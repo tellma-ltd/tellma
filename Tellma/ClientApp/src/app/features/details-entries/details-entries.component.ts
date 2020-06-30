@@ -1,15 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
+import { WorkspaceService } from '~/app/data/workspace.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 't-details-entries',
   templateUrl: './details-entries.component.html',
   styles: []
 })
-export class DetailsEntriesComponent implements OnInit {
+export class DetailsEntriesComponent extends MasterBaseComponent {
 
-  constructor() { }
-
-  ngOnInit() {
+  constructor(private workspace: WorkspaceService, private translate: TranslateService) {
+    super();
   }
 
+  public get c() {
+    return this.ws.DetailsEntry;
+  }
+
+  public get ws() {
+    return this.workspace.currentTenant;
+  }
 }

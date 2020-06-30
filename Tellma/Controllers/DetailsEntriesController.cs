@@ -92,6 +92,18 @@ namespace Tellma.Controllers
 
         protected override Query<DetailsEntry> Search(Query<DetailsEntry> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
+            string search = args.Search;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var line = nameof(DetailsEntry.Line);
+                var memo = nameof(LineForQuery.Memo);
+
+                var filterString = $"{line}/{memo} {Ops.contains} '{search}'";
+                query = query.Filter(FilterExpression.Parse(filterString));
+            }
+
             return query;
         }
 

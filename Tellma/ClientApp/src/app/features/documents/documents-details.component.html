@@ -1135,7 +1135,7 @@
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
                         <t-contracts-picker *ngIf="!readonlyContract_Manual(entry)" [(ngModel)]="entry.ContractId"
-                            (ngModelChange)="update.call(null, pair);"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectContract"
                             [definitionIds]="definitionIdsContract_Manual(entry)" required>
                         </t-contracts-picker>
                         <t-restricted *ngIf="readonlyContract_Manual(entry)"

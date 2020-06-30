@@ -26,7 +26,7 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
             titlePlural: () => trx.instant('IdentityServerUsers'),
             select: ['Email'],
             apiEndpoint: 'identity-server-users',
-            screenUrl: 'identity-server-users',
+            masterScreenUrl: 'identity-server-users',
             orderby: () => ['Email'],
             inactiveFilter: null,
             format: (item: IdentityServerUser) => item.Email,

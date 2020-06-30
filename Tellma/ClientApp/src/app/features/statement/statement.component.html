@@ -49,7 +49,8 @@
                 <!-- Contract -->
                 <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContractParameter">
                     <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
-                        [definitionIds]="definitionIdsContract_Manual" [showCreate]="false">
+                        [definitionIds]="definitionIdsContract_Manual" [additionalSelect]="contractAdditionalSelect"
+                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                     </t-contracts-picker>
                     <t-view-link *ngIf="readonlyContract_Manual"
                         [link]="link('contracts/') + ws.get('Contract', readonlyValueContractId_Manual)?.DefinitionId"

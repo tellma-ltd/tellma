@@ -5,6 +5,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export interface OutboxRecord extends EntityWithKey {
     DocumentId?: number;
@@ -36,7 +37,14 @@ export function metadata_OutboxRecord(wss: WorkspaceService, trx: TranslateServi
             titlePlural: () => trx.instant('Outbox'),
             select: _select,
             apiEndpoint: 'outbox',
-            screenUrl: 'outbox',
+            masterScreenUrl: 'outbox',
+            navigateToDetailsSelect: ['Document/DefinitionId'],
+            navigateToDetails: (outboxRecord: OutboxRecord, router: Router, _: string) => {
+                const docId = outboxRecord.DocumentId;
+                const definitionId = ws.Document[docId].DefinitionId;
+                const extras = { state_key: 'from_outbox' }; // fake state key to hide forward and backward navigation in details screen
+                router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, docId, extras]);
+            },
             orderby: () => ['CreatedAt desc'],
             inactiveFilter: null,
             format: (__: EntityWithKey) => '',

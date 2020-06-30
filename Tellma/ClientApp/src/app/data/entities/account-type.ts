@@ -69,9 +69,6 @@ export interface AccountType extends AccountTypeForSave<AccountTypeContractDefin
   CreatedById?: number | string;
   ModifiedAt?: string;
   ModifiedById?: number | string;
-
-  // Temp
-  SelfParentId?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -97,7 +94,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       titlePlural: () => trx.instant('AccountTypes'),
       select: _select,
       apiEndpoint: 'account-types',
-      screenUrl: 'account-types',
+      masterScreenUrl: 'account-types',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
@@ -145,9 +142,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         ChildCount: { control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
         ActiveChildCount: { control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
         Level: { control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        // Temp
-        SelfParentId: { control: 'number', label: () => `${trx.instant('TreeSelfParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        SelfParent: { control: 'navigation', label: () => trx.instant('TreeSelfParent'), type: 'AccountClassification', foreignKeyName: 'SelfParentId' },
 
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },

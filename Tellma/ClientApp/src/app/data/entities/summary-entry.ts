@@ -28,7 +28,7 @@ export function metadata_SummaryEntry(wss: WorkspaceService, trx: TranslateServi
                 { key: 'FromDate', isRequired: true, desc: { control: 'date', label: () => trx.instant('FromDate') } },
                 { key: 'ToDate', isRequired: true, desc: { control: 'date', label: () => trx.instant('ToDate') } },
             ],
-            screenUrl: 'summary-entries',
+            masterScreenUrl: 'summary-entries',
             orderby: () => ['AccountId'],
             inactiveFilter: null,
             format: (__: Entity) => '',

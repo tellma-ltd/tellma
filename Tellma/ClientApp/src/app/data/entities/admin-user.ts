@@ -37,7 +37,7 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             titlePlural: () => trx.instant('AdminUsers'),
             select: ['Name'],
             apiEndpoint: 'admin-users',
-            screenUrl: 'admin-users',
+            masterScreenUrl: 'admin-users',
             orderby: () => ['Name'],
             inactiveFilter: 'IsActive eq true',
             format: (item: AdminUserForSave) => item.Name,

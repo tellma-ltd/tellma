@@ -56,7 +56,7 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
             titlePlural: () => trx.instant('Accounts'),
             select: _select,
             apiEndpoint: 'accounts',
-            screenUrl: 'accounts',
+            masterScreenUrl: 'accounts',
             orderby: () => ['Code'].concat(ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]]),
             inactiveFilter: 'IsDeprecated eq false',
             includeInactveLabel: () => trx.instant('IncludeDeprecated'),

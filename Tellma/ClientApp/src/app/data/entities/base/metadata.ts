@@ -31,6 +31,7 @@ import { metadata_Agent } from '../agent';
 import { metadata_ContractDefinition } from '../contract-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
 import { metadata_LookupDefinition } from '../lookup-definition';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export const metadata: {
     [collection: string]: (
@@ -152,7 +153,17 @@ export interface EntityDescriptor {
     /**
      * The url of the screen that displays this type after the 'https://web.tellma.com/app/101/' part.
      */
-    screenUrl?: string;
+    masterScreenUrl?: string;
+
+    /**
+     * The select required for navigateToDetails to succeed
+     */
+    navigateToDetailsSelect?: string[];
+
+    /**
+     * Navigates to the details screen representing the entity with a certain Id, this is a more powerful version of screenUrl
+     */
+    navigateToDetails?: (entity: Entity, router: Router, statekey?: string) => void;
 
     /**
      * A function that returns a display string representing the entity.

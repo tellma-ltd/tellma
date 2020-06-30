@@ -29,9 +29,6 @@ export interface EntryType extends EntryTypeForSave {
   CreatedById?: number | string;
   ModifiedAt?: string;
   ModifiedById?: number | string;
-
-  // Temp
-  SelfParentId?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -56,7 +53,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
       titlePlural: () => trx.instant('EntryTypes'),
       select: _select,
       apiEndpoint: 'entry-types',
-      screenUrl: 'entry-types',
+      masterScreenUrl: 'entry-types',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
@@ -92,15 +89,6 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
         Level: {
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
-        },
-        // Temp
-        SelfParentId: {
-          control: 'number', label: () => `${trx.instant('TreeSelfParent')} (${trx.instant('Id')})`,
-          minDecimalPlaces: 0, maxDecimalPlaces: 0
-        },
-        SelfParent: {
-          control: 'navigation', label: () => trx.instant('TreeSelfParent'),
-          type: 'EntryType', foreignKeyName: 'SelfParentId'
         },
 
         IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
