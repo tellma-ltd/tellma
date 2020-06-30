@@ -75,9 +75,8 @@ SET NOCOUNT ON;
 	----SELECT  *, [Node].ToString() As [Path] FROM @Entities;-- ORDER BY [Node].GetLevel(), [Node];
 */
 
-
 	WITH Children ([Id], [ParentId], [Num]) AS (
-		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E.[Code])
 		FROM [dbo].[AccountClassifications] E
 		LEFT JOIN [dbo].[AccountClassifications] E2 ON E.[ParentId] = E2.[Id]
 	),

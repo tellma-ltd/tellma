@@ -74,7 +74,7 @@
 (5132000, N'Professional Fees Expense - *', N'الرسوم المهنية حساب - *', N'5132-000', @ProfessionalFeesExpense, @AC5132, @SDG,NULL,NULL,NULL),
 (5133000, N'Transportation expense - *', N'حساب النقل - *', N'5133-000', @TransportationExpense, @AC5133, @SDG,NULL,NULL,NULL),
 (5141000, N'Wages and Salaries - *', N'الأجور والرواتب - *', N'5141-000', @WagesAndSalaries, @AC5141, @SDG,NULL,NULL,NULL),
-(5143000, N'Employee bonus', N'مكافأة الموظف', N'5143-000', @EmployeeBonusExtension, @AC5143, @SDG,NULL,NULL,NULL),
+--(5143000, N'Employee bonus', N'مكافأة الموظف', N'5143-000', @EmployeeBonusExtension, @AC5143, @SDG,NULL,NULL,NULL),
 (7100001, N'Cash control', N'السيطرة النقدية', N'7100-001', @CashControlExtension, @AC7100, @SDG,NULL,NULL,NULL),
 (7100002, N'Trading control', N'مراقبة التداول', N'7100-002', @TradingControlExtension, @AC7100, @SDG,NULL,NULL,NULL),
 (7100003, N'Payroll control', N'السيطرة الرواتب', N'7100-003', @PayrollControlExtension, @AC7100, @SDG,NULL,NULL,NULL),

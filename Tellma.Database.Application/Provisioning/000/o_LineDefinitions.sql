@@ -443,7 +443,7 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (10,0,14,	@WagesAndSalaries),
 (11,0,14,	@SocialSecurityContributions),
 (12,0,14,	@OtherShorttermEmployeeBenefits),
-(13,0,14,	@EmployeeBonusExtension),
+--(13,0,14,	@EmployeeBonusExtension),
 (14,0,14,	@PostemploymentBenefitExpenseDefinedContributionPlans),
 (15,0,14,	@PostemploymentBenefitExpenseDefinedBenefitPlans),
 (16,0,14,	@TerminationBenefitsExpense),

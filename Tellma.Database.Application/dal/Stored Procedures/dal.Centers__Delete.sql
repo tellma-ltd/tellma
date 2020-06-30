@@ -2,12 +2,12 @@
 	@Ids [dbo].[IdList] READONLY
 AS
 SET NOCOUNT ON;
-	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
+	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] =1 AND [IsActive] = 1);
 	DELETE [dbo].[Centers] WHERE [Id] IN (SELECT [Id] FROM @Ids);
 		
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
-		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E.[Code])
 		FROM [dbo].[Centers] E
 		LEFT JOIN [dbo].[Centers] E2 ON E.[ParentId] = E2.[Id]
 	),
@@ -27,7 +27,7 @@ SET NOCOUNT ON;
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 	
 	-- Whether there are multiple active segments is an important cached value of the settings
-	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
+	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
 
 	IF (@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

@@ -5,7 +5,7 @@
 	[ParentId]			INT,  
 	[CenterType]		NVARCHAR (50)		CHECK (		
 												[CenterType] IN (
-													N'Segment', N'Abstract', N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
+													N'Abstract', N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
 													N'SharedExpenseControl', N'TransitExpenseControl', N'ConstructionExpenseControl',
 													N'ProductionExpenseControl'
 												)

@@ -24,8 +24,8 @@ BEGIN
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	WHERE (@fromDate <= L.[PostingDate]) AND (L.[PostingDate] < DATEADD(DAY, 1, @toDate))
 	
-	AND [AT].[Code]  = N'CashAndCashEquivalents' -- TODO: Or below
-	AND E.[EntryTypeId] <> (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InternalCashTransfer')
+	AND [AT].[Concept]  = N'CashAndCashEquivalents' -- TODO: Or below
+	AND E.[EntryTypeId] <> (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InternalCashTransfer')
 	GROUP BY E.[EntryTypeId]
 	
 	CREATE TABLE #Rollups (

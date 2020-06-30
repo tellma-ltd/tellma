@@ -19,8 +19,8 @@ BEGIN
 			[Value]
 	)
 	SELECT
-		[AT].[Code] AS [RowConcept],
-		[ET].[Code] AS [ColumnConcept],
+		[AT].[Concept] AS [RowConcept],
+		[ET].[Concept] AS [ColumnConcept],
 		SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
@@ -30,7 +30,7 @@ BEGIN
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
 	WHERE (@fromDate <= D.[PostingDate]) AND (D.[PostingDate] < DATEADD(DAY, 1, @toDate))
 	-- TODO: consider subtypes of the ones below
-	AND [AT].[Code] IN (
+	AND [AT].[Concept] IN (
 		N'IssuedCapital',
 		N'RetainedEarnings',
 		N'SharePremium',
@@ -38,7 +38,7 @@ BEGIN
 		N'OtherEquityInterest',
 		N'OtherReserves'
 	)
-	GROUP BY [AT].[Code], [ET].[Code]
+	GROUP BY [AT].[Concept], [ET].[Concept]
 	/*
 	-- We need to assign the accounts whose AccountType = OtherReserves to one of the below...
 RevaluationSurplusMember

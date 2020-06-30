@@ -17,23 +17,24 @@ SET NOCOUNT ON;
 				E.[Index], E.[Id], E.[ParentId],
 				-- TODO: use index and last node number to add a tree that is pre-sorted
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
-				E.[Code], E.[Name], E.[Name2], E.[Name3], E.[IsAssignable]
+				E.[Code], E.[Concept], E.[Name], E.[Name2], E.[Name3], E.[IsAssignable]
 			FROM @Entities E
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
 				t.[ParentId]			= IIF(t.[IsSystem]=0,s.[ParentId],t.[ParentId]),
+				t.[Code]				= IIF(t.[IsSystem]=0,s.[Code],t.[Code]),
+				t.[Concept]				= IIF(t.[IsSystem]=0,s.[Concept],t.[Concept]),
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
-				t.[Code]				= IIF(t.[IsSystem]=0,s.[Code],t.[Code]),
 				t.[IsAssignable]		= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Node], [IsAssignable])
-			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Node], s.[IsAssignable])
+			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Concept], [Node], [IsAssignable])
+			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Concept], s.[Node], s.[IsAssignable])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 	
@@ -50,7 +51,7 @@ SET NOCOUNT ON;
 
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
-		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E.[Code])
 		FROM [dbo].[EntryTypes] E
 		LEFT JOIN [dbo].[EntryTypes] E2 ON E.[ParentId] = E2.[Id]
 	),

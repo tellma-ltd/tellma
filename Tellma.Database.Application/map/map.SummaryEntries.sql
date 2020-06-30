@@ -2,14 +2,14 @@
 	@fromDate Date = '01.01.2018',
 	@toDate Date = '01.01.2019',
 	@CenterId INT = NULL,
-	@AccountTypeCode NVARCHAR (255) = NULL
+	@AccountTypeConcept NVARCHAR (255) = NULL
 )
 RETURNS TABLE AS
 RETURN
 	WITH AccountTypesSubtree AS (
 		SELECT Id FROM dbo.[AccountTypes]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[AccountTypes] WHERE [Code] = @AccountTypeCode)
+			(SELECT [Node] FROM dbo.[AccountTypes] WHERE [Concept] = @AccountTypeConcept)
 		) = 1
 	),
 	ReportAccounts AS (
@@ -17,7 +17,7 @@ RETURN
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.Id
 		WHERE
 			(@CenterId IS NULL OR [CenterId] = @CenterId)
-		AND (@AccountTypeCode IS NULL OR [AccountTypeId] IN (SELECT [Id] FROM AccountTypesSubtree))
+		AND (@AccountTypeConcept IS NULL OR [AccountTypeId] IN (SELECT [Id] FROM AccountTypesSubtree))
 	),
 	OpeningBalances AS (
 		SELECT

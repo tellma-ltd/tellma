@@ -1,9 +1,11 @@
 ﻿INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
-(-1,NULL, N'SSIA', N'الجهاز الاستثماري', N'', N'Segment'),
-(0,-1, N'SSIA', N'الجهاز الاستثماري', N'0000', N'Parent'),
-(1000,-1, N'Consolidated Board of Directors', N'مجلس الإدارة الموحد', N'1000', N'SellingGeneralAndAdministration'),
-(2000,-1, N'Board of Commissioners', N'مجلس المفوضين ', N'2000', N'SellingGeneralAndAdministration'),
-(3,-1, N'Executive Management', N'الإدارة التنفيذية', N'3', N'Abstract'),
+(0,NULL, N'SSIA', N'الجهاز الاستثماري', N'', N'Abstract'),
+(1,0, N'Boards', N'المجالس الإدارية', N'1', N'Abstract'),
+(11,1, N'Boards', N'المجالس الإدارية', N'11', N'Abstract'),
+(1100,1, N'SSIA', N'الجهاز الاستثماري', N'1100', N'Parent'),
+(1200,1, N'Consolidated Board of Directors', N'مجلس الإدارة الموحد', N'1200', N'SellingGeneralAndAdministration'),
+(1300,1, N'Board of Commissioners', N'مجلس المفوضين ', N'1300', N'SellingGeneralAndAdministration'),
+(3,0, N'Executive Management', N'الإدارة التنفيذية', N'3', N'Abstract'),
 (31,3, N'financial affairs', N'الشئون المالية ', N'31', N'Abstract'),
 (3100,31, N'Directorate General for Financial Affairs', N'الإدارة العامة للشئون المالية ', N'3100', N'SellingGeneralAndAdministration'),
 (311,31, N'Finance', N'المالية ', N'311', N'Abstract'),
@@ -64,7 +66,7 @@
 (3920,39, N'Management Office Executive', N'إدارة المكتب التنفيذي', N'3920', N'SellingGeneralAndAdministration'),
 (3930,39, N'Internal Audit Management', N'إدارة المراجعة الداخلية', N'3930', N'SellingGeneralAndAdministration'),
 (3940,39, N'Legal Counsel', N'المستشار القانوني', N'3940', N'SellingGeneralAndAdministration'),
-(4,-1, N'Real Estate', N'عقارات', N'4', N'Abstract'),
+(4,0, N'Real Estate', N'عقارات', N'4', N'Abstract'),
 (41,4, N'Real Estate - Rentals', N'عقارات للتأجير', N'41', N'Abstract'),
 (411,41, N'Saffat Towers Complex', N'مجمع أبراج الصافات', N'411', N'Abstract'),
 (4111,411, N'Saffat Towers - Direct Expenses', N'أبراج الصافات - مصروفات مباشرة', N'4111', N'CostOfSales'),
@@ -79,7 +81,7 @@
 (422,42, N'Yasmine Scheme', N'مخطط الياسمين', N'422', N'Abstract'),
 (4221,422, N'Yasmine Scheme - Cost of Sales', N'مخطط الياسمين - تكلفة المبيعات', N'4221', N'CostOfSales'),
 (4222,422, N'Yasmine Scheme - SGA', N'مخطط الياسمين - مصروفات إدارية وتسويقية', N'4222', N'SellingGeneralAndAdministration'),
-(5,422, N'Projects Under Construction', N'مشاريع قيد التنفيذ', N'5', N'Abstract'),
+(5,0, N'Projects Under Construction', N'مشاريع قيد التنفيذ', N'5', N'Abstract'),
 (5001,5, N'Ubayyid Hospital Project', N'مشروع مستشفى الأبيض', N'5001', N'ConstructionExpenseControl'),
 (5002,5, N'Salam Scheme Project', N'مشروع مخطط السلام', N'5002', N'ConstructionExpenseControl'),
 (5003,5, N'Ahfaad Complex Project', N'مشروع مجمع الأحفاد', N'5003', N'ConstructionExpenseControl');
@@ -95,64 +97,63 @@ BEGIN
 END;
 
 -- Declarations
--- Declarations
-DECLARE @107C_SSIA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'SSIA');
-DECLARE @107C_ConsolidatedBoardofDirectors INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Consolidated Board of Directors');
-DECLARE @107C_BoardofCommissioners INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Board of Commissioners');
-DECLARE @107C_DirectorateGeneralforFinancialAffairs INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Directorate General for Financial Affairs');
-DECLARE @107C_FinanceDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Finance Department');
-DECLARE @107C_AccountsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Accounts Division');
-DECLARE @107C_FinalAccountsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Final Accounts Division');
-DECLARE @107C_CollectionDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Collection Division');
-DECLARE @107C_PaymentsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Payments Division');
-DECLARE @107C_ProcurementDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Procurement Division');
-DECLARE @107C_DirectorateGeneralforHumanResourcesandAdministrativeAffairs INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Directorate General for Human Resources and Administrative Affairs');
-DECLARE @107C_HumanResourcesDevelopmentDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Human Resources Development Department');
-DECLARE @107C_PersonnelDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Personnel Division');
-DECLARE @107C_TrainingDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Training Division');
-DECLARE @107C_AdministrativeAffairsDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Administrative Affairs Department');
-DECLARE @107C_ServicesDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Services Division');
-DECLARE @107C_SecurityandSafetyDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Security and Safety Division');
-DECLARE @107C_PublicadministrationcompaniesandRealEstateDevelopment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Public administration companies and Real Estate Development');
-DECLARE @107C_DepartmentofAgriculturalInvestment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Agricultural Investment');
-DECLARE @107C_DepartmentofTourismInvestmentandHotels INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Tourism Investment and Hotels');
-DECLARE @107C_DepartmentofIndustrialInvestment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Industrial Investment');
-DECLARE @107C_DepartmentofMedicalInvestment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Medical Investment');
-DECLARE @107C_MarketingDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Marketing Department');
-DECLARE @107C_CommercialMarketing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Commercial Marketing');
-DECLARE @107C_RealEstateMarketing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Real Estate Marketing');
-DECLARE @107C_RealEstateDevelopmentDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Real Estate Development Department');
-DECLARE @107C_DevelopmentDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Development Division');
-DECLARE @107C_ProjectsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Projects Division');
-DECLARE @107C_DirectorateGeneralforStudiesandStrategicPlanning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Directorate General for Studies and Strategic Planning');
-DECLARE @107C_StudiesandResearchDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Studies and Research Department');
-DECLARE @107C_RiskDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Risk Department');
-DECLARE @107C_TotalQualityDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Total Quality Department');
-DECLARE @107C_DepartmentofFeasibilityStudiesandStatistics INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Feasibility Studies and Statistics');
-DECLARE @107C_ResearchandDevelopmentDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Research and Development Department');
-DECLARE @107C_InformationTechnologyManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Information Technology Management');
-DECLARE @107C_TechnicalSupportandMaintenanceDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Technical Support and Maintenance Department');
-DECLARE @107C_DepartmentofNetworkandInformationSecurity INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Network and Information Security');
-DECLARE @107C_SystemsDevelopmentandSoftwareDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Systems Development and Software Division');
-DECLARE @107C_DirectorateGeneralforFinancialInvestmentandsmartpartnerships INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Directorate General for Financial Investment and smart partnerships');
-DECLARE @107C_BankingSystemManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Banking System Management');
-DECLARE @107C_FinancialServicesDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Financial Services Department');
-DECLARE @107C_InternalTradeFinanceManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Internal Trade Finance Management');
-DECLARE @107C_OfficeoftheCommissionerGeneral INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Office of the Commissioner-General');
-DECLARE @107C_PublicRelationsDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Public Relations Department');
-DECLARE @107C_DepartmentofMedia INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Department of Media');
-DECLARE @107C_ProtocolDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Protocol Department');
-DECLARE @107C_ManagementOfficeExecutive INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Management Office Executive');
-DECLARE @107C_InternalAuditManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Internal Audit Management');
-DECLARE @107C_LegalCounsel INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Legal Counsel');
-DECLARE @107C_SaffatTowersDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Saffat Towers - Direct Expenses');
-DECLARE @107C_SaffatTowersSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Saffat Towers - SGA');
-DECLARE @107C_PearlComplexDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Pearl Complex - Direct Expenses');
-DECLARE @107C_PearlComplexSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Pearl Complex - SGA');
-DECLARE @107C_RayyanSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Rayyan Scheme - Cost of Sales');
-DECLARE @107C_RayyanSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Rayyan Scheme - SGA');
-DECLARE @107C_YasmineSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Yasmine Scheme - Cost of Sales');
-DECLARE @107C_YasmineSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Yasmine Scheme - SGA');
-DECLARE @107C_UbayyidHospitalProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Ubayyid Hospital Project');
-DECLARE @107C_SalamSchemeProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Salam Scheme Project');
-DECLARE @107C_AhfaadComplexProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Ahfaad Complex Project');
+DECLARE @107C_SSIA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'SSIA');
+DECLARE @107C_ConsolidatedBoardofDirectors INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Consolidated Board of Directors');
+DECLARE @107C_BoardofCommissioners INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Board of Commissioners');
+DECLARE @107C_DirectorateGeneralforFinancialAffairs INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Directorate General for Financial Affairs');
+DECLARE @107C_FinanceDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Finance Department');
+DECLARE @107C_AccountsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Accounts Division');
+DECLARE @107C_FinalAccountsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Final Accounts Division');
+DECLARE @107C_CollectionDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Collection Division');
+DECLARE @107C_PaymentsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Payments Division');
+DECLARE @107C_ProcurementDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Procurement Division');
+DECLARE @107C_DirectorateGeneralforHumanResourcesandAdministrativeAffairs INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Directorate General for Human Resources and Administrative Affairs');
+DECLARE @107C_HumanResourcesDevelopmentDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Human Resources Development Department');
+DECLARE @107C_PersonnelDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Personnel Division');
+DECLARE @107C_TrainingDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Training Division');
+DECLARE @107C_AdministrativeAffairsDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Administrative Affairs Department');
+DECLARE @107C_ServicesDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Services Division');
+DECLARE @107C_SecurityandSafetyDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Security and Safety Division');
+DECLARE @107C_PublicadministrationcompaniesandRealEstateDevelopment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Public administration companies and Real Estate Development');
+DECLARE @107C_DepartmentofAgriculturalInvestment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Agricultural Investment');
+DECLARE @107C_DepartmentofTourismInvestmentandHotels INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Tourism Investment and Hotels');
+DECLARE @107C_DepartmentofIndustrialInvestment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Industrial Investment');
+DECLARE @107C_DepartmentofMedicalInvestment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Medical Investment');
+DECLARE @107C_MarketingDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Marketing Department');
+DECLARE @107C_CommercialMarketing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Commercial Marketing');
+DECLARE @107C_RealEstateMarketing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Real Estate Marketing');
+DECLARE @107C_RealEstateDevelopmentDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Real Estate Development Department');
+DECLARE @107C_DevelopmentDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Development Division');
+DECLARE @107C_ProjectsDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Projects Division');
+DECLARE @107C_DirectorateGeneralforStudiesandStrategicPlanning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Directorate General for Studies and Strategic Planning');
+DECLARE @107C_StudiesandResearchDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Studies and Research Department');
+DECLARE @107C_RiskDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Risk Department');
+DECLARE @107C_TotalQualityDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Total Quality Department');
+DECLARE @107C_DepartmentofFeasibilityStudiesandStatistics INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Feasibility Studies and Statistics');
+DECLARE @107C_ResearchandDevelopmentDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Research and Development Department');
+DECLARE @107C_InformationTechnologyManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Information Technology Management');
+DECLARE @107C_TechnicalSupportandMaintenanceDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Technical Support and Maintenance Department');
+DECLARE @107C_DepartmentofNetworkandInformationSecurity INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Network and Information Security');
+DECLARE @107C_SystemsDevelopmentandSoftwareDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Systems Development and Software Division');
+DECLARE @107C_DirectorateGeneralforFinancialInvestmentandsmartpartnerships INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Directorate General for Financial Investment and smart partnerships');
+DECLARE @107C_BankingSystemManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Banking System Management');
+DECLARE @107C_FinancialServicesDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Financial Services Department');
+DECLARE @107C_InternalTradeFinanceManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Internal Trade Finance Management');
+DECLARE @107C_OfficeoftheCommissionerGeneral INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Office of the Commissioner-General');
+DECLARE @107C_PublicRelationsDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Public Relations Department');
+DECLARE @107C_DepartmentofMedia INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Media');
+DECLARE @107C_ProtocolDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Protocol Department');
+DECLARE @107C_ManagementOfficeExecutive INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Management Office Executive');
+DECLARE @107C_InternalAuditManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Internal Audit Management');
+DECLARE @107C_LegalCounsel INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Legal Counsel');
+DECLARE @107C_SaffatTowersDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Saffat Towers - Direct Expenses');
+DECLARE @107C_SaffatTowersSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Saffat Towers - SGA');
+DECLARE @107C_PearlComplexDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Pearl Complex - Direct Expenses');
+DECLARE @107C_PearlComplexSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Pearl Complex - SGA');
+DECLARE @107C_RayyanSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Rayyan Scheme - Cost of Sales');
+DECLARE @107C_RayyanSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Rayyan Scheme - SGA');
+DECLARE @107C_YasmineSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Yasmine Scheme - Cost of Sales');
+DECLARE @107C_YasmineSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Yasmine Scheme - SGA');
+DECLARE @107C_UbayyidHospitalProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Ubayyid Hospital Project');
+DECLARE @107C_SalamSchemeProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Salam Scheme Project');
+DECLARE @107C_AhfaadComplexProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Ahfaad Complex Project');

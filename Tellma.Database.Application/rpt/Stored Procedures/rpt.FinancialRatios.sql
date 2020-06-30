@@ -2,12 +2,12 @@
 	@FromDate DATE,
 	@ToDate DATE
 AS
-	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'Revenue');
-	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'ExpenseByNatureAbstract');
-	DECLARE @EquityAndLiabilitiesAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'EquityAndLiabilitiesAbstract');
-	DECLARE @EquityAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'EquityAbstract');--TradeAndOtherPayables
-	DECLARE @TradeAndOtherNonCurrentPayables HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherNonCurrentPayables');
-	DECLARE @NonCurrentProvisionsAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'NonCurrentProvisionsAbstract');
+	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenue');
+	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNatureAbstract');
+	DECLARE @EquityAndLiabilitiesAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EquityAndLiabilitiesAbstract');
+	DECLARE @EquityAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EquityAbstract');--TradeAndOtherPayables
+	DECLARE @TradeAndOtherNonCurrentPayables HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'TradeAndOtherNonCurrentPayables');
+	DECLARE @NonCurrentProvisionsAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'NonCurrentProvisionsAbstract');
 	
 	DECLARE @ProfitFromOperations DECIMAL (19,4);
 	DECLARE @SalesRevenues DECIMAL (19,4);

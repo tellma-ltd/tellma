@@ -43,9 +43,9 @@ BEGIN
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 
-	IF (SELECT COUNT(*) FROM dbo.Centers WHERE CenterType = N'Segment' AND IsActive = 1) = 1
+	IF (SELECT COUNT(*) FROM dbo.Centers WHERE [IsSegment] = 1 AND [IsActive] = 1) = 1
 	BEGIN
-		DECLARE @SegmentId INT = (SELECT [Id] FROM dbo.Centers WHERE CenterType = N'Segment' AND IsActive = 1);
+		DECLARE @SegmentId INT = (SELECT [Id] FROM dbo.Centers WHERE [IsSegment] = 1 AND[IsActive] = 1);
 		UPDATE @D SET [SegmentId] = @SegmentId
 	END
 BEGIN

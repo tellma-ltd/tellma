@@ -18,11 +18,11 @@ AS
 --(6,8,	N'Entries', N'Time2',				1,	N'Till',		N'حتى',			1,0,1),
 --(7,8,	N'Entries', N'MonetaryValue',		1,	N'Depreciation',N'الإهلاك',		1,0,0);
 	DECLARE @WideLines WideLineList;
-	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment');
+	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');
 	DECLARE @PPETypeIds IdList;
 	DECLARE @AET INT = (
 		SELECT [Id] FROM dbo.EntryTypes
-		WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment'
+		WHERE [Concept] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment'
 	);
 
 	WITH PPEBalancesPre AS (

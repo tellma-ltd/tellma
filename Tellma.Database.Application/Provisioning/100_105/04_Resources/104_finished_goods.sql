@@ -14,33 +14,7 @@ BEGIN
 		Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
-	SET @PId= (SELECT [Id] FROM dbo.[AccountTypes] WHERE [Code] = N'FinishedGoods');
-	DELETE FROM @AccountTypes;
-	INSERT INTO @AccountTypes([ParentId],[Index], [ParentIndex],
-					[Code],		[Name],	[IsAssignable]--, [Node]
-																	) VALUES
-	(@PId,0,NULL,	N'D',		N'D',	1),--			N'/1/11/5/1/'),
-	(@PId,1,NULL,	N'HSP',		N'HSP',	0),--			N'/1/11/5/2/'),
-	(NULL,2,1,		N'CHS',		N'CHS',	1),--			N'/1/11/5/2/1/'),
-	(NULL,3,1,		N'RHS',		N'RHS',	1),--			N'/1/11/5/2/2/'),
-	(NULL,4,1,		N'SHS',		N'SHS',	1),--			N'/1/11/5/2/3/'),
-	(@PId,5,NULL,	N'LTZ',		N'LTZ',	0),--			N'/1/11/5/3/'),
-	(NULL,6,5,		N'L',		N'L',	1),--			N'/1/11/5/3/1/'),
-	(NULL,7,5,		N'T',		N'T',	1),--			N'/1/11/5/3/2/'),
-	(NULL,8,5,		N'Z',		N'Z',	1),--			N'/1/11/5/3/3/'),
-	(@PId,9,NULL,	N'SM',		N'SM',	1),--			N'/1/11/5/4/'),
-	(@PId,10,NULL,	N'CP',		N'CP',	1),--			N'/1/11/5/5/'),
-	(@PId,11,NULL,	N'Other',	N'Other',1);--			N'/1/11/5/6/');
-	
-	EXEC [api].[AccountTypes__Save]
-		@Entities = @AccountTypes,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Resource Classifications: Provisioning: ' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;												
+	SET @PId= (SELECT [Id] FROM dbo.[AccountTypes] WHERE [Concept] = N'FinishedGoods');					
 
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],

@@ -4,7 +4,7 @@
 	[AccountTypeId]			INT					NOT NULL CONSTRAINT [FK_AccountTypeCenterTypes__AccountTypeId] REFERENCES dbo.[AccountTypes]([Id]) ON DELETE CASCADE,
 	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_AccountTypeCenterTypes__CenterType] CHECK (
 													[CenterType] IN (
-														N'Segment', N'Abstract', N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
+														N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
 														N'SharedExpenseControl', N'TransitExpenseControl', N'ConstructionExpenseControl',
 														N'ProductionExpenseControl'
 													)

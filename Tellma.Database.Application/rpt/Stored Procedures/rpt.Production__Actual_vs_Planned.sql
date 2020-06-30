@@ -4,8 +4,8 @@
 	-- TODO: rewrite using summary entries
 AS
 BEGIN
-	DECLARE @InventoryProductionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InventoryProductionExtension');
-	DECLARE @FinishedGoods INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'FinishedGoods');
+	DECLARE @InventoryProductionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoryProductionExtension');
+	DECLARE @FinishedGoods INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'FinishedGoods');
 	WITH
 	Actual([ResourceId], [Mass], [Count]) AS (
 		SELECT

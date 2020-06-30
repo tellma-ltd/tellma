@@ -15,15 +15,15 @@ BEGIN
 	END
 
 	DECLARE @CashAndCashEquivalentsNode HIERARCHYID = (
-		SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'CashAndCashEquivalents'
+		SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'CashAndCashEquivalents'
 	);
 	DECLARE @EffectOfExchangeRateChangesOnCashAndCashEquivalents INT = (
-		SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'EffectOfExchangeRateChangesOnCashAndCashEquivalents'
+		SELECT [Id] FROM dbo.[EntryTypes] WHERE [Concept] = N'EffectOfExchangeRateChangesOnCashAndCashEquivalents'
 	);
 	DECLARE @ForeignExchangeGainLossAccount INT = (
 		SELECT MIN([Id]) FROM dbo.Accounts
 		WHERE [AccountTypeId] = (
-			SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'exchange-variance'
+			SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'exchange-variance'
 		)
 	);
 

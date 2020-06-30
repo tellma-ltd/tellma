@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[AccountTypes] (
 	[Id]						INT					CONSTRAINT [PK_AccountTypes]  PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]					INT					CONSTRAINT [FK_AccountTypes__ParentId] REFERENCES [dbo].[AccountTypes] ([Id]),
-	[SelfParentId]				AS					COALESCE([ParentId], [Id]) PERSISTED,
-	[Code]						NVARCHAR (255)		NOT NULL CONSTRAINT [IX_AccountTypes__Code] UNIQUE NONCLUSTERED,
+	[Code]						NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountTypes__Code] UNIQUE NONCLUSTERED,
+	[Concept]					NVARCHAR (255)		NOT NULL CONSTRAINT [IX_AccountTypes__Concept] UNIQUE NONCLUSTERED,
 	[Name]						NVARCHAR (255)		NOT NULL,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
@@ -45,6 +45,8 @@
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	-- Pure SQL properties and computed properties
-	[ParentNode]				AS [Node].GetAncestor(1)
+	[ParentNode]				AS [Node].GetAncestor(1) PERSISTED,
+	[Level]						AS [Node].GetLevel() PERSISTED,
+	[Path]						AS [Node].ToString() PERSISTED 
 );
 GO

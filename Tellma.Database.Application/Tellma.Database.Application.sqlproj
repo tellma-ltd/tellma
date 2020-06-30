@@ -357,7 +357,6 @@
     <Build Include="api\Stored Procedures\api.EntryTypes__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.EntryTypeList.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Save.sql" />
-    <Build Include="dbo\Functions\dbo.fn_ATCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Save.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />

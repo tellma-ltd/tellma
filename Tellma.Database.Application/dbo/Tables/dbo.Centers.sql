@@ -1,26 +1,22 @@
 ﻿CREATE TABLE [dbo].[Centers] (
 	[Id]					INT					CONSTRAINT [PK_Centers]  PRIMARY KEY NONCLUSTERED IDENTITY,
--- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
-	--[SegmentId]				INT					NOT NULL CONSTRAINT [FK_Centers__SegmentId] REFERENCES dbo.[Segments]([Id]),
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
-	[SelfParentId]			AS					COALESCE([ParentId], [Id]) PERSISTED,
 	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK (
 													[CenterType] IN (
-														N'Segment', N'Abstract', N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
+														N'Abstract', N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
 														N'SharedExpenseControl', N'TransitExpenseControl', N'ConstructionExpenseControl',
 														N'ProductionExpenseControl'
 													)
 												),
-	[IsLeaf]				AS					CAST(IIF([CenterType] = N'Abstract', 0, 1) AS BIT) PERSISTED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
 	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Agents]([Id]),
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.
-	[Code]					NVARCHAR (50)		NOT NULL UNIQUE CLUSTERED,
+	[Code]					NVARCHAR (50)		NOT NULL UNIQUE NONCLUSTERED,
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Centers__CreatedById] REFERENCES [dbo].[Users] ([Id]),
@@ -28,8 +24,12 @@
 	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Centers__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	
 	-- Pure SQL properties and computed properties
-	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_Centers__Node] UNIQUE, -- CLUSTERED,
-	[ParentNode]			AS [Node].GetAncestor(1)--,	[SegmentNode]			AS [Node].GetAncestor([Node].GetLeveL() - 1)
+	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_Centers__Node] UNIQUE CLUSTERED,
+--	[ParentNode]			AS					[Node].GetAncestor(1),
+	[Level]					AS					[Node].GetLevel(),
+--	[SegmentNode]			AS [Node].GetAncestor([Level] - 1),
+	[IsLeaf]				AS					CAST(IIF([CenterType] = N'Abstract', 0, 1) AS BIT) PERSISTED,
+	[IsSegment]				AS					CAST(IIF([Node].GetAncestor(1) = hierarchyid::GetRoot(), 1, 0) AS BIT) PERSISTED
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name]

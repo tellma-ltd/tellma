@@ -28,18 +28,6 @@ BEGIN -- Inserting
 	:r .\07_Resources_Cash.sql
 	:r .\07_Resources_FinancialLiabilities.sql
 	:r .\07_Resources_EmployeeBenefits.sql
-	
-	IF @DebugResources = 1
-	BEGIN
-	--	SELECT * FROM dbo.[ResourceDefinitions];
-		SELECT	RD.[Id] AS [ResourceDefinitionId], RC.[Id], RC.[ParentId], RC.[Node].ToString() As [Path],
-				REPLICATE(N'    ', RC.[Node].GetLevel() - 1) + RC.[Name] AS [Name],
-				RC.[Code], RC.[IsActive], RC.[IsLeaf]
-		FROM dbo.[AccountTypes] RC
-		ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
-		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
-		EXEC rpt.[sp_Resources] @R2Ids;
-	END
 
 		--(N'general-resources',				N'General items',				N'General item',	NULL),
 	--(N'sdks',							N'SDKs',						N'SDK',				N'FinishedGoods')

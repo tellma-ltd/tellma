@@ -14,8 +14,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[AccountTypes] AS t
 		USING (
 			SELECT
-				E.[Index], E.[Id], E.[ParentId],
-				-- TODO: use index and last node number to add a tree that is pre-sorted
+				E.[Index], E.[Id], E.[ParentId], E.[Concept],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Description], E.[Description2], E.[Description3], E.[Code], E.[IsAssignable],
 				E.[EntryTypeParentId],
@@ -49,6 +48,7 @@ SET NOCOUNT ON;
 		THEN
 			UPDATE SET
 				t.[ParentId]				= IIF(t.[IsSystem]=0,s.[ParentId],t.[ParentId]),
+				t.[Concept]					= IIF(t.[IsSystem]=0,s.[Concept],t.[Concept]),
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
@@ -85,7 +85,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId],
+			INSERT ([ParentId],[Concept],
 					[Name],[Name2],[Name3],
 					[Description],	[Description2], [Description3],
 					[Code],
@@ -117,7 +117,7 @@ SET NOCOUNT ON;
 					[NotedDateLabel2],
 					[NotedDateLabel3]
 					)
-			VALUES (s.[ParentId],
+			VALUES (s.[ParentId],s.[Concept],
 					s.[Name], s.[Name2], s.[Name3],
 					s.[Description], s.[Description2], s.[Description3],
 					s.[Code],
@@ -165,7 +165,7 @@ SET NOCOUNT ON;
 
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
-		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E.[Code])
 		FROM [dbo].[AccountTypes] E
 		LEFT JOIN [dbo].[AccountTypes] E2 ON E.[ParentId] = E2.[Id]
 	),

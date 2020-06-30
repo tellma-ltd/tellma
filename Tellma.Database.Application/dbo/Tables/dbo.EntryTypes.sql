@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[EntryTypes] ( -- inspired by IFRS concepts. However, its main purpose is to facilitate smart posting and reporting
 	[Id]					INT					CONSTRAINT [PK_EntryTypes]  PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]				INT					CONSTRAINT [FK_EntryTypes__ParentId] REFERENCES [dbo].[EntryTypes] ([Id]),
-	[SelfParentId]			AS					COALESCE([ParentId], [Id]) PERSISTED,
-	[Code]					NVARCHAR (255)		NOT NULL UNIQUE NONCLUSTERED,
+	[Code]					NVARCHAR (50)		NOT NULL UNIQUE NONCLUSTERED,
+	[Concept]				NVARCHAR (255)		NOT NULL UNIQUE NONCLUSTERED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
@@ -19,6 +19,8 @@
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	
-	[ParentNode]			AS [Node].GetAncestor(1),
+	[ParentNode]			AS [Node].GetAncestor(1) PERSISTED,
+	[Level]						AS [Node].GetLevel() PERSISTED,
+	[Path]						AS [Node].ToString() PERSISTED 
 );
 GO

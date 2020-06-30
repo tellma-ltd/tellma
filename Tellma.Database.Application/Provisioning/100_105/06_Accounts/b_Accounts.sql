@@ -77,7 +77,7 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	--(125,N'50062',@purchase_expenseADef,@Expenses_AC,@OtherExpenseByNature,				N'Employee Meals',				NULL,			@C101_UNALLOC,	@ServiceExtension,	NULL),
 	(130,N'50065',@CommunicationExpense,		@Expenses_AC,			NULL,					NULL,					N'Internet & Tel',				NULL,			@C101_Sys,		NULL,				NULL),
 	(140,N'50070',@UtilitiesExpense,			@Expenses_AC,			NULL,					NULL,					N'Electricity',					@SDG,			@C101_PWG,		NULL,				NULL),
-	(190,N'50100',@EmployeeBonusExtension,		@Expenses_AC,			NULL,					NULL,					N'Bonuses',						NULL,			NULL,			NULL,				NULL),
+--	(190,N'50100',@EmployeeBonusExtension,		@Expenses_AC,			NULL,					NULL,					N'Bonuses',						NULL,			NULL,			NULL,				NULL),
 	(195,N'50120',@TerminationBenefitsExpense,	@Expenses_AC,			NULL,					NULL,					N'Termination Benefits',		@SDG,			NULL,			NULL,				NULL),
 	(200,N'50401',@GainLossOnForeignExchangeExtension,@Expenses_AC,		NULL,					NULL,					N'Exchange Loss (Gain)',		@USD,			NULL,			NULL,				NULL);
 
