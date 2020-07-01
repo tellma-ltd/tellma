@@ -1487,7 +1487,7 @@
     </ng-template>
 
     <!-- Commands for Smart entries -->
-    <ng-template #row_SmartEntryCommands let-line="item.line">
+    <ng-template #row_SmartEntryCommands let-pair="item" let-line="item.line">
         <div ngbDropdown [placement]="commandsDropdownPlacement">
             <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
                 ngbDropdownToggle><span class="small">
@@ -1496,6 +1496,9 @@
             <div ngbDropdownMenu>
                 <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
                     {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
+                </button>
+                <button ngbDropdownItem class="t-transparent-background" *ngIf="hasManualLines && isEdit" (click)="onReverse(pair, model, isEdit)">
+                    {{ 'Reverse' | translate }}
                 </button>
             </div>
         </div>
@@ -1514,6 +1517,9 @@
                 </button> -->
                 <button ngbDropdownItem class="t-transparent-background" (click)="onAutoBalance(pair, model, update);">
                     {{ 'AutoBalance' | translate }}
+                </button>
+                <button ngbDropdownItem class="t-transparent-background" *ngIf="isEdit" (click)="onClone(pair, model, isEdit)">
+                    {{ 'Clone' | translate }}
                 </button>
             </div>
         </div>
