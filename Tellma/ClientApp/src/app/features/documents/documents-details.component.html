@@ -1518,6 +1518,9 @@
                 <button ngbDropdownItem class="t-transparent-background" (click)="onAutoBalance(pair, model, update);">
                     {{ 'AutoBalance' | translate }}
                 </button>
+                <button ngbDropdownItem class="t-transparent-background" *ngIf="isEdit" (click)="onClone(pair, model, isEdit)">
+                    {{ 'Clone' | translate }}
+                </button>
             </div>
         </div>
     </ng-template>

@@ -3257,6 +3257,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this._computeEntriesModel = null; // To refresh the manual entries grid
   }
 
+  public onClone(pair: LineEntryPair, doc: Document, isEdit: boolean): void {
+    if (!isEdit) {
+      return;
+    }
+
+    const entry = pair.entry;
+    const clone = this.processEntryClone(JSON.parse(JSON.stringify(entry)));
+
+    // Insert the reversed entry in the manual line
+    this.addManualEntry(clone, doc);
+    this._computeEntriesModel = null; // To refresh the manual entries grid
+  }
+
   public total(doc: Document, direction: number) {
     direction = direction as 1 | -1; // To avoid an Angular template binding bug
 
