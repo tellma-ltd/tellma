@@ -80,7 +80,7 @@ BEGIN
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN #Mapping M --ON [AT].[Code] = M.[AccountType]
-	ON [AT].[Code] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
+	ON [AT].[Concept] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
 	WHERE L.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	GROUP BY M.[Concept]
 	

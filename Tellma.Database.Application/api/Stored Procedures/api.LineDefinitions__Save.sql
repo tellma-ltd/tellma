@@ -5,6 +5,7 @@
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
+	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,
@@ -22,6 +23,7 @@ SET NOCOUNT ON;
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
+		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
 		@WorkflowSignatures = @WorkflowSignatures;
@@ -43,6 +45,7 @@ SET NOCOUNT ON;
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
+		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,

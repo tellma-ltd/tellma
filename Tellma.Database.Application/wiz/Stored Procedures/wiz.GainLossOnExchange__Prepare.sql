@@ -37,7 +37,7 @@ BEGIN
 		FROM [dbo].[AccountTypes] T1
 		JOIN [dbo].[AccountTypes] T2
 		ON T2.[Node].IsDescendantOf(T1.[Node]) = 1
-		WHERE T1.[Code] IN (
+		WHERE T1.[Concept] IN (
 			N'TradeAndOtherCurrentReceivables',
 			N'CashAndCashEquivalents',
 			N'TradeAndOtherCurrentPayables',

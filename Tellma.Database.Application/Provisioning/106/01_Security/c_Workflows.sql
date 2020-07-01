@@ -1,4 +1,5 @@
 ﻿DELETE FROM @LineDefinitions; DELETE FROM @LineDefinitionEntries; DELETE FROM @LineDefinitionColumns;
+DELETE FROM @LineDefinitionGenerateParameters;
 DELETE FROM @LineDefinitionEntryContractDefinitions; DELETE FROM @LineDefinitionEntryResourceDefinitions;
 DELETE FROM @LineDefinitionEntryNotedContractDefinitions; DELETE FROM @LineDefinitionStateReasons;
 -- refresh the collections with back end data
@@ -31,6 +32,12 @@ INSERT INTO @LineDefinitionColumns
 SELECT [Id], [LineDefinitionId],[Id], [ColumnName], [EntryIndex], [Label], [InheritsFromHeader],
 		[VisibleState], [RequiredState], [ReadOnlyState]
 FROM dbo.LineDefinitionColumns;
+
+INSERT INTO @LineDefinitionGenerateParameters
+([Index], [HeaderIndex],		[Id], [Key], [Label], [Visibility], [DataType], [Filter])
+SELECT [Id], [LineDefinitionId],[Id], [Key], [Label], [Visibility], [DataType], [Filter]
+FROM dbo.LineDefinitionGenerateParameters;
+
 INSERT INTO @LineDefinitionStateReasons
 (	[Index],[HeaderIndex],		[State],[Name])
 SELECT [Id],[LineDefinitionId],	[State],[Name]
@@ -84,6 +91,7 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 	@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
+	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 	@Workflows = @Workflows,
 	@WorkflowSignatures = @WorkflowSignatures,

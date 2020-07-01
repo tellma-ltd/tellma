@@ -674,6 +674,7 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 	@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
+	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 	@Workflows = @Workflows,
 	@WorkflowSignatures = @WorkflowSignatures,

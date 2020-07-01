@@ -5,6 +5,7 @@
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
+	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,
@@ -37,6 +38,10 @@ SET NOCOUNT ON;
 				[TitlePlural3],
 				[AllowSelectiveSigning],
 				[ViewDefaultsToForm],
+				[GenerateScript],
+				[GenerateLabel],
+				[GenerateLabel2],
+				[GenerateLabel3],
 				[Script]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
@@ -53,6 +58,7 @@ SET NOCOUNT ON;
 			ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
 			ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
 			ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
+			ISNULL(t.[GenerateScript], N'')	<> ISNULL(s.[GenerateScript], N'') OR
 			ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
 			)
 		THEN
@@ -69,6 +75,10 @@ SET NOCOUNT ON;
 				t.[TitlePlural3]				= s.[TitlePlural3],
 				t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 				t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
+				t.[GenerateScript]				= s.[GenerateScript],
+				t.[GenerateLabel]				= s.[GenerateLabel],
+				t.[GenerateLabel2]				= s.[GenerateLabel2],
+				t.[GenerateLabel3]				= s.[GenerateLabel3],
 				t.[Script]						= s.[Script],
 				t.[SavedById]					= @UserId
 		WHEN NOT MATCHED THEN
@@ -85,6 +95,10 @@ SET NOCOUNT ON;
 				[TitlePlural3],
 				[AllowSelectiveSigning],
 				[ViewDefaultsToForm],
+				[GenerateScript],
+				[GenerateLabel],
+				[GenerateLabel2],
+				[GenerateLabel3],
 				[Script]
 			)
 			VALUES (
@@ -100,6 +114,10 @@ SET NOCOUNT ON;
 				s.[TitlePlural3],
 				s.[AllowSelectiveSigning],
 				s.[ViewDefaultsToForm],
+				s.[GenerateScript],
+				s.[GenerateLabel],
+				s.[GenerateLabel2],
+				s.[GenerateLabel3],
 				s.[Script])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -268,6 +286,41 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3], [VisibleState],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
 		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
+
+	MERGE [dbo].[LineDefinitionGenerateParameters] AS t
+	USING (
+		SELECT
+			LDGP.[Id],
+			II.[Id] AS [LineDefinitionId],
+			LDGP.[Index],
+			LDGP.[Key],
+			LDGP.[Label],
+			LDGP.[Label2],
+			LDGP.[Label3],
+			LDGP.[Visibility],
+			LDGP.[DataType],
+			LDGP.[Filter]
+		FROM @LineDefinitionGenerateParameters LDGP
+		JOIN @Entities LD ON LDGP.HeaderIndex = LD.[Index]
+		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+	) AS s
+	ON s.[Id] = t.[Id]
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[Index]			= s.[Index],
+			t.[Key]				= s.[Key],
+			t.[Label]			= s.[Label],
+			t.[Label2]			= s.[Label2],
+			t.[Label3]			= s.[Label3],
+			t.[Visibility]		= s.[Visibility],
+			t.[DataType]		= s.[DataType],
+			t.[Filter]			= s.[Filter],
+			t.[SavedById]		= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT ([LineDefinitionId],		[Index],	[Key],	[Label],	[Label2],	[Label3], [Visibility],	[DataType], [Filter])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[Key], s.[Label], s.[Label2], s.[Label3],s.[Visibility], s.[DataType], s.[Filter]);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (

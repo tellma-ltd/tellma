@@ -12,7 +12,12 @@
 	[TitlePlural3]				NVARCHAR (50),
 	[AllowSelectiveSigning]		BIT DEFAULT 0,
 	[ViewDefaultsToForm]		BIT DEFAULT 0,
-	[Script]					NVARCHAR (MAX), -- to store SQL code that populates the line
+	[GenerateScript]			NVARCHAR (MAX), -- to store SQL code that generates the line in the UI
+	[GenerateLabel]				NVARCHAR (50),
+	[GenerateLabel2]			NVARCHAR (50),
+	[GenerateLabel3]			NVARCHAR (50),
+	-- Preprocess script
+	[Script]					NVARCHAR (MAX), -- to store SQL code that preprocesses the line in the save pipeline
 	[SavedById]					INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]					DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]					DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,

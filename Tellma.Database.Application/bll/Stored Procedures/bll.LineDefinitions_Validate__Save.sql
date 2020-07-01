@@ -5,6 +5,7 @@
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
+	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,

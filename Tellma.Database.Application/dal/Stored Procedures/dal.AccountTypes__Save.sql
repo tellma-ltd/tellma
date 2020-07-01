@@ -14,9 +14,9 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[AccountTypes] AS t
 		USING (
 			SELECT
-				E.[Index], E.[Id], E.[ParentId], E.[Concept],
+				E.[Index], E.[Id], E.[ParentId], E.[Code], E.[Concept],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
-				E.[Name], E.[Name2], E.[Name3], E.[Description], E.[Description2], E.[Description3], E.[Code], E.[IsAssignable],
+				E.[Name], E.[Name2], E.[Name3], E.[Description], E.[Description2], E.[Description3], E.[IsAssignable],
 				E.[EntryTypeParentId],
 				E.[DueDateLabel],
 				E.[DueDateLabel2],
@@ -48,6 +48,7 @@ SET NOCOUNT ON;
 		THEN
 			UPDATE SET
 				t.[ParentId]				= IIF(t.[IsSystem]=0,s.[ParentId],t.[ParentId]),
+				t.[Code]					= IIF(t.[IsSystem]=0,s.[Code],t.[Code]),
 				t.[Concept]					= IIF(t.[IsSystem]=0,s.[Concept],t.[Concept]),
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
@@ -55,7 +56,6 @@ SET NOCOUNT ON;
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
-				t.[Code]					= IIF(t.[IsSystem]=0,s.[Code],t.[Code]),
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
 				t.[DueDateLabel]			= s.[DueDateLabel],
@@ -85,10 +85,9 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId],[Concept],
+			INSERT ([ParentId],[Code],[Concept],
 					[Name],[Name2],[Name3],
 					[Description],	[Description2], [Description3],
-					[Code],
 					[Node],
 					[IsAssignable],
 					[EntryTypeParentId],
@@ -117,10 +116,9 @@ SET NOCOUNT ON;
 					[NotedDateLabel2],
 					[NotedDateLabel3]
 					)
-			VALUES (s.[ParentId],s.[Concept],
+			VALUES (s.[ParentId],s.[Code],s.[Concept],
 					s.[Name], s.[Name2], s.[Name3],
 					s.[Description], s.[Description2], s.[Description3],
-					s.[Code],
 					s.[Node],
 					s.[IsAssignable],
 					s.[EntryTypeParentId],

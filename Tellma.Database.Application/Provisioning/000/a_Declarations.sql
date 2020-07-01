@@ -42,6 +42,7 @@
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
 	DECLARE @LineDefinitions dbo.LineDefinitionList;
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
+	DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 	DECLARE @LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;

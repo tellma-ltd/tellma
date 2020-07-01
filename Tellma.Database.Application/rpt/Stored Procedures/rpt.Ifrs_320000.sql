@@ -17,7 +17,7 @@ BEGIN
 			[Value]
 	)
 
-	SELECT [AT].[Code] AS [Concept], SUM(E.[AlgebraicValue]) AS [Value]
+	SELECT [AT].[Concept], SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
@@ -25,7 +25,7 @@ BEGIN
 	WHERE @fromDate <= L.[PostingDate] AND L.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	-- TODO: replace with IsDescendantOf, to cater for possible customer extensions
 	-- The #Mapping table can be persisted and used to add the column IFRS320000_ConceptId to the fact table.
-	AND [AT].[Code] IN (
+	AND [AT].[Concept] IN (
 		N'Revenue',
 		--N'InterestRevenueCalculatedUsingEffectiveInterestMethod',
 		--N'InsuranceRevenue',
@@ -56,7 +56,7 @@ BEGIN
 		N'IncomeTaxExpenseContinuingOperations',
 		N'ProfitLossFromDiscontinuedOperations'
 	)
-	GROUP BY [AT].[Code]
+	GROUP BY [AT].[Concept]
 	
 	-- TODO: Calculate ProfitLossFromDiscontinuedOperations by considering centers who are discontinued during period
 /*

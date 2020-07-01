@@ -23,7 +23,7 @@ BEGIN
 	(1, N'ColdRollExtension',	N'Cold Roll',	N'/1/11/1/1/2/',	1);
 	
 	DECLARE @RawMaterialsDescendants AccountTypeList;
-	SET @PId = (SELECT [Id] FROM dbo.[AccountTypes] WHERE [Code] = N'RawMaterials');
+	SET @PId = (SELECT [Id] FROM dbo.[AccountTypes] WHERE [Concept] = N'RawMaterials');
 	INSERT INTO @RawMaterialsDescendants ([ParentId],[Code], [Name], [ParentIndex], [IsAssignable], [Index])
 	SELECT @PId, [Code], [Name], (SELECT [Index] FROM @RawMaterialsDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index]
 	FROM @RawMaterialsDescendantsTemp RC
