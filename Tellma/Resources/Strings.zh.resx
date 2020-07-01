@@ -1435,6 +1435,12 @@
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>条目类型</value>
   </data>
+  <data name="LineDefinitionGenerateParameter" xml:space="preserve">
+    <value>行定义生成参数</value>
+  </data>
+  <data name="LineDefinitionGenerateParameters" xml:space="preserve">
+    <value>行定义生成参数</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>行定义</value>
   </data>
@@ -1632,6 +1638,18 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>双因素认证（2FA）</value>
+  </data>
+  <data name="Parameter_DataType" xml:space="preserve">
+    <value>数据类型</value>
+  </data>
+  <data name="Parameter_Filter" xml:space="preserve">
+    <value>过滤</value>
+  </data>
+  <data name="Parameter_Key" xml:space="preserve">
+    <value>键</value>
+  </data>
+  <data name="Parameter_Visibility" xml:space="preserve">
+    <value>能见度</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>密码</value>
@@ -1858,9 +1876,6 @@
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>是必须的</value>
   </data>
-  <data name="ReportDefinition_Key" xml:space="preserve">
-    <value>键</value>
-  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>措施</value>
   </data>
@@ -1914,9 +1929,6 @@
   </data>
   <data name="ReportDefinition_Value" xml:space="preserve">
     <value>值</value>
-  </data>
-  <data name="ReportDefinition_Visibility" xml:space="preserve">
-    <value>能见度</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>

@@ -251,8 +251,7 @@
                 {{ ws.getMultilingualValue('Center', model?.SegmentId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId"
-            filter="IsSegment eq true" [required]="true"
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId" filter="IsSegment eq true" [required]="true"
             [disabled]="readonlyDocumentSegment(model)">
         </t-centers-picker>
     </t-form-group>
@@ -369,7 +368,7 @@
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
                             [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
-                            [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartCommands)"
+                            [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartHeaderCommands, smartCommands)"
                             [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
                             (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
                         </t-table>
@@ -810,6 +809,22 @@
                     </div>
                 </div>
             </ng-template>
+
+            <!-- Commands for Smart table -->
+            <ng-template #smartHeaderCommands>
+                <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
+                    <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                        ngbDropdownToggle><span class="small">
+                            <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                        </span></button>
+                    <div ngbDropdownMenu>
+                        <button ngbDropdownItem class="t-transparent-background"
+                            (click)="onDeleteAll(lineDefId, model, isEdit)">
+                            {{ 'DeleteAll' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </li>
 
         <!-- The dropdown menu for smart lines -->
@@ -1043,7 +1058,7 @@
                             'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
                             'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 },
                             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 },
-                            'Commands' : { rowTemplate : row_ManualEntryCommands }
+                            'Commands' : { headerTemplate: header_ManualEntryCommands, rowTemplate : row_ManualEntryCommands }
                         }" [onNewItem]="onNewManualEntry" (insert)="onInsertManualEntry($event, model)"
             (delete)="onDeleteManualEntry($event, model)">
         </t-table>
@@ -1059,13 +1074,14 @@
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.AccountId">
                 <!-- <span *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> -->
                 <t-restricted [metadata]="entry.EntityMetadata?.AccountId" *ngIf="!isEdit">
-                    <t-view-link link="../../../accounts" [itemId]="entry?.AccountId">{{ accountDisplay(entry?.AccountId) }}</t-view-link>
+                    <t-view-link link="../../../accounts" [itemId]="entry?.AccountId">
+                        {{ accountDisplay(entry?.AccountId) }}</t-view-link>
                     <span class="text-muted font-italic"
                         *ngIf="bookkeeping && !entry?.AccountId">{{ 'Undefined' | translate }}</span>
                 </t-restricted>
-                <t-accounts-picker *ngIf="isEdit" style="min-width: 150px;"
-                    [(ngModel)]="entry.AccountId" (ngModelChange)="update.call(null, pair);"
-                    [additionalSelect]="additionalSelectAccount" [filter]="filterAccount(pair, bookkeeping)">
+                <t-accounts-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
+                    (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectAccount"
+                    [filter]="filterAccount(pair, bookkeeping)">
                 </t-accounts-picker>
             </t-form-group-dynamic>
         </div>
@@ -1497,8 +1513,25 @@
                 <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
                     {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
                 </button>
-                <button ngbDropdownItem class="t-transparent-background" *ngIf="hasManualLines && isEdit" (click)="onReverse(pair, model, isEdit)">
+                <button ngbDropdownItem class="t-transparent-background" *ngIf="hasManualLines && isEdit"
+                    (click)="onReverse(pair, model, isEdit)">
                     {{ 'Reverse' | translate }}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <!-- Commands for Manual entries table -->
+    <ng-template #header_ManualEntryCommands>
+        <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
+            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                ngbDropdownToggle><span class="small">
+                    <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                </span></button>
+            <div ngbDropdownMenu>
+                <button ngbDropdownItem class="t-transparent-background"
+                    (click)="onDeleteAllManualEntries(model, isEdit)">
+                    {{ 'DeleteAll' | translate }}
                 </button>
             </div>
         </div>
@@ -1518,17 +1551,12 @@
                 <button ngbDropdownItem class="t-transparent-background" (click)="onAutoBalance(pair, model, update);">
                     {{ 'AutoBalance' | translate }}
                 </button>
-                <button ngbDropdownItem class="t-transparent-background" *ngIf="isEdit" (click)="onClone(pair, model, isEdit)">
+                <button ngbDropdownItem class="t-transparent-background"
+                    (click)="onCloneManualLine(pair, model, isEdit)">
                     {{ 'Clone' | translate }}
                 </button>
             </div>
         </div>
-    </ng-template>
-
-    <!-- Manual Commands -->
-    <ng-template #header_ManualCommands></ng-template>
-    <ng-template #row_ManualCommands let-pair="item" let-line="item.line" let-index="index" let-update="update"
-        let-bookkeeping="argument">
     </ng-template>
 </ng-template>
 

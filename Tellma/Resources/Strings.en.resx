@@ -1435,6 +1435,12 @@
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
+  <data name="LineDefinitionGenerateParameter" xml:space="preserve">
+    <value>Line Definition Generate Parameter</value>
+  </data>
+  <data name="LineDefinitionGenerateParameters" xml:space="preserve">
+    <value>Line Definition Generate Parameters</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>Line Definitions</value>
   </data>
@@ -1632,6 +1638,18 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
+  </data>
+  <data name="Parameter_DataType" xml:space="preserve">
+    <value>Data Type</value>
+  </data>
+  <data name="Parameter_Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Parameter_Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="Parameter_Visibility" xml:space="preserve">
+    <value>Visibility</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
@@ -1858,9 +1876,6 @@
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
   </data>
-  <data name="ReportDefinition_Key" xml:space="preserve">
-    <value>Key</value>
-  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>Measures</value>
   </data>
@@ -1914,9 +1929,6 @@
   </data>
   <data name="ReportDefinition_Value" xml:space="preserve">
     <value>Value</value>
-  </data>
-  <data name="ReportDefinition_Visibility" xml:space="preserve">
-    <value>Visibility</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
