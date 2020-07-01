@@ -366,19 +366,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           delete line.ModifiedById;
 
           if (!!line.Entries) {
-            line.Entries.forEach(entry => {
-              // Standard
-              entry.Id = null;
-              delete entry.EntityMetadata;
-              delete entry.serverErrors;
-
-              // Non savable
-              delete entry.LineId;
-              delete entry.CreatedAt;
-              delete entry.CreatedById;
-              delete entry.ModifiedAt;
-              delete entry.ModifiedById;
-            });
+            line.Entries.forEach(this.processEntryClone);
           }
         });
       }
@@ -389,6 +377,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       console.error('Cloning a non existing item');
       return null;
     }
+  }
+
+  private processEntryClone(clone: Entry): Entry {
+
+    // Standard
+    clone.Id = null;
+    delete clone.EntityMetadata;
+    delete clone.serverErrors;
+
+    // Non savable
+    delete clone.LineId;
+    delete clone.CreatedAt;
+    delete clone.CreatedById;
+    delete clone.ModifiedAt;
+    delete clone.ModifiedById;
+
+    return clone;
   }
 
   public get ws(): TenantWorkspace {
@@ -2357,6 +2362,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
     // Called when the user inserts a new entry
+    this.addManualEntry(pair.entry, model);
+    pair.line = this.manualLine(model); // Must exist after calling addManualEntry
+  }
+
+  /**
+   * Finds the one manual line (creates it if missing) and adds the entry to it
+   */
+  private addManualEntry(entry: Entry, model: Document): void {
     // Get the one and only manual line
     let manualLine = this.manualLine(model);
     if (!manualLine) {
@@ -2369,13 +2382,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       model.Lines.push(manualLine);
 
+      // Optimization
       this._manualLineModel = model;
       this._manualLineResult = manualLine;
     }
 
     // Add the entry to it
-    manualLine.Entries.push(pair.entry);
-    pair.line = manualLine;
+    manualLine.Entries.push(entry);
   }
 
   public onDeleteManualEntry(pair: LineEntryPair, model: Document): void {
@@ -2487,18 +2500,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const col = e.column;
         // Only show columns that don't inherit from a document property marked IsCommon = true
         return !col.InheritsFromHeader ||
-            !(
-              (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-              (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-              (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
-              (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
-              (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
-              (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
-              (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
-              (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
-              (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
-              (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId')
-            );
+          !(
+            (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+            (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
+            (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
+            (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
+            (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
+            (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
+            (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+            (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
+            (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId')
+          );
       })
       .map(e => e.index + '') : [];
 
@@ -3226,6 +3239,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       delete currentEntry.Value;
       update(pair);
     }
+  }
+
+  public onReverse(pair: LineEntryPair, doc: Document, isEdit: boolean): void {
+    if (!isEdit) {
+      return;
+    }
+
+    const entry = pair.entry;
+    const clone = this.processEntryClone(JSON.parse(JSON.stringify(entry)));
+
+    // Reverse the direction
+    clone.Direction = clone.Direction === 1 ? -1 : 1; // typescript complains if a simply multiply by -1
+
+    // Insert the reversed entry in the manual line
+    this.addManualEntry(clone, doc);
+    this._computeEntriesModel = null; // To refresh the manual entries grid
   }
 
   public total(doc: Document, direction: number) {
