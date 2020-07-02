@@ -18,7 +18,7 @@ RETURN
 			[ContractId]			INT,
 			[ResourceId]			INT,
 			[Direction]				SMALLINT,
-			[Amount]			DECIMAL (19,4),
+			[Amount]				DECIMAL (19,4),
 			[Mass]					DECIMAL,
 			[Volume]				DECIMAL,
 			[Count]					DECIMAL,

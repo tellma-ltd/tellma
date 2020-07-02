@@ -3,7 +3,7 @@
 	[DocumentIndex]				INT				INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
-	[DefinitionId]				NVARCHAR (50)	NOT NULL,
+	[DefinitionId]				INT				NOT NULL DEFAULT 0,
 	[PostingDate]				DATE,
 	[TemplateLineId]			INT,
 	[Multiplier]				DECIMAL (19,4),

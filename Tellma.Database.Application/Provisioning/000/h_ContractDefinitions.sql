@@ -9,17 +9,15 @@
 (7, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135),
 (8, N'CashOnHandAccount', N'Cash On Hand Account', N'Cash On Hand Accounts', N'funnel-dollar', N'Cash',140),
 (9, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145),
-(10, N'ImportShipment', N'Foreign Import', N'Foreign Imports', N'file-import', N'Purchasing',150),
-(11, N'ExportShipment', N'Foreign Export', N'Foreign Exports', N'file-export', N'Sales',155),
-(12, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160);
+(10, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160);
 
 UPDATE @ContractDefinitions
 SET [CenterVisibility] = N'Optional'
-WHERE [Code] IN (N'Supplier', N'Customer', N'Employee')
+WHERE [Code] IN (N'Supplier')
 
 UPDATE @ContractDefinitions
 SET [CenterVisibility] = N'Required'
-WHERE [Code] IN (N'CashOnHandAccount', N'BankAccount')
+WHERE [Code] IN (N'CashOnHandAccount', N'BankAccount', N'Customer', N'Employee', N'Warehouse')
 
 UPDATE @ContractDefinitions
 SET [BankAccountNumberVisibility] = N'Optional'
@@ -62,6 +60,4 @@ DECLARE @EmployeeCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code]
 DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'BankAccount');
 DECLARE @CashOnHandAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'CashOnHandAccount');
 DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Warehouse');
-DECLARE @ImportShipmentCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'ImportShipment');
-DECLARE @ExportShipmentCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'ExportShipment');
 DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Shipper');

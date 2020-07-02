@@ -611,7 +611,6 @@
     <None Include="Provisioning\107\05_Contracts\08_Employees.sql" />
     <None Include="Provisioning\107\06_Accounts\b_Accounts.sql" />
     <None Include="Provisioning\107\05_Contracts\00_Agents.sql" />
-    <None Include="Provisioning\000\r_AccountClassifications.sql" />
     <None Include="Provisioning\108\00_Setup\Script.sql" />
     <Build Include="map\map.ContractUsers.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeCenterTypes.sql" />
@@ -626,6 +625,10 @@
     <None Include="Provisioning\100_105\02_Basic\c_Units.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionGenerateParameters.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionGenerateParameterList.sql" />
+    <None Include="Provisioning\107\06_Accounts\a_AccountClassifications.sql" />
+    <None Include="Provisioning\106\06_Accounts\a_AccountClassifications.sql" />
+    <Build Include="dbo\User Defined Types\dbo.GenerateArgumentList.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines__Generate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

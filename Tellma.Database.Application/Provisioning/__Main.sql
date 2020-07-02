@@ -11,7 +11,7 @@ IF @OverwriteDb = 0 RETURN
 :r .\000\g_ResourceDefinitions.sql
 :r .\000\h_ContractDefinitions.sql
 :r .\000\i_AccountTypes.sql
-:r .\000\j_IfrsConcepts.sql
+--:r .\000\j_IfrsConcepts.sql
 --:r .\000\k_IfrsDisclosures.sql
 :r .\000\l_Currencies.sql
 :r .\000\m_Units.sql
@@ -20,7 +20,7 @@ IF @OverwriteDb = 0 RETURN
 
 :r .\000\p_DocumentDefinitions.sql
 :r .\000\q_ReportDefinitions.sql
-:r .\000\r_AccountClassifications.sql
+
 
 :r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
@@ -92,6 +92,7 @@ BEGIN
 	:r .\106\05_Contracts\07_Creditors.sql
 	:r .\106\05_Contracts\08_Employees.sql
 
+	:r .\106\06_Accounts\a_AccountClassifications.sql
 	:r .\106\06_Accounts\b_Accounts.sql
 END
 IF @DB = N'107' -- SSIA, SDG, en/ar
@@ -113,6 +114,7 @@ BEGIN
 	:r .\107\05_Contracts\06_Suppliers.sql
 	:r .\107\05_Contracts\07_Creditors.sql
 	:r .\107\05_Contracts\08_Employees.sql
+	:r .\107\06_Accounts\a_AccountClassifications.sql
 	--:r .\107\06_Accounts\b_Accounts.sql
 END
 IF @DB = N'108' -- SSIA - HG, SDG, en/ar

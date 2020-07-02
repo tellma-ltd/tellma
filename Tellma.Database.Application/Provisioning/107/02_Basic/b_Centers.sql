@@ -1,7 +1,6 @@
 ﻿INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
 (0,NULL, N'SSIA', N'الجهاز الاستثماري', N'', N'Abstract'),
 (1,0, N'Boards', N'المجالس الإدارية', N'1', N'Abstract'),
-(11,1, N'Boards', N'المجالس الإدارية', N'11', N'Abstract'),
 (1100,1, N'SSIA', N'الجهاز الاستثماري', N'1100', N'Parent'),
 (1200,1, N'Consolidated Board of Directors', N'مجلس الإدارة الموحد', N'1200', N'SellingGeneralAndAdministration'),
 (1300,1, N'Board of Commissioners', N'مجلس المفوضين ', N'1300', N'SellingGeneralAndAdministration'),

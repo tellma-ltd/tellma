@@ -255,7 +255,7 @@ END
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE L.DefinitionId = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = 'ManualLine');
+	WHERE L.DefinitionId = @ManualLineLD;
 
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
@@ -355,6 +355,7 @@ END
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
+		WHERE L.DefinitionId <> @ManualLineLD
 		--WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
 		--	SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
 		--	WHERE [LineDefinitionEntryId] = LDE.[Id]
@@ -393,6 +394,7 @@ END
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
+		WHERE L.DefinitionId <> @ManualLineLD
 	),
 	ConformantAccounts2 AS (
 		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
@@ -409,9 +411,11 @@ END
 	UPDATE E -- Set account to null, if non conformant
 	SET E.AccountId = NULL
 	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	LEFT JOIN ConformantAccounts2 CA
 	ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex] AND E.AccountId = CA.AccountId
-	WHERE E.AccountId IS NOT NULL AND  CA.AccountId IS NULL;
+	WHERE L.DefinitionId  <> @ManualLineLD
+	AND E.AccountId IS NOT NULL AND CA.AccountId IS NULL;
 
 	-- Return the populated entries.
 	-- (Later we may need to return the populated lines and documents as well)

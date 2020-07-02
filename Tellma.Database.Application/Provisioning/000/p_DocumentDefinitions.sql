@@ -1,5 +1,6 @@
 ﻿INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 (0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'newspaper', N'Financials', 1040),
+(7, N'CostsReallocation',2, N'Merchandise in transit, projects under construction, work in progress',N'Costs Reallocation Voucher', N'Cost Reallocation Vouchers', N'CRA',N'recycle', N'Financials', 1050),
 (8, N'ClosingPeriodVoucher',2, N'PPE Depreciation, Intangible Amortization, Exchange Variance, Settling trade accounts',N'Closing Month Voucher', N'Closing Month Vouchers', N'CPV',N'history', N'Financials', 1050),
 (9, N'ClosingYearVoucher',2, N'Fiscal Close, Manual',N'Closing Year Voucher', N'Closing Year Vouchers', N'CYV',N'anchor', N'Financials', 1060),
 (10, N'PaymentIssueToNonTradingAgents',2, N'payment to partner, debtor, creditor, to other cash, to bank, to exchange, to other',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'PIO',N'money-check-alt', N'Cash', 1080),
@@ -39,20 +40,21 @@
 (78, N'EmployeeTravel',2, N'Per diem, Petty Cash, Fuel Allowance, ...',N'Travel', N'Travels', N'TIE',N'suitcase-rolling', N'HumanCapital', 1480);
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-(0,0, @ManualLineLD, 1),
-(0,10, @CashPaymentToOtherLD, 1),
-(1,10, @ManualLineLD, 1),
+(0,0,   @ManualLineLD, 1),
+(0,7,   @CostReallocationPUCLD,0),
+(0,10,  @CashPaymentToOtherLD, 1),
+(1,10,  @ManualLineLD, 1),
 --(4,10, @CashTransferExchangeLD, 1),
-(0,11, @DepositCashToBankLD, 1),
-(1,11, @DepositCheckToBankLD, 1),
-(0,12, @CashReceiptFromOtherLD, 1),
-(1,12, @CheckReceiptFromOtherInCashierLD, 1),
-(0,30, @CashPaymentToTradePayableLD, 1),
-(1,30, @InvoiceFromTradePayableLD, 1),
-(2,30, @StockReceiptFromTradePayableLD, 1),
-(3,30, @PPEReceiptFromTradePayableLD, 1),
-(4,30, @ConsumableServiceReceiptFromTradePayableLD, 1),
-(5,30, @RentalReceiptFromTradePayableLD, 1);
+(0,11,  @DepositCashToBankLD, 1),
+(1,11,  @DepositCheckToBankLD, 1),
+(0,12,  @CashReceiptFromOtherLD, 1),
+(1,12,  @CheckReceiptFromOtherInCashierLD, 1),
+(0,30,  @CashPaymentToTradePayableLD, 1),
+(1,30,  @InvoiceFromTradePayableLD, 1),
+(2,30,  @StockReceiptFromTradePayableLD, 1),
+(3,30,  @PPEReceiptFromTradePayableLD, 1),
+(4,30,  @ConsumableServiceReceiptFromTradePayableLD, 1),
+(5,30,  @RentalReceiptFromTradePayableLD, 1);
 
 
 EXEC dal.DocumentDefinitions__Save
@@ -61,6 +63,7 @@ EXEC dal.DocumentDefinitions__Save
 	
 --Declarations
 DECLARE @ManualJournalVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
+DECLARE @CostsReallocationDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'CostsReallocation');
 DECLARE @ClosingPeriodVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ClosingPeriodVoucher');
 DECLARE @ClosingYearVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ClosingYearVoucher');
 DECLARE @PaymentIssueToNonTradingAgentsDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaymentIssueToNonTradingAgents');
