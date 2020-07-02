@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinition", Plural = "LineDefinitions")]
-    public class LineDefinitionForSave<TEntry, TColumn, TStateReason> : EntityWithKey<int>
+    public class LineDefinitionForSave<TEntry, TColumn, TStateReason,TGenerateParameter> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [Required]
@@ -60,6 +60,18 @@ namespace Tellma.Entities
         public string TitlePlural3 { get; set; }
         public bool? AllowSelectiveSigning { get; set; }
         public bool? ViewDefaultsToForm { get; set; }
+
+        public string GenerateScript { get; set; }
+
+        [StringLength(50)]
+        public string GenerateLabel { get; set; }
+
+        [StringLength(50)]
+        public string GenerateLabel2 { get; set; }
+
+        [StringLength(50)]
+        public string GenerateLabel3 { get; set; }
+
         public string Script { get; set; }
 
         [ForeignKey(nameof(LineDefinitionEntry.LineDefinitionId))]
@@ -70,14 +82,17 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(LineDefinitionStateReason.LineDefinitionId))]
         public List<TStateReason> StateReasons { get; set; }
+
+        [ForeignKey(nameof(LineDefinitionGenerateParameter.LineDefinitionId))]
+        public List<TGenerateParameter> GenerateParameters { get; set; }
     }
 
-    public class LineDefinitionForSave : LineDefinitionForSave<LineDefinitionEntryForSave, LineDefinitionColumnForSave, LineDefinitionStateReasonForSave>
+    public class LineDefinitionForSave : LineDefinitionForSave<LineDefinitionEntryForSave, LineDefinitionColumnForSave, LineDefinitionStateReasonForSave, LineDefinitionGenerateParameterForSave>
     {
 
     }
 
-    public class LineDefinition : LineDefinitionForSave<LineDefinitionEntry, LineDefinitionColumn, LineDefinitionStateReason>
+    public class LineDefinition : LineDefinitionForSave<LineDefinitionEntry, LineDefinitionColumn, LineDefinitionStateReason, LineDefinitionGenerateParameter>
     {
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }

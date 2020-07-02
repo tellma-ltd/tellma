@@ -670,7 +670,7 @@
 
             <!-- Key -->
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
-                <label class="small" for="key">{{ 'ReportDefinition_Key' | translate }}</label>
+                <label class="small" for="key">{{ 'Parameter_Key' | translate }}</label>
                 <span class="form-control t-studio-input" id="key"
                     style="opacity: 0.5;">{{ '@' + itemToEdit['Key'] }}</span>
             </div>
@@ -746,7 +746,7 @@
 
             <!-- Visibility -->
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
-                <label class="small" for="visibility">{{ 'ReportDefinition_Visibility' | translate }}</label>
+                <label class="small" for="visibility">{{ 'Parameter_Visibility' | translate }}</label>
                 <select class="form-control t-studio-input" id="visibility" [(ngModel)]="itemToEdit['Visibility']"
                     (ngModelChange)="itemToEditHasChanged = true">
                     <option value="None" *ngIf="showNone(itemToEdit['Key'])">

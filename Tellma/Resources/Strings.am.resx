@@ -1435,6 +1435,12 @@
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
+  <data name="LineDefinitionGenerateParameter" xml:space="preserve">
+    <value>መስመር ፍቺ መለኪያ ፍጠር</value>
+  </data>
+  <data name="LineDefinitionGenerateParameters" xml:space="preserve">
+    <value>መስመር ፍቺ መለኪያዎች ፍጠር</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>የመስመር ፍቺዎች</value>
   </data>
@@ -1632,6 +1638,18 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>ባለሁለት ክፍሉ ማረጋገጫ (2FA)</value>
+  </data>
+  <data name="Parameter_DataType" xml:space="preserve">
+    <value>የውሂብ አይነት</value>
+  </data>
+  <data name="Parameter_Filter" xml:space="preserve">
+    <value>ማጣሪያ</value>
+  </data>
+  <data name="Parameter_Key" xml:space="preserve">
+    <value>ቁልፍ</value>
+  </data>
+  <data name="Parameter_Visibility" xml:space="preserve">
+    <value>ለማየት መቻል</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>የይለፍ ቃል</value>
@@ -1858,9 +1876,6 @@
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>ያስፈልጋል</value>
   </data>
-  <data name="ReportDefinition_Key" xml:space="preserve">
-    <value>ቁልፍ</value>
-  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>እርምጃዎች</value>
   </data>
@@ -1914,9 +1929,6 @@
   </data>
   <data name="ReportDefinition_Value" xml:space="preserve">
     <value>ዋጋ</value>
-  </data>
-  <data name="ReportDefinition_Visibility" xml:space="preserve">
-    <value>ለማየት መቻል</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>ሪፖርት ፍቺዎች</value>

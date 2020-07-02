@@ -192,7 +192,7 @@ namespace Tellma.Entities
 
     public class ReportParameterDefinitionForSave : EntityWithKey<int>
     {
-        [Display(Name = "ReportDefinition_Key")]
+        [Display(Name = "Parameter_Key")]
         [Required]
         [StringLength(255)]
         [AlwaysAccessible]
@@ -213,7 +213,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
-        [Display(Name = "ReportDefinition_Visibility")]
+        [Display(Name = "Parameter_Visibility")]
         [AlwaysAccessible]
         [VisibilityChoiceList]
         public string Visibility { get; set; }

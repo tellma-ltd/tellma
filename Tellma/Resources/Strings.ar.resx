@@ -1435,6 +1435,12 @@
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>نوع السطر</value>
   </data>
+  <data name="LineDefinitionGenerateParameter" xml:space="preserve">
+    <value>معامل توليد الأسطر</value>
+  </data>
+  <data name="LineDefinitionGenerateParameters" xml:space="preserve">
+    <value>معاملات توليد الأسطر</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>تعريفات أسطر</value>
   </data>
@@ -1632,6 +1638,18 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
+  </data>
+  <data name="Parameter_DataType" xml:space="preserve">
+    <value>الطبيعة</value>
+  </data>
+  <data name="Parameter_Filter" xml:space="preserve">
+    <value>المصفاة</value>
+  </data>
+  <data name="Parameter_Key" xml:space="preserve">
+    <value>المفتاح</value>
+  </data>
+  <data name="Parameter_Visibility" xml:space="preserve">
+    <value>المظهر</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>كلمة المرور</value>
@@ -1858,9 +1876,6 @@
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>معامل مطلوب</value>
   </data>
-  <data name="ReportDefinition_Key" xml:space="preserve">
-    <value>المفتاح</value>
-  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>القيم</value>
   </data>
@@ -1914,9 +1929,6 @@
   </data>
   <data name="ReportDefinition_Value" xml:space="preserve">
     <value>القيمة</value>
-  </data>
-  <data name="ReportDefinition_Visibility" xml:space="preserve">
-    <value>المظهر</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>تعاريف تقارير</value>

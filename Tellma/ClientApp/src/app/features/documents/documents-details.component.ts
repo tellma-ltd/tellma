@@ -2530,6 +2530,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     lineDefId: number,
     header: TemplateRef<any>,
     row: TemplateRef<any>,
+    headerCommandsTemplate: TemplateRef<any>,
     commandsTemplate: TemplateRef<any>): ColumnTemplates {
 
     const def = this.definition;
@@ -2558,6 +2559,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       // Add the commands template
       templates.Commands = {
+        headerTemplate: headerCommandsTemplate,
         rowTemplate: commandsTemplate,
       };
 
@@ -3202,14 +3204,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public onCloneManualLine(pair: LineEntryPair, doc: Document) {
-    const clone = JSON.parse(JSON.stringify(pair.line)) as Line;
-    delete clone.Id;
-    delete clone.serverErrors;
-
-    // TODO
-  }
-
   public onAutoBalance(pair: LineEntryPair, doc: Document, update: (pair: LineEntryPair) => void): void {
     if (!doc || !doc.Lines) {
       return;
@@ -3257,7 +3251,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this._computeEntriesModel = null; // To refresh the manual entries grid
   }
 
-  public onClone(pair: LineEntryPair, doc: Document, isEdit: boolean): void {
+  public onDeleteAll(lineDefId: number, doc: Document, isEdit: boolean): void {
+    if (!isEdit) {
+      return;
+    }
+
+    doc.Lines = doc.Lines.filter(line => line.DefinitionId !== lineDefId);
+    this._computeEntriesModel = null; // Refresh the bookkeping and manual lines
+    this._linesModel = null; // Refresh the smart tabs
+  }
+
+  public onDeleteAllManualEntries(doc: Document, isEdit: boolean): void {
+    this.onDeleteAll(this.ws.definitions.ManualLinesDefinitionId, doc, isEdit);
+  }
+
+  public onCloneManualLine(pair: LineEntryPair, doc: Document, isEdit: boolean): void {
     if (!isEdit) {
       return;
     }
