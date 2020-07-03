@@ -40,13 +40,12 @@ PRINT N'';
 --70: PUC Costs Reallocation
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
-		DECLARE @CenterId INT, @PostingDate DATE, @Memo NVARCHAR(255)
+		DECLARE @CenterId INT, @PostingDate DATE;
 		
 		DECLARE @WideLines WideLineList;
-
+				
 		SELECT @CenterId = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CenterId'') AS INT);
 		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
-		SELECT @Memo = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''Memo'') AS NVARCHAR (255));
 		DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N''ExpenseByNature'');
 
 		WITH ExpenseByNatureAccounts AS (
@@ -56,13 +55,13 @@ SET [GenerateScript] = N'
 			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 		)
 		INSERT INTO @WideLines(
-			[Index], [PostingDate], [Memo],
+			[Index], [PostingDate],
 			[AccountId0], [CurrencyId0], [ContractId0], [ResourceId0], [UnitId0], [EntryTypeId0], [DueDate0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
 			[AccountId1], [CurrencyId1], [ContractId1], [ResourceId1], [UnitId1], [EntryTypeId1], [DueDate1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
 			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]) AS [Index], 
-			@PostingDate, @Memo,
+			@PostingDate,
 			NULL			AS [AccountId0],
 			[CurrencyId]	AS [CurrencyId0],
 			NULL			AS [ContractId0],
@@ -98,10 +97,9 @@ SET [GenerateScript] = N'
 	'
 WHERE [Index] = 70;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
-		[Key],			[Label],		[Visibility],	[DataType],			[Filter]) VALUES
-(0,70,N'CenterId',		N'Project',		N'Required',	N'Center',			N'CenterType = N''ConstructionExpenseControl'''),
-(1,70,N'PostingDate',	N'Posting Date',N'Required',	N'DATE',			NULL),
-(2,70,N'Memo',			N'Memo',		N'Optional',	N'NVARCHAR(255)',	NULL);
+		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
+(0,70,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
+(1,70,N'PostingDate',	N'AsOfDate',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
 (0,70,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
@@ -119,7 +117,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,70,	N'ResourceId',			1,	N'Item',				4,4,0),
 (4,70,	N'Quantity',			1,	N'Quantity',			4,4,0),
 (5,70,	N'UnitId',				1,	N'Unit',				4,4,0),
-(6,70,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
+(6,70,	N'PostingDate',			1,	N'Posting Date',		4,4,0),
 (7,70,	N'CenterId',			1,	N'Project',				4,4,1);
 --100:CashPaymentToOther
 UPDATE @LineDefinitions

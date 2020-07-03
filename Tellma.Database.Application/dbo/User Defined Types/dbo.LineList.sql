@@ -1,9 +1,9 @@
 ﻿CREATE TYPE [dbo].[LineList] AS TABLE (
 	[Index]						INT,
-	[DocumentIndex]				INT		INDEX IX_LineList_DocumentIndex ([DocumentIndex]),
+	[DocumentIndex]				INT			NOT NULL DEFAULT 0 INDEX IX_LineList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [DocumentIndex]),
-	[Id]						INT				NOT NULL DEFAULT 0,
-	[DefinitionId]				INT				NOT NULL,
+	[Id]						INT			NOT NULL DEFAULT 0,
+	[DefinitionId]				INT			NOT NULL,
 	[PostingDate]				DATE,
 	[TemplateLineId]			INT,
 	[Multiplier]				DECIMAL (19,4),
