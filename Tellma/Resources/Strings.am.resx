@@ -1219,6 +1219,9 @@
   <data name="Field0Definition" xml:space="preserve">
     <value>{0} ትርጓሜ</value>
   </data>
+  <data name="Field0IsCommon" xml:space="preserve">
+    <value>{0} ነው የጋራ</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0} ሰይም</value>
   </data>

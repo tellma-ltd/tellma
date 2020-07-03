@@ -349,6 +349,7 @@
   "ExportForImport": "Export for Import",
   "ExportRange": "Exporting Range",
   "Field0Definition": "{{0}} Definition",
+  "Field0IsCommon": "{{0}} Is Common",
   "Field0Label": "{{0}} Label",
   "Field0Visibility": "{{0}} Visibility",
   "Fields": "Fields",
@@ -819,6 +820,5 @@
   "WithoutPicture": "Without Picture",
   "WithPicture": "With Picture",
   "Workflow": "Workflow",
-  "XIsCommon": "{{0}} Is Common",
   "Yes": "Yes"
 }

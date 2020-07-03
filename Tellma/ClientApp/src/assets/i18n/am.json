@@ -349,6 +349,7 @@
   "ExportForImport": "አስመጣ ለ ላክ",
   "ExportRange": "ላኪ ክልል",
   "Field0Definition": "{{0}} ትርጓሜ",
+  "Field0IsCommon": "{{0}} የጋራ ነው",
   "Field0Label": "{{0}} ሰይም",
   "Field0Visibility": "{{0}} ታይነት",
   "Fields": "Fields",
@@ -819,6 +820,5 @@
   "WithoutPicture": "በገጽ ያለ",
   "WithPicture": "በገጽ ጋር",
   "Workflow": "የስራ ፍሰት",
-  "XIsCommon": "{{0}} የጋራ ነው",
   "Yes": "አዎ"
 }

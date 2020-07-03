@@ -1219,6 +1219,9 @@
   <data name="Field0Definition" xml:space="preserve">
     <value>{0}定义</value>
   </data>
+  <data name="Field0IsCommon" xml:space="preserve">
+    <value>{0}是常有的事</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0}标签</value>
   </data>

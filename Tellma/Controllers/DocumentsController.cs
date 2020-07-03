@@ -23,6 +23,7 @@ using Tellma.Controllers.Templating;
 using System.Text;
 using Tellma.Entities.Descriptors;
 using Tellma.Services.Utilities;
+using Tellma.Controllers.ImportExport;
 
 namespace Tellma.Controllers
 {
@@ -1637,6 +1638,24 @@ namespace Tellma.Controllers
         {
             _definitionIdOverride = definitionId;
             return this;
+        }
+
+        protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
+        {
+            // Remove the attachments, since they cannot be imported in a CSV
+            var attachments = mapping.CollectionProperty(nameof(DocumentForSave.Attachments));
+            mapping.CollectionProperties = mapping.CollectionProperties.Where(p => p != attachments);
+
+            // Remove the LineTemplateId and Multiplier
+            var lines = mapping.CollectionProperty(nameof(Document.Lines));
+            var lineTemplateId = lines.SimpleProperty(nameof(LineForSave.TemplateLineId));
+            var multiplier = lines.SimpleProperty(nameof(LineForSave.Multiplier));
+            lines.SimpleProperties = lines.SimpleProperties.Where(p => p != lineTemplateId && p != multiplier);
+
+            // Fix the newly created gaps, if any
+            mapping.NormalizeIndices();
+
+            return base.ProcessDefaultMapping(mapping);
         }
 
         #region Details Select

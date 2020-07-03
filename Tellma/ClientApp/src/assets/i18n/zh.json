@@ -349,6 +349,7 @@
   "ExportForImport": "对于出口进口",
   "ExportRange": "出口范围",
   "Field0Definition": "{{0}}定义",
+  "Field0IsCommon": "{{0}}是常有的事",
   "Field0Label": "{{0}}标签",
   "Field0Visibility": "{{0}}能见度",
   "Fields": "字段",
@@ -819,6 +820,5 @@
   "WithoutPicture": "没有图片",
   "WithPicture": "随着图片",
   "Workflow": "工作流程",
-  "XIsCommon": "{{0}}是常有的事",
   "Yes": "是"
 }

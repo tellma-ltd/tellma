@@ -349,6 +349,7 @@
   "ExportForImport": "استيراد للتصدير",
   "ExportRange": "نطاق التصدير",
   "Field0Definition": "تعريف الحقل ({{0}})",
+  "Field0IsCommon": "{{0}} صفة مشتركة",
   "Field0Label": "اسم الحقل ({{0}})",
   "Field0Visibility": "مظهر الحقل ({{0}})",
   "Fields": "الحقول",
@@ -819,6 +820,5 @@
   "WithoutPicture": "بدون صورة",
   "WithPicture": "مع صورة",
   "Workflow": "الدورة المستندية",
-  "XIsCommon": "{{0}} صفة مشتركة",
   "Yes": "نعم"
 }

@@ -206,7 +206,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
 
                     // IsCommon property
                     const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
-                    isCommonPropDesc.label = () => trx.instant('XIsCommon', { 0: propDesc.label() });
+                    isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
             }
 
@@ -239,7 +239,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
 
                     // IsCommon property
                     const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
-                    isCommonPropDesc.label = () => trx.instant('XIsCommon', { 0: propDesc.label() });
+                    isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
             }
         }

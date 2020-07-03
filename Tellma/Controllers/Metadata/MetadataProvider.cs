@@ -159,7 +159,7 @@ namespace Tellma.Controllers
                     }
 
                     // Use MultilingualDisplayAttribute if present
-                    var multilingualAtt = propInfo.GetCustomAttribute<MultilingualDisplayAttribute>();
+                    var multilingualAtt = propInfo.GetCustomAttribute<MultilingualDisplayAttribute>(inherit: true);
                     if (multilingualAtt != null)
                     {
                         string name = multilingualAtt.Name;
@@ -180,7 +180,7 @@ namespace Tellma.Controllers
                     }
 
                     // e.g. "Decimal 1 Label"
-                    var labelAtt = propInfo.GetCustomAttribute<DefinitionLabelDisplayAttribute>();
+                    var labelAtt = propInfo.GetCustomAttribute<DefinitionLabelDisplayAttribute>(inherit: true);
                     if (labelAtt != null)
                     {
                         string labelName = "Field0Label";
@@ -202,20 +202,26 @@ namespace Tellma.Controllers
                     }
 
                     // e.g. "Currency Visibility"
-                    var visibilityDisplayAtt = propInfo.GetCustomAttribute<VisibilityDisplayAttribute>();
+                    var visibilityDisplayAtt = propInfo.GetCustomAttribute<VisibilityDisplayAttribute>(inherit: true);
                     if (visibilityDisplayAtt != null)
                     {
                         string name = visibilityDisplayAtt.Name;
                         display = () => _localizer["Field0Visibility", _localizer[name]];
                     }
 
-
                     // e.g. "Lookup 1 Definition"
-                    var ddDisplayAtt = propInfo.GetCustomAttribute<DefinitionDefinitionDisplayAttribute>();
+                    var ddDisplayAtt = propInfo.GetCustomAttribute<DefinitionDefinitionDisplayAttribute>(inherit: true);
                     if (ddDisplayAtt != null)
                     {
                         string name = ddDisplayAtt.Name;
                         display = () => _localizer["Field0Definition", _localizer[name]];
+                    }
+
+                    var isCommonAtt = propInfo.GetCustomAttribute<IsCommonDisplayAttribute>(inherit: true);
+                    if (isCommonAtt != null)
+                    {
+                        string name = isCommonAtt.Name;
+                        display = () => _localizer["Field0IsCommon", _localizer[name]];
                     }
 
                     #endregion
@@ -240,8 +246,8 @@ namespace Tellma.Controllers
                             nameof(Lookup) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
                             nameof(LookupForSave) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
 
-                            nameof(Document) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display),
-                            nameof(DocumentForSave) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display),
+                            nameof(Document) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display, _localizer),
+                            nameof(DocumentForSave) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display, _localizer),
 
                             _ => throw new InvalidOperationException($"Bug: Unaccounted type in definition overrides {entityType.Name}")
                         };
@@ -762,13 +768,13 @@ namespace Tellma.Controllers
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
         private static DefinitionPropOverrides ResourcePropertyOverrides(
-            ResourceDefinitionForClient def, 
-            SettingsForClient settings, 
+            ResourceDefinitionForClient def,
+            SettingsForClient settings,
             PropertyInfo propInfo,
             Func<string> display)
         {
             bool isRequired = false;
-            
+
             switch (propInfo.Name)
             {
                 case nameof(Resource.Description):
@@ -928,10 +934,10 @@ namespace Tellma.Controllers
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
         private static DefinitionPropOverrides ContractPropertyOverrides(
-    ContractDefinitionForClient def,
-    SettingsForClient settings,
-    PropertyInfo propInfo,
-    Func<string> display)
+            ContractDefinitionForClient def,
+            SettingsForClient settings,
+            PropertyInfo propInfo,
+            Func<string> display)
         {
             bool isRequired = false;
 
@@ -984,49 +990,31 @@ namespace Tellma.Controllers
                     isRequired = def.Text2Visibility == Visibility.Required;
                     break;
                 case nameof(Contract.Currency):
-                    display = PropertyDisplay(def.CurrencyVisibility, display);
-                    isRequired = def.CurrencyVisibility == Visibility.Required;
-                    break;
                 case nameof(Contract.CurrencyId):
                     display = PropertyDisplay(def.CurrencyVisibility, display);
                     isRequired = def.CurrencyVisibility == Visibility.Required;
                     break;
                 case nameof(Contract.Center):
-                    display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required;
-                    break;
                 case nameof(Contract.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
                     isRequired = def.CenterVisibility == Visibility.Required;
                     break;
                 case nameof(Contract.Lookup1):
-                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
-                    isRequired = def.Lookup1Visibility == Visibility.Required;
-                    break;
                 case nameof(Contract.Lookup1Id):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
                     isRequired = def.Lookup1Visibility == Visibility.Required;
                     break;
                 case nameof(Contract.Lookup2):
-                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
-                    isRequired = def.Lookup2Visibility == Visibility.Required;
-                    break;
                 case nameof(Contract.Lookup2Id):
                     display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
                     isRequired = def.Lookup2Visibility == Visibility.Required;
                     break;
                 case nameof(Contract.Lookup3):
-                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
-                    isRequired = def.Lookup3Visibility == Visibility.Required;
-                    break;
                 case nameof(Contract.Lookup3Id):
                     display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
                     isRequired = def.Lookup3Visibility == Visibility.Required;
                     break;
                 case nameof(Contract.Lookup4):
-                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
-                    isRequired = def.Lookup4Visibility == Visibility.Required;
-                    break;
                 case nameof(Contract.Lookup4Id):
                     display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
                     isRequired = def.Lookup4Visibility == Visibility.Required;
@@ -1112,9 +1100,11 @@ namespace Tellma.Controllers
             DocumentDefinitionForClient def,
             SettingsForClient settings,
             PropertyInfo propInfo,
-            Func<string> display)
+            Func<string> display,
+            IStringLocalizer localizer)
         {
             bool isRequired = false;
+            Func<string> propDisplay;
 
             switch (propInfo.Name)
             {
@@ -1122,61 +1112,89 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
                     isRequired = def.MemoVisibility == Visibility.Required;
                     break;
+                case nameof(Document.MemoIsCommon):
+                    display = PropertyDisplay(def.MemoIsCommonVisibility, display);
+                    break;
                 case nameof(Document.PostingDate):
                     display = PropertyDisplay(settings, def.PostingDateVisibility, def.PostingDateLabel, def.PostingDateLabel2, def.PostingDateLabel3, display);
                     isRequired = def.PostingDateRequiredState == 0;
                     break;
-                case nameof(Document.DebitContractId):
-                    display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
-                    isRequired = def.DebitContractRequiredState == 0;
+                case nameof(Document.PostingDateIsCommon):
+                    display = PropertyDisplay(def.PostingDateVisibility, display);
                     break;
+                case nameof(Document.DebitContractId):
                 case nameof(Document.DebitContract):
                     display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
                     isRequired = def.DebitContractRequiredState == 0;
                     break;
-                case nameof(Document.CreditContractId):
-                    display = PropertyDisplay(settings, def.CreditContractVisibility, def.CreditContractLabel, def.CreditContractLabel2, def.CreditContractLabel3, display);
-                    isRequired = def.CreditContractRequiredState == 0;
+                case nameof(Document.DebitContractIsCommon):
+                    display = PropertyDisplay(def.DebitContractVisibility, display);
                     break;
+                case nameof(Document.CreditContractId):
                 case nameof(Document.CreditContract):
                     display = PropertyDisplay(settings, def.CreditContractVisibility, def.CreditContractLabel, def.CreditContractLabel2, def.CreditContractLabel3, display);
                     isRequired = def.CreditContractRequiredState == 0;
                     break;
-                case nameof(Document.NotedContractId):
-                    display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
-                    isRequired = def.NotedContractRequiredState == 0;
+                case nameof(Document.CreditContractIsCommon):
+                    display = PropertyDisplay(def.CreditContractVisibility, display);
                     break;
+                case nameof(Document.NotedContractId):
                 case nameof(Document.NotedContract):
                     display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
                     isRequired = def.NotedContractRequiredState == 0;
+                    break;
+                case nameof(Document.NotedContractIsCommon):
+                    display = PropertyDisplay(def.NotedContractVisibility, display);
                     break;
                 case nameof(Document.Time1):
                     display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
                     isRequired = def.Time1RequiredState == 0;
                     break;
+                case nameof(Document.Time1IsCommon):
+                    display = PropertyDisplay(def.Time1Visibility, display);
+                    break;
                 case nameof(Document.Time2):
                     display = PropertyDisplay(settings, def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
                     isRequired = def.Time2RequiredState == 0;
+                    break;
+                case nameof(Document.Time2IsCommon):
+                    display = PropertyDisplay(def.Time2Visibility, display);
                     break;
                 case nameof(Document.Quantity):
                     display = PropertyDisplay(settings, def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
                     isRequired = def.QuantityRequiredState == 0;
                     break;
-                case nameof(Document.UnitId):
-                    display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
-                    isRequired = def.UnitRequiredState == 0;
+                case nameof(Document.QuantityIsCommon):
+                    display = PropertyDisplay(def.QuantityVisibility, display);
                     break;
+                case nameof(Document.UnitId):
                 case nameof(Document.Unit):
                     display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
                     isRequired = def.UnitRequiredState == 0;
                     break;
-                case nameof(Document.CurrencyId):
-                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
-                    isRequired = def.CurrencyRequiredState == 0;
+                case nameof(Document.UnitIsCommon):
+                    display = PropertyDisplay(def.UnitVisibility, display);
                     break;
+                case nameof(Document.CurrencyId):
                 case nameof(Document.Currency):
                     display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
                     isRequired = def.CurrencyRequiredState == 0;
+                    break;
+                case nameof(Document.CurrencyIsCommon):
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
+                    break;
+
+                // TODO: Include those in the definition
+                case nameof(Document.DocumentText1):
+                case nameof(Document.DocumentText2):
+                case nameof(Document.DocumentLookup1):
+                case nameof(Document.DocumentLookup1Id):
+                case nameof(Document.DocumentLookup2):
+                case nameof(Document.DocumentLookup2Id):
+                case nameof(Document.DocumentLookup3):
+                case nameof(Document.DocumentLookup3Id):
+                    display = null;
+                    isRequired = false;
                     break;
             }
 
@@ -1219,20 +1237,39 @@ namespace Tellma.Controllers
         /// if the labels are null
         /// </summary>
         private static Func<string> PropertyDisplay(
-            SettingsForClient settings, 
-            string visibility, 
-            string label, 
-            string label2, 
-            string label3, 
+            SettingsForClient settings,
+            string visibility,
+            string label,
+            string label2,
+            string label3,
             Func<string> defaultDisplay)
         {
-            if (visibility == null)
+            if (visibility != null && defaultDisplay != null)
+            {
+                return () => settings.Localize(label, label2, label3) ?? defaultDisplay();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns null if the visibility is false, otherwise returns a new display function
+        /// that reads the relies on the supplied labels, and falls back to the default function
+        /// if the labels are null
+        /// </summary>
+        private static Func<string> PropertyDisplay(
+            bool isVisible,
+            Func<string> defaultDisplay)
+        {
+            if (!isVisible)
             {
                 return null;
             }
             else
             {
-                return () => settings.Localize(label, label2, label3) ?? defaultDisplay();
+                return defaultDisplay;
             }
         }
 
@@ -1249,7 +1286,7 @@ namespace Tellma.Controllers
             string label3,
             Func<string> defaultDisplay)
         {
-            if (isVisible)
+            if (isVisible && defaultDisplay != null)
             {
                 return () => settings.Localize(label, label2, label3) ?? defaultDisplay();
             }
