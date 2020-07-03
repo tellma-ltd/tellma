@@ -210,7 +210,7 @@ export interface DocumentDefinitionLineDefinitionForClient {
     IsVisibleByDefault: boolean;
 }
 
-export interface LineDefinitionForClient extends MasterDetailsDefinitionForClient {
+export interface LineDefinitionForClient {
     Code: string;
     TitleSingular: string;
     TitleSingular2: string;
@@ -220,9 +220,14 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
     TitlePlural3: string;
     AllowSelectiveSigning: boolean;
     ViewDefaultsToForm: boolean;
+    GenerateScript: boolean;
+    GenerateLabel: string;
+    GenerateLabel2: string;
+    GenerateLabel3: string;
     Entries: LineDefinitionEntryForClient[];
     Columns: LineDefinitionColumnForClient[];
     StateReasons: LineDefinitionStateReasonForClient[];
+    GenerateParameters: LineDefinitionGenerateParameterForClient[];
 }
 
 export interface LineDefinitionEntryForClient {
@@ -253,6 +258,16 @@ export interface LineDefinitionStateReasonForClient {
     Name2: string;
     Name3: string;
     IsActive: boolean;
+}
+
+export interface LineDefinitionGenerateParameterForClient {
+    Key: string;
+    Label: string;
+    Label2: string;
+    Label3: string;
+    DataType: string;
+    Filter: string;
+    Visibility: Visibility;
 }
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |

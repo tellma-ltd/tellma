@@ -180,7 +180,7 @@ namespace Tellma.Controllers
                 Text2Visibility = MapVisibility(def.Text2Visibility),
 
                 // Contract Only
-                
+
                 AgentVisibility = MapVisibility(def.AgentVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
                 JobVisibility = MapVisibility(def.JobVisibility),
@@ -394,6 +394,10 @@ namespace Tellma.Controllers
                 // Data
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
                 ViewDefaultsToForm = def.ViewDefaultsToForm ?? false,
+                GenerateScript = !string.IsNullOrWhiteSpace(def.GenerateScript),
+                GenerateLabel = def.GenerateLabel,
+                GenerateLabel2 = def.GenerateLabel2,
+                GenerateLabel3 = def.GenerateLabel3,
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     Direction = e.Direction.Value,
@@ -426,6 +430,17 @@ namespace Tellma.Controllers
                     Name3 = r.Name3,
                     IsActive = r.IsActive ?? false,
                 })?.ToList() ?? new List<LineDefinitionStateReasonForClient>(),
+
+                GenerateParameters = def.GenerateParameters?.Select(p => new LineDefinitionGenerateParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    DataType = p.DataType,
+                    Filter = p.Filter,
+                    Visibility = p.Visibility // This one can't be 'None'
+                })?.ToList() ?? new List<LineDefinitionGenerateParameterForClient>(),
             };
 
             // For consistency, Manual lines do not have columns or entries

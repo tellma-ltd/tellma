@@ -37,6 +37,7 @@ SELECT * FROM [map].[LineDefinitions]();
 SELECT * FROM [map].[LineDefinitionEntries]() ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
+SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 	
 -- Get the contract definitions of the line definition entries
 SELECT [Id], [LineDefinitionEntryId], [ContractDefinitionId] FROM [dbo].[LineDefinitionEntryContractDefinitions];

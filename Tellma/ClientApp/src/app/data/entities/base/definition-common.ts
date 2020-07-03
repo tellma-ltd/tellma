@@ -91,6 +91,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'asterisk',
           'balance-scale',
           'bars',
+          'bolt',
           'book',
           'boxes',
           'building',

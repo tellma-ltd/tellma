@@ -15,6 +15,8 @@ using System.Transactions;
 using System.Threading;
 using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Tellma.Data
 {
@@ -610,13 +612,13 @@ namespace Tellma.Data
             return (version, permissions);
         }
 
-        public async Task<(Guid, 
+        public async Task<(Guid,
             IEnumerable<LookupDefinition>,
             IEnumerable<ContractDefinition>,
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
             IEnumerable<DocumentDefinition>,
-            IEnumerable<LineDefinition>)> 
+            IEnumerable<LineDefinition>)>
             Definitions__Load(CancellationToken cancellation)
         {
             Guid version;
@@ -950,7 +952,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new LineDefinitionEntry 
+                    var entity = new LineDefinitionEntry
                     {
                         ContractDefinitions = new List<LineDefinitionEntryContractDefinition>(),
                         NotedContractDefinitions = new List<LineDefinitionEntryNotedContractDefinition>(),
@@ -1016,6 +1018,26 @@ namespace Tellma.Data
                     var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
                     lineDefinition.StateReasons ??= new List<LineDefinitionStateReason>();
                     lineDefinition.StateReasons.Add(entity);
+                }
+
+                // line definition generate parameter
+                var lineDefinitionGenerateParameterProps = TypeDescriptor.Get<LineDefinitionGenerateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new LineDefinitionGenerateParameter();
+                    foreach (var prop in lineDefinitionGenerateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
+                    lineDefinition.GenerateParameters ??= new List<LineDefinitionGenerateParameter>();
+                    lineDefinition.GenerateParameters.Add(entity);
                 }
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
@@ -3717,7 +3739,7 @@ namespace Tellma.Data
                     prop.SetValue(entry, propValue);
                 }
             }
-         }
+        }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(int definitionId, List<DocumentForSave> documents, int top)
         {
@@ -4319,6 +4341,268 @@ namespace Tellma.Data
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
+        }
+
+        #endregion
+
+        #region Lines
+        
+        public async Task<(
+            List<LineForSave> lines,
+            List<Account> accounts,
+            List<Contract> contracts,
+            List<Resource> resources,
+            List<EntryType> entryTypes,
+            List<Center> centers,
+            List<Currency> currencies,
+            List<Unit> units
+            )> Lines__Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
+        {
+            List<LineForSave> lines = new List<LineForSave>();
+
+            // Prepare SQL command
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+
+            // Add params
+            DataTable argsTable = RepositoryUtilities.DataTable(args.Select(e => new GenerateArgument { Key = e.Key, Value = e.Value }));
+            var argsTvp = new SqlParameter("@GenerateArguments", argsTable)
+            {
+                TypeName = $"[dbo].[{nameof(GenerateArgument)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@LineDefinitionId", lineDefId);
+            cmd.Parameters.Add(argsTvp);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Lines__Generate)}]";
+
+            // Lines for save
+            using var reader = await cmd.ExecuteReaderAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                lines.Add(new LineForSave
+                {
+                    DefinitionId = reader.Int32(i++),
+                    PostingDate = reader.DateTime(i++),
+                    Memo = reader.String(i++),
+
+                    Entries = new List<EntryForSave>(),
+                });
+
+                int index = reader.Int32(i++) ?? throw new InvalidOperationException("Returned line [Index] was null");
+                if (lines.Count != index + 1)
+                {
+                    throw new InvalidOperationException($"Mismatch between line index {index} and it's actual position {lines.Count - 1} in the returned result set");
+                }
+            }
+
+            // Entries for save
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                var entry = new EntryForSave
+                {
+                    AccountId = reader.Int32(i++),
+                    CurrencyId = reader.String(i++),
+                    ResourceId = reader.Int32(i++),
+                    ContractId = reader.Int32(i++),
+                    EntryTypeId = reader.Int32(i++),
+                    NotedContractId = reader.Int32(i++),
+                    CenterId = reader.Int32(i++),
+                    UnitId = reader.Int32(i++),
+                    IsSystem = reader.Boolean(i++),
+                    Direction = reader.Int16(i++),
+                    DueDate = reader.DateTime(i++),
+                    MonetaryValue = reader.Decimal(i++),
+                    Quantity = reader.Decimal(i++),
+                    Value = reader.Decimal(i++),
+                    Time1 = reader.DateTime(i++),
+                    Time2 = reader.DateTime(i++),
+                    ExternalReference = reader.String(i++),
+                    AdditionalReference = reader.String(i++),
+                    NotedAgentName = reader.String(i++),
+                    NotedAmount = reader.Decimal(i++),
+                    NotedDate = reader.DateTime(i++),
+                };
+
+                int lineIndex = reader.Int32(i++) ?? throw new InvalidOperationException("Returned entry [Index] was null");
+                if (lineIndex >= lines.Count)
+                {
+                    throw new InvalidOperationException($"Entry's [LineIndex] = {lineIndex} is not valid, only {lines.Count} were loaded");
+                }
+
+                var line = lines[lineIndex];
+                line.Entries.Add(entry);
+            }
+
+            // Account
+            var list_Account = new List<Account>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Account.Add(new Account
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+                    Code = reader.String(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Account.Name), FieldMetadata.Loaded },
+                        { nameof(Account.Name2), FieldMetadata.Loaded },
+                        { nameof(Account.Name3), FieldMetadata.Loaded },
+                        { nameof(Account.Code), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+            // Currency
+            var list_Currency = new List<Currency>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Currency.Add(new Currency
+                {
+                    Id = reader.GetString(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+                    E = reader.Int16(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Currency.Name), FieldMetadata.Loaded },
+                        { nameof(Currency.Name2), FieldMetadata.Loaded },
+                        { nameof(Currency.Name3), FieldMetadata.Loaded },
+                        { nameof(Currency.E), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+            // Resource
+            var list_Resource = new List<Resource>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Resource.Add(new Resource
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+                    DefinitionId = reader.Int32(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Resource.Name), FieldMetadata.Loaded },
+                        { nameof(Resource.Name2), FieldMetadata.Loaded },
+                        { nameof(Resource.Name3), FieldMetadata.Loaded },
+                        { nameof(Resource.DefinitionId), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+            // Contract
+            var list_Contract = new List<Contract>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Contract.Add(new Contract
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+                    DefinitionId = reader.Int32(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Contract.Name), FieldMetadata.Loaded },
+                        { nameof(Contract.Name2), FieldMetadata.Loaded },
+                        { nameof(Contract.Name3), FieldMetadata.Loaded },
+                        { nameof(Contract.DefinitionId), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+            // EntryType
+            var list_EntryType = new List<EntryType>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_EntryType.Add(new EntryType
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(EntryType.Name), FieldMetadata.Loaded },
+                        { nameof(EntryType.Name2), FieldMetadata.Loaded },
+                        { nameof(EntryType.Name3), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+
+            // Center
+            var list_Center = new List<Center>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Center.Add(new Center
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Center.Name), FieldMetadata.Loaded },
+                        { nameof(Center.Name2), FieldMetadata.Loaded },
+                        { nameof(Center.Name3), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+            // Unit
+            var list_Unit = new List<Unit>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Unit.Add(new Unit
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Unit.Name), FieldMetadata.Loaded },
+                        { nameof(Unit.Name2), FieldMetadata.Loaded },
+                        { nameof(Unit.Name3), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
+            return (lines, list_Account, list_Contract, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         #endregion

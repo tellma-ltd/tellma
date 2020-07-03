@@ -206,6 +206,40 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
+        [HttpGet("generate-lines/{lineDefId}")]
+        public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (lines, accounts, contracts, resources, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
+
+                // Related entitiess
+                var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
+                {
+                    { GetCollectionName(typeof(Account)), accounts },
+                    { GetCollectionName(typeof(Contract)), contracts },
+                    { GetCollectionName(typeof(Resource)), resources },
+                    { GetCollectionName(typeof(EntryType)), entryTypes },
+                    { GetCollectionName(typeof(Center)), centers },
+                    { GetCollectionName(typeof(Currency)), currencies },
+                    { GetCollectionName(typeof(Unit)), units }
+                };
+
+                // Prepare the result in a response object
+                var response = new EntitiesResponse<LineForSave>
+                {
+                    Result = lines,
+                    RelatedEntities = relatedEntities,
+                    CollectionName = "", // Not important
+                    ServerTime = serverTime,
+                };
+
+                // Return
+                return Ok(response);
+            }, _logger);
+        }
+
         protected override CrudServiceBase<DocumentForSave, Document, int> GetCrudService()
         {
             return _service;
@@ -320,6 +354,9 @@ namespace Tellma.Controllers
 
         private DocumentDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents?
             .GetValueOrDefault(DefinitionId.Value) ?? throw new InvalidOperationException($"Document Definition with Id = {DefinitionId} is missing from the cache");
+
+        private LineDefinitionForClient LineDefinition(int lineDefId) => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines?
+            .GetValueOrDefault(lineDefId) ?? throw new InvalidOperationException($"Line Definition with Id = {lineDefId} is missing from the cache");
 
         #endregion
 
@@ -658,6 +695,8 @@ namespace Tellma.Controllers
         public override async Task<(Document, Extras)> GetById(int id, GetByIdArguments args, CancellationToken cancellation)
         {
             var (entity, extras) = await base.GetById(id, args, cancellation);
+
+            // TODO it's more accurate to do this from the client side (e.g. if the user views a cached document)
             if (entity.OpenedAt == null)
             {
                 var userInfo = await _repo.GetUserInfoAsync(cancellation);
@@ -678,6 +717,43 @@ namespace Tellma.Controllers
             }
 
             return (entity, extras);
+        }
+
+        public async Task<(
+            List<LineForSave> lines,
+            List<Account> accounts,
+            List<Contract> contracts,
+            List<Resource> resources,
+            List<EntryType> entryTypes,
+            List<Center> centers,
+            List<Currency> currencies,
+            List<Unit> units
+            )> Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
+        {
+            // TODO: Permissions (?)
+
+            var lineDef = LineDefinition(lineDefId);
+
+            // Better args will contain only the defined parameter keys and all the defined parameter keys (with possible null values)
+            var betterArgs = new Dictionary<string, string>();
+            foreach (var param in lineDef.GenerateParameters)
+            {
+                var value = args.GetValueOrDefault(param.Key);
+
+                // Ensure all required signatures are supplied
+                if (param.Visibility == Visibility.Required && string.IsNullOrWhiteSpace(value))
+                {
+                    var tenantInfo = await _repo.GetTenantInfoAsync(cancellation);
+                    var paramLabel = tenantInfo.Localize(param.Label, param.Label2, param.Label3);
+                    var msg = _localizer[Constants.Error_Field0IsRequired, paramLabel];
+                    throw new BadRequestException(msg);
+                }
+
+                betterArgs[param.Key] = value;
+            }
+
+            // Call the SP
+            return await _repo.Lines__Generate(lineDefId, betterArgs, cancellation);
         }
 
         protected override IRepository GetRepository()
@@ -1591,6 +1667,7 @@ namespace Tellma.Controllers
 
         // ------------------------------------------------
         // Paths to return on the level of each entity type
+        // IMPORTANT: Keep in sync with bll.Lines__Generate
         // ------------------------------------------------
 
         public static IEnumerable<string> DocumentPaths() => DocumentProps
@@ -1701,9 +1778,9 @@ namespace Tellma.Controllers
         private static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
         private static IEnumerable<string> AccountProps => Enum(
             // Names
-            nameof(Account.Name), 
-            nameof(Account.Name2), 
-            nameof(Account.Name3), 
+            nameof(Account.Name),
+            nameof(Account.Name2),
+            nameof(Account.Name3),
             nameof(Account.Code),
 
             // Definitions
@@ -1725,12 +1802,12 @@ namespace Tellma.Controllers
             // Labels
             nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
-            nameof(AccountType.Time2Label), nameof(AccountType.Time2Label), nameof(AccountType.Time2Label),
-            nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel),
-            nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel),
-            nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel),
-            nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
-            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel)
+            nameof(AccountType.Time2Label), nameof(AccountType.Time2Label2), nameof(AccountType.Time2Label3),
+            nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel2), nameof(AccountType.ExternalReferenceLabel3),
+            nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel2), nameof(AccountType.AdditionalReferenceLabel3),
+            nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel2), nameof(AccountType.NotedAgentNameLabel3),
+            nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel2), nameof(AccountType.NotedAmountLabel3),
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel2), nameof(AccountType.NotedDateLabel3)
          );
 
         // Helper method
