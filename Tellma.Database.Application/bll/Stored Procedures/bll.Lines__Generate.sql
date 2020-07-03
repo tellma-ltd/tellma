@@ -12,6 +12,8 @@ AS
 	EXECUTE	sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY',
 			@GenerateArguments = @GenerateArguments;
 
+	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId
+	
 	INSERT INTO @Lines([Index], [DefinitionId], [PostingDate], [Memo])
 	SELECT [Index], @LineDefinitionId, [PostingDate], [Memo] FROM @WideLines
 
