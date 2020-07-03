@@ -41,7 +41,7 @@
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 (0,0,   @ManualLineLD, 1),
-(0,7,   @CostReallocationPUCLD,0),
+(0,7,   @CostReallocationIPUCLD,0),
 (0,10,  @CashPaymentToOtherLD, 1),
 (1,10,  @ManualLineLD, 1),
 --(4,10, @CashTransferExchangeLD, 1),

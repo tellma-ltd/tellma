@@ -12,15 +12,15 @@
 	[Collection]		NVARCHAR (50)		NOT NULL,
 	[DefinitionId]		INT,
 	[MarkupLanguage]	NVARCHAR (255)		NOT NULL,
-	[SupportsPrimaryLanguage] BIT NOT NULL,
-	[SupportsSecondaryLanguage] BIT NOT NULL,
-	[SupportsTernaryLanguage] BIT NOT NULL,
+	[SupportsPrimaryLanguage]				BIT NOT NULL,
+	[SupportsSecondaryLanguage]				BIT NOT NULL,
+	[SupportsTernaryLanguage]				BIT NOT NULL,
 	[DownloadName]		NVARCHAR (1024),
 	[Body]				NVARCHAR (MAX),
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_MarkupTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_MarkupTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_MarkupTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_MarkupTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_MarkupTemplates__Code]

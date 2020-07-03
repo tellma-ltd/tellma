@@ -2,7 +2,7 @@
 (
 	[Id]								INT		CONSTRAINT [PK_ReportDefinitions] PRIMARY KEY IDENTITY,
 	[Code]								NVARCHAR (50)	NOT NULL CONSTRAINT [IX_ReportDefinitions] UNIQUE,
-	[Title]								NVARCHAR (255),
+	[Title]								NVARCHAR (255)	NOT NULL,
 	[Title2]							NVARCHAR (255),
 	[Title3]							NVARCHAR (255),
 	[Description]						NVARCHAR (1024),

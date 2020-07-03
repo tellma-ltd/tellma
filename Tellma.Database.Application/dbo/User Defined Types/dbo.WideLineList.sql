@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[WideLineList] AS TABLE (
 	[Index]						INT	,
-	[DocumentIndex]				INT				INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
+	[DocumentIndex]				INT				NOT NULL DEFAULT 0 INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				INT				NOT NULL DEFAULT 0,

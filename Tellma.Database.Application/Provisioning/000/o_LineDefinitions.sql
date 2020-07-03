@@ -40,13 +40,14 @@ PRINT N'';
 --70: PUC Costs Reallocation
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
-		DECLARE @CenterId INT, @PostingDate DATE, @Memo NVARCHAR (255) -- obtained from document header
+		DECLARE @CenterId INT, @PostingDate DATE, @Memo NVARCHAR(255)
+		
 		DECLARE @WideLines WideLineList;
 
 		SELECT @CenterId = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CenterId'') AS INT);
 		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
 		SELECT @Memo = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''Memo'') AS NVARCHAR (255));
-		DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N''ExpenseByNature'');
+		DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N''ExpenseByNature'');
 
 		WITH ExpenseByNatureAccounts AS (
 			SELECT A.[Id]
@@ -55,11 +56,12 @@ SET [GenerateScript] = N'
 			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 		)
 		INSERT INTO @WideLines(
-			[PostingDate], [Memo],
+			[Index], [PostingDate], [Memo],
 			[AccountId0], [CurrencyId0], [ContractId0], [ResourceId0], [UnitId0], [EntryTypeId0], [DueDate0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
 			[AccountId1], [CurrencyId1], [ContractId1], [ResourceId1], [UnitId1], [EntryTypeId1], [DueDate1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]) AS [Index], 
 			@PostingDate, @Memo,
 			NULL			AS [AccountId0],
 			[CurrencyId]	AS [CurrencyId0],
@@ -92,9 +94,14 @@ SET [GenerateScript] = N'
 		AND L.[PostingDate] <= @PostingDate
 		GROUP BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]
 
-		SELECT * FROM @WideLines
+		SELECT * FROM @WideLines;
 	'
 WHERE [Index] = 70;
+INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
+		[Key],			[Label],		[Visibility],	[DataType],			[Filter]) VALUES
+(0,70,N'CenterId',		N'Project',		N'Required',	N'Center',			N'CenterType = N''ConstructionExpenseControl'''),
+(1,70,N'PostingDate',	N'Posting Date',N'Required',	N'DATE',			NULL),
+(2,70,N'Memo',			N'Memo',		N'Optional',	N'NVARCHAR(255)',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
 (0,70,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
@@ -761,7 +768,7 @@ EXEC [api].[LineDefinitions__Save]
 -- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 
-DECLARE @CostReallocationPUCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationPUC');
+DECLARE @CostReallocationIPUCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationIPUC');
 DECLARE @CashPaymentToOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToOther');
 DECLARE @CashTransferExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransferExchange');
 DECLARE @DepositCashToBankLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'DepositCashToBank');

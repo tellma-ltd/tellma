@@ -522,8 +522,6 @@
     <Build Include="map\map.MarkupTemplates.sql" />
     <Build Include="dbo\Tables\dbo.DocumentDefinitionMarkupTemplates.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentDefinitionMarkupTemplateList.sql" />
-    <Build Include="dal\Stored Procedures\dal.Segments__Save.sql" />
-    <Build Include="dbo\Tables\dbo.Segments.sql" />
     <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
@@ -629,6 +627,7 @@
     <None Include="Provisioning\106\06_Accounts\a_AccountClassifications.sql" />
     <Build Include="dbo\User Defined Types\dbo.GenerateArgumentList.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines__Generate.sql" />
+    <Build Include="dbo\User Defined Types\dbo.SN.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

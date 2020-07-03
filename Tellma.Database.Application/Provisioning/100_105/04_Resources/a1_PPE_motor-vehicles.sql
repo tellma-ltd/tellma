@@ -16,7 +16,7 @@ BEGIN
 		GOTO Err_Label;
 	END;		
 
-	DECLARE @ParentId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'MotorVehicles');
+	DECLARE @ParentId INT = (SELECT Id FROM dbo.AccountTypes WHERE [Concept] = N'MotorVehicles');
 	 
 	DECLARE @MotorVehicleDescendants AccountTypeList;
 	INSERT INTO @MotorVehicleDescendants ([Index],
