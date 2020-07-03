@@ -1104,7 +1104,6 @@ namespace Tellma.Controllers
             IStringLocalizer localizer)
         {
             bool isRequired = false;
-            Func<string> propDisplay;
 
             switch (propInfo.Name)
             {
@@ -1182,6 +1181,10 @@ namespace Tellma.Controllers
                     break;
                 case nameof(Document.CurrencyIsCommon):
                     display = PropertyDisplay(def.CurrencyVisibility, display);
+                    break;
+                case nameof(Document.Clearance):
+                    display = PropertyDisplay(def.ClearanceVisibility, display);
+                    isRequired = def.ClearanceVisibility == Visibility.Required;
                     break;
 
                 // TODO: Include those in the definition
