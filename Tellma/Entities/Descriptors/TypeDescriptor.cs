@@ -20,6 +20,7 @@ namespace Tellma.Entities.Descriptors
         private readonly Func<Entity> _create;
         private readonly Func<IList> _createList;
         private readonly IReadOnlyDictionary<string, PropertyDescriptor> _propertiesDic;
+        private PropertyDescriptor _idProperty;
 
         /// <summary>
         /// The <see cref="Type"/> being described
@@ -67,6 +68,11 @@ namespace Tellma.Entities.Descriptors
         /// Returns true if there is a property on this entity called Id
         /// </summary>
         public bool HasId => _propertiesDic.ContainsKey("Id");
+
+        /// <summary>
+        /// Returns the property called "Id", or throws an exception if one doesn't exist
+        /// </summary>
+        public PropertyDescriptor IdProperty => _idProperty ??= _propertiesDic["Id"];
 
         /// <summary>
         /// The name of this <see cref="Entity"/>. E.g. "Document"

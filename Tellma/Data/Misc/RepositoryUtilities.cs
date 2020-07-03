@@ -266,6 +266,30 @@ namespace Tellma.Data
         }
 
         /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetBoolean(int)"/> but also handles the null case
+        /// </summary
+        public static bool? Boolean(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? (bool?)null : reader.GetBoolean(index);
+        }
+
+        /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetInt16(int)"/> but also handles the null case
+        /// </summary
+        public static short? Int16(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? (short?)null : reader.GetInt16(index);
+        }
+
+        /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetDecimal(int)"/> but also handles the null case
+        /// </summary
+        public static decimal? Decimal(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? (decimal?)null : reader.GetDecimal(index);
+        }
+
+        /// <summary>
         /// Equivalent to <see cref="SqlDataReader.GetString(int)"/> but also handles the null case
         /// </summary
         public static string String(this SqlDataReader reader, int index)
@@ -274,11 +298,29 @@ namespace Tellma.Data
         }
 
         /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetDateTime(int)"/> but also handles the null case
+        /// </summary
+        public static DateTime? DateTime(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? (DateTime?)null : reader.GetDateTime(index);
+        }
+
+        /// <summary>
         /// Equivalent to <see cref="SqlDataReader.GetGuid(int)"/> but also handles the null case
         /// </summary
         public static Guid? Guid(this SqlDataReader reader, int index)
         {
             return reader.IsDBNull(index) ? (Guid?)null : reader.GetGuid(index);
+        }
+
+        public static object Value(this SqlDataReader reader, int index, string colNameToCheck = null)
+        {
+            if (colNameToCheck != null && colNameToCheck != reader.GetName(index))
+            {
+                throw new InvalidOperationException($"Attempt to load SQL column {colNameToCheck} into C# property {colNameToCheck}");
+            }
+
+            return reader.IsDBNull(index) ? null : reader.GetValue(index);
         }
 
         /// <summary>

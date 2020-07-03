@@ -7,8 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
-  DocumentDefinitionForClient,
-  LineDefinitionColumnForClient, LineDefinitionEntryForClient, DefinitionsForClient, LineDefinitionForClient
+  DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
+  DefinitionsForClient, LineDefinitionForClient, LineDefinitionGenerateParameterForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -16,7 +16,7 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, getDataURL, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError, printBlob
+  toLocalDateISOString, FriendlyError, printBlob, isSpecified
 } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
@@ -130,6 +130,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   @ViewChild('negativeSignatureModal', { static: true })
   negativeSignatureModal: TemplateRef<any>;
+
+  @ViewChild('autoGenerateModal', { static: true })
+  autoGenerateModal: TemplateRef<any>;
 
   public confirmationMessage: string;
   public signatureForNegativeModal: RequiredSignature;
@@ -1819,6 +1822,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const relatedEntities = extras.RequiredSignaturesRelatedEntities as ({ [key: string]: EntityWithKey[] });
       if (!!relatedEntities) {
         mergeEntitiesInWorkspace(relatedEntities, this.workspace);
+
+        // We always call 'this.workspace.'notifyStateChanged' before this, so no need to call it again
       }
     }
   }
@@ -3276,6 +3281,104 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Insert the reversed entry in the manual line
     this.addManualEntry(clone, doc);
     this._computeEntriesModel = null; // To refresh the manual entries grid
+  }
+
+  public showAutoGenerate(lineDefId: number, isEdit: boolean): boolean {
+    if (!isEdit) {
+      return false;
+    }
+
+    const lineDef = this.lineDefinition(lineDefId);
+    return !!lineDef && lineDef.GenerateScript;
+  }
+
+  public autoGenerateLabel(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    return this.ws.getMultilingualValueImmediate(lineDef, 'GenerateLabel') || this.translate.instant('AutoGenerate');
+  }
+
+  // Used by the auto-generate modal
+  public autoGenerateArgs: { [key: string]: any } = {};
+  public autoGenerateLineDef: LineDefinitionForClient;
+  public autoGenerateLineDefId: number;
+
+  // public getAutoGenerateParameter(key: string): any {
+  //   return this.autoGenerateParameters[key];
+  // }
+
+  // public setAutoGenerateParameter(key: string, value: any): void {
+  //   this.autoGenerateParameters[key] = value;
+  // }
+
+  public parameterLabel(p: LineDefinitionGenerateParameterForClient) {
+    let label = this.ws.getMultilingualValueImmediate(p, 'Label');
+    if (p.Visibility === 'Required') {
+      label = `${label} *`;
+    }
+
+    return label;
+  }
+
+  public onAutoGenerate(lineDefId: number, doc: Document, isEdit: boolean): void {
+    if (!isEdit) {
+      return;
+    }
+
+    this.autoGenerateLineDef = this.lineDefinition(lineDefId);
+    this.autoGenerateLineDefId = lineDefId;
+    this.autoGenerateArgs = {}; // Reset the args
+
+    const lineDef = this.autoGenerateLineDef;
+    if (lineDef.GenerateParameters.length > 0) {
+
+      // Launch the modal that takes the parameters
+      const modalRef = this.modalService.open(this.autoGenerateModal);
+      modalRef.result.then(
+        (confirmed: boolean) => {
+          if (confirmed) {
+            this.onDoAutoGenerate(lineDefId, doc);
+          }
+        },
+        _ => { }
+      );
+
+    } else {
+      // No parameters needed, generate right away
+      this.onDoAutoGenerate(lineDefId, doc);
+    }
+  }
+
+  public get autoGenerateRequiredParamsAreSet(): boolean {
+    const lineDef = this.autoGenerateLineDef;
+    if (!!lineDef && lineDef.GenerateParameters.length > 0) {
+      for (const param of lineDef.GenerateParameters) {
+        if (param.Visibility === 'Required' && !isSpecified(this.autoGenerateArgs[param.Key])) {
+          return false; // At least one required parameter is missing
+        }
+      }
+    }
+
+    return true;
+  }
+
+  public onDoAutoGenerate(lineDefId: number, doc: DocumentForSave) {
+    if (!this.autoGenerateRequiredParamsAreSet) {
+      return; // Can't call the API unless all required params are set
+    }
+
+    // Call the API and retrieve the generated lines
+    this.documentsApi.autoGenerate(lineDefId, this.autoGenerateArgs).pipe(
+      tap((res: EntitiesResponse<LineForSave>) => {
+        // Add related entities to workspace
+        mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
+        this.workspace.notifyStateChanged();
+
+        // Add the new lines to the doc and refresh the grids
+        doc.Lines.push(... res.Result);
+        this._computeEntriesModel = null;
+        this._linesModel = null;
+      }),
+    ).subscribe({ error: this.details.handleActionError });
   }
 
   public total(doc: Document, direction: number) {

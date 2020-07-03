@@ -38,7 +38,7 @@ import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
 import { GetAggregateResponse } from './dto/get-aggregate-response';
 import { Center } from './entities/center';
-import { friendlify } from './util';
+import { friendlify, isSpecified } from './util';
 import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
 import { SignArguments } from './dto/sign-arguments';
@@ -63,6 +63,7 @@ import { StatementArguments } from './dto/statement-arguments';
 import { StatementResponse } from './dto/statement-response';
 import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ServerNotificationSummary } from './dto/server-notification-summary';
+import { LineForSave } from './entities/line';
 
 
 @Injectable({
@@ -560,6 +561,33 @@ export class ApiService {
           }),
           takeUntil(cancellationToken$),
         );
+        return obs$;
+      },
+      autoGenerate: (lineDefId: number, args: { [key: string]: any }) => {
+
+        const paramsArray: string[] = [];
+        for (const key of Object.keys(args)) {
+          const val = args[key];
+          if (isSpecified(val)) {
+            paramsArray.push(`${key}=${encodeURIComponent(val.toString())}`);
+          }
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/generate-lines/${lineDefId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.get<EntitiesResponse<LineForSave>>(url).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
         return obs$;
       }
     };

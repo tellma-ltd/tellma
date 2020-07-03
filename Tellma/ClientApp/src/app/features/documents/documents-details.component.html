@@ -534,6 +534,7 @@
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                additionalSelect="E"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
                             <t-contracts-picker *ngSwitchCase="'ContractId'"
@@ -821,6 +822,11 @@
                         <button ngbDropdownItem class="t-transparent-background"
                             (click)="onDeleteAll(lineDefId, model, isEdit)">
                             {{ 'DeleteAll' | translate }}
+                        </button>
+                        <button ngbDropdownItem class="t-transparent-background"
+                            *ngIf="showAutoGenerate(lineDefId, isEdit)"
+                            (click)="onAutoGenerate(lineDefId, model, isEdit)">
+                            {{ autoGenerateLabel(lineDefId) }}
                         </button>
                     </div>
                 </div>
@@ -1756,6 +1762,60 @@
         <button class="btn btn-danger" (click)="modal.close(true)">
             <fa-icon icon="check"></fa-icon>
             &nbsp;{{ 'Confirm' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Auto-Generate Modal -->
+<ng-template #autoGenerateModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ autoGenerateLabel(autoGenerateLineDefId) }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="param.DataType">
+            <!-- Center -->
+            <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
+            </t-form-group>
+            
+            <!-- Date -->            
+            <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
+            </t-form-group>
+            
+            <!-- String -->            
+            <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
+            </t-form-group>
+
+            <!-- Default -->
+            <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
+            </t-form-group>
+
+        </ng-container>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.close(true)" [disabled]="!autoGenerateRequiredParamsAreSet">
+            <fa-icon icon="bolt"></fa-icon>
+            &nbsp;{{ autoGenerateLabel(autoGenerateLineDefId) }}
         </button>
         <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
             <fa-icon icon="times"></fa-icon>
