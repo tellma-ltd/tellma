@@ -146,4 +146,4 @@ DECLARE @106AC522 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @106AC7 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7');
 DECLARE @106AC71 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'71');
 DECLARE @106AC711 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'711');
-DECLARE @106AC712 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'712');	
+DECLARE @106AC712 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'712');

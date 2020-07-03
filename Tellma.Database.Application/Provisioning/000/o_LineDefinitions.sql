@@ -1,6 +1,6 @@
 ﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (0, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
-(70, N'CostReallocationIPUC', N'cost reallocation of investment propoerty under construction', N'IPUC Cost Reallocation', N'IPUC Cost Reallocations', 0, 1),
+(70, N'CostReallocationIPUC', N'cost reallocation of investment propoerty under construction', N'IPUC Cost Reallocation', N'IPUC Cost Reallocations', 0, 0),
 (100, N'CashPaymentToOther', N'cash payment to other than suppliers, customers, and employees', N'Payment to Other', N'Payments to Others', 0, 1),
 (104, N'CashTransferExchange', N'cash transfer exchange', N'Cash Transfer', N'Cash Transfers', 0, 1),
 (110, N'DepositCashToBank', N'deposit cash in bank', N'Cash Deposit', N'Cash Deposits', 0, 1),
@@ -60,7 +60,7 @@ SET [GenerateScript] = N'
 			[AccountId1], [CurrencyId1], [ContractId1], [ResourceId1], [UnitId1], [EntryTypeId1], [DueDate1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
-			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]) AS [Index], 
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]) - 1 AS [Index], 
 			@PostingDate,
 			NULL			AS [AccountId0],
 			[CurrencyId]	AS [CurrencyId0],
@@ -99,7 +99,7 @@ WHERE [Index] = 70;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
 (0,70,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
-(1,70,N'PostingDate',	N'AsOfDate',	N'Required',	N'Date',	NULL);
+(1,70,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
 (0,70,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
