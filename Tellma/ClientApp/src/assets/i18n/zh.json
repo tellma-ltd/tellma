@@ -488,6 +488,7 @@
   "Menu_Sales": "销售",
   "Menu_Security": "安全",
   "Menu_Studio": "工作室",
+  "Message_AutoGenerateReturnedNothing": "自动生成不返回任何行。",
   "Mode_Insert": "插入",
   "Mode_Merge": "合并",
   "Mode_Update": "更新",

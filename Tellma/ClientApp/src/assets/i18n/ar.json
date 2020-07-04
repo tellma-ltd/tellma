@@ -488,6 +488,7 @@
   "Menu_Sales": "مبيعات",
   "Menu_Security": "أمان",
   "Menu_Studio": "استديو",
+  "Message_AutoGenerateReturnedNothing": "الإنشاء التلقائي لم ينتج عنه أي سطور.",
   "Mode_Insert": "إضافة",
   "Mode_Merge": "دمج",
   "Mode_Update": "تعديل",

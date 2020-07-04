@@ -488,6 +488,7 @@
   "Menu_Sales": "የሽያጭ",
   "Menu_Security": "መያዣ",
   "Menu_Studio": "ስቱዲዮ",
+  "Message_AutoGenerateReturnedNothing": "ራስ-ለማመንጨት ማንኛውም መስመሮች አይመልስም ነበር.",
   "Mode_Insert": "አስገባ",
   "Mode_Merge": "ውህደቱን",
   "Mode_Update": "አዘምን",

@@ -488,6 +488,7 @@
   "Menu_Sales": "Sales",
   "Menu_Security": "Security",
   "Menu_Studio": "Studio",
+  "Message_AutoGenerateReturnedNothing": "Auto-generate did not return any lines.",
   "Mode_Insert": "Insert",
   "Mode_Merge": "Merge",
   "Mode_Update": "Update",
