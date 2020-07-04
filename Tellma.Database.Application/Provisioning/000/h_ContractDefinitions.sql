@@ -13,6 +13,14 @@
 
 UPDATE @ContractDefinitions
 SET [CenterVisibility] = N'Optional'
+WHERE [Code] IN (N'CashOnHandAccount', N'Employee', N'Supplier')
+
+UPDATE @ContractDefinitions
+SET [CurrencyVisibility] = N'Required'
+WHERE [Code] IN (N'BankAccount', N'Customer')
+
+UPDATE @ContractDefinitions
+SET [CenterVisibility] = N'Optional'
 WHERE [Code] IN (N'Supplier')
 
 UPDATE @ContractDefinitions
