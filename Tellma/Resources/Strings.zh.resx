@@ -544,20 +544,11 @@
   <data name="Document_CreditContract" xml:space="preserve">
     <value>信贷合同</value>
   </data>
-  <data name="Document_CreditContractIsCommon" xml:space="preserve">
-    <value>信贷合同是常有的事</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Document_CurrencyIsCommon" xml:space="preserve">
-    <value>货币是通用</value>
-  </data>
   <data name="Document_DebitContract" xml:space="preserve">
     <value>借记合同</value>
-  </data>
-  <data name="Document_DebitContractIsCommon" xml:space="preserve">
-    <value>借记合同是常有的事</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>属性1</value>
@@ -574,14 +565,8 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>文本属性2</value>
   </data>
-  <data name="Document_MemoIsCommon" xml:space="preserve">
-    <value>备注是常有的事</value>
-  </data>
   <data name="Document_NotedContract" xml:space="preserve">
     <value>注意合同</value>
-  </data>
-  <data name="Document_NotedContractIsCommon" xml:space="preserve">
-    <value>注意合同是常有的事</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
@@ -589,14 +574,8 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>
   </data>
-  <data name="Document_PostingDateIsCommon" xml:space="preserve">
-    <value>日期是常有的事</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>数量</value>
-  </data>
-  <data name="Document_QuantityIsCommon" xml:space="preserve">
-    <value>数量是很常见</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>分割</value>
@@ -625,20 +604,11 @@
   <data name="Document_Time1" xml:space="preserve">
     <value>时间1</value>
   </data>
-  <data name="Document_Time1IsCommon" xml:space="preserve">
-    <value>时间1是常有的事</value>
-  </data>
   <data name="Document_Time2" xml:space="preserve">
     <value>时间2</value>
   </data>
-  <data name="Document_Time2IsCommon" xml:space="preserve">
-    <value>时间2是常有的事</value>
-  </data>
   <data name="Document_Unit" xml:space="preserve">
     <value>单元</value>
-  </data>
-  <data name="Document_UnitIsCommon" xml:space="preserve">
-    <value>单位是常见</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>文件分配</value>
