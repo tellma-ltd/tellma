@@ -97,6 +97,7 @@ BEGIN
 END
 IF @DB = N'107' -- SSIA, SDG, en/ar
 BEGIN
+	:r .\000\r_AccountClassifications.sql
 	:r .\107\00_Setup\Script.sql
 	:r .\107\01_Security\a_Users.sql
 	:r .\107\01_Security\b_Permissions.sql
@@ -114,8 +115,9 @@ BEGIN
 	:r .\107\05_Contracts\06_Suppliers.sql
 	:r .\107\05_Contracts\07_Creditors.sql
 	:r .\107\05_Contracts\08_Employees.sql
-	:r .\107\06_Accounts\a_AccountClassifications.sql
-	--:r .\107\06_Accounts\b_Accounts.sql
+
+	--:r .\107\06_Accounts\a_AccountClassifications.sql
+	:r .\107\06_Accounts\b_Accounts.sql
 END
 IF @DB = N'108' -- SSIA - HG, SDG, en/ar
 BEGIN

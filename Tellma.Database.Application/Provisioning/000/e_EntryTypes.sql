@@ -141,9 +141,6 @@ INSERT INTO @ET VALUES(134, N'61314', N'/6/1/3/14/', N'OtherInflowsOutflowsOfCas
 INSERT INTO @ET VALUES(135, N'614', N'/6/1/4/', N'InternalCashTransferExtension', N'Internal cash transfer', N'')
 INSERT INTO @ET VALUES(136, N'62', N'/6/2/', N'EffectOfExchangeRateChangesOnCashAndCashEquivalents', N'Effect of exchange rate changes on cash and cash equivalents', N'')
 INSERT INTO @ET VALUES(137, N'7', N'/7/', N'ChangesInEquity', N'Increase (decrease) in equity', N'')
-INSERT INTO @ET VALUES(138, N'701', N'/7/1/', N'ComprehensiveIncome', N'Comprehensive income', N'')
-INSERT INTO @ET VALUES(139, N'7011', N'/7/1/1/', N'ProfitLoss', N'Profit (loss)', N'')
-INSERT INTO @ET VALUES(140, N'7012', N'/7/1/2/', N'OtherComprehensiveIncome', N'Other comprehensive income', N'')
 INSERT INTO @ET VALUES(141, N'702', N'/7/2/', N'IssueOfEquity', N'Issue of equity', N'')
 INSERT INTO @ET VALUES(142, N'703', N'/7/3/', N'DividendsPaid', N'Dividends recognised as distributions to owners', N'')
 INSERT INTO @ET VALUES(143, N'704', N'/7/4/', N'IncreaseDecreaseThroughOtherContributionsByOwners', N'Increase through other contributions by owners, equity', N'')
@@ -346,9 +343,6 @@ DECLARE @OtherInflowsOutflowsOfCashClassifiedAsFinancingActivities INT = (SELECT
 DECLARE @InternalCashTransferExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InternalCashTransferExtension');
 DECLARE @EffectOfExchangeRateChangesOnCashAndCashEquivalents INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'EffectOfExchangeRateChangesOnCashAndCashEquivalents');
 DECLARE @ChangesInEquity INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ChangesInEquity');
-DECLARE @ComprehensiveIncome INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ComprehensiveIncome');
-DECLARE @ProfitLoss INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ProfitLoss');
-DECLARE @OtherComprehensiveIncome INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'OtherComprehensiveIncome');
 DECLARE @IssueOfEquity INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IssueOfEquity');
 DECLARE @DividendsPaid INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DividendsPaid');
 DECLARE @IncreaseDecreaseThroughOtherContributionsByOwners INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughOtherContributionsByOwners');

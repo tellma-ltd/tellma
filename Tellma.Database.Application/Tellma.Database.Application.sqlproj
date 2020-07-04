@@ -629,6 +629,7 @@
     <Build Include="bll\Stored Procedures\bll.Lines__Generate.sql" />
     <Build Include="dbo\User Defined Types\dbo.SN.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineDefinitions.sql" />
+    <None Include="Provisioning\000\r_AccountClassifications.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

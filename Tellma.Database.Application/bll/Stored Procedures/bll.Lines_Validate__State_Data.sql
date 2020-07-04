@@ -89,7 +89,7 @@ BEGIN
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
-		N'Error_TheFieldIsRequired'
+		N'Error_Field0IsRequired'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	CROSS JOIN (VALUES
