@@ -720,6 +720,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.chooseItem(id);
   }
 
+  /**
+   * When the user users keyboard arrows to highlight an item and then hits enter
+   */
   onCreateFromKeyDown = () => {
     if (!this.canCreateNew) {
       return;
@@ -735,6 +738,24 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.openCreateModal();
   }
 
+  /**
+   * When the user hits create from an open master modal
+   */
+  onCreateFromMasterModal = () => {
+    if (!this.canCreateNew) {
+      return;
+    }
+
+    // otherwise Angular complains that the value has changed after it has been checked
+    this.onTouched();
+
+    // Open the modal (passing the definitionId so the user isn't prompted again)
+    this.openCreateModal(this.definitionId);
+  }
+
+  /**
+   * When the user clicks an item with the mouse
+   */
   onCreateFromFocus = () => {
     if (!this.canCreateNew) {
       return;
@@ -788,10 +809,10 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._initialText = '';
     this._definitionId = definitionId;
 
-    this.modalService.open(this.masterWrapperTemplate, { windowClass: 't-master-modal' })
+    const modalRef = this.modalService.open(this.masterWrapperTemplate, { windowClass: 't-master-modal' });
 
-      // this guarantees that the input will be focused again when the modal closes
-      .result.then(this.onFocusInput, this.onFocusInput);
+    // this guarantees that the input will be focused again when the modal closes
+    modalRef.result.then(this.onFocusInput, this.onFocusInput);
   }
 
   public searchOptionName(definitionId: number) {
@@ -807,18 +828,21 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.createDefinitionIds || []; // Ones that you can't create will appear but will be disabled
   }
 
-  private openCreateModal = () => {
-    if (this.createOptions.length > 1) {
+  private openCreateModal = (definitionId?: number) => {
+    if (!!definitionId && this.createOptions.some(defId => defId === definitionId)) {
+      // It's given and valid
+      this.openCreateModalInner(definitionId);
+    } else if (this.createOptions.length > 1) {
       // Without the setTimeout it misbehaves when createFromFocus,
       // applying the Enter press on the modal itself
       setTimeout(() => {
         this.modalService.open(this.detailsOptionsTemplate)
           .result.then(
-            (definitionId) => {
-              if (!this.canCreateFromOptions(definitionId)) {
+            (defId) => {
+              if (!this.canCreateFromOptions(defId)) {
                 return;
               }
-              this.openCreateModalInner(definitionId);
+              this.openCreateModalInner(defId);
             },
             (_: any) => {
             }
@@ -836,10 +860,10 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._definitionId = definitionId;
     this._idString = 'new';
 
-    this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' })
+    const modalRef = this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' });
 
-      // this guarantees that the input will be focused again when the modal closes
-      .result.then(this.onFocusInput, this.onFocusInput);
+    // this guarantees that the input will be focused again when the modal closes
+    modalRef.result.then(this.onFocusInput, this.onFocusInput);
   }
 
   private openEditModalInner = () => {

@@ -55,7 +55,7 @@
 
 <ng-template #masterWrapperTemplate let-modal>
   <ng-container
-    *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter, definitionId: definitionId }">
+    *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromMasterModal, update: onUpdate, modal: modal, filter: filter, definitionId: definitionId }">
   </ng-container>
 </ng-template>
 

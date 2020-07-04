@@ -3368,6 +3368,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
           this.workspace.notifyStateChanged();
 
+          for (const line of res.Result) {
+            line._flags = { isModified: true };
+          }
+
           // Add the new lines to the doc and refresh the grids
           doc.Lines.push(...res.Result);
           this._computeEntriesModel = null;
