@@ -38,7 +38,7 @@
         [label]="('ExchangeRate_AmountInCurrency' | translate) + AmountInCurrency_postfix(model)"
         [serverErrors]="model?.serverErrors?.AmountInCurrency">
         <span *ngIf="!isEdit"
-            [title]="model?.AmountInCurrency">{{ model?.AmountInCurrency | number:AmountInCurrency_format(model) }}</span>
+            [title]="model?.AmountInCurrency">{{ model?.AmountInCurrency | accounting:AmountInCurrency_format(model) }}</span>
         <t-decimal-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.AmountInCurrency"
             [minDecimalPlaces]="AmountInCurrency_decimals(model)" [maxDecimalPlaces]="6"
             [ngModelOptions]="{ updateOn: 'blur' }" required></t-decimal-editor>
@@ -48,7 +48,7 @@
     <t-form-group class="t-form-group" [label]="('ExchangeRate_AmountInFunctional' | translate) + functional_postfix"
         [serverErrors]="model?.serverErrors?.AmountInFunctional">
         <span *ngIf="!isEdit"
-            [title]="model?.AmountInFunctional">{{ model?.AmountInFunctional| number:functional_format }}</span>
+            [title]="model?.AmountInFunctional">{{ model?.AmountInFunctional| accounting:functional_format }}</span>
         <t-decimal-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.AmountInFunctional"
             [minDecimalPlaces]="functional_decimals" [maxDecimalPlaces]="6"
             [ngModelOptions]="{ updateOn: 'blur' }" required></t-decimal-editor>

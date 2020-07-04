@@ -100,7 +100,7 @@
         [serverErrors]="model?.serverErrors?.MonetaryValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
             <div>
-                {{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
+                {{ model?.MonetaryValue | accounting:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
             </div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -206,7 +206,7 @@
     <t-form-group *ngIf="Decimal1_isVisible" class="t-form-group" [label]="Decimal1_label"
         [serverErrors]="model?.serverErrors?.Decimal1">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal1">
-            <div>{{ model?.Decimal1 | number:'1.0-4' }}</div>
+            <div>{{ model?.Decimal1 | accounting:'1.0-4' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Decimal1" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Decimal1_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
@@ -217,7 +217,7 @@
     <t-form-group *ngIf="Decimal2_isVisible" class="t-form-group" [label]="Decimal2_label"
         [serverErrors]="model?.serverErrors?.Decimal2">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal2">
-            <div>{{ model?.Decimal2 | number:'1.0-4' }}</div>
+            <div>{{ model?.Decimal2 | accounting:'1.0-4' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Decimal2" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Decimal2_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
@@ -228,7 +228,7 @@
     <t-form-group *ngIf="Int1_isVisible" class="t-form-group" [label]="Int1_label"
         [serverErrors]="model?.serverErrors?.Int1">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int1">
-            <div>{{ model?.Int1 | number:'1.0-0' }}</div>
+            <div>{{ model?.Int1 | accounting:'1.0-0' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int1" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Int1_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
@@ -239,7 +239,7 @@
     <t-form-group *ngIf="Int2_isVisible" class="t-form-group" [label]="Int2_label"
         [serverErrors]="model?.serverErrors?.Int2">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int2">
-            <div>{{ model?.Int2 | number:'1.0-0' }}</div>
+            <div>{{ model?.Int2 | accounting:'1.0-0' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int2" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Int2_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
@@ -338,7 +338,7 @@
         [serverErrors]="model?.serverErrors?.ResidualMonetaryValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualMonetaryValue">
             <div>
-                {{ model?.ResidualMonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
+                {{ model?.ResidualMonetaryValue | accounting:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
             </div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualMonetaryValue"
@@ -353,7 +353,7 @@
         [serverErrors]="model?.serverErrors?.ResidualValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualValue">
             <div>
-                {{ model?.ResidualValue | number:'1.' + functionalDecimals + '-' + functionalDecimals }}
+                {{ model?.ResidualValue | accounting:'1.' + functionalDecimals + '-' + functionalDecimals }}
             </div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -366,7 +366,7 @@
     <t-form-group *ngIf="ReorderLevel_isVisible" class="t-form-group" [label]="'Resource_ReorderLevel' | translate"
         [serverErrors]="model?.serverErrors?.ReorderLevel">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ReorderLevel">
-            <div *ngIf="!isEdit">{{ model?.ReorderLevel | number:'1.0-4' }}</div>
+            <div *ngIf="!isEdit">{{ model?.ReorderLevel | accounting:'1.0-4' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ReorderLevel" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="ReorderLevel_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
@@ -378,7 +378,7 @@
         [label]="'Resource_EconomicOrderQuantity' | translate"
         [serverErrors]="model?.serverErrors?.EconomicOrderQuantity">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EconomicOrderQuantity">
-            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity | number:'1.0-4' }}</div>
+            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity | accounting:'1.0-4' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity"
             [ngModelOptions]="{ updateOn: 'blur' }" [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0"

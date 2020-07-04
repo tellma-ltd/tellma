@@ -18,8 +18,8 @@
 	[LocationJson]				NVARCHAR(MAX),
 	[FromDate]					DATE,
 	[ToDate]					DATE,
-	[Decimal1]					DECIMAL,
-	[Decimal2]					DECIMAL,
+	[Decimal1]					DECIMAL (19,4),
+	[Decimal2]					DECIMAL (19,4),
 	[Int1]						INT,
 	[Int2]						INT,
 	[Lookup1Id]					INT					CONSTRAINT [FK_Resources__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]),
@@ -30,13 +30,13 @@
 	[Text2]						NVARCHAR (50), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (10),
-	[ResidualMonetaryValue]		Decimal (19,4),
-	[ResidualValue]				Decimal (19,4),
-	[ReorderLevel]				Decimal (19,4),
-	[EconomicOrderQuantity]		Decimal (19,4),
+	[ResidualMonetaryValue]		DECIMAL (19,4),
+	[ResidualValue]				DECIMAL (19,4),
+	[ReorderLevel]				DECIMAL (19,4),
+	[EconomicOrderQuantity]		DECIMAL (19,4),
 
 --	[ParentId]					INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
-	[MonetaryValue]				Decimal (19,4),
+	[MonetaryValue]				DECIMAL (19,4),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	

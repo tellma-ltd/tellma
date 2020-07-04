@@ -1393,7 +1393,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         label: () => `${this.translate.instant('Debit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
           if (entry.Direction > 0 && isSpecified(entry.Value)) {
-            return formatNumber(entry.Value, locale, this.functionalDigitsInfo);
+            return formatAccounting(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
           }
@@ -1408,7 +1408,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         label: () => `${this.translate.instant('Credit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
           if (entry.Direction < 0 && isSpecified(entry.Value)) {
-            return formatNumber(entry.Value, locale, this.functionalDigitsInfo);
+            return formatAccounting(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
           }
@@ -1425,7 +1425,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         display: (entry: DetailsEntry) => {
           if (isSpecified(entry.Accumulation)) {
             return formatAccounting(entry.Accumulation, this.functionalDigitsInfo);
-            // return formatNumber(entry.Accumulation, locale, this.functionalDigitsInfo);
           } else {
             return '';
           }
