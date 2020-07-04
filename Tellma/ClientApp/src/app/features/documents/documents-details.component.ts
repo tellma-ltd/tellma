@@ -1109,10 +1109,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
+  /**
+   * The resource that will eventually be set in the entry after saving
+   */
   public resource(entry: Entry): Resource {
     const account = this.account(entry);
     const accountResourceId = !!account ? account.ResourceId : null;
-    const resourceId = accountResourceId || entry.ResourceId;
+    const entryResourceId = !!account && !!account.ResourceDefinitionId ? entry.ResourceId : null;
+    const resourceId = accountResourceId || entryResourceId;
+
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
@@ -1223,11 +1228,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const account = this.account(entry);
-    const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
-    const contract = this.ws.get('Contract', entry.ContractId) as Contract;
-
     const accountCenterId = !!account ? account.CenterId : null;
+
+    const resource = this.resource(entry);
     const resourceCenterId = !!resource ? resource.CenterId : null;
+
+    const contract = this.contract(entry);
     const contractCenterId = !!contract ? contract.CenterId : null;
 
     return accountCenterId || resourceCenterId || contractCenterId;
@@ -1263,10 +1269,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
   }
 
+  /**
+   * The contract that will eventually be set in the entry after saving
+   */
   public contract(entry: Entry): Contract {
     const account = this.account(entry);
     const accountContractId = !!account ? account.ContractId : null;
-    const contractId = accountContractId || entry.ContractId;
+    const entryContractId = !!account && !!account.ContractDefinitionId ? entry.ContractId : null;
+    const contractId = accountContractId || entryContractId;
+
     return this.ws.get('Contract', contractId) as Contract;
   }
 
@@ -1323,9 +1334,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Quantity + Unit
 
   public showQuantityAndUnit(entry: Entry): boolean {
-    const account = this.account(entry);
     const resource = this.resource(entry);
-    return !!account && !!resource && !!resource.Units && resource.Units.length > 0;
+    return !!resource && !!resource.Units && resource.Units.length > 0;
   }
 
   public readonlyUnit(entry: Entry): boolean {
@@ -1405,11 +1415,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const account = this.account(entry);
-    const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
-    const contract = this.ws.get('Contract', entry.ContractId) as Contract;
-
     const accountCurrencyId = !!account ? account.CurrencyId : null;
+
+    const resource = this.resource(entry);
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
+
+    const contract = this.contract(entry);
     const contractCurrencyId = !!contract ? contract.CurrencyId : null;
 
     return accountCurrencyId || resourceCurrencyId || contractCurrencyId;
