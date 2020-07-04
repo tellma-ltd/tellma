@@ -26,12 +26,15 @@ PIVOT
 )
 SELECT
 		EA.*,
-		EA.[Direction] * EA.[MonetaryValue]	AS [AlgebraicMonetaryValue],
-		EA.[Direction] * EA.[Quantity]		AS [AlgebraicQuantity],
-		EA.[Direction] * EA.[Count] 		AS [AlgebraicCount],
-		EA.[Direction] * EA.[Mass]			AS [AlgebraicMass],
-		EA.[Direction] * EA.[Volume]		AS [AlgebraicVolume],
-		EA.[Direction] * EA.[Length]		AS [AlgebraicLength],
-		EA.[Direction] * EA.[Time]			AS [AlgebraicTime],
-		EA.[Direction] * EA.[Value]			AS [AlgebraicValue]
+		EA.[Direction] * EA.[MonetaryValue]		AS [AlgebraicMonetaryValue],
+		EA.[Direction] * -EA.[MonetaryValue]	AS [NegativeAlgebraicMonetaryValue],
+		EA.[Direction] * EA.[Quantity]			AS [AlgebraicQuantity],
+		EA.[Direction] * -EA.[Quantity]			AS [NegativeAlgebraicQuantity],
+		EA.[Direction] * EA.[Count] 			AS [AlgebraicCount],
+		EA.[Direction] * EA.[Mass]				AS [AlgebraicMass],
+		EA.[Direction] * EA.[Volume]			AS [AlgebraicVolume],
+		EA.[Direction] * EA.[Length]			AS [AlgebraicLength],
+		EA.[Direction] * EA.[Time]				AS [AlgebraicTime],
+		EA.[Direction] * EA.[Value]				AS [AlgebraicValue],
+		EA.[Direction] * -EA.[Value]			AS [NegativeAlgebraicValue]
 FROM EA

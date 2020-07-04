@@ -490,6 +490,15 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>量ACC。</value>
   </data>
+  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
+    <value>负代数货币价值</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
+    <value>负代数量</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
+    <value>负代数价值</value>
+  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>数量加速。</value>
   </data>

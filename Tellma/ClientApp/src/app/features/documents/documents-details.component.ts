@@ -1228,12 +1228,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const account = this.account(entry);
-    const accountCenterId = !!account ? account.CenterId : null;
-
     const resource = this.resource(entry);
-    const resourceCenterId = !!resource ? resource.CenterId : null;
-
     const contract = this.contract(entry);
+
+    const accountCenterId = !!account ? account.CenterId : null;
+    const resourceCenterId = !!resource ? resource.CenterId : null;
     const contractCenterId = !!contract ? contract.CenterId : null;
 
     return accountCenterId || resourceCenterId || contractCenterId;
@@ -1415,12 +1414,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const account = this.account(entry);
-    const accountCurrencyId = !!account ? account.CurrencyId : null;
-
     const resource = this.resource(entry);
-    const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
-
     const contract = this.contract(entry);
+
+    const accountCurrencyId = !!account ? account.CurrencyId : null;
+    const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
     const contractCurrencyId = !!contract ? contract.CurrencyId : null;
 
     return accountCurrencyId || resourceCurrencyId || contractCurrencyId;

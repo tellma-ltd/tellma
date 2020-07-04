@@ -490,6 +490,15 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>Amount Acc.</value>
   </data>
+  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
+    <value>Negative Algebraic Monetary Value</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
+    <value>Negative Algebraic Quantity</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
+    <value>Negative Algebraic Value</value>
+  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>Quantity Acc.</value>
   </data>

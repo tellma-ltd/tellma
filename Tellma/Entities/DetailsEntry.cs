@@ -39,6 +39,9 @@ namespace Tellma.Entities
         [Display(Name = "DetailsEntry_AlgebraicQuantity")]
         public decimal? AlgebraicQuantity { get; set; }
 
+        [Display(Name = "DetailsEntry_NegativeAlgebraicQuantity")]
+        public decimal? NegativeAlgebraicQuantity { get; set; }
+
         [Display(Name = "Entry_Unit")]
         public int? UnitId { get; set; }
 
@@ -47,6 +50,9 @@ namespace Tellma.Entities
 
         [Display(Name = "DetailsEntry_AlgebraicMonetaryValue")]
         public decimal? AlgebraicMonetaryValue { get; set; }
+
+        [Display(Name = "DetailsEntry_NegativeAlgebraicMonetaryValue")]
+        public decimal? NegativeAlgebraicMonetaryValue { get; set; }
 
         [Display(Name = "Entry_Currency")]
         [StringLength(3)]
@@ -81,6 +87,9 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_AlgebraicValue")]
         public decimal? AlgebraicValue { get; set; }
+
+        [Display(Name = "Entry_NegativeAlgebraicValue")]
+        public decimal? NegativeAlgebraicValue { get; set; }
 
         [Display(Name = "Entry_Time1")]
         public DateTime? Time1 { get; set; }
