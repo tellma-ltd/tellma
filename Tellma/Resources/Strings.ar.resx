@@ -544,20 +544,11 @@
   <data name="Document_CreditContract" xml:space="preserve">
     <value>العقد الدائن</value>
   </data>
-  <data name="Document_CreditContractIsCommon" xml:space="preserve">
-    <value>العقد الدائن مشترك</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Document_CurrencyIsCommon" xml:space="preserve">
-    <value>العملة مشتركة</value>
-  </data>
   <data name="Document_DebitContract" xml:space="preserve">
     <value>العقد المدين</value>
-  </data>
-  <data name="Document_DebitContractIsCommon" xml:space="preserve">
-    <value>العقد المدين مشترك</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>الصفة 1</value>
@@ -574,14 +565,8 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>الصفة النصية 2</value>
   </data>
-  <data name="Document_MemoIsCommon" xml:space="preserve">
-    <value>الملاحظات مشتركة</value>
-  </data>
   <data name="Document_NotedContract" xml:space="preserve">
     <value>العقد المعني</value>
-  </data>
-  <data name="Document_NotedContractIsCommon" xml:space="preserve">
-    <value>العقد المعني مشترك</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>زمن الاطلاع</value>
@@ -589,14 +574,8 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
   </data>
-  <data name="Document_PostingDateIsCommon" xml:space="preserve">
-    <value>التاريخ مشترك</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>الكمية</value>
-  </data>
-  <data name="Document_QuantityIsCommon" xml:space="preserve">
-    <value>الكمية مشتركة</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>القطاع</value>
@@ -625,20 +604,11 @@
   <data name="Document_Time1" xml:space="preserve">
     <value>الزمن 1</value>
   </data>
-  <data name="Document_Time1IsCommon" xml:space="preserve">
-    <value>الزمن 1 مشترك</value>
-  </data>
   <data name="Document_Time2" xml:space="preserve">
     <value>الزمن 2</value>
   </data>
-  <data name="Document_Time2IsCommon" xml:space="preserve">
-    <value>الزمن 2 مشترك</value>
-  </data>
   <data name="Document_Unit" xml:space="preserve">
     <value>وحدة القياس</value>
-  </data>
-  <data name="Document_UnitIsCommon" xml:space="preserve">
-    <value>وحدة القياس مشتركة</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>تعهيد مستند</value>
@@ -1218,6 +1188,9 @@
   </data>
   <data name="Field0Definition" xml:space="preserve">
     <value>تعريف الحقل ({0})</value>
+  </data>
+  <data name="Field0IsCommon" xml:space="preserve">
+    <value>{0} صفة مشتركة</value>
   </data>
   <data name="Field0Label" xml:space="preserve">
     <value>اسم الحقل ({0})</value>

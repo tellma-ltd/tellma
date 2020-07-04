@@ -544,20 +544,11 @@
   <data name="Document_CreditContract" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
-  <data name="Document_CreditContractIsCommon" xml:space="preserve">
-    <value>የብድር ኮንትራት የጋራ</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Document_CurrencyIsCommon" xml:space="preserve">
-    <value>ምንዛሬ ነው ኮመን</value>
-  </data>
   <data name="Document_DebitContract" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
-  </data>
-  <data name="Document_DebitContractIsCommon" xml:space="preserve">
-    <value>ዴቢት ኮንትራት የጋራ</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>ባህርይ 1</value>
@@ -574,13 +565,7 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 2</value>
   </data>
-  <data name="Document_MemoIsCommon" xml:space="preserve">
-    <value>Memoየጋራ ነው</value>
-  </data>
   <data name="Document_NotedContract" xml:space="preserve">
-    <value>የታወቁ ወኪል የተለመደ ነው</value>
-  </data>
-  <data name="Document_NotedContractIsCommon" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
@@ -589,14 +574,8 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>ቀን</value>
   </data>
-  <data name="Document_PostingDateIsCommon" xml:space="preserve">
-    <value>የታወቁ ወኪል የተለመደ ነው</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>ብዛት</value>
-  </data>
-  <data name="Document_QuantityIsCommon" xml:space="preserve">
-    <value>ብዛት የሆነው የጋራ</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>ክፍል</value>
@@ -625,20 +604,11 @@
   <data name="Document_Time1" xml:space="preserve">
     <value>የጊዜ 1</value>
   </data>
-  <data name="Document_Time1IsCommon" xml:space="preserve">
-    <value>የጊዜ 1 የጋራ</value>
-  </data>
   <data name="Document_Time2" xml:space="preserve">
     <value>የጊዜ 2</value>
   </data>
-  <data name="Document_Time2IsCommon" xml:space="preserve">
-    <value>የጊዜ 2 የሆነው የጋራ</value>
-  </data>
   <data name="Document_Unit" xml:space="preserve">
     <value>መለኪያ</value>
-  </data>
-  <data name="Document_UnitIsCommon" xml:space="preserve">
-    <value>አሃድ የተለመደ ነው</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>የሰነድ ምደባ</value>
@@ -1218,6 +1188,9 @@
   </data>
   <data name="Field0Definition" xml:space="preserve">
     <value>{0} ትርጓሜ</value>
+  </data>
+  <data name="Field0IsCommon" xml:space="preserve">
+    <value>{0} ነው የጋራ</value>
   </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0} ሰይም</value>

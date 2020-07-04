@@ -544,20 +544,11 @@
   <data name="Document_CreditContract" xml:space="preserve">
     <value>Credit Contract</value>
   </data>
-  <data name="Document_CreditContractIsCommon" xml:space="preserve">
-    <value>Credit Contract Is Common</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Document_CurrencyIsCommon" xml:space="preserve">
-    <value>Currency Is Common</value>
-  </data>
   <data name="Document_DebitContract" xml:space="preserve">
     <value>Debit Contract</value>
-  </data>
-  <data name="Document_DebitContractIsCommon" xml:space="preserve">
-    <value>Debit Contract Is Common</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -574,14 +565,8 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>Text Attribute 2</value>
   </data>
-  <data name="Document_MemoIsCommon" xml:space="preserve">
-    <value>Memo Is Common</value>
-  </data>
   <data name="Document_NotedContract" xml:space="preserve">
     <value>Noted Contract</value>
-  </data>
-  <data name="Document_NotedContractIsCommon" xml:space="preserve">
-    <value>Noted Contract Is Common</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
@@ -589,14 +574,8 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="Document_PostingDateIsCommon" xml:space="preserve">
-    <value>Date Is Common</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>Quantity</value>
-  </data>
-  <data name="Document_QuantityIsCommon" xml:space="preserve">
-    <value>Quantity Is Common</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>Segment</value>
@@ -625,20 +604,11 @@
   <data name="Document_Time1" xml:space="preserve">
     <value>Time 1</value>
   </data>
-  <data name="Document_Time1IsCommon" xml:space="preserve">
-    <value>Time 1 Is Common</value>
-  </data>
   <data name="Document_Time2" xml:space="preserve">
     <value>Time 2</value>
   </data>
-  <data name="Document_Time2IsCommon" xml:space="preserve">
-    <value>Time 2 Is Common</value>
-  </data>
   <data name="Document_Unit" xml:space="preserve">
     <value>Unit</value>
-  </data>
-  <data name="Document_UnitIsCommon" xml:space="preserve">
-    <value>Unit Is Common</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>Document Assignment</value>
@@ -1218,6 +1188,9 @@
   </data>
   <data name="Field0Definition" xml:space="preserve">
     <value>{0} Definition</value>
+  </data>
+  <data name="Field0IsCommon" xml:space="preserve">
+    <value>{0} Is Common</value>
   </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0} Label</value>

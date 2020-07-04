@@ -1813,7 +1813,7 @@
 
     <!-- footer -->
     <div class="modal-footer">
-        <button class="btn btn-primary" (click)="modal.close(true)" [disabled]="!autoGenerateRequiredParamsAreSet">
+        <button class="btn btn-primary" (click)="onDoAutoGenerate(modal)" [disabled]="!autoGenerateRequiredParamsAreSet">
             <fa-icon icon="bolt"></fa-icon>
             &nbsp;{{ autoGenerateLabel(autoGenerateLineDefId) }}
         </button>

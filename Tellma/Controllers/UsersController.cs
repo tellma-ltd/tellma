@@ -832,17 +832,12 @@ namespace Tellma.Controllers
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
-            // Remove the RoleId property from the template, it's supposed to be hidden
-            var roleMemberships = mapping.CollectionProperty(nameof(RoleMembership));
+            // Remove the UserId property from the template, it's supposed to be hidden
+            var roleMemberships = mapping.CollectionProperty(nameof(Role.Members));
             var userProp = roleMemberships.SimpleProperty(nameof(RoleMembership.UserId));
 
             roleMemberships.SimpleProperties = roleMemberships.SimpleProperties.Where(p => p != userProp);
-
-            // Shift the index of all columns after the role property to prevent a gap
-            foreach (var propMapping in mapping.AllPropertyMappings().Where(p => p.Index > userProp.Index))
-            {
-                propMapping.Index--;
-            }
+            mapping.NormalizeIndices(); // Fix the gap we created in the previous line
 
             return base.ProcessDefaultMapping(mapping);
         }

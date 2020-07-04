@@ -16,7 +16,7 @@ namespace Tellma.Controllers.ImportExport
     {
         // private fields
         private readonly Dictionary<string, PropertyMappingInfo> _simplePropsDic;
-        private readonly Dictionary<string, MappingInfo> _collectionPropsDic;
+        private readonly Dictionary<string, MappingInfo> _collectionPropsDic; // Maps type name to mapping info
 
         /// <summary>
         /// This is the <see cref="CollectionPropertyMetadata"/> of the list property that this <see cref="MappingInfo"/> is based on.
@@ -44,7 +44,7 @@ namespace Tellma.Controllers.ImportExport
             _simplePropsDic = simpleProps.ToDictionary(p => p.Metadata.Descriptor.Name);
 
             CollectionProperties = collectionProps ?? throw new ArgumentNullException(nameof(collectionProps));
-            _collectionPropsDic = collectionProps.ToDictionary(p => p.Metadata.Descriptor.Name);
+            _collectionPropsDic = collectionProps.ToDictionary(p => p.ParentCollectionPropertyMetadata.Descriptor.Name);
 
             ParentCollectionPropertyMetadata = parentCollectionPropMeta;
         }
@@ -133,6 +133,14 @@ namespace Tellma.Controllers.ImportExport
 
         public IEnumerable<PropertyMappingInfo> AllPropertyMappings() => SimpleProperties
             .Concat(CollectionProperties.SelectMany(p => p.AllPropertyMappings()));
-        
+
+        public void NormalizeIndices()
+        {
+            var orderedProps = AllPropertyMappings().OrderBy(e => e.Index).Select((e, i) => (e, i));
+            foreach (var (e, i) in orderedProps)
+            {
+                e.Index = i;
+            }
+        }        
     }
 }

@@ -13,7 +13,7 @@ using Tellma.Entities;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     public class IfrsConceptsController : FactGetByIdControllerBase<IfrsConcept, int>
     {
         public const string BASE_ADDRESS = "ifrs-concepts";

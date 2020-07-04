@@ -102,7 +102,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
                 PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
-                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Document_PostingDateIsCommon') },
+                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
                 Clearance: {
                     control: 'choice',
                     label: () => trx.instant('Document_Clearance'),
@@ -110,30 +110,30 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     format: (c: number) => trx.instant('Document_Clearance_' + c)
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
-                MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },
+                MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
                 DebitContractId: { control: 'number', label: () => `${trx.instant('Document_DebitContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DebitContract: { control: 'navigation', label: () => trx.instant('Document_DebitContract'), type: 'Contract', foreignKeyName: 'DebitContractId' },
-                DebitContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_DebitContractIsCommon') },
+                DebitContractIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitContract') }) },
                 CreditContractId: { control: 'number', label: () => `${trx.instant('Document_CreditContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CreditContract: { control: 'navigation', label: () => trx.instant('Document_CreditContract'), type: 'Contract', foreignKeyName: 'CreditContractId' },
-                CreditContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_CreditContractIsCommon') },
+                CreditContractIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_CreditContract') }) },
                 NotedContractId: { control: 'number', label: () => `${trx.instant('Document_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 NotedContract: { control: 'navigation', label: () => trx.instant('Document_NotedContract'), type: 'Contract', foreignKeyName: 'NotedContractId' },
-                NotedContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_NotedContractIsCommon') },
+                NotedContractIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_NotedContract') }) },
                 SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
                 Time1: { control: 'date', label: () => trx.instant('Document_Time1') },
-                Time1IsCommon: { control: 'boolean', label: () => trx.instant('Document_Time1IsCommon') },
+                Time1IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Time1') }) },
                 Time2: { control: 'date', label: () => trx.instant('Document_Time2') },
-                Time2IsCommon: { control: 'boolean', label: () => trx.instant('Document_Time2IsCommon') },
+                Time2IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Time2') }) },
                 Quantity: { control: 'number', label: () => trx.instant('Document_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Document_QuantityIsCommon') },
+                QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Quantity') }) },
                 UnitId: { control: 'number', label: () => `${trx.instant('Document_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { control: 'navigation', label: () => trx.instant('Document_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
-                UnitIsCommon: { control: 'boolean', label: () => trx.instant('Document_UnitIsCommon') },
+                UnitIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Unit') }) },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Document_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Document_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Document_CurrencyIsCommon') },
+                CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Currency') }) },
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => formatSerial(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
@@ -206,7 +206,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
 
                     // IsCommon property
                     const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
-                    isCommonPropDesc.label = () => trx.instant('XIsCommon', { 0: propDesc.label() });
+                    isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
             }
 
@@ -239,7 +239,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
 
                     // IsCommon property
                     const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
-                    isCommonPropDesc.label = () => trx.instant('XIsCommon', { 0: propDesc.label() });
+                    isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
             }
         }

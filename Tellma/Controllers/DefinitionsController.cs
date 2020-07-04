@@ -743,6 +743,23 @@ namespace Tellma.Controllers
                 }
             }
 
+            // JV has some hard coded values:
+            if (def.Code == ManualJournalVoucher)
+            {
+                // PostingDate
+                result.PostingDateVisibility = true;
+                result.PostingDateLabel = null;
+                result.PostingDateLabel2 = null;
+                result.PostingDateLabel3 = null;
+
+                // Memo
+                result.MemoVisibility = Visibility.Optional;
+                result.MemoIsCommonVisibility = false;
+                result.MemoLabel = null;
+                result.MemoLabel2 = null;
+                result.MemoLabel3 = null;
+            }
+
             return result;
         }
 

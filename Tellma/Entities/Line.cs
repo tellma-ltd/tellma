@@ -24,6 +24,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Memo")]
         [StringLength(255)]
+        [UserKey]
         public string Memo { get; set; }        
 
         [ForeignKey(nameof(Entry.LineId))]
@@ -92,6 +93,10 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        [Display(Name = "Definition")]
+        [ForeignKey(nameof(DefinitionId))]
+        public LineDefinition Definition { get; set; }
     }
 
     public static class LineState

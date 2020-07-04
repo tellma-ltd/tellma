@@ -1,7 +1,7 @@
 <t-master *ngIf="found;else pageNotFound" collection="Document" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [showImportButton]="false" [tableSummaryHeaderTemplate]="summaryHeader"
+  [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="PostingDate,State,Assignee,AssignedAt,Memo" selectForTiles="PostingDate,State,Memo"
   [multiselectActions]="[
                 { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },

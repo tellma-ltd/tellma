@@ -65,7 +65,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ContractDefinitionsService>()
                 .AddScoped<ResourceDefinitionsService>()
                 .AddScoped<LookupDefinitionsService>()
-                .AddScoped<UsersService>();
+                .AddScoped<UsersService>()
+                .AddScoped<LineDefinitionsService>();
         }
     }
 
@@ -114,6 +115,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(SummaryEntry) => sp.GetRequiredService<SummaryEntriesService>(),
                 nameof(Unit) => sp.GetRequiredService<UnitsService>(),
                 nameof(User) => sp.GetRequiredService<UsersService>(),
+                nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
 
                 _ => throw new InvalidOperationException($"Bug: Entity type {entityType.Name} does not have a known {nameof(IFactServiceBase)} implementation")
             };
@@ -159,6 +161,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Role) => sp.GetRequiredService<RolesService>(),
                 nameof(Unit) => sp.GetRequiredService<UnitsService>(),
                 nameof(User) => sp.GetRequiredService<UsersService>(),
+                nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
 
                 _ => throw new InvalidOperationException($"Bug: Entity type {entityType.Name} does not have a known {nameof(IFactWithIdService)} implementation")
             };

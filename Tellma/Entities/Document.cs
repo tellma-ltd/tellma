@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,7 @@ namespace Tellma.Entities
         [Display(Name = "Document_PostingDate")]
         public DateTime? PostingDate { get; set; }
 
-        [Display(Name = "Document_PostingDateIsCommon")]
+        [IsCommonDisplay(Name = "Document_PostingDate")]
         public bool? PostingDateIsCommon { get; set; }
 
         [Display(Name = "Document_Clearance")]
@@ -51,26 +52,26 @@ namespace Tellma.Entities
         [StringLength(255)]
         public string Memo { get; set; }
 
-        [Display(Name = "Document_MemoIsCommon")]
+        [IsCommonDisplay(Name = "Memo")]
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
         [Display(Name = "Document_DebitContract")]
         public int? DebitContractId { get; set; }
 
-        [Display(Name = "Document_DebitContractIsCommon")]
+        [IsCommonDisplay(Name = "Document_DebitContract")]
         public bool? DebitContractIsCommon { get; set; }
 
         [Display(Name = "Document_CreditContract")]
         public int? CreditContractId { get; set; }
 
-        [Display(Name = "Document_CreditContractIsCommon")]
+        [IsCommonDisplay(Name = "Document_CreditContract")]
         public bool? CreditContractIsCommon { get; set; }
 
         [Display(Name = "Document_NotedContract")]
         public int? NotedContractId { get; set; }
 
-        [Display(Name = "Document_NotedContractIsCommon")]
+        [IsCommonDisplay(Name = "Document_NotedContract")]
         public bool? NotedContractIsCommon { get; set; }
 
         [Display(Name = "Document_Segment")]
@@ -79,32 +80,32 @@ namespace Tellma.Entities
         [Display(Name = "Document_Time1")]
         public DateTime? Time1 { get; set; }
 
-        [Display(Name = "Document_Time1IsCommon")]
+        [IsCommonDisplay(Name = "Document_Time1")]
         public bool? Time1IsCommon { get; set; }
 
         [Display(Name = "Document_Time2")]
         public DateTime? Time2 { get; set; }
 
-        [Display(Name = "Document_Time2IsCommon")]
+        [IsCommonDisplay(Name = "Document_Time2")]
         public bool? Time2IsCommon { get; set; }
 
         [Display(Name = "Document_Quantity")]
         public decimal? Quantity { get; set; }
 
-        [Display(Name = "Document_QuantityIsCommon")]
+        [IsCommonDisplay(Name = "Document_Quantity")]
         public bool? QuantityIsCommon { get; set; }
 
         [Display(Name = "Document_Unit")]
         public int? UnitId { get; set; }
 
-        [Display(Name = "Document_UnitIsCommon")]
+        [IsCommonDisplay(Name = "Document_Unit")]
         public bool? UnitIsCommon { get; set; }
 
         [Display(Name = "Document_Currency")]
         [StringLength(3)]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "Document_CurrencyIsCommon")]
+        [IsCommonDisplay(Name = "Document_Currency")]
         public bool? CurrencyIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
@@ -217,6 +218,10 @@ namespace Tellma.Entities
         [Display(Name = "Document_StatesHistory")]
         [ForeignKey(nameof(DocumentStateChange.DocumentId))]
         public List<DocumentStateChange> StatesHistory { get; set; }
+
+        [Display(Name = "Definition")]
+        [ForeignKey(nameof(DefinitionId))]
+        public DocumentDefinition Definition { get; set; }
 
         // HIDDEN
 
