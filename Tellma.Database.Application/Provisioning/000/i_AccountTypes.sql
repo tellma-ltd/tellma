@@ -23,7 +23,7 @@ INSERT INTO @AT VALUES(14,'111108', '/1/1/1/1/8/', N'ChangesInPropertyPlantAndEq
 INSERT INTO @AT VALUES(15,'111109', '/1/1/1/1/9/', N'ChangesInPropertyPlantAndEquipment',N'TangibleExplorationAndEvaluationAssets', N'Tangible exploration and evaluation assets',N'The amount of exploration and evaluation assets recognised as tangible assets in accordance with the entity''s accounting policy. [Refer: Exploration and evaluation assets [member]]')
 INSERT INTO @AT VALUES(16,'111110', '/1/1/1/1/10/', N'ChangesInPropertyPlantAndEquipment',N'MiningAssets', N'Mining assets',N'The amount of assets related to mining activities of the entity.')
 INSERT INTO @AT VALUES(17,'111111', '/1/1/1/1/11/', N'ChangesInPropertyPlantAndEquipment',N'OilAndGasAssets', N'Oil and gas assets',N'The amount of assets related to the exploration, evaluation, development or production of oil and gas.')
-INSERT INTO @AT VALUES(18,'111112', '/1/1/1/1/12/', N'ChangesInPropertyPlantAndEquipment',N'ConstructionInProgress', N'Construction in progress',N'The amount of expenditure capitalised during the construction of non-current assets that are not yet available for use. [Refer: Non-current assets]')
+INSERT INTO @AT VALUES(18,'111112', '/1/1/1/1/12/', NULL,N'ConstructionInProgress', N'Construction in progress',N'The amount of expenditure capitalised during the construction of non-current assets that are not yet available for use. [Refer: Non-current assets]')
 INSERT INTO @AT VALUES(19,'111113', '/1/1/1/1/13/', N'ChangesInPropertyPlantAndEquipment',N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel', N'Owner-occupied property measured using investment property fair value model',N'The amount of property, plant and equipment representing owner-occupied property measured using the investment property fair value model applying paragraph 29A of IAS 16. [Refer: Property, plant and equipment]')
 INSERT INTO @AT VALUES(20,'111199', '/1/1/1/1/99/', N'ChangesInPropertyPlantAndEquipment',N'OtherPropertyPlantAndEquipment', N'Other property, plant and equipment',N'The amount of property, plant and equipment that the entity does not separately disclose in the same statement or note. [Refer: Property, plant and equipment]')
 INSERT INTO @AT VALUES(21,'1112', '/1/1/1/2/', NULL,N'InvestmentProperty', N'Investment property',N'The amount of property (land or a building - or part of a building - or both) held (by the owner or by the lessee as a right-of-use asset) to earn rentals or for capital appreciation or both, rather than for: (a) use in the production or supply of goods or services or for administrative purposes; or (b) sale in the ordinary course of business.')
@@ -65,7 +65,6 @@ INSERT INTO @AT VALUES(56,'112113', '/1/1/2/1/1/3/', N'ChangesInInventories',N'C
 INSERT INTO @AT VALUES(57,'112114', '/1/1/2/1/1/4/', N'ChangesInInventories',N'FinishedGoods', N'Current finished goods',N'A classification of current inventory representing the amount of goods that have completed the production process and are held for sale in the ordinary course of business. [Refer: Inventories]')
 INSERT INTO @AT VALUES(58,'112115', '/1/1/2/1/1/5/', N'ChangesInInventories',N'PropertyIntendedForSaleInOrdinaryCourseOfBusiness', N'Property intended for sale in ordinary course of business',N'The amount of property intended for sale in the ordinary course of business of the entity. Property is land or a building - or part of a building - or both.')
 INSERT INTO @AT VALUES(59,'11212', '/1/1/2/1/2/', NULL,N'WorkInProgress', N'Current work in progress',N'A classification of current inventory representing the amount of assets currently in production, which require further processes to be converted into finished goods or services. [Refer: Current finished goods; Inventories]')
-
 INSERT INTO @AT VALUES(60,'11213', '/1/1/2/1/3/', N'ChangesInInventories',N'CurrentMaterialsAndSuppliesToBeConsumedInProductionProcessOrRenderingServices', N'Current materials and supplies to be consumed in production process or rendering services',N'A classification of current inventory representing the amount of materials and supplies to be consumed in a production process or while rendering services. [Refer: Inventories]')
 INSERT INTO @AT VALUES(61,'112131', '/1/1/2/1/3/1/', N'ChangesInInventories',N'CurrentRawMaterialsAndCurrentProductionSupplies', N'Current raw materials and current production supplies',N'A classification of current inventory representing the amount of current raw materials and current production supplies. [Refer: Current production supplies; Current raw materials]')
 INSERT INTO @AT VALUES(62,'1121311', '/1/1/2/1/3/1/1/', N'ChangesInInventories',N'RawMaterials', N'Current raw materials',N'A classification of current inventory representing the amount of assets to be consumed in the production process or in the rendering of services. [Refer: Inventories]')
@@ -80,48 +79,30 @@ INSERT INTO @AT VALUES(70,'11221', '/1/1/2/2/1/', NULL,N'CurrentTradeReceivables
 INSERT INTO @AT VALUES(71,'11222', '/1/1/2/2/2/', NULL,N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'Current receivables due from related parties',N'The amount of current receivables due from related parties. [Refer: Related parties [member]]')
 INSERT INTO @AT VALUES(72,'11223', '/1/1/2/2/3/', NULL,N'CurrentPrepaymentsAndCurrentAccruedIncome', N'Current prepayments and current accrued income',N'The amount of current prepayments and current accrued income. [Refer: Prepayments; Accrued income]')
 INSERT INTO @AT VALUES(73,'112231', '/1/1/2/2/3/1/', NULL,N'CurrentPrepayments', N'Current prepayments',N'The amount of current prepayments. [Refer: Prepayments]')
-
-
 INSERT INTO @AT VALUES(74,'112232', '/1/1/2/2/3/2/', NULL,N'CurrentAccruedIncome', N'Current accrued income',N'The amount of current accrued income. [Refer: Accrued income]')
-
 INSERT INTO @AT VALUES(75,'11224', '/1/1/2/2/4/', NULL,N'CurrentBilledButNotReceivedExtension', N'Current billed but not received',N'The amount invoiced but against which there was no good or service received')
-
 INSERT INTO @AT VALUES(76,'11225', '/1/1/2/2/5/', NULL,N'CurrentReceivablesFromTaxesOtherThanIncomeTax', N'Current receivables from taxes other than income tax',N'The amount of current receivables from taxes other than income tax. [Refer: Receivables from taxes other than income tax]')
 INSERT INTO @AT VALUES(77,'112251', '/1/1/2/2/5/1/', NULL,N'CurrentValueAddedTaxReceivables', N'Current value added tax receivables',N'The amount of current value added tax receivables. [Refer: Value added tax receivables]')
 INSERT INTO @AT VALUES(78,'112252', '/1/1/2/2/5/2/', NULL,N'WithholdingTaxReceivablesExtension', N'Withholding tax receivables',N'The amount of receivables related to a withtholding tax.')
 INSERT INTO @AT VALUES(79,'11227', '/1/1/2/2/7/', NULL,N'CurrentReceivablesFromRentalOfProperties', N'Current receivables from rental of properties',N'The amount of current receivables from rental of properties. [Refer: Receivables from rental of properties]')
-
-
 INSERT INTO @AT VALUES(80,'11228', '/1/1/2/2/8/', NULL,N'OtherCurrentReceivables', N'Other current receivables',N'The amount of current other receivables. [Refer: Other receivables]')
-
 INSERT INTO @AT VALUES(81,'11229', '/1/1/2/2/9/', NULL,N'AllowanceAccountForCreditLossesOfTradeAndOtherCurrentReceivablesExtension', N'Allowance account for credit losses of trade and other current receivables',N'The amount of an allowance account used to record impairments to trade and other current receivables due to credit losses. [Refer: Financial assets]')
 INSERT INTO @AT VALUES(82,'1123', '/1/1/2/3/', NULL,N'CurrentTaxAssetsCurrent', N'Current tax assets, current',N'The current amount of current tax assets. [Refer: Current tax assets]')
 INSERT INTO @AT VALUES(83,'1124', '/1/1/2/4/', NULL,N'CurrentBiologicalAssets', N'Current biological assets',N'The amount of current biological assets. [Refer: Biological assets]')
 INSERT INTO @AT VALUES(84,'1125', '/1/1/2/5/', NULL,N'OtherCurrentFinancialAssets', N'Other current financial assets',N'The amount of current financial assets that the entity does not separately disclose in the same statement or note. [Refer: Other financial assets; Current financial assets]')
 INSERT INTO @AT VALUES(85,'11251', '/1/1/2/5/1/', NULL,N'LoansExtension', N'Loans',N'')
-
-
-
-
-
-
 INSERT INTO @AT VALUES(86,'11253', '/1/1/2/5/3/', NULL,N'CollectionGuaranteeExtension', N'Collection Guarantee',N'e.g., checks, LG, ..')
-
 INSERT INTO @AT VALUES(87,'11254', '/1/1/2/5/4/', NULL,N'DishonouredGuaranteeExtension', N'Dishonoured Guarantee',N'e.g., dishonored check, invalid LG, etc')
-
 INSERT INTO @AT VALUES(88,'1126', '/1/1/2/6/', NULL,N'OtherCurrentNonfinancialAssets', N'Other current non-financial assets',N'The amount of current non-financial assets that the entity does not separately disclose in the same statement or note. [Refer: Financial assets]')
 INSERT INTO @AT VALUES(89,'1127', '/1/1/2/7/', N'IncreaseDecreaseInCashAndCashEquivalents',N'CashAndCashEquivalents', N'Cash and cash equivalents',N'The amount of cash on hand and demand deposits, along with short-term, highly liquid investments that are readily convertible to known amounts of cash and that are subject to an insignificant risk of changes in value. [Refer: Cash; Cash equivalents]')
 INSERT INTO @AT VALUES(90,'11271', '/1/1/2/7/1/', N'IncreaseDecreaseInCashAndCashEquivalents',N'Cash', N'Cash',N'The amount of cash on hand and demand deposits. [Refer: Cash on hand]')
 INSERT INTO @AT VALUES(91,'112711', '/1/1/2/7/1/1/', N'IncreaseDecreaseInCashAndCashEquivalents',N'CashOnHand', N'Cash on hand',N'The amount of cash held by the entity. This does not include demand deposits.')
-
 INSERT INTO @AT VALUES(92,'112712', '/1/1/2/7/1/2/', N'IncreaseDecreaseInCashAndCashEquivalents',N'BalancesWithBanks', N'Balances with banks',N'The amount of cash balances held at banks.')
-
 INSERT INTO @AT VALUES(93,'11272', '/1/1/2/7/2/', N'IncreaseDecreaseInCashAndCashEquivalents',N'CashEquivalents', N'Cash equivalents',N'The amount of short-term, highly liquid investments that are readily convertible to known amounts of cash and that are subject to an insignificant risk of changes in value.')
 INSERT INTO @AT VALUES(94,'112721', '/1/1/2/7/2/1/', N'IncreaseDecreaseInCashAndCashEquivalents',N'ShorttermDepositsClassifiedAsCashEquivalents', N'Short-term deposits, classified as cash equivalents',N'A classification of cash equivalents representing short-term deposits. [Refer: Cash equivalents]')
 INSERT INTO @AT VALUES(95,'112722', '/1/1/2/7/2/2/', N'IncreaseDecreaseInCashAndCashEquivalents',N'ShorttermInvestmentsClassifiedAsCashEquivalents', N'Short-term investments, classified as cash equivalents',N'A classification of cash equivalents representing short-term investments. [Refer: Cash equivalents]')
 INSERT INTO @AT VALUES(96,'112723', '/1/1/2/7/2/3/', N'IncreaseDecreaseInCashAndCashEquivalents',N'BankingArrangementsClassifiedAsCashEquivalents', N'Other banking arrangements, classified as cash equivalents',N'A classification of cash equivalents representing banking arrangements that the entity does not separately disclose in the same statement or note. [Refer: Cash equivalents]')
 INSERT INTO @AT VALUES(97,'11273', '/1/1/2/7/3/', N'IncreaseDecreaseInCashAndCashEquivalents',N'OtherCashAndCashEquivalents', N'Other cash and cash equivalents',N'The amount of cash and cash equivalents that the entity does not separately disclose in the same statement or note. [Refer: Cash and cash equivalents]')
-
 INSERT INTO @AT VALUES(98,'1128', '/1/1/2/8/', NULL,N'CurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral', N'Current non-cash assets pledged as collateral for which transferee has right by contract or custom to sell or repledge collateral',N'The amount of current non-cash collateral assets (such as debt or equity instruments) provided to a transferee, for which the transferee has the right by contract or custom to sell or repledge the collateral.')
 INSERT INTO @AT VALUES(99,'1129', '/1/1/2/9/', NULL,N'NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners', N'Non-current assets or disposal groups classified as held for sale or as held for distribution to owners',N'The amount of non-current assets or disposal groups classified as held for sale or as held for distribution to owners. [Refer: Non-current assets or disposal groups classified as held for distribution to owners; Non-current assets or disposal groups classified as held for sale]')
 INSERT INTO @AT VALUES(100,'113', '/1/1/3/', NULL,N'AllowanceAccountForCreditLossesOfFinancialAssets', N'Allowance account for credit losses of financial assets',N'The amount of an allowance account used to record impairments to financial assets due to credit losses. [Refer: Financial assets]')
@@ -129,18 +110,11 @@ INSERT INTO @AT VALUES(101,'1131', '/1/1/3/1/', NULL,N'AllowanceAccountForCredit
 INSERT INTO @AT VALUES(102,'1132', '/1/1/3/2/', NULL,N'AllowanceAccountForCreditLossesOfOtherFinancialAssetsExtension', N'Allowance account for credit losses of other financial assets',N'The amount of an allowance account used to record impairments to other financial assets due to credit losses. [Refer: Financial assets]')
 INSERT INTO @AT VALUES(103,'12', '/1/2/', NULL,N'EquityAndLiabilities', N'Equity and liabilities',N'The amount of the entity''s equity and liabilities. [Refer: Equity; Liabilities]')
 INSERT INTO @AT VALUES(104,'121', '/1/2/1/', N'ChangesInEquity',N'Equity', N'Equity',N'The amount of residual interest in the assets of the entity after deducting all its liabilities.')
-
-
 INSERT INTO @AT VALUES(105,'1211', '/1/2/1/1/', N'ChangesInEquity',N'IssuedCapital', N'Issued capital',N'The nominal value of capital issued.')
-
 INSERT INTO @AT VALUES(106,'1212', '/1/2/1/2/', N'ChangesInEquity',N'RetainedEarnings', N'Retained earnings',N'A component of equity representing the entity''s cumulative undistributed earnings or deficit.')
-
 INSERT INTO @AT VALUES(107,'1213', '/1/2/1/3/', N'ChangesInEquity',N'SharePremium', N'Share premium',N'The amount received or receivable from the issuance of the entity''s shares in excess of nominal value.')
-
 INSERT INTO @AT VALUES(108,'1214', '/1/2/1/4/', N'ChangesInEquity',N'TreasuryShares', N'Treasury shares',N'An entity’s own equity instruments, held by the entity or other members of the consolidated group.')
-
 INSERT INTO @AT VALUES(109,'1215', '/1/2/1/5/', N'ChangesInEquity',N'OtherEquityInterest', N'Other equity interest',N'The amount of equity interest of an entity without share capital that the entity does not separately disclose in the same statement or note.')
-
 INSERT INTO @AT VALUES(110,'1216', '/1/2/1/6/', N'ChangesInEquity',N'OtherReserves', N'Other reserves',N'A component of equity representing reserves within equity, not including retained earnings. [Refer: Retained earnings]')
 INSERT INTO @AT VALUES(111,'121601', '/1/2/1/6/1/', N'ChangesInEquity',N'RevaluationSurplus', N'Revaluation surplus',N'A component of equity representing the accumulated revaluation surplus on the revaluation of assets recognised in other comprehensive income. [Refer: Other comprehensive income]')
 INSERT INTO @AT VALUES(112,'121602', '/1/2/1/6/2/', N'ChangesInEquity',N'ReserveOfExchangeDifferencesOnTranslation', N'Reserve of exchange differences on translation',N'A component of equity representing exchange differences on translation of financial statements of foreign operations recognised in other comprehensive income and accumulated in equity. [Refer: Other comprehensive income]')
@@ -170,7 +144,6 @@ INSERT INTO @AT VALUES(135,'122', '/1/2/2/', NULL,N'Liabilities', N'Liabilities'
 INSERT INTO @AT VALUES(136,'1221', '/1/2/2/1/', NULL,N'NoncurrentLiabilities', N'Non-current liabilities',N'The amount of liabilities that do not meet the definition of current liabilities. [Refer: Current liabilities]')
 INSERT INTO @AT VALUES(137,'12211', '/1/2/2/1/1/', NULL,N'NoncurrentProvisions', N'Non-current provisions',N'The amount of non-current provisions. [Refer: Provisions]')
 INSERT INTO @AT VALUES(138,'122111', '/1/2/2/1/1/1/', NULL,N'NoncurrentProvisionsForEmployeeBenefits', N'Non-current provisions for employee benefits',N'The amount of non-current provisions for employee benefits. [Refer: Provisions for employee benefits]')
-
 INSERT INTO @AT VALUES(139,'122112', '/1/2/2/1/1/2/', NULL,N'OtherLongtermProvisions', N'Other non-current provisions',N'The amount of non-current provisions other than provisions for employee benefits. [Refer: Non-current provisions]')
 INSERT INTO @AT VALUES(140,'1221121', '/1/2/2/1/1/2/1/', NULL,N'LongtermWarrantyProvision', N'Non-current warranty provision',N'The amount of non-current provision for warranties. [Refer: Warranty provision]')
 INSERT INTO @AT VALUES(141,'1221122', '/1/2/2/1/1/2/2/', NULL,N'LongtermRestructuringProvision', N'Non-current restructuring provision',N'The amount of non-current provision for restructuring. [Refer: Restructuring provision]')
@@ -191,7 +164,6 @@ INSERT INTO @AT VALUES(155,'12216', '/1/2/2/1/6/', NULL,N'OtherNoncurrentNonfina
 INSERT INTO @AT VALUES(156,'1222', '/1/2/2/2/', NULL,N'CurrentLiabilities', N'Current liabilities',N'The amount of liabilities that: (a) the entity expects to settle in its normal operating cycle; (b) the entity holds primarily for the purpose of trading; (c) are due to be settled within twelve months after the reporting period; or (d) the entity does not have an unconditional right to defer settlement for at least twelve months after the reporting period.')
 INSERT INTO @AT VALUES(157,'12221', '/1/2/2/2/1/', NULL,N'CurrentProvisions', N'Current provisions',N'The amount of current provisions. [Refer: Provisions]')
 INSERT INTO @AT VALUES(158,'122211', '/1/2/2/2/1/1/', NULL,N'CurrentProvisionsForEmployeeBenefits', N'Current provisions for employee benefits',N'The amount of current provisions for employee benefits. [Refer: Provisions for employee benefits]')
-
 INSERT INTO @AT VALUES(159,'122212', '/1/2/2/2/1/2/', N'ChangesInOtherProvisions',N'OtherShorttermProvisions', N'Other current provisions',N'The amount of current provisions other than provisions for employee benefits. [Refer: Provisions]')
 INSERT INTO @AT VALUES(160,'1222121', '/1/2/2/2/1/2/1/', N'ChangesInOtherProvisions',N'ShorttermWarrantyProvision', N'Current warranty provision',N'The amount of current provision for warranties. [Refer: Warranty provision]')
 INSERT INTO @AT VALUES(161,'1222122', '/1/2/2/2/1/2/2/', N'ChangesInOtherProvisions',N'ShorttermRestructuringProvision', N'Current restructuring provision',N'The amount of current provision for restructuring. [Refer: Restructuring provision]')
@@ -205,7 +177,6 @@ INSERT INTO @AT VALUES(168,'122221', '/1/2/2/2/2/1/', NULL,N'TradeAndOtherCurren
 INSERT INTO @AT VALUES(169,'122222', '/1/2/2/2/2/2/', NULL,N'TradeAndOtherCurrentPayablesToRelatedParties', N'Current payables to related parties',N'The amount of current payables due to related parties. [Refer: Related parties [member]; Payables to related parties]')
 INSERT INTO @AT VALUES(170,'122223', '/1/2/2/2/2/3/', NULL,N'DeferredIncomeClassifiedAsCurrent', N'Deferred income classified as current',N'The amount of deferred income classified as current. [Refer: Deferred income]')
 INSERT INTO @AT VALUES(171,'122224', '/1/2/2/2/2/4/', NULL,N'AccrualsClassifiedAsCurrent', N'Accruals classified as current',N'The amount of accruals classified as current. [Refer: Accruals]')
-
 INSERT INTO @AT VALUES(172,'1222241', '/1/2/2/2/2/4/1/', NULL,N'ShorttermEmployeeBenefitsAccruals', N'Short-term employee benefits accruals',N'The amount of accruals for employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services. [Refer: Accruals classified as current]')
 INSERT INTO @AT VALUES(173,'122226', '/1/2/2/2/2/6/', NULL,N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', N'Current payables on social security and taxes other than income tax',N'The amount of current payables on social security and taxes other than incomes tax. [Refer: Payables on social security and taxes other than income tax]')
 INSERT INTO @AT VALUES(174,'12222601', '/1/2/2/2/2/6/1/', NULL,N'CurrentValueAddedTaxPayables', N'Current value added tax payables',N'The amount of current value added tax payables. [Refer: Value added tax payables]')
@@ -219,8 +190,6 @@ INSERT INTO @AT VALUES(181,'12222608', '/1/2/2/2/2/6/8/', NULL,N'WithholdingTaxP
 INSERT INTO @AT VALUES(182,'12222609', '/1/2/2/2/2/6/9/', NULL,N'CostSharingPayableExtension', N'Cost sharing payable',N'')
 INSERT INTO @AT VALUES(183,'12222610', '/1/2/2/2/2/6/10/', NULL,N'DividendTaxPayableExtension', N'Dividend tax payable',N'')
 INSERT INTO @AT VALUES(184,'122227', '/1/2/2/2/2/7/', NULL,N'CurrentRetentionPayables', N'Current retention payables',N'The amount of current retention payables. [Refer: Retention payables]')
-
-
 INSERT INTO @AT VALUES(185,'122228', '/1/2/2/2/2/8/', NULL,N'OtherCurrentPayables', N'Other current payables',N'The amount of current payables that the entity does not separately disclose in the same statement or note.')
 INSERT INTO @AT VALUES(186,'12223', '/1/2/2/2/3/', NULL,N'CurrentTaxLiabilitiesCurrent', N'Current tax liabilities, current',N'The current amount of current tax liabilities. [Refer: Current tax liabilities]')
 INSERT INTO @AT VALUES(187,'12224', '/1/2/2/2/4/', NULL,N'OtherCurrentFinancialLiabilities', N'Other current financial liabilities',N'The amount of current financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities; Current financial liabilities]')
@@ -237,11 +206,7 @@ INSERT INTO @AT VALUES(197,'2111', '/2/1/1/1/', NULL,N'ProfitLossBeforeTax', N'P
 INSERT INTO @AT VALUES(198,'211101', '/2/1/1/1/1/', NULL,N'ProfitLossFromOperatingActivities', N'Profit (loss) from operating activities',N'The profit (loss) from operating activities of the entity. [Refer: Profit (loss)]')
 INSERT INTO @AT VALUES(199,'2111011', '/2/1/1/1/1/1/', NULL,N'Revenue', N'Revenue',N'The income arising in the course of an entity''s ordinary activities. Income is increases in economic benefits during the accounting period in the form of inflows or enhancements of assets or decreases of liabilities that result in an increase in equity, other than those relating to contributions from equity participants.')
 INSERT INTO @AT VALUES(200,'21110111', '/2/1/1/1/1/1/1/', NULL,N'RevenueFromSaleOfGoods', N'Revenue from sale of goods',N'The amount of revenue arising from the sale of goods. [Refer: Revenue]')
-
-
 INSERT INTO @AT VALUES(201,'21110112', '/2/1/1/1/1/1/2/', NULL,N'RevenueFromRenderingOfServices', N'Revenue from rendering of services',N'The amount of revenue arising from the rendering of services. [Refer: Revenue]')
-
-
 INSERT INTO @AT VALUES(202,'21110113', '/2/1/1/1/1/1/3/', NULL,N'RevenueFromConstructionContracts', N'Revenue from construction contracts',N'The amount of revenue arising from construction contracts. Construction contracts are contracts specifically negotiated for the construction of an asset or a combination of assets that are closely interrelated or interdependent in terms of their design, technology and function or their ultimate purpose or use. [Refer: Revenue]')
 INSERT INTO @AT VALUES(203,'21110114', '/2/1/1/1/1/1/4/', NULL,N'RevenueFromRoyalties', N'Royalty income',N'The amount of income arising from royalties.')
 INSERT INTO @AT VALUES(204,'21110115', '/2/1/1/1/1/1/5/', NULL,N'LicenceFeeIncome', N'Licence fee income',N'The amount of income arising from licence fees.')
@@ -267,11 +232,7 @@ INSERT INTO @AT VALUES(223,'211101538', '/2/1/1/1/1/5/3/8/', NULL,N'AdvertisingE
 INSERT INTO @AT VALUES(224,'21110154', '/2/1/1/1/1/5/4/', NULL,N'EmployeeBenefitsExpense', N'Employee benefits expense',N'The expense of all forms of consideration given by an entity in exchange for a service rendered by employees or for the termination of employment.')
 INSERT INTO @AT VALUES(225,'211101541', '/2/1/1/1/1/5/4/1/', NULL,N'ShorttermEmployeeBenefitsExpense', N'Short-term employee benefits expense',N'The amount of expense from employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services.')
 INSERT INTO @AT VALUES(226,'2111015411', '/2/1/1/1/1/5/4/1/1/', NULL,N'WagesAndSalaries', N'Wages and salaries',N'A class of employee benefits expense that represents wages and salaries. [Refer: Employee benefits expense]')
-
-
-
 INSERT INTO @AT VALUES(227,'2111015412', '/2/1/1/1/1/5/4/1/2/', NULL,N'SocialSecurityContributions', N'Social security contributions',N'A class of employee benefits expense that represents social security contributions. [Refer: Employee benefits expense]')
-
 INSERT INTO @AT VALUES(228,'2111015413', '/2/1/1/1/1/5/4/1/3/', NULL,N'OtherShorttermEmployeeBenefits', N'Other short-term employee benefits',N'The amount of expense from employee benefits (other than termination benefits), which are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services, that the entity does not separately disclose in the same statement or note. [Refer: Employee benefits expense]')
 INSERT INTO @AT VALUES(229,'211101542', '/2/1/1/1/1/5/4/2/', NULL,N'PostemploymentBenefitExpenseDefinedContributionPlans', N'Post-employment benefit expense, defined contribution plans',N'The amount of post-employment benefit expense relating to defined contribution plans. Defined contribution plans are post-employment benefit plans under which an entity pays fixed contributions into a separate entity (a fund) and will have no legal or constructive obligation to pay further contributions if the fund does not hold sufficient assets to pay all employee benefits relating to employee service in the current and prior periods.')
 INSERT INTO @AT VALUES(230,'211101543', '/2/1/1/1/1/5/4/3/', NULL,N'PostemploymentBenefitExpenseDefinedBenefitPlans', N'Post-employment benefit expense, defined benefit plans',N'The amount of post-employment benefit expense relating to defined benefit plans. [Refer: Defined benefit plans [member]]')
@@ -281,9 +242,7 @@ INSERT INTO @AT VALUES(233,'211101546', '/2/1/1/1/1/5/4/6/', NULL,N'OtherEmploye
 INSERT INTO @AT VALUES(234,'21110155', '/2/1/1/1/1/5/5/', NULL,N'DepreciationAmortisationAndImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss', N'Depreciation, amortisation and impairment loss (reversal of impairment loss) recognised in profit or loss',N'The amount of depreciation expense, amortisation expense and impairment loss (reversal of impairment loss) recognised in profit or loss. [Refer: Depreciation and amortisation expense; Impairment loss (reversal of impairment loss) recognised in profit or loss]')
 INSERT INTO @AT VALUES(235,'211101551', '/2/1/1/1/1/5/5/1/', NULL,N'DepreciationAndAmortisationExpense', N'Depreciation and amortisation expense',N'The amount of depreciation and amortisation expense. Depreciation and amortisation are the systematic allocations of depreciable amounts of assets over their useful lives.')
 INSERT INTO @AT VALUES(236,'2111015511', '/2/1/1/1/1/5/5/1/1/', NULL,N'DepreciationExpense', N'Depreciation expense',N'The amount of depreciation expense. Depreciation is the systematic allocation of depreciable amounts of tangible assets over their useful lives.')
-
 INSERT INTO @AT VALUES(237,'2111015512', '/2/1/1/1/1/5/5/1/2/', NULL,N'AmortisationExpense', N'Amortisation expense',N'The amount of amortisation expense. Amortisation is the systematic allocation of depreciable amounts of intangible assets over their useful lives.')
-
 INSERT INTO @AT VALUES(238,'211101552', '/2/1/1/1/1/5/5/2/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss', N'Reversal of impairment loss (impairment loss) recognised in profit or loss',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
 INSERT INTO @AT VALUES(239,'21110155211', '/2/1/1/1/1/5/5/2/1/', NULL,N'WritedownsReversalsOfInventories', N'Write-downs (reversals of write-downs) of inventories',N'The amount recognised resulting from the write-down of inventories to net realisable value or reversals of those write-downs. [Refer: Inventories]')
 INSERT INTO @AT VALUES(240,'2111015522', '/2/1/1/1/1/5/5/2/2/', NULL,N'WritedownsReversalsOfPropertyPlantAndEquipment', N'Write-downs (reversals of write-downs) of property, plant and equipment',N'The amount recognised resulting from the write-down of property, plant and equipment to its recoverable amount or reversals of those write-downs. [Refer: Property, plant and equipment]')
@@ -291,12 +250,9 @@ INSERT INTO @AT VALUES(241,'2111015523', '/2/1/1/1/1/5/5/2/3/', NULL,N'Impairmen
 INSERT INTO @AT VALUES(242,'2111015524', '/2/1/1/1/1/5/5/2/4/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances', N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss for loans and advances. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
 INSERT INTO @AT VALUES(243,'21110157', '/2/1/1/1/1/5/7/', NULL,N'TaxExpenseOtherThanIncomeTaxExpense', N'Tax expense other than income tax expense',N'The amount of tax expense exclusive of income tax expense.')
 INSERT INTO @AT VALUES(244,'21110159', '/2/1/1/1/1/5/9/', NULL,N'OtherExpenseByNature', N'Other expenses',N'The amount of expenses that the entity does not separately disclose in the same statement or note when the entity uses the ''nature of expense'' form for its analysis of expenses. [Refer: Expenses, by nature]')
-
 INSERT INTO @AT VALUES(245,'2111016', '/2/1/1/1/1/6/', NULL,N'OtherGainsLosses', N'Other gains (losses)',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
 INSERT INTO @AT VALUES(246,'21110161', '/2/1/1/1/1/6/1/', NULL,N'GainLossOnDisposalOfPropertyPlantAndEquipmentExtension', N'Gain (loss) on disposal of property, plant and equipment',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
 INSERT INTO @AT VALUES(247,'21110162', '/2/1/1/1/1/6/2/', NULL,N'GainLossOnForeignExchangeExtension', N'Gain (loss) on foreign exchange',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
-
-
 INSERT INTO @AT VALUES(248,'211103', '/2/1/1/1/3/', NULL,N'GainsLossesOnNetMonetaryPosition', N'Gains (losses) on net monetary position',N'The gains (losses) representing the difference resulting from the restatement of non-monetary assets, owners'' equity and items in the statement of comprehensive income and the adjustment of index linked assets and liabilities in hyperinflationary reporting.')
 INSERT INTO @AT VALUES(249,'211104', '/2/1/1/1/4/', NULL,N'GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost', N'Gain (loss) arising from derecognition of financial assets measured at amortised cost',N'The gain (loss) arising from the derecognition of financial assets measured at amortised cost. [Refer: Financial assets at amortised cost]')
 INSERT INTO @AT VALUES(250,'211105', '/2/1/1/1/5/', NULL,N'FinanceIncome', N'Finance income',N'The amount of income associated with interest and other financing activities of the entity.')
