@@ -6,7 +6,7 @@
     <div class="d-inline text-nowrap" *ngSwitchCase="'state'" [style.text-align]="alignment">
       <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
     </div>
-    <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">{{ displayValue }}</span>
+    <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">&zwnj;{{ displayValue }}&zwnj;</span>
     <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
 
     <!-- <span *ngSwitchCase="'boolean'">{{ displayValue }}</span>

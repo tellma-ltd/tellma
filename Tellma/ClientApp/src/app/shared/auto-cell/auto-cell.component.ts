@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { Entity } from '~/app/data/entities/base/entity';
 import { formatNumber, formatDate } from '@angular/common';
+import { formatAccounting } from '~/app/data/util';
 
 @Component({
   selector: 't-auto-cell',
@@ -222,9 +223,8 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
       if (value === undefined) {
         return null;
       }
-      const locale = 'en-GB';
       const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return formatNumber(value, locale, digitsInfo);
+      return formatAccounting(value, digitsInfo);
     }
     case 'date': {
       if (value === undefined) {

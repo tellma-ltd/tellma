@@ -93,6 +93,7 @@ import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-g
 import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cell.component';
 import { SerialEditorComponent } from './serial-editor/serial-editor.component';
 import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.component';
+import { AccountingPipe } from './accounting/accounting.pipe';
 
 @NgModule({
   declarations: [
@@ -125,6 +126,7 @@ import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.
     FormGroupSettingsComponent,
     FormGroupCellComponent,
     MapBoundsFitterComponent,
+    AccountingPipe,
   ],
   imports: [
     CommonModule,
@@ -187,7 +189,8 @@ import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.
     AutoCellComponent,
     AutoLabelComponent,
     LabelPipe,
-    MapBoundsFitterComponent
+    MapBoundsFitterComponent,
+    AccountingPipe,
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

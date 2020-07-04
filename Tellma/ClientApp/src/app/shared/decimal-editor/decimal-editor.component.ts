@@ -52,6 +52,7 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // to update the formatting if any of the inputs change
     if ((!!changes.maxDecimalPlaces && !changes.maxDecimalPlaces.isFirstChange())
       || (!!changes.minDecimalPlaces && !changes.minDecimalPlaces.isFirstChange())) {
       this.input.nativeElement.value = this.format(this.input.nativeElement.value);
@@ -76,14 +77,30 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
     return ',';
   }
 
+  private isBracketed(val: string): boolean {
+    return val.startsWith('(') && val.endsWith(')');
+  }
+
+  private removeBrackets(val: string): string {
+    return val.substr(1, val.length - 2);
+  }
+
+  /**
+   * Takes a number and formats it with a decimal point and a thousands separator
+   */
   private format(value: number | string): string {
     if (value === null || value === undefined || value === '') {
       return '';
     }
 
-    // Takes a number and formats it with a decimal point and a thousands separator
-    let [integer, fraction = ''] = (value || '0').toString()
-      .split(this.decimalSeparator);
+    let valueString = (value || '0').toString();
+
+    const isNegativeBrackets =  this.isBracketed(valueString);
+    if (isNegativeBrackets) {
+      valueString = this.removeBrackets(valueString);
+    }
+
+    let [integer, fraction = ''] = valueString.split(this.decimalSeparator);
 
     let min = this.minDecimalPlaces;
     if (min === null) {
@@ -105,17 +122,38 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
 
     integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandsSeparator);
 
-    return integer + fraction;
+    // If there is a negative sign remove it
+    const isNegativeSign = integer.startsWith('-');
+    if (isNegativeSign) {
+      integer = integer.substring(1);
+    }
+
+    let result = integer + fraction;
+    if ((isNegativeBrackets && !isNegativeSign) || (isNegativeSign && !isNegativeBrackets)) {
+      // If one of the two negatives is true, add brackets around the result
+      result = `(${result})`;
+    }
+
+    return result;
   }
 
+  /**
+   * Reverses the effect of 'format' method above, and returns the original number
+   */
   private parse(value: string): number {
 
     if (value === null || value === undefined || value === '') {
       return undefined;
     }
 
-    // Reverses the effect of 'format' method above, and returns the original number
-    let [integer, fraction = ''] = (value || '').split(this.decimalSeparator);
+    value = (value || '').trim();
+    const isNegativeBrackets = this.isBracketed(value);
+    if (isNegativeBrackets) {
+      value = this.removeBrackets(value).trim(); // remove the brackets
+    }
+
+
+    let [integer, fraction = ''] = value.split(this.decimalSeparator);
 
     integer = integer.replace(new RegExp(this.thousandsSeparator, 'g'), '');
 
@@ -129,7 +167,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
       : '';
 
     const stringResult = integer + fraction;
-    return !!stringResult ? +stringResult : 0;
+    const result = !!stringResult ? +stringResult : 0;
+
+    return isNegativeBrackets ? -result : result;
   }
 
   ////////////////// Behavior

@@ -201,6 +201,7 @@ BEGIN
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
+			t.[Index]					= s.[Index],
 			t.[IsSystem]				= s.[IsSystem], 
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],

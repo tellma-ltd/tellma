@@ -291,7 +291,7 @@
         [serverErrors]="model?.serverErrors?.Quantity" *ngIf="showDocumentQuantity(model)">
         <ng-container *ngIf="model?.QuantityIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Quantity">
-                <div>{{ model?.Quantity | number:'1.0-4'  }}</div>
+                <div>{{ model?.Quantity | accounting:'1.0-4'  }}</div>
             </t-restricted>
             <t-decimal-editor *ngIf="isEdit" [disabled]="readonlyDocumentQuantity(model)"
                 [required]="requireDocumentQuantity(model)" [(ngModel)]="model.Quantity"
@@ -488,15 +488,15 @@
                             <span
                                 *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
                             <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
                             </div>
                             <div *ngSwitchCase="'Quantity'" class="t-right-aligned">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | accounting:'1.0-4'  }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
                             <div *ngSwitchCase="'Value'" class="t-right-aligned">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | accounting:functional_format  }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
@@ -514,7 +514,7 @@
                             <span
                                 *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                             <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
@@ -906,7 +906,7 @@
                                 <td class="small font-weight-bold pb-12 pt-2">
                                     {{ ('TotalDebit' | translate) + functionalPostfix }}&nbsp;&nbsp;&nbsp;</td>
                                 <td class="px-1 pt-2" style="text-align: right">
-                                    {{ total(model, 1) | number:functional_format }}
+                                    {{ total(model, 1) | accounting:functional_format }}
                                 </td>
                             </tr>
                             <tr class="border-bottom">
@@ -914,7 +914,7 @@
                                 <td class="small font-weight-bold pt-12 pb-2">
                                     {{ ('TotalCredit' | translate) + functionalPostfix }}&nbsp;&nbsp;&nbsp;</td>
                                 <td class="px-1 pb-2 align-right" style="text-align: right;">
-                                    {{ total(model, -1) | number:functional_format }}
+                                    {{ total(model, -1) | accounting:functional_format }}
                                 </td>
                             </tr>
                         </table>
@@ -1119,7 +1119,7 @@
                     <!-- View -->
                     <ng-container *ngIf="!isEdit || bookkeeping">
                         <t-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
-                            {{ entry.MonetaryValue | number:MonetaryValue_format(entry) }}
+                            {{ entry.MonetaryValue | accounting:MonetaryValue_format(entry) }}
                         </t-restricted>
                     </ng-container>
                     <!-- Edit -->
@@ -1200,7 +1200,7 @@
                 <t-form-group-dynamic [label]="'Entry_Quantity' | translate"
                     [serverErrors]="entry.serverErrors?.Quantity">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Quantity">
-                        <span>{{ entry.Quantity | number:'1.0-4'}}</span>
+                        <span>{{ entry.Quantity | accounting:'1.0-4'}}</span>
                     </t-restricted>
                     <t-decimal-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Quantity" [maxDecimalPlaces]="4"
                         [minDecimalPlaces]="0" (ngModelChange)="update.call(null, pair);"
@@ -1376,7 +1376,7 @@
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAmount">
                         <div class="text-truncate">
-                            {{ entry.NotedAmount | number:MonetaryValue_format(entry) }}
+                            {{ entry.NotedAmount | accounting:MonetaryValue_format(entry) }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
@@ -1436,7 +1436,7 @@
     <ng-template #row_Debit let-pair="item" let-entry="item.entry" let-index="index" let-update="update"
         let-bookkeeping="argument">
         <t-restricted class="h-100" *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Value">
-            <div style="float: right">{{ getDebit(entry) | number:functional_format }}</div>
+            <div style="float: right">{{ getDebit(entry) | accounting:functional_format }}</div>
         </t-restricted>
         <t-form-group-dynamic *ngIf="isEdit && !bookkeeping" class="t-form-group"
             [serverErrors]="entry.serverErrors?.Value">
@@ -1458,7 +1458,7 @@
     <ng-template #row_Credit let-pair="item" let-entry="item.entry" let-index="index" let-update="update"
         let-bookkeeping="argument">
         <t-restricted class="h-100" *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Value">
-            <div style="float: right">{{ getCredit(entry) | number:functional_format }}</div>
+            <div style="float: right">{{ getCredit(entry) | accounting:functional_format }}</div>
         </t-restricted>
         <t-form-group-dynamic *ngIf="isEdit && !bookkeeping" class="t-form-group"
             [serverErrors]="entry.serverErrors?.Value">
