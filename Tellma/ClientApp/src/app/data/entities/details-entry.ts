@@ -18,10 +18,12 @@ export interface DetailsEntry extends EntityWithKey {
     ResourceId?: number;
     Quantity?: number;
     AlgebraicQuantity?: number;
+    NegativeAlgebraicQuantity?: number;
     UnitId?: number;
     DueDate?: string;
     MonetaryValue?: number;
     AlgebraicMonetaryValue?: number;
+    NegativeAlgebraicMonetaryValue?: number;
     CurrencyId?: string;
     Count?: number;
     AlgebraicCount?: number;
@@ -33,6 +35,7 @@ export interface DetailsEntry extends EntityWithKey {
     AlgebraicTime?: number;
     Value?: number;
     AlgebraicValue?: number;
+    NegativeAlgebraicValue?: number;
     Time1?: string;
     Time2?: string;
     ExternalReference?: string;
@@ -108,10 +111,12 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 DueDate: { control: 'date', label: () => trx.instant('Entry_DueDate') },
                 Quantity: { control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 AlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                NegativeAlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_NegativeAlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 UnitId: { control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { control: 'navigation', label: () => trx.instant('Entry_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 AlgebraicMonetaryValue: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                NegativeAlgebraicMonetaryValue: { control: 'number', label: () => trx.instant('DetailsEntry_NegativeAlgebraicMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 Count: { control: 'number', label: () => trx.instant('DetailsEntry_Count'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
@@ -132,6 +137,13 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 AlgebraicValue: {
                     control: 'number',
                     label: () => `${trx.instant('DetailsEntry_AlgebraicValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
+                NegativeAlgebraicValue: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_NegativeAlgebraicValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     alignment: 'right'

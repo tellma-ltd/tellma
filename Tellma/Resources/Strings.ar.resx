@@ -490,6 +490,15 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>إجمالي المبلغ</value>
   </data>
+  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
+    <value>سالب المبلغ الجبري</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
+    <value>سالب الكمية الجبرية</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
+    <value>سالب القيمة الجبرية</value>
+  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>إجمالي الكمية</value>
   </data>

@@ -490,6 +490,15 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>መጠን Acc.</value>
   </data>
+  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
+    <value>አሉታዊ አልጀብራዊ የገንዘብ ዋጋ</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
+    <value>አሉታዊ አልጀብራዊ ብዛት</value>
+  </data>
+  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
+    <value>አሉታዊ አልጀብራዊ እሴት</value>
+  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>ብዛት Acc.</value>
   </data>
