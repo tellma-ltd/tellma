@@ -698,8 +698,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
    */
   private getAccountResourceContractCurrencyId(): string {
     const account = this.account();
-    const resource = this.ws.get('Resource', this.resourceId) as Resource;
-    const contract = this.ws.get('Contract', this.contractId) as Contract;
+    const resource = this.resource();
+    const contract = this.contract();
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
@@ -745,6 +745,18 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       args.contract_id = v;
       this.parametersChanged();
     }
+  }
+
+  /**
+   * Returns any uniquely identifiable contract from the parameters
+   */
+  private contract(): Contract {
+    const account = this.account();
+    const accountContractId = !!account ? account.ContractId : null;
+    const paramContractId = !!account && !!account.ContractDefinitionId ? this.contractId : null;
+    const contractId = accountContractId || paramContractId;
+
+    return this.ws.get('Contract', contractId) as Contract;
   }
 
   public get showContractParameter(): boolean {
@@ -805,15 +817,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Returns the resource specified in the parameter
+   * Returns any uniquely identifiable resource from the parameters
    */
   private resource(): Resource {
-    // id = id || this.resourceId;
-    // return this.ws.get('Resource', id);
-
     const account = this.account();
     const accountResourceId = !!account ? account.ResourceId : null;
-    const resourceId = accountResourceId || this.resourceId;
+    const paramResourceId = !!account && !!account.ResourceDefinitionId ? this.resourceId : null;
+    const resourceId = accountResourceId || paramResourceId;
+
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
@@ -916,8 +927,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
    */
   private getAccountResourceContractCenterId(): number {
     const account = this.account();
-    const resource = this.ws.get('Resource', this.resourceId) as Resource;
-    const contract = this.ws.get('Contract', this.contractId) as Contract;
+    const resource = this.resource();
+    const contract = this.contract();
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
