@@ -1115,7 +1115,7 @@
     <value>ተከታታይ ቁጥር «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
-    <value>ተከታታይ ቁጥር «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
+    <value>ተከታታይ ቁጥር «{0}» አስቀድሞ ጥቅም ላይ ነው.</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>ተጠቃሚው «{0} 'ንቁ አይደለም.</value>

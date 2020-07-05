@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {
@@ -26,13 +27,8 @@ namespace Tellma.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            //[Required(ErrorMessage = Services.Utilities.Constants.Error_RequiredField0)]
-            //[EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
-            //[Display(Name = "Email")]
-            //public string Email { get; set; }
-
-            [Required(ErrorMessage = Services.Utilities.Constants.Error_Field0IsRequired)]
-            [StringLength(100, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
+            [Required(ErrorMessage = Constants.Error_Field0IsRequired)]
+            [StringLength(100, ErrorMessage = Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }

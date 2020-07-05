@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {
@@ -30,8 +31,8 @@ namespace Tellma.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required(ErrorMessage = Services.Utilities.Constants.Error_Field0IsRequired)]
-            [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
+            [Required(ErrorMessage = Constants.Error_Field0IsRequired)]
+            [EmailAddress(ErrorMessage = Constants.Error_Field0IsNotValidEmail)]
             [Display(Name = "Email")]
             public string Email { get; set; }
         }
