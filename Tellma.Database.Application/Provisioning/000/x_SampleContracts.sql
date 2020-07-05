@@ -110,13 +110,11 @@ INSERT INTO @Contracts( -- text1: email, text2: phone
 (	2,			N'S03',		N'Supplier 3',		NUll,					NULL,		NULL,			NULL,		NULL,		NULL,		NULL,
 	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		@Agent3,	N'TX-30-300',
 	NULL,		NULL);
-
 EXEC [api].[Contracts__Save]
 	@DefinitionId = @SupplierCD,
 	@ContractUsers = @ContractUsers,
 	@Entities = @Contracts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
 	Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
@@ -138,16 +136,39 @@ INSERT INTO @Contracts( -- text1: email, text2: phone, lookup1: MarketSegment
 (	2,			N'C0003',	N'Customer 3',		NUll,					NULL,		NULL,			NULL,		NULL,		NULL,		NULL,
 	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		@Agent3,	NULL,
 	NULL,		NULL);
-
 EXEC [api].[Contracts__Save]
 	@DefinitionId = @CustomerCD,
 	@ContractUsers = @ContractUsers,
 	@Entities = @Contracts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
 	Print 'Customers: Inserting: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;
+
+-- Adding sample Employee accounts
+DELETE FROM @Contracts -- 
+INSERT INTO @Contracts( -- text1: email, text2: phone, Gender:, Color, Marital Status, Date Of Birth, 
+	[Index],	[Code],		[Name],				[CurrencyId],			[CenterId],	[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
+	[Int1],		[Int2],		[Lookup1Id],		[Lookup2Id],			[Lookup3Id],[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
+	[JobId],	[BankAccountNumber]) VALUES
+(	0,			N'E001',	N'Employee 1',		@FunctionalCurrencyId,	NULL,		NULL,			NULL,		NULL,		NULL,		NULL,
+	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		@Agent1,	NULL,
+	NULL,		NULL),
+(	1,			N'E002',	N'Employee 2',		NUll,					NULL,		NULL,			NULL,		NULL,		NULL,		NULL,
+	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		NULL,		N'TX-22',
+	NULL,		NULL),
+(	2,			N'E003',	N'Employee 3',		NUll,					NULL,		NULL,			NULL,		NULL,		NULL,		NULL,
+	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		@Agent3,	NULL,
+	NULL,		NULL);
+EXEC [api].[Contracts__Save]
+	@DefinitionId = @EmployeeCD,
+	@ContractUsers = @ContractUsers,
+	@Entities = @Contracts,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Employees: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;

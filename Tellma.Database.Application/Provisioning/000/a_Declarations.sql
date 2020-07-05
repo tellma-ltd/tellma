@@ -48,7 +48,7 @@
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
 	DECLARE @LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
-	DECLARE @Currencies dbo.[CurrencyList];
+	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 
 	DECLARE @Agents dbo.AgentList, @Contracts ContractList, @ContractUsers dbo.ContractUserList;
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
