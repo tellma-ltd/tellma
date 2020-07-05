@@ -2,12 +2,12 @@
 (
 	[Id]						INT						CONSTRAINT [PK_LookupDefinitions] PRIMARY KEY IDENTITY,
 	[Code]						NVARCHAR (50)			NOT NULL CONSTRAINT [IX_LookupDefinitions] UNIQUE,
-	[TitleSingular]				NVARCHAR (255)			NOT NULL,
-	[TitleSingular2]			NVARCHAR (255),
-	[TitleSingular3]			NVARCHAR (255),
-	[TitlePlural]				NVARCHAR (255)			NOT NULL,
-	[TitlePlural2]				NVARCHAR (255),
-	[TitlePlural3]				NVARCHAR (255),
+	[TitleSingular]				NVARCHAR (50)			NOT NULL,
+	[TitleSingular2]			NVARCHAR (50),
+	[TitleSingular3]			NVARCHAR (50),
+	[TitlePlural]				NVARCHAR (50)			NOT NULL,
+	[TitlePlural2]				NVARCHAR (50),
+	[TitlePlural3]				NVARCHAR (50),
 	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- Required when the state is "Deployed"

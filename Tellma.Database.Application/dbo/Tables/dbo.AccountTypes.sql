@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[AccountTypes] (
 	[Id]						INT					CONSTRAINT [PK_AccountTypes]  PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]					INT					CONSTRAINT [FK_AccountTypes__ParentId] REFERENCES [dbo].[AccountTypes] ([Id]),
-	[Code]						NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountTypes__Code] UNIQUE NONCLUSTERED,
+	[Code]						NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountTypes__Code] UNIQUE NONCLUSTERED, -- 50
 	[Concept]					NVARCHAR (255)		NOT NULL CONSTRAINT [IX_AccountTypes__Concept] UNIQUE NONCLUSTERED,
 	[Name]						NVARCHAR (255)		NOT NULL,
 	[Name2]						NVARCHAR (255),

@@ -681,6 +681,7 @@
     <None Include="_Azure\Azure.106.Soreti.publish.xml" />
     <None Include="_Azure\Azure.107.SSIA.publish.xml" />
     <None Include="106.Soreti.publish.xml" />
+    <None Include="Provisioning\000\x_SampleContracts.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

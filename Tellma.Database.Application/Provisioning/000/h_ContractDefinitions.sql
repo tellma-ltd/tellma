@@ -12,6 +12,10 @@
 (10, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160);
 
 UPDATE @ContractDefinitions
+SET [AgentVisibility] = N'Optional'
+WHERE [Code] IN (N'CashOnHandAccount', N'Employee', N'Supplier', N'Customer', N'Partner')
+
+UPDATE @ContractDefinitions
 SET [CenterVisibility] = N'Optional'
 WHERE [Code] IN (N'CashOnHandAccount', N'Employee', N'Supplier')
 
@@ -47,6 +51,13 @@ UPDATE @ContractDefinitions
 SET [UserCardinality] = N'Multiple'
 WHERE [Code] IN ( N'BankAccount', N'Warehouse')
 
+UPDATE @ContractDefinitions
+SET [Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD
+WHERE [Code] IN ( N'BankAccount')
+
+UPDATE @ContractDefinitions
+SET [Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Market Segment', [Lookup1DefinitionId] = @MarketSegmentLKD
+WHERE [Code] IN ( N'Customer')
 
 EXEC [api].[ContractDefinitions__Save]
 	@Entities = @ContractDefinitions,
@@ -69,3 +80,5 @@ DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Co
 DECLARE @CashOnHandAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'CashOnHandAccount');
 DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Warehouse');
 DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Shipper');
+
+
