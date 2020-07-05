@@ -17,7 +17,7 @@ namespace Tellma.Entities
 
         [Display(Name = "User_Email")]
         [Required]
-        [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
+        [EmailAddress]
         [StringLength(255)]
         public string Email { get; set; }
 

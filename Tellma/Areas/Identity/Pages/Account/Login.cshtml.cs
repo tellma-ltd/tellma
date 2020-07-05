@@ -49,7 +49,7 @@ namespace Tellma.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required(ErrorMessage = Constants.Error_Field0IsRequired)]
-            [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
+            [EmailAddress(ErrorMessage = Constants.Error_Field0IsNotValidEmail)]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
