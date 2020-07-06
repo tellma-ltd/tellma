@@ -11,22 +11,22 @@ namespace Tellma.Entities
     public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [MultilingualDisplay(Name = "Title", Language = Language.Primary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Title { get; set; }
 
         [MultilingualDisplay(Name = "Title", Language = Language.Secondary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Title2 { get; set; }
 
         [MultilingualDisplay(Name = "Title", Language = Language.Ternary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Title3 { get; set; }
 

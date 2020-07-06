@@ -22,7 +22,6 @@ namespace Tellma
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
         // The UI cultures currently supported by the system
         public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh", "am" };
 
@@ -65,6 +64,9 @@ namespace Tellma
                 services.Configure<GlobalOptions>(_config);
                 GlobalOptions = _config.Get<GlobalOptions>();
 
+                // Azure Application Insights
+                services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+
                 // Access to caller information
                 services.AddClientInfo();
 
@@ -74,7 +76,7 @@ namespace Tellma
 
                 // Custom services
                 services.AddMultiTenancy();
-                services.AddSharding();
+                services.AddSharding(_config.GetSection("Sharding"));
 
                 // The application repository contains the tenant specific data, it acquires the
                 // connection string dynamically, therefore it depends on multitenancy and sharding

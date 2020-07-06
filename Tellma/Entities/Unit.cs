@@ -36,7 +36,6 @@ namespace Tellma.Entities
         public string Code { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
-        [Required]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Description { get; set; }

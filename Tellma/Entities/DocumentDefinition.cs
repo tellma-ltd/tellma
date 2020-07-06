@@ -11,7 +11,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "Code")]
         [Required]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
@@ -24,33 +24,33 @@ namespace Tellma.Entities
         public byte? DocumentType { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Secondary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string TitleSingular2 { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Ternary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string TitleSingular3 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
         [Required]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Secondary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural2 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Ternary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
         public string Prefix { get; set; }

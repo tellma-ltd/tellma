@@ -15,6 +15,13 @@
     "mssql2": {
       "type": "mssql",
       "connectionId": "AdminConnection"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPINSIGHTS_INSTRUMENTATIONKEY"
+    },
+    "secrets1": {
+      "type": "secrets"
     }
   }
 }
