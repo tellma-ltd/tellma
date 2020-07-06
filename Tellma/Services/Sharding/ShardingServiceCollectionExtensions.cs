@@ -1,5 +1,6 @@
 ﻿using Tellma.Services.Sharding;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -10,11 +11,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSharding(this IServiceCollection services)
+        public static IServiceCollection AddSharding(this IServiceCollection services, IConfiguration configSection = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
+            }
+
+            if (configSection != null)
+            {
+                // Add configuration
+                services.Configure<ShardResolverOptions>(configSection);
             }
 
             services.AddSingleton<IShardResolver, ShardResolver>();
