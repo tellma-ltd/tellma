@@ -8,11 +8,11 @@ With EB AS (
 			E.[Quantity] * -- Quantity in E.UnitId
 			EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
 		 *	(RBU.[UnitAmount]) / (RBU.[BaseAmount]) As [BaseQuantity],-- Quantity in Base unit of that resource
-		 IIF(RBU.[UnitType] = N'Mass', 1, R.[StockUnitMass]) AS [Density]
+		 IIF(RBU.[UnitType] = N'Mass', 1, R.[UnitMass]) AS [Density]
 	FROM dbo.Entries E
 	LEFT JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 	LEFT JOIN dbo.Units EU ON E.UnitId = EU.[Id]
-	LEFT JOIN dbo.Units RBU ON R.[StockUnitId] = RBU.[Id]
+	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 )
 SELECT
 		EB.*,

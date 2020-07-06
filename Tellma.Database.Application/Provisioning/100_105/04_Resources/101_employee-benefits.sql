@@ -7,9 +7,9 @@ BEGIN
 	(1,		N'Labor (hourly)');
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId],	[Multiplier]) VALUES
-	(0, 0, @WorkMonth,	1),
-	(0, 1, @Hour,		1);
+			[UnitId]) VALUES
+	(0, 0, @WorkMonth),
+	(0, 1, @Hour);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
 		@DefinitionId = @EmployeeBenefitRD,

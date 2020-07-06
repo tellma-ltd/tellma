@@ -53,12 +53,12 @@ BEGIN
 	(2, N'199',		N'Fake',										NULL),--1
 	(3, N'201',		N'Toyota Yaris 2018 White/White/Leather',		dbo.fn_Lookup(N'body-colors', N'White'));--1
 
-	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId],					[Multiplier]) VALUES
-	(0, 0, dbo.fn_UnitName__Id(N'ea'),	1),
-	(0, 1, dbo.fn_UnitName__Id(N'ea'),	1),
-	(0, 2, dbo.fn_UnitName__Id(N'ea'),	1),
-	(0, 3, dbo.fn_UnitName__Id(N'ea'),	1);
+	--INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+	--		[UnitId],					[Multiplier]) VALUES
+	--(0, 0, dbo.fn_UnitName__Id(N'ea'),	1),
+	--(0, 1, dbo.fn_UnitName__Id(N'ea'),	1),
+	--(0, 2, dbo.fn_UnitName__Id(N'ea'),	1),
+	--(0, 3, dbo.fn_UnitName__Id(N'ea'),	1);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'skds',

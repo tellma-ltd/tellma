@@ -27,20 +27,20 @@ BEGIN
 	(4, N'L-38x1.1',		N'L38x1.1'),
 	(5, N'L-38x1.2',		N'L38x1.2');
 
-	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId],					[Multiplier]) VALUES
-	(0, 0, dbo.fn_UnitName__Id(N'pcs'),	1),
-	(1, 0, dbo.fn_UnitName__Id(N'kg'),	22.12),
-	(0, 1, dbo.fn_UnitName__Id(N'pcs'),	1),
-	(1, 1, dbo.fn_UnitName__Id(N'kg'),	110.68),
-	(0, 2, dbo.fn_UnitName__Id(N'pcs'),	1),
-	(1, 2, dbo.fn_UnitName__Id(N'kg'),	51.195),
-	(0, 3, dbo.fn_UnitName__Id(N'pcs'),	1),
-	(1, 3, dbo.fn_UnitName__Id(N'kg'),	12.01),
-	(0, 4, dbo.fn_UnitName__Id(N'pcs'),	1),
-	(1, 4, dbo.fn_UnitName__Id(N'kg'),	7.66),
-	(0, 5, dbo.fn_UnitName__Id(N'pcs'),	1),
-	(1, 5, dbo.fn_UnitName__Id(N'kg'),	8.82);
+	--INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+	--		[UnitId],					[Multiplier]) VALUES
+	--(0, 0, dbo.fn_UnitName__Id(N'pcs'),	1),
+	--(1, 0, dbo.fn_UnitName__Id(N'kg'),	22.12),
+	--(0, 1, dbo.fn_UnitName__Id(N'pcs'),	1),
+	--(1, 1, dbo.fn_UnitName__Id(N'kg'),	110.68),
+	--(0, 2, dbo.fn_UnitName__Id(N'pcs'),	1),
+	--(1, 2, dbo.fn_UnitName__Id(N'kg'),	51.195),
+	--(0, 3, dbo.fn_UnitName__Id(N'pcs'),	1),
+	--(1, 3, dbo.fn_UnitName__Id(N'kg'),	12.01),
+	--(0, 4, dbo.fn_UnitName__Id(N'pcs'),	1),
+	--(1, 4, dbo.fn_UnitName__Id(N'kg'),	7.66),
+	--(0, 5, dbo.fn_UnitName__Id(N'pcs'),	1),
+	--(1, 5, dbo.fn_UnitName__Id(N'kg'),	8.82);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'steel-products',
