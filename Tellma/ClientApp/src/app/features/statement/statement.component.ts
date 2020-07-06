@@ -24,6 +24,7 @@ import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
+import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 't-statement',
@@ -828,6 +829,13 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
+  private resourceDefinition(): ResourceDefinitionForClient {
+    const resource = this.resource();
+    if (!!resource && !!resource.DefinitionId) {
+      return this.ws.definitions.Resources[resource.DefinitionId];
+    }
+  }
+
   public get showResourceParameter(): boolean {
     const account = this.account();
     return !!account && !!account.ResourceDefinitionId;
@@ -1285,14 +1293,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       // Quantity + Unit
       if (this.showResourceParameter) {
         // Determine whether the resource specifies a single well defined unit
-        const singleUnitDefined = !!resource && !!resource.Units && resource.Units.length === 1;
+        const resourceDef = this.resourceDefinition();
+        const singleUnitDefined = !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId;
+        const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
         this._columns.push({
           select: ['Direction', 'Quantity'],
           label: () => {
             let label = this.translate.instant('Entry_Quantity');
             if (singleUnitDefined) {
-              const unitId = resource.Units[0].UnitId;
+              const unitId = singleUnitId;
               label = `${label} (${this.ws.getMultilingualValue('Unit', unitId, 'Name')})`;
             }
             return label;
@@ -1311,7 +1321,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             id: 'QuantityAccumulation',
             select: ['Quantity', 'Direction'],
             label: () => {
-              const unitId = resource.Units[0].UnitId;
+              const unitId = singleUnitId;
               return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', unitId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {

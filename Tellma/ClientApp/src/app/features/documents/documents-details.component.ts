@@ -1334,26 +1334,41 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showQuantityAndUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
-    return !!resource && !!resource.Units && resource.Units.length > 0;
+    const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
+    return !!resourceDef && !!resourceDef.UnitCardinality;
   }
 
   public readonlyUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
-    return !!resource && !!resource.Units && resource.Units.length === 1;
+    const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
+    return !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId;
   }
 
   public readonlyValueUnitId(entry: Entry): number {
     const resource = this.resource(entry);
-    return !!resource && !!resource.Units && !!resource.Units[0] ? resource.Units[0].UnitId : null;
+    return !!resource ? resource.UnitId : null;
   }
 
   public filterUnitId(entry: Entry): string {
+    // This method is only required when Cardinality === Multi
     const resource = this.resource(entry);
-    if (!!resource && !!resource.Units) {
-      return resource.Units.map(e => `Id eq ${e.UnitId}`).join(' or ');
+    let filter: string;
+    if (!!resource) {
+      if (!!resource.UnitId) {
+        filter = `Id eq ${resource.UnitId}`;
+      }
+
+      if (!!resource.Units) {
+        const unitsFilter = resource.Units.map(e => `Id eq ${e.UnitId}`).join(' or ');
+        if (!!filter) {
+          filter += ` or ${unitsFilter}`;
+        } else {
+          filter = unitsFilter;
+        }
+      }
     }
 
-    return null;
+    return filter;
   }
 
   // DueDate
