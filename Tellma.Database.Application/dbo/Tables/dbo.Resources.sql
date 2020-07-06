@@ -34,9 +34,9 @@
 	[ResidualValue]				DECIMAL (19,4),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
-	[StockUnitId]				INT					CONSTRAINT [FK_Resources__BaseUnitId] REFERENCES [dbo].[Units] ([Id]),
-	[StockUnitMass]				DECIMAL (19,4),
-	[StockUnitMassUnitId]		INT					CONSTRAINT [FK_Resources__BaseMassUnitId] REFERENCES [dbo].[Units] ([Id]),
+	[UnitId]					INT					CONSTRAINT [FK_Resources__UnitId] REFERENCES [dbo].[Units] ([Id]),
+	[UnitMass]					DECIMAL (19,4),
+	[UnitMassUnitId]			INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[Units] ([Id]),
 --	[ParentId]					INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
 	[MonetaryValue]				DECIMAL (19,4),
 

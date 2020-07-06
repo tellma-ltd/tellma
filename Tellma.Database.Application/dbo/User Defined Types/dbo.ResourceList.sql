@@ -31,10 +31,9 @@
 	[ResidualValue]				DECIMAL (19,4),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
-	[StockUnitId]				INT,
-	[StockUnitMass]				DECIMAL (19,4),
-	[StockUnitMassUnitId]		INT,
-
+	[UnitId]					INT,
+	[UnitMass]					DECIMAL (19,4),
+	[UnitMassUnitId]		INT,
 --	[ParentId]					INT,
 	[MonetaryValue]				DECIMAL (19,4),
 

@@ -1871,4 +1871,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[QuantityUnitId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9534463b-6480-4cf2-8155-876b8664b882" ChangeDateTime="07/06/2020 09:05:37">
+    <Property Name="ElementName" Value="[dbo].[Resources].[StockUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7e1a772b-842d-4992-87f7-89e74e4ce9bc" ChangeDateTime="07/06/2020 09:05:56">
+    <Property Name="ElementName" Value="[dbo].[Resources].[StockUnitMass]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMass]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ce0424b7-a178-4e92-af74-d5d152bdcc55" ChangeDateTime="07/06/2020 09:06:11">
+    <Property Name="ElementName" Value="[dbo].[Resources].[StockUnitMassUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMassUnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e8dbe231-5c4c-469b-94e4-cc85441d5b3c" ChangeDateTime="07/06/2020 09:09:22">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[DefaultStockUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultUnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ec95630-2996-4c54-9c7a-c95fab6cbb52" ChangeDateTime="07/06/2020 09:09:43">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[StockUnitMassVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMassVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b071180a-5539-4518-ac88-0f7a9eadfe2c" ChangeDateTime="07/06/2020 09:10:03">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[DefaultSockUnitMassUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultUnitMassUnitId]" />
+  </Operation>
 </Operations>

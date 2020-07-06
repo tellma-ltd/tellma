@@ -48,9 +48,9 @@ SET NOCOUNT ON;
 				[ResidualValue],
 				[ReorderLevel],
 				[EconomicOrderQuantity],	
-				[StockUnitId],
-				[StockUnitMass],
-				[StockUnitMassUnitId],
+				[UnitId],
+				[UnitMass],
+				[UnitMassUnitId],
 				[MonetaryValue]				
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
@@ -88,9 +88,9 @@ SET NOCOUNT ON;
 				t.[ResidualValue]			= s.[ResidualValue],
 				t.[ReorderLevel]			= s.[ReorderLevel],
 				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
-				t.[StockUnitId]				= s.[StockUnitId],
-				t.[StockUnitMass]			= s.[StockUnitMass],
-				t.[StockUnitMassUnitId]		= s.[StockUnitMassUnitId],
+				t.[UnitId]				= s.[UnitId],
+				t.[UnitMass]			= s.[UnitMass],
+				t.[UnitMassUnitId]		= s.[UnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -126,9 +126,9 @@ SET NOCOUNT ON;
 				[ResidualValue],
 				[ReorderLevel],
 				[EconomicOrderQuantity],
-				[StockUnitId],
-				[StockUnitMass],
-				[StockUnitMassUnitId],
+				[UnitId],
+				[UnitMass],
+				[UnitMassUnitId],
 				[MonetaryValue]				
 				)
 			VALUES (
@@ -162,9 +162,9 @@ SET NOCOUNT ON;
 				s.[ResidualValue],
 				s.[ReorderLevel],
 				s.[EconomicOrderQuantity],
-				s.[StockUnitId],
-				s.[StockUnitMass],
-				s.[StockUnitMassUnitId],
+				s.[UnitId],
+				s.[UnitMass],
+				s.[UnitMassUnitId],
 				s.[MonetaryValue]			
 				)
 			OUTPUT s.[Index], inserted.[Id]

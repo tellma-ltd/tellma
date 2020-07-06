@@ -42,12 +42,12 @@ BEGIN
 	(2, N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000'),
 	(3, N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812');
 	;
-	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId],					[Multiplier]) VALUES
-	(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
-	(0, 1, dbo.fn_UnitName__Id(N'yr'),	1),
-	(0, 2, dbo.fn_UnitName__Id(N'yr'),	1),
-	(0, 3, dbo.fn_UnitName__Id(N'yr'),	1);
+	--INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+	--		[UnitId],					[Multiplier]) VALUES
+	--(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
+	--(0, 1, dbo.fn_UnitName__Id(N'yr'),	1),
+	--(0, 2, dbo.fn_UnitName__Id(N'yr'),	1),
+	--(0, 3, dbo.fn_UnitName__Id(N'yr'),	1);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'motor-vehicles',

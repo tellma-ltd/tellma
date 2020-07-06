@@ -39,21 +39,21 @@ BEGIN
 		[dbo].[fn_Lookup](N'paper-types', N'Commercial'),	70,					100,
 		N'Color - ملون',									N'70-100',			250,			2);
 
-	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId],						[Multiplier]) VALUES
-	(0, 0, dbo.fn_UnitName__Id(N'mt'),		1),
-	(0, 1, dbo.fn_UnitName__Id(N'mt'),		1),
-	(1, 1, dbo.fn_UnitName__Id(N'500pkt'),	19600),
-	(0, 2, dbo.fn_UnitName__Id(N'mt'),		1),
-	(1, 2, dbo.fn_UnitName__Id(N'500pkt'),	20000),
-	(0, 3, dbo.fn_UnitName__Id(N'mt'),		1),
-	(1, 3, dbo.fn_UnitName__Id(N'500pkt'),	22000),
-	(0, 4, dbo.fn_UnitName__Id(N'mt'),		1),
-	(1, 4, dbo.fn_UnitName__Id(N'500pkt'),	24000),
-	(0, 5, dbo.fn_UnitName__Id(N'mt'),		1),
-	(1, 5, dbo.fn_UnitName__Id(N'500pkt'),	26000),
-	(0, 6, dbo.fn_UnitName__Id(N'mt'),		1),
-	(1, 6, dbo.fn_UnitName__Id(N'500pkt'),	28000);
+	--INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+	--		[UnitId],						[Multiplier]) VALUES
+	--(0, 0, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(0, 1, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(1, 1, dbo.fn_UnitName__Id(N'500pkt'),	19600),
+	--(0, 2, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(1, 2, dbo.fn_UnitName__Id(N'500pkt'),	20000),
+	--(0, 3, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(1, 3, dbo.fn_UnitName__Id(N'500pkt'),	22000),
+	--(0, 4, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(1, 4, dbo.fn_UnitName__Id(N'500pkt'),	24000),
+	--(0, 5, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(1, 5, dbo.fn_UnitName__Id(N'500pkt'),	26000),
+	--(0, 6, dbo.fn_UnitName__Id(N'mt'),		1),
+	--(1, 6, dbo.fn_UnitName__Id(N'500pkt'),	28000);
 
 
 	EXEC [api].[Resources__Save]
