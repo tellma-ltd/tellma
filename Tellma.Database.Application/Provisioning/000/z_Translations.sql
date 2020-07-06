@@ -355,20 +355,6 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 (N'Currencies',N'ZAR', N'en', N'Rand', N's'),(N'Currencies',N'ZAR', N'ar', N'راند', N's'),(N'Currencies',N'ZAR', N'am', N'ራንድ', N's'),(N'Currencies',N'ZAR', N'cn', N'南非兰特', N's'),(N'Currencies',N'ZAR', N'en', N'South African rand', N'n'),(N'Currencies',N'ZAR', N'ar', N'راند جنوب أفريقيا', N'n'),(N'Currencies',N'ZAR', N'am', N'የደቡብ አፍሪካው ሮድ', N'n'),(N'Currencies',N'ZAR', N'cn', N'南非兰特', N'n'),
 (N'Currencies',N'ZMW', N'en', N'Kwacha', N's'),(N'Currencies',N'ZMW', N'ar', N'كواشا', N's'),(N'Currencies',N'ZMW', N'am', N'Kwacha', N's'),(N'Currencies',N'ZMW', N'cn', N'赞比亚克瓦查', N's'),(N'Currencies',N'ZMW', N'en', N'Zambian kwacha', N'n'),(N'Currencies',N'ZMW', N'ar', N'كواشا زامبيا', N'n'),(N'Currencies',N'ZMW', N'am', N'የዛምቢያ kwacha', N'n'),(N'Currencies',N'ZMW', N'cn', N'赞比亚克瓦查', N'n'),
 (N'Currencies',N'ZWL', N'en', N'ZW Dollar', N's'),(N'Currencies',N'ZWL', N'ar', N'دولار ز.', N's'),(N'Currencies',N'ZWL', N'am', N'ZW ዶላር', N's'),(N'Currencies',N'ZWL', N'cn', N'津巴布韦元', N's'),(N'Currencies',N'ZWL', N'en', N'Zimbabwean dollar', N'n'),(N'Currencies',N'ZWL', N'ar', N'الدولار الزيمبابوي', N'n'),(N'Currencies',N'ZWL', N'am', N'ዚምባብዌ ዶላር', N'n'),(N'Currencies',N'ZWL', N'cn', N'津巴布韦元', N'n');
--- Users
-UPDATE dbo.Users
-SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Users', [Name], @PrimaryLanguageId, 'n'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Users', [Name], @SecondaryLanguageId, 'n'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Users', [Name], @TernaryLanguageId, 'n')
-WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Users' AND [Form] = N'n')
--- Roles
-UPDATE dbo.Roles
-SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @PrimaryLanguageId, 'n'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @SecondaryLanguageId, 'n'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @TernaryLanguageId, 'n')
-WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Roles' AND [Form] = N'n')
 -- Entry Types
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 (N'EntryTypes',N'ChangesInPropertyPlantAndEquipment', N'en', N'Increase (decrease) in property, plant and equipment', N's'),(N'EntryTypes',N'ChangesInPropertyPlantAndEquipment', N'ar', N'الزيادة (النقصان) في الممتلكات والمنشآت والمعدات', N's'),(N'EntryTypes',N'ChangesInPropertyPlantAndEquipment', N'am', N'በንብረት ፣ በእጽዋት እና በመሳሪያዎች ውስጥ መጨመር (መቀነስ)', N's'),(N'EntryTypes',N'ChangesInPropertyPlantAndEquipment', N'cn', N'Increase (decrease) in property, plant and equipment', N's'),
@@ -544,7 +530,6 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 (N'EntryTypes',N'InventoryWritedown2011', N'en', N'Inventory write-down', N's'),(N'EntryTypes',N'InventoryWritedown2011', N'ar', N'شطب المخزون', N's'),(N'EntryTypes',N'InventoryWritedown2011', N'am', N'የፈጠራ ዕቃዎች መጻፍ-', N's'),(N'EntryTypes',N'InventoryWritedown2011', N'cn', N'Inventory write-down', N's'),
 (N'EntryTypes',N'ReversalOfInventoryWritedown', N'en', N'Reversal of inventory write-down', N's'),(N'EntryTypes',N'ReversalOfInventoryWritedown', N'ar', N'عكس شطب المخزون', N's'),(N'EntryTypes',N'ReversalOfInventoryWritedown', N'am', N'የንብረት መዛግብት ተገላቢጦሽ', N's'),(N'EntryTypes',N'ReversalOfInventoryWritedown', N'cn', N'Reversal of inventory write-down', N's'),
 (N'EntryTypes',N'InternalInventoryTransferExtension', N'en', N'Inventory transfer', N's'),(N'EntryTypes',N'InternalInventoryTransferExtension', N'ar', N'تحويل المخزون', N's'),(N'EntryTypes',N'InternalInventoryTransferExtension', N'am', N'የፈጠራ ዕቃዎችን  ማስተላለፍ', N's'),(N'EntryTypes',N'InternalInventoryTransferExtension', N'cn', N'Inventory transfer', N's');
-
 -- Account Types
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 ('AccountTypes', N'StatementOfFinancialPositionAbstract', N'en', N'Statement of financial position [abstract]', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'ar', N'قائمة المركز المالي', N's'),
@@ -814,11 +799,20 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'PayrollControlExtension', N'en', N'Payroll control', N's'),('AccountTypes', N'PayrollControlExtension', N'ar', N'مراقبة الرواتب', N's'),
 ('AccountTypes', N'OtherControlExtension', N'en', N'Other document control', N's'),('AccountTypes', N'OtherControlExtension', N'ar', N'مراقبة وثيقة أخرى', N's'),
 ('AccountTypes', N'FinalAccountsControlExtension', N'en', N'Final Account Control', N's'),('AccountTypes', N'FinalAccountsControlExtension', N'ar', N'التحكم في حساب نهائي', N's')
-
--- IfrsConcepts
--- IfrsDisclosures
-
--- Report Definitions
+-- Users
+UPDATE dbo.Users
+SET
+	[Name]  = dbo.fn_TranslateFromEnglish(N'Users', [Name], @PrimaryLanguageId, 'n'),
+	[Name2] = dbo.fn_TranslateFromEnglish(N'Users', [Name], @SecondaryLanguageId, 'n'),
+	[Name3] = dbo.fn_TranslateFromEnglish(N'Users', [Name], @TernaryLanguageId, 'n')
+WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Users' AND [Form] = N'n')
+-- Roles
+UPDATE dbo.Roles
+SET
+	[Name]  = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @PrimaryLanguageId, 'n'),
+	[Name2] = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @SecondaryLanguageId, 'n'),
+	[Name3] = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @TernaryLanguageId, 'n')
+WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Roles' AND [Form] = N'n')
 -- Lookup Definitions
 UPDATE dbo.LookupDefinitions
 SET
@@ -879,7 +873,6 @@ SET
 	[Label2] = dbo.fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @SecondaryLanguageId, 'n'),
 	[Label3] = dbo.fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @TernaryLanguageId, 'n')
 WHERE [Label] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'LineDefinitionColumns');
-
 -- Document Definitions
 UPDATE dbo.DocumentDefinitions
 SET
@@ -913,3 +906,6 @@ SET
 	--[Description2] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @SecondaryLanguageId, 'n'),
 	--[Description3] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @TernaryLanguageId, 'n')
 WHERE [Concept] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'AccountTypes');
+-- units, -- IfrsConcepts
+-- IfrsDisclosures
+-- Report Definitions
