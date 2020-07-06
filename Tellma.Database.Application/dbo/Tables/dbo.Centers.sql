@@ -5,7 +5,7 @@
 	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK (
 													[CenterType] IN (
-														N'Abstract', N'Parent', N'CostOfSales',	N'SellingGeneralAndAdministration',
+														N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
 														N'SharedExpenseControl', N'TransitExpenseControl', N'ConstructionExpenseControl',
 														N'ProductionExpenseControl'
 													)

@@ -1,89 +1,101 @@
 ﻿INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
-(0,NULL, N'SSIA', N'الجهاز الاستثماري', N'', N'Abstract'),
-(1,0, N'Boards', N'المجالس الإدارية', N'1', N'Abstract'),
-(1100,1, N'SSIA', N'الجهاز الاستثماري', N'1100', N'Parent'),
-(1200,1, N'Consolidated Board of Directors', N'مجلس الإدارة الموحد', N'1200', N'SellingGeneralAndAdministration'),
-(1300,1, N'Board of Commissioners', N'مجلس المفوضين ', N'1300', N'SellingGeneralAndAdministration'),
-(3,0, N'Executive Management', N'الإدارة التنفيذية', N'3', N'Abstract'),
-(31,3, N'financial affairs', N'الشئون المالية ', N'31', N'Abstract'),
-(3100,31, N'Directorate General for Financial Affairs', N'الإدارة العامة للشئون المالية ', N'3100', N'SellingGeneralAndAdministration'),
-(311,31, N'Finance', N'المالية ', N'311', N'Abstract'),
-(3110,311, N'Finance Department', N'الإدارة المالية ', N'3110', N'SellingGeneralAndAdministration'),
-(3111,311, N'Accounts Division', N'قسم الحسابات', N'3111', N'SellingGeneralAndAdministration'),
-(3112,311, N'Final Accounts Division', N'قسم الحسابات الختامية', N'3112', N'SellingGeneralAndAdministration'),
-(3113,311, N'Collection Division', N'قسم التحصيل', N'3113', N'SellingGeneralAndAdministration'),
-(3114,311, N'Payments Division', N'قسم الدفعيات', N'3114', N'SellingGeneralAndAdministration'),
-(3115,311, N'Procurement Division', N'قسم المشتريات', N'3115', N'SellingGeneralAndAdministration'),
-(32,3, N'Human Resources and Administrative Affairs', N'تنمية الموارد البشرية والشئون الادارية ', N'32', N'Abstract'),
-(3200,32, N'Directorate General for Human Resources and Administrative Affairs', N'الإدارة العامة لتنمية الموارد البشرية والشئون الادارية ', N'3200', N'SellingGeneralAndAdministration'),
-(321,32, N'Human Resource Development', N'تنمية الموارد البشرية ', N'321', N'Abstract'),
-(3210,321, N'Human Resources Development Department', N'إدارة تنمية الموارد البشرية', N'3210', N'SellingGeneralAndAdministration'),
-(3211,321, N'Personnel Division', N'قسم شئون العاملين', N'3211', N'SellingGeneralAndAdministration'),
-(3212,321, N'Training Division', N'قسم التدريب', N'3212', N'SellingGeneralAndAdministration'),
-(322,32, N'Administrative Affairs', N'الشئون الادارية ', N'322', N'Abstract'),
-(3220,322, N'Administrative Affairs Department', N'إدارة الشئون الادارية', N'3220', N'SellingGeneralAndAdministration'),
-(3221,322, N'Services Division', N'قسم الخدمات', N'3221', N'SellingGeneralAndAdministration'),
-(3222,322, N'Security and Safety Division', N'قسم الأمن والسلامة', N'3222', N'SellingGeneralAndAdministration'),
-(33,3, N'Corporate and Real Estate Development', N'الشركات والتنمية العقارية ', N'33', N'Abstract'),
-(3300,33, N'Public administration companies and Real Estate Development', N'الإدارة العامة للشركات والتنمية العقارية', N'3300', N'SellingGeneralAndAdministration'),
-(3310,33, N'Department of Agricultural Investment', N'إدارة الاستثمار الزراعي', N'3310', N'SellingGeneralAndAdministration'),
-(3320,33, N'Department of Tourism Investment and Hotels', N'إدارة الاستثمار السياحي والفنادق', N'3320', N'SellingGeneralAndAdministration'),
-(3330,33, N'Department of Industrial Investment', N'إدارة الاستثمار الصناعي', N'3330', N'SellingGeneralAndAdministration'),
-(3340,33, N'Department of Medical Investment', N'إدارة الاستثمار الطبي', N'3340', N'SellingGeneralAndAdministration'),
-(335,33, N'Marketing', N'التسويق', N'335', N'Abstract'),
-(3350,335, N'Marketing Department', N'إدارة التسويق', N'3350', N'SellingGeneralAndAdministration'),
-(3351,335, N'Commercial Marketing', N'التسويق التجاري', N'3351', N'SellingGeneralAndAdministration'),
-(3352,335, N'Real Estate Marketing', N'التسويق العقاري', N'3352', N'SellingGeneralAndAdministration'),
-(336,33, N'Real Estate Development', N'التنمية العقارية', N'336', N'Abstract'),
-(3360,336, N'Real Estate Development Department', N'إدارة التنمية العقارية', N'3360', N'SellingGeneralAndAdministration'),
-(3361,336, N'Development Division', N'قسم التطوير العقاري', N'3361', N'SellingGeneralAndAdministration'),
-(3362,336, N'Projects Division', N'قسم المشروعات', N'3362', N'SellingGeneralAndAdministration'),
-(34,3, N'Studies and Strategic Planning', N'الدراسات والتخطيط الاستراتيجي ', N'34', N'Abstract'),
-(3400,34, N'Directorate General for Studies and Strategic Planning', N'الإدارة العامة للدراسات والتخطيط الاستراتيجي', N'3400', N'SellingGeneralAndAdministration'),
-(341,34, N'Studies and Research', N'الدراسات والبحوث', N'341', N'Abstract'),
-(3410,341, N'Studies and Research Department', N'إدارة الدراسات والبحوث', N'3410', N'SellingGeneralAndAdministration'),
-(3411,341, N'Risk Department', N'قسم المخاطر', N'3411', N'SellingGeneralAndAdministration'),
-(3412,341, N'Total Quality Department', N'قسم الجودة الشاملة', N'3412', N'SellingGeneralAndAdministration'),
-(3413,341, N'Department of Feasibility Studies and Statistics', N'قسم دراسات الجدوى والاحصاء', N'3413', N'SellingGeneralAndAdministration'),
-(3414,341, N'Research and Development Department', N'قسم البحوث والتطوير', N'3414', N'SellingGeneralAndAdministration'),
-(342,34, N'Information Technology', N'تكنولوجيا المعلومات ', N'342', N'Abstract'),
-(3420,342, N'Information Technology Management', N'إدارة تكنولوجيا المعلومات', N'3420', N'SellingGeneralAndAdministration'),
-(3421,342, N'Technical Support and Maintenance Department', N'قسم الدعم الفني والصيانة', N'3421', N'SellingGeneralAndAdministration'),
-(3422,342, N'Department of Network and Information Security', N'قسم الشبكات وامن المعلومات', N'3422', N'SellingGeneralAndAdministration'),
-(3423,342, N'Systems Development and Software Division', N'قسم تطوير الانظمة والبرمجيات', N'3423', N'SellingGeneralAndAdministration'),
-(35,3, N'Financial investment and smart partnerships', N'الاستثمار المالي والشراكات الذكية ', N'35', N'Abstract'),
-(3500,35, N'Directorate General for Financial Investment and smart partnerships', N'الإدارة العامة للاستثمار المالي والشراكات الذكية ', N'3500', N'SellingGeneralAndAdministration'),
-(3510,35, N'Banking System Management', N'إدارة الجهاز المصرفي', N'3510', N'SellingGeneralAndAdministration'),
-(3520,35, N'Financial Services Department', N'إدارة الخدمات المالية', N'3520', N'SellingGeneralAndAdministration'),
-(3530,35, N'Internal Trade Finance Management', N'إدارة التمويل التجاري الداخلي', N'3530', N'SellingGeneralAndAdministration'),
-(39,3, N'Commissioner-General', N'المفوض العام', N'39', N'Abstract'),
-(3900,39, N'Office of the Commissioner-General', N'مكتب المفوض العام', N'3900', N'SellingGeneralAndAdministration'),
-(391,39, N'Public relations', N'العلاقات العامة', N'391', N'Abstract'),
-(3910,391, N'Public Relations Department', N'إدارة العلاقات العامة', N'3910', N'SellingGeneralAndAdministration'),
-(3911,391, N'Department of Media', N'قسم الإعلام', N'3911', N'SellingGeneralAndAdministration'),
-(3912,391, N'Protocol Department', N'قسم المراسم', N'3912', N'SellingGeneralAndAdministration'),
-(3920,39, N'Management Office Executive', N'إدارة المكتب التنفيذي', N'3920', N'SellingGeneralAndAdministration'),
-(3930,39, N'Internal Audit Management', N'إدارة المراجعة الداخلية', N'3930', N'SellingGeneralAndAdministration'),
-(3940,39, N'Legal Counsel', N'المستشار القانوني', N'3940', N'SellingGeneralAndAdministration'),
-(4,0, N'Real Estate', N'عقارات', N'4', N'Abstract'),
-(41,4, N'Real Estate - Rentals', N'عقارات للتأجير', N'41', N'Abstract'),
-(411,41, N'Saffat Towers Complex', N'مجمع أبراج الصافات', N'411', N'Abstract'),
-(4111,411, N'Saffat Towers - Direct Expenses', N'أبراج الصافات - مصروفات مباشرة', N'4111', N'CostOfSales'),
-(4112,411, N'Saffat Towers - SGA', N'أبراج الصافات - مصروفات غير مباشرة', N'4112', N'SellingGeneralAndAdministration'),
-(412,41, N'Pearl Complex', N'مجمع لؤلؤة الثغر', N'412', N'Abstract'),
-(4121,412, N'Pearl Complex - Direct Expenses', N'لؤلؤة الثغر - مصروفات مباشرة', N'4121', N'CostOfSales'),
-(4122,412, N'Pearl Complex - SGA', N'لؤلؤة الثغر - مصروفات غير مباشرة', N'4122', N'SellingGeneralAndAdministration'),
-(42,4, N'Real Estate - Sales', N'عقارات للبيع', N'42', N'Abstract'),
-(421,42, N'Rayyan Scheme', N'مخطط الريان', N'421', N'Abstract'),
-(4211,421, N'Rayyan Scheme - Cost of Sales', N'مخطط الريان - تكلفة المبيعات', N'4211', N'CostOfSales'),
-(4212,421, N'Rayyan Scheme - SGA', N'مخطط الريان - مصروفات إدارية وتسويقية', N'4212', N'SellingGeneralAndAdministration'),
-(422,42, N'Yasmine Scheme', N'مخطط الياسمين', N'422', N'Abstract'),
-(4221,422, N'Yasmine Scheme - Cost of Sales', N'مخطط الياسمين - تكلفة المبيعات', N'4221', N'CostOfSales'),
-(4222,422, N'Yasmine Scheme - SGA', N'مخطط الياسمين - مصروفات إدارية وتسويقية', N'4222', N'SellingGeneralAndAdministration'),
-(5,0, N'Projects Under Construction', N'مشاريع قيد التنفيذ', N'5', N'Abstract'),
-(5001,5, N'Ubayyid Hospital Project', N'مشروع مستشفى الأبيض', N'5001', N'ConstructionExpenseControl'),
-(5002,5, N'Salam Scheme Project', N'مشروع مخطط السلام', N'5002', N'ConstructionExpenseControl'),
-(5003,5, N'Ahfaad Complex Project', N'مشروع مجمع الأحفاد', N'5003', N'ConstructionExpenseControl');
+(0,NULL, N'SSIA', N'الجهاز الاستثماري', N'0', N'Abstract'),
+(1,0, N'Headquarters', N'المقر الرئيسي', N'1', N'BusinessUnit'),
+(1000,1, N'Boards', N'المجالس الإدارية', N'1000', N'Abstract'),
+(10001,1000, N'Consolidated Board of Directors', N'مجلس الإدارة الموحد', N'10001', N'SellingGeneralAndAdministration'),
+(10002,1000, N'Board of Commissioners', N'مجلس المفوضين ', N'10002', N'SellingGeneralAndAdministration'),
+(12,1, N'Executive Management', N'الإدارة التنفيذية', N'12', N'Abstract'),
+(121,12, N'financial affairs', N'الشئون المالية ', N'121', N'Abstract'),
+(12100,121, N'Directorate General for Financial Affairs', N'الإدارة العامة للشئون المالية ', N'12100', N'SellingGeneralAndAdministration'),
+(1211,121, N'Finance', N'المالية ', N'1211', N'Abstract'),
+(12110,1211, N'Finance Department', N'الإدارة المالية ', N'12110', N'SellingGeneralAndAdministration'),
+(12111,1211, N'Accounts Division', N'قسم الحسابات', N'12111', N'SellingGeneralAndAdministration'),
+(12112,1211, N'Final Accounts Division', N'قسم الحسابات الختامية', N'12112', N'SellingGeneralAndAdministration'),
+(12113,1211, N'Collection Division', N'قسم التحصيل', N'12113', N'SellingGeneralAndAdministration'),
+(12114,1211, N'Payments Division', N'قسم الدفعيات', N'12114', N'SellingGeneralAndAdministration'),
+(12115,1211, N'Procurement Division', N'قسم المشتريات', N'12115', N'SellingGeneralAndAdministration'),
+(122,12, N'Human Resources and Administrative Affairs', N'تنمية الموارد البشرية والشئون الادارية ', N'122', N'Abstract'),
+(12200,122, N'Directorate General for Human Resources and Administrative Affairs', N'الإدارة العامة لتنمية الموارد البشرية والشئون الادارية ', N'12200', N'SellingGeneralAndAdministration'),
+(1221,122, N'Human Resource Development', N'تنمية الموارد البشرية ', N'1221', N'Abstract'),
+(12210,1221, N'Human Resources Development Department', N'إدارة تنمية الموارد البشرية', N'12210', N'SellingGeneralAndAdministration'),
+(12211,1221, N'Personnel Division', N'قسم شئون العاملين', N'12211', N'SellingGeneralAndAdministration'),
+(12212,1221, N'Training Division', N'قسم التدريب', N'12212', N'SellingGeneralAndAdministration'),
+(1222,122, N'Administrative Affairs', N'الشئون الادارية ', N'1222', N'Abstract'),
+(12220,1222, N'Administrative Affairs Department', N'إدارة الشئون الادارية', N'12220', N'SellingGeneralAndAdministration'),
+(12221,1222, N'Services Division', N'قسم الخدمات', N'12221', N'SellingGeneralAndAdministration'),
+(12222,1222, N'Security and Safety Division', N'قسم الأمن والسلامة', N'12222', N'SellingGeneralAndAdministration'),
+(123,12, N'Corporate and Real Estate Development', N'الشركات والتنمية العقارية ', N'123', N'Abstract'),
+(12300,123, N'Public administration companies and Real Estate Development', N'الإدارة العامة للشركات والتنمية العقارية', N'12300', N'SellingGeneralAndAdministration'),
+(1231,123, N'Agricultural Investment', N'الاستثمار الزراعي', N'1231', N'Abstract'),
+(12310,1231, N'Department of Agricultural Investment', N'إدارة الاستثمار الزراعي', N'12310', N'SellingGeneralAndAdministration'),
+(1232,123, N'Tourism Investment and Hotels', N'الاستثمار السياحي والفنادق', N'1232', N'Abstract'),
+(12320,1232, N'Department of Tourism Investment and Hotels', N'إدارة الاستثمار السياحي والفنادق', N'12320', N'SellingGeneralAndAdministration'),
+(1233,123, N'Industrial Investment', N'الاستثمار الصناعي', N'1233', N'Abstract'),
+(12330,1233, N'Department of Industrial Investment', N'إدارة الاستثمار الصناعي', N'12330', N'SellingGeneralAndAdministration'),
+(1234,123, N'Medical Investment', N'الاستثمار الطبي', N'1234', N'Abstract'),
+(12340,1234, N'Department of Medical Investment', N'إدارة الاستثمار الطبي', N'12340', N'SellingGeneralAndAdministration'),
+(1235,123, N'Marketing', N'التسويق', N'1235', N'Abstract'),
+(12350,1235, N'Marketing Department', N'إدارة التسويق', N'12350', N'SellingGeneralAndAdministration'),
+(12351,1235, N'Commercial Marketing', N'التسويق التجاري', N'12351', N'SellingGeneralAndAdministration'),
+(12352,1235, N'Real Estate Marketing', N'التسويق العقاري', N'12352', N'SellingGeneralAndAdministration'),
+(1236,123, N'Real Estate Development', N'التنمية العقارية', N'1236', N'Abstract'),
+(12360,1236, N'Real Estate Development Department', N'إدارة التنمية العقارية', N'12360', N'SellingGeneralAndAdministration'),
+(12361,1236, N'Development Division', N'قسم التطوير العقاري', N'12361', N'SellingGeneralAndAdministration'),
+(12362,1236, N'Projects Division', N'قسم المشروعات', N'12362', N'SellingGeneralAndAdministration'),
+(124,12, N'Studies and Strategic Planning', N'الدراسات والتخطيط الاستراتيجي ', N'124', N'Abstract'),
+(12400,124, N'Directorate General for Studies and Strategic Planning', N'الإدارة العامة للدراسات والتخطيط الاستراتيجي', N'12400', N'SellingGeneralAndAdministration'),
+(1241,124, N'Studies and Research', N'الدراسات والبحوث', N'1241', N'Abstract'),
+(12410,1241, N'Studies and Research Department', N'إدارة الدراسات والبحوث', N'12410', N'SellingGeneralAndAdministration'),
+(12411,1241, N'Risk Department', N'قسم المخاطر', N'12411', N'SellingGeneralAndAdministration'),
+(12412,1241, N'Total Quality Department', N'قسم الجودة الشاملة', N'12412', N'SellingGeneralAndAdministration'),
+(12413,1241, N'Department of Feasibility Studies and Statistics', N'قسم دراسات الجدوى والاحصاء', N'12413', N'SellingGeneralAndAdministration'),
+(12414,1241, N'Research and Development Department', N'قسم البحوث والتطوير', N'12414', N'SellingGeneralAndAdministration'),
+(1242,124, N'Information Technology', N'تكنولوجيا المعلومات ', N'1242', N'Abstract'),
+(12420,1242, N'Information Technology Management', N'إدارة تكنولوجيا المعلومات', N'12420', N'SellingGeneralAndAdministration'),
+(12421,1242, N'Technical Support and Maintenance Department', N'قسم الدعم الفني والصيانة', N'12421', N'SellingGeneralAndAdministration'),
+(12422,1242, N'Department of Network and Information Security', N'قسم الشبكات وامن المعلومات', N'12422', N'SellingGeneralAndAdministration'),
+(12423,1242, N'Systems Development and Software Division', N'قسم تطوير الانظمة والبرمجيات', N'12423', N'SellingGeneralAndAdministration'),
+(125,12, N'Financial investment and smart partnerships', N'الاستثمار المالي والشراكات الذكية ', N'125', N'Abstract'),
+(12500,125, N'Directorate General for Financial Investment and smart partnerships', N'الإدارة العامة للاستثمار المالي والشراكات الذكية ', N'12500', N'SellingGeneralAndAdministration'),
+(1251,125, N'Banking System', N'الجهاز المصرفي', N'1251', N'Abstract'),
+(12510,1251, N'Banking System Department', N'إدارة الجهاز المصرفي', N'12510', N'SellingGeneralAndAdministration'),
+(1252,125, N'Financial Services', N'الخدمات المالية', N'1252', N'Abstract'),
+(12520,1252, N'Financial Services Department', N'إدارة الخدمات المالية', N'12520', N'SellingGeneralAndAdministration'),
+(1253,125, N'Internal Trade Finance', N'التمويل التجاري الداخلي', N'1253', N'Abstract'),
+(12530,1253, N'Internal Trade Finance Department', N'إدارة التمويل التجاري الداخلي', N'12530', N'SellingGeneralAndAdministration'),
+(129,12, N'Commissioner-General', N'المفوض العام', N'129', N'Abstract'),
+(12900,129, N'Office of the Commissioner-General', N'مكتب المفوض العام', N'12900', N'SellingGeneralAndAdministration'),
+(1291,129, N'Public relations', N'العلاقات العامة', N'1291', N'Abstract'),
+(12910,1291, N'Public Relations Department', N'إدارة العلاقات العامة', N'12910', N'SellingGeneralAndAdministration'),
+(12911,1291, N'Department of Media', N'قسم الإعلام', N'12911', N'SellingGeneralAndAdministration'),
+(12912,1291, N'Protocol Department', N'قسم المراسم', N'12912', N'SellingGeneralAndAdministration'),
+(12913,1291, N'Management Office Executive', N'إدارة المكتب التنفيذي', N'12913', N'SellingGeneralAndAdministration'),
+(12914,1291, N'Internal Audit Management', N'إدارة المراجعة الداخلية', N'12914', N'SellingGeneralAndAdministration'),
+(12915,1291, N'Legal Counsel', N'المستشار القانوني', N'12915', N'SellingGeneralAndAdministration'),
+(2,NULL, N'Investment Property', N'الاستثمار العقاري', N'2', N'Abstract'),
+(21,2, N'Saffat Towers Complex', N'مجمع أبراج الصافات', N'21', N'BusinessUnit'),
+(21000,21, N'Saffat Towers - Direct Expenses', N'أبراج الصافات - مصروفات مباشرة', N'21000', N'CostOfSales'),
+(211,21, N'Saffat Towers - SGA', N'أبراج الصافات - مصروفات غير مباشرة', N'211', N'Abstract'),
+(21100,211, N'Saffat Towers - SGA', N'أبراج الصافات - مصروفات غير مباشرة', N'21100', N'SellingGeneralAndAdministration'),
+(22,2, N'Pearl Complex', N'مجمع لؤلؤة الثغر', N'22', N'BusinessUnit'),
+(22000,22, N'Pearl Complex - Direct Expenses', N'لؤلؤة الثغر - مصروفات مباشرة', N'22000', N'CostOfSales'),
+(221,22, N'Pearl Complex - SGA', N'لؤلؤة الثغر - مصروفات غير مباشرة', N'221', N'Abstract'),
+(22100,221, N'Pearl Complex - SGA', N'لؤلؤة الثغر - مصروفات غير مباشرة', N'22100', N'SellingGeneralAndAdministration'),
+(23,2, N'Rayyan Scheme', N'مخطط الريان', N'23', N'BusinessUnit'),
+(23000,23, N'Rayyan Scheme - Cost of Sales', N'مخطط الريان - مصروفات مباشرة', N'23000', N'CostOfSales'),
+(231,23, N'Rayyan Scheme - SGA', N'مخطط الريان - مصروفات إدارية وتسويقية', N'231', N'Abstract'),
+(23100,231, N'Rayyan Scheme - SGA', N'مخطط الريان - مصروفات إدارية وتسويقية', N'23100', N'SellingGeneralAndAdministration'),
+(24,2, N'Yasmine Scheme', N'مخطط الياسمين', N'24', N'BusinessUnit'),
+(24000,24, N'Yasmine Scheme - Cost of Sales', N'مخطط الياسمين - مصروفات مباشرة', N'24000', N'CostOfSales'),
+(241,24, N'Yasmine Scheme - SGA', N'مخطط الياسمين - مصروفات إدارية وتسويقية', N'241', N'Abstract'),
+(24100,241, N'Yasmine Scheme - SGA', N'مخطط الياسمين - مصروفات إدارية وتسويقية', N'24100', N'SellingGeneralAndAdministration'),
+(25,2, N'Mehira Scheme', N'مخطط مهيرة', N'25', N'BusinessUnit'),
+(25000,25, N'Mehira Scheme - Cost of Sales', N'مخطط مهيرة - مصروفات مباشرة', N'25000', N'CostOfSales'),
+(251,25, N'Mehira Scheme - SGA', N'مخطط مهيرة - مصروفات إدارية وتسويقية', N'251', N'Abstract'),
+(25100,251, N'Mehira Scheme - SGA', N'مخطط مهيرة - مصروفات إدارية وتسويقية', N'25100', N'SellingGeneralAndAdministration'),
+(252,25, N'Mehira Scheme - Projects under construction', N'مخطط مهيرة - مشاريع قيد التنفيذ', N'252', N'Abstract'),
+(25201,242, N'Mehira Scheme - Phase 1', N'مخطط مهيرة - المرحلة الأولى', N'25201', N'ConstructionExpenseControl'),
+(25202,242, N'Mehira Scheme - Phase 2', N'مخطط مهيرة - المرحلة الثانية', N'25202', N'ConstructionExpenseControl');
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
@@ -97,6 +109,7 @@ END;
 
 -- Declarations
 DECLARE @107C_SSIA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'SSIA');
+DECLARE @107C_Headquarters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Headquarters');
 DECLARE @107C_ConsolidatedBoardofDirectors INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Consolidated Board of Directors');
 DECLARE @107C_BoardofCommissioners INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Board of Commissioners');
 DECLARE @107C_DirectorateGeneralforFinancialAffairs INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Directorate General for Financial Affairs');
@@ -135,9 +148,9 @@ DECLARE @107C_TechnicalSupportandMaintenanceDepartment INT = (SELECT [Id] FROM d
 DECLARE @107C_DepartmentofNetworkandInformationSecurity INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Network and Information Security');
 DECLARE @107C_SystemsDevelopmentandSoftwareDivision INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Systems Development and Software Division');
 DECLARE @107C_DirectorateGeneralforFinancialInvestmentandsmartpartnerships INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Directorate General for Financial Investment and smart partnerships');
-DECLARE @107C_BankingSystemManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Banking System Management');
+DECLARE @107C_BankingSystemDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Banking System Department');
 DECLARE @107C_FinancialServicesDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Financial Services Department');
-DECLARE @107C_InternalTradeFinanceManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Internal Trade Finance Management');
+DECLARE @107C_InternalTradeFinanceDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Internal Trade Finance Department');
 DECLARE @107C_OfficeoftheCommissionerGeneral INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Office of the Commissioner-General');
 DECLARE @107C_PublicRelationsDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Public Relations Department');
 DECLARE @107C_DepartmentofMedia INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Department of Media');
@@ -145,14 +158,20 @@ DECLARE @107C_ProtocolDepartment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Ce
 DECLARE @107C_ManagementOfficeExecutive INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Management Office Executive');
 DECLARE @107C_InternalAuditManagement INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Internal Audit Management');
 DECLARE @107C_LegalCounsel INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Legal Counsel');
+DECLARE @107C_SaffatTowersComplex INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Saffat Towers Complex');
 DECLARE @107C_SaffatTowersDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Saffat Towers - Direct Expenses');
 DECLARE @107C_SaffatTowersSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Saffat Towers - SGA');
+DECLARE @107C_PearlComplex INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Pearl Complex');
 DECLARE @107C_PearlComplexDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Pearl Complex - Direct Expenses');
 DECLARE @107C_PearlComplexSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Pearl Complex - SGA');
+DECLARE @107C_RayyanScheme INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Rayyan Scheme');
 DECLARE @107C_RayyanSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Rayyan Scheme - Cost of Sales');
 DECLARE @107C_RayyanSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Rayyan Scheme - SGA');
+DECLARE @107C_YasmineScheme INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Yasmine Scheme');
 DECLARE @107C_YasmineSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Yasmine Scheme - Cost of Sales');
 DECLARE @107C_YasmineSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Yasmine Scheme - SGA');
-DECLARE @107C_UbayyidHospitalProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Ubayyid Hospital Project');
-DECLARE @107C_SalamSchemeProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Salam Scheme Project');
-DECLARE @107C_AhfaadComplexProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Ahfaad Complex Project');
+DECLARE @107C_MehiraScheme INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme');
+DECLARE @107C_MehiraSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - Cost of Sales');
+DECLARE @107C_MehiraSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - SGA');
+DECLARE @107C_MehiraSchemePhase1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - Phase 1');
+DECLARE @107C_MehiraSchemePhase2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - Phase 2');
