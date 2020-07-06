@@ -2,12 +2,12 @@
 (
 	[Id]								INT				CONSTRAINT [PK_ResourceDefinitions] PRIMARY KEY IDENTITY,
 	[Code]								NVARCHAR (255)	NOT NULL CONSTRAINT [UX_ResourceDefinitions] UNIQUE,
-	[TitleSingular]						NVARCHAR (255),
-	[TitleSingular2]					NVARCHAR (255),
-	[TitleSingular3]					NVARCHAR (255),
-	[TitlePlural]						NVARCHAR (255),
-	[TitlePlural2]						NVARCHAR (255),
-	[TitlePlural3]						NVARCHAR (255),
+	[TitleSingular]						NVARCHAR (100),
+	[TitleSingular2]					NVARCHAR (100),
+	[TitleSingular3]					NVARCHAR (100),
+	[TitlePlural]						NVARCHAR (100),
+	[TitlePlural2]						NVARCHAR (100),
+	[TitlePlural3]						NVARCHAR (100),
 	-----Resource Properties Common with Contracts
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),

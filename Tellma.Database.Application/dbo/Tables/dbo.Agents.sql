@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Agents]
 (
 	[Id]				INT					CONSTRAINT [PK_Agents] PRIMARY KEY IDENTITY,
-	[Name]				NVARCHAR (50)		NOT NULL,
+	[Name]				NVARCHAR (50)		NOT NULL CONSTRAINT [UX_Agents__Name] UNIQUE,
 	[Name2]				NVARCHAR (50),
 	[Name3]				NVARCHAR (50),
 	[IsRelated]			BIT					NOT NULL DEFAULT 0,
@@ -11,4 +11,4 @@
 	[CreatedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Agents__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
 	[ModifiedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Agents__ModifiedById] REFERENCES [dbo].[Users] ([Id])
-)
+);

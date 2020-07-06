@@ -2,12 +2,12 @@
 (
 	[Id]								INT				CONSTRAINT [PK_ContractDefinitions] PRIMARY KEY IDENTITY,
 	[Code]								NVARCHAR(50)	NOT NULL CONSTRAINT [IX_ContractDefinitions__Code] UNIQUE,
-	[TitleSingular]						NVARCHAR (255),
-	[TitleSingular2]					NVARCHAR (255),
-	[TitleSingular3]					NVARCHAR (255),
-	[TitlePlural]						NVARCHAR (255),
-	[TitlePlural2]						NVARCHAR (255),
-	[TitlePlural3]						NVARCHAR (255),
+	[TitleSingular]						NVARCHAR (50),
+	[TitleSingular2]					NVARCHAR (50),
+	[TitleSingular3]					NVARCHAR (50),
+	[TitlePlural]						NVARCHAR (50)	NOT NULL,
+	[TitlePlural2]						NVARCHAR (50),
+	[TitlePlural3]						NVARCHAR (50),
 	-----Contract properties common with resources
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
