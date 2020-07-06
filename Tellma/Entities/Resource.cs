@@ -125,9 +125,6 @@ namespace Tellma.Entities
         [Display(Name = "Resource_EconomicOrderQuantity")]
         public decimal? EconomicOrderQuantity { get; set; } // Check
 
-        [Display(Name = "Resource_MonetaryValue")]
-        public decimal? MonetaryValue { get; set; } // Check
-
         [Display(Name = "Resource_Unit")]
         public int? UnitId { get; set; }
 
@@ -136,6 +133,9 @@ namespace Tellma.Entities
 
         [Display(Name = "Resource_UnitMassUnit")]
         public int? UnitMassUnitId { get; set; }
+
+        [Display(Name = "Resource_MonetaryValue")]
+        public decimal? MonetaryValue { get; set; } // Check
 
         [Display(Name = "Resource_Units")]
         [ForeignKey(nameof(ResourceUnit.ResourceId))]
