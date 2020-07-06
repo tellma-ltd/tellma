@@ -89,7 +89,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
       result.Name3 = this.initialText;
     }
 
-    // const defs = this.definition;
+    const defs = this.definition;
 
     // result.Identifier = defs.IdentifierDefaultValue;
     // result.CurrencyId = defs.CurrencyDefaultValue;
@@ -109,6 +109,8 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     // result.Lookup5Id = defs.Lookup5DefaultValue;
     // result.Text1 = defs.Text1DefaultValue;
     // result.Text2 = defs.Text2DefaultValue;
+    result.UnitId = defs.DefaultUnitId;
+    result.UnitMassUnitId = defs.DefaultUnitMassUnitId;
     result.Units = [];
 
     return result;
@@ -421,7 +423,11 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get Unit_isRequired(): boolean {
-    return true;
+    return !this.definition.DefaultUnitId;
+  }
+
+  public get Unit_default(): number {
+    return this.definition.DefaultUnitId;
   }
 
   public get UnitMass_isVisible(): boolean {

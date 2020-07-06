@@ -640,7 +640,7 @@
   "Resource_ResidualMonetaryValue": "ቀሪ የገንዘብ ዋጋ",
   "Resource_ResidualValue": "ትራፊ እሴት",
   "Resource_Unit": "መለኪያ",
-  "Resource_UnitMass": "ዩኒት በ የጅምላ",
+  "Resource_UnitMass": "የጅምላ በእያንዳንዱ ዩኒት",
   "Resource_UnitMassUnit": "የጅምላ ዩኒት",
   "Resource_Units": "የመለኪያ ዩኒት",
   "ResourceDefinition": "የመገልገያ ፍቺ",

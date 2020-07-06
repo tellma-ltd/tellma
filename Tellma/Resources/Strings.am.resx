@@ -1976,7 +1976,7 @@
     <value>መለኪያ</value>
   </data>
   <data name="Resource_UnitMass" xml:space="preserve">
-    <value>ዩኒት በ የጅምላ</value>
+    <value>የጅምላ በእያንዳንዱ ዩኒት</value>
   </data>
   <data name="Resource_UnitMassUnit" xml:space="preserve">
     <value>የጅምላ ዩኒት</value>

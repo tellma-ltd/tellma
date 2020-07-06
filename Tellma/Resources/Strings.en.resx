@@ -1976,7 +1976,7 @@
     <value>Unit</value>
   </data>
   <data name="Resource_UnitMass" xml:space="preserve">
-    <value>Mass per Unit</value>
+    <value>Mass Per Unit</value>
   </data>
   <data name="Resource_UnitMassUnit" xml:space="preserve">
     <value>Mass Unit</value>

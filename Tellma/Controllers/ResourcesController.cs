@@ -228,8 +228,13 @@ namespace Tellma.Controllers
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
             //SetDefaultValue(entities, e => e.Text1, def.Text1DefaultValue);
             //SetDefaultValue(entities, e => e.Text2, def.Text2DefaultValue);
-            SetDefaultValue(entities, e => e.UnitId, def.DefaultUnitId);
-            SetDefaultValue(entities, e => e.UnitMassUnitId, def.DefaultUnitMassUnitId);
+
+            // Set defaults
+            entities.ForEach(entity =>
+            {
+                entity.UnitId ??= def.DefaultUnitId;
+                entity.UnitMassUnitId ??= def.DefaultUnitMassUnitId;
+            });
 
             entities.ForEach(e =>
             {
@@ -329,22 +334,22 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        private void SetDefaultValue<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, TKey defaultValue)
-        {
-            if (defaultValue != null)
-            {
-                Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
-                Action<ResourceForSave, TKey> setPropValue = ControllerUtilities.GetAssigner(selector).Compile();
+        //private void SetDefaultValue<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, TKey defaultValue)
+        //{
+        //    if (defaultValue != null)
+        //    {
+        //        Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
+        //        Action<ResourceForSave, TKey> setPropValue = ControllerUtilities.GetAssigner(selector).Compile();
 
-                entities.ForEach(entity =>
-                {
-                    if (getPropValue(entity) == null)
-                    {
-                        setPropValue(entity, defaultValue);
-                    }
-                });
-            }
-        }
+        //        entities.ForEach(entity =>
+        //        {
+        //            if (getPropValue(entity) == null)
+        //            {
+        //                setPropValue(entity, defaultValue);
+        //            }
+        //        });
+        //    }
+        //}
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {

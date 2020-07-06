@@ -917,15 +917,18 @@ namespace Tellma.Controllers
                     {
                         display = null;
                     } 
-                    else
+                    else if (def.DefaultUnitId == null)
                     {
                         isRequired = true;
                     }
                     break;
                 case nameof(Resource.UnitMass):
-                case nameof(Resource.UnitMassUnitId):
                     display = PropertyDisplay(def.UnitMassVisibility, display);
                     isRequired = def.UnitMassVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.UnitMassUnitId):
+                    display = PropertyDisplay(def.UnitMassVisibility, display);
+                    isRequired = def.UnitMassVisibility == Visibility.Required && def.DefaultUnitMassUnitId == null;
                     break;
                 case nameof(Resource.MonetaryValue):
                     display = PropertyDisplay(def.MonetaryValueVisibility, display);
