@@ -265,14 +265,14 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>تجميعي</value>
   </data>
+  <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
+    <value>وحدة أعمال</value>
+  </data>
   <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
     <value>تكاليف إنشاء</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>تكلفة مبيعات</value>
-  </data>
-  <data name="Center_CenterType_Parent" xml:space="preserve">
-    <value>أصل</value>
   </data>
   <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
     <value>تكاليف تصنيع</value>

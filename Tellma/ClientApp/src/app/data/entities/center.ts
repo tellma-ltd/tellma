@@ -64,7 +64,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                     label: () => trx.instant('Center_CenterType'),
                     choices: [
                         'Abstract',
-                        'Parent',
+                        'BusinessUnit',
                         'CostOfSales',
                         'SellingGeneralAndAdministration',
                         'SharedExpenseControl',

@@ -10,7 +10,7 @@
             ],
             'CenterType' : [
                 { template: abstract, expression: 'CenterType eq \'Abstract\''},
-                { template: parent, expression: 'CenterType eq \'Parent\''},
+                { template: businessunit, expression: 'CenterType eq \'BusinessUnit\''},
                 { template: cos, expression: 'CenterType eq \'CostOfSales\''},
                 { template: selling, expression: 'CenterType eq \'SellingGeneralAndAdministration\''},
                 { template: shared, expression: 'CenterType eq \'SharedExpenseControl\''},
@@ -49,7 +49,7 @@
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
 <ng-template #abstract> {{ 'Center_CenterType_Abstract' | translate }} </ng-template>
-<ng-template #parent> {{ 'Center_CenterType_Parent' | translate }} </ng-template>
+<ng-template #businessunit> {{ 'Center_CenterType_BusinessUnit' | translate }} </ng-template>
 <ng-template #cos> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>
 <ng-template #selling> {{ 'Center_CenterType_SellingGeneralAndAdministration' | translate }} </ng-template>
 <ng-template #shared> {{ 'Center_CenterType_SharedExpenseControl' | translate }} </ng-template>

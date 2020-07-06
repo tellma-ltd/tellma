@@ -265,14 +265,14 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>ረቂቅ</value>
   </data>
+  <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
+    <value>ቢዝነስ ዩኒት</value>
+  </data>
   <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
     <value>ኮንስትራክሽን የወጪ</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>የሽያጭ ወጪ</value>
-  </data>
-  <data name="Center_CenterType_Parent" xml:space="preserve">
-    <value>ወላጅ</value>
   </data>
   <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
     <value>የምርት የወጪ</value>

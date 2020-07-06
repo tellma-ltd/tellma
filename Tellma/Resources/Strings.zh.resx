@@ -265,14 +265,14 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>抽象</value>
   </data>
+  <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
+    <value>业务部</value>
+  </data>
   <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
     <value>工程费用</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>销售成本</value>
-  </data>
-  <data name="Center_CenterType_Parent" xml:space="preserve">
-    <value>亲</value>
   </data>
   <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
     <value>生产费用</value>
