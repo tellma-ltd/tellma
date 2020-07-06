@@ -244,7 +244,7 @@
                         [class.is-invalid]="invalid(defaultunit, serverErrors(model, 'DefaultUnitId'))">
                         <label class="small"
                             for="defaultunit">{{ 'Field0Default' | translate: { '0': ('Resource_Unit' | translate) } }}</label>
-                        <div>
+                        <div class="form-control t-borderless-input t-studio-input">
                             <t-units-picker class="" [(ngModel)]="model.DefaultUnitId"
                                 (ngModelChange)="onDefinitionChange(model)" id="defaultunit" #defaultunit="ngModel">
                             </t-units-picker>
@@ -263,7 +263,7 @@
                         [class.is-invalid]="invalid(defaultunitmassunit, serverErrors(model, 'DefaultUnitMassUnitId'))">
                         <label class="small"
                             for="defaultunitmassunit">{{ 'Field0Default' | translate: { '0': ('Resource_UnitMassUnit' | translate) } }}</label>
-                        <div>
+                        <div class="form-control t-borderless-input t-studio-input">
                             <t-units-picker class="" [(ngModel)]="model.DefaultUnitMassUnitId"
                                 (ngModelChange)="onDefinitionChange(model)" id="defaultunitmassunit"
                                 #defaultunitmassunit="ngModel">

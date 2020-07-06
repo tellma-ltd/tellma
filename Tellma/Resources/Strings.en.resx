@@ -265,14 +265,14 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>Abstract</value>
   </data>
+  <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
+    <value>Business Unit</value>
+  </data>
   <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
     <value>Construction Expense</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>Cost of Sales</value>
-  </data>
-  <data name="Center_CenterType_Parent" xml:space="preserve">
-    <value>Parent</value>
   </data>
   <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
     <value>Production Expense</value>

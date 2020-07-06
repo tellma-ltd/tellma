@@ -475,6 +475,10 @@ input.t-h2,
   background-color: $secondary !important;
 }
 
+.t-studio-input button {
+  color: white !important;
+}
+
 .t-less-dark {
   background-color: $gray-700;
 }
@@ -1226,7 +1230,8 @@ tr.t-highlight {
   }
 }
 
-.t-master-modal, .t-inbox-modal {
+.t-master-modal,
+.t-inbox-modal {
   .modal-content {
     height: 100%;
   }
@@ -1247,7 +1252,8 @@ tr.t-highlight {
 }
 
 @media (min-width: 576px) {
-  .t-master-modal, .t-inbox-modal {
+  .t-master-modal,
+  .t-inbox-modal {
     .modal-content {
       height: 100%;
     }
@@ -1751,9 +1757,20 @@ button:focus {
 }
 
 .t-hidden-cursor .ace_cursor-layer .ace_cursor {
-	display: none;
+  display: none;
 }
 
 .t-underline {
   text-decoration: underline;
+}
+
+.t-studio-input .t-magnifier-btn {
+  margin-right: -0.35rem;
+}
+
+.t-rtl {
+  .t-studio-input .t-magnifier-btn {
+    margin-right: 0;
+    margin-left: -0.35rem;
+  }
 }

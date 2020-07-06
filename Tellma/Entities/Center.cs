@@ -20,7 +20,7 @@ namespace Tellma.Entities
         [StringLength(255)]
         [ChoiceList(new object[] {
             "Abstract", 
-            "Parent", 
+            "BusinessUnit", 
             "CostOfSales",
             "SellingGeneralAndAdministration", 
             "SharedExpenseControl",
@@ -30,7 +30,7 @@ namespace Tellma.Entities
         },
             new string[] {
                 "Center_CenterType_Abstract",
-                "Center_CenterType_Parent",
+                "Center_CenterType_BusinessUnit",
                 "Center_CenterType_CostOfSales",
                 "Center_CenterType_SellingGeneralAndAdministration",
                 "Center_CenterType_SharedExpenseControl",
