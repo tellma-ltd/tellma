@@ -94,8 +94,8 @@
 (251,25, N'Mehira Scheme - SGA', N'مخطط مهيرة - مصروفات إدارية وتسويقية', N'251', N'Abstract'),
 (25100,251, N'Mehira Scheme - SGA', N'مخطط مهيرة - مصروفات إدارية وتسويقية', N'25100', N'SellingGeneralAndAdministration'),
 (252,25, N'Mehira Scheme - Projects under construction', N'مخطط مهيرة - مشاريع قيد التنفيذ', N'252', N'Abstract'),
-(25201,242, N'Mehira Scheme - Phase 1', N'مخطط مهيرة - المرحلة الأولى', N'25201', N'ConstructionExpenseControl'),
-(25202,242, N'Mehira Scheme - Phase 2', N'مخطط مهيرة - المرحلة الثانية', N'25202', N'ConstructionExpenseControl');
+(25201,252, N'Mehira Scheme - Phase 1', N'مخطط مهيرة - المرحلة الأولى', N'25201', N'ConstructionExpenseControl'),
+(25202,252, N'Mehira Scheme - Phase 2', N'مخطط مهيرة - المرحلة الثانية', N'25202', N'ConstructionExpenseControl');
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,

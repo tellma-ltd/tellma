@@ -49,6 +49,32 @@ BEGIN
 		UPDATE @D SET [SegmentId] = @SegmentId
 	END
 BEGIN
+--
+	UPDATE E
+	SET E.ResourceId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	WHERE L.DefinitionId = @ManualLineLD
+	AND A.ResourceDefinitionId IS NULL;
+
+	UPDATE E
+	SET E.ContractId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	WHERE L.DefinitionId = @ManualLineLD
+	AND A.ContractDefinitionId IS NULL;
+
+	UPDATE E
+	SET E.EntryTypeId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+	WHERE L.DefinitionId = @ManualLineLD
+	AND AC.EntryTypeParentId IS NULL
+
 --	Overwrite input with data specified in the template (or clause)
 	UPDATE E
 	SET
