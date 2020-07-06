@@ -98,6 +98,9 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     ReorderLevelVisibility?: Visibility;
     EconomicOrderQuantityVisibility?: Visibility;
     UnitCardinality?: DefinitionCardinality;
+    DefaultUnitId?: number;
+    UnitMassVisibility?: Visibility;
+    DefaultUnitMassUnitId?: number;
     MonetaryValueVisibility?: Visibility;
 
     // Main Menu
@@ -223,6 +226,11 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),
                 UnitCardinality: cardinalityPropDescriptor('ResourceDefinition_UnitCardinality', trx),
+                DefaultUnitId: { control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_Unit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
+                DefaultUnit: { control: 'navigation', label: () => trx.instant('Field0Default', { 0: trx.instant('Resource_Unit') }), type: 'Unit', foreignKeyName: 'DefaultUnitId' },
+                UnitMassVisibility: visibilityPropDescriptor('Resource_UnitMass', trx),
+                DefaultUnitMassUnitId: { control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
+                DefaultUnitMassUnit: { control: 'navigation', label: () => trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') }), type: 'Unit', foreignKeyName: 'DefaultUnitMassUnitId' },
                 MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
 
                 State: statePropDescriptor(trx),

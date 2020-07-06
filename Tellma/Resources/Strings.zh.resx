@@ -829,9 +829,6 @@
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>发生意外错误添加外部登录与电子邮件用户“{0}”。</value>
   </data>
-  <data name="Error_AtLeastOneUnitIsRequired" xml:space="preserve">
-    <value>指定至少一个测量单元</value>
-  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>
   </data>
@@ -1194,6 +1191,9 @@
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>Facebook的</value>
+  </data>
+  <data name="Field0Default" xml:space="preserve">
+    <value>默认{0}</value>
   </data>
   <data name="Field0Definition" xml:space="preserve">
     <value>{0}定义</value>
@@ -1973,7 +1973,13 @@
     <value>剩余价值</value>
   </data>
   <data name="Resource_Unit" xml:space="preserve">
-    <value>计量单位</value>
+    <value>单元</value>
+  </data>
+  <data name="Resource_UnitMass" xml:space="preserve">
+    <value>每单位体积</value>
+  </data>
+  <data name="Resource_UnitMassUnit" xml:space="preserve">
+    <value>质量单位</value>
   </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>测量单位</value>
@@ -1992,9 +1998,6 @@
   </data>
   <data name="ResourceUnit" xml:space="preserve">
     <value>资源股</value>
-  </data>
-  <data name="ResourceUnit_Multiplier" xml:space="preserve">
-    <value>乘数</value>
   </data>
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>单元</value>

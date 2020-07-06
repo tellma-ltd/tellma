@@ -305,6 +305,15 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string UnitCardinality { get; set; }
 
+        [DefaultDisplay(Name = "Resource_Unit")]
+        public int? DefaultUnitId { get; set; }
+
+        [VisibilityDisplay(Name = "Resource_UnitMass"), VisibilityChoiceList]
+        public string UnitMassVisibility { get; set; }
+
+        [DefaultDisplay(Name = "Resource_UnitMassUnit")]
+        public int? DefaultUnitMassUnitId { get; set; }
+
         // Financial Instruments
 
         [VisibilityDisplay(Name = "Resource_MonetaryValue"), VisibilityChoiceList]
@@ -347,5 +356,13 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
+
+        [DefaultDisplay(Name = "Resource_UnitMassUnit")]
+        [ForeignKey(nameof(DefaultUnitId))]
+        public Unit DefaultUnit { get; set; }
+
+        [DefaultDisplay(Name = "Resource_UnitMassUnit")]
+        [ForeignKey(nameof(DefaultUnitMassUnitId))]
+        public Unit DefaultUnitMassUnit { get; set; }
     }
 }

@@ -241,6 +241,26 @@
                     </div>
 
                     <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'UnitMass', propLower: 'unitmass', fieldName: 'Resource_UnitMass' }">
+                    </ng-container>
+                    
+                    <!-- DefaultUnitMassUnit -->
+                    <!-- <div class="form-group"
+                        [class.is-invalid]="invalid(defaultunitmassunit, serverErrors(model, 'DefaultUnitMassUnitId'))">
+                        <label class="small"
+                            for="defaultunitmassunit">{{ 'Field0Default' | translate: { '0': ('Resource_UnitMassUnit' | translate) } }}</label>
+                        <select class="form-control t-studio-input" id="defaultunitmassunit"
+                            [(ngModel)]="model.DefaultUnitMassUnitId" (ngModelChange)="onDefinitionChange(model)"
+                            #defaultunitmassunit="ngModel">
+                            <option *ngFor="let c of cardinalityChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultunitmassunit, serverErrors: serverErrors(model, 'UnitVisibility') }">
+                        </ng-container>
+                    </div> -->
+
+                    <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'MonetaryValue', propLower: 'monetaryvalue', fieldName: 'Resource_MonetaryValue' }">
                     </ng-container>
 

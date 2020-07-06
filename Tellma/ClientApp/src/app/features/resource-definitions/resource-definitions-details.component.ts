@@ -24,7 +24,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = '';
+  public expand = 'DefaultUnit,DefaultUnitMassUnit';
 
   create = () => {
     const result: ResourceDefinitionForSave = {};
@@ -228,6 +228,9 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.ReorderLevelVisibility) ||
         areServerErrors(model.serverErrors.EconomicOrderQuantityVisibility) ||
         areServerErrors(model.serverErrors.UnitCardinality) ||
+        areServerErrors(model.serverErrors.DefaultUnitId) ||
+        areServerErrors(model.serverErrors.UnitMassVisibility) ||
+        areServerErrors(model.serverErrors.DefaultUnitMassUnitId) ||
         areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
         false
       ));

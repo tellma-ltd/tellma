@@ -43,6 +43,9 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     ReorderLevel?: number;
     EconomicOrderQuantity?: number;
     MonetaryValue?: number;
+    UnitId?: number;
+    UnitMass?: number;
+    UnitMassUnitId?: number;
     Units?: TResourceUnit[];
 }
 
@@ -138,6 +141,12 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
 
+                UnitId: { control: 'number', label: () => `${trx.instant('Resource_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Unit: { control: 'navigation', label: () => trx.instant('Resource_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
+                UnitMass: { control: 'number', label: () => trx.instant('Resource_UnitMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                UnitMassUnitId: { control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                UnitMassUnit: { control: 'navigation', label: () => trx.instant('Resource_UnitMassUnit'), type: 'Unit', foreignKeyName: 'UnitMassUnit' },
+
                 // Standard
 
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
@@ -187,8 +196,20 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 delete entityDesc.properties.LocationJson;
             }
 
+            // Unit, special case
+            if (!definition.UnitCardinality) {
+                delete entityDesc.properties.UnitId;
+                delete entityDesc.properties.Unit;
+            }
+
+            // UnitMassUnit, special case
+            if (!definition.UnitMassVisibility) {
+                delete entityDesc.properties.UnitMassUnitId;
+                delete entityDesc.properties.UnitMassUnit;
+            }
+
             // Simple properties Visibility
-            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'ResidualMonetaryValue', 'ResidualValue', 'MonetaryValue']) {
+            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'ResidualMonetaryValue', 'ResidualValue', 'MonetaryValue', 'UnitMass']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 }

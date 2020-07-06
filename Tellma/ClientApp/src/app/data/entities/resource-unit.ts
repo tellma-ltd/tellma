@@ -2,7 +2,6 @@ import { EntityForSave } from './base/entity-for-save';
 
 export interface ResourceUnitForSave extends EntityForSave {
     UnitId?: number;
-    Multiplier?: number;
 }
 
 export interface ResourceUnit extends ResourceUnitForSave {

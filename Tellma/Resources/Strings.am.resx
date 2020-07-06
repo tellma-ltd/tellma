@@ -829,9 +829,6 @@
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>ያልተጠበቀ ስህተት «{0}» ኢሜይል ጋር ተጠቃሚ ውጫዊ የመግቢያ በማከል ተከስቷል.</value>
   </data>
-  <data name="Error_AtLeastOneUnitIsRequired" xml:space="preserve">
-    <value>ቢያንስ አንድ የመለኪያ አሃድ ይግለጹ</value>
-  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
   </data>
@@ -1194,6 +1191,9 @@
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>facebook</value>
+  </data>
+  <data name="Field0Default" xml:space="preserve">
+    <value>ነባሪ {0}</value>
   </data>
   <data name="Field0Definition" xml:space="preserve">
     <value>{0} ትርጓሜ</value>
@@ -1973,7 +1973,13 @@
     <value>ትራፊ እሴት</value>
   </data>
   <data name="Resource_Unit" xml:space="preserve">
-    <value>የመለኪያ አሃድ</value>
+    <value>መለኪያ</value>
+  </data>
+  <data name="Resource_UnitMass" xml:space="preserve">
+    <value>ዩኒት በ የጅምላ</value>
+  </data>
+  <data name="Resource_UnitMassUnit" xml:space="preserve">
+    <value>የጅምላ ዩኒት</value>
   </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>
@@ -1992,9 +1998,6 @@
   </data>
   <data name="ResourceUnit" xml:space="preserve">
     <value>ሀብት ዩኒት</value>
-  </data>
-  <data name="ResourceUnit_Multiplier" xml:space="preserve">
-    <value>ማባዣ</value>
   </data>
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>መለኪያ</value>

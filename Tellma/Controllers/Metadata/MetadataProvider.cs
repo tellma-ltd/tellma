@@ -209,6 +209,14 @@ namespace Tellma.Controllers
                         display = () => _localizer["Field0Visibility", _localizer[name]];
                     }
 
+                    // e.g. "Default Currency"
+                    var defaultDisplayAtt = propInfo.GetCustomAttribute<DefaultDisplayAttribute>(inherit: true);
+                    if (defaultDisplayAtt != null)
+                    {
+                        string name = defaultDisplayAtt.Name;
+                        display = () => _localizer["Field0Default", _localizer[name]];
+                    }
+
                     // e.g. "Lookup 1 Definition"
                     var ddDisplayAtt = propInfo.GetCustomAttribute<DefinitionDefinitionDisplayAttribute>(inherit: true);
                     if (ddDisplayAtt != null)
@@ -246,8 +254,8 @@ namespace Tellma.Controllers
                             nameof(Lookup) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
                             nameof(LookupForSave) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
 
-                            nameof(Document) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display, _localizer),
-                            nameof(DocumentForSave) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display, _localizer),
+                            nameof(Document) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display),
+                            nameof(DocumentForSave) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display),
 
                             _ => throw new InvalidOperationException($"Bug: Unaccounted type in definition overrides {entityType.Name}")
                         };
@@ -883,7 +891,7 @@ namespace Tellma.Controllers
                     isRequired = def.IdentifierVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Units):
-                    if (def.UnitCardinality == null)
+                    if (def.UnitCardinality != Cardinality.Multiple)
                     {
                         display = null;
                     }
@@ -903,6 +911,21 @@ namespace Tellma.Controllers
                 case nameof(Resource.ResidualValue):
                     display = PropertyDisplay(def.ResidualValueVisibility, display);
                     isRequired = def.ResidualValueVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.UnitId):
+                    if (def.UnitCardinality == null)
+                    {
+                        display = null;
+                    } 
+                    else
+                    {
+                        isRequired = true;
+                    }
+                    break;
+                case nameof(Resource.UnitMass):
+                case nameof(Resource.UnitMassUnitId):
+                    display = PropertyDisplay(def.UnitMassVisibility, display);
+                    isRequired = def.UnitMassVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.MonetaryValue):
                     display = PropertyDisplay(def.MonetaryValueVisibility, display);
@@ -1100,8 +1123,7 @@ namespace Tellma.Controllers
             DocumentDefinitionForClient def,
             SettingsForClient settings,
             PropertyInfo propInfo,
-            Func<string> display,
-            IStringLocalizer localizer)
+            Func<string> display)
         {
             bool isRequired = false;
 

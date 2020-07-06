@@ -92,7 +92,7 @@
 	[UnitCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'Single' CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
 	[DefaultStockUnitId]				INT				CONSTRAINT [ResourceDefinitions__DefaultStockUnitId] REFERENCES dbo.Units([Id]),
 	[StockUnitMassVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None'  CHECK ([StockUnitMassVisibility] IN (N'None', N'Optional', N'Required')),
-	[DefaultSockUnitMassUnitId]			INT				CONSTRAINT [ResourceDefinitions__DefaultSockUnitMassUnitId] REFERENCES dbo.Units([Id]),
+	[DefaultStockUnitMassUnitId]			INT				CONSTRAINT [ResourceDefinitions__DefaultStockUnitMassUnitId] REFERENCES dbo.Units([Id]),
 
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),

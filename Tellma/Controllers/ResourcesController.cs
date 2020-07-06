@@ -228,6 +228,8 @@ namespace Tellma.Controllers
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
             //SetDefaultValue(entities, e => e.Text1, def.Text1DefaultValue);
             //SetDefaultValue(entities, e => e.Text2, def.Text2DefaultValue);
+            SetDefaultValue(entities, e => e.UnitId, def.DefaultUnitId);
+            SetDefaultValue(entities, e => e.UnitMassUnitId, def.DefaultUnitMassUnitId);
 
             entities.ForEach(e =>
             {
@@ -235,23 +237,24 @@ namespace Tellma.Controllers
                 e.Units ??= new List<ResourceUnitForSave>();
             });
 
-            // Units
-            if (def.UnitCardinality == Cardinality.None)
+            // Unit + Units
+            if (def.UnitCardinality == null) // None is mapped to null
             {
-                // Remove all units
+                // Remove both
                 entities.ForEach(entity =>
                 {
+                    entity.UnitId = null;
                     entity.Units.Clear();
                 });
             }
             else if (def.UnitCardinality == Cardinality.Single)
             {
-                // Remove all but the first unit
+                // Remove units
                 entities.ForEach(entity =>
                 {
                     if (entity.Units.Count > 1)
                     {
-                        entity.Units = entity.Units.Take(1).ToList();
+                        entity.Units.Clear();
                     }
                 });
             }
@@ -311,25 +314,6 @@ namespace Tellma.Controllers
                 if (e.EntityMetadata.LocationJsonParseError != null)
                 {
                     ModelState.AddModelError($"[{i}].{nameof(e.LocationJson)}", e.EntityMetadata.LocationJsonParseError);
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        return;
-                    }
-                }
-
-                if (unitIsRequired && e.Units.Count == 0)
-                {
-                    string errorMsg;
-                    if (def.UnitCardinality == Cardinality.Single)
-                    {
-                        errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["Resource_Unit"]];
-                    }
-                    else
-                    {
-                        errorMsg = _localizer["Error_AtLeastOneUnitIsRequired"];
-                    }
-
-                    ModelState.AddModelError($"[{i}].{nameof(e.Units)}", errorMsg);
                     if (ModelState.HasReachedMaxErrors)
                     {
                         return;

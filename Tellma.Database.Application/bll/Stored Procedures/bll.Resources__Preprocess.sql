@@ -17,13 +17,13 @@ SELECT * FROM @Entities;
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 IF (
-	SELECT COUNT(*) FROM dbo.[Centers]
-	WHERE [IsActive] = 1 AND [IsLeaf] = 1
+	SELECT COUNT(*) FROM dbo.[Centers] [C]
+	WHERE [C].[IsActive] = 1 AND [C].[IsLeaf] = 1
 ) = 1
 UPDATE @PreprocessedResources
 SET [CenterId] = (
-		SELECT TOP (1) [Id] FROM dbo.[Centers]
-		WHERE [IsActive] = 1 AND [IsLeaf] = 1
+		SELECT TOP (1) [C].[Id] FROM dbo.[Centers] [C]
+		WHERE [C].[IsActive] = 1 AND [C].[IsLeaf] = 1
 	);
 
 SELECT * FROM @PreprocessedResources;

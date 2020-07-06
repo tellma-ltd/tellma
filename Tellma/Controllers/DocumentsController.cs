@@ -1791,7 +1791,7 @@ namespace Tellma.Controllers
         private static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
         private static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
         private static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
-        private static IEnumerable<string> ResourceUnitsProps => Enum(nameof(ResourceUnit.Multiplier));
+        private static IEnumerable<string> ResourceUnitsProps => Enum();
         private static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
         private static IEnumerable<string> ContractProps => Enum(nameof(Contract.Name), nameof(Contract.Name2), nameof(Contract.Name3), nameof(Contract.DefinitionId));
         private static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));

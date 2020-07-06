@@ -431,6 +431,9 @@ namespace Tellma.Controllers.Dto
         public string ReorderLevelVisibility { get; set; }
         public string EconomicOrderQuantityVisibility { get; set; }
         public string UnitCardinality { get; set; }
+        public int? DefaultUnitId { get; set; }
+        public string UnitMassVisibility { get; set; }
+        public int? DefaultUnitMassUnitId { get; set; }
         public string MonetaryValueVisibility { get; set; }
     }
 

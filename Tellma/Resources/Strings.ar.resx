@@ -829,9 +829,6 @@
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
   </data>
-  <data name="Error_AtLeastOneUnitIsRequired" xml:space="preserve">
-    <value>حدد وحدة قياس واحدة على الأقل</value>
-  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
   </data>
@@ -1194,6 +1191,9 @@
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>الفيسبوك</value>
+  </data>
+  <data name="Field0Default" xml:space="preserve">
+    <value>قيمة الحقل ({0}) الافتراضية</value>
   </data>
   <data name="Field0Definition" xml:space="preserve">
     <value>تعريف الحقل ({0})</value>
@@ -1975,6 +1975,12 @@
   <data name="Resource_Unit" xml:space="preserve">
     <value>وحدة القياس</value>
   </data>
+  <data name="Resource_UnitMass" xml:space="preserve">
+    <value>وزن الوحدة</value>
+  </data>
+  <data name="Resource_UnitMassUnit" xml:space="preserve">
+    <value>وحدة الوزن</value>
+  </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>وحدات القياس</value>
   </data>
@@ -1992,9 +1998,6 @@
   </data>
   <data name="ResourceUnit" xml:space="preserve">
     <value>وحدة قياس مورد</value>
-  </data>
-  <data name="ResourceUnit_Multiplier" xml:space="preserve">
-    <value>المعامل</value>
   </data>
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>الوحدة</value>

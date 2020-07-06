@@ -104,7 +104,7 @@ SET NOCOUNT ON;
 				[UnitCardinality],
 				[DefaultStockUnitId],
 				[StockUnitMassVisibility],
-				[DefaultSockUnitMassUnitId],
+				[DefaultStockUnitMassUnitId],
 				-- financial instruments
 				[MonetaryValueVisibility],
 
@@ -209,8 +209,8 @@ SET NOCOUNT ON;
 				t.[DefaultStockUnitId]	= s.[DefaultStockUnitId],
 				t.[StockUnitMassVisibility]
 										= s.[StockUnitMassVisibility],
-				t.[DefaultSockUnitMassUnitId]
-										= s.[DefaultSockUnitMassUnitId],
+				t.[DefaultStockUnitMassUnitId]
+										= s.[DefaultStockUnitMassUnitId],
 				t.[MonetaryValueVisibility]
 										= s.[MonetaryValueVisibility],
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
@@ -300,7 +300,7 @@ SET NOCOUNT ON;
 				[UnitCardinality],
 				[DefaultStockUnitId],
 				[StockUnitMassVisibility],
-				[DefaultSockUnitMassUnitId],
+				[DefaultStockUnitMassUnitId],
 				[MonetaryValueVisibility],
 
 				[MainMenuIcon],
@@ -390,7 +390,7 @@ SET NOCOUNT ON;
 				s.[UnitCardinality],
 				s.[DefaultStockUnitId],
 				s.[StockUnitMassVisibility],
-				s.[DefaultSockUnitMassUnitId],
+				s.[DefaultStockUnitMassUnitId],
 				-- Financial
 				s.[MonetaryValueVisibility],
 

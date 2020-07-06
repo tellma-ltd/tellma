@@ -377,6 +377,9 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     ReorderLevelVisibility: Visibility;
     EconomicOrderQuantityVisibility: Visibility;
     UnitCardinality: DefinitionCardinality;
+    DefaultUnitId?: number;
+    UnitMassVisibility?: Visibility;
+    DefaultUnitMassUnitId?: number;
     MonetaryValueVisibility: Visibility;
 }
 

@@ -84,14 +84,39 @@
 
     <!-- Unit (Cardinality Single) -->
     <t-form-group *ngIf="Unit_isVisible" class="t-form-group" [label]="'Resource_Unit' | translate"
-        [serverErrors]="model?.serverErrors?.Units">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Units">
-            <t-view-link link="../../../units" [itemId]="getUnitId(model)">
-                {{ ws.getMultilingualValue('Unit', getUnitId(model), 'Name') }}
+        [serverErrors]="model?.serverErrors?.Unit">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Unit">
+            <t-view-link link="../../../units" [itemId]="model?.UnitId">
+                {{ ws.getMultilingualValue('Unit', model?.UnitId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-units-picker *ngIf="isEdit" [ngModel]="getUnitId(model)" (ngModelChange)="setUnitId(model, $event)"
-            [required]="true">
+        <t-units-picker *ngIf="isEdit" [(ngModel)]="model.UnitId" [required]="Unit_isRequired">
+        </t-units-picker>
+    </t-form-group>
+
+    <!-- UnitMass -->
+    <t-form-group *ngIf="UnitMass_isVisible" class="t-form-group" [label]="'Resource_UnitMass' | translate"
+        [serverErrors]="model?.serverErrors?.UnitMass">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.UnitMass">
+            <div>
+                {{ model?.UnitMass | accounting:'1.0-4' }}
+            </div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitMass" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="UnitMass_isRequired" [minDecimalPlaces]="4"
+            [maxDecimalPlaces]="4">
+        </t-decimal-editor>
+    </t-form-group>    
+
+    <!-- UnitMassUnit -->
+    <t-form-group *ngIf="UnitMass_isVisible" class="t-form-group" [label]="'Resource_UnitMassUnit' | translate"
+        [serverErrors]="model?.serverErrors?.UnitMassUnit">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.UnitMassUnit">
+            <t-view-link link="../../../units" [itemId]="model?.UnitMassUnitId">
+                {{ ws.getMultilingualValue('Unit', model?.UnitMassUnitId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-units-picker *ngIf="isEdit" [(ngModel)]="model.UnitMassUnitId" [required]="UnitMass_isRequired">
         </t-units-picker>
     </t-form-group>
 
@@ -408,10 +433,9 @@
                 <ng-template ngbNavContent>
                     <t-restricted [metadata]="model?.EntityMetadata?.Units"
                         [class.p-4]="model?.EntityMetadata?.Units === 1">
-                        <t-table [dataSource]="model?.Units" [isEdit]="isEdit" [columnPaths]="['Unit', 'Multiplier']"
+                        <t-table [dataSource]="model?.Units" [isEdit]="isEdit" [columnPaths]="['Unit']"
                             [columnTemplates]="{
-                                                'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
-                                                'Multiplier' : { headerTemplate : header_Multiplier, rowTemplate : row_Multiplier, weight : 1 }
+                                                'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 }
                                                 }">
                         </t-table>
                     </t-restricted>
@@ -426,18 +450,6 @@
                             <t-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
                                 (ngModelChange)="update.call(null, item);" [required]="!item.PH">
                             </t-units-picker>
-                        </t-form-group-cell>
-                    </ng-template>
-
-                    <!-- Multiplier -->
-                    <ng-template #header_Multiplier>{{ 'ResourceUnit_Multiplier' | translate }}</ng-template>
-                    <ng-template #row_Multiplier let-item="item" let-index="index" let-update="update">
-                        <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Multiplier">
-                            <div *ngIf="!isEdit">{{ item.Multiplier | number }}</div>
-                            <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Multiplier"
-                                (ngModelChange)="update.call(null, item)" [ngModelOptions]="{ updateOn: 'blur' }"
-                                [minDecimalPlaces]="0" [maxDecimalPlaces]="0" [required]="!item.PH">
-                            </t-decimal-editor>
                         </t-form-group-cell>
                     </ng-template>
                 </ng-template>

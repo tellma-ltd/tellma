@@ -42,7 +42,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: ResourceDefinitionForClient; // Used in preview mode
 
-  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
+  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Unit,UnitMassUnit,Units/Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
@@ -417,25 +417,19 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get Unit_isVisible(): boolean {
-    return this.definition.UnitCardinality === 'Single';
+    return !!this.definition.UnitCardinality;
   }
 
-  public getUnitId(model: ResourceForSave): number {
-    if (!!model && !!model.Units && !!model.Units[0]) {
-      return model.Units[0].UnitId;
-    }
-
-    return undefined;
+  public get Unit_isRequired(): boolean {
+    return true;
   }
 
-  public setUnitId(model: ResourceForSave, unitId: number): void {
-    if (!!model) {
-      if (!!unitId) {
-        model.Units = [{ UnitId: unitId, Multiplier: 1 }];
-      } else {
-        model.Units = [];
-      }
-    }
+  public get UnitMass_isVisible(): boolean {
+    return !!this.definition.UnitMassVisibility;
+  }
+
+  public get UnitMass_isRequired(): boolean {
+    return this.definition.UnitMassVisibility === 'Required';
   }
 
   public get Units_isVisible(): boolean {

@@ -1871,4 +1871,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[QuantityUnitId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e07d165a-a667-40de-b513-71a668c10784" ChangeDateTime="07/06/2020 08:17:44">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[DefaultSockUnitMassUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultStockUnitMassUnitId]" />
+  </Operation>
 </Operations>

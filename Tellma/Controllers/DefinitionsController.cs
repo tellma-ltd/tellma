@@ -286,6 +286,10 @@ namespace Tellma.Controllers
                 ReorderLevelVisibility = MapVisibility(def.ReorderLevelVisibility),
                 EconomicOrderQuantityVisibility = MapVisibility(def.EconomicOrderQuantityVisibility),
                 UnitCardinality = MapCardinality(def.UnitCardinality),
+                DefaultUnitId = def.DefaultUnitId,
+                UnitMassVisibility = MapVisibility(def.UnitMassVisibility),
+                DefaultUnitMassUnitId = def.DefaultUnitMassUnitId,
+
                 MonetaryValueVisibility = MapVisibility(def.MonetaryValueVisibility),
             };
         }
