@@ -102,7 +102,7 @@ SET NOCOUNT ON;
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
 				[UnitCardinality],
-				[DefaultStockUnitId]
+				[DefaultStockUnitId],
 				[StockUnitMassVisibility],
 				[DefaultSockUnitMassUnitId],
 				-- financial instruments

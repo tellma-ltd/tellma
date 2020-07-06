@@ -202,7 +202,7 @@ SET NOCOUNT ON;
 
 	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
 	UPDATE R --dbo.Resources
-	SET A.ImageId = L.ImageId
+	SET R.ImageId = L.ImageId
 	FROM dbo.[Resources] R
 	JOIN @IndexedIds II ON R.Id = II.[Id]
 	JOIN @ImageIds L ON II.[Index] = L.[Index]
