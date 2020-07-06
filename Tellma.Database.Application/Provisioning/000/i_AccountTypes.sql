@@ -274,6 +274,7 @@ INSERT INTO @AT VALUES(265,'319', '/3/1/9/', NULL,N'OtherControlExtension', N'Ot
 INSERT INTO @AT VALUES(266,'32', '/3/2/', NULL,N'FinalAccountsControlExtension', N'Final Account Control',N'')
 
 
+
 	INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], 
 			[EntryTypeParentId], [Description])
 	SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex,
@@ -569,6 +570,7 @@ DECLARE @TradingControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE 
 DECLARE @PayrollControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PayrollControlExtension');
 DECLARE @OtherControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherControlExtension');
 DECLARE @FinalAccountsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'FinalAccountsControlExtension');
+
 
 END
 

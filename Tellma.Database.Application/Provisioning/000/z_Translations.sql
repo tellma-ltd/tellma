@@ -547,7 +547,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 
 -- Account Types
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
-('AccountTypes', N'StatementOfFinancialPositionAbstract', N'en', N'Statement of financial position [abstract]', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'ar', N'بيان المركز المالي [ملخص]', N's'),
+('AccountTypes', N'StatementOfFinancialPositionAbstract', N'en', N'Statement of financial position [abstract]', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'ar', N'قائمة المركز المالي', N's'),
 ('AccountTypes', N'Assets', N'en', N'Assets', N's'),('AccountTypes', N'Assets', N'ar', N'الأصول', N's'),
 ('AccountTypes', N'NoncurrentAssets', N'en', N'Non-current assets', N's'),('AccountTypes', N'NoncurrentAssets', N'ar', N'الأصول غير المتداولة', N's'),
 ('AccountTypes', N'PropertyPlantAndEquipment', N'en', N'Property, plant and equipment', N's'),('AccountTypes', N'PropertyPlantAndEquipment', N'ar', N'الممتلكات والمصانع والمعدات', N's'),
@@ -598,7 +598,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'OtherNoncurrentFinancialAssets', N'en', N'Other non-current financial assets', N's'),('AccountTypes', N'OtherNoncurrentFinancialAssets', N'ar', N'أصول مالية غير متداولة أخرى', N's'),
 ('AccountTypes', N'OtherNoncurrentNonfinancialAssets', N'en', N'Other non-current non-financial assets', N's'),('AccountTypes', N'OtherNoncurrentNonfinancialAssets', N'ar', N'أصول غير مالية غير متداولة أخرى', N's'),
 ('AccountTypes', N'NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral', N'en', N'Non-current non-cash assets pledged as collateral for which transferee has right by contract or custom to sell or repledge collateral', N's'),('AccountTypes', N'NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral', N'ar', N'الأصول غير النقدية وغير المتداولة المرهونة كضمان والتي يكون للمنشأة المنقول إليها الحق بموجب عقد ما أو حسب الأعراف ببيع أو إعادة رهن الضمان', N's'),
-('AccountTypes', N'CurrentAssets', N'en', N'Current assets', N's'),('AccountTypes', N'CurrentAssets', N'ar', N'الاصول المتداولة', N's'),
+('AccountTypes', N'CurrentAssets', N'en', N'Current assets', N's'),('AccountTypes', N'CurrentAssets', N'ar', N'الأصول المتداولة', N's'),
 ('AccountTypes', N'Inventories', N'en', N'Current inventories', N's'),('AccountTypes', N'Inventories', N'ar', N'المخزون الحالي', N's'),
 ('AccountTypes', N'CurrentInventoriesHeldForSale', N'en', N'Current inventories held for sale', N's'),('AccountTypes', N'CurrentInventoriesHeldForSale', N'ar', N'المخزون الحالي المحتفظ به برسم البيع', N's'),
 ('AccountTypes', N'Merchandise', N'en', N'Current merchandise', N's'),('AccountTypes', N'Merchandise', N'ar', N'السلع الحالية', N's'),
@@ -612,9 +612,9 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'RawMaterials', N'en', N'Current raw materials', N's'),('AccountTypes', N'RawMaterials', N'ar', N'المواد الخام الحالية', N's'),
 ('AccountTypes', N'ProductionSupplies', N'en', N'Current production supplies', N's'),('AccountTypes', N'ProductionSupplies', N'ar', N'مستلزمات الإنتاج الحالية', N's'),
 ('AccountTypes', N'CurrentPackagingAndStorageMaterials', N'en', N'Current packaging and storage materials', N's'),('AccountTypes', N'CurrentPackagingAndStorageMaterials', N'ar', N'مواد التعبئة والتغليف والتخزين الحالية', N's'),
-('AccountTypes', N'SpareParts', N'en', N'Current spare parts', N's'),('AccountTypes', N'SpareParts', N'ar', N'قطع غيار حالية', N's'),
+('AccountTypes', N'SpareParts', N'en', N'Current spare parts', N's'),('AccountTypes', N'SpareParts', N'ar', N'قطع الغيار الحالية', N's'),
 ('AccountTypes', N'CurrentFuel', N'en', N'Current fuel', N's'),('AccountTypes', N'CurrentFuel', N'ar', N'الوقود الحالي', N's'),
-('AccountTypes', N'CurrentInventoriesInTransit', N'en', N'Current inventories in transit', N's'),('AccountTypes', N'CurrentInventoriesInTransit', N'ar', N'المخزونات الحالية في مجال النقل', N's'),
+('AccountTypes', N'CurrentInventoriesInTransit', N'en', N'Current inventories in transit', N's'),('AccountTypes', N'CurrentInventoriesInTransit', N'ar', N'المخزون في الطريق', N's'),
 ('AccountTypes', N'OtherInventories', N'en', N'Other current inventories', N's'),('AccountTypes', N'OtherInventories', N'ar', N'مخزون حالي آخر', N's'),
 ('AccountTypes', N'TradeAndOtherCurrentReceivables', N'en', N'Trade and other current receivables', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivables', N'ar', N'الذمم المدينة التجارية والأخرى المتداولة', N's'),
 ('AccountTypes', N'CurrentTradeReceivables', N'en', N'Current trade receivables', N's'),('AccountTypes', N'CurrentTradeReceivables', N'ar', N'الذمم المدينة االتجارية المتداولة', N's'),

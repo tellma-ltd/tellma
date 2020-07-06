@@ -43,12 +43,12 @@
 (1112,11, N'1112',N'Other non-current financial assets', N'أصول مالية غير متداولة أخرى',@OtherNoncurrentFinancialAssets),
 (1113,11, N'1113',N'Other non-current non-financial assets', N'أصول غير مالية غير متداولة أخرى',@OtherNoncurrentNonfinancialAssets),
 (1114,11, N'1114',N'Non-current non-cash assets pledged as collateral for which transferee has right by contract or cust', N'الأصول غير النقدية وغير المتداولة المرهونة كضمان والتي يكون للمنشأة المنقول إليها الحق بموجب عقد ما ',@NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral),
-(12,1, N'12',N'Current assets', N'الاصول المتداولة',@CurrentAssets),
+(12,1, N'12',N'Current assets', N'الأصول المتداولة',@CurrentAssets),
 (1201,12, N'1201',N'Current inventories', N'المخزون الحالي',@Inventories),
 (120101,1201, N'120101',N'Current inventories held for sale', N'المخزون الحالي المحتفظ به برسم البيع',@CurrentInventoriesHeldForSale),
 (120102,1201, N'120102',N'Current work in progress', N'الأعمال الحالية قيد التنفيذ',@WorkInProgress),
 (120103,1201, N'120103',N'Current materials and supplies to be consumed in production process or rendering services', N'المواد والمستلزمات الحالية التي تُستهلك في عملية الإنتاج أو تقديم الخدمات',@CurrentMaterialsAndSuppliesToBeConsumedInProductionProcessOrRenderingServices),
-(120104,1201, N'120104',N'Current inventories in transit', N'المخزونات الحالية في مجال النقل',@CurrentInventoriesInTransit),
+(120104,1201, N'120104',N'Current inventories in transit', N'المخزون في الطريق',@CurrentInventoriesInTransit),
 (120199,1201, N'120199',N'Other current inventories', N'مخزون حالي آخر',@OtherInventories),
 (1202,12, N'1202',N'Trade and other current receivables', N'الذمم المدينة التجارية والأخرى المتداولة',@TradeAndOtherCurrentReceivables),
 (120201,1202, N'120201',N'Current trade receivables', N'الذمم المدينة االتجارية المتداولة',@CurrentTradeReceivables),
@@ -118,9 +118,9 @@
 (4,NULL, N'4',N'Profit (loss) from operating activities', N'الربح (الخسارة) من الأنشطة التشغيلية',@ProfitLossFromOperatingActivities),
 (41,4, N'41',N'Revenue', N'الإيراد',@Revenue),
 (4101,41, N'4101',N'Revenue from sale of goods', N'الإيراد من بيع السلع',@RevenueFromSaleOfGoods),
-(410101,4101, N'410101',N'Revenue from sale of goods (by product type)', N'الإيرادات من بيع السلع (حسب نوع المنتج)',@RevenueFromSaleOfGoods),
+(410101,4101, N'410101',N'Revenue from sale of goods (by product type)', N'الإيرادات من بيع السلع (بنوع المنتج)',@RevenueFromSaleOfGoods),
 (4102,41, N'4102',N'Revenue from rendering of services', N'الإيراد من تقديم الخدمات',@RevenueFromRenderingOfServices),
-(410201,4102, N'410201',N'Revenue from rendering of services (by service type)', N'الإيرادات من تقديم الخدمات (حسب نوع الخدمة)',@RevenueFromRenderingOfServices),
+(410201,4102, N'410201',N'Revenue from rendering of services (by service type)', N'الإيرادات من تقديم الخدمات (بنوع الخدمة)',@RevenueFromRenderingOfServices),
 (4103,41, N'4103',N'Revenue from construction contracts', N'الإيراد من عقود الإنشاء',@RevenueFromConstructionContracts),
 (4104,41, N'4104',N'Royalty income', N'دخل الملكية',@RevenueFromRoyalties),
 (4105,41, N'4105',N'Licence fee income', N'دخل حقوق الانتفاع',@LicenceFeeIncome),
@@ -137,10 +137,10 @@
 (430302,4303, N'430302',N'Professional fees expense', N'مصروف الرسوم المهنية',@ProfessionalFeesExpense),
 (430303,4303, N'430303',N'Transportation expense', N'مصروف النقل',@TransportationExpense),
 (430304,4303, N'430304',N'Bank and similar charges', N'الرسوم البنكية والرسوم المشابهة',@BankAndSimilarCharges),
-(430305,4303, N'430305',N'Travel expense', N'نفقات السفر',@TravelExpense),
-(430306,4303, N'430306',N'Communication expense', N'حساب الاتصالات',@CommunicationExpense),
-(430307,4303, N'430307',N'Utilities expense', N'المصاريف الخدمية',@UtilitiesExpense),
-(430308,4303, N'430308',N'Advertising expense', N'مصاريف الدعاية',@AdvertisingExpense),
+(430305,4303, N'430305',N'Travel expense', N'مصروفات السفر',@TravelExpense),
+(430306,4303, N'430306',N'Communication expense', N'مصروفات الاتصالات',@CommunicationExpense),
+(430307,4303, N'430307',N'Utilities expense', N'المصروفات الخدمية',@UtilitiesExpense),
+(430308,4303, N'430308',N'Advertising expense', N'مصروفات الدعاية',@AdvertisingExpense),
 (4304,43, N'4304',N'Employee benefits expense', N'مصاريف منافع الموظفين',@EmployeeBenefitsExpense),
 (430401,4304, N'430401',N'Wages and salaries', N'الأجور والرواتب',@WagesAndSalaries),
 (430402,4304, N'430402',N'Social security contributions', N'مساهمات الضمان الاجتماعي',@SocialSecurityContributions),
@@ -177,6 +177,7 @@
 (5110,51, N'5110',N'Hedging gains (losses) for hedge of group of items with offsetting risk positions', N'أرباح (خسائر) التحوط فيما يخص التحوط لمجموعة من البنود التي يكون لها مراكز مخاطر متعادلة',@HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions),
 (52,5, N'52',N'Tax income (expense)', N'دخل (مصروف) الضريبة',@IncomeTaxExpenseContinuingOperations),
 (53,5, N'53',N'Profit (loss) from discontinued operations', N'الربح (الخسارة) من العمليات المتوقفة',@ProfitLossFromDiscontinuedOperations)
+
 
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
@@ -350,7 +351,6 @@ DECLARE @AC430603 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC430604 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430604');
 DECLARE @AC4307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4307');
 DECLARE @AC4399 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4399');
-
 DECLARE @AC44 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'44');
 DECLARE @AC4401 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4401');
 DECLARE @AC4402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4402');
