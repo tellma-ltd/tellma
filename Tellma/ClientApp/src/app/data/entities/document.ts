@@ -45,6 +45,7 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
 
 export interface Document extends DocumentForSave<Line, Attachment> {
     DefinitionId?: number;
+    Code?: string;
     State?: DocumentState;
     StateAt?: string;
     Comment?: string;
@@ -138,6 +139,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => formatSerial(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
                 },
+                Code: { control: 'text', label: () => trx.instant('Code') },
                 State: {
                     control: 'state',
                     label: () => trx.instant('Document_State'),

@@ -126,6 +126,10 @@ namespace Tellma.Entities
         [Display(Name = "Definition")]
         public int? DefinitionId { get; set; }
 
+        [Display(Name = "Code")]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         [Display(Name = "Document_State")]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
