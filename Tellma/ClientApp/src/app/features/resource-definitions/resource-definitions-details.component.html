@@ -1,7 +1,6 @@
 <t-details collection="ResourceDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
     [additionalSelect]="additionalSelect" [masterCrumb]="'ResourceDefinitions' | translate"
-    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen"
-    [actions]="[
+    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[
         { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeArchived, action: onMakeArchived, showAction: showMakeArchived, canAction: hasStatePermission, actionTooltip: stateTooltip }
@@ -236,29 +235,44 @@
                                 {{ c.name() }}</option>
                         </select>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: unitcardinality, serverErrors: serverErrors(model, 'UnitVisibility') }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: unitcardinality, serverErrors: serverErrors(model, 'UnitCardinality') }">
+                        </ng-container>
+                    </div>
+
+                    <!-- DefaultUnit -->
+                    <div class="form-group" *ngIf="isCardinalityVisible(model.UnitCardinality)"
+                        [class.is-invalid]="invalid(defaultunit, serverErrors(model, 'DefaultUnitId'))">
+                        <label class="small"
+                            for="defaultunit">{{ 'Field0Default' | translate: { '0': ('Resource_Unit' | translate) } }}</label>
+                        <div>
+                            <t-units-picker class="" [(ngModel)]="model.DefaultUnitId"
+                                (ngModelChange)="onDefinitionChange(model)" id="defaultunit" #defaultunit="ngModel">
+                            </t-units-picker>
+                        </div>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultunit, serverErrors: serverErrors(model, 'DefaultUnitId') }">
                         </ng-container>
                     </div>
 
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'UnitMass', propLower: 'unitmass', fieldName: 'Resource_UnitMass' }">
                     </ng-container>
-                    
+
                     <!-- DefaultUnitMassUnit -->
-                    <!-- <div class="form-group"
+                    <div class="form-group" *ngIf="isVisible(model.UnitMassVisibility)"
                         [class.is-invalid]="invalid(defaultunitmassunit, serverErrors(model, 'DefaultUnitMassUnitId'))">
                         <label class="small"
                             for="defaultunitmassunit">{{ 'Field0Default' | translate: { '0': ('Resource_UnitMassUnit' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="defaultunitmassunit"
-                            [(ngModel)]="model.DefaultUnitMassUnitId" (ngModelChange)="onDefinitionChange(model)"
-                            #defaultunitmassunit="ngModel">
-                            <option *ngFor="let c of cardinalityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
+                        <div>
+                            <t-units-picker class="" [(ngModel)]="model.DefaultUnitMassUnitId"
+                                (ngModelChange)="onDefinitionChange(model)" id="defaultunitmassunit"
+                                #defaultunitmassunit="ngModel">
+                            </t-units-picker>
+                        </div>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultunitmassunit, serverErrors: serverErrors(model, 'UnitVisibility') }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultunitmassunit, serverErrors: serverErrors(model, 'DefaultUnitMassUnitId') }">
                         </ng-container>
-                    </div> -->
+                    </div>
 
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'MonetaryValue', propLower: 'monetaryvalue', fieldName: 'Resource_MonetaryValue' }">
@@ -287,7 +301,8 @@
                     <ng-template #labeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
                         <!-- Visibility -->
-                        <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
+                        <ng-container
+                            *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
                         </ng-container>
 
                         <!-- Labels -->
@@ -343,7 +358,8 @@
                     <ng-template #definitionedProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
                         <!-- Visibility + Labels -->
-                        <ng-container *ngTemplateOutlet="labeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
+                        <ng-container
+                            *ngTemplateOutlet="labeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
                         </ng-container>
 
                         <!-- DefinitionId -->

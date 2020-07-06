@@ -1746,6 +1746,7 @@ namespace Tellma.Controllers
             );
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             // This is used in account, it does not need currency or center, since they already come with the account
+            .Concat(UnitPaths(nameof(Resource.Unit)))
             .Concat(ResourceUnitPaths(nameof(Resource.Units)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps

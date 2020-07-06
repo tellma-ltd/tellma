@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ResourceDefinitionForSave, metadata_ResourceDefinition, ResourceDefinition } from '~/app/data/entities/resource-definition';
-import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
+import { DefinitionVisibility, DefinitionCardinality } from '~/app/data/entities/base/definition-common';
 import { ResourceDefinitionForClient, DefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
@@ -352,6 +352,10 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public isVisible(visibility: DefinitionVisibility) {
     return visibility === 'Optional' || visibility === 'Required';
+  }
+
+  public isCardinalityVisible(cardinality: DefinitionCardinality) {
+    return cardinality === 'Single' || cardinality === 'Multiple';
   }
 
   // Menu stuff
