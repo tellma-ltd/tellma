@@ -7,11 +7,11 @@ BEGIN
 	DECLARE @InventoryProductionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoryProductionExtension');
 	DECLARE @FinishedGoods INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'FinishedGoods');
 	WITH
-	Actual([ResourceId], [Mass], [Count]) AS (
+	Actual([ResourceId], [Mass], [Quantity]) AS (
 		SELECT
 			J.[ResourceId],
 			SUM(J.[AlgebraicMass]) AS [Mass],
-			SUM(J.[AlgebraicCount]) AS [Count]
+			SUM(J.[AlgebraicQuantity]) AS [Quantity]
 		FROM [map].[DetailsEntries]() J
 		JOIN dbo.Lines L ON J.LineId = L.Id
 		JOIN dbo.[Accounts] A ON J.AccountId = A.[Id]
@@ -22,7 +22,7 @@ BEGIN
 		GROUP BY J.[ResourceId]
 	),
 	-- TODO: use map.DetailsBudgetEntries
-	Planned([ResourceId], [Mass], [Count]) AS (
+	Planned([ResourceId], [Mass], [Quantity]) AS (
 		SELECT 
 		ResourceId,
 		SUM([Mass]) * (
@@ -32,13 +32,13 @@ BEGIN
 				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
 			) + 1
 		) As [Mass],
-		SUM([Count]) * (
+		SUM([Quantity]) * (
 			DATEDIFF(
 				DAY,
 				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
 				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
 			) + 1
-		) As [Count]
+		) As [Quantity]
 		FROM dbo.[BudgetEntries] BE
 		JOIN dbo.[Budgets] B ON B.[Id] = BE.[BudgetId]
 		WHERE (ToDate >= @fromDate AND FromDate <= @toDate)
@@ -47,7 +47,7 @@ BEGIN
 	)
 	SELECT RL.Id, RL.[Name],
 		A.[Mass] AS MassActual, P.Mass As MassPlanned, A.Mass/P.Mass * 100 As [PercentOfMassPlanned],
-		A.[Count] AS CountActual, P.[Count] AS CountPlanned, A.[Count]/P.[Count] * 100 As [PercentOfCountPlanned]
+		A.[Quantity] AS QuantityActual, P.[Quantity] AS QuantityPlanned, A.[Quantity]/P.[Quantity] * 100 As [PercentOfQuantityPlanned]
 	FROM dbo.[Resources] RL
 	LEFT JOIN Actual A ON RL.Id = A.ResourceId
 	LEFT JOIN Planned P ON RL.Id = P.ResourceId

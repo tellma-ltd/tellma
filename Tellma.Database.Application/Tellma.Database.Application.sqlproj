@@ -554,7 +554,6 @@
     <Build Include="map\map.Agents.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
-    <Build Include="dbo\Tables\dbo.ResourceUnitRates.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryContractDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryNotedContractDefinitions.sql" />

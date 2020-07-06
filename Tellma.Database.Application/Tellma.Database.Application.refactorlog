@@ -1857,4 +1857,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[VisibleState]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7d341d99-683b-4bf5-b541-cb1df6b46d37" ChangeDateTime="07/06/2020 05:06:23">
+    <Property Name="ElementName" Value="[dbo].[BudgetEntries].[Count]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BudgetEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Quantity]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="023fb2e0-83fb-459c-b45c-5927d7f40329" ChangeDateTime="07/06/2020 05:06:50">
+    <Property Name="ElementName" Value="[dbo].[BudgetEntries].[CountUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BudgetEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[QuantityUnitId]" />
+  </Operation>
 </Operations>

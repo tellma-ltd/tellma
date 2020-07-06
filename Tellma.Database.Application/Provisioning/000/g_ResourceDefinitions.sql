@@ -51,7 +51,6 @@
 		[IdentifierLabel]					= N'Tag #',
 		[CurrencyVisibility]				= N'Required',
 		[DescriptionVisibility]				= N'Optional',
-		[CenterVisibility]					= N'Required',
 		[ResidualMonetaryValueVisibility]	= N'Required',
 		[ResidualValueVisibility]			= N'Required'
 	WHERE [Code] IN (N'ComputerEquipmentMember', N'MachineryMember');
@@ -117,13 +116,42 @@
 		[Text2Visibility] = N'Optional'
 
 	WHERE [Code] = N'PaperProducts'
+	UPDATE @ResourceDefinitions
+	SET [CenterVisibility] = N'Required'
+	WHERE [Code] IN (
+		N'LandMember', N'BuildingsMember', N'MachineryMember', N'MotorVehiclesMember', N'FixturesAndFittingsMember', N'OfficeEquipmentMember',
+		N'OfficeEquipmentMember',  N'CommunicationAndNetworkEquipmentMember', N'NetworkInfrastructureMember', N'BearerPlantsMember', 
+		N'TangibleExplorationAndEvaluationAssetsMember', N'MiningAssetsMember', N'OilAndGasAssetsMember',  N'PowerGeneratingAssetsMember',
+		N'LeaseholdImprovementsMember', N'ConstructionInProgressMember', N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember',
+		N'OtherPropertyPlantAndEquipmentMember',
+		N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
+	);
 
 	UPDATE @ResourceDefinitions
 	SET [LocationVisibility] = N'Optional'
 	WHERE [Code] IN (
 		N'LandMember', N'BuildingsMember', N'LeaseholdImprovementsMember', N'ConstructionInProgressMember',
-		N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
-	)
+		N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember',
+		'PropertyIntendedForSaleInOrdinaryCourseOfBusiness'
+	);
+
+	UPDATE @ResourceDefinitions
+	SET [IdentifierVisibility] = N'Required'
+	WHERE [Code] IN (
+		--N'LandMember', N'BuildingsMember', N'LeaseholdImprovementsMember', N'ConstructionInProgressMember',
+		--N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember',
+		'PropertyIntendedForSaleInOrdinaryCourseOfBusiness'
+	);
+
+	UPDATE @ResourceDefinitions
+		SET [Decimal1Visibility] = N'Optional', [Decimal1Label] = N'Area (m^2)'
+		WHERE [Code] IN (
+			N'LandMember', N'BuildingsMember', N'LeaseholdImprovementsMember', N'ConstructionInProgressMember',
+			N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
+		);
+
+	UPDATE @ResourceDefinitions
+	SET [UnitCardinality] = N'Single' 
 
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,

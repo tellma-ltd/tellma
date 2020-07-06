@@ -102,6 +102,9 @@ SET NOCOUNT ON;
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
 				[UnitCardinality],
+				[DefaultStockUnitId]
+				[StockUnitMassVisibility],
+				[DefaultSockUnitMassUnitId],
 				-- financial instruments
 				[MonetaryValueVisibility],
 
@@ -203,6 +206,11 @@ SET NOCOUNT ON;
 				t.[EconomicOrderQuantityVisibility]
 										= s.[EconomicOrderQuantityVisibility],
 				t.[UnitCardinality]		= s.[UnitCardinality],
+				t.[DefaultStockUnitId]	= s.[DefaultStockUnitId],
+				t.[StockUnitMassVisibility]
+										= s.[StockUnitMassVisibility],
+				t.[DefaultSockUnitMassUnitId]
+										= s.[DefaultSockUnitMassUnitId],
 				t.[MonetaryValueVisibility]
 										= s.[MonetaryValueVisibility],
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
@@ -290,6 +298,9 @@ SET NOCOUNT ON;
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
 				[UnitCardinality],
+				[DefaultStockUnitId],
+				[StockUnitMassVisibility],
+				[DefaultSockUnitMassUnitId],
 				[MonetaryValueVisibility],
 
 				[MainMenuIcon],
@@ -377,6 +388,9 @@ SET NOCOUNT ON;
 				s.[ReorderLevelVisibility],
 				s.[EconomicOrderQuantityVisibility],
 				s.[UnitCardinality],
+				s.[DefaultStockUnitId],
+				s.[StockUnitMassVisibility],
+				s.[DefaultSockUnitMassUnitId],
 				-- Financial
 				s.[MonetaryValueVisibility],
 

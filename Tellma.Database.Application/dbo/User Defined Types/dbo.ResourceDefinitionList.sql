@@ -90,6 +90,10 @@
 	[ReorderLevelVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
 	[UnitCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'Single' CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
+	[DefaultStockUnitId]				INT,
+	[StockUnitMassVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None'  CHECK ([StockUnitMassVisibility] IN (N'None', N'Optional', N'Required')),
+	[DefaultSockUnitMassUnitId]			INT,
+
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
 

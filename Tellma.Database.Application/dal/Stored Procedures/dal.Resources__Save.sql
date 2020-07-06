@@ -48,6 +48,9 @@ SET NOCOUNT ON;
 				[ResidualValue],
 				[ReorderLevel],
 				[EconomicOrderQuantity],	
+				[StockUnitId],
+				[StockUnitMass],
+				[StockUnitMassUnitId],
 				[MonetaryValue]				
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
@@ -85,6 +88,9 @@ SET NOCOUNT ON;
 				t.[ResidualValue]			= s.[ResidualValue],
 				t.[ReorderLevel]			= s.[ReorderLevel],
 				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
+				t.[StockUnitId]				= s.[StockUnitId],
+				t.[StockUnitMass]			= s.[StockUnitMass],
+				t.[StockUnitMassUnitId]		= s.[StockUnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -119,7 +125,10 @@ SET NOCOUNT ON;
 				[ResidualMonetaryValue],
 				[ResidualValue],
 				[ReorderLevel],
-				[EconomicOrderQuantity],	
+				[EconomicOrderQuantity],
+				[StockUnitId],
+				[StockUnitMass],
+				[StockUnitMassUnitId],
 				[MonetaryValue]				
 				)
 			VALUES (
@@ -152,7 +161,10 @@ SET NOCOUNT ON;
 				s.[ResidualMonetaryValue],
 				s.[ResidualValue],
 				s.[ReorderLevel],
-				s.[EconomicOrderQuantity],	
+				s.[EconomicOrderQuantity],
+				s.[StockUnitId],
+				s.[StockUnitMass],
+				s.[StockUnitMassUnitId],
 				s.[MonetaryValue]			
 				)
 			OUTPUT s.[Index], inserted.[Id]
@@ -167,36 +179,32 @@ SET NOCOUNT ON;
 		SELECT
 			RU.[Id],
 			I.[Id] AS [ResourceId],
-			RU.[UnitId],
-			RU.[Multiplier]
+			RU.[UnitId]
 		FROM @ResourceUnits RU
 		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[UnitId] <> s.[UnitId] OR t.[Multiplier] <> s.[Multiplier])
+	WHEN MATCHED AND (t.[UnitId] <> s.[UnitId])
 	THEN
 		UPDATE SET
 			t.[UnitId]					= s.[UnitId],
-			t.[Multiplier]				= s.[Multiplier],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT (
 			[ResourceId],
-			[UnitId],
-			[Multiplier]
+			[UnitId]
 		) VALUES (
 			s.[ResourceId],
-			s.[UnitId],
-			s.[Multiplier]
+			s.[UnitId]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
 	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
-	UPDATE A --dbo.Resources
+	UPDATE R --dbo.Resources
 	SET A.ImageId = L.ImageId
-	FROM dbo.[Resources] A
-	JOIN @IndexedIds II ON A.Id = II.[Id]
+	FROM dbo.[Resources] R
+	JOIN @IndexedIds II ON R.Id = II.[Id]
 	JOIN @ImageIds L ON II.[Index] = L.[Index]
 
 	IF @ReturnIds = 1

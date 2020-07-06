@@ -8,7 +8,7 @@ BEGIN
 	WITH JournalSummary
 	AS (
 		SELECT ResourceId,
-			SUM(OpeningCount) AS OpeningCount, SUM(CountIn) AS CountIn, SUM(CountOut) AS CountOut, SUM(EndingCount) AS EndingCount,
+			SUM(OpeningQuantity) AS OpeningQuantity, SUM(QuantityIn) AS QuantityIn, SUM(QuantityOut) AS QuantityOut, SUM(EndingQuantity) AS EndingQuantity,
 			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(EndingMass) AS EndingMass
 		FROM [map].[SummaryEntries](
 			@FromDate,

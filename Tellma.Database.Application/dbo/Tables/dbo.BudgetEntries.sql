@@ -7,16 +7,10 @@
 	[BudgetId]				INT				NOT NULL CONSTRAINT [FK_Budgets__BudgetId] REFERENCES [dbo].[Budgets] ([Id]),
 	[MonetaryValue]			DECIMAL (19,4)	NOT NULL DEFAULT 0,
 	[Value]					DECIMAL (19,4)	NOT NULL DEFAULT 0,
-	[Count]					DECIMAL			NOT NULL DEFAULT 0, -- Count Unit
-	[CountUnitId]			INT,			-- move it to Resources as PlanCountUnitId?
+	[Quantity]					DECIMAL			NOT NULL DEFAULT 0, -- Count Unit
+	[QuantityUnitId]			INT,			-- move it to Resources as PlanQuantityUnitId?
 	[Mass]					DECIMAL			NOT NULL DEFAULT 0, -- Mass Unit, like LTZ bar, cement bag, etc
 	[MassUnitId]			INT,			-- move it to Resources as PlanMassUnitId?
-	[Volume]				DECIMAL			NOT NULL DEFAULT 0, -- Volume Unit, possibly for shipping
-	[VolumeUnitId]			INT,			-- move it to Resources as PlanVolumeUnitId?
-	[Area]					DECIMAL			NOT NULL DEFAULT 0, -- Area Unit, possibly for lands
-	[AreaUnitId]			INT,			-- move it to Resources as PlanAreaUnitId?
-	[Time]					DECIMAL			NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	[TimeUnitId]			INT,
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
