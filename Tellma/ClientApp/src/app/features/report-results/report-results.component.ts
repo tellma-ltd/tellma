@@ -111,6 +111,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       '#17A2B8', '#1490A3', '#128091',
       '#10707F', '#0D606D', '#0B505B',
       '#094049', '#073036', '#042024',
+      '#073036', '#094049', '#0B505B',
+      '#0D606D', '#10707F', '#128091',
+      '#1490A3',
+
       // '#80E0EF', '#C9F2F8', '#49D3E9',
       // '#1BC0DA', '#25CBE4', '#19B0C8',
     ]
