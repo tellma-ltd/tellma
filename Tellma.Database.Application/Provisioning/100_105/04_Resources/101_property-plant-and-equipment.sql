@@ -28,21 +28,21 @@ BEGIN
 -- Defining other fixed assets
 	DELETE FROM @Resources;
 INSERT INTO @Resources ([Index],
-		[Name],				[Identifier],[CurrencyId],	[CenterId], [UnitId]) VALUES	
-	(0, N'Camera',					N'-', @USD,			@C101_Sales,dbo.fn_UnitName__Id(N'yr')),
-	(1, N'Generator',				N'-', @USD,			@C101_PWG,dbo.fn_UnitName__Id(N'yr')),
-	(2, N'Battery for Generator',	N'-', @USD,			@C101_PWG,dbo.fn_UnitName__Id(N'yr')),
-	(3, N'Mouse (65.49 GBP)',		N'-', @USD,			@C101_EXEC,dbo.fn_UnitName__Id(N'yr')),
-	(4, N'Laptop Case (17.99 GBP)',	N'-', @USD,			@C101_EXEC,dbo.fn_UnitName__Id(N'yr')),
-	(5, N'Dock (140.80 GBP)',		N'-', @USD,			@C101_EXEC,dbo.fn_UnitName__Id(N'yr')),
-	(6, N'FingerPrint System',		N'-', @USD,			@C101_EXEC,dbo.fn_UnitName__Id(N'yr')),
-	(7, N'SSD for PC',				N'1', @USD, 		@C101_B10,dbo.fn_UnitName__Id(N'yr')),
-	(8, N'SSD for PC',				N'2', @USD, 		@C101_Campus,dbo.fn_UnitName__Id(N'yr')),
-	(9, N'SSD 240 GB',				N'-', @USD, 		@C101_Sys,dbo.fn_UnitName__Id(N'yr')),
-	(10,N'Meeting Luxurious Table',	N'-', @USD, 		@C101_EXEC,dbo.fn_UnitName__Id(N'yr')),
-	(11,N'Generator Auto Switch',	N'-', @USD, 		@C101_PWG,dbo.fn_UnitName__Id(N'yr')),
-	(12,N'Hikvision 240GB SSD Disk',N'-', @USD, 		@C101_B10,dbo.fn_UnitName__Id(N'yr')),
-	(13,N'Huawei Prime 7 Golden',	N'-', @USD, 		@C101_Sales,dbo.fn_UnitName__Id(N'yr'));
+		[Name],				[Identifier],[CurrencyId],	[CenterId]) VALUES
+	(0, N'Camera',					N'-', @USD,			@C101_Sales),
+	(1, N'Generator',				N'-', @USD,			@C101_PWG),
+	(2, N'Battery for Generator',	N'-', @USD,			@C101_PWG),
+	(3, N'Mouse (65.49 GBP)',		N'-', @USD,			@C101_EXEC),
+	(4, N'Laptop Case (17.99 GBP)',	N'-', @USD,			@C101_EXEC),
+	(5, N'Dock (140.80 GBP)',		N'-', @USD,			@C101_EXEC),
+	(6, N'FingerPrint System',		N'-', @USD,			@C101_EXEC),
+	(7, N'SSD for PC',				N'1', @USD, 		@C101_B10),
+	(8, N'SSD for PC',				N'2', @USD, 		@C101_Campus),
+	(9, N'SSD 240 GB',				N'-', @USD, 		@C101_Sys),
+	(10,N'Meeting Luxurious Table',	N'-', @USD, 		@C101_EXEC),
+	(11,N'Generator Auto Switch',	N'-', @USD, 		@C101_PWG),
+	(12,N'Hikvision 240GB SSD Disk',N'-', @USD, 		@C101_B10),
+	(13,N'Huawei Prime 7 Golden',	N'-', @USD, 		@C101_Sales);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = @OtherPropertyPlantAndEquipmentMemberRD,

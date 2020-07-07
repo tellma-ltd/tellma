@@ -116,6 +116,7 @@
 		[Text2Visibility] = N'Optional'
 
 	WHERE [Code] = N'PaperProducts'
+
 	UPDATE @ResourceDefinitions
 	SET [CenterVisibility] = N'Required'
 	WHERE [Code] IN (
@@ -150,16 +151,43 @@
 			N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
 		);
 
-		UPDATE @ResourceDefinitions
-		SET [UnitCardinality] = N'None' 
-		WHERE [Code] IN (
-			N'LandMember', N'BuildingsMember', N'MachineryMember', N'MotorVehiclesMember', N'FixturesAndFittingsMember', N'OfficeEquipmentMember',
-			N'OfficeEquipmentMember',  N'CommunicationAndNetworkEquipmentMember', N'NetworkInfrastructureMember', N'BearerPlantsMember', 
-			N'TangibleExplorationAndEvaluationAssetsMember', N'MiningAssetsMember', N'OilAndGasAssetsMember',  N'PowerGeneratingAssetsMember',
-			N'LeaseholdImprovementsMember', N'ConstructionInProgressMember', N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember',
-			N'OtherPropertyPlantAndEquipmentMember',
-			N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
-		);
+	UPDATE @ResourceDefinitions
+	SET [UnitCardinality] = N'None' 
+	WHERE [Code] IN (
+		N'LandMember', N'BuildingsMember', N'MachineryMember', N'MotorVehiclesMember', N'FixturesAndFittingsMember', N'OfficeEquipmentMember',
+		N'OfficeEquipmentMember',  N'CommunicationAndNetworkEquipmentMember', N'NetworkInfrastructureMember', N'BearerPlantsMember', 
+		N'TangibleExplorationAndEvaluationAssetsMember', N'MiningAssetsMember', N'OilAndGasAssetsMember',  N'PowerGeneratingAssetsMember',
+		N'LeaseholdImprovementsMember', N'ConstructionInProgressMember', N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember',
+		N'OtherPropertyPlantAndEquipmentMember',
+		N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
+	);
+
+UPDATE @ResourceDefinitions
+	SET 
+		[IdentifierVisibility] = N'Required',
+		[IdentifierLabel] = N'Plate #',
+		[Lookup1Visibility] = N'Optional',
+		[Lookup1Label] = N'Make',
+		[Lookup1DefinitionId] = @VehicleMakeLKD
+	WHERE [Code] IN (
+		'MotorVehiclesMember'
+	);
+
+UPDATE @ResourceDefinitions
+	SET 
+		[IdentifierVisibility] = N'Required',
+		[IdentifierLabel] = N'Chassis #',
+		[Lookup1Visibility] = N'Optional',
+		[Lookup1Label] = N'Make',
+		[Lookup1DefinitionId] = @VehicleMakeLKD,
+		[Lookup2Visibility] = N'Optional',
+		[Lookup2Label] = N'Body Color',
+		[Lookup2DefinitionId] = @BodyColorLKD,
+		[UnitCardinality] = N'None'
+	WHERE [Code] IN (
+		'FinishedVehicle'
+	);
+
 
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,

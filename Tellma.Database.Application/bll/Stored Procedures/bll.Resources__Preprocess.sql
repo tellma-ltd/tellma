@@ -16,6 +16,16 @@ SELECT * FROM @Entities;
 
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+-- Set unique items to unit pure
+IF (SELECT UnitCardinality FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId) = N'None'
+UPDATE @PreprocessedResources
+SET UnitId = (SELECT MIN([Id]) FROM dbo.Units WHERE UnitType = N'Pure')
+
+UPDATE @PreprocessedResources
+SET
+	UnitId = (SELECT [DefaultUnitId] FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId),
+	UnitMassUnitId = (SELECT [DefaultUnitMassUnitId] FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId)
+
 IF (
 	SELECT COUNT(*) FROM dbo.[Centers] [C]
 	WHERE [C].[IsActive] = 1 AND [C].[IsLeaf] = 1

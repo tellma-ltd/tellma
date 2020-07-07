@@ -2,18 +2,18 @@
 BEGIN
 	DELETE FROM @Resources;
 	INSERT INTO @Resources ([Index],
-		[Name], [UnitId]) VALUES
-	(0,	N'Basic', dbo.fn_UnitName__Id(N'wmo')),
-	(1, N'Transportation Allowance', dbo.fn_UnitName__Id(N'wmo')),
-	(2, N'Day Overtime', dbo.fn_UnitName__Id(N'hr')),
-	(3, N'Night Overtime', dbo.fn_UnitName__Id(N'hr')),
-	(4, N'Rest Overtime', dbo.fn_UnitName__Id(N'hr')),
-	(5, N'Holiday Overtime', dbo.fn_UnitName__Id(N'hr')),
-	(6, N'Labor (hourly)', dbo.fn_UnitName__Id(N'hr')),
-	(7, N'Labor (daily)', dbo.fn_UnitName__Id(N'wd')),
-	(8, N'Data package', dbo.fn_UnitName__Id(N'wmo')),
-	(9, N'SS Contribution (11%)', dbo.fn_UnitName__Id(N'wmo')),
-	(10,N'Meal Allowance', dbo.fn_UnitName__Id(N'wmo'));
+		[Name],						[UnitId]) VALUES
+	(0,	N'Basic',					@wmo),
+	(1, N'Transportation Allowance',@wmo),
+	(2, N'Day Overtime',			@hr),
+	(3, N'Night Overtime',			@hr),
+	(4, N'Rest Overtime',			@hr),
+	(5, N'Holiday Overtime',		@hr),
+	(6, N'Labor (hourly)',			@hr),
+	(7, N'Labor (daily)',			@wd),
+	(8, N'Data package',			@wmo),
+	(9, N'SS Contribution (11%)',	@wmo),
+	(10,N'Meal Allowance',			@wmo);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
 		@DefinitionId = @EmployeeBenefitRD,

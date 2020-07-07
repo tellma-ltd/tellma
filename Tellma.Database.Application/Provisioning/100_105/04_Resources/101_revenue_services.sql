@@ -3,10 +3,10 @@ BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 		INSERT INTO @Resources ([Index],
 		[Name],						[Name2],			[UnitId]) VALUES
-	(0,	N'Monthly Subscription',	N'اشتراك شهري',		@Month),
-	(1, N'Yearly Support',			N'مساندة سنوية',	@Year),
+	(0,	N'Monthly Subscription',	N'اشتراك شهري',		@mo),
+	(1, N'Yearly Support',			N'مساندة سنوية',	@yr),
 	(2, N'ERP Implementation',		N'تفعيل النظام',	@ea),
-	(3, N'ERP Stabilization',		N'استقرار النظام',	@Month)	
+	(3, N'ERP Stabilization',		N'استقرار النظام',	@mo)	
 	;
 
 	EXEC sys.sp_set_session_context 'UserId', @Jiad_akra;

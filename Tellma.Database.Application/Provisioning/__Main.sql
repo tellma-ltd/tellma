@@ -33,7 +33,6 @@ BEGIN
 
 	:r .\100_105\02_Basic\a_Lookups.sql
 	:r .\100_105\02_Basic\b_Centers.sql
-	:r .\100_105\02_Basic\c_Units.sql
 
 	:r .\100_105\04_Resources\101_property-plant-and-equipment.sql
 	:r .\100_105\04_Resources\101_employee-benefits.sql
@@ -45,7 +44,6 @@ BEGIN
 	:r .\100_105\04_Resources\105_merchandise.sql
 
 	:r .\100_105\04_Resources\a1_PPE_motor-vehicles.sql
-	:r .\100_105\04_Resources\a3_PPE_machineries.sql
 
 	:r .\100_105\04_Resources\d1_FG_vehicles.sql
 	--:r .\100_105\04_Resources\e1_CCE_received-checks.sql
@@ -80,7 +78,6 @@ BEGIN
 
 	:r .\106\02_Basic\a_Lookups.sql
 	:r .\106\02_Basic\b_Centers.sql
-	:r .\106\02_Basic\c_Units.sql
 	
 	:r .\106\05_Contracts\00_Agents.sql
 	:r .\106\05_Contracts\01_CashCustodians.sql
@@ -104,7 +101,6 @@ BEGIN
 
 	:r .\107\02_Basic\a_Lookups.sql
 	:r .\107\02_Basic\b_Centers.sql
-	:r .\107\02_Basic\c_Units.sql
 	
 	:r .\107\05_Contracts\00_Agents.sql
 	:r .\107\05_Contracts\01_CashCustodians.sql
@@ -127,7 +123,6 @@ BEGIN
 
 	--:r .\108\02_Basic\a_Lookups.sql
 	--:r .\108\02_Basic\b_Centers.sql
-	--:r .\108\02_Basic\c_Units.sql
 	
 	--:r .\108\05_Contracts\00_Agents.sql
 	--:r .\108\05_Contracts\01_CashCustodians.sql

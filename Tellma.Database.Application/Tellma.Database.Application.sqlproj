@@ -585,7 +585,6 @@
     <None Include="Provisioning\100_105\04_Resources\104_raw-materials.sql" />
     <None Include="Provisioning\100_105\04_Resources\105_merchandise.sql" />
     <None Include="Provisioning\100_105\04_Resources\a1_PPE_motor-vehicles.sql" />
-    <None Include="Provisioning\100_105\04_Resources\a3_PPE_machineries.sql" />
     <None Include="Provisioning\100_105\04_Resources\d1_FG_vehicles.sql" />
     <None Include="Provisioning\100_105\04_Resources\e1_CCE_received-checks.sql" />
     <None Include="Provisioning\100_105\07_Entries\105_manual-journal-vouchers.sql" />
@@ -619,7 +618,6 @@
     <Build Include="bll\Stored Procedures\bll.ContractDefinitions_Validate__UpdateState.sql" />
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__UpdateState.sql" />
     <None Include="Provisioning\106\01_Security\c_Workflows.sql" />
-    <None Include="Provisioning\100_105\02_Basic\c_Units.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionGenerateParameters.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionGenerateParameterList.sql" />
     <None Include="Provisioning\107\06_Accounts\a_AccountClassifications.sql" />
@@ -669,7 +667,6 @@
     <None Include="Provisioning\106\02_Basic\b_Centers.sql" />
     <None Include="Provisioning\000\m_Units.sql" />
     <None Include="Provisioning\100_105\00_Setup\Script.sql" />
-    <None Include="Provisioning\106\02_Basic\c_Units.sql" />
     <None Include="Provisioning\107\00_Setup\Script.sql" />
     <None Include="107.SSIA.publish.xml" />
     <None Include="Provisioning\107\01_Security\a_Users.sql" />
