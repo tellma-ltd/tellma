@@ -2441,6 +2441,7 @@ namespace Tellma.Data
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
+
             var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
