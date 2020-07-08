@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
 using Tellma.Entities.Descriptors;
+using Tellma.Services;
 
 namespace Tellma.Data
 {
@@ -24,6 +25,7 @@ namespace Tellma.Data
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer _localizer;
+        private readonly IInstrumentationService _instrumentation;
         private readonly string _connectionString;
 
         private SqlConnection _conn;
@@ -33,12 +35,13 @@ namespace Tellma.Data
         #region Lifecycle
 
         public AdminRepository(IOptions<AdminRepositoryOptions> config, IExternalUserAccessor externalUserAccessor,
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer)
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation)
         {
             _connectionString = config?.Value?.ConnectionString ?? throw new ArgumentException("The admin connection string was not supplied", nameof(config));
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
             _localizer = localizer;
+            _instrumentation = instrumentation;
         }
 
         public void Dispose()
@@ -60,6 +63,7 @@ namespace Tellma.Data
         /// <returns>The connection string that was initialized</returns>
         private async Task<SqlConnection> GetConnectionAsync(CancellationToken cancellation = default)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(GetConnectionAsync));
             if (_conn == null)
             {
                 _conn = new SqlConnection(_connectionString);
@@ -145,7 +149,7 @@ namespace Tellma.Data
             var userId = userInfo.UserId ?? 0;
             var userToday = _clientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, userId, userToday, _localizer);
+            return new QueryArguments(conn, Sources, userId, userToday, _localizer, _instrumentation);
         }
 
         private static string Sources(Type t)
@@ -166,6 +170,7 @@ namespace Tellma.Data
 
         private async Task<AdminUserInfo> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(OnConnect));
             AdminUserInfo result = null;
 
             using (SqlCommand cmd = _conn.CreateCommand()) // Use the private field _conn to avoid infinite recursion
@@ -207,6 +212,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view, CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(Action_View__Permissions));
             var result = new List<AbstractPermission>();
 
             var conn = await GetConnectionAsync(cancellation);
@@ -238,6 +244,7 @@ namespace Tellma.Data
 
         public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load(CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(UserSettings__Load));
             Guid version;
             var user = new AdminUser();
             var customSettings = new List<(string, string)>();
@@ -284,6 +291,7 @@ namespace Tellma.Data
 
         public async Task<AdminSettings> Settings__Load(CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(Settings__Load));
             // Returns 
             // (1) the settings with the functional currency expanded
 
@@ -323,6 +331,7 @@ namespace Tellma.Data
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(Permissions__Load));
             Guid version;
             var permissions = new List<AbstractPermission>();
 
@@ -369,6 +378,8 @@ namespace Tellma.Data
 
         public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId, CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(GetDatabaseConnectionInfo));
+
             DatabaseConnectionInfo result = null;
 
             var conn = await GetDirectoryConnectionAsync(cancellation);
@@ -403,6 +414,8 @@ namespace Tellma.Data
 
         public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email, CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(GetAccessibleDatabaseIds));
+
             var databaseIds = new List<int>();
             var isAdmin = false;
 
@@ -438,6 +451,8 @@ namespace Tellma.Data
 
         public async Task DirectoryUsers__SetEmailByExternalId(string externalId, string email)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(DirectoryUsers__SetEmailByExternalId));
+
             var conn = await GetDirectoryConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -455,6 +470,8 @@ namespace Tellma.Data
 
         public async Task DirectoryUsers__SetExternalIdByEmail(string email, string externalId)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(DirectoryUsers__SetExternalIdByEmail));
+
             var conn = await GetDirectoryConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -471,6 +488,8 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<string>> DirectoryUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(DirectoryUsers__Save));
+
             var result = new List<string>();
 
             var conn = await GetDirectoryConnectionAsync();
@@ -524,6 +543,8 @@ namespace Tellma.Data
 
         public async Task AdminUsers__SaveSettings(string key, string value)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__SaveSettings));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -540,6 +561,8 @@ namespace Tellma.Data
 
         public async Task AdminUsers__CreateAdmin(string email, string fullName, string password, string adminServerDescription = null)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__CreateAdmin));
+
             // 1 - Adds the given user to AdminUsers (if it does not exist)
             // 2 - Gives that user access to the admin database
             // 3 - Gives that user universal permissions (if not already)
@@ -561,6 +584,8 @@ namespace Tellma.Data
 
         public async Task AdminUsers__SetEmailByUserId(int userId, string externalEmail)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__SetEmailByUserId));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -577,6 +602,8 @@ namespace Tellma.Data
 
         public async Task AdminUsers__SetExternalIdByUserId(int userId, string externalId)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__SetExternalIdByUserId));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -593,6 +620,8 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AdminUsers_Validate__Save(List<AdminUserForSave> entities, int top)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers_Validate__Save));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -625,6 +654,8 @@ namespace Tellma.Data
 
         public async Task<List<int>> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__Save));
+
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -677,6 +708,8 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AdminUsers_Validate__Delete(List<int> ids, int top)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers_Validate__Delete));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -700,6 +733,8 @@ namespace Tellma.Data
 
         public async Task AdminUsers__Delete(IEnumerable<int> ids)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__Delete));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -731,6 +766,8 @@ namespace Tellma.Data
 
         public async Task AdminUsers__Activate(List<int> ids, bool isActive)
         {
+            using var _ = _instrumentation.Block("AdminRepo." + nameof(AdminUsers__Activate));
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters

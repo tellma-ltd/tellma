@@ -8,6 +8,8 @@
 
         public bool EmbeddedClientApplicationEnabled { get; set; }
 
+        public bool InstrumentationEnabled { get; set; }
+
         public LocalizationOptions Localization { get; set; }
 
         public WebClientOptions ClientApplications { get; set; }

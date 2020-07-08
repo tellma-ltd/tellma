@@ -21,12 +21,10 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "lookup-definitions";
 
-        private readonly ILogger<LookupDefinitionsController> _logger;
         private readonly LookupDefinitionsService _service;
 
-        public LookupDefinitionsController(ILogger<LookupDefinitionsController> logger, LookupDefinitionsService service) : base(logger)
+        public LookupDefinitionsController(LookupDefinitionsService service, IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
             _service = service;
         }
 

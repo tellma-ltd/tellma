@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tellma.Services.Sharding;
 using Microsoft.Extensions.Logging;
+using Tellma.Services;
 
 namespace Tellma.Controllers
 {
@@ -23,7 +24,7 @@ namespace Tellma.Controllers
     /// 5. Add the tenant info in the HTTP context, making it accessible to our model metadata provider
     /// 6. Ensures that the <see cref="IDefinitionsCache"/> is nice and fresh
     /// 7. If the version headers are provided, it also checks their freshness and adds appropriate response headers
-    /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeAccessAttribute"/>
+    /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeJwtBearerAttribute"/>
     /// </summary>
     public class ApplicationControllerAttribute : TypeFilterAttribute
     {
@@ -43,25 +44,26 @@ namespace Tellma.Controllers
             private readonly IServiceProvider _serviceProvider;
             private readonly IDefinitionsCache _definitionsCache;
             private readonly ISettingsCache _settingsCache;
-            private readonly ILogger<ApplicationApiFilter> _logger;
+            private readonly IInstrumentationService _instrumentation;
 
-            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
-                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger)
+            public ApplicationApiFilter(IServiceProvider sp)
             {
-                _appRepo = appRepo;
-                _tenantIdAccessor = tenantIdAccessor;
-                _tenantInfoAccessor = tenantInfoAccessor;
-                _externalUserAccessor = externalUserAccessor;
-                _serviceProvider = serviceProvider;
-                _definitionsCache = definitionsCache;
-                _settingsCache = settingsCache;
-                _logger = logger;
+                _appRepo = sp.GetRequiredService<ApplicationRepository>();
+                _tenantIdAccessor = sp.GetRequiredService<ITenantIdAccessor>();
+                _tenantInfoAccessor = sp.GetRequiredService<ITenantInfoAccessor>();
+                _externalUserAccessor = sp.GetRequiredService<IExternalUserAccessor>();
+                _definitionsCache = sp.GetRequiredService<IDefinitionsCache>();
+                _settingsCache = sp.GetRequiredService<ISettingsCache>();
+                _instrumentation = sp.GetRequiredService<IInstrumentationService>();
+                _serviceProvider = sp;
             }
 
             protected abstract bool AllowUnobtrusive { get; }
 
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
+                IDisposable block;
+
                 // (1) Make sure the API caller have provided a tenantId, and extract it
                 try
                 {
@@ -241,7 +243,7 @@ namespace Tellma.Controllers
         /// </summary>
         private class UnobtrusiveApplicationApiFilter : ApplicationApiFilter
         {
-            public UnobtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger) : base(tenantIdAccessor, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache, logger)
+            public UnobtrusiveApplicationApiFilter(IServiceProvider sp) : base(sp)
             {
             }
 
@@ -253,7 +255,7 @@ namespace Tellma.Controllers
         /// </summary>
         private class ObtrusiveApplicationApiFilter : ApplicationApiFilter
         {
-            public ObtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger) : base(tenantIdAccessor, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache, logger)
+            public ObtrusiveApplicationApiFilter(IServiceProvider sp) : base(sp)
             {
             }
 

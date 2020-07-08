@@ -28,7 +28,7 @@ namespace Tellma.Controllers
     {
         private readonly VoucherBookletsService _service;
 
-        public VoucherBookletsController(ILogger<VoucherBookletsController> logger, VoucherBookletsService service) : base(logger)
+        public VoucherBookletsController(VoucherBookletsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }
@@ -43,7 +43,6 @@ namespace Tellma.Controllers
         private string VIEW => "voucher-booklets";
 
         public VoucherBookletsService(
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IServiceProvider sp) : base(sp)
         {

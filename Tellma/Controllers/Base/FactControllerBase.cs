@@ -19,6 +19,8 @@ using System.Threading;
 using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using Tellma.Entities.Descriptors;
+using Tellma.Services;
+using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 
 namespace Tellma.Controllers
 {
@@ -26,17 +28,19 @@ namespace Tellma.Controllers
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
     /// entity type using OData-like parameters
     /// </summary>
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class FactControllerBase<TEntity> : ControllerBase
         where TEntity : Entity
     {
-        private readonly ILogger _logger;
+        protected readonly ILogger _logger;
+        protected readonly IInstrumentationService _instrumentation;
 
-        public FactControllerBase(ILogger logger)
+        public FactControllerBase(IServiceProvider sp)
         {
-            _logger = logger;
+            _logger = sp.GetRequiredService<ILogger<FactControllerBase<TEntity>>>();
+            _instrumentation = sp.GetRequiredService<IInstrumentationService>();
         }
 
         [HttpGet]
@@ -44,6 +48,9 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
+                using var _ = _instrumentation.Block("Controller GetFact");
+                IDisposable block;
+
                 // Calculate server time at the very beginning for consistency
                 var serverTime = DateTimeOffset.UtcNow;
 
@@ -51,8 +58,17 @@ namespace Tellma.Controllers
                 var service = GetFactService();
                 var (data, extras, isPartial, totalCount) = await service.GetFact(args, cancellation);
 
+                block = _instrumentation.Block("Flatten and trim");
+
                 // Flatten and Trim
                 var relatedEntities = FlattenAndTrim(data, cancellation);
+
+                block.Dispose();
+                block = _instrumentation.Block("Transform Extras");
+
+                var transformedExtras = TransformExtras(extras, cancellation);
+
+                block.Dispose();
 
                 // Prepare the result in a response object
                 var result = new GetResponse<TEntity>
@@ -78,6 +94,8 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
+                using var _ = _instrumentation.Block(nameof(GetAggregate));
+
                 // Calculate server time at the very beginning for consistency
                 var serverTime = DateTimeOffset.UtcNow;
 
@@ -92,7 +110,9 @@ namespace Tellma.Controllers
                     ServerTime = serverTime,
 
                     Result = data,
-                    RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
+
+                    // TODO: Add ancestors of tree dimensions
+                    RelatedEntities = new Dictionary<string, IEnumerable<Entity>>(),
                 };
 
                 return Ok(result);
@@ -154,7 +174,6 @@ namespace Tellma.Controllers
     public abstract class ServiceBase
     {
         protected ValidationErrorsDictionary ModelState { get; } = new ValidationErrorsDictionary();
-
 
         #region Validation
 
@@ -291,17 +310,18 @@ namespace Tellma.Controllers
         }
 
         #endregion
-
     }
 
     public abstract class FactServiceBase<TEntity> : ServiceBase, IFactServiceBase
         where TEntity : Entity
     {
         protected readonly IStringLocalizer _localizer;
+        protected readonly IInstrumentationService _instrumentation;
 
         public FactServiceBase(IServiceProvider sp)
         {
             _localizer = sp.GetRequiredService<IStringLocalizer<Strings>>();
+            _instrumentation = sp.GetRequiredService<IInstrumentationService>();
         }
 
         /// <summary>
@@ -327,17 +347,44 @@ namespace Tellma.Controllers
         /// </summary>
         public virtual async Task<(List<TEntity> Data, Extras Extras, bool IsPartial, int? Count)> GetFact(GetArguments args, CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("Service GetFact");
+
+            IDisposable block;
+
+            block = _instrumentation.Block("Parse Filter");
+
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
+
+            block.Dispose();
+            block = _instrumentation.Block("Parse OrderBy");
+
             var orderby = OrderByExpression.Parse(args.OrderBy);
+
+            block.Dispose();
+            block = _instrumentation.Block("Parse Expand");
+
             var expand = ExpandExpression.Parse(args.Expand);
+
+            block.Dispose();
+            block = _instrumentation.Block("Parse Select");
+
             var select = ParseSelect(args.Select);
+
+            block.Dispose();
+            block = _instrumentation.Block("Prepare the Query");
 
             // Prepare the query
             var query = GetRepository().Query<TEntity>();
 
+            block.Dispose();
+            block = _instrumentation.Block("Retrieve Permissions");
+
             // Retrieve the user permissions for the current view
             var permissions = await UserPermissions(Constants.Read, cancellation);
+
+            block.Dispose();
+            block = _instrumentation.Block("Process and Apply permissions");
 
             // Filter out permissions with masks that would be violated by the filter or order by arguments
             var defaultMask = GetDefaultMask() ?? new MaskTree();
@@ -350,11 +397,19 @@ namespace Tellma.Controllers
             var permissionsFilter = GetReadPermissionsCriteria(permissions);
             query = query.Filter(permissionsFilter);
 
+            block.Dispose();
+            block = _instrumentation.Block("Apply Search");
+
             // Search
             query = Search(query, args, permissions);
 
+            block.Dispose();
+            block = _instrumentation.Block("Apply Filter");
+
             // Filter
             query = query.Filter(filter);
+
+            block.Dispose();
 
             // If requested, retrieve the total count before any ordering, paging, expanding or selecting
             int? totalCount = null;
@@ -367,8 +422,13 @@ namespace Tellma.Controllers
                 }
             }
 
+            block = _instrumentation.Block("Apply OrderBy");
+
             // OrderBy
             query = OrderBy(query, orderby);
+
+            block.Dispose();
+            block = _instrumentation.Block("Apply Top and Skip");
 
             // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
             var top = args.Top;
@@ -376,18 +436,28 @@ namespace Tellma.Controllers
             top = Math.Min(top, MaximumPageSize());
             query = query.Skip(skip).Top(top);
 
+            block.Dispose();
+            block = _instrumentation.Block("Apply Select and Expand");
+
             // Apply the expand, which has the general format 'Expand=A,B/C,D'
             var expandedQuery = query.Expand(expand);
-
             // Apply the select, which has the general format 'Select=A,B/C,D'
             expandedQuery = expandedQuery.Select(select);
+
+            block.Dispose();
+            block = _instrumentation.Block("Load the data");
 
             // Load the data in memory
             var data = await expandedQuery.ToListAsync(cancellation);
             var extras = await GetExtras(data, cancellation);
 
+            block.Dispose();
+            block = _instrumentation.Block("Apply read permissions mask");
+
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             await ApplyReadPermissionsMask(data, query, permissions, defaultMask, cancellation);
+
+            block.Dispose();
 
             // Return
             return (data, extras, isPartial, totalCount);
@@ -462,7 +532,7 @@ namespace Tellma.Controllers
         /// </summary>
         /// <returns></returns>
         protected abstract IRepository GetRepository();
-        
+
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified level
         /// </summary>
@@ -649,7 +719,7 @@ namespace Tellma.Controllers
             MaskTree defaultMask,
             CancellationToken cancellation)
         {
-            // TODO: is there is a solution to this?
+            // TODO: is there a solution to this?
             return Task.CompletedTask;
         }
 
@@ -678,7 +748,7 @@ namespace Tellma.Controllers
 
         #region Export
 
-        
+
 
         ///// <summary>
         ///// Transforms an Entity response into an abstract grid that can be transformed into an file

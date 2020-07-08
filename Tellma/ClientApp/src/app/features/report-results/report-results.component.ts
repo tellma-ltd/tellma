@@ -293,7 +293,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       // EXTRAS
       const extras = this.computeAdditionalParameters();
 
-      obs$ = this.crud.get({
+      obs$ = this.crud.getFact({
         top,
         skip,
         orderby,

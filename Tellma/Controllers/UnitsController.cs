@@ -20,12 +20,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "units";
 
         private readonly UnitsService _service;
-        private readonly ILogger _logger;
 
-        public UnitsController(UnitsService service, ILogger<UnitsController> logger) : base(logger)
+        public UnitsController(UnitsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("activate")]

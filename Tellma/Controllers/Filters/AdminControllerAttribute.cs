@@ -16,7 +16,7 @@ namespace Tellma.Controllers
     /// 2. If the user is new it updates his/her ExternalId in the admin database
     /// 3. If the user has a new email it updates his/her Email in the admin database
     /// 4. If version headers are provided, it also checks their freshness and adds appropriate response headers
-    /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeAccessAttribute"/>
+    /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeJwtBearerAttribute"/>
     /// </summary>
     public class AdminControllerAttribute : TypeFilterAttribute
     {

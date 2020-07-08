@@ -930,7 +930,7 @@ export class ApiService {
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
-      get: (args: GetArguments, extras?: { [key: string]: any }) => {
+      getFact: (args: GetArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
         this.addExtras(paramsArray, extras);
 

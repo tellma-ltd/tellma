@@ -21,12 +21,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "exchange-rates";
 
         private readonly ExchangeRatesService _service;
-        private readonly ILogger _logger;
 
-        public ExchangeRatesController(ExchangeRatesService service, ILogger<ExchangeRatesController> logger) : base(logger)
+        public ExchangeRatesController(ExchangeRatesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("convert-to-functional")]

@@ -22,12 +22,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "account-types";
 
         private readonly AccountTypesService _service;
-        private readonly ILogger _logger;
 
-        public AccountTypesController(AccountTypesService service, ILogger<AccountTypesController> logger) : base(logger)
+        public AccountTypesController(AccountTypesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("activate")]

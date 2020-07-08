@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Services;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Services.Identity;
@@ -20,6 +21,7 @@ namespace Tellma.Data
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer _localizer;
+        private readonly IInstrumentationService _instrumentation;
         private readonly string _connectionString;
 
         private SqlConnection _conn;
@@ -28,12 +30,13 @@ namespace Tellma.Data
         #region Lifecycle
 
         public IdentityRepository(IOptions<EmbeddedIdentityServerOptions> config, IExternalUserAccessor externalUserAccessor,
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer)
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation)
         {
             _connectionString = config?.Value?.ConnectionString ?? throw new ArgumentException("The identity connection string was not supplied", nameof(config));
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
             _localizer = localizer;
+            _instrumentation = instrumentation;
         }
 
         public void Dispose()
@@ -58,7 +61,7 @@ namespace Tellma.Data
             if (_conn == null)
             {
                 _conn = new SqlConnection(_connectionString);
-                await _conn.OpenAsync();
+                await _conn.OpenAsync(cancellation);
             }
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
@@ -95,7 +98,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync(cancellation);
             var userToday = _clientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, 0, userToday, _localizer);
+            return new QueryArguments(conn, Sources, 0, userToday, _localizer, _instrumentation);
         }
 
         private static string Sources(Type t)

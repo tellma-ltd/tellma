@@ -13,12 +13,13 @@ using Tellma.Services.ClientInfo;
 using Tellma.Services.Identity;
 using Tellma.Services.MultiTenancy;
 using Tellma.Services.Sharding;
+using Tellma.Services.Instrumentation;
 
 namespace Tellma.Controllers
 {
     [Route("api/companies")]
     [ApiController]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class CompaniesController : ControllerBase
     {
@@ -110,7 +111,7 @@ namespace Tellma.Controllers
         {
             try
             {
-                using var appRepo = new ApplicationRepository(_shardResolver, _externalUserAccessor, _clientInfoAccessor, null, _tenantIdAccessor);
+                using var appRepo = new ApplicationRepository(_shardResolver, _externalUserAccessor, _clientInfoAccessor, null, _tenantIdAccessor, new DoNothingService());
                 
                 await appRepo.InitConnectionAsync(databaseId, setLastActive: false, cancellation);
                 UserInfo userInfo = await appRepo.GetUserInfoAsync(cancellation);

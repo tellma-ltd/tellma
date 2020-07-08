@@ -17,6 +17,7 @@ using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace Tellma
 {
@@ -66,6 +67,7 @@ namespace Tellma
 
                 // Azure Application Insights
                 services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+                services.AddInstrumentation(GlobalOptions.InstrumentationEnabled, _config.GetSection("Instrumentation"));
 
                 // Access to caller information
                 services.AddClientInfo();
@@ -232,36 +234,28 @@ namespace Tellma
 
             try
             {
-                // Simple instrumentation, will be expanded later
-                app.Use(async (context, next) =>
-                {
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    context.Response.OnStarting(() =>
-                    {
-                        stopwatch.Stop();
-                        var milliseconds = stopwatch.ElapsedMilliseconds;
-                        context.Response.Headers.Add("x-milliseconds", milliseconds.ToString());
-
-                        return System.Threading.Tasks.Task.FromResult(0);
-                    });
-
-                    await next.Invoke();
-                });
+                // Built-in instrumentation
+                app.UseInstrumentation();
 
 
                 // Regular Errors
                 if (_env.IsDevelopment())
                 {
                     app.UseDeveloperExceptionPage();
+                    app.UseMiddlewareInstrumentation("Developer Exception Page");
                 }
                 else
                 {
                     app.UseExceptionHandler("/Error");
+                    app.UseMiddlewareInstrumentation("Exception Handler");
+
                     app.UseHsts();
+                    app.UseMiddlewareInstrumentation("HSTS");
                 }
 
                 app.UseHttpsRedirection();
+                app.UseMiddlewareInstrumentation("Https Redirection");
+
 
                 // Localization
                 // Extract the culture from the request string and set it in the execution thread
@@ -278,15 +272,20 @@ namespace Tellma
                     // UI strings that we have localized
                     opt.AddSupportedUICultures(SUPPORTED_CULTURES);
                 });
+                app.UseMiddlewareInstrumentation("Localization");
 
                 app.UseStaticFiles();
+                app.UseMiddlewareInstrumentation("Static Files");
+
                 if (GlobalOptions.EmbeddedClientApplicationEnabled)
                 {
                     app.UseSpaStaticFiles();
+                    app.UseMiddlewareInstrumentation("SPA Static Files");
                 }
 
                 // The API
                 app.UseRouting();
+                app.UseMiddlewareInstrumentation("Routing");
 
                 // CORS
                 if (!GlobalOptions.EmbeddedClientApplicationEnabled)
@@ -314,28 +313,33 @@ namespace Tellma
                             "x-admin-permissions-version",
                             "x-admin-user-settings-version",
                             "x-global-settings-version",
-                            "x-milliseconds"
+                            "x-instrumentation"
                         );
                     });
+                    app.UseMiddlewareInstrumentation("CORS");
                 }
 
                 // Moves the access token from the query string to the Authorization header, for SignalR
                 app.UseQueryStringToken();
+                app.UseMiddlewareInstrumentation("Query String Token");
 
                 // IdentityServer
                 if (GlobalOptions.EmbeddedIdentityServerEnabled)
                 {
                     // Note: this already includes a call to app.UseAuthentication()
                     app.UseEmbeddedIdentityServer();
+                    app.UseMiddlewareInstrumentation("Embedded Identity Server");
                 }
                 else
                 {
                     app.UseAuthentication();
+                    app.UseMiddlewareInstrumentation("Authentication");
                 }
 
                 app.UseAuthorization();
+                app.UseMiddlewareInstrumentation("Authorization");
 
-                // Routing
+                // The API
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");

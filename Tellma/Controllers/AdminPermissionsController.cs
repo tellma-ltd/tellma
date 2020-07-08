@@ -14,7 +14,7 @@ namespace Tellma.Controllers
 {
     [Route("api/admin-permissions")]
     [ApiController]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [AdminController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminPermissionsController : ControllerBase

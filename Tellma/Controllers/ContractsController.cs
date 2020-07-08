@@ -24,12 +24,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "contracts/";
 
         private readonly ContractsService _service;
-        private readonly ILogger _logger;
 
-        public ContractsController(ContractsService service, ILogger<ContractsController> logger) : base(logger)
+        public ContractsController(ContractsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("{id}/image")]
@@ -379,7 +377,7 @@ namespace Tellma.Controllers
     {
         private readonly ContractsGenericService _service;
 
-        public ContractsGenericController(ContractsGenericService service, ILogger<ContractsGenericController> logger) : base(logger)
+        public ContractsGenericController(ContractsGenericService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

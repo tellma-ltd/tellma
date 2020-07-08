@@ -20,13 +20,9 @@ namespace Tellma.Controllers
     public abstract class FactTreeControllerBase<TEntity, TKey> : FactGetByIdControllerBase<TEntity, TKey>
         where TEntity : EntityWithKey<TKey>
     {
-        // Private Fields
-        private readonly ILogger _logger;
-
         // Constructor
-        public FactTreeControllerBase(ILogger logger) : base(logger)
+        public FactTreeControllerBase(IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
         }
 
         // IMPORTANT: Children-of is replicated in CrudTreeControllerBase, please keep them in sync

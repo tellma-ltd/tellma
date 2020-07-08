@@ -21,11 +21,9 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "accounts";
 
         private readonly AccountsService _service;
-        private readonly ILogger _logger;
 
-        public AccountsController(ILogger<AccountsController> logger, AccountsService service) : base(logger)
+        public AccountsController(AccountsService service, IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
             _service = service;
         }
 

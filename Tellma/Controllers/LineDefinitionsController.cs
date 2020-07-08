@@ -19,7 +19,7 @@ namespace Tellma.Controllers
 
         private readonly LineDefinitionsService _service;
 
-        public LineDefinitionsController(LineDefinitionsService service, ILogger<LineDefinitionsController> logger) : base(logger)
+        public LineDefinitionsController(LineDefinitionsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

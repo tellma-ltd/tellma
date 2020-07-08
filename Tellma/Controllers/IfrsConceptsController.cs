@@ -20,7 +20,7 @@ namespace Tellma.Controllers
 
         private readonly IfrsConceptsService _service;
 
-        public IfrsConceptsController(IfrsConceptsService service, ILogger<IfrsConceptsController> logger) : base(logger)
+        public IfrsConceptsController(IfrsConceptsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

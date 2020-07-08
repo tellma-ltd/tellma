@@ -23,12 +23,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "identity-server-users";
 
         private readonly IdentityServerUsersService _service;
-        private readonly ILogger<IdentityServerUsersController> _logger;
 
-        public IdentityServerUsersController(IdentityServerUsersService service, ILogger<IdentityServerUsersController> logger) : base(logger)
+        public IdentityServerUsersController(IdentityServerUsersService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("reset-password")]

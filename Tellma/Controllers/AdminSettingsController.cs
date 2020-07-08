@@ -22,7 +22,7 @@ using Tellma.Controllers.Utilities;
 namespace Tellma.Controllers
 {
     [Route("api/admin-settings")]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [AdminController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

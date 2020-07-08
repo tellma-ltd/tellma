@@ -23,12 +23,9 @@ namespace Tellma.Controllers
     public abstract class FactWithIdControllerBase<TEntity, TKey> : FactControllerBase<TEntity>
         where TEntity : EntityWithKey<TKey>
     {
-        private readonly ILogger _logger;
-
         // Constructor
-        public FactWithIdControllerBase(ILogger logger) : base(logger)
+        public FactWithIdControllerBase(IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
         }
 
         [HttpGet("by-ids")]

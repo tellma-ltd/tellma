@@ -38,15 +38,8 @@ namespace Tellma.Controllers
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
-        // Private Fields
-
-        private readonly ILogger _logger;
-
-        // Constructor
-
-        public CrudControllerBase(ILogger logger) : base(logger)
+        public CrudControllerBase(IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
         }
 
         // HTTP Methods

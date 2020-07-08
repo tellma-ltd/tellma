@@ -23,12 +23,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "inbox";
 
         private readonly InboxService _service;
-        private readonly ILogger<InboxController> _logger;
 
-        public InboxController(InboxService service, ILogger<InboxController> logger) : base(logger)
+        public InboxController(InboxService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("check")]

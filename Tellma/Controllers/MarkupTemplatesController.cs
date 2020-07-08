@@ -25,12 +25,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "markup-templates";
 
         private readonly MarkupTemplatesService _service;
-        private readonly ILogger _logger;
 
-        public MarkupTemplatesController(MarkupTemplatesService service, ILogger<MarkupTemplatesController> logger) : base(logger)
+        public MarkupTemplatesController(MarkupTemplatesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("preview-by-filter")]

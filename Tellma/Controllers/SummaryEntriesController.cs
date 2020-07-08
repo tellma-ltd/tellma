@@ -25,8 +25,7 @@ namespace Tellma.Controllers
 
         private readonly SummaryEntriesService _service;
 
-        public SummaryEntriesController(SummaryEntriesService service,
-            ILogger<SummaryEntriesController> logger) : base(logger)
+        public SummaryEntriesController(SummaryEntriesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

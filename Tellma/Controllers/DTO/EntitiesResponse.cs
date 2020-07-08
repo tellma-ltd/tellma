@@ -1,6 +1,7 @@
 ﻿using Tellma.Entities;
 using System.Collections.Generic;
 using System;
+using Tellma.Services.Instrumentation;
 
 namespace Tellma.Controllers.Dto
 {

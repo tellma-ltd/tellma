@@ -22,12 +22,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "entry-types";
 
         private readonly EntryTypesService _service;
-        private readonly ILogger _logger;
 
-        public EntryTypesController(EntryTypesService service, ILogger<EntryTypesController> logger) : base(logger)
+        public EntryTypesController(EntryTypesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("activate")]

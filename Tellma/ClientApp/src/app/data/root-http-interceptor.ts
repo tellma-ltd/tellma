@@ -32,6 +32,12 @@ import { toLocalDateISOString } from './util';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
+interface InstrumentationReport {
+  Total: number;
+  Overhead: number;
+  Breakdown?: any[];
+}
+
 export class RootHttpInterceptor implements HttpInterceptor {
 
   // Global
@@ -234,11 +240,15 @@ export class RootHttpInterceptor implements HttpInterceptor {
       });
     }
 
+    const requestTime = new Date();
+
     // Here we intercept the response
     return next.handle(req).pipe(
       tap(e => {
+        const responseTime = new Date();
         if (e instanceof HttpResponseBase) {
           this.handleServerVersions(e, tenantId);
+          this.logInstrumentation(e, req.urlWithParams, requestTime, responseTime);
 
           // The client is definitely online
           if (this.workspace.offline) {
@@ -274,6 +284,24 @@ export class RootHttpInterceptor implements HttpInterceptor {
         return throwError(e);
       })
     );
+  }
+
+  private logInstrumentation = (res: HttpResponseBase, url: string, reqTime: Date, resTime: Date) => {
+    if (!!res && !!res.headers) {
+      const instrumentationJson = res.headers.get('x-instrumentation');
+      if (!!instrumentationJson) {
+        try {
+          const instrumentation = JSON.parse(instrumentationJson) as InstrumentationReport;
+          if (!!instrumentation) {
+            const diff = resTime.getTime() - reqTime.getTime();
+            console.log(`(${diff}ms) ${url}`);
+            console.log(instrumentation);
+          }
+        } catch (err) {
+          console.error('Error parsing instrumentation from server: ' + err);
+        }
+      }
+    }
   }
 
   private handleServerVersions = (e: HttpResponseBase, tenantId: number) => {

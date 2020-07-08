@@ -24,11 +24,8 @@ namespace Tellma.Controllers
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
-        private readonly ILogger _logger;
-
-        public CrudTreeControllerBase(ILogger logger) : base(logger)
+        public CrudTreeControllerBase(IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
         }
 
         // IMPORTANT: Children-of is replicated in FactTreeControllerBase, please keep them in sync

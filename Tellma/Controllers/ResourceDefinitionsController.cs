@@ -21,12 +21,10 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "resource-definitions";
 
-        private readonly ILogger<ResourceDefinitionsController> _logger;
         private readonly ResourceDefinitionsService _service;
 
-        public ResourceDefinitionsController(ILogger<ResourceDefinitionsController> logger, ResourceDefinitionsService service) : base(logger)
+        public ResourceDefinitionsController(ResourceDefinitionsService service, IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
             _service = service;
         }
 

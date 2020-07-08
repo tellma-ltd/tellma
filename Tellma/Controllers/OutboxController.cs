@@ -20,7 +20,7 @@ namespace Tellma.Controllers
 
         private readonly OutboxService _service;
 
-        public OutboxController(OutboxService service, ILogger<OutboxController> logger) : base(logger)
+        public OutboxController(OutboxService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

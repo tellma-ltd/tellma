@@ -28,19 +28,17 @@ using Tellma.Controllers.ImportExport;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [ApplicationController(allowUnobtrusive: true)]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
         public const string BASE_ADDRESS = "users";
 
         private readonly UsersService _service;
-        private readonly ILogger _logger;
 
-        public UsersController(UsersService service, ILogger<UsersController> logger) : base(logger)
+        public UsersController(UsersService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("client")]

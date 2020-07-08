@@ -23,12 +23,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "roles";
 
         private readonly RolesService _service;
-        private readonly ILogger _logger;
 
-        public RolesController(RolesService service, ILogger<RolesController> logger) : base(logger)
+        public RolesController(RolesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("activate")]

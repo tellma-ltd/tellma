@@ -308,15 +308,30 @@ namespace Tellma.Data.Queries
             var userId = args.UserId;
             var userToday = args.UserToday;
             var localizer = args.Localizer;
+            var i = args.Instrumentation;
+
+            using var _ = i.Block("Query CountAsync");
+            IDisposable block;
+
+            block = i.Block("Get Descriptor");
 
             var resultDesc = TypeDescriptor.Get<T>();
+
+            block.Dispose();
+            block = i.Block("Prepare select and filter expressions");
 
             SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
             FilterExpression filterExp = _filterConditions?.Aggregate(
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
+            block.Dispose();
+            block = i.Block("Validate paths and properties");
+
             // To prevent SQL injection
             ValidatePathsAndProperties(selectExp, null, filterExp, null, resultDesc, localizer);
+
+            block.Dispose();
+            block = i.Block("Prepare query internal");
 
             // Prepare the query
             var flatQuery = new QueryInternal
@@ -333,6 +348,9 @@ namespace Tellma.Data.Queries
                 Top = _top,
                 FromSql = _fromSql
             };
+
+            block.Dispose();
+            block = i.Block("Prepare SQL Parameters");
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
@@ -353,6 +371,9 @@ namespace Tellma.Data.Queries
                     ps.AddParameter(additionalParameter);
                 }
             }
+
+            block.Dispose();
+            block = i.Block("Prepare raw SQL");
 
             // Load the statement
             var sql = flatQuery.PrepareStatement(sources, ps, userId, userToday).Sql;
@@ -378,6 +399,9 @@ namespace Tellma.Data.Queries
 {sql}";
             }
 
+            block.Dispose();
+            block = i.Block("Create Command");
+
             // Execute the SqlStatement
             using var cmd = conn.CreateCommand();
 
@@ -388,12 +412,18 @@ namespace Tellma.Data.Queries
                 cmd.Parameters.Add(parameter);
             }
 
+            block.Dispose();
+            block = i.Block("Open Connection");
+
             // It is alawys closed, but we add this code anyways for robustness
             bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
             if (ownsConnection)
             {
                 conn.Open();
             }
+
+            block.Dispose();
+            block = i.Block("Execute Scalar");
 
             try
             {
@@ -403,6 +433,9 @@ namespace Tellma.Data.Queries
             }
             finally
             {
+                block.Dispose();
+                block = i.Block("Cleanup");
+
                 // Otherwise we might get an error
                 cmd.Parameters.Clear();
 
@@ -412,6 +445,8 @@ namespace Tellma.Data.Queries
                     conn.Close();
                     conn.Dispose();
                 }
+
+                block.Dispose();
             }
         }
 

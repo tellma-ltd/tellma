@@ -22,12 +22,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "details-entries";
 
         private readonly DetailsEntriesService _service;
-        private readonly ILogger<DetailsEntriesController> _logger;
 
-        public DetailsEntriesController(DetailsEntriesService service, ILogger<DetailsEntriesController> logger) : base(logger)
+        public DetailsEntriesController(DetailsEntriesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("statement")]

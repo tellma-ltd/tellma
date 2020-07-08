@@ -7,13 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data;
+using Tellma.Services;
 using Tellma.Services.ApiAuthentication;
 using Tellma.Services.MultiTenancy;
 
 namespace Tellma.Controllers
 {
     [Route("api/notifications")]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [ApplicationController(allowUnobtrusive: true)]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -21,11 +22,13 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IInstrumentationService _instrumentation;
 
-        public ServerNotificationsController(ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor)
+        public ServerNotificationsController(ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IInstrumentationService instrumentation)
         {
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
+            _instrumentation = instrumentation;
         }
 
         /// <summary>
@@ -36,8 +39,16 @@ namespace Tellma.Controllers
         [HttpGet("recap")]
         public async Task<ServerNotificationSummary> Recap(CancellationToken cancellation)
         {
+            IDisposable block;
+            using var _ = _instrumentation.Block("Recap");
+
+            block = _instrumentation.Block("Get User Info Async");
+
             var serverTime = DateTimeOffset.UtcNow;
             var userInfo = await _repo.GetUserInfoAsync(cancellation);
+
+            block.Dispose();
+            
 
             var userIdSingleton = new List<int> { userInfo.UserId.Value };
             var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation)).FirstOrDefault();
@@ -65,7 +76,7 @@ namespace Tellma.Controllers
         }
     }
 
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     public class ServerNotificationsHub : Hub<INotifiedClient>
     {
     }

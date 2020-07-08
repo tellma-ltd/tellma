@@ -207,7 +207,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           };
 
           // Call the API and return the observable
-          return this.api.get(args).pipe(
+          return this.api.getFact(args).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
               this._errorMessage = friendlyError.error;

@@ -34,12 +34,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "documents/";
 
         private readonly DocumentsService _service;
-        private readonly ILogger<DocumentsController> _logger;
 
-        public DocumentsController(DocumentsService service, ILogger<DocumentsController> logger) : base(logger)
+        public DocumentsController(DocumentsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
@@ -1848,7 +1846,7 @@ namespace Tellma.Controllers
     {
         private readonly DocumentsGenericService _service;
 
-        public DocumentsGenericController(DocumentsGenericService service, ILogger<DocumentsGenericController> logger) : base(logger)
+        public DocumentsGenericController(DocumentsGenericService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

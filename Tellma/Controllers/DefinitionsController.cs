@@ -13,7 +13,7 @@ using System.Threading;
 namespace Tellma.Controllers
 {
     [Route("api/definitions")]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [ApplicationController(allowUnobtrusive: true)]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -17,7 +17,7 @@ using Tellma.Services.Utilities;
 namespace Tellma.Controllers
 {
     [Route("api/settings")]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [ApplicationController(allowUnobtrusive: true)]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

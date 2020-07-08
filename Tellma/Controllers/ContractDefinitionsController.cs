@@ -20,12 +20,10 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "contract-definitions";
 
-        private readonly ILogger<ContractDefinitionsController> _logger;
         private readonly ContractDefinitionsService _service;
 
-        public ContractDefinitionsController(ILogger<ContractDefinitionsController> logger, ContractDefinitionsService service) : base(logger)
+        public ContractDefinitionsController(ContractDefinitionsService service, IServiceProvider sp) : base(sp)
         {
-            _logger = logger;
             _service = service;
         }
 

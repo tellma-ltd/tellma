@@ -32,12 +32,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "resources/";
 
         private readonly ResourcesService _service;
-        private readonly ILogger _logger;
 
-        public ResourcesController(ResourcesService service, ILogger<ResourcesController> logger) : base(logger)
+        public ResourcesController(ResourcesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("{id}/image")]
@@ -243,25 +241,15 @@ namespace Tellma.Controllers
             });
 
             // Unit + Units
-            if (def.UnitCardinality == null) // None is mapped to null
-            {
-                // Remove both
-                entities.ForEach(entity =>
-                {
-                    entity.UnitId = null;
-                    entity.Units.Clear();
-                });
-            }
-            else if (def.UnitCardinality == Cardinality.Single)
+            if (def.UnitCardinality != Cardinality.Multiple)
             {
                 // Remove units
                 entities.ForEach(entity =>
                 {
-                    if (entity.Units.Count > 1)
-                    {
-                        entity.Units.Clear();
-                    }
+                    entity.Units.Clear();
                 });
+
+                // If cardinality is "None", SQL server will set UnitId to pure
             }
 
             var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
@@ -467,7 +455,7 @@ namespace Tellma.Controllers
     {
         private readonly ResourcesGenericService _service;
 
-        public ResourcesGenericController(ResourcesGenericService service, ILogger<ResourcesGenericController> logger) : base(logger)
+        public ResourcesGenericController(ResourcesGenericService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

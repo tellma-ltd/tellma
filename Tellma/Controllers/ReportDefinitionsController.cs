@@ -25,7 +25,7 @@ namespace Tellma.Controllers
 
         private readonly ReportDefinitionsService _service;
 
-        public ReportDefinitionsController(ReportDefinitionsService service, ILogger<ReportDefinitionsController> logger) : base(logger)
+        public ReportDefinitionsController(ReportDefinitionsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

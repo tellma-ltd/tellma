@@ -452,7 +452,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
 
       // Retrieve the entities
-      obs$ = this.crud.get({
+      obs$ = this.crud.getFact({
         top,
         skip: skipParam,
         orderby,
@@ -1429,7 +1429,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       });
     } else if (this.exportMode === 'WhatISee') {
       const colPaths = this.tableColumnPaths;
-      obs$ = this.crud.get({
+      obs$ = this.crud.getFact({
         top: this.exportPageSize,
         skip: this.exportSkip,
         orderby: s.orderby,

@@ -28,20 +28,18 @@ using Tellma.Services.Utilities;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [AuthorizeAccess]
+    [AuthorizeJwtBearer]
     [AdminController]
     public class AdminUsersController : CrudControllerBase<AdminUserForSave, AdminUser, int>
     {
         public const string BASE_ADDRESS = "admin-users";
 
         private readonly AdminUsersService _service;
-        private readonly ILogger _logger;
         private readonly AdminRepository _repo;
 
-        public AdminUsersController(AdminUsersService service, ILogger<AdminUsersController> logger, AdminRepository repo) : base(logger)
+        public AdminUsersController(AdminUsersService service, AdminRepository repo, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
             _repo = repo;
         }
 

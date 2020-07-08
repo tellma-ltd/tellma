@@ -23,12 +23,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "lookups/";
 
         private readonly LookupsService _service;
-        private readonly ILogger<LookupsController> _logger;
 
-        public LookupsController(LookupsService service, ILogger<LookupsController> logger) : base(logger)
+        public LookupsController(LookupsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("activate")]
@@ -247,7 +245,7 @@ namespace Tellma.Controllers
     {
         private readonly LookupsGenericService _service;
 
-        public LookupsGenericController(LookupsGenericService service, ILogger<LookupsGenericController> logger) : base(logger)
+        public LookupsGenericController(LookupsGenericService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }

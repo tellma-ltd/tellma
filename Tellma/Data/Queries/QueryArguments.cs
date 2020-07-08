@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Data.SqlClient;
+using Tellma.Services;
 
 namespace Tellma.Data.Queries
 {
@@ -9,13 +10,14 @@ namespace Tellma.Data.Queries
     /// </summary>
     public class QueryArguments
     {
-        public QueryArguments(SqlConnection conn, Func<Type, string> sources, int userId, DateTime? userToday, IStringLocalizer localizer)
+        public QueryArguments(SqlConnection conn, Func<Type, string> sources, int userId, DateTime? userToday, IStringLocalizer localizer, IInstrumentationService instrumentation)
         {
             Connection = conn ?? throw new ArgumentNullException(nameof(conn));
             Sources = sources ?? throw new ArgumentNullException(nameof(sources));
             UserId = userId;
             UserToday = userToday;
             Localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            Instrumentation = instrumentation ?? throw new ArgumentNullException(nameof(instrumentation));
         }
 
         public SqlConnection Connection { get; }
@@ -27,5 +29,7 @@ namespace Tellma.Data.Queries
         public DateTime? UserToday { get; }
 
         public IStringLocalizer Localizer { get; }
+
+        public IInstrumentationService Instrumentation { get; set; }
     }
 }

@@ -422,7 +422,7 @@ namespace Tellma.Data.Queries
                     var principalEntities = results[query.PrincipalQuery]; // The list of entities with collection nav properties
                     var pathToCollection = query.PathToCollectionPropertyInPrincipal;
                     var pathToCollectionEntity = new ArraySegment<string>(pathToCollection.Array, pathToCollection.Offset, pathToCollection.Count - 1);
-                    var collectionPropName = pathToCollection[pathToCollection.Count - 1];
+                    var collectionPropName = pathToCollection[^1]; // Last item
 
                     // In the first step, we collect the collection entities in a hashset, by following the paths from the principal query result list
                     var collectionEntities = new HashSet<EntityWithKey>();

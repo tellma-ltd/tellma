@@ -23,12 +23,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "currencies";
 
         private readonly CurrenciesService _service;
-        private readonly ILogger _logger;
 
-        public CurrenciesController(CurrenciesService service, ILogger<CurrenciesController> logger) : base(logger)
+        public CurrenciesController(CurrenciesService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpPut("activate")]
