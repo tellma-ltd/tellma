@@ -4,10 +4,6 @@ using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Threading.Tasks;
-using IdentityModel.AspNetCore.OAuth2Introspection;
-using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
