@@ -14,6 +14,9 @@ SET NOCOUNT ON;
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities;
 
+	--TODO IN C#
+	-- IF UnitCardinality of @DefinitionId = None, Wipe out the @ResourceUnits
+
 	DECLARE @ValidationErrors ValidationErrorList;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Resources_Validate__Save]

@@ -40,21 +40,20 @@
 (78, N'EmployeeTravel',2, N'Per diem, Petty Cash, Fuel Allowance, ...',N'Travel', N'Travels', N'TIE',N'suitcase-rolling', N'HumanCapital', 1480);
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-(0,0,   @ManualLineLD, 1),
-(0,7,   @CostReallocationIPUCLD,1),
-(0,10,  @CashPaymentToOtherLD, 1),
-(1,10,  @ManualLineLD, 1),
---(4,10, @CashTransferExchangeLD, 1),
-(0,11,  @DepositCashToBankLD, 1),
-(1,11,  @DepositCheckToBankLD, 1),
-(0,12,  @CashReceiptFromOtherLD, 1),
-(1,12,  @CheckReceiptFromOtherInCashierLD, 1),
-(0,30,  @CashPaymentToTradePayableLD, 1),
-(1,30,  @InvoiceFromTradePayableLD, 1),
-(2,30,  @StockReceiptFromTradePayableLD, 1),
-(3,30,  @PPEReceiptFromTradePayableLD, 1),
-(4,30,  @ConsumableServiceReceiptFromTradePayableLD, 1),
-(5,30,  @RentalReceiptFromTradePayableLD, 1);
+(0,0, @ManualLineLD, 1),
+(2,9, @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD, 1),
+(0,10, @CashPaymentToOtherLD, 1),
+(4,10, @CashTransferExchangeLD, 1),
+(0,11, @DepositCashToBankLD, 1),
+(1,11, @DepositCheckToBankLD, 1),
+(0,12, @CashReceiptFromOtherLD, 1),
+(1,12, @CheckReceiptFromOtherInCashierLD, 1),
+(0,30, @CashPaymentToTradePayableLD, 1),
+(1,30, @InvoiceFromTradePayableLD, 1),
+(2,30, @StockReceiptFromTradePayableLD, 1),
+(3,30, @PPEReceiptFromTradePayableLD, 1),
+(4,30, @ConsumableServiceReceiptFromTradePayableLD, 1),
+(5,30, @RentalReceiptFromTradePayableLD, 1);
 
 
 EXEC dal.DocumentDefinitions__Save

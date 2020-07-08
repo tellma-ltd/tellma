@@ -1,6 +1,6 @@
 ﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (0, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
-(70, N'CostReallocationIPUC', N'cost reallocation of investment propoerty under construction', N'IPUC Cost Reallocation', N'IPUC Cost Reallocations', 0, 0),
+(92, N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment', N'Capitalization of an investment property expenditures ', N'Investment Property', N'Investment Properties', 0, 1),
 (100, N'CashPaymentToOther', N'cash payment to other than suppliers, customers, and employees', N'Payment to Other', N'Payments to Others', 0, 1),
 (104, N'CashTransferExchange', N'cash transfer exchange', N'Cash Transfer', N'Cash Transfers', 0, 1),
 (110, N'DepositCashToBank', N'deposit cash in bank', N'Cash Deposit', N'Cash Deposits', 0, 1),
@@ -12,7 +12,7 @@
 (302, N'StockReceiptFromTradePayable', N'Receiving goods to inventory from supplier/contractor', N'Stock', N'Stock', 0, 0),
 (303, N'PPEReceiptFromTradePayable', N'Receiving property, plant and equipment from supplier/contractor', N'Fixed Asset', N'Fixed Assets', 0, 1),
 (304, N'ConsumableServiceReceiptFromTradePayable', N'Receiving services/consumables from supplier/lessor/consultant, ...', N'Consumable/Service', N'Consumables/Services', 0, 1),
-(305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1);
+(305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1)
 --0: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -120,6 +120,90 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,70,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (7,70,	N'Memo',				1,	N'Memo',				4,4,1),
 (8,70,	N'CenterId',			1,	N'Project',				4,4,1);
+--75: PUC Costs Reallocation
+UPDATE @LineDefinitions
+SET [GenerateScript] = N'
+		DECLARE @CenterId INT, @PostingDate DATE;
+		
+		DECLARE @WideLines WideLineList;
+				
+		SELECT @CenterId = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CenterId'') AS INT);
+		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
+		DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N''ExpenseByNature'');
+
+		WITH ExpenseByNatureAccounts AS (
+			SELECT A.[Id]
+			FROM dbo.Accounts A
+			JOIN dbo.AccountTypes [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
+		)
+		INSERT INTO @WideLines(
+			[Index], [PostingDate],
+			[AccountId0], [CurrencyId0], [ContractId0], [ResourceId0], [UnitId0], [EntryTypeId0], [DueDate0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
+			[AccountId1], [CurrencyId1], [ContractId1], [ResourceId1], [UnitId1], [EntryTypeId1], [DueDate1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
+		)
+		SELECT
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]) - 1 AS [Index], 
+			@PostingDate,
+			NULL			AS [AccountId0],
+			[CurrencyId]	AS [CurrencyId0],
+			NULL			AS [ContractId0],
+			NULL			AS [ResourceId0],
+			NULL			AS [UnitId0],
+			NULL			AS [EntryTypeId0],
+			NULL			As [DueDate0],
+			@CenterId		AS [Centerid0],
+			SUM([Direction] * [Quantity]) AS [Quantity0],
+			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue0],
+			SUM([Direction] * [Value]) AS [Value0],
+
+			[AccountId]		AS [AccountId1],
+			[CurrencyId]	AS [CurrencyId1],
+			[ContractId]	AS [ContractId1],
+			[ResourceId]	AS [ResourceId1],
+			[UnitId]		AS [UnitId1],
+			[EntryTypeId]	AS [EntryTypeId1],
+			[DueDate]		As [DueDate1],
+			@CenterId		AS [Centerid1],
+			SUM([Direction] * [Quantity]) AS [Quantity1],
+			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue1],
+			SUM([Direction] * [Value]) AS [Value1]
+		FROM dbo.Entries E 
+		JOIN dbo.Lines L ON E.LineId = L.Id
+		WHERE E.[CenterId] = @CenterId
+		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
+		AND L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]
+
+		SELECT * FROM @WideLines;
+	'
+WHERE [Index] = 75;
+INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
+		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
+(0,75,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
+(1,75,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId]) VALUES
+(0,75,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
+(1,75,	-1, @ExpenseByNature);
+INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
+			[ResourceDefinitionId]) VALUES
+(1,1,75,	@EmployeeBenefitRD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
+															[ReadOnlyState],
+															[InheritsFromHeader]) VALUES
+(0,75,	N'AccountId',			1,	N'Expenditure',			4,4,0),
+(1,75,	N'ResourceId',			1,	N'Item',				5,5,0),
+(2,75,	N'Quantity',			1,	N'Quantity',			5,5,0),
+(3,75,	N'UnitId',				1,	N'Unit',				5,5,0),
+(4,75,	N'MonetaryValue',		1,	N'Amount',				4,4,0),
+(5,75,	N'CurrencyId',			1,	N'Currency',			4,4,0),
+(6,75,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
+(7,75,	N'Memo',				1,	N'Memo',				4,4,1),
+(8,75,	N'CenterId',			1,	N'Project',				4,4,1);
+
 --100:CashPaymentToOther
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -765,9 +849,9 @@ EXEC [api].[LineDefinitions__Save]
 	@WorkflowSignatures = @WorkflowSignatures,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 -- Declarations
+-- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
-
-DECLARE @CostReallocationIPUCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationIPUC');
+DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
 DECLARE @CashPaymentToOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToOther');
 DECLARE @CashTransferExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransferExchange');
 DECLARE @DepositCashToBankLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'DepositCashToBank');
@@ -780,7 +864,6 @@ DECLARE @StockReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefiniti
 DECLARE @PPEReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEReceiptFromTradePayable');
 DECLARE @ConsumableServiceReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptFromTradePayable');
 DECLARE @RentalReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RentalReceiptFromTradePayable');
-
 /*
 DECLARE @TranslationsLD TABLE (
 	[Word] NVARCHAR (50),

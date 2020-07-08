@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[LineDefinitionList] AS TABLE (
 	[Index]						INT	PRIMARY KEY,
 	[Id]						INT	NOT NULL DEFAULT 0,
-	[Code]						NVARCHAR (50) NOT NULL UNIQUE,
+	[Code]						NVARCHAR (100) NOT NULL UNIQUE,
 	[Description]				NVARCHAR (1024),
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),

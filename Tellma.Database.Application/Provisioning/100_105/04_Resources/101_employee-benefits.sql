@@ -2,14 +2,9 @@
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-			[Name]) VALUES
-	(0,		N'Basic'),
-	(1,		N'Labor (hourly)');
-
-	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId]) VALUES
-	(0, 0, @WorkMonth),
-	(0, 1, @Hour);
+			[Name],				[UnitId]) VALUES
+	(0,		N'Basic',			@wmo),
+	(1,		N'Labor (hourly)',	@hr);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
 		@DefinitionId = @EmployeeBenefitRD,

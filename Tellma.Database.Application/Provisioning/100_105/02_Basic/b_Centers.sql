@@ -1,31 +1,9 @@
-﻿DECLARE @Centers dbo.CenterList; 
-
-IF @DB = N'100' -- ACME, USD, en/ar/zh
-	INSERT INTO @Centers([Index],[ParentIndex],
-		[Name],					[Name2],				[Code],[CenterType]) VALUES
-	(0,NULL,N'Unallocated',		N'غ مخصص',				N'00',	N'Common');
--- Purchasing - Hiring - Stocking - Manufacturing - Development - Marketing & Selling - Administration
-ELSE IF @DB = N'101' -- Banan SD, USD, en
-BEGIN
-	INSERT INTO @Centers([Index],[ParentIndex],
-		[Name],					[Name2],				[Code],[CenterType]) VALUES
-	(0,NULL,N'Unallocated',		N'غ مخصص',				N'00',	N'Common'),
-	(1,NULL,N'Departments',		N'الإدارات',				N'10',	N'Abstract'),
-	(2,1,	N'Exec. Office',	N'المكتب التنفيذي',	N'11',	N'AdministrativeExpense'),
-	(3,1,	N'Sales Unit',		N'التسويق والمبيعات',	N'12',	N'DistributionCosts'),
-	(4,1,	N'Services Unit',	N'وحدة الخدمات',		N'13',	N'ServiceExtension'), -- Rent, Power, and IT support
-	(5,NULL,N'Profit Centers',	N'مراكز الإيرادات',		N'20',	N'Abstract'),
-	(6,5,	N'B10/HCM',			N'بابل',				N'21',	N'CostOfSales'),
-	(7,5,	N'BSmart',			N'بيسمارت',				N'22',	N'CostOfSales'),
-	(8,5,	N'Campus',			N'كامبوس',				N'23',	N'CostOfSales'),
-	(9,5,	N'Tellma',			N'تلما',				N'24',	N'CostOfSales'),
-	(10,5,	N'1st Floor',		N'ط - 1',				N'29',	N'CostOfSales');
-END
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
+﻿
+IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT INTO @Centers([Index],[ParentIndex],
 			[Name],						[Code],[CenterType]) VALUES
-	(1,NULL,N'Unallocated',				N'000',	N'Common'),
+	(0,NULL,N'Unallocated',				N'000',	N'Common'),
 	(2,NULL,N'Support Servies',			N'001',	N'ServiceExtension'),
 	(3,NULL,N'Selling and Gen. Admin',	N'100',	N'Abstract'),
 	(4,3,	N'Shared Admin',			N'101',	N'AdministrativeExpense'),
@@ -34,17 +12,16 @@ BEGIN
 	(7,6,	N'Lifan Motors',			N'201',	N'CostOfSales'),
 	(8,6,	N'Sesay',					N'202',	N'CostOfSales'),
 	(9,6,	N'Soreti',					N'203',	N'CostOfSales');
-END
-ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-	INSERT INTO @Centers([Index],[ParentIndex],
-		[Name],							[Code],[CenterType]) VALUES
-	(1,NULL,N'Unallocated',				N'00',	N'Common');
 
+	-- There is already a center
+	UPDATE @Centers SET [Id] = (SELECT MIN([Id]) FROM dbo.Centers)
+	WHERE [Index] = 0
+END
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @Centers([Index],[ParentIndex],
 			[Name],						[Code], [CenterType]) VALUES
-	(0,NULL,N'Unallocated',				N'000',	N'Common'),
+	(0,NULL,N'Unallocated',				N'000',	N'Abstract'),
 	(1,NULL,N'Administration',			N'100',	N'Abstract'),
 	(2,1,	N'Exec Office',				N'101',	N'AdministrativeExpense'), -- Badege
 	(3,1,	N'Finance Dept',			N'102',	N'AdministrativeExpense'), -- Tizita
@@ -67,12 +44,16 @@ BEGIN
 	(20,16,	N'Other Income',			N'520',	N'Abstract'), -- 
 	(21,20,	N'Coffee',					N'521',	N'Profit'), -- Gadissa
 	(22,20,	N'T/H Bldg',				N'522',	N'Profit'); -- Bldg Manager
+
+	-- There is already a center
+	UPDATE @Centers SET [Id] = (SELECT MIN([Id]) FROM dbo.Centers)
+	WHERE [Index] = 0
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @Centers([Index],[ParentIndex],
 				[Name],						[Name2],					[Code],[CenterType]) VALUES
-	(0,NULL,	N'Unallocated',				N'غ مخصص',					N'00',	N'Common'),
+	(0,NULL,	N'Simpex',					N'سيمبكس',					N'0',	N'Abstract'),
 	(1,NULL,	N'Admin. Centers',			N'المراكز الإدارية',		N'10',	N'Abstract'),
 	(2,1,		N'Exec. Office',			N'المكتب التنفيذي',		N'11',	N'AdministrativeExpense'),
 	(3,1,		N'Finance',					N'الإدارة المالية',			N'12',	N'AdministrativeExpense'),
@@ -88,6 +69,10 @@ BEGIN
 	(21,5,		N'Jeddah Sales',			N'مبيعات جدة',				N'41',	N'CostOfSales'),
 	(22,5,		N'Riyadh Sales',			N'مبيعات الرياض',			N'42',	N'CostOfSales'),
 	(23,5,		N'Dammam Sales',			N'مبيعات الدمام',			N'43',	N'CostOfSales')
+
+	-- There is already a center
+	UPDATE @Centers SET [Id] = (SELECT MIN([Id]) FROM dbo.Centers)
+	WHERE [Index] = 0
 END
 
 EXEC [api].[Centers__Save]

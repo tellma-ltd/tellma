@@ -91,7 +91,7 @@
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
 	[UnitCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'Single' CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
 	[DefaultUnitId]						INT				CONSTRAINT [ResourceDefinitions__DefaultUnitId] REFERENCES dbo.Units([Id]),
-	[UnitMassVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None'  CHECK ([UnitMassVisibility] IN (N'None', N'Optional', N'Required')),
+	[UnitMassVisibility]				NVARCHAR (50)	DEFAULT N'None'  CHECK ([UnitMassVisibility] IN (N'None', N'Optional', N'Required')),-- make it required
 	[DefaultUnitMassUnitId]				INT				CONSTRAINT [ResourceDefinitions__DefaultUnitMassUnitId] REFERENCES dbo.Units([Id]),
 
 	-- Financial instruments

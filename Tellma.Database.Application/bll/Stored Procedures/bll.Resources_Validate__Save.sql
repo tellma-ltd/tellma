@@ -5,12 +5,10 @@
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
--- TODO: Add Top(@Top)
--- TODO: make sure the account type does not contradict the definition
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-    SELECT
+    SELECT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
@@ -18,7 +16,7 @@ SET NOCOUNT ON;
 
     -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-    SELECT
+    SELECT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
@@ -27,7 +25,7 @@ SET NOCOUNT ON;
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.Code
@@ -37,7 +35,7 @@ SET NOCOUNT ON;
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]
@@ -52,7 +50,7 @@ SET NOCOUNT ON;
 
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT 
+	SELECT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsUsed',
 		FE.[Name]
@@ -62,7 +60,7 @@ SET NOCOUNT ON;
 
 	-- Name2 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
@@ -72,7 +70,7 @@ SET NOCOUNT ON;
 
 	-- Name3 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
@@ -82,7 +80,7 @@ SET NOCOUNT ON;
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsDuplicated',
 		[Name]
@@ -96,7 +94,7 @@ SET NOCOUNT ON;
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsDuplicated',
 		[Name2]
@@ -111,7 +109,7 @@ SET NOCOUNT ON;
 
 	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsDuplicated',
 		[Name3]
@@ -124,11 +122,16 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- TODO: if units have standard conversion rates, reject any attempt to change them
-	-- TODO: Add bll.Resources__Preprocess, to update the units with 
-
-	-- TODO: make sure AssetTypeId is descendants of AssetsAbstract
-	-- TODO: make sure ExpenseTypeId is descendants of ExpenseByNatureAbstract
-	-- TODO: make sure RevenueTypeId is descendants of Revenue
+	-- Unit in ResourceUnits must be of same type of Header unit or be of type Mass
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP(@Top)
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].Units[' + CAST(RU.[Index] AS NVARCHAR(255)) + '].UnitId',
+		N'Error_TheUnitHasIncompatibleUnitType'
+	FROM @Entities R
+	JOIN dbo.Units UR ON R.[UnitId] = UR.[Id]
+	JOIN @ResourceUnits RU ON R.[Index] = RU.[HeaderIndex]
+	JOIN dbo.Units URU ON RU.[UnitId] = URU.[Id]
+	WHERE URU.[UnitType] <> N'Mass'
+	AND URU.[UnitType] <> UR.[UnitType]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

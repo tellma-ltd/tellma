@@ -8,24 +8,7 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(1,			N'Customer2'),
 	(2,			N'Customer3'),
 	(3,			N'Customer4');
-ELSE IF @DB = N'101' -- Banan SD, USD, en
-BEGIN
-	INSERT INTO @Customers
-	([Index],	[Name],	[Name2]) VALUES
-	(0,			N'International African University', N'جامعة أفريقيا العالمية'),
-	(1,			N'Mico poultry', N'ميكو'),
-	(2,			N'Sabco', N'سابكو'),
-	(3,			N'al-Washm', N'شركة الوشم'),
-	(4,			N'TAGI restaurants', N'مطاعم تاجي'),
-	(5,			N'It3aam', N'شركة إطعام'),
-	(6,			N'Rafeef', N'شركة رفيف'),
-	(7,			N'Golden Earth', N'غولدن إيرث')
-	;
-	EXEC [api].[Contracts__Save]
-		@DefinitionId = @CustomerCD,
-		@Entities = @Customers,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-END
+
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Customers
 	([Index],	[Name],						[FromDate], [TaxIdentificationNumber]) VALUES
@@ -68,6 +51,4 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		@Plastic = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
 		@Lifan = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
 
-	DECLARE @It3am INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'It3aam');
-	DECLARE @Washm INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'al-Washm');
-	DECLARE @Taji INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'TAGI restaurants');
+
