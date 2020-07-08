@@ -6,24 +6,7 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1'),
 	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2');
-ELSE IF @DB = N'101' -- Banan SD, USD, en
-BEGIN
-	INSERT INTO @employees
-	([Index],	[Name],				[Name2],			[Code]) VALUES
-	(0,			N'Ahmad Habashi',	N'أحمد حبشي',		N'E1'),
-	(1,			N'Ahmad Abdussalam',N'أحمد عبدالسلام',	N'E2'),
-	(101,		N'Abu Ammar',		N'أبو عمار',		N'E101'),
-	(102,		N'Mohamad Ali',		N'محمد علي',		N'E102'),
-	(103,		N'elAmin elTayeb',	N'الأمين الطيب',		N'E103'),
-	(104,		N'M. Kamil',		N'محمد كامل',		N'E099')
 
-	;
-
-	--INSERT INTO @AgentRates([Index], [HeaderIndex],
-	--[ResourceId],					[UnitId],	[CurrencyId],	[Rate]) VALUES
-	--(0,0,@BasicSalary,				@WorkMonth, N'SDG',			3500),
-	--(0,1,@HourlyWage,				@Hour,		N'USD',			5.5);
-END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT INTO @employees
@@ -104,21 +87,13 @@ BEGIN
 		GOTO Err_Label;
 	END;
 
-	DECLARE @Abu_Ammar INT, @M_Ali INT, @el_Amin INT;
-	DECLARE @MohamadAkra int, @AhmadAkra int, @MKamil INT, @AASalamEmp INT;
+
 	
 	DECLARE @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
 		@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
 		@MesfinWolde int;
 
 	SELECT 
-		@Abu_Ammar = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Abu Ammar'), 
-		@M_Ali = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mohamad Ali'), 
-		@el_Amin = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'elAmin elTayeb'), 
-		@MKamil = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'M. Kamil'),
-		@AASalamEmp = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ahmad Abdussalam'),
-		@MohamadAkra = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mohamad Akra'), 
-		@AhmadAkra = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ahmad Akra'), 
 		@BadegeKebede = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Badege Kebede'), 
 		@TizitaNigussie = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Tizita Nigussie'), 
 		@Ashenafi = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ashenafi Fantahun'), 

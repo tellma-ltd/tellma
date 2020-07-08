@@ -21,10 +21,11 @@ IF (SELECT UnitCardinality FROM dbo.ResourceDefinitions WHERE [Id] = @Definition
 UPDATE @PreprocessedResources
 SET UnitId = (SELECT MIN([Id]) FROM dbo.Units WHERE UnitType = N'Pure')
 
-UPDATE @PreprocessedResources
-SET
-	UnitId = (SELECT [DefaultUnitId] FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId),
-	UnitMassUnitId = (SELECT [DefaultUnitMassUnitId] FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId)
+-- Handled by C#
+--UPDATE @PreprocessedResources
+--SET
+--	UnitId = COALESCE(UnitId, (SELECT [DefaultUnitId] FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId)),
+--	UnitMassUnitId = COALESCE(UnitMassUnitId, (SELECT [DefaultUnitMassUnitId] FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId))
 
 IF (
 	SELECT COUNT(*) FROM dbo.[Centers] [C]

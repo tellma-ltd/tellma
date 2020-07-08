@@ -80,6 +80,7 @@ import {
   faFolderMinus,
   faFolderPlus,
   faUmbrellaBeach,
+  faDoorClosed,
   faSpa,
   faUserMinus,
   faTrophy,
@@ -626,7 +627,7 @@ export class ApplicationModule {
       faRecycle, faIdBadge, faFunnelDollar, faCashRegister, faMapMarkerAlt, faNewspaper, faUserClock, faAnchor, faDollyFlatbed,
       faEdit, faFolderMinus, faFolderPlus, faUmbrellaBeach, faSpa, faUserMinus, faUserPlus, faTrophy, faSuitcaseRolling, faTasks,
       faChevronUp, faChevronDown, faAngleDown, faAngleUp, faSearchDollar, faCertificate, faBolt,
-      faShip, faPallet, faObjectGroup, faIndent, faHistory, faGrinHearts, faUserCog, faStream, faTree, faSeedling
+      faShip, faPallet, faObjectGroup, faIndent, faHistory, faGrinHearts, faUserCog, faStream, faTree, faSeedling,faDoorClosed
     );
   }
 }

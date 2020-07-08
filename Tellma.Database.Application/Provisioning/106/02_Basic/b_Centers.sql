@@ -1,4 +1,5 @@
-﻿INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
+﻿DELETE FROM @Centers;
+INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
 (0,NULL, N'Soreti', N'ሶሬቲ', N'0', N'Abstract'),
 (1,0, N'Head Office', N'ዋና መስሪያ ቤት', N'1', N'BusinessUnit'),
 (11,1, N'Selling, General and Admininstration', N'መሸጥ ፣ አጠቃላይ እና አስተዳደር', N'11', N'Abstract'),
@@ -70,6 +71,10 @@
 (74,7, N'Real Estate - Construction Projects', N'የማይንቀሳቀስ ንብረት - የግንባታ ፕሮጀክቶች', N'74', N'Abstract'),
 (741,74, N'Soreti Mall Construction Project', N'ሶሬቲ የገቢያ አዳራሽ - የግንባታ ፕሮጀክቶች', N'741', N'ConstructionExpenseControl'),
 (742,74, N'AA Building Construction Project', N'AA ሕንፃ ግንባታ ፕሮጀክት', N'742', N'ConstructionExpenseControl');
+
+-- There is already a center
+	UPDATE @Centers SET [Id] = (SELECT MIN([Id]) FROM dbo.Centers)
+	WHERE [Index] = 0
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,

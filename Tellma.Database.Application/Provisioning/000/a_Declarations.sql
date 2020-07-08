@@ -22,7 +22,7 @@
 	DECLARE @DB NVARCHAR (50) = RIGHT(DB_NAME(), 3);
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
-	DECLARE @PId INT ;
+	DECLARE @PId INT ,@IndexedIds IndexedIdList;
 	DECLARE @Users dbo.UserList;
 	DECLARE @Roles dbo.RoleList,@Members [dbo].[RoleMembershipList], @Permissions dbo.PermissionList;
 	DECLARE @EntryTypes dbo.EntryTypeList;
@@ -49,7 +49,8 @@
 	DECLARE @LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
-	DECLARE @Units dbo.UnitList;
+	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
+	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 
 	DECLARE @Agents dbo.AgentList, @Contracts ContractList, @ContractUsers dbo.ContractUserList;
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;

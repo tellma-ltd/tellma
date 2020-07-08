@@ -20,14 +20,16 @@ IF @OverwriteDb = 0 RETURN
 
 :r .\000\p_DocumentDefinitions.sql
 :r .\000\q_ReportDefinitions.sql
+:r .\000\r_AccountClassifications.sql
+:r .\000\s_Centers.sql
+:r .\000\t_Accounts.sql
 
 :r .\000\x_SampleContracts.sql
 :r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
 
-IF @DB IN (N'100', N'101', N'102', N'103', N'104', N'105')
+IF @DB IN (N'100', N'102', N'103', N'104', N'105')
 BEGIN
-	:r .\100_105\00_Setup\Script.sql
 	:r .\100_105\01_Security\a_Users.sql
 	:r .\100_105\01_Security\b_Permissions.sql
 
@@ -36,7 +38,6 @@ BEGIN
 
 	:r .\100_105\04_Resources\101_property-plant-and-equipment.sql
 	:r .\100_105\04_Resources\101_employee-benefits.sql
-	:r .\100_105\04_Resources\101_revenue_services.sql
 	:r .\100_105\04_Resources\102_employee-benefits.sql
 	:r .\100_105\04_Resources\102_property-plant-and-equipment.sql
 	:r .\100_105\04_Resources\104_finished_goods.sql
@@ -56,19 +57,32 @@ BEGIN
 	:r .\100_105\05_Contracts\04_Debtors.sql
 	:r .\100_105\05_Contracts\05_Partners.sql
 	:r .\100_105\05_Contracts\06_Suppliers.sql
-	:r .\100_105\05_Contracts\07_Creditors.sql
 	:r .\100_105\05_Contracts\08_Employees.sql
+END
+IF @DB = N'101' -- Banan SD, en/ar
+BEGIN
 
-	:r .\100_105\06_Accounts\a_AccountClassifications.sql
-	:r .\100_105\06_Accounts\b_Accounts.sql
+	:r .\101\00_Script.sql
 
-	--IF @DB = N'101'
-	--BEGIN
-	--:r .\100_105\07_Entries\101\a_manual-journal-vouchers.sql
-	--:r .\100_105\07_Entries\101\b_cash-payment-vouchers.sql
-	--:r .\100_105\07_Entries\101\e_revenue-templates.sql
-	--:r .\100_105\07_Entries\101\f_revenue-recognition-vouchers.sql
-	--END
+	:r .\101\10_Users.sql
+	:r .\101\11_Permissions.sql
+
+	:r .\101\20_Lookups.sql
+	:r .\101\21_Units.sql
+	:r .\101\22_Centers.sql
+
+	:r .\101\30_Resources.sql
+	
+	:r .\101\40_Agents.sql
+	:r .\101\50_Contracts.sql
+
+	:r .\101\60_AccountClassifications.sql
+	:r .\101\61_Accounts.sql
+
+	--:r .\101\71_ManualJournalVouchers.sql
+	--:r .\101\72_CashPaymentVouchers.sql
+	--:r .\101\73_RevenueTemplates.sql
+	--:r .\101\74_RevenueRecognitionVouchers.sql
 END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
@@ -94,26 +108,23 @@ BEGIN
 END
 IF @DB = N'107' -- SSIA, SDG, en/ar
 BEGIN
-	:r .\000\r_AccountClassifications.sql
-	:r .\107\00_Setup\Script.sql
-	:r .\107\01_Security\a_Users.sql
-	:r .\107\01_Security\b_Permissions.sql
 
-	:r .\107\02_Basic\a_Lookups.sql
-	:r .\107\02_Basic\b_Centers.sql
+	:r .\107\00_Script.sql
+
+	:r .\107\10_Users.sql
+	:r .\107\11_Permissions.sql
+
+	:r .\107\20_Lookups.sql
+	:r .\107\21_Units.sql
+	:r .\107\22_Centers.sql
+
+	:r .\107\30_Resources.sql
 	
-	:r .\107\05_Contracts\00_Agents.sql
-	:r .\107\05_Contracts\01_CashCustodians.sql
-	:r .\107\05_Contracts\02_InventoryCustodians.sql
-	:r .\107\05_Contracts\03_Customers.sql
-	:r .\107\05_Contracts\04_Debtors.sql
-	:r .\107\05_Contracts\05_Partners.sql
-	:r .\107\05_Contracts\06_Suppliers.sql
-	:r .\107\05_Contracts\07_Creditors.sql
-	:r .\107\05_Contracts\08_Employees.sql
+	:r .\107\40_Agents.sql
+	:r .\107\50_Contracts.sql
 
-	--:r .\107\06_Accounts\a_AccountClassifications.sql
-	:r .\107\06_Accounts\b_Accounts.sql
+	:r .\107\60_AccountClassifications.sql
+	:r .\107\61_Accounts.sql
 END
 IF @DB = N'108' -- SSIA - HG, SDG, en/ar
 BEGIN

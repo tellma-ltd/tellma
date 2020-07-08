@@ -1,4 +1,5 @@
-﻿INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
+﻿DELETE FROM @Centers;
+INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
 (0,NULL, N'SSIA', N'الجهاز الاستثماري', N'0', N'Abstract'),
 (1,0, N'Headquarters', N'المقر الرئيسي', N'1', N'BusinessUnit'),
 (1000,1, N'Boards', N'المجالس الإدارية', N'1000', N'Abstract'),
@@ -72,7 +73,7 @@
 (12913,1291, N'Management Office Executive', N'إدارة المكتب التنفيذي', N'12913', N'SellingGeneralAndAdministration'),
 (12914,1291, N'Internal Audit Management', N'إدارة المراجعة الداخلية', N'12914', N'SellingGeneralAndAdministration'),
 (12915,1291, N'Legal Counsel', N'المستشار القانوني', N'12915', N'SellingGeneralAndAdministration'),
-(2,NULL, N'Investment Property', N'الاستثمار العقاري', N'2', N'Abstract'),
+(2,0, N'Investment Property', N'الاستثمار العقاري', N'2', N'Abstract'),
 (21,2, N'Saffat Towers Complex', N'مجمع أبراج الصافات', N'21', N'BusinessUnit'),
 (21000,21, N'Saffat Towers - Direct Expenses', N'أبراج الصافات - مصروفات مباشرة', N'21000', N'CostOfSales'),
 (211,21, N'Saffat Towers - SGA', N'أبراج الصافات - مصروفات غير مباشرة', N'211', N'Abstract'),
@@ -94,8 +95,13 @@
 (251,25, N'Mehira Scheme - SGA', N'مخطط مهيرة - مصروفات إدارية وتسويقية', N'251', N'Abstract'),
 (25100,251, N'Mehira Scheme - SGA', N'مخطط مهيرة - مصروفات إدارية وتسويقية', N'25100', N'SellingGeneralAndAdministration'),
 (252,25, N'Mehira Scheme - Projects under construction', N'مخطط مهيرة - مشاريع قيد التنفيذ', N'252', N'Abstract'),
+--(25200,252, N'Mehira Scheme - Shared Expenses', N'مخطط مهيرة - مصروفات مشتركة', N'25200', N'SharedExpenseControl'),
 (25201,252, N'Mehira Scheme - Phase 1', N'مخطط مهيرة - المرحلة الأولى', N'25201', N'ConstructionExpenseControl'),
 (25202,252, N'Mehira Scheme - Phase 2', N'مخطط مهيرة - المرحلة الثانية', N'25202', N'ConstructionExpenseControl');
+
+-- There is already a center
+UPDATE @Centers SET [Id] = (SELECT MIN([Id]) FROM dbo.Centers)
+WHERE [Index] = 0
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,

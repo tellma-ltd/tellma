@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[LineDefinitions] (
 	[Id]						INT 			CONSTRAINT [PK_LineDefinitions] PRIMARY KEY IDENTITY,
-	[Code]						NVARCHAR (50)	NOT NULL CONSTRAINT [IX_LineDefinitions] UNIQUE,
+	[Code]						NVARCHAR (100)	NOT NULL CONSTRAINT [IX_LineDefinitions] UNIQUE,
 	[Description]				NVARCHAR (1024),
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),

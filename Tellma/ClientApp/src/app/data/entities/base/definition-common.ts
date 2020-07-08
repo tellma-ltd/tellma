@@ -118,6 +118,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'copy',
           'cube',
           'dolly-flatbed',
+          'door-closed',
           'download',
           'edit',
           'ellipsis-h',

@@ -36,29 +36,25 @@ DECLARE @EmployeeRewardDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeRewar
 DECLARE @EmployeeLeaveDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeLeaveDD AS NVARCHAR(50));
 DECLARE @EmployeeLeaveAllowanceDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeLeaveAllowanceDD AS NVARCHAR(50));
 DECLARE @EmployeeTravelDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeTravelDD AS NVARCHAR(50));
-INSERT INTO @Roles([Index],
-	[Code],					[Name]) VALUES
-(0, N'Administrator',		N'Administrator'),
-(1, N'Shareholder',			N'Sahareholder'),
-(2, N'GeneralManager',		N'General Manager'),
-
-(10,N'FinanceManager',		N'Finance Manager'),
-(11,N'Comptroller',			N'Comptroller'),
-(12,N'Accountant',			N'Accountant'),
-(13,N'Cashier',				N'Cashier'),
-
-(20,N'InternalAuditor',		N'Internal Auditor'),
-(21,N'ExternalAuditor',		N'External Auditor'),
-
-(30,N'StoreKeeper',			N'Store Keeper'),
-
-(40,N'ProductionManager',	N'Production Manager'),
-
-(50,N'SalesManager',		N'Sales Manager'),
-(51,N'SalesPerson',			N'Sales Person'),
-
-(90,N'HrManager',			N'HR Manager')
-INSERT INTO @Roles([Index], [Code],	[Name], [IsPublic]) VALUES (99, N'Public', N'Public', 1);
+INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
+(0, N'Administrator', N'Administrator', 0),
+(1, N'GeneralManager', N'General Manager', 0),
+(2, N'FinanceManager', N'Finance Manager', 0),
+(3, N'Comptroller', N'Comptroller', 0),
+(4, N'Accountant', N'Accountant', 0),
+(5, N'Cashier', N'Cashier', 0),
+(6, N'InternalAuditor', N'Internal Auditor', 0),
+(7, N'ExternalAuditor', N'External Auditor', 0),
+(8, N'InventoryCustodian', N'Inventory Custodian', 0),
+(9, N'AdminAffairs', N'Admin. Affairs', 0),
+(10, N'ProductionManager', N'Production Manager', 0),
+(11, N'ProjectManager', N'Project Manager', 0),
+(12, N'HrManager', N'HR Manager', 0),
+(13, N'SalesManager', N'Sales Manager', 0),
+(14, N'SalesPerson', N'Sales Person', 0),
+(15, N'AccountManager', N'Account Manager', 0),
+(98, N'Reader', N'Reader', 0),
+(99, N'Public', N'Public', 1);
 
 INSERT INTO @Members([Index], [HeaderIndex], [UserId]) VALUES(0, 0, @AdminUserId);
 
@@ -66,36 +62,36 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 --Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
 			[Action],	[Criteria],			[View]) VALUES
  (0,0,		N'All',		NULL,				N'all'),
--- Board
-(100,1,		N'Read',	NULL,				N'all'),
 -- 2:GeneralManager
-(200,2,		N'Read',	NULL,				N'all'),
+(10,1,		N'Read',	NULL,				N'all'),
 -- 3:FinanceManager
-(1000,10,	N'Read',	NULL,				N'all'),
+(20,2,	N'Read',	NULL,				N'all'),
 -- 11:Comptroller
-(1100,11,	N'All',		NULL,				@ManualJournalVoucherDDPath),
-(1101,11,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
-(1102,11,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
-(1103,11,	N'All',		NULL,				N'accounts'),
-(1104,11,	N'All',		NULL,				N'centers'),
-(1105,11,	N'All',		NULL,				N'currencies'),
+(30,3,	N'All',		NULL,				@ManualJournalVoucherDDPath),
+(31,3,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
+(32,3,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
+(33,3,	N'All',		NULL,				N'accounts'),
+(34,3,	N'All',		NULL,				N'centers'),
+(35,3,	N'All',		NULL,				N'currencies'),
 -- 12:Accountant
-(1200,12,	N'All',		NULL,				@ManualJournalVoucherDDPath),
-(1201,12,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
-(1202,12,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
-(1203,12,	N'Read',	NULL,				N'accounts'),
-(1204,12,	N'Read',	NULL,				N'centers'),
+(40,4,	N'All',		NULL,				@ManualJournalVoucherDDPath),
+(41,4,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
+(42,4,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
+(43,4,	N'Read',	NULL,				N'accounts'),
+(44,4,	N'Read',	NULL,				N'centers'),
 -- 13:Cashier
-(1301,13,	N'Update',	N'Agent/UserId = Me or AssigneeId = Me',
+(50,5,	N'Update',	N'Agent/UserId = Me or AssigneeId = Me',
 											@PaymentReceiptFromNonTradingAgentsDDPath),
-(1302,13,	N'Update',	N'AssignedById = Me or AssigneeId = Me',
+(51,5,	N'Update',	N'AssignedById = Me or AssigneeId = Me',
 											@PaymentIssueToNonTradingAgentsDDPath),
 -- 20:InternalAuditor
-(2000,20,	N'Read',	NULL,				N'all'), -- GM
+(60,6,	N'Read',	NULL,				N'all'), -- GM
 -- 3:ExtenralAuditor
-(2100,21,	N'Read',	NULL,				N'all'), -- GM
+(70,7,	N'Read',	NULL,				N'all'), -- GM
+-- Board
+(980,98,		N'Read',	NULL,				N'all'),
 -- 99:Public
-(9001,99,	N'Read',	NULL,				N'currencies'),-- inbox public permission is hardcoded
+(9901,99,	N'Read',	NULL,				N'currencies'),-- inbox public permission is hardcoded
 (9903,99,	N'Read',	NULL,				N'entry-types'),
 (9905,99,	N'Read',	NULL,				N'exchange-rates'),
 (9907,99,	N'Read',	NULL,				N'roles'),
@@ -142,16 +138,20 @@ END;
 
 -- Declarations
 DECLARE @AdministratorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Administrator');
-DECLARE @FinanceManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'FinanceManager');
 DECLARE @GeneralManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'GeneralManager');
-DECLARE @ReaderRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Reader');
-DECLARE @AccountManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AccountManager');
+DECLARE @FinanceManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'FinanceManager');
 DECLARE @ComptrollerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Comptroller');
-DECLARE @CashCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'CashCustodian');
+DECLARE @AccountantRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Accountant');
+DECLARE @CashierRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Cashier');
+DECLARE @InternalAuditorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InternalAuditor');
+DECLARE @ExternalAuditorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ExternalAuditor');
+DECLARE @InventoryCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InventoryCustodian');
 DECLARE @AdminAffairsRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AdminAffairs');
 DECLARE @ProductionManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProductionManager');
+DECLARE @ProjectManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProjectManager');
 DECLARE @HrManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'HrManager');
 DECLARE @SalesManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'SalesManager');
 DECLARE @SalesPersonRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'SalesPerson');
-DECLARE @InventoryCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InventoryCustodian');
+DECLARE @AccountManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AccountManager');
+DECLARE @ReaderRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Reader');
 DECLARE @PublicRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Public');

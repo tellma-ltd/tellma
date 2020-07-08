@@ -4,18 +4,22 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 -- Roles
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 (N'Roles',N'Administrator', N'ar', N'المشرف', N'n'),(N'Roles',N'Administrator', N'am', N'አስተዳዳሪ', N'n'),(N'Roles',N'Administrator', N'cn', N'管理员', N'n'),
-(N'Roles',N'Finance Manager', N'ar', N'المدير المالي', N'n'),(N'Roles',N'Finance Manager', N'am', N'የፋይናንስ አስተዳዳሪ', N'n'),(N'Roles',N'Finance Manager', N'cn', N'财务经理', N'n'),
 (N'Roles',N'General Manager', N'ar', N'المدير العام', N'n'),(N'Roles',N'General Manager', N'am', N'አጠቃላይ አስተዳዳሪ', N'n'),(N'Roles',N'General Manager', N'cn', N'总经理', N'n'),
-(N'Roles',N'Reader', N'ar', N'صلاحية قراءة', N'n'),(N'Roles',N'Reader', N'am', N'አንባቢ', N'n'),(N'Roles',N'Reader', N'cn', N'读者', N'n'),
-(N'Roles',N'Account Manager', N'ar', N'مدير حساب العملاء', N'n'),(N'Roles',N'Account Manager', N'am', N'መለያ አቀናባሪ', N'n'),(N'Roles',N'Account Manager', N'cn', N'客户客户经理', N'n'),
+(N'Roles',N'Finance Manager', N'ar', N'المدير المالي', N'n'),(N'Roles',N'Finance Manager', N'am', N'የፋይናንስ አስተዳዳሪ', N'n'),(N'Roles',N'Finance Manager', N'cn', N'财务经理', N'n'),
 (N'Roles',N'Comptroller', N'ar', N'مراقب الحسابات', N'n'),(N'Roles',N'Comptroller', N'am', N'የመለያ ኮምፒተር', N'n'),(N'Roles',N'Comptroller', N'cn', N'帐户主计长', N'n'),
+(N'Roles',N'Accountant', N'ar', N'محاسب', N'n'),(N'Roles',N'Accountant', N'am', N'አካውንታንት', N'n'),(N'Roles',N'Accountant', N'cn', N'会计', N'n'),
 (N'Roles',N'Cashier', N'ar', N'أمين الصندوق', N'n'),(N'Roles',N'Cashier', N'am', N'ገንዘብ ተቀባይ', N'n'),(N'Roles',N'Cashier', N'cn', N'出纳员', N'n'),
+(N'Roles',N'Internal Auditor', N'ar', N'المراجع الداخلي', N'n'),(N'Roles',N'Internal Auditor', N'am', N'የውስጥ ኦዲተር', N'n'),(N'Roles',N'Internal Auditor', N'cn', N'内部审计', N'n'),
+(N'Roles',N'External Auditor', N'ar', N'المراجع الخارجي', N'n'),(N'Roles',N'External Auditor', N'am', N'የውጭ ኦዲተር', N'n'),(N'Roles',N'External Auditor', N'cn', N'外部审计师', N'n'),
+(N'Roles',N'Inventory Custodian', N'ar', N'أمين المخزون', N'n'),(N'Roles',N'Inventory Custodian', N'am', N'የፈጠራ ዕቃዎች ባለሙያ', N'n'),(N'Roles',N'Inventory Custodian', N'cn', N'库存保管人', N'n'),
 (N'Roles',N'Admin. Affairs', N'ar', N'الشؤون الإدارية', N'n'),(N'Roles',N'Admin. Affairs', N'am', N'አስተዳደራዊ ጉዳዮች', N'n'),(N'Roles',N'Admin. Affairs', N'cn', N'政务', N'n'),
 (N'Roles',N'Production Manager', N'ar', N'مدير الانتاج', N'n'),(N'Roles',N'Production Manager', N'am', N'የምርት ሥራ አስኪያጅ', N'n'),(N'Roles',N'Production Manager', N'cn', N'产品经理', N'n'),
+(N'Roles',N'Project Manager', N'ar', N'مدير مشروع', N'n'),(N'Roles',N'Project Manager', N'am', N'የፕሮጀክት ሥራ አስኪያጅ', N'n'),(N'Roles',N'Project Manager', N'cn', N'专案经理', N'n'),
 (N'Roles',N'HR Manager', N'ar', N'مدير الموارد البشرية', N'n'),(N'Roles',N'HR Manager', N'am', N'የሰው ኃይል ሥራ አስኪያጅ', N'n'),(N'Roles',N'HR Manager', N'cn', N'人力资源经理', N'n'),
 (N'Roles',N'Sales Manager', N'ar', N'مدير المبيعات', N'n'),(N'Roles',N'Sales Manager', N'am', N'የሽያጭ ሃላፊ', N'n'),(N'Roles',N'Sales Manager', N'cn', N'销售经理', N'n'),
 (N'Roles',N'Sales Person', N'ar', N'مندوب مبيعات', N'n'),(N'Roles',N'Sales Person', N'am', N'የሽያጭ ሰው', N'n'),(N'Roles',N'Sales Person', N'cn', N'销售人员', N'n'),
-(N'Roles',N'Inventory Custodian', N'ar', N'أمين المخزون', N'n'),(N'Roles',N'Inventory Custodian', N'am', N'የፈጠራ ዕቃዎች ባለሙያ', N'n'),(N'Roles',N'Inventory Custodian', N'cn', N'库存保管人', N'n'),
+(N'Roles',N'Account Manager', N'ar', N'مدير حساب العملاء', N'n'),(N'Roles',N'Account Manager', N'am', N'መለያ አቀናባሪ', N'n'),(N'Roles',N'Account Manager', N'cn', N'客户客户经理', N'n'),
+(N'Roles',N'Reader', N'ar', N'صلاحية قراءة', N'n'),(N'Roles',N'Reader', N'am', N'አንባቢ', N'n'),(N'Roles',N'Reader', N'cn', N'读者', N'n'),
 (N'Roles',N'Public', N'ar', N'صلاحيات عامة', N'n'),(N'Roles',N'Public', N'am', N'ሕዝባዊ', N'n'),(N'Roles',N'Public', N'cn', N'上市', N'n');
 -- Lookup Definitions
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES

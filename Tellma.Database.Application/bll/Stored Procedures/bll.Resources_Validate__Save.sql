@@ -125,7 +125,7 @@ SET NOCOUNT ON;
 	-- Unit in ResourceUnits must be of same type of Header unit or be of type Mass
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP(@Top)
-		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].Units[' + RU.[Index] + '].UnitId',
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].Units[' + CAST(RU.[Index] AS NVARCHAR(255)) + '].UnitId',
 		N'Error_TheUnitHasIncompatibleUnitType'
 	FROM @Entities R
 	JOIN dbo.Units UR ON R.[UnitId] = UR.[Id]
