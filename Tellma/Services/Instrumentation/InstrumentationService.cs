@@ -95,7 +95,7 @@ namespace Tellma.Services.Instrumentation
             return new InstrumentationReport
             {
                 Middleware = _middlewareInstrumentation,
-                Breakdown = _current.Breakdown,
+                Breakdown = _current.B,
                 Overhead = _overhead.ElapsedMilliseconds,
                 Total = totalTime, 
             };

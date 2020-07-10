@@ -24,8 +24,13 @@ namespace Tellma.Services.Instrumentation
         /// The tree of measured code
         /// </summary>
         [JsonProperty(Order = 2)]
-        public List<CodeBlockInstrumentation> Breakdown { get; set; }
+        public IEnumerable<CodeBlockInstrumentation> Breakdown { get; set; }
 
+        /// <summary>
+        /// The instrumentation of the middleware steps 
+        /// (Given special treatment since each middleware calls the next middelware, and we want to 
+        /// measure every middleware on its own without the part where it calls the next middleware)
+        /// </summary>
         [JsonProperty(Order = 3)]
         public List<CodeBlockInstrumentation> Middleware { get; set; }
     }

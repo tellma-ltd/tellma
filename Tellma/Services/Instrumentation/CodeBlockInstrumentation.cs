@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tellma.Services.Instrumentation
 {
@@ -16,8 +17,13 @@ namespace Tellma.Services.Instrumentation
         /// <summary>
         ///  Ordered
         /// </summary>
-        [JsonProperty(Order = 3)]
-        public List<CodeBlockInstrumentation> Breakdown { get; set; }
+        private List<CodeBlockInstrumentation> _breakdown = null;
+
+        /// <summary>
+        /// The total time this section took. Kept short for smaller response size
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public long T { get; set; } = 0;
 
         /// <summary>
         /// The name of this section. Kept short for smaller response size
@@ -26,10 +32,10 @@ namespace Tellma.Services.Instrumentation
         public string N { get; set; }
 
         /// <summary>
-        /// The total time this section took. Kept short for smaller response size
+        /// The instrumented blocks that took at least 1 millisecond. Name kept short for smaller response size
         /// </summary>
-        [JsonProperty(Order = 1)]
-        public long T { get; set; } = 0;
+        [JsonProperty(Order = 3)]
+        public IEnumerable<CodeBlockInstrumentation> B => _breakdown?.Where(e => e.T != 0);
 
         /// <summary>
         /// Adds a step with the specified name
@@ -43,8 +49,8 @@ namespace Tellma.Services.Instrumentation
                 _dic.Add(name, instrumentation);
 
                 // Add to the breakdown
-                Breakdown ??= new List<CodeBlockInstrumentation>();
-                Breakdown.Add(instrumentation);
+                _breakdown ??= new List<CodeBlockInstrumentation>();
+                _breakdown.Add(instrumentation);
             }
 
             return instrumentation;
