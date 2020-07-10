@@ -7,10 +7,11 @@ AS
 BEGIN
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @ModifiedUserIds [dbo].[IdList];
+	DECLARE @PublicRolesInvolved BIT;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	-- This should include all User Ids whose permissions may have been modified
+	-- This should include all User Ids whose permissions may have been modified (taking into account public roles
 	INSERT INTO @ModifiedUserIds ([Id]) SELECT DISTINCT X.[Id] FROM (
 			SELECT [UserId] AS [Id] FROM [dbo].[RoleMemberships] WHERE [RoleId] IN (SELECT [Id] FROM @Entities)
 			UNION 
@@ -94,7 +95,7 @@ BEGIN
 		DELETE;
 
 	UPDATE [dbo].[Users] SET [PermissionsVersion] = NEWID()
-	WHERE [Id] IN (SELECT [Id] FROM @ModifiedUserIds);
+	-- TODO: WHERE [Id] IN (SELECT [Id] FROM @ModifiedUserIds);
 
 	-- Return
 	IF (@ReturnIds = 1)

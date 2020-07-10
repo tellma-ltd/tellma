@@ -17,8 +17,14 @@
     /// </summary>
     public class Versioned<TData>
     {
-        public string Version { get; set; }
+        public Versioned(TData data, string version)
+        {
+            Version = version;
+            Data = data;
+        }
 
-        public TData Data { get; set; }
+        public string Version { get; }
+
+        public TData Data { get; }
     }
 }

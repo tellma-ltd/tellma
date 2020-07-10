@@ -244,10 +244,10 @@ namespace Tellma.Controllers
             };
 
             var result = new Versioned<AdminUserSettingsForClient>
-            {
-                Version = version.ToString(),
-                Data = userSettingsForClient
-            };
+            (
+                version: version.ToString(),
+                data: userSettingsForClient
+            );
 
             return result;
         }
@@ -574,7 +574,7 @@ namespace Tellma.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _repo.UserPermissions(action, View, cancellation);
+            return _repo.UserPermissions(action, View, cancellation); // TODO: Cache
         }
 
         protected override OrderByExpression DefaultOrderBy()

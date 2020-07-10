@@ -69,10 +69,10 @@ namespace Tellma.Controllers
 
             // Tag the permissions for client with their current version
             var result = new Versioned<PermissionsForClient>
-            {
-                Version = version.ToString(),
-                Data = permissionsForClient
-            };
+            (
+                version: version.ToString(),
+                data: permissionsForClient
+            );
 
             // Return the result
             return result;

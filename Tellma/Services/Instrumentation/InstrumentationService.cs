@@ -61,7 +61,7 @@ namespace Tellma.Services.Instrumentation
 
             var scope = new CodeBlockScope(_overhead, onDispose: (long time) =>
             {
-                subBlock.Total += time;
+                subBlock.T += time;
 
                 // Pop the stack when we're done with a block
                 _current = _stack.Pop();
@@ -108,8 +108,8 @@ namespace Tellma.Services.Instrumentation
 
             _middlewareInstrumentation.Add(new CodeBlockInstrumentation
             {
-                Name = name,
-                Total = milliseconds
+                N = name,
+                T = milliseconds
             });
         }
     }

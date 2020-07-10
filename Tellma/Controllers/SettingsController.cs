@@ -195,7 +195,8 @@ namespace Tellma.Controllers
         public async Task<Settings> Get(SelectExpandArguments args, CancellationToken cancellation)
         {
             // Authorized access (Criteria are not supported here)
-            var readPermissions = await _repo.UserPermissions(Constants.Read, "settings", cancellation);
+
+            var readPermissions = await _repo.PermissionsFromCache("settings", Constants.Read, cancellation);
             if (!readPermissions.Any())
             {
                 throw new ForbiddenException();
@@ -219,7 +220,7 @@ namespace Tellma.Controllers
         public async Task<(Settings, Versioned<SettingsForClient>)> Save(SettingsForSave settingsForSave, SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
-            var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings", cancellation: default);
+            var updatePermissions = await _repo.PermissionsFromCache("settings", Constants.Update, cancellation: default);
             if (!updatePermissions.Any())
             {
                 throw new ForbiddenException();
@@ -361,10 +362,10 @@ namespace Tellma.Controllers
 
             // Tag the settings for client with their current version
             var result = new Versioned<SettingsForClient>
-            {
-                Version = settings.SettingsVersion.ToString(),
-                Data = settingsForClient
-            };
+            (
+                version: settings.SettingsVersion.ToString(),
+                data: settingsForClient
+            );
 
             return result;
         }

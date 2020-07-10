@@ -800,10 +800,10 @@ namespace Tellma.Controllers
 
             // Return result
             return new Versioned<DefinitionsForClient>
-            {
-                Data = result,
-                Version = version.ToString()
-            };
+            (
+                data: result,
+                version: version.ToString()
+            );
         }
     }
 }

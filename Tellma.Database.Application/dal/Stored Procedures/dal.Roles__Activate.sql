@@ -14,3 +14,6 @@ AS
 		UPDATE SET 
 			t.[IsActive]	= @IsActive,
 			t.[SavedById]	= @UserId;
+
+	UPDATE [dbo].[Users] SET [PermissionsVersion] = NEWID()
+	-- TODO: WHERE [Id] IN (SELECT [Id] FROM @AffectedUserIds);

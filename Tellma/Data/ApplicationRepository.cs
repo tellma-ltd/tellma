@@ -37,6 +37,7 @@ namespace Tellma.Data
         private SqlConnection _conn;
         private UserInfo _userInfo;
 
+        private int? _tenantId;
         private TenantInfo _tenantInfo;
         private Transaction _transactionOverride;
 
@@ -94,6 +95,7 @@ namespace Tellma.Data
             var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
 
             (_userInfo, _tenantInfo) = await OnConnect(externalUserId, externalEmail, culture, neutralCulture, setLastActive, cancellation);
+            _tenantId = databaseId;
         }
 
         /// <summary>
@@ -153,6 +155,11 @@ namespace Tellma.Data
         {
             await GetConnectionAsync(cancellation); // This automatically initializes the tenant info
             return _tenantInfo;
+        }
+
+        public int GetTenantId()
+        {
+            return _tenantId ?? throw new InvalidOperationException("TenantId are not initialized, call GetConnectionAsync() firsti");
         }
 
         /// <summary>
@@ -340,74 +347,6 @@ namespace Tellma.Data
             }
 
             return (userInfo, tenantInfo);
-        }
-
-        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view, CancellationToken cancellation)
-        {
-            using var _ = _instrumentation.Block("Repo." + nameof(Action_View__Permissions));
-
-            var result = new List<AbstractPermission>();
-
-            var conn = await GetConnectionAsync(cancellation);
-            using (SqlCommand cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("@Action", action);
-                cmd.Parameters.Add("@View", view);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
-
-                using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    result.Add(new AbstractPermission
-                    {
-                        View = reader.GetString(i++),
-                        Action = reader.GetString(i++),
-                        Criteria = reader.String(i++),
-                        Mask = reader.String(i++)
-                    });
-                }
-            }
-
-            return result;
-        }
-
-        public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewPrefix, CancellationToken cancellation)
-        {
-            using var _ = _instrumentation.Block("Repo." + nameof(Action_ViewPrefix__Permissions));
-
-            var result = new List<AbstractPermission>();
-
-            var conn = await GetConnectionAsync(cancellation);
-            using (SqlCommand cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("@Action", action);
-                cmd.Parameters.Add("@ViewPrefix", viewPrefix);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Action_ViewPrefix__Permissions)}]";
-
-                using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    result.Add(new AbstractPermission
-                    {
-                        View = reader.GetString(i++),
-                        Action = reader.GetString(i++),
-                        Criteria = reader.String(i++),
-                        Mask = reader.String(i++)
-                    });
-                }
-            }
-
-            return result;
         }
 
         public async Task<List<InboxNotificationInfo>> InboxCounts__Load(IEnumerable<int> userIds, CancellationToken cancellation)

@@ -91,9 +91,9 @@ namespace Tellma.Controllers
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var createdByProp = nameof(InboxRecord.CreatedBy);
-                var nameProp = $"{createdByProp}/{nameof(Entities.User.Name)}";
-                var name2Prop = $"{createdByProp}/{nameof(Entities.User.Name2)}";
-                var name3Prop = $"{createdByProp}/{nameof(Entities.User.Name3)}";
+                var nameProp = $"{createdByProp}/{nameof(User.Name)}";
+                var name2Prop = $"{createdByProp}/{nameof(User.Name2)}";
+                var name3Prop = $"{createdByProp}/{nameof(User.Name3)}";
 
                 var commentProp = nameof(InboxRecord.Comment);
                 var memoProp = $"{nameof(InboxRecord.Document)}/{nameof(Document.Memo)}";

@@ -84,6 +84,41 @@ namespace Tellma.Data.Queries
 
         // Functionality
 
+        public string PrepareCountSql(
+            Func<Type, string> sources,
+            SqlStatementParameters ps,
+            int userId,
+            DateTime? userToday,
+            int maxCount)
+        {
+            // (1) Prepare the JOIN's clause
+            var joinTree = PrepareJoin();
+            var joinSql = joinTree.GetSql(sources, FromSql);
+
+            // (2) Prepare the SELECT clause
+            string selectSql = maxCount > 0 ? $"SELECT TOP {maxCount} [P].*" : "SELECT [P].*";
+
+            // (3) Prepare the WHERE clause
+            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
+
+            // (4) Finally put together the final SQL statement and return it
+            string sql = QueryTools.CombineSql(
+                       selectSql: selectSql,
+                       joinSql: joinSql,
+                       principalQuerySql: null,
+                       whereSql: whereSql,
+                       orderbySql: null,
+                       offsetFetchSql: null,
+                       groupbySql: null
+                   );
+
+            sql = $@"SELECT COUNT(*) As [Count] FROM (
+{QueryTools.IndentLines(sql)}
+) AS [Q]";
+
+            return sql;
+        }
+
         /// <summary>
         /// Create a <see cref="SqlStatement"/> that contains all the needed information to execute the query against a SQL Server database and load and hydrate the entities
         /// IMPORTANT: Calling this method will keep a permanent cache of some parts of the result, therefore if the arguments need to change after

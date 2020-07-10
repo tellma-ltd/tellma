@@ -763,7 +763,7 @@ namespace Tellma.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            var permissions = (await _repo.UserPermissions(action, View, cancellation)).ToList();
+            var permissions = (await _repo.PermissionsFromCache(View, action, cancellation)).ToList();
 
             // Add a special permission that lets you see the documents that were assigned to you
             permissions.AddRange(DocumentServiceUtil.HardCodedPermissions(action));
@@ -1880,7 +1880,7 @@ namespace Tellma.Controllers
         {
             // Get all permissions pertaining to documents
             string prefix = DocumentsController.BASE_ADDRESS;
-            var permissions = (await _repo.GenericUserPermissions(action, prefix, cancellation)).ToList();
+            var permissions = (await _repo.GenericPermissionsFromCache(prefix, action, cancellation)).ToList();
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)

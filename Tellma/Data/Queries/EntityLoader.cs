@@ -9,18 +9,25 @@ using System.Threading.Tasks;
 using Tellma.Entities.Descriptors;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
+using Tellma.Services;
 
 namespace Tellma.Data.Queries
 {
     internal static class EntityLoader
     {
-        private static string PrepareSql(string preparatorySql, params SqlStatement[] statements)
+        private static string PrepareSql(string preparatorySql, string countSql, params SqlStatement[] statements)
         {
             // Prepare the main sql script
             StringBuilder sql = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(preparatorySql))
             {
                 sql.AppendLine(preparatorySql);
+                sql.AppendLine(); // Just for aesthetics
+            }
+
+            if (!string.IsNullOrEmpty(countSql))
+            {
+                sql.AppendLine(countSql);
                 sql.AppendLine(); // Just for aesthetics
             }
 
@@ -49,7 +56,7 @@ namespace Tellma.Data.Queries
             using (var cmd = conn.CreateCommand())
             {
                 // Command Text
-                cmd.CommandText = PrepareSql(preparatorySql, statement);
+                cmd.CommandText = PrepareSql(preparatorySql, null, statement);
 
                 // Command Parameters
                 foreach (var parameter in ps)
@@ -167,20 +174,27 @@ namespace Tellma.Data.Queries
         /// <param name="ps">The parameters needed by SQL</param>
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
         /// <returns>The list of hydrated entities with all related entities attached by means of navigation properties</returns>            
-        public static async Task<List<Entity>> LoadStatements<T>(
+        public static async Task<(List<Entity> result, int count)> LoadStatements<T>(
            List<SqlStatement> statements,
            string preparatorySql,
+           string countSql,
            SqlStatementParameters ps,
            SqlConnection conn,
+           IInstrumentationService instrumentation,
            CancellationToken cancellation) where T : Entity
         {
+            using var _ = instrumentation.Block("EntityLoader.Load");
+            IDisposable block;
+
             var results = statements.ToDictionary(e => e.Query, e => new List<Entity>());
+
+            block = instrumentation.Block("Command + Connection");
 
             // Prepare the SQL command
             using var cmd = conn.CreateCommand();
 
             // Command Text
-            cmd.CommandText = PrepareSql(preparatorySql, statements.ToArray());
+            cmd.CommandText = PrepareSql(preparatorySql, countSql, statements.ToArray());
 
             // Command Parameters
             foreach (var parameter in ps)
@@ -294,14 +308,31 @@ namespace Tellma.Data.Queries
 
             // This collection will be returned at the end
             var result = new List<Entity>();
+            var count = 0;
 
             // This will contain all the descriptors of all the loaded entities
             var descriptors = new HashSet<TypeDescriptor>();
+
+            block.Dispose();
+            block = instrumentation.Block("Load + Simple Props");
 
             try
             {
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
+                // If there is count SQL, load the count
+                if (!string.IsNullOrWhiteSpace(countSql))
+                {
+                    if (await reader.ReadAsync(cancellation))
+                    {
+                        count = reader.GetInt32(0);
+                    }
+
+                    // Go over to the next result set
+                    await reader.NextResultAsync(cancellation);
+                }
+
+                // Then load the data
                 foreach (var statement in statements)
                 {
                     var list = results[statement.Query];
@@ -355,6 +386,9 @@ namespace Tellma.Data.Queries
                 }
             }
 
+            block.Dispose();
+            block = instrumentation.Block("allEntities");
+
             // Here we prepare a dictionary of all the entities loaded so far
             Dictionary<Type, List<Entity>> allEntities = allIdEntities
                 .ToDictionary(e => e.Key, e => e.Value.Values.Cast<Entity>().ToList());
@@ -369,6 +403,9 @@ namespace Tellma.Data.Queries
                     allEntities[resultRootType] = result;
                 }
             }
+
+            block.Dispose();
+            block = instrumentation.Block("Navigation Props");
 
             // Here we populate the navigation properties, after the simple properties have been populated
             foreach (var descriptor in descriptors)
@@ -407,6 +444,9 @@ namespace Tellma.Data.Queries
                     }
                 }
             }
+
+            block.Dispose();
+            block = instrumentation.Block("Collection Props");
 
             // Here we populate the collection navigation properties after the navigation properties have been populated
             foreach (var (query, list) in results)
@@ -487,8 +527,10 @@ namespace Tellma.Data.Queries
                 }
             }
 
+            block.Dispose();
+
             // Return the result
-            return result;
+            return (result, count);
         }
 
         /// <summary>

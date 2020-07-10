@@ -67,9 +67,9 @@ namespace Tellma.Controllers
             _settingsCache = settingsCache;
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View, cancellation);
+            return _repo.PermissionsFromCache(View, action, cancellation);
         }
 
         protected override IRepository GetRepository()

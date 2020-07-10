@@ -292,7 +292,7 @@ namespace Tellma.Data.Queries
                 clone._additionalParameters = new List<SqlParameter>();
             }
 
-            clone._additionalParameters.AddRange(parameters);           
+            clone._additionalParameters.AddRange(parameters);
 
             return clone;
         }
@@ -302,6 +302,179 @@ namespace Tellma.Data.Queries
         /// </summary>
         public async Task<int> CountAsync(CancellationToken cancellation, int maximum = 0)
         {
+            var (_, count) = await ToListAndCountInnerAsync(includeCount: true, maxCount: maximum, cancellation: cancellation);
+            return count;
+
+            //            var args = await _factory(cancellation);
+            //            var conn = args.Connection;
+            //            var sources = args.Sources;
+            //            var userId = args.UserId;
+            //            var userToday = args.UserToday;
+            //            var localizer = args.Localizer;
+            //            var i = args.Instrumentation;
+
+            //            using var _ = i.Block("Query CountAsync");
+            //            IDisposable block;
+
+            //            block = i.Block("Get Descriptor");
+
+            //            var resultDesc = TypeDescriptor.Get<T>();
+
+            //            block.Dispose();
+            //            block = i.Block("Prepare select and filter expressions");
+
+            //            SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
+            //            FilterExpression filterExp = _filterConditions?.Aggregate(
+            //                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
+
+            //            block.Dispose();
+            //            block = i.Block("Validate paths and properties");
+
+            //            // To prevent SQL injection
+            //            ValidatePathsAndProperties(selectExp, null, filterExp, null, resultDesc, localizer);
+
+            //            block.Dispose();
+            //            block = i.Block("Prepare query internal");
+
+            //            // Prepare the query
+            //            var flatQuery = new QueryInternal
+            //            {
+            //                ResultDescriptor = resultDesc,
+            //                Select = selectExp,
+            //                Filter = filterExp,
+            //                Ids = _ids,
+            //                ParentIds = _parentIds,
+            //                PropName = _propName,
+            //                Values = _values,
+            //                IncludeRoots = _includeRoots,
+            //                Skip = _skip,
+            //                Top = _top,
+            //                FromSql = _fromSql
+            //            };
+
+            //            block.Dispose();
+            //            block = i.Block("Prepare SQL Parameters");
+
+            //            // Prepare the parameters
+            //            var ps = new SqlStatementParameters();
+
+            //            // Add the from sql parameters
+            //            if(_parameters != null)
+            //            {
+            //                foreach(var p in _parameters)
+            //                {
+            //                    ps.AddParameter(p);
+            //                }
+            //            }
+
+            //            if (_additionalParameters != null)
+            //            {
+            //                foreach (var additionalParameter in _additionalParameters)
+            //                {
+            //                    ps.AddParameter(additionalParameter);
+            //                }
+            //            }
+
+            //            block.Dispose();
+            //            block = i.Block("Prepare raw SQL");
+
+            //            // Load the statement
+            //            var sql = flatQuery.PrepareStatement(sources, ps, userId, userToday).Sql;
+
+            //            // Add the maximum
+            //            if (maximum > 0)
+            //            {
+            //                // Replace "SELECT" with "SELECT TOP maximum"
+            //                sql = sql.Remove(0, "SELECT".Length);
+            //                sql = $"SELECT TOP {maximum}" + sql;
+            //            }
+
+            //            sql = QueryTools.IndentLines(sql);
+            //            sql = $@"SELECT COUNT(*) As [Count] FROM (
+            //{sql}
+            //) As [S]";
+
+            //            // always prepend the preparatory sql to the beginning
+            //            if (!string.IsNullOrWhiteSpace(_preSql))
+            //            {
+            //                sql = $@"{_preSql}
+
+            //{sql}";
+            //            }
+
+            //            block.Dispose();
+            //            block = i.Block("Create Command");
+
+            //            // Execute the SqlStatement
+            //            using var cmd = conn.CreateCommand();
+
+            //            // Prepare the SQL command
+            //            cmd.CommandText = sql;
+            //            foreach (var parameter in ps)
+            //            {
+            //                cmd.Parameters.Add(parameter);
+            //            }
+
+            //            block.Dispose();
+            //            block = i.Block("Open Connection");
+
+            //            // It is alawys closed, but we add this code anyways for robustness
+            //            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            //            if (ownsConnection)
+            //            {
+            //                conn.Open();
+            //            }
+
+            //            block.Dispose();
+            //            block = i.Block("Execute Scalar");
+
+            //            try
+            //            {
+            //                // Execute the query and return the result
+            //                int count = (int)await cmd.ExecuteScalarAsync(cancellation);
+            //                return count;
+            //            }
+            //            finally
+            //            {
+            //                block.Dispose();
+            //                block = i.Block("Cleanup");
+
+            //                // Otherwise we might get an error
+            //                cmd.Parameters.Clear();
+
+            //                // This block is never entered, but we put it anyways for robustness
+            //                if (ownsConnection)
+            //                {
+            //                    conn.Close();
+            //                    conn.Dispose();
+            //                }
+
+            //                block.Dispose();
+            //            }
+        }
+
+        /// <summary>
+        /// Executes the <see cref="Query{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/>
+        /// </summary>
+        public async Task<List<T>> ToListAsync(CancellationToken cancellation)
+        {
+            var (result, _) = await ToListAndCountInnerAsync(includeCount: false, maxCount: 0, cancellation: cancellation);
+            return result;
+        }
+
+        /// <summary>
+        /// Executes the <see cref="Query{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/> + their total count (without the orderby, select, expand, top or skip applied)
+        /// </summary>
+        public Task<(List<T> result, int count)> ToListAndCountAsync(int maxCount, CancellationToken cancellation)
+        {
+            return ToListAndCountInnerAsync(includeCount: true, maxCount: maxCount, cancellation: cancellation);
+        }
+
+        /// <summary>
+        /// Backbone for <see cref="CountAsync(CancellationToken, int)"/>, <see cref="ToListAsync(CancellationToken)"/> and <see cref="ToListAndCountAsync(CancellationToken)"/>
+        /// </summary>
+        private async Task<(List<T> result, int count)> ToListAndCountInnerAsync(bool includeCount, int maxCount, CancellationToken cancellation)
+        {
             var args = await _factory(cancellation);
             var conn = args.Connection;
             var sources = args.Sources;
@@ -310,159 +483,14 @@ namespace Tellma.Data.Queries
             var localizer = args.Localizer;
             var i = args.Instrumentation;
 
-            using var _ = i.Block("Query CountAsync");
+            using var _ = i.Block("Query.ToListAndCountInnerAsync");
             IDisposable block;
 
             block = i.Block("Get Descriptor");
-
             var resultDesc = TypeDescriptor.Get<T>();
 
             block.Dispose();
-            block = i.Block("Prepare select and filter expressions");
-
-            SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
-            FilterExpression filterExp = _filterConditions?.Aggregate(
-                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
-
-            block.Dispose();
-            block = i.Block("Validate paths and properties");
-
-            // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, null, filterExp, null, resultDesc, localizer);
-
-            block.Dispose();
-            block = i.Block("Prepare query internal");
-
-            // Prepare the query
-            var flatQuery = new QueryInternal
-            {
-                ResultDescriptor = resultDesc,
-                Select = selectExp,
-                Filter = filterExp,
-                Ids = _ids,
-                ParentIds = _parentIds,
-                PropName = _propName,
-                Values = _values,
-                IncludeRoots = _includeRoots,
-                Skip = _skip,
-                Top = _top,
-                FromSql = _fromSql
-            };
-
-            block.Dispose();
-            block = i.Block("Prepare SQL Parameters");
-
-            // Prepare the parameters
-            var ps = new SqlStatementParameters();
-
-            // Add the from sql parameters
-            if(_parameters != null)
-            {
-                foreach(var p in _parameters)
-                {
-                    ps.AddParameter(p);
-                }
-            }
-
-            if (_additionalParameters != null)
-            {
-                foreach (var additionalParameter in _additionalParameters)
-                {
-                    ps.AddParameter(additionalParameter);
-                }
-            }
-
-            block.Dispose();
-            block = i.Block("Prepare raw SQL");
-
-            // Load the statement
-            var sql = flatQuery.PrepareStatement(sources, ps, userId, userToday).Sql;
-
-            // Add the maximum
-            if (maximum > 0)
-            {
-                // Replace "SELECT" with "SELECT TOP maximum"
-                sql = sql.Remove(0, "SELECT".Length);
-                sql = $"SELECT TOP {maximum}" + sql;
-            }
-
-            sql = QueryTools.IndentLines(sql);
-            sql = $@"SELECT COUNT(*) As [Count] FROM (
-{sql}
-) As [S]";
-
-            // always prepend the preparatory sql to the beginning
-            if (!string.IsNullOrWhiteSpace(_preSql))
-            {
-                sql = $@"{_preSql}
-
-{sql}";
-            }
-
-            block.Dispose();
-            block = i.Block("Create Command");
-
-            // Execute the SqlStatement
-            using var cmd = conn.CreateCommand();
-
-            // Prepare the SQL command
-            cmd.CommandText = sql;
-            foreach (var parameter in ps)
-            {
-                cmd.Parameters.Add(parameter);
-            }
-
-            block.Dispose();
-            block = i.Block("Open Connection");
-
-            // It is alawys closed, but we add this code anyways for robustness
-            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
-            if (ownsConnection)
-            {
-                conn.Open();
-            }
-
-            block.Dispose();
-            block = i.Block("Execute Scalar");
-
-            try
-            {
-                // Execute the query and return the result
-                int count = (int)await cmd.ExecuteScalarAsync(cancellation);
-                return count;
-            }
-            finally
-            {
-                block.Dispose();
-                block = i.Block("Cleanup");
-
-                // Otherwise we might get an error
-                cmd.Parameters.Clear();
-
-                // This block is never entered, but we put it anyways for robustness
-                if (ownsConnection)
-                {
-                    conn.Close();
-                    conn.Dispose();
-                }
-
-                block.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Executes the <see cref="Query{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/>
-        /// </summary>
-        public async Task<List<T>> ToListAsync(CancellationToken cancellation)
-        {
-            var args = await _factory(cancellation);
-            var conn = args.Connection;
-            var sources = args.Sources;
-            var userId = args.UserId;
-            var userTimeZone = args.UserToday;
-            var localizer = args.Localizer;
-
-            var resultDesc = TypeDescriptor.Get<T>();
+            block = i.Block("Validate Paths and Props");
 
             _orderby ??= (IsEntityWithKey() ? OrderByExpression.Parse("Id desc") :
                 throw new InvalidOperationException($"Query<{resultDesc.Type.Name}> was executed without an orderby clause"));
@@ -478,6 +506,9 @@ namespace Tellma.Data.Queries
             ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp, resultDesc, localizer);
 
             // ------------------------ Step #1
+
+            block.Dispose();
+            block = i.Block("Prepare QueryInternals");
 
             // Segment the paths of select and expand along the one-to-many relationships, each one-to-many relationship will
             // result in a new internal query for the child collection with the original query as its principal query
@@ -658,7 +689,10 @@ namespace Tellma.Data.Queries
             root.Top = _top;
             root.FromSql = _fromSql;
 
-            // ------------------------ Step #2
+            // ------------------------ Step #2: Turn the tree of QueryInternal to prepare a list of statements + an optional count query
+
+            block.Dispose();
+            block = i.Block("Prepare Statemnts");
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
@@ -682,19 +716,30 @@ namespace Tellma.Data.Queries
 
             // Prepare the SqlStatements
             List<SqlStatement> statements = segments.Values
-                .Select(q => q.PrepareStatement(sources, ps, userId, userTimeZone))
+                .Select(q => q.PrepareStatement(sources, ps, userId, userToday))
                 .ToList(); // The order matters for the Entity loader
 
+
+            block.Dispose();
+            block = i.Block("Prepare Count");
+
+            // Prepare the countSQL (if any)
+            string countSql = includeCount ? root.PrepareCountSql(sources, ps, userId, userToday, maxCount) : null;
+
+            block.Dispose();
+
             // Load the entities
-            var result = await EntityLoader.LoadStatements<T>(
+            var (result, count) = await EntityLoader.LoadStatements<T>(
                 statements: statements,
                 preparatorySql: null,
+                countSql: countSql,
                 ps: ps,
                 conn: conn,
+                instrumentation: i,
                 cancellation: cancellation);
 
             // Return the entities
-            return result.Cast<T>().ToList();
+            return (result.Cast<T>().ToList(), count);
         }
 
         /// <summary>

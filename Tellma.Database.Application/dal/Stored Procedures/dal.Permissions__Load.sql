@@ -22,5 +22,3 @@ AS
     JOIN [dbo].[Roles] R ON P.[RoleId] = R.Id
     WHERE R.[IsPublic] = 1 
     AND R.[IsActive] = 1
-
-

@@ -70,7 +70,7 @@ namespace Tellma.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _repo.UserPermissions(action, View, cancellation);
+            return _repo.PermissionsFromCache(View, action, cancellation);
         }
     }
 }

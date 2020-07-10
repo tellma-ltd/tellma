@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -40,29 +41,35 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Starts the instrumentation process, and adds the results in the response headers
+        /// Starts the instrumentation process if the request is GET, POST, PUT or DELETE, and adds the results in the response headers
         /// </summary>
         public static IApplicationBuilder UseInstrumentation(this IApplicationBuilder app)
         {
             return app.Use(async (context, next) =>
             {
-                // Resolving this scoped service starts the instrumentation measurement
-                var instrumentation = context.RequestServices.GetRequiredService<IInstrumentationService>();
-
-                context.Response.OnStarting(() =>
+                if (context.Request.Method == "GET" ||
+                    context.Request.Method == "POST" ||
+                    context.Request.Method == "PUT" ||
+                    context.Request.Method == "DELETE")
                 {
-                    // The report contains the overall duration of the request as well an optional breakdown
-                    var report = instrumentation.GetReport();
-                    var serializedReport = JsonConvert.SerializeObject(report, new JsonSerializerSettings
+                    // Resolving this scoped service starts the instrumentation measurement
+                    var instrumentation = context.RequestServices.GetRequiredService<IInstrumentationService>();
+
+                    context.Response.OnStarting(() =>
                     {
-                        NullValueHandling = NullValueHandling.Ignore
+                        // The report contains the overall duration of the request as well an optional breakdown
+                        var report = instrumentation.GetReport();
+                        var serializedReport = JsonConvert.SerializeObject(report, new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
+
+                        context.Response.Headers.Add("x-instrumentation", serializedReport);
+
+                        // return
+                        return Task.CompletedTask;
                     });
-
-                    context.Response.Headers.Add("x-instrumentation", serializedReport);
-
-                    // return
-                    return Task.CompletedTask;
-                });
+            }
 
                 await next.Invoke();
             });

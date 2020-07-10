@@ -28,6 +28,10 @@ namespace Tellma.Controllers
     /// </summary>
     public class ApplicationControllerAttribute : TypeFilterAttribute
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="allowUnobtrusive">Allows clients to call this controller silently, without updating LastActive of the user</param>
         public ApplicationControllerAttribute(bool allowUnobtrusive = false) :
             base(allowUnobtrusive ? typeof(UnobtrusiveApplicationApiFilter) : typeof(ObtrusiveApplicationApiFilter))
         { }
@@ -44,7 +48,6 @@ namespace Tellma.Controllers
             private readonly IServiceProvider _serviceProvider;
             private readonly IDefinitionsCache _definitionsCache;
             private readonly ISettingsCache _settingsCache;
-            private readonly IInstrumentationService _instrumentation;
 
             public ApplicationApiFilter(IServiceProvider sp)
             {
@@ -54,7 +57,6 @@ namespace Tellma.Controllers
                 _externalUserAccessor = sp.GetRequiredService<IExternalUserAccessor>();
                 _definitionsCache = sp.GetRequiredService<IDefinitionsCache>();
                 _settingsCache = sp.GetRequiredService<ISettingsCache>();
-                _instrumentation = sp.GetRequiredService<IInstrumentationService>();
                 _serviceProvider = sp;
             }
 
@@ -62,8 +64,6 @@ namespace Tellma.Controllers
 
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
-                IDisposable block;
-
                 // (1) Make sure the API caller have provided a tenantId, and extract it
                 try
                 {

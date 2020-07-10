@@ -165,7 +165,7 @@ namespace Tellma.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _repo.UserPermissions(action, View, cancellation);
+            return _repo.PermissionsFromCache(View, action, cancellation);
         }
 
         protected override Query<Contract> Search(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
@@ -403,9 +403,9 @@ namespace Tellma.Controllers
         {
             // Get all permissions pertaining to contracts
             string prefix = ContractsController.BASE_ADDRESS;
-            var permissions = await _repo.GenericUserPermissions(action, prefix, cancellation);
+            var permissions = await _repo.GenericPermissionsFromCache(prefix, action, cancellation);
 
-            // Massage the permissions by adding definitionId = definitionId as an extra clause 
+            // Massage the permissions by adding DefinitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)
             foreach (var permission in permissions.Where(e => e.View != "all"))
             {

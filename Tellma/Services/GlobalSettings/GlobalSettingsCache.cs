@@ -66,10 +66,10 @@ namespace Tellma.Services.GlobalSettings
             }
 
             return new Versioned<GlobalSettingsForClient>
-            {
-                Data = result,
-                Version = _version
-            };
+            (
+                data: result,
+                version: _version
+            );
         }
 
         private string LoadGlobalSettingsVersion(AdminRepository _)

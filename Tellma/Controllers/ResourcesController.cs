@@ -177,9 +177,9 @@ namespace Tellma.Controllers
             return $"{tenantId}/Resources/{guid}";
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View, cancellation);
+            return _repo.PermissionsFromCache(View, action, cancellation);
         }
 
         protected override IRepository GetRepository()
@@ -484,7 +484,7 @@ namespace Tellma.Controllers
         {
             // Get all permissions pertaining to resources
             string prefix = ResourcesController.BASE_ADDRESS;
-            var permissions = await _repo.GenericUserPermissions(action, prefix, cancellation);
+            var permissions = await _repo.GenericPermissionsFromCache(prefix, action, cancellation);
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)

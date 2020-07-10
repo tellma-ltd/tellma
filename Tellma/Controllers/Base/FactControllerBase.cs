@@ -345,7 +345,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
         /// </summary>
-        public virtual async Task<(List<TEntity> Data, Extras Extras, bool IsPartial, int? Count)> GetFact(GetArguments args, CancellationToken cancellation)
+        public virtual async Task<(List<TEntity> data, Extras extras, bool isPartial, int? count)> GetFact(GetArguments args, CancellationToken cancellation)
         {
             using var _ = _instrumentation.Block("Service GetFact");
 
@@ -398,37 +398,16 @@ namespace Tellma.Controllers
             query = query.Filter(permissionsFilter);
 
             block.Dispose();
-            block = _instrumentation.Block("Apply Search");
+            block = _instrumentation.Block("Apply Arguments");
 
             // Search
             query = Search(query, args, permissions);
 
-            block.Dispose();
-            block = _instrumentation.Block("Apply Filter");
-
             // Filter
             query = query.Filter(filter);
 
-            block.Dispose();
-
-            // If requested, retrieve the total count before any ordering, paging, expanding or selecting
-            int? totalCount = null;
-            if (args.CountEntities)
-            {
-                totalCount = await query.CountAsync(cancellation, MAXIMUM_COUNT);
-                if (totalCount >= MAXIMUM_COUNT)
-                {
-                    totalCount = int.MaxValue; // All we know is that the real count is >= MAXIMUM_COUNT
-                }
-            }
-
-            block = _instrumentation.Block("Apply OrderBy");
-
             // OrderBy
             query = OrderBy(query, orderby);
-
-            block.Dispose();
-            block = _instrumentation.Block("Apply Top and Skip");
 
             // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
             var top = args.Top;
@@ -436,19 +415,27 @@ namespace Tellma.Controllers
             top = Math.Min(top, MaximumPageSize());
             query = query.Skip(skip).Top(top);
 
-            block.Dispose();
-            block = _instrumentation.Block("Apply Select and Expand");
-
             // Apply the expand, which has the general format 'Expand=A,B/C,D'
             var expandedQuery = query.Expand(expand);
+
             // Apply the select, which has the general format 'Select=A,B/C,D'
             expandedQuery = expandedQuery.Select(select);
 
             block.Dispose();
-            block = _instrumentation.Block("Load the data");
+            block = _instrumentation.Block("Load data & count");
 
-            // Load the data in memory
-            var data = await expandedQuery.ToListAsync(cancellation);
+            // Load the data and count in memory
+            List<TEntity> data;
+            int? count = 0;
+            if (args.CountEntities)
+            {
+                (data, count) = await expandedQuery.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
+            } 
+            else
+            {
+                data = await expandedQuery.ToListAsync(cancellation);
+            }
+
             var extras = await GetExtras(data, cancellation);
 
             block.Dispose();
@@ -460,7 +447,7 @@ namespace Tellma.Controllers
             block.Dispose();
 
             // Return
-            return (data, extras, isPartial, totalCount);
+            return (data, extras, isPartial, count);
         }
 
         /// <summary>

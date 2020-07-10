@@ -8,8 +8,6 @@ namespace Tellma.Controllers
     /// </summary>
     public interface IDefinitionsCache
     {
-
-
         /// <summary>
         /// Returns the cached model metadata associated with the given database ID or null if non exist.
         /// Once this it is called, the result is guaranteed to be be the same for any subsequent calls

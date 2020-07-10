@@ -20,16 +20,16 @@ namespace Tellma.Services.Instrumentation
         public List<CodeBlockInstrumentation> Breakdown { get; set; }
 
         /// <summary>
-        /// The name of this section
+        /// The name of this section. Kept short for smaller response size
         /// </summary>
         [JsonProperty(Order = 2)]
-        public string Name { get; set; }
+        public string N { get; set; }
 
         /// <summary>
-        /// The total time this section took
+        /// The total time this section took. Kept short for smaller response size
         /// </summary>
         [JsonProperty(Order = 1)]
-        public long Total { get; set; } = 0;
+        public long T { get; set; } = 0;
 
         /// <summary>
         /// Adds a step with the specified name
@@ -39,7 +39,7 @@ namespace Tellma.Services.Instrumentation
         {
             if (!_dic.TryGetValue(name, out CodeBlockInstrumentation instrumentation))
             {
-                instrumentation = new CodeBlockInstrumentation { Name = name };
+                instrumentation = new CodeBlockInstrumentation { N = name };
                 _dic.Add(name, instrumentation);
 
                 // Add to the breakdown

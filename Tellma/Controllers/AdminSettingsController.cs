@@ -263,10 +263,10 @@ namespace Tellma.Controllers
 
             // Tag the settings for client with their current version
             var result = new Versioned<AdminSettingsForClient>
-            {
-                Version = settings.SettingsVersion.ToString(),
-                Data = settingsForClient
-            };
+            (
+                version: settings.SettingsVersion.ToString(),
+                data: settingsForClient
+            );
 
             return result;
         }
@@ -301,10 +301,10 @@ namespace Tellma.Controllers
             };
 
             var result = new Versioned<AdminSettingsForClient>
-            {
-                Data = adminSettingsForClient,
-                Version = adminSettings.SettingsVersion.ToString()
-            };
+            (
+                data: adminSettingsForClient,
+                version: adminSettings.SettingsVersion.ToString()
+            );
 
             return result;
         }
