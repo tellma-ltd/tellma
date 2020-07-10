@@ -8,7 +8,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
     /// <summary>
     /// This is the context used by 
     /// </summary>
-    public class EmbeddedIdentityServerContext : IdentityDbContext<EmbeddedIdentityServerUser>
+    public class EmbeddedIdentityServerContext : IdentityUserContext<EmbeddedIdentityServerUser>
     {
         public EmbeddedIdentityServerContext(DbContextOptions<EmbeddedIdentityServerContext> opt) : base(opt) { }
     }
