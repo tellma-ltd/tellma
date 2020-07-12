@@ -59,7 +59,7 @@ namespace Tellma.Controllers
 
     public class AccountsService : CrudServiceBase<AccountForSave, Account, int>
     {
-        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.AccountPaths());
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.AccountPaths());
 
         private readonly ApplicationRepository _repo;
 

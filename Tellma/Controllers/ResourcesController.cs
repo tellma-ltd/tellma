@@ -556,6 +556,6 @@ namespace Tellma.Controllers
             }
         }
 
-        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.EntryResourcePaths());
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.EntryResourcePaths());
     }
 }

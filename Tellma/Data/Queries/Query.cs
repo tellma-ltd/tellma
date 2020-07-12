@@ -676,7 +676,7 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            // The remaining odata arguments are exclusvie to the root
+            // The remaining odata arguments are exclusive to the root
             var root = segments[new string[0]];
             root.Filter = filterExp;
             root.OrderBy = orderbyExp;
@@ -941,15 +941,15 @@ UNION
             // Select
             if (selectExp != null)
             {
-                PathValidator selectPathValidator = new PathValidator();
+                PathValidator trie = new PathValidator();
                 foreach (var atom in selectExp)
                 {
                     // AddPath(atom.Path, atom.Property);
-                    selectPathValidator.AddPath(atom.Path, atom.Property);
+                    trie.AddPath(atom.Path, atom.Property);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                selectPathValidator.Validate(rootDesc, localizer, "select",
+                trie.Validate(rootDesc, localizer, "select",
                     allowLists: true,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -958,14 +958,14 @@ UNION
             // Expand
             if (expandExp != null)
             {
-                PathValidator expandPathTree = new PathValidator();
+                PathValidator trie = new PathValidator();
                 foreach (var atom in expandExp)
                 {
-                    expandPathTree.AddPath(atom.Path);
+                    trie.AddPath(atom.Path);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                expandPathTree.Validate(rootDesc, localizer, "expand",
+                trie.Validate(rootDesc, localizer, "expand",
                     allowLists: true,
                     allowSimpleTerminals: false,
                     allowNavigationTerminals: true);
@@ -974,15 +974,15 @@ UNION
             // Filter
             if (filterExp != null)
             {
-                PathValidator filterPathTree = new PathValidator();
+                PathValidator trie = new PathValidator();
                 foreach (var atom in filterExp)
                 {
                     // AddPath(atom.Path, atom.Property);
-                    filterPathTree.AddPath(atom.Path, atom.Property);
+                    trie.AddPath(atom.Path, atom.Property);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                filterPathTree.Validate(rootDesc, localizer, "filter",
+                trie.Validate(rootDesc, localizer, "filter",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -991,14 +991,14 @@ UNION
             // Order By
             if (orderbyExp != null)
             {
-                PathValidator orderbyPathTree = new PathValidator();
+                PathValidator trie = new PathValidator();
                 foreach (var atom in orderbyExp)
                 {
                     // AddPath(atom.Path, atom.Property);
-                    orderbyPathTree.AddPath(atom.Path, atom.Property);
+                    trie.AddPath(atom.Path, atom.Property);
                 }
 
-                orderbyPathTree.Validate(rootDesc, localizer, "orderby",
+                trie.Validate(rootDesc, localizer, "orderby",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);

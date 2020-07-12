@@ -16,6 +16,7 @@ using System.Threading;
 using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Tellma.Data
 {
@@ -3744,6 +3745,323 @@ namespace Tellma.Data
         #endregion
 
         #region Documents
+
+//        public async Task<(List<Document> docs, List<RequiredSignature> signatures, Dictionary<string, IEnumerable<Entity>> related)> LoadDocumentsByIds(List<int> ids, FilterExpression permissionsFilter, CancellationToken cancellation)
+//        {
+//            using var _ = _instrumentation.Block("Repo." + nameof(LoadDocumentsByIds));
+
+//            // This section prepares an SQL select statement with the permissions and Id filters applied
+//            var query = new QueryInternal
+//            {
+//                Select = SelectExpression.Parse("Id"),
+//                Filter = permissionsFilter,
+//                Ids = ids.Select(e => (object)e),
+//                ResultDescriptor = TypeDescriptor.Get<Document>()
+//            };
+
+//            var userId = (await GetUserInfoAsync(cancellation)).UserId.Value;
+//            var today = _clientInfoAccessor.GetInfo()?.Today;
+
+//            var ps = new SqlStatementParameters();
+//            var stmt = query.PrepareStatement(Sources, ps, userId, today);
+//            var selectWhereSql = stmt.Sql; // SELECT [P].[Id] FROM [map].[Documents]() WHERE ...
+
+//            // Then we construct the actual SQL
+
+//            var sql = $@" -- Custom Query
+//DECLARE @DocIds [dbo].[IdList];
+//DECLARE @LineIds [dbo].[IdList];
+//DECLARE @AccountIds [dbo].[IdList];
+//DECLARE @ResourceIds [dbo].[IdList];
+
+//INSERT INTO @DocIds {selectWhereSql};
+//INSERT INTO @LineIds SELECT [Id] FROM [map].[Lines]() WHERE [DocumentId] IN (SELECT [Id] FROM @DocIds);
+//INSERT INTO @AccountIds SELECT DISTINCT [AccountId] FROM [map].[Entries]() WHERE [AccountId] IS NOT NULL AND [LineId] IN (SELECT [Id] FROM @LineIds);
+
+//SELECT * FROM [map].[Documents]() WHERE [Id] IN (SELECT [Id] FROM @DocIds);
+//SELECT * FROM [map].[Lines]() WHERE [Id] IN (SELECT [Id] FROM @LineIds);
+//SELECT * FROM [map].[Entries]() WHERE [LineId] IN (SELECT [Id] FROM @LineIds);
+//SELECT * FROM [map].[Attachments]() WHERE [DocumentId] IN (SELECT [Id] FROM @DocIds);
+//SELECT * FROM [map].[DocumentAssignmentsHistory]() WHERE [DocumentId] IN (SELECT [Id] FROM @DocIds);
+//SELECT * FROM [map].[DocumentStatesHistory]() WHERE [DocumentId] IN (SELECT [Id] FROM @DocIds);
+//SELECT * FROM [map].[DocumentsRequiredSignatures](@DocIds);
+//SELECT [Id],{string.Join(',', DocDetails.AccountProps.Select(p => $"[{p}]"))} FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds);
+//SELECT [Id],{string.Join(',', DocDetails.AccountTypeProps.Select(p => $"[{p}]"))} FROM [map].[AccountTypes]() WHERE [Id] IN (SELECT [AccountTypeId] FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds));
+//SELECT [Id],{string.Join(',', DocDetails.EntryTypeProps.Select(p => $"[{p}]"))} FROM [map].[EntryTypes]() WHERE [Id] IN (
+//	SELECT [EntryTypeId] FROM [map].[Entries]() WHERE [LineId] IN (SELECT [Id] FROM @LineIds)
+//	UNION
+//	SELECT [EntryTypeId] FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds)
+//	UNION
+//	SELECT [EntryTypeParentId] FROM [map].[AccountTypes]() WHERE [Id] IN (SELECT [AccountTypeId] FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds))
+//);
+//SELECT [Id],{string.Join(',', DocDetails.CenterProps.Select(p => $"[{p}]"))} FROM [map].[Centers]() WHERE [Id] IN (
+//	SELECT [SegmentId] FROM [map].[Documents]() WHERE [Id] IN (SELECT [Id] FROM @DocIds)
+//	UNION
+//	SELECT [CenterId] FROM [map].[Entries]() WHERE [LineId] IN (SELECT [Id] FROM @LineIds)
+//	UNION
+//	SELECT [CenterId] FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds)
+//	UNION
+//	SELECT [CenterId] FROM [map].[Resources]() WHERE [Id] IN (SELECT [ResourceId] FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds))
+//	UNION
+//	SELECT [CenterId] FROM [map].[Contracts]() WHERE [Id] IN (SELECT [ContractId] FROM [map].[Accounts]() WHERE [Id] IN (SELECT [Id] FROM @AccountIds))
+//)
+
+//";
+//            var signatures = new List<RequiredSignature>();
+//            var related = new Dictionary<string, IEnumerable<Entity>>();
+
+//            var conn = await GetConnectionAsync(cancellation);
+//            using var cmd = conn.CreateCommand();
+
+//            // Command Parameters
+//            foreach (var parameter in ps)
+//            {
+//                cmd.Parameters.Add(parameter);
+//            }
+
+//            cmd.CommandText = sql;
+
+//            // Documents
+//            using var reader = await cmd.ExecuteReaderAsync(cancellation);
+//            var allDocs = new List<Document>();
+//            {
+//                var desc = TypeDescriptor.Get<Document>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new Document();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    allDocs.Add(entity);
+//                }
+//            }
+
+//            // Lines
+//            await reader.NextResultAsync(cancellation);
+//            var allLines = new List<Line>();
+//            {
+//                // Load the lines
+//                var desc = TypeDescriptor.Get<Line>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new Line();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    allLines.Add(entity);
+//                }
+
+//                // Add the lines to their documents
+//                var linesByDocId = allLines.GroupBy(e => e.DocumentId).ToDictionary(e => e.Key, e => e.OrderBy(e => e.Index).ToList());
+//                foreach (var doc in allDocs)
+//                {
+//                    doc.Lines = linesByDocId.GetValueOrDefault(doc.Id) ?? new List<Line>();
+//                    doc.EntityMetadata[nameof(doc.Lines)] = FieldMetadata.Loaded;
+//                }
+//            }
+
+//            // Entries
+//            await reader.NextResultAsync(cancellation);
+//            {
+//                var allEntries = new List<Entry>();
+//                var desc = TypeDescriptor.Get<Entry>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new Entry();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    allEntries.Add(entity);
+//                }
+
+//                var entriesByLineId = allEntries.GroupBy(e => e.LineId).ToDictionary(e => e.Key, e => e.OrderBy(e => e.Index).ToList());
+//                foreach (var line in allLines)
+//                {
+//                    line.Entries = entriesByLineId.GetValueOrDefault(line.Id) ?? new List<Entry>();
+//                    line.EntityMetadata[nameof(line.Entries)] = FieldMetadata.Loaded;
+//                }
+//            }
+
+//            // Attachments
+//            await reader.NextResultAsync(cancellation);
+//            {
+//                var attachments = new List<Attachment>();
+//                var desc = TypeDescriptor.Get<Attachment>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new Attachment();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    attachments.Add(entity);
+//                }
+
+//                // Add the attachments to their documents
+//                var attachmentsByDocId = attachments.GroupBy(e => e.DocumentId).ToDictionary(e => e.Key, e => e.OrderBy(e => e.Id).ToList());
+//                foreach (var doc in allDocs)
+//                {
+//                    doc.Attachments = attachmentsByDocId.GetValueOrDefault(doc.Id) ?? new List<Attachment>();
+//                    doc.EntityMetadata[nameof(doc.Attachments)] = FieldMetadata.Loaded;
+//                }
+//            }
+
+//            // DocumentAssignment
+//            await reader.NextResultAsync(cancellation);
+//            {
+//                var assignmentsHistory = new List<DocumentAssignment>();
+//                var desc = TypeDescriptor.Get<DocumentAssignment>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new DocumentAssignment();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    assignmentsHistory.Add(entity);
+//                }
+
+//                // Add the state history to their documents
+//                var assignmentsHistoryByDocId = assignmentsHistory.GroupBy(e => e.DocumentId).ToDictionary(e => e.Key, e => e.OrderBy(e => e.Id).ToList());
+//                foreach (var doc in allDocs)
+//                {
+//                    doc.AssignmentsHistory = assignmentsHistoryByDocId.GetValueOrDefault(doc.Id) ?? new List<DocumentAssignment>();
+//                    doc.EntityMetadata[nameof(doc.AssignmentsHistory)] = FieldMetadata.Loaded;
+//                }
+//            }
+
+//            // DocumentStateChange
+//            await reader.NextResultAsync(cancellation);
+//            {
+//                var stateHistory = new List<DocumentStateChange>();
+//                var desc = TypeDescriptor.Get<DocumentStateChange>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new DocumentStateChange();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    stateHistory.Add(entity);
+//                }
+
+//                // Add the state history to their documents
+//                var stateHistoryByDocId = stateHistory.GroupBy(e => e.DocumentId).ToDictionary(e => e.Key, e => e.OrderBy(e => e.Id).ToList());
+//                foreach (var doc in allDocs)
+//                {
+//                    doc.StatesHistory = stateHistoryByDocId.GetValueOrDefault(doc.Id) ?? new List<DocumentStateChange>();
+//                    doc.EntityMetadata[nameof(doc.StatesHistory)] = FieldMetadata.Loaded;
+//                }
+//            }
+
+//            // RequiredSignature
+//            var allSignatures = new List<RequiredSignature>();
+//            await reader.NextResultAsync(cancellation);
+//            {
+//                var desc = TypeDescriptor.Get<RequiredSignature>();
+//                while (await reader.ReadAsync(cancellation))
+//                {
+//                    var entity = new RequiredSignature();
+
+//                    foreach (var prop in desc.SimpleProperties)
+//                    {
+//                        var value = reader[prop.Name];
+//                        if (value != DBNull.Value)
+//                        {
+//                            prop.SetValue(entity, value);
+//                        }
+
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    foreach (var prop in desc.NavigationProperties)
+//                    {
+//                        entity.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+//                    }
+
+//                    allSignatures.Add(entity);
+//                }
+//            }
+
+//            // Accounts
+
+//            return (allDocs, allSignatures, new Dictionary<string, IEnumerable<Entity>>());
+//        }
 
         public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> docs)
         {

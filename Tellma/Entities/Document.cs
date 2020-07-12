@@ -1,9 +1,10 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using D = Tellma.Entities.Descriptors;
 
 namespace Tellma.Entities
 {
@@ -258,5 +259,163 @@ namespace Tellma.Entities
         public const string Current = _prefix + "0";
         public const string Posted = _prefix + "1";
         public const string Canceled = _prefix + "minus_1";
+    }
+
+    public static class DocDetails
+    {
+        // ------------------------------------------------
+        // Paths to return on the level of each entity type
+        // IMPORTANT: Keep in sync with ApplicationRepository.GetDocumentsByIds
+        // ------------------------------------------------
+
+        public static IEnumerable<string> DocumentPaths() => DocumentProps
+            .Concat(LinePaths(nameof(Document.Lines)))
+            .Concat(AttachmentPaths(nameof(Document.Attachments)))
+            .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
+            .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
+            .Concat(ContractPaths(nameof(Document.DebitContract)))
+            .Concat(ContractPaths(nameof(Document.CreditContract)))
+            .Concat(ContractPaths(nameof(Document.NotedContract)))
+            .Concat(CenterPaths(nameof(Document.Segment)))
+            .Concat(UnitPaths(nameof(Document.Unit)))
+            .Concat(CurrencyPaths(nameof(Document.Currency)))
+            .Concat(LookupPaths(nameof(Document.DocumentLookup1)))
+            .Concat(LookupPaths(nameof(Document.DocumentLookup2)))
+            .Concat(LookupPaths(nameof(Document.DocumentLookup3)))
+            .Concat(UserPaths(nameof(Document.CreatedBy)))
+            .Concat(UserPaths(nameof(Document.ModifiedBy)))
+            .Concat(UserPaths(nameof(Document.Assignee)));
+        public static IEnumerable<string> LinePaths(string path = null) => LineProps
+            .Concat(EntryPaths(nameof(Line.Entries)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
+            .Concat(AccountPaths(nameof(Entry.Account)))
+            .Concat(CurrencyPaths(nameof(Entry.Currency)))
+            .Concat(EntryResourcePaths(nameof(Entry.Resource)))
+            .Concat(EntryContractPaths(nameof(Entry.Contract)))
+            .Concat(EntryTypePaths(nameof(Entry.EntryType)))
+            .Concat(ContractPaths(nameof(Entry.NotedContract)))
+            .Concat(CenterPaths(nameof(Entry.Center)))
+            .Concat(UnitPaths(nameof(Entry.Unit)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AttachmentPaths(string path = null) => AttachmentProps
+            .Concat(UserPaths(nameof(Attachment.CreatedBy)))
+            .Concat(UserPaths(nameof(Attachment.ModifiedBy)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> DocumentStateChangePaths(string path = null) => DocumentStateChangeProps
+            .Concat(UserPaths(nameof(DocumentStateChange.ModifiedBy)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> DocumentAssignmentPaths(string path = null) => DocumentAssignmentProps
+            .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
+            .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryContractPaths(string path = null) => ContractPaths(path)
+            .Concat( // Entry Contract also adds the Currency and Center
+                CurrencyPaths(nameof(Contract.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+            ).Concat(
+                CenterPaths(nameof(Contract.Center)).Select(p => path == null ? p : $"{path}/{p}")
+            );
+        public static IEnumerable<string> ContractPaths(string path = null) => ContractProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
+            .Concat( // Entry Resource also adds the Currency and Center
+                CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+            ).Concat(
+                CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}")
+            );
+        public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
+            // This is used in account, it does not need currency or center, since they already come with the account
+            .Concat(UnitPaths(nameof(Resource.Unit)))
+            .Concat(ResourceUnitPaths(nameof(Resource.Units)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
+            .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> CenterPaths(string path = null) => CenterProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> UnitPaths(string path = null) => UnitProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> CurrencyPaths(string path = null) => CurrencyProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> UserPaths(string path = null) => UserProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryTypeParentPaths(string path = null) => EntryTypeParentProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AccountPaths(string path = null) => AccountProps
+            .Concat(AccountTypePaths(nameof(Account.AccountType)))
+            .Concat(CenterPaths(nameof(Account.Center)))
+            .Concat(EntryTypePaths(nameof(Account.EntryType)))
+            .Concat(CurrencyPaths(nameof(Account.Currency)))
+            .Concat(ContractPaths(nameof(Account.Contract)))
+            .Concat(ResourcePaths(nameof(Account.Resource)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
+            .Concat(EntryTypeParentPaths(nameof(AccountType.EntryTypeParent)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+
+        // -------------------------------------------------------------
+        // Simple properties to include on the level of each entity type
+        // -------------------------------------------------------------
+
+        public static IEnumerable<string> DocumentProps => D.TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> LineProps => D.TypeDescriptor.Get<Line>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> EntryProps => D.TypeDescriptor.Get<Entry>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> AttachmentProps => D.TypeDescriptor.Get<Attachment>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> DocumentAssignmentProps => D.TypeDescriptor.Get<DocumentAssignment>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> DocumentStateChangeProps => D.TypeDescriptor.Get<DocumentStateChange>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> UnitProps => Enum(nameof(Unit.Name), nameof(Unit.Name2), nameof(Unit.Name3));
+        public static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
+        public static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
+        public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
+        public static IEnumerable<string> ResourceUnitsProps => Enum();
+        public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
+        public static IEnumerable<string> ContractProps => Enum(nameof(Contract.Name), nameof(Contract.Name2), nameof(Contract.Name3), nameof(Contract.DefinitionId));
+        public static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
+        public static IEnumerable<string> AccountProps => Enum(
+            // Names
+            nameof(Account.Name),
+            nameof(Account.Name2),
+            nameof(Account.Name3),
+            nameof(Account.Code),
+
+            // Definitions
+            nameof(Account.ContractDefinitionId),
+            nameof(Account.NotedContractDefinitionId),
+            nameof(Account.ResourceDefinitionId)
+        );
+        public static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
+        public static IEnumerable<string> EntryTypeParentProps => Enum(nameof(EntryType.IsActive));
+        public static IEnumerable<string> AccountTypeProps => Enum(
+            // Names
+            nameof(AccountType.Name),
+            nameof(AccountType.Name2),
+            nameof(AccountType.Name3),
+
+            // Misc
+            nameof(AccountType.EntryTypeParentId),
+
+            // Labels
+            nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),
+            nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
+            nameof(AccountType.Time2Label), nameof(AccountType.Time2Label2), nameof(AccountType.Time2Label3),
+            nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel2), nameof(AccountType.ExternalReferenceLabel3),
+            nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel2), nameof(AccountType.AdditionalReferenceLabel3),
+            nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel2), nameof(AccountType.NotedAgentNameLabel3),
+            nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel2), nameof(AccountType.NotedAmountLabel3),
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel2), nameof(AccountType.NotedDateLabel3)
+         );
+
+        // Helper method
+        private static IEnumerable<string> Enum(params string[] ps)
+        {
+            foreach (var p in ps)
+            {
+                yield return p;
+            }
+        }
     }
 }
