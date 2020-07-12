@@ -38,9 +38,11 @@ AS
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 		WHERE A.[AccountTypeId] IN (SELECT [Id] FROM @PPETypeIds)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
+		AND U.[UnitType] <> N'Pure'
 		GROUP BY E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Quantity]) > 0 OR SUM(E.[Direction] * E.[MonetaryValue]) > 0 OR  SUM(E.[Direction] * E.[Value]) > 0
 	),
@@ -48,8 +50,8 @@ AS
 	-- Total information is used for accelerated depreciation models, when we implement them
 		SELECT --TotalCapacity, TotalMonetaryValue, TotalValue,
 				PB.RemainingCapacity,
-				(PB.RemainingMonetaryValue - R.ResidualMonetaryValue) AS [DepreciableRemainingMonetaryValue],
-				(PB.RemainingValue - R.ResidualValue) AS [DepreciableRemainingValue],
+				PB.RemainingMonetaryValue AS [DepreciableRemainingMonetaryValue],
+				PB.RemainingValue AS [DepreciableRemainingValue],
 				IIF(@Quantity <  PB.RemainingCapacity, @Quantity,  PB.RemainingCapacity) AS [UsedCapacity],
 				PB.[ResourceId]
 		FROM PPEBalancesPre PB

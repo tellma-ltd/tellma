@@ -95,9 +95,6 @@ SET NOCOUNT ON;
 				[IdentifierLabel2],
 				[IdentifierLabel3],
 				[IdentifierVisibility],
-					-- PPE
-				[ResidualMonetaryValueVisibility],
-				[ResidualValueVisibility],
 				-- Inventory
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
@@ -196,11 +193,6 @@ SET NOCOUNT ON;
 				t.[IdentifierLabel2]	= s.[IdentifierLabel2],
 				t.[IdentifierLabel3]	= s.[IdentifierLabel3],
 				t.[IdentifierVisibility]= s.[IdentifierVisibility],
-					-- PPE
-				t.[ResidualMonetaryValueVisibility]
-										= s.[ResidualMonetaryValueVisibility],
-				t.[ResidualValueVisibility]
-										= s.[ResidualValueVisibility],
 				-- Inventory
 				t.[ReorderLevelVisibility] = s.[ReorderLevelVisibility],
 				t.[EconomicOrderQuantityVisibility]
@@ -291,9 +283,6 @@ SET NOCOUNT ON;
 				[IdentifierLabel2],
 				[IdentifierLabel3],
 				[IdentifierVisibility],
-				-- PPE
-				[ResidualMonetaryValueVisibility],
-				[ResidualValueVisibility],
 				-- Inventory
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
@@ -381,9 +370,6 @@ SET NOCOUNT ON;
 				s.[IdentifierLabel2],
 				s.[IdentifierLabel3],
 				s.[IdentifierVisibility],
-				-- PPE
-				s.[ResidualMonetaryValueVisibility],
-				s.[ResidualValueVisibility],
 				-- Inventory
 				s.[ReorderLevelVisibility],
 				s.[EconomicOrderQuantityVisibility],

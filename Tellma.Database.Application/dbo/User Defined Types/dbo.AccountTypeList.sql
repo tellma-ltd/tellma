@@ -12,6 +12,7 @@
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
+	[AllowsPureUnit]			BIT					NOT NULL DEFAULT 0,
 	[EntryTypeParentId]			INT,
 	[DueDateLabel]				NVARCHAR (50),
 	[DueDateLabel2]				NVARCHAR (50),

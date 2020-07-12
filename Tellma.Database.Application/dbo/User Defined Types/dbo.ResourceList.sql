@@ -27,13 +27,11 @@
 	[Text2]						NVARCHAR (50), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (10),
-	[ResidualMonetaryValue]		DECIMAL (19,4),
-	[ResidualValue]				DECIMAL (19,4),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
 	[UnitId]					INT,
 	[UnitMass]					DECIMAL (19,4),
-	[UnitMassUnitId]		INT,
+	[UnitMassUnitId]			INT,
 --	[ParentId]					INT,
 	[MonetaryValue]				DECIMAL (19,4),
 

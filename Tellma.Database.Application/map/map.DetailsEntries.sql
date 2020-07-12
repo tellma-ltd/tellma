@@ -2,12 +2,15 @@
 	RETURNS TABLE
 	AS
 	RETURN
-With EB AS (
+With EB AS ( -- TODO: Test with Resources having both pure and non pure units
 	SELECT
 		E.*,
+		IIF(EU.UnitType = N'Pure',
+			E.[Quantity],
 			E.[Quantity] * -- Quantity in E.UnitId
 			EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
-		 *	(RBU.[UnitAmount]) / (RBU.[BaseAmount]) As [BaseQuantity],-- Quantity in Base unit of that resource
+		 *	(RBU.[UnitAmount]) / (RBU.[BaseAmount])
+		 ) As [BaseQuantity],-- Quantity in Base unit of that resource
 		 IIF(RBU.[UnitType] = N'Mass', 1, R.[UnitMass]) AS [Density]
 	FROM dbo.Entries E
 	LEFT JOIN dbo.Resources R ON E.ResourceId = R.[Id]

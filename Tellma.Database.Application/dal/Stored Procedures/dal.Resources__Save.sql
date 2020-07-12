@@ -44,8 +44,6 @@ SET NOCOUNT ON;
 				[Text2],
 -- Specific to resources
 				[Identifier],
-				[ResidualMonetaryValue],
-				[ResidualValue],
 				[ReorderLevel],
 				[EconomicOrderQuantity],	
 				[UnitId],
@@ -84,8 +82,6 @@ SET NOCOUNT ON;
 				t.[Text2]					= s.[Text2],
 
 				t.[Identifier]				= s.[Identifier],
-				t.[ResidualMonetaryValue]	= s.[ResidualMonetaryValue],
-				t.[ResidualValue]			= s.[ResidualValue],
 				t.[ReorderLevel]			= s.[ReorderLevel],
 				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
 				t.[UnitId]				= s.[UnitId],
@@ -122,8 +118,6 @@ SET NOCOUNT ON;
 				[Text2],
 -- Specific to resources
 				[Identifier],
-				[ResidualMonetaryValue],
-				[ResidualValue],
 				[ReorderLevel],
 				[EconomicOrderQuantity],
 				[UnitId],
@@ -158,8 +152,6 @@ SET NOCOUNT ON;
 				s.[Text2],
 -- Specific to resources
 				s.[Identifier],
-				s.[ResidualMonetaryValue],
-				s.[ResidualValue],
 				s.[ReorderLevel],
 				s.[EconomicOrderQuantity],
 				s.[UnitId],

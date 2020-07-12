@@ -50,9 +50,7 @@
 		[IdentifierVisibility]				= N'Optional',
 		[IdentifierLabel]					= N'Tag #',
 		[CurrencyVisibility]				= N'Required',
-		[DescriptionVisibility]				= N'Optional',
-		[ResidualMonetaryValueVisibility]	= N'Required',
-		[ResidualValueVisibility]			= N'Required'
+		[DescriptionVisibility]				= N'Optional'
 	WHERE [Code] IN (N'ComputerEquipmentMember', N'MachineryMember');
 
 	UPDATE @ResourceDefinitions
