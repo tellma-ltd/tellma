@@ -15,7 +15,7 @@
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
 	[NotedContractDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedContractDefinitionId] REFERENCES [dbo].[ContractDefinitions] ([Id]),
-	[IsDeprecated]				BIT				NOT NULL DEFAULT 0,
+	[IsActive]					BIT				NOT NULL DEFAULT 1,
 	-- Audit details
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__CreatedById] REFERENCES [dbo].[Users] ([Id]),

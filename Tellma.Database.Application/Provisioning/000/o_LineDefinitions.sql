@@ -203,7 +203,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,75,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (7,75,	N'Memo',				1,	N'Memo',				4,4,1),
 (8,75,	N'CenterId',			1,	N'Project',				4,4,1);
-
 --100:CashPaymentToOther
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -216,7 +215,7 @@ SET [Script] = N'
 WHERE [Index] = 100;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
-(0,100,	+1, @CashControlExtension),
+(0,100,	+1, @CashPaymentsToOthersControlExtension),
 (1,100,	-1, @CashAndCashEquivalents);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
@@ -258,7 +257,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId],[EntryTypeId]) VALUES
 (0,104,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
 (1,104,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(2,104,+1,	@GainLossOnForeignExchangeExtension, NULL); -- Make it an automatic system entry
+(2,104,+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax, NULL); -- Make it an automatic system entry
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,104,		@CashOnHandAccountCD),
@@ -356,7 +355,7 @@ WHERE [Index] = 120;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
 (0,120,	+1, @CashAndCashEquivalents),
-(1,120,	-1, @CashControlExtension);
+(1,120,	-1, @CashReceiptsFromOthersControlExtension);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,120,		@CashOnHandAccountCD),
@@ -388,7 +387,7 @@ WHERE [Index] = 121;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
 (0,121,	+1, @CashOnHand),
-(1,121,	-1, @CashControlExtension);
+(1,121,	-1, @CashReceiptsFromOthersControlExtension);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,121,		@CashOnHandAccountCD);
@@ -420,7 +419,7 @@ SET [Script] = N'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId],[EntryTypeId]) VALUES
-(0,300,+1,	@CashControlExtension, NULL),
+(0,300,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
 (1,300,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
@@ -487,7 +486,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId],				[EntryTypeId]) VALUES
 (0,11,+1,	@Inventories,					@ReceiptsReturnsThroughPurchaseExtension), -- 
 (1,11,-1,	@CurrentValueAddedTaxReceivables,NULL), 
-(2,11,-1,	@TradingControlExtension,		NULL);
+(2,11,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,		NULL);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,11,	@WarehouseCD),

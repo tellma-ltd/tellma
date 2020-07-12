@@ -24,9 +24,9 @@ AS
 		FROM dbo.Accounts
 		WHERE [ClassificationId] IN (SELECT [Id] FROM @Ids)
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[IsDeprecated] = 0)
+	WHEN MATCHED AND (t.[IsActive] = 0)
 	THEN
 		UPDATE SET 
-			t.[IsDeprecated]	= 1,
+			t.[IsActive]	= 1,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;

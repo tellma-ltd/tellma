@@ -141,17 +141,17 @@ BEGIN
 	JOIN dbo.[EntryTypes] ET ON AC.[EntryTypeParentId] = ET.[Id]
 	WHERE ET.IsActive = 1 AND E.[EntryTypeId] IS NULL;
 END
-	-- No deprecated account, for any positive state
+	-- No inactive account, for any positive state
 IF @State > 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheAccount0IsDeprecated',
+		N'Error_TheAccount0IsInactive',
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
-	WHERE (A.[IsDeprecated] = 1);
+	WHERE (A.[IsActive] = 0);
 
 	WITH FE_AB (EntryId, AccountBalanceId) AS (
 		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId

@@ -1,0 +1,34 @@
+﻿CREATE PROCEDURE [bll].[Accounts_Validate__Activate]
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@IsActive BIT,
+	@Top INT = 10
+AS
+SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+
+IF @IsActive = 0
+BEGIN
+	WITH
+	ActiveAccounts([Index], [AccountId], [Value], [MonetaryValue])
+	AS (
+		SELECT I.[Index], E.AccountId, 
+			SUM(E.[Direction] * E.[Value]) AS [Value],
+			SUM(E.[Direction] * E.[MonetaryValue])
+		-- TODO: Add the remaining units
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN @Ids I ON I.[Id] = E.[AccountId]
+		WHERE L.[State] = 4 -- N'Posted'
+		GROUP BY I.[Index], E.AccountId
+		HAVING
+			SUM(E.[Direction] * E.[Value]) <> 0
+		OR	SUM(E.[Direction] * E.[MonetaryValue]) <> 0
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAccountHasNonZeroBalance'
+	FROM ActiveAccounts AA
+END
+
+SELECT TOP(@Top) * FROM @ValidationErrors;

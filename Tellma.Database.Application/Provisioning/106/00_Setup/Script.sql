@@ -24,7 +24,7 @@ INSERT INTO @LookupDefinitionIds([Id]) VALUES
 --(@BodyColorLKD),
 (@VehicleMakeLKD),
 --(@SteelThicknessLKD),
---(@PapreOriginLKD),
+--(@PaperOriginLKD),
 --(@PaperGroupLKD),
 --(@PaperTypeLKD),
 (@GrainClassificationLKD),
