@@ -3,10 +3,7 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -214,6 +211,6 @@ namespace Tellma.Controllers
             }
         }
 
-        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.AccountTypePaths());
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.AccountTypePaths());
     }
 }

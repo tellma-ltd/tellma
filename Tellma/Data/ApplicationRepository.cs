@@ -16,6 +16,7 @@ using System.Threading;
 using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Tellma.Data
 {

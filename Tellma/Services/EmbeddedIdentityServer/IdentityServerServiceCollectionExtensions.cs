@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Extract the configuration section of Identity Server into a strongly typed object that is easier to deal with
             services.Configure<EmbeddedIdentityServerOptions>(configSection);
-            var config = configSection.Get<EmbeddedIdentityServerOptions>();            
+            var config = configSection.Get<EmbeddedIdentityServerOptions>();
 
             // Register the identity context
             string connString = config?.ConnectionString ?? throw new InvalidOperationException("To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider");
@@ -51,15 +53,68 @@ namespace Microsoft.Extensions.DependencyInjection
                     opt.TokenLifespan = TimeSpan.FromDays(Constants.TokenExpiryInDays));
 
             // Add default identity setup for the embedded IdentityServer instance
-            services.AddIdentity<EmbeddedIdentityServerUser, IdentityRole>(opt =>
+            services.AddIdentityCore<EmbeddedIdentityServerUser>(opt =>
             {
                 opt.SignIn.RequireConfirmedEmail = true;
                 opt.User.RequireUniqueEmail = true;
             })
+                .AddSignInManager()
                 .AddErrorDescriber<LocalizedIdentityErrorDescriptor>()
                 .AddDefaultTokenProviders()
-                // Use the identity context database
-                .AddEntityFrameworkStores<EmbeddedIdentityServerContext>();
+                .AddUserStore<ClaimlessUserStore>();
+
+            // Add authentication and cookie schemes (the section below is copied from GitHub: https://bit.ly/2W8GXaN)
+            var authBuilder = services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddCookie(IdentityConstants.ApplicationScheme, o =>
+            {
+                o.LoginPath = new PathString("/Account/Login");
+                o.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+                };
+            })
+            .AddCookie(IdentityConstants.ExternalScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.ExternalScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            })
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme;
+                o.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = SecurityStampValidator.ValidateAsync<ITwoFactorSecurityStampValidator>
+                };
+            })
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
+
+            // add external providers
+            if (config?.Google != null && config.Google.ClientId != null)
+            {
+                authBuilder.AddGoogle("Google", "Google", opt =>
+                {
+                    opt.ClientId = config.Google.ClientId;
+                    opt.ClientSecret = config.Google.ClientSecret;
+                });
+            }
+
+            if (config?.Microsoft != null && config.Microsoft.ClientId != null)
+            {
+                authBuilder.AddMicrosoftAccount("Microsoft", "Microsoft", opt =>
+                {
+                    opt.ClientId = config.Microsoft.ClientId;
+                    opt.ClientSecret = config.Microsoft.ClientSecret;
+                });
+            }
 
             // For windows authentication
             services.Configure<IISOptions>(opt =>
@@ -113,27 +168,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
 
-            // add external providers
-            var authBuilder = services.AddAuthentication();
-
-            if (config?.Google != null && config.Google.ClientId != null)
-            {
-                authBuilder.AddGoogle("Google", "Google", opt =>
-                {
-                    opt.ClientId = config.Google.ClientId;
-                    opt.ClientSecret = config.Google.ClientSecret;
-                });
-            }
-
-            if (config?.Microsoft != null && config.Microsoft.ClientId != null)
-            {
-                authBuilder.AddMicrosoftAccount("Microsoft", "Microsoft", opt =>
-                {
-                    opt.ClientId = config.Microsoft.ClientId;
-                    opt.ClientSecret = config.Microsoft.ClientSecret;
-                });
-            }
-
             // Configure cookie authentication for the embedded identity server
             services.ConfigureApplicationCookie(opt =>
             {
@@ -163,7 +197,9 @@ namespace Microsoft.Extensions.DependencyInjection
             return app.UseIdentityServer();
         }
 
-
+        /// <summary>
+        /// The identity resources supported by the embedded IdentityServer instance
+        /// </summary>
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             yield return new IdentityResources.OpenId();
