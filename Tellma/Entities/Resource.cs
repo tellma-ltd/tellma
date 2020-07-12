@@ -113,7 +113,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Identifier { get; set; } // Check
 
-        [Display(Name = "Resource_ResidualMonetaryValue")]
+        [Display(Name = " ")]
         public decimal? ResidualMonetaryValue { get; set; } // Check
 
         [Display(Name = "Resource_ResidualValue")]

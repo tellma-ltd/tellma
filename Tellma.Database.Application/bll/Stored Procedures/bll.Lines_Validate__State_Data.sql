@@ -51,20 +51,22 @@ IF @State = 4 -- posted
 BEGIN
 	DECLARE @ArchiveDate DATE;
 	-- Posting Date not null
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_LinePostingDateIsRequired'
+		N'Error_Field0IsRequired',		
+		N'localize:Line_PostingDate'
 	FROM @Lines L
 	WHERE L.[PostingDate] IS NULL;
 	-- Null Values are not allowed
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' +
-			CAST([Index]  AS NVARCHAR (255))+ ']',
-		N'Error_TransactionHasNullValue'
+			CAST([Index]  AS NVARCHAR (255))+ '].Value',
+		N'Error_Field0IsRequired',
+		N'localize:Entry_Value'
 	FROM @Entries
 	WHERE [Value] IS NULL;
 

@@ -850,6 +850,15 @@
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>A system record cannot be edited.</value>
   </data>
+  <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
+    <value>Cannot sign a {0} document.</value>
+  </data>
+  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
+    <value>Cannot delete a signature from a {0} document.</value>
+  </data>
+  <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
+    <value>Only draft lines can be deleted.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
   </data>
@@ -877,6 +886,9 @@
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Document DefinitionId '{0}' could not be found.</value>
   </data>
+  <data name="Error_DocumentIsNotInState0" xml:space="preserve">
+    <value>The document is not {0}.</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>The email was not provided by the external sign-in.</value>
   </data>
@@ -891,6 +903,9 @@
   </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>Failed to parse uploaded file, Error: {0}.</value>
+  </data>
+  <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
+    <value>The date falls within an archived financial period,</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>The {0} field is not a valid e-mail address</value>
@@ -909,6 +924,9 @@
   </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
     <value>Incompatible Account Type '{0}' and Purpose '{1}'.</value>
+  </data>
+  <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
+    <value>User '{0}' is not a member of role '{1}'.</value>
   </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox</value>
@@ -940,8 +958,17 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>Label '{0}' matches multiples fields on type {1}, use a numeric postfix to disambiguate, like this '{0}.1'.</value>
   </data>
+  <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
+    <value>Line cannot be signed on behalf of user '{0}'</value>
+  </data>
+  <data name="Error_LineIsAlreadyInState0" xml:space="preserve">
+    <value>The line is already in state {0} and therefore cannot be signed.</value>
+  </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
     <value>Some signatures are missing.</value>
+  </data>
+  <data name="Error_LineMustBeInState0First" xml:space="preserve">
+    <value>Line has not been {0} yet.</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>Error loading external login information.</value>
@@ -988,6 +1015,9 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Secondary language cannot be the same as the primary language.</value>
   </data>
+  <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
+    <value>All subsequent signatures must be deleted first.</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Ternary language cannot be the same as the primary language.</value>
   </data>
@@ -1018,8 +1048,17 @@
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>The exchange rate for currency '{0}' on date {1} is duplicated.</value>
   </data>
+  <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
+    <value>The currency '{0}' is used in account '{1}'</value>
+  </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>The currency should be different than the functional currency.</value>
+  </data>
+  <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
+    <value>The document has completed lines.</value>
+  </data>
+  <data name="Error_TheDocumentIsClosed" xml:space="preserve">
+    <value>The document is closed. Please open it first.</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>The email '{0}' is duplicated.</value>
@@ -1044,6 +1083,9 @@
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing.</value>
+  </data>
+  <data name="Error_TheLineHasNoEntries" xml:space="preserve">
+    <value>The line has no entries.</value>
   </data>
   <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
     <value>{0}' is used in {1}: '{2}'</value>
@@ -1104,6 +1146,9 @@
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>The user '{0}' has already accepted the invitation.</value>
+  </data>
+  <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
+    <value>User '{0}' does not have sufficient permissions to sign on behalf of user '{1}'.</value>
   </data>
   <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
     <value>Value '{0}' for field {1} should not exceed one character</value>

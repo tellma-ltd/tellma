@@ -381,7 +381,7 @@
   "InboxRecord": "بيان من صندوق الوارد",
   "InboxRecords": "بيانات صندوق الوارد",
   "IncludeCanceled": "إشمل الملغى",
-  "IncludeCompleted": "إدراج الحركات المكتملة",
+  "IncludeCompleted": "إدراج الحركات المنفذة",
   "IncludeInactive": "إشمل غير المنشط",
   "InvalidDate": "تاريخ غير سليم",
   "InvalidEmail": "عنوان بريد غير سليم",

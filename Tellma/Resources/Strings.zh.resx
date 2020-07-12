@@ -859,14 +859,14 @@
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>系统记录不能进行编辑。</value>
   </data>
-  <data name="Error_CannotSignCanceledDocuments" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
+    <value>不能签署{0}文件。</value>
   </data>
-  <data name="Error_CannotSignClosedDocuments" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
+    <value>无法从{0}文档中删除签名。</value>
   </data>
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>只有线路草案可以被删除。</value>
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
@@ -895,14 +895,8 @@
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>文档DefinitionId“{0}”未能找到。</value>
   </data>
-  <data name="Error_DocumentIsNotCanceled" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_DocumentIsNotDraft" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_DocumentIsNotPosted" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_DocumentIsNotInState0" xml:space="preserve">
+    <value>该文档不是{0}。</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>电子邮件没有被外部登录提供。</value>
@@ -920,7 +914,7 @@
     <value>解析失败上传的文件，错误：{0}。</value>
   </data>
   <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>该日期在存档的财务周期内，</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>{0}字段是不是一个有效的E-mail地址</value>
@@ -941,7 +935,7 @@
     <value>不兼容的帐户类型 '{0}' 和目的 '{1}'。</value>
   </data>
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>用户“{0}”不是的角色“{1}”的部件。</value>
   </data>
   <data name="Error_IncompatibleUserRole" xml:space="preserve">
     <value>#VALUE!</value>
@@ -979,35 +973,17 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>标签“{0}”可匹配于类型{1}的倍数字段，可使用一个数字后缀来消除歧义，像这样“{0} 0.1”。</value>
   </data>
-  <data name="Error_Line0MustBeAuthorizedFirst" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
+    <value>线不能代表用户签署“{0}”</value>
   </data>
-  <data name="Error_Line0MustBeCompletedFirst" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_Line0MustBeRequestedFirst" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_LineCannotBeSignedOnBehalOfUser0" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_LineIsAlready_minus_1" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_LineIsAlready_minus_2" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_LineIsAlready_minus_3" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_LineIsAlready_minus_4" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_LineIsAlreadyInState0" xml:space="preserve">
+    <value>该生产线已经处于状态{0}，因此不能签署。</value>
   </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
     <value>有些签名人失踪。</value>
   </data>
-  <data name="Error_LinePostingDateIsRequired" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_LineMustBeInState0First" xml:space="preserve">
+    <value>行一直没有{0}呢。</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>错误加载外部登录信息。</value>
@@ -1058,7 +1034,7 @@
     <value>#VALUE!</value>
   </data>
   <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>随后的所有签名必须先将其删除。</value>
   </data>
   <data name="Error_SystemTypesCannotBeDeleted" xml:space="preserve">
     <value>#VALUE!</value>
@@ -1139,7 +1115,7 @@
     <value>汇率货币“{0}”上日期{1}被复制。</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>货币“{0}”中的帐户中使用“{1}”</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInDocument1" xml:space="preserve">
     <value>#VALUE!</value>
@@ -1153,8 +1129,8 @@
   <data name="Error_TheDocumentDoesNotHaveAnyFinalizedLines" xml:space="preserve">
     <value>#VALUE!</value>
   </data>
-  <data name="Error_TheDocumentHascompletedLines" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
+    <value>该文件已完成线。</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>#VALUE!</value>
@@ -1162,14 +1138,8 @@
   <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
     <value>#VALUE!</value>
   </data>
-  <data name="Error_TheDocumentIsInCancelledState" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_TheDocumentIsInPostedState" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
-  <data name="Error_TheDocumentIsPosted" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_TheDocumentIsClosed" xml:space="preserve">
+    <value>该文件是封闭的。请首先打开它。</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>
@@ -1202,13 +1172,10 @@
     <value>与ID的记录“{0}”没有被发现。也许它已经被删除，请重新整理。</value>
   </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>该行没有条目。</value>
   </data>
   <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
     <value>{0}”在{1}使用： '{2}'</value>
-  </data>
-  <data name="Error_TheLookupDefinitionIsUsed" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
     <value>名称“{0}”被复制。</value>
@@ -1261,9 +1228,6 @@
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>借记卡和信用卡是由{0}不同。</value>
   </data>
-  <data name="Error_TransactionHasNullValue" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
   </data>
@@ -1280,7 +1244,7 @@
     <value>用户“{0}”已经接受了邀请。</value>
   </data>
   <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>用户“{0}”不具有足够的权限来代表用户登录“{1}”。</value>
   </data>
   <data name="Error_UserCannotSignLine" xml:space="preserve">
     <value>#VALUE!</value>

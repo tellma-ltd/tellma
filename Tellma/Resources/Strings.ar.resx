@@ -850,6 +850,15 @@
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان من النظام.</value>
   </data>
+  <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
+    <value>لا يمكن توقيع مستند في حالة {1}.</value>
+  </data>
+  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
+    <value>لا يمكن حذف توقيع من مستند في حالة {1}.</value>
+  </data>
+  <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
+    <value>لا يمكن حذف الأسطر ما لم تكن في حالة جديد.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
   </data>
@@ -877,6 +886,9 @@
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المستند ({0}).</value>
   </data>
+  <data name="Error_DocumentIsNotInState0" xml:space="preserve">
+    <value>المستند ليس في حالة {0}.</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>مسجل الدخول الخارجي لم يفصح عن عنوان بريدك الإلكتروني</value>
   </data>
@@ -891,6 +903,9 @@
   </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>تعذر قراءة الملف المرفوع، رسالة الخطأ: {0}.</value>
+  </data>
+  <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
+    <value>التاريخ يقع في فترة مالية مقفلة.</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>حقل {0} لا يحتوي على عنوان بريد إلكتروني سليم</value>
@@ -909,6 +924,9 @@
   </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
     <value>نوع الحساب ({0}) والسبب ({1}) غير متناسبان.</value>
+  </data>
+  <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
+    <value>المستخدم ({0}) ليس عضوا في الدور ({1}).</value>
   </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
@@ -940,8 +958,17 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>عنوان العمود ({0}) يتطابق مع أكثر من حقل واحد على نوع {1}، قم بإلحاق عدد لإزالة اللبس، مثال: {0}.1.</value>
   </data>
+  <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
+    <value>لا يمكن توقيع السطر بالنيابة عن المستخدم ({0}).</value>
+  </data>
+  <data name="Error_LineIsAlreadyInState0" xml:space="preserve">
+    <value>السطر في حالة {0} وبالتالي لا يمكن توقيعه.</value>
+  </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
     <value>بعض التوقيعات ناقصة.</value>
+  </data>
+  <data name="Error_LineMustBeInState0First" xml:space="preserve">
+    <value>السطر لم يصل إلى حالة {0} بعد.</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي</value>
@@ -988,6 +1015,9 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
   </data>
+  <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
+    <value>قبل حذف أي توقيع يتعين حذف كل التوقيعات اللاحقة له.</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة هي نفسها اللغة الرئيسية.</value>
   </data>
@@ -995,10 +1025,10 @@
     <value>اللغة الثالثة هي نفسها اللغة الثانية.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
-    <value>البيان '{1}' من نوع {0} مستخدم حاليا في الحساب {2}</value>
+    <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
-    <value>الحساب ({0}) غير منشط</value>
+    <value>الحساب ({0}) غير منشط.</value>
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1}).</value>
@@ -1020,6 +1050,12 @@
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية.</value>
+  </data>
+  <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
+    <value>المستند يحتوي على أسطر في حالة منفذ.</value>
+  </data>
+  <data name="Error_TheDocumentIsClosed" xml:space="preserve">
+    <value>هذا المستند مقفل، قم بفتحه أولا.</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>البريد الإلكتروني ({0}) مكرر</value>
@@ -1044,6 +1080,12 @@
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
+  </data>
+  <data name="Error_TheLineHasNoEntries" xml:space="preserve">
+    <value>السطر خاو.</value>
+  </data>
+  <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
+    <value>البيان ({1}) مستخدم حاليا في {1} ({2})</value>
   </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
     <value>الاسم ({0}) مكرر</value>
@@ -1101,6 +1143,9 @@
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>المستخدم ({0}) قد قبل الدعوة.</value>
+  </data>
+  <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
+    <value>المستخدم ({0}) لم يمنح الأذونات الكافية للتوقيع بالنيابة عن المستخدم ({1}).</value>
   </data>
   <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
     <value>القيمة ({0}) للحقل {1} ينبغي ألا يتجاوز طولها حرفا واحدا</value>

@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentIsPosted'
+		N'Error_TheDocumentIsClosed'
 	FROM @Ids FE 
 	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
 	WHERE D.[State] = +1
@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentHascompletedLines',
+		N'Error_TheDocumentHasCompletedLines',
 		CAST(L.[State] AS NVARCHAR(50))
 	FROM @Ids FE 
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]

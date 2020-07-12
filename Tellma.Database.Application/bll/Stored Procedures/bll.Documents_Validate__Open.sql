@@ -7,10 +7,11 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Cannot unpost it if it is not posted
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_DocumentIsNotPosted'
+		N'Error_DocumentIsNotInState0',
+		N'localize:Document_State_1'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[State] <> 1;	

@@ -5,21 +5,19 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- Cannot delete a signature unless the document state is ACTIVE
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	-- Cannot delete a signature unless the document state is CURRENT
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		CASE
-			WHEN D.[State] = 1 THEN N'Error_TheDocumentIsInPostedState'
-			WHEN D.[State] = -1 THEN N'Error_TheDocumentIsInCancelledState'
-		END
+		N'Error_CannotUnsignDocumentInState0',
+		N'localize:Document_State_' + (CASE WHEN D.[State] = 1 THEN N'1' WHEN D.[State] = -1 THEN N'minus_1' END)
 	FROM @Ids FE
 	JOIN dbo.[LineSignatures] LS ON FE.[Id] = LS.[Id]
 	JOIN [dbo].[Lines] L ON LS.[LineId] = L.[Id]
 	JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 	WHERE (D.[State] <> 0);
 
-	-- cannot unsign if there are subsequent signatures
+	-- Cannot unsign if there are subsequent signatures
 		INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',

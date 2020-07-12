@@ -19,13 +19,11 @@ SET NOCOUNT ON;
 
 	IF @OnBehalfOfuserId IS NULL SET @OnBehalfOfuserId = @UserId
 	-- Must not sign lines in a document that is already closed/canceled
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		CASE
-			WHEN D.[State] = 1 THEN N'Error_CannotSignClosedDocuments'
-			WHEN D.[State] = -1 THEN N'Error_CannotSignCanceledDocuments'
-		END
+		N'Error_CannotSignDocumentInState0',
+		N'localize:Document_State_' + (CASE WHEN D.[State] = 1 THEN N'1' WHEN D.[State] = -1 THEN N'minus_1' END)
 	FROM @Ids FE
 	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
@@ -56,28 +54,21 @@ SET NOCOUNT ON;
 	--WHERE RS.CanSign = 0;
 
 	-- Cannot sign a current state, unless all states < abs (current state) are positive and signed.	
-	INSERT INTO @ValidationErrors([Key], [ErrorName])		
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])		
 	SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-			CASE 
-				WHEN LastUnsignedState = 1 THEN N'Error_Line0MustBeRequestedFirst'
-				WHEN LastUnsignedState = 2 THEN N'Error_Line0MustBeAuthorizedFirst'
-				WHEN LastUnsignedState = 3 THEN N'Error_Line0MustBeCompletedFirst'
-			END
+			N'Error_LineMustBeInState0First',
+			N'localize:Line_State_minus_' + ABS([LastUnsignedState])
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
 
 	-- Cannot sign a current state, if it is already signed negatively in a previous state.
-	INSERT INTO @ValidationErrors([Key], [ErrorName])		
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])		
 	SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-			CASE
-				WHEN LastNegativeState = -1 THEN N'Error_LineIsAlready_minus_1'
-				WHEN LastNegativeState = -2 THEN N'Error_LineIsAlready_minus_2'
-				WHEN LastNegativeState = -3 THEN N'Error_LineIsAlready_minus_3'
-				WHEN LastNegativeState = -4 THEN N'Error_LineIsAlready_minus_4'
-			END
+			N'Error_LineIsAlreadyInState0',
+			N'localize:Line_State_minus_' + ABS([LastNegativeState])
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE LastNegativeState IS NOT NULL
@@ -89,7 +80,7 @@ SET NOCOUNT ON;
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-			N'Error_LineCannotBeSignedOnBehalOfUser0',
+			N'Error_LineCannotBeSignedOnBehalfOfUser0',
 			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId)
 		FROM @Ids 
 		WHERE [Id] IN (
