@@ -237,41 +237,6 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        //public override async Task<ActionResult<GetByIdResponse<Document>>> GetById(int id, [FromQuery] GetByIdArguments args, CancellationToken cancellation)
-        //{
-        //    string shorthand = "$Details";
-        //    if (args.Select == shorthand)
-        //    {
-        //        // The normal query for retrieving a single document is very frequently used and can be slow, so we heavily optimize it
-        //        return await ControllerUtilities.InvokeActionImpl(async () =>
-        //        {
-        //            // Calculate server time at the very beginning for consistency
-        //            var serverTime = DateTimeOffset.UtcNow;
-
-        //            // Load the data
-        //            var (entity, signatures, related) = await _service.GetByIdOptimized(id, cancellation);
-
-        //            // Prepare the extras
-        //            var extras = new Extras {{ "RequiredSignatures",  signatures }};
-
-        //            // Prepare the result in a response object
-        //            var result = new GetByIdResponse<Document>
-        //            {
-        //                Result = entity,
-        //                RelatedEntities = related,
-        //                CollectionName = GetCollectionName(typeof(Document)),
-        //                Extras = extras,
-        //                ServerTime = serverTime,
-        //            };
-        //            return Ok(result);
-        //        }, _logger);
-        //    } 
-        //    else
-        //    {
-        //        return await base.GetById(id, args, cancellation);
-        //    }
-        //}
-
         protected override CrudServiceBase<DocumentForSave, Document, int> GetCrudService()
         {
             return _service;
@@ -749,26 +714,6 @@ namespace Tellma.Controllers
 
             return (entity, extras);
         }
-
-        //public async Task<(Document doc, List<RequiredSignature> signatures, Dictionary<string, IEnumerable<Entity>> related)> GetByIdOptimized(int id, CancellationToken cancellation)
-        //{
-        //    // Apply read permissions
-        //    var permissions = await UserPermissions(Constants.Read, cancellation);
-        //    var permissionsFilter = GetReadPermissionsCriteria(permissions);
-
-        //    // Load the data
-        //    var (data, signatures, related) = await _repo.LoadDocumentsByIds(new List<int> { id }, permissionsFilter, cancellation);
-
-        //    // Check that the entity exists, else return NotFound
-        //    var entity = data.SingleOrDefault();
-        //    if (entity == null)
-        //    {
-        //        throw new NotFoundException<int>(id);
-        //    }
-
-        //    // Return
-        //    return (entity, signatures, related);
-        //}
 
         public async Task<(
             List<LineForSave> lines,
