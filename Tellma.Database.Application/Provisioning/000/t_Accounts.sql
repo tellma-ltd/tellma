@@ -153,3 +153,18 @@ BEGIN
 	Print 'Inserting Accounts: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+
+DELETE FROM @IndexedIds;
+INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.Accounts
+WHERE AccountTypeId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [IsActive] = 0)
+
+EXEC [api].[Accounts__Activate]
+	@IndexedIds = @IndexedIds,
+	@IsActive =0,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Accounts: Deactivating: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;

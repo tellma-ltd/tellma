@@ -1913,4 +1913,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DefaultUnitMassUnitId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7e46c730-f47c-4641-b168-9b45f9d03d73" ChangeDateTime="07/12/2020 07:03:29">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IsDeprecated]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsActive]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="27cef0a3-6008-414d-9860-6a98a781af9b" ChangeDateTime="07/12/2020 07:05:25">
+    <Property Name="ElementName" Value="[dal].[Accounts__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Accounts__Activate]" />
+  </Operation>
 </Operations>

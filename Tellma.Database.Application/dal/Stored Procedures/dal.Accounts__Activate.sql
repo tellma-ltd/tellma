@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dal].[Accounts__Deprecate] -- [dbo].[dal_Accounts__Activate] @Accounts = N'CashOnHand', @IsActive = 0
+﻿CREATE PROCEDURE [dal].[Accounts__Activate] -- [dbo].[dal_Accounts__Activate] @Accounts = N'CashOnHand', @IsActive = 0
 	@Ids dbo.[IdList] READONLY,
-	@IsDeprecated bit
+	@IsActive bit
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -12,10 +12,10 @@ BEGIN
 		SELECT [Id]
 		FROM @Ids
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[IsDeprecated] <> @IsDeprecated)
+	WHEN MATCHED AND (t.[IsActive] <> @IsActive)
 	THEN
 		UPDATE SET 
-			t.[IsDeprecated]	= @IsDeprecated,
+			t.[IsActive]		= @IsActive,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;
 END;

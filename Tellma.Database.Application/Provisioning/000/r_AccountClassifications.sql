@@ -162,7 +162,6 @@
 (4402,44, N'4402',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
 (4403,44, N'4403',N'Gains (losses) on disposals of investment properties', N'الأرباح (الخسائر) من عمليات التصرف بالعقارات الاستثمارية',@GainsLossesOnDisposalsOfInvestmentProperties),
 (4404,44, N'4404',N'The gains (losses) on disposals of investments.', N'الأرباح (الخسائر) من التصرف بالاستثمارات',@GainsLossesOnDisposalsOfInvestments),
-(4405,44, N'4405',N'Gain (loss) on foreign exchange', N'الربح (الخسارة) على الصرف الأجنبي',@GainLossOnForeignExchangeExtension),
 (5,NULL, N'5',N'Other profit (loss)', N'الربح الآخر (خسارة)',NULL),
 (51,5, N'51',N'Other profit (loss) from continuing operation', N'الربح الآخر (الخسارة) من استمرار العملية',NULL),
 (5101,51, N'5101',N'Gains (losses) on net monetary position', N'الأرباح (الخسائر) من صافي المركز المالي',@GainsLossesOnNetMonetaryPosition),
@@ -217,6 +216,22 @@ BEGIN
 	Print 'Inserting AccountClassifications: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+
+DELETE FROM @IndexedIds;
+INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications
+WHERE AccountTypeParentId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [IsActive] = 0)
+
+EXEC [api].[AccountClassifications__Activate]
+	@IndexedIds = @IndexedIds,
+	@IsActive =0,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'AccountClassifications: Deactivating: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;
+
 --Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC11 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'11');
@@ -381,7 +396,6 @@ DECLARE @AC44 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = 
 DECLARE @AC4402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4402');
 DECLARE @AC4403 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4403');
 DECLARE @AC4404 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4404');
-DECLARE @AC4405 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4405');
 DECLARE @AC5 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5');
 DECLARE @AC51 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'51');
 DECLARE @AC5101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5101');
