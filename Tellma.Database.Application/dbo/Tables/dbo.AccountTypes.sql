@@ -11,6 +11,7 @@
 	[Description3]				NVARCHAR (1024),
 	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [UX_AccountTypes__Node] UNIQUE CLUSTERED,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
+	[AllowsPureUnit]			BIT					DEFAULT 0,
 	[EntryTypeParentId]			INT					CONSTRAINT [FK_AccountTypes__EntryTypeParentId] REFERENCES [dbo].[EntryTypes] ([Id]),	
 	[DueDateLabel]				NVARCHAR (50),
 	[DueDateLabel2]				NVARCHAR (50),

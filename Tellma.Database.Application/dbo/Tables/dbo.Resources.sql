@@ -30,14 +30,15 @@
 	[Text2]						NVARCHAR (50), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (10),
-	[ResidualMonetaryValue]		DECIMAL (19,4),
-	[ResidualValue]				DECIMAL (19,4),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
+	-- for non current, unit = usage unit (must NOT be pure). 
+	-- And the "pure" is implicit, and allowed in 2 account types: Non current and disposal (needs flag: Allows pure)
 	[UnitId]					INT					CONSTRAINT [FK_Resources__UnitId] REFERENCES [dbo].[Units] ([Id]),
 	[UnitMass]					DECIMAL (19,4),
 	[UnitMassUnitId]			INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[Units] ([Id]),
---	[ParentId]					INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
+	-- 
+	--[ParentId]					INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
 	[MonetaryValue]				DECIMAL (19,4),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
