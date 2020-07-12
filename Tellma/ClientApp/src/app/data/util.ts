@@ -204,37 +204,37 @@ export function friendlify(error: any, trx: TranslateService): FriendlyError {
     switch (res.status) {
       case 0: // Offline
       case 504: // Service worker reports
-        return friendlyStructure(res.status, trx.instant(`Error_UnableToReachServer`));
+        return friendlyStructure(res.status, trx.instant('Error_UnableToReachServer'));
 
       case 400: // Bad Request
       case 422: // Unprocessible entity
         if (error.error instanceof Blob) {
           // TODO: Need a better solution to handle blobs
-          return friendlyStructure(res.status, trx.instant(`Error_UnkownClientError`));
+          return friendlyStructure(res.status, trx.instant('Error_UnkownClientError'));
         } else {
           // These two status codes mean a friendly error is already coming from the server
           return friendlyStructure(res.status, res.error);
         }
 
       case 401:  // Unauthorized
-        return friendlyStructure(res.status, trx.instant(`Error_LoginSessionExpired`));
+        return friendlyStructure(res.status, trx.instant('Error_LoginSessionExpired'));
 
       case 403:  // Forbidden
-        return friendlyStructure(res.status, trx.instant(`Error_AccountDoesNotHaveSufficientPermissions`));
+        return friendlyStructure(res.status, trx.instant('Error_AccountDoesNotHaveSufficientPermissions'));
 
       case 404: // Not found
-        return friendlyStructure(res.status, trx.instant(`Error_RecordNotFound`));
+        return friendlyStructure(res.status, trx.instant('Error_RecordNotFound'));
 
       case 500:  // Internal Server Error
-        return friendlyStructure(res.status, trx.instant(`Error_UnhandledServerError`));
+        return friendlyStructure(res.status, trx.instant('Error_UnhandledServerError'));
 
       default:  // Any other HTTP error
-        return friendlyStructure(res.status, trx.instant(`Error_UnkownServerError`));
+        return friendlyStructure(res.status, trx.instant('Error_UnkownServerError'));
     }
 
   } else {
     console.error(error);
-    return friendlyStructure(null, trx.instant(`Error_UnkownClientError`));
+    return friendlyStructure(null, trx.instant('Error_UnkownClientError'));
   }
 }
 

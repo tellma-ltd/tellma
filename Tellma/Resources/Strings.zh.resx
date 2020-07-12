@@ -832,8 +832,11 @@
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>
   </data>
-  <data name="Error_BasicFieldsKeyword0ShouldComeEndOfPath" xml:space="preserve">
-    <value>关键字“{0}”表示所有基本字段，它们应当出现在选择路径的末端。</value>
+  <data name="Error_CannotAssignCanceledDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_CannotAssignPostedDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>无法停用自己的用户。</value>
@@ -841,8 +844,8 @@
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
     <value>因为这是已经在使用无法删除{0}记录。</value>
   </data>
-  <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
-    <value>无法删除有孩子的树节点。</value>
+  <data name="Error_CannotDeleteSystemTypes" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>您无法删除自己的用户。</value>
@@ -859,11 +862,14 @@
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>系统记录不能进行编辑。</value>
   </data>
-  <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
-    <value>该代码需要更新导入模式。</value>
+  <data name="Error_CannotSignCanceledDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
-  <data name="Error_Column0NotRecognizable" xml:space="preserve">
-    <value>列“{0}”不是可识别的。</value>
+  <data name="Error_CannotSignClosedDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
@@ -877,17 +883,29 @@
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
     <value>该日期不能在未来</value>
   </data>
+  <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
+    <value>定义“{0}”已包含数据。</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>该定义已被使用，并且不能被隐藏</value>
   </data>
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
     <value>此屏幕定义归档。</value>
   </data>
-  <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
-    <value>删除{0}不是从这个API的支持。</value>
+  <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
+    <value>{0} '{1}' 使用外币。</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>文档DefinitionId“{0}”未能找到。</value>
+  </data>
+  <data name="Error_DocumentIsNotCanceled" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_DocumentIsNotDraft" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_DocumentIsNotPosted" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>电子邮件没有被外部登录提供。</value>
@@ -895,20 +913,17 @@
   <data name="Error_EmptyHeadersNotAllowed" xml:space="preserve">
     <value>空头。</value>
   </data>
-  <data name="Error_EmptyImportFile" xml:space="preserve">
-    <value>导入的文件是空的。</value>
-  </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
     <value>从外部提供错误：{0}。</value>
   </data>
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
     <value>导入Excel文件包含多个工作表，请注明名称为其中一个“{0}”。</value>
   </data>
-  <data name="Error_FailedToConvertValue0ToType1" xml:space="preserve">
-    <value>无法转换值： '{0}' 到类型：{1}。</value>
-  </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>解析失败上传的文件，错误：{0}。</value>
+  </data>
+  <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>{0}字段是不是一个有效的E-mail地址</value>
@@ -922,23 +937,23 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>字段{0}必须至少{2}和在最大{1}个字符长。</value>
   </data>
-  <data name="Error_Field0OnType1IsNotANavigationField" xml:space="preserve">
-    <value>字段“{0}”上型“{1}”不是一个导航领域，因此它不能被随后在选择路径中的另一个字段。</value>
-  </data>
-  <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
-    <value>外键像“{0}”不能在选择参数中指定。</value>
-  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>导入失败，因为以下的原因：</value>
   </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
     <value>不兼容的帐户类型 '{0}' 和目的 '{1}'。</value>
   </data>
-  <data name="Error_InvalidLanguageId0" xml:space="preserve">
-    <value>无效的语言ID '{0}'。</value>
+  <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_IncompatibleUserRole" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>无效的登录尝试。如果你还没有确认您的电子邮件了，请检查您的电子邮件收件箱</value>
+  </data>
+  <data name="Error_IsCurrent0IsIncompatibleWithAccountType1" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>属性{0}必须在导入文件</value>
@@ -967,8 +982,35 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>标签“{0}”可匹配于类型{1}的倍数字段，可使用一个数字后缀来消除歧义，像这样“{0} 0.1”。</value>
   </data>
+  <data name="Error_Line0MustBeAuthorizedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_Line0MustBeCompletedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_Line0MustBeRequestedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineCannotBeSignedOnBehalOfUser0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_2" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_3" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
     <value>有些签名人失踪。</value>
+  </data>
+  <data name="Error_LinePostingDateIsRequired" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>错误加载外部登录信息。</value>
@@ -978,9 +1020,6 @@
   </data>
   <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
     <value>多于一个的{0}记录发现其中{1} = '{2}'。</value>
-  </data>
-  <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
-    <value>不能指定导航领域“{0}”中不包括它在扩大的说法太选择的说法。</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
     <value>新的附件必须包括文件的字节</value>
@@ -1003,9 +1042,6 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>只有新的附件可以包括文件的字节</value>
   </data>
-  <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
-    <value>解析API中不支持删除模式。</value>
-  </data>
   <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
     <value>属性{0}不上型存在{1}。</value>
   </data>
@@ -1021,20 +1057,59 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>中学语文不能是相同的主要语言。</value>
   </data>
+  <data name="Error_State0IsNotNegative" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_SystemTypesCannotBeDeleted" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>三元语言不能与主要语言相同。</value>
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>三元语言不能与第二语言相同。</value>
   </data>
-  <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
-    <value>{0}'{1}'用于一个或多个帐户</value>
+  <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
+    <value>'{1}' 中的帐户中使用{0} '{2}'</value>
+  </data>
+  <data name="Error_TheAccount0IsDeprecated" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3HavingIncompatibleEntryType4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithAgent4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithCenter4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithCurrency4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithResource4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccountClassification0IsNotLeaf" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>帐户“ {1}”中使用了帐户分类“ {0}”</value>
   </data>
-  <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
-    <value>量{0}的值{1}不匹配，即使两者在{2}</value>
+  <data name="Error_TheAccountClassificationHasAccount0WithNonZeroBalance" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAgent0HasNoUserId" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>量必须大于0。</value>
@@ -1042,23 +1117,62 @@
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>等效必须大于1。</value>
   </data>
-  <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
-    <value>该代码“{0}”不存在。</value>
-  </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>该代码“{0}”被复制。</value>
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>该代码已经被使用“{0}”。</value>
   </data>
+  <data name="Error_TheCommentIsMadeByAnotherUser0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContract0IsUsedIn12" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContract0IsUsedInAccount1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContractDefinition0IsNotCompatibleWithContract1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContractDefinitionIsUsedInAccountType0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>汇率货币“{0}”上日期{1}被复制。</value>
   </data>
-  <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
-    <value>货币 '{0}' 中使用的 '{1}'</value>
+  <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInDocument1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInResource1" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>货币应该比本位币不同。</value>
+  </data>
+  <data name="Error_TheDocumentDoesNotHaveAnyFinalizedLines" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentHascompletedLines" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsInCancelledState" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsInPostedState" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsPosted" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>
@@ -1066,11 +1180,14 @@
   <data name="Error_TheEmail0IsUsed" xml:space="preserve">
     <value>电子邮件已经被使用“{0}”。</value>
   </data>
-  <data name="Error_TheEmailCannotBeModified" xml:space="preserve">
-    <value>用户邮件不能在此处修改。</value>
-  </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>与ID的实体“{0}”被指定多次。</value>
+  </data>
+  <data name="Error_TheEntryCausesOffLimitBalance0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheField0IsIncompatible" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheField0IsReadOnly" xml:space="preserve">
     <value>{0}字段是只读的。</value>
@@ -1087,11 +1204,23 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>与ID的记录“{0}”没有被发现。也许它已经被删除，请重新整理。</value>
   </data>
+  <data name="Error_TheLineHasNoEntries" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
+    <value>{0}”在{1}使用： '{2}'</value>
+  </data>
+  <data name="Error_TheLookupDefinitionIsUsed" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
     <value>名称“{0}”被复制。</value>
   </data>
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>“{0}”已被使用的名称。</value>
+  </data>
+  <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>密码和确认密码不匹配。</value>
@@ -1099,8 +1228,8 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>目的字段是必需的，因为该帐户类型是“{0}”。</value>
   </data>
-  <data name="Error_TheResourceIsRequired" xml:space="preserve">
-    <value>资源字段是必需的。</value>
+  <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>角色“{0}”无效。</value>
@@ -1114,17 +1243,17 @@
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
     <value>序列号“{0}”已被使用。</value>
   </data>
-  <data name="Error_TheUser0IsInactive" xml:space="preserve">
-    <value>用户“{0}”不活跃。</value>
+  <data name="Error_TheTypeIsUsedInAccount0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
+    <value>单位“{0}”具有不兼容的类型，应该是类型{1}</value>
   </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>有效截止日期不能在未来。</value>
   </data>
   <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
     <value>值“{0}”不是有效的整数。</value>
-  </data>
-  <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
-    <value>值“{0}”是无效的{1}字段。</value>
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>用代码的视图“{0}”不被激活。</value>
@@ -1135,17 +1264,29 @@
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>借记卡和信用卡是由{0}不同。</value>
   </data>
+  <data name="Error_TransactionHasNullValue" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>未知导入模式 '{0}'，允许值是：{1}</value>
   </data>
+  <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
+    <value>行定义ID {0}不存在。</value>
+  </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
     <value>上传的文件是空的。</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>用户“{0}”已经接受了邀请。</value>
+  </data>
+  <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_UserCannotSignLine" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
     <value>值“{0}”字段为{1}不应超过一个字符</value>
@@ -1155,9 +1296,6 @@
   </data>
   <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
     <value>值 '{0}' 不是有效的{1}。有效的值的示例：{2}。</value>
-  </data>
-  <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
-    <value>值 '{0}' 是无效的{1}字段中，可接受的值是：{2}。</value>
   </data>
   <data name="Error_Value0NotSupportedForField1DidYouMean2" xml:space="preserve">
     <value>值 '{0}' 是无效的{1}字段，你的意思是 '{2}'？</value>

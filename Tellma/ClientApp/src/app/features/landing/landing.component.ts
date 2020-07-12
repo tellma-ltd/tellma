@@ -21,10 +21,10 @@ export class LandingComponent implements OnInit, OnDestroy {
       const errorId = +e.get('error');
       switch (errorId) {
         case 401:
-          this.error = `Error_LoginSessionExpired`;
+          this.error = 'Error_LoginSessionExpired';
           break;
         case 422:
-          this.error = `Error_UnableToValidateYourCredentials`;
+          this.error = 'Error_UnableToValidateYourCredentials';
           break;
         default:
           this.error = null;

@@ -123,10 +123,12 @@ SET NOCOUNT ON;
 	);
 
 	-- Unit in ResourceUnits must be of same type of Header unit or be of type Mass
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].Units[' + CAST(RU.[Index] AS NVARCHAR(255)) + '].UnitId',
-		N'Error_TheUnitHasIncompatibleUnitType'
+		N'Error_TheUnit0HasIncompatibleUnitTypeMustBeType1',
+		[dbo].[fn_Localize](URU.[Name], URU.[Name2], URU.[Name3]) AS [NameOfIncompatibleUnitName],
+		N'localize:Unit_' + UR.[UnitType] as [ExpectedType]
 	FROM @Entities R
 	JOIN dbo.Units UR ON R.[UnitId] = UR.[Id]
 	JOIN @ResourceUnits RU ON R.[Index] = RU.[HeaderIndex]

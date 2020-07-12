@@ -17,12 +17,13 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	-- cannot change functional currency if there are valueable documented with finanlized lines
+	-- cannot change functional currency if there are valueable documents with finanlized lines
 	IF dbo.fn_FunctionalCurrencyId() <> @FunctionalCurrencyId
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
     SELECT DISTINCT TOP (@Top)
 		'FunctionalCurrencyId',
-		N'Error_Document0HasForeignCurrency',
+		N'Error_Document01HasForeignCurrency',
+		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]),
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N]
 	FROM dbo.DocumentDefinitions DD
 	JOIN dbo.Documents D ON D.[DefinitionId] = DD.[Id]

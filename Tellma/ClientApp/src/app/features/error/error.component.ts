@@ -31,28 +31,28 @@ export class ErrorComponent implements OnInit {
       switch (error) {
         case 'unauthorized':
           this._title = 'Unauthorized';
-          this._generalErrorMessage = `Error_UnauthorizedForCompany`;
+          this._generalErrorMessage = 'Error_UnauthorizedForCompany';
           break;
 
         case 'loading-company-settings':
-          this._title = `Error_LoadingCompanySettings`;
+          this._title = 'Error_LoadingCompanySettings';
           break;
 
         case 'admin-unauthorized':
           this._title = 'Unauthorized';
-          this._generalErrorMessage = `Error_UnauthorizedForAdmin`;
+          this._generalErrorMessage = 'Error_UnauthorizedForAdmin';
           break;
 
         case 'loading-admin-settings':
-          this._title = `Error_LoadingAdminSettings`;
+          this._title = 'Error_LoadingAdminSettings';
           break;
 
         case 'loading-global-settings':
-          this._title = `Error_LoadingGlobalSettings`;
+          this._title = 'Error_LoadingGlobalSettings';
           break;
 
         case 'page-not-found':
-          this._title = `Error_PageNotFound`;
+          this._title = 'Error_PageNotFound';
           this._generalErrorMessage = `Error_PageNotFoundMessage`;
           break;
 

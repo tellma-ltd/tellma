@@ -1518,7 +1518,17 @@ return the entities
                 throw new FormatException(_localizer["Error_OnlyCsvOrExcelAreSupported"]);
             }
 
-            return extracter.Extract(stream).ToList();
+            // Extrat and return
+            try
+            {
+                return extracter.Extract(stream).ToList();
+            } 
+            catch (Exception ex)
+            {
+                // Report any errors during extraction
+                string msg = _localizer["Error_FailedToParseFileError0", ex.Message];
+                throw new BadRequestException(msg);
+            }
         }
 
         private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)

@@ -832,8 +832,11 @@
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
   </data>
-  <data name="Error_BasicFieldsKeyword0ShouldComeEndOfPath" xml:space="preserve">
-    <value>በ ቁልፍ ቃል »{0} 'ሁሉ መሠረታዊ መስኮች ይወክላሉ; እና የተመረጡ መንገድ መጨረሻ ላይ ይመጣል ይገባል.</value>
+  <data name="Error_CannotAssignCanceledDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_CannotAssignPostedDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>በራስዎ ተጠቃሚ አቦዝን አይችልም.</value>
@@ -841,8 +844,8 @@
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
     <value>ይህም በጥቅም ላይ አስቀድሞ ስለሆነ አንድ {0} መዝገብ መሰረዝ አይቻልም.</value>
   </data>
-  <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
-    <value>ልጆች ጋር አንድ ዛፍ አንጓ መሰረዝ አይቻልም.</value>
+  <data name="Error_CannotDeleteSystemTypes" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>በራስዎ ተጠቃሚ መሰረዝ አይችሉም.</value>
@@ -859,11 +862,14 @@
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>የስርዓት መዝገብ አርትዖት ሊደረግበት አይችልም.</value>
   </data>
-  <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
-    <value>ኮድ የዝማኔ ማስመጣት ሁነታ ያስፈልጋል.</value>
+  <data name="Error_CannotSignCanceledDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
-  <data name="Error_Column0NotRecognizable" xml:space="preserve">
-    <value>አምድ «{0}» የሚታወቅ አይደለም.</value>
+  <data name="Error_CannotSignClosedDocuments" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ ላይ ሳለ አንድ ስህተት ተከስቷል.</value>
@@ -877,17 +883,29 @@
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
     <value>ቀን ወደፊት ላይ መሆን አይችልም</value>
   </data>
+  <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
+    <value>በ ትርጉም «{0}» አስቀድሞ ውሂብ ይዟል.</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
   </data>
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
     <value>ይህ ማያ ገጽ ትርጉም በማህደር ነው.</value>
   </data>
-  <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
-    <value>{0} መሰረዝ ይሂ ኤፒአይ አይደገፍም።</value>
+  <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
+    <value>በ {0} «{1}» የውጭ ገንዘቦች ይጠቀማል.</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>የሰነድ DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
+  </data>
+  <data name="Error_DocumentIsNotCanceled" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_DocumentIsNotDraft" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_DocumentIsNotPosted" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>ኢሜሉ በውጫዊ መለያው አልቀረበም ፡፡</value>
@@ -895,20 +913,17 @@
   <data name="Error_EmptyHeadersNotAllowed" xml:space="preserve">
     <value>በዶ ራስጌ.</value>
   </data>
-  <data name="Error_EmptyImportFile" xml:space="preserve">
-    <value>ከውጪ ፋይል ባዶ ነው.</value>
-  </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
     <value>ከውጫዊ አቅራቢ ስህተት: {0}.</value>
   </data>
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
     <value>ከውጪ የ Excel ፋይል በርካታ ወረቀቶች, «{0}» ስም ጋር ከእነርሱ አንዱ ምልክት ያድርጉ ይዟል.</value>
   </data>
-  <data name="Error_FailedToConvertValue0ToType1" xml:space="preserve">
-    <value>ልወጣ እሴት አልተሳካም: «{0}» አይነት: {1}.</value>
-  </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>የተሰቀለ ፋይል, ስህተት መተንተን አልተሳካም: {0}.</value>
+  </data>
+  <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>በ {0} መስክ ትክክለኛ ኢ-ሜል አድራሻ አይደለም</value>
@@ -922,23 +937,23 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>መስኩ {0} ቢያንስ {2} እና ቢበዛ {1} ቁምፊዎች መሆን አለበት።</value>
   </data>
-  <data name="Error_Field0OnType1IsNotANavigationField" xml:space="preserve">
-    <value>አይነት ላይ የመስክ «{0} '' {1}» ስለዚህ ይህ ይምረጡ መንገድ ላይ ሌላ መስክ ተከትሎ አይችልም, የዳሰሳ መስክ አይደለም.</value>
-  </data>
-  <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
-    <value>የውጭ ቁልፎች «{0}» ወደ ይምረጡ ክርክር ውስጥ ሊገለጹ አይችሉም እፈልጋለሁ.</value>
-  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>አስመጣ ምክንያት የሚከተለውን ምክንያት አልተሳካም:</value>
   </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
     <value>ያልተጣጣመ የመለያ አይነት «{0}» እና ዓላማ «{1}».</value>
   </data>
-  <data name="Error_InvalidLanguageId0" xml:space="preserve">
-    <value>ልክ ያልሆነ ቋንቋ መታወቂያ «{0}».</value>
+  <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_IncompatibleUserRole" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>በመለያ-ውስጥ ልክ ያልኾነ ሙከራ. በእርስዎ ኢሜይል አረጋግጧል አይደለም ከሆነ እስካሁን የኢሜይል ገቢ መልዕክት ሳጥን ምልክት ያድርጉ</value>
+  </data>
+  <data name="Error_IsCurrent0IsIncompatibleWithAccountType1" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} በመጣው ፋይል ውስጥ መሆን አለበት</value>
@@ -967,8 +982,35 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>መለያ '{0}' '{0} .1' አይነት {1} ላይ ብዜት መስኮች, ይህ እንደ disambiguate አንድ ቁጥራዊ postfix ይጠቀሙ ጋር ይዛመዳል.</value>
   </data>
+  <data name="Error_Line0MustBeAuthorizedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_Line0MustBeCompletedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_Line0MustBeRequestedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineCannotBeSignedOnBehalOfUser0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_2" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_3" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_LineIsAlready_minus_4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
     <value>አንዳንድ ፊርማዎች ጠፍተዋል</value>
+  </data>
+  <data name="Error_LinePostingDateIsRequired" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>የውጫዊ መግቢያ መረጃ መጫን ላይ ስህተት።</value>
@@ -978,9 +1020,6 @@
   </data>
   <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
     <value>ከአንድ በላይ {0} መዝገቦች አገኘ የት {1} = «{2}».</value>
-  </data>
-  <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
-    <value>በጣም ወደ ለማስፋፋት ክርክር ውስጥ ጨምሮ ያለ ይምረጡ ክርክር ውስጥ የአሰሳ መስክ «{0}» መጥቀስ አይቻልም.</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
     <value>አዲስ አባሪዎችን ፋይል ባይቶች ማካተት አለበት</value>
@@ -1003,9 +1042,6 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>አዲስ ብቻ አባሪዎችን ፋይል ባይቶች ሊያካትት ይችላል</value>
   </data>
-  <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
-    <value>የስረዛ ሁነታን መተንተን ኤፒአይ አይደገፍም።</value>
-  </data>
   <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
     <value>ንብረት {0} አይነት {1} ላይ የለም.</value>
   </data>
@@ -1021,20 +1057,59 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>ሁለተኛ ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
+  <data name="Error_State0IsNotNegative" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_SystemTypesCannotBeDeleted" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Ternary ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>Ternary ቋንቋ ሁለተኛ ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
-  <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
-    <value>በ {0} «{1} 'አንድ ወይም ተጨማሪ መለያዎች ውስጥ ጥቅም ላይ ውሏል</value>
+  <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
+    <value>በ {0} «{1}» መለያ ላይ ውሏል «{2}»</value>
+  </data>
+  <data name="Error_TheAccount0IsDeprecated" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3HavingIncompatibleEntryType4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithAgent4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithCenter4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithCurrency4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedIn12LineDefinition3WithResource4" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAccountClassification0IsNotLeaf" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ ምደባ «{0}» መለያ ላይ ውሏል «{1}»</value>
   </data>
-  <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
-    <value>መጠን {0} በሁለቱም ውስጥ እንኳ ዋጋ {1} አይዛመድም {2}</value>
+  <data name="Error_TheAccountClassificationHasAccount0WithNonZeroBalance" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheAgent0HasNoUserId" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>መጠን 0 የበለጠ መሆን አለበት.</value>
@@ -1042,23 +1117,62 @@
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>ተመጣጣኝ 1 የበለጠ መሆን አለበት.</value>
   </data>
-  <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
-    <value>ኮድ «{0}» የለም.</value>
-  </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
+  <data name="Error_TheCommentIsMadeByAnotherUser0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContract0IsUsedIn12" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContract0IsUsedInAccount1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContractDefinition0IsNotCompatibleWithContract1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheContractDefinitionIsUsedInAccountType0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>ቀን {1} ላይ የገንዘብ ምንዛሪ የምንዛሬ ተመን «{0}» የተባዙ ነው.</value>
   </data>
-  <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
-    <value>ምንዛሬ ውስጥ ጥቅም ላይ «{0} '' {1}»</value>
+  <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInDocument1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInResource1" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>ምንዛሬ ወደ ተግባራዊ ምንዛሪ የተለየ መሆን አለበት.</value>
+  </data>
+  <data name="Error_TheDocumentDoesNotHaveAnyFinalizedLines" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentHascompletedLines" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsInCancelledState" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsInPostedState" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheDocumentIsPosted" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>በ ኢሜይል «{0}» የተባዙ ነው.</value>
@@ -1066,11 +1180,14 @@
   <data name="Error_TheEmail0IsUsed" xml:space="preserve">
     <value>በ ኢሜይል «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheEmailCannotBeModified" xml:space="preserve">
-    <value>የተጠቃሚው ኢሜይል ከዚህ ሊቀየሩ አይችሉም.</value>
-  </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
+  </data>
+  <data name="Error_TheEntryCausesOffLimitBalance0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheField0IsIncompatible" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheField0IsReadOnly" xml:space="preserve">
     <value>የ {0} መስኩ ተነባቢ-ብቻ ነው።</value>
@@ -1087,11 +1204,23 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>መታወቂያ ጋር ከመዝገብ «{0}» አልተገኘም. ምናልባት ቀደም ተሰርዟል, አድሰው ይሞክሩ.</value>
   </data>
+  <data name="Error_TheLineHasNoEntries" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
+    <value>{0} «{1} ውስጥ ጥቅም ላይ ነው:« {2} »</value>
+  </data>
+  <data name="Error_TheLookupDefinitionIsUsed" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
     <value>ስም «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>ስም «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
@@ -1099,8 +1228,8 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>የመለያ አይነት ነው ምክንያቱም ዓላማ መስክ «{0}» ያስፈልጋል.</value>
   </data>
-  <data name="Error_TheResourceIsRequired" xml:space="preserve">
-    <value>የ መገልገያ መስክ ያስፈልጋል.</value>
+  <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -1112,19 +1241,19 @@
     <value>ተከታታይ ቁጥር «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
-    <value>ተከታታይ ቁጥር «{0}» አስቀድሞ ጥቅም ላይ ነው.</value>
+    <value>ተከታታይ ቁጥር «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheUser0IsInactive" xml:space="preserve">
-    <value>ተጠቃሚው «{0} 'ንቁ አይደለም.</value>
+  <data name="Error_TheTypeIsUsedInAccount0" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
+    <value>ክፍሉም «{0}» ያልተጣጣመ አይነት አለው, ይህ አይነት መሆን አለበት {1}</value>
   </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>ልክ የሚሰራው ለወደፊቱ ሊሆን አይችልም</value>
   </data>
   <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
     <value>ዋጋ «{0}» ትክክለኛ ኢንቲጀር አይደለም.</value>
-  </data>
-  <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
-    <value>ዋጋ «{0}» በ {1} መስክ ትክክል አይደለም.</value>
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>ኮድ ጋር ያለው አመለካከት «{0}» ገቢር አይደለም.</value>
@@ -1135,17 +1264,29 @@
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>ዴቢት እና ዱቤ በ {0} የተለያዩ ናቸው</value>
   </data>
+  <data name="Error_TransactionHasNullValue" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>አንድ ያልታወቀ ስህተት ውጫዊ አቅራቢ በመጠቀም ውስጥ ለመግባት ሲሞከር ተከስቷል.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>ያልታወቀ ማስመጣት ሁነታ «{0}», የሚፈቀደው እሴቶች ናቸው: {1}</value>
   </data>
+  <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
+    <value>መስመር ፍቺ መታወቂያ {0} የለም.</value>
+  </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
     <value>የተሰቀለ ፋይል ባዶ ነበር.</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>ተጠቃሚው «{0} 'አስቀድመው ግብዣ ተቀብለውታል.</value>
+  </data>
+  <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
+    <value>#VALUE!</value>
+  </data>
+  <data name="Error_UserCannotSignLine" xml:space="preserve">
+    <value>#VALUE!</value>
   </data>
   <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
     <value>መስክ {1} ለ እሴት «{0} 'አንድ ቁምፊ መብለጥ የለበትም</value>
@@ -1155,9 +1296,6 @@
   </data>
   <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
     <value>እሴት «{0}» የሚሰራ {1} አይደለም. የሚሰራ እሴት ምሳሌ: {2}.</value>
-  </data>
-  <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
-    <value>የ {{0} እሴት ለ {1} መስክ ልክ ያልሆነ ነው ፣ ተቀባይነት ያላቸው እሴቶች የሚከተሉት ናቸው {2}።</value>
   </data>
   <data name="Error_Value0NotSupportedForField1DidYouMean2" xml:space="preserve">
     <value>እሴት «{0}» እርስዎ «{2}» ማለት ነበር, በ {1} መስክ ልክ ያልሆነ ነው?</value>

@@ -1159,7 +1159,7 @@ namespace Tellma.Controllers
                     {
                         var serial = duplicateSerialNumbers[doc];
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                            _localizer["Error_DuplicateSerial0", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
+                            _localizer["Error_TheSerialNumber0IsDuplicated", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
                     }
                 }
 

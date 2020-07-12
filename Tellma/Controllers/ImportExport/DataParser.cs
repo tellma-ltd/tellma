@@ -131,8 +131,7 @@ namespace Tellma.Controllers.ImportExport
                     }
                     else
                     {
-                        // More than match in the db list => error
-                        
+                        // More than 1 match in the db list => error                        
                         if (matches.Skip(1).Any()) // given the earlier check, this can only mean more than one
                         {
                             var typeDisplay = parentIdProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
@@ -345,7 +344,6 @@ namespace Tellma.Controllers.ImportExport
                         }
                         else
                         {
-                            
                             if (matches.Skip(1).Any()) // More than one match
                             {
                                 var typeDisplay = fkProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();

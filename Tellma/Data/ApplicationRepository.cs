@@ -2271,7 +2271,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Lookups__Delete(IEnumerable<int> ids)
+        public async Task Lookups__Delete(int definitionId, IEnumerable<int> ids)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Lookups__Delete));
 
@@ -2285,6 +2285,7 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(idsTvp);
 
             // Command

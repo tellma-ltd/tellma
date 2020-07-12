@@ -197,7 +197,7 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.Lookups__Delete(ids);
+                await _repo.Lookups__Delete(DefinitionId.Value, ids);
             }
             catch (ForeignKeyViolationException)
             {
