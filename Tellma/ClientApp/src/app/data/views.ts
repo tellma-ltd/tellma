@@ -11,7 +11,7 @@ export interface ActionInfo {
     criteria: boolean;
 }
 
-export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' |
+export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' |
     'ResendInvitationEmail' | 'ResetPassword' | 'State' | 'All';
 
 function li(name: Action, criteria = true) {
@@ -24,7 +24,6 @@ export const ACTIONS: { [action: string]: string } = {
     'Update': 'Permission_Update',
     'Delete': 'Permission_Delete',
     'IsActive': 'Permission_IsActive',
-    'IsDeprecated': 'Permission_IsDeprecated',
     'ResendInvitationEmail': 'ResendInvitationEmail',
     'State': 'Permission_State',
     'ResetPassword': 'ResetPassword',
@@ -118,7 +117,7 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         update: true,
         delete: true,
         actions: [
-            li('IsDeprecated')
+            li('IsActive')
         ]
     },
     'ifrs-concepts': {

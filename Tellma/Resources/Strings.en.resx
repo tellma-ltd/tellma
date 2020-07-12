@@ -88,9 +88,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
-  <data name="Account_IsDeprecated" xml:space="preserve">
-    <value>Is Deprecated</value>
-  </data>
   <data name="Account_NotedContractDefinition" xml:space="preserve">
     <value>Noted Contract Definition</value>
   </data>
@@ -1000,6 +997,9 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>
   </data>
+  <data name="Error_TheAccount0IsInactive" xml:space="preserve">
+    <value>The account '{0}' is inactive</value>
+  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>The account classification '{0}' is used in account '{1}'</value>
   </data>
@@ -1629,9 +1629,6 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>Activate/Deactivate</value>
-  </data>
-  <data name="Permission_IsDeprecated" xml:space="preserve">
-    <value>Activate/Deprecate</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>Mask</value>

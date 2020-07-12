@@ -1,10 +1,10 @@
 <t-master collection="Account" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'Accounts' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Code,IsDeprecated" selectForTiles="Code,Name,Name2,Name3"
+  selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3"
   [multiselectActions]="[
-              { template: activate, action: onActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
-              { template: deprecate, action: onDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
+              { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+              { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
@@ -40,7 +40,7 @@
 
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
-<ng-template #deprecate> {{ 'Deprecate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
 
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

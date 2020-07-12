@@ -87,7 +87,7 @@
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
-                            Li("IsDeprecated")
+                            Li("IsActive")
                         }
                     },
                     new ViewInfo {

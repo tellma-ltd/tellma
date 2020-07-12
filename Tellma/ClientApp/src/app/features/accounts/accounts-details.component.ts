@@ -68,7 +68,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  public onDeprecate = (model: Account): void => {
+  public onDeactivate = (model: Account): void => {
     if (!!model && !!model.Id) {
       this.accountsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
@@ -76,12 +76,12 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  public showActivate = (model: Account) => !!model && model.IsDeprecated;
-  public showDeprecate = (model: Account) => !!model && !model.IsDeprecated;
+  public showActivate = (model: Account) => !!model && !model.IsActive;
+  public showDeactivate = (model: Account) => !!model && model.IsActive;
 
-  public canActivateDeprecateItem = (model: Account) => this.ws.canDo(this.view, 'IsDeprecated', model.Id);
+  public canActivateDeactivateItem = (model: Account) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
-  public activateDeprecateTooltip = (model: Account) => this.canActivateDeprecateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Account) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   // CenterId

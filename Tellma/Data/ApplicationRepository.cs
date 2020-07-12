@@ -3219,14 +3219,14 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task Accounts__Deprecate(List<int> ids, bool isDeprecated)
+        public async Task Accounts__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts__Deprecate));
+            using var _ = _instrumentation.Block("Repo." + nameof(Accounts__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            var isDeprecatedParam = new SqlParameter("@IsDeprecated", isDeprecated);
+            var isActivatedParam = new SqlParameter("@IsActive", isActive);
 
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -3236,11 +3236,11 @@ namespace Tellma.Data
             };
 
             cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@IsDeprecated", isDeprecated);
+            cmd.Parameters.Add("@IsActive", isActive);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Accounts__Deprecate)}]";
+            cmd.CommandText = $"[dal].[{nameof(Accounts__Activate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();

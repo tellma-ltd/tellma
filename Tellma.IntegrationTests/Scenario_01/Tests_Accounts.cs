@@ -245,7 +245,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active account returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(View, "IsDeprecated", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<Account>("Account_Payables");
@@ -264,7 +264,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.True(responseDto.IsDeprecated, "The account was not deprecated");
+            Assert.False(responseDto.IsActive, "The account was not deactivated");
         }
 
         [Fact(DisplayName = "11 Activating an inactive account returns a 200 OK active entity")]
@@ -287,7 +287,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.False(responseDto.IsDeprecated, "The account was not activated");
+            Assert.True(responseDto.IsActive, "The account was not activated");
         }
 
         [Fact(DisplayName = "12 Using Select argument works as expected")]

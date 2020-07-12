@@ -65,10 +65,6 @@ namespace Tellma.Entities
 
     public class Account : AccountForSave
     {
-        [Display(Name = "Account_IsDeprecated")]
-        [AlwaysAccessible]
-        public bool? IsDeprecated { get; set; }
-
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 

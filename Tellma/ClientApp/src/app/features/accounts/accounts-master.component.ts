@@ -50,7 +50,7 @@ export class AccountsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public onDeprecate = (ids: (number | string)[]): Observable<any> => {
+  public onDeactivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.accountsApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
@@ -59,8 +59,8 @@ export class AccountsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsDeprecated', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsActive', null);
 
-  public activateDeprecateTooltip = (ids: (number | string)[]) => this.canActivateDeprecateItem(ids) ? '' :
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

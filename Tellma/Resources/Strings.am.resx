@@ -88,9 +88,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
-  <data name="Account_IsDeprecated" xml:space="preserve">
-    <value>ቀንሷል</value>
-  </data>
   <data name="Account_NotedContractDefinition" xml:space="preserve">
     <value>እንደተጠቀሰው የኮንትራት ፍቺ</value>
   </data>
@@ -1075,8 +1072,8 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>በ {0} «{1}» መለያ ላይ ውሏል «{2}»</value>
   </data>
-  <data name="Error_TheAccount0IsDeprecated" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_TheAccount0IsInactive" xml:space="preserve">
+    <value>መለያው «{0} 'ንቁ አይደለም</value>
   </data>
   <data name="Error_TheAccount0IsUsedIn12" xml:space="preserve">
     <value>#VALUE!</value>
@@ -1812,9 +1809,6 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>አንቃ / አቦዝንን</value>
-  </data>
-  <data name="Permission_IsDeprecated" xml:space="preserve">
-    <value>አንቃ / አለመቀበልን</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>ሽፉን</value>

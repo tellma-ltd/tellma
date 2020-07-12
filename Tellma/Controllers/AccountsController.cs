@@ -40,12 +40,12 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<Account>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Account>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deprecate(ids: ids, args);
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             }, _logger);
@@ -195,22 +195,22 @@ namespace Tellma.Controllers
 
         public Task<(List<Account>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
-            return SetIsDeprecated(ids, args, isDeprecated: false);
+            return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Account>, Extras)> Deprecate(List<int> ids, ActionArguments args)
+        public Task<(List<Account>, Extras)> Deactivate(List<int> ids, ActionArguments args)
         {
-            return SetIsDeprecated(ids, args, isDeprecated: true);
+            return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Account>, Extras)> SetIsDeprecated(List<int> ids, ActionArguments args, bool isDeprecated)
+        private async Task<(List<Account>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsDeprecated", ids);
+            await CheckActionPermissions("IsActive", ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.Accounts__Deprecate(ids, isDeprecated);
+            await _repo.Accounts__Activate(ids, isActive);
 
             if (args.ReturnEntities ?? false)
             {

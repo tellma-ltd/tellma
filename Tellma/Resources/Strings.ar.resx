@@ -88,9 +88,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
-  <data name="Account_IsDeprecated" xml:space="preserve">
-    <value>مؤرشف</value>
-  </data>
   <data name="Account_NotedContractDefinition" xml:space="preserve">
     <value>تعريف العقد المعني</value>
   </data>
@@ -1000,6 +997,9 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان '{1}' من نوع {0} مستخدم حاليا في الحساب {2}</value>
   </data>
+  <data name="Error_TheAccount0IsInactive" xml:space="preserve">
+    <value>الحساب ({0}) غير منشط</value>
+  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1}).</value>
   </data>
@@ -1626,9 +1626,6 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>تنشيط - إيقاف النشاط</value>
-  </data>
-  <data name="Permission_IsDeprecated" xml:space="preserve">
-    <value>تنشيط - أرشفة</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>حجاب</value>

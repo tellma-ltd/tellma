@@ -88,9 +88,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
   </data>
-  <data name="Account_IsDeprecated" xml:space="preserve">
-    <value>已弃用</value>
-  </data>
   <data name="Account_NotedContractDefinition" xml:space="preserve">
     <value>注意合同的定义</value>
   </data>
@@ -1075,8 +1072,8 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>'{1}' 中的帐户中使用{0} '{2}'</value>
   </data>
-  <data name="Error_TheAccount0IsDeprecated" xml:space="preserve">
-    <value>#VALUE!</value>
+  <data name="Error_TheAccount0IsInactive" xml:space="preserve">
+    <value>帐户“{0}”是不活动的</value>
   </data>
   <data name="Error_TheAccount0IsUsedIn12" xml:space="preserve">
     <value>#VALUE!</value>
@@ -1812,9 +1809,6 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>激活/停用</value>
-  </data>
-  <data name="Permission_IsDeprecated" xml:space="preserve">
-    <value>激活/弃用</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>面具</value>

@@ -24,7 +24,6 @@ export interface AccountForSave extends EntityWithKey {
 }
 
 export interface Account extends AccountForSave {
-    IsDeprecated?: boolean;
     IsActive?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
@@ -58,8 +57,7 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
             apiEndpoint: 'accounts',
             masterScreenUrl: 'accounts',
             orderby: () => ['Code'].concat(ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]]),
-            inactiveFilter: 'IsDeprecated eq false',
-            includeInactveLabel: () => trx.instant('IncludeDeprecated'),
+            inactiveFilter: 'IsActive eq true',
             format: (item: Account) => format(item, ws),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -102,7 +100,7 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                     format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Contracts[defId], 'TitlePlural')
                 },
                 NotedContractDefinition: { control: 'navigation', label: () => trx.instant('Account_NotedContractDefinition'), type: 'ContractDefinition', foreignKeyName: 'NotedContractDefinitionId' },
-                IsDeprecated: { control: 'boolean', label: () => trx.instant('Account_IsDeprecated') },
+                IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
                 ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
