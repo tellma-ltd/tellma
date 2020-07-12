@@ -4,7 +4,7 @@
 (2, N'BodyColor', N'Body Color', N'Body Colors', N'palette', N'Administration',3),
 (3, N'VehicleMake', N'Vehicle Make', N'Vehicle Makes', N'car', N'Administration',4),
 (4, N'SteelThickness', N'Thickness', N'Thicknesses', N'ruler', N'Administration',5),
-(5, N'PapreOrigin', N'Paper Origin', N'Paper Origins', N'map', N'Administration',6),
+(5, N'PaperOrigin', N'Paper Origin', N'Paper Origins', N'map', N'Administration',6),
 (6, N'PaperGroup', N'Paper Group', N'Paper Groups', N'copy', N'Administration',7),
 (7, N'PaperType', N'Paper Type', N'Paper Types', N'scroll', N'Administration',8),
 (8, N'GrainClassification', N'Grain Group', N'Grain Groups', N'tree', N'Administration',9),
@@ -29,7 +29,7 @@ DECLARE @OperatingSystemLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE 
 DECLARE @BodyColorLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'BodyColor');
 DECLARE @VehicleMakeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'VehicleMake');
 DECLARE @SteelThicknessLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'SteelThickness');
-DECLARE @PapreOriginLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PapreOrigin');
+DECLARE @PaperOriginLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperOrigin');
 DECLARE @PaperGroupLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperGroup');
 DECLARE @PaperTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperType');
 DECLARE @GrainClassificationLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'GrainClassification');

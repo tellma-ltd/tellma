@@ -107,7 +107,7 @@ SELECT 9922,99,	N'Read',	NULL,				N'lookups/' + CAST(@OperatingSystemLKD AS NVAR
 SELECT 9923,99,	N'Read',	NULL,				N'lookups/' + CAST(@BodyColorLKD AS NVARCHAR(100)) UNION
 SELECT 9924,99,	N'Read',	NULL,				N'lookups/' + CAST(@VehicleMakeLKD AS NVARCHAR(100)) UNION
 SELECT 9925,99,	N'Read',	NULL,				N'lookups/' + CAST(@SteelThicknessLKD AS NVARCHAR(100)) UNION
-SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PapreOriginLKD AS NVARCHAR(100)) UNION
+SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperOriginLKD AS NVARCHAR(100)) UNION
 SELECT 9927,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperGroupLKD AS NVARCHAR(100)) UNION
 SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(100)) UNION
 SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION

@@ -65,8 +65,6 @@
 (1205,12, N'1205',N'Other current financial assets', N'أصول مالية متداولة أخرى',@OtherCurrentFinancialAssets),
 (120501,1205, N'120501',N'Staff Debtors', N'المدينين الموظفين',@LoansExtension),
 (120502,1205, N'120502',N'Sundry debtors', N'المدينين المتنوعة',@LoansExtension),
-(120503,1205, N'120503',N'Collection Guarantee', N'جمع الضمان',@CollectionGuaranteeExtension),
-(120504,1205, N'120504',N'Dishonoured Guarantee', N'المرتجعة ضمان',@DishonouredGuaranteeExtension),
 (1206,12, N'1206',N'Other current non-financial assets', N'أصول غير مالية متداولة أخرى',@OtherCurrentNonfinancialAssets),
 (1207,12, N'1207',N'Cash and cash equivalents', N'النقد والنقد المعادل',@CashAndCashEquivalents),
 (120701,1207, N'120701',N'Cash', N'نقد',@Cash),
@@ -161,8 +159,10 @@
 (4307,43, N'4307',N'Tax expense other than income tax expense', N'مصروف ضريبة غير مصروف ضريبة الدخل',@TaxExpenseOtherThanIncomeTaxExpense),
 (4399,43, N'4399',N'Other expenses', N'مصاريف أخرى',@OtherExpenseByNature),
 (44,4, N'44',N'Other gains (losses)', N'أرباح (خسائر) الأخرى',@OtherGainsLosses),
-(4401,44, N'4401',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainLossOnDisposalOfPropertyPlantAndEquipmentExtension),
-(4402,44, N'4402',N'Gain (loss) on foreign exchange', N'الربح (الخسارة) على الصرف الأجنبي',@GainLossOnForeignExchangeExtension),
+(4402,44, N'4402',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
+(4403,44, N'4403',N'Gains (losses) on disposals of investment properties', N'الأرباح (الخسائر) من عمليات التصرف بالعقارات الاستثمارية',@GainsLossesOnDisposalsOfInvestmentProperties),
+(4404,44, N'4404',N'The gains (losses) on disposals of investments.', N'الأرباح (الخسائر) من التصرف بالاستثمارات',@GainsLossesOnDisposalsOfInvestments),
+(4405,44, N'4405',N'Gain (loss) on foreign exchange', N'الربح (الخسارة) على الصرف الأجنبي',@GainLossOnForeignExchangeExtension),
 (5,NULL, N'5',N'Other profit (loss)', N'الربح الآخر (خسارة)',NULL),
 (51,5, N'51',N'Other profit (loss) from continuing operation', N'الربح الآخر (الخسارة) من استمرار العملية',NULL),
 (5101,51, N'5101',N'Gains (losses) on net monetary position', N'الأرباح (الخسائر) من صافي المركز المالي',@GainsLossesOnNetMonetaryPosition),
@@ -176,8 +176,36 @@
 (5109,51, N'5109',N'Cumulative gain (loss) previously recognised in other comprehensive income arising from reclassifica', N'الأرباح (الخسائر) التراكمية المعترف بها سابقا في الدخل الشامل الآخر والناجمة عن إعادة تصنيف الأصول ا',@CumulativeGainLossPreviouslyRecognisedInOtherComprehensiveIncomeArisingFromReclassificationOfFinancialAssetsOutOfFairValueThrou),
 (5110,51, N'5110',N'Hedging gains (losses) for hedge of group of items with offsetting risk positions', N'أرباح (خسائر) التحوط فيما يخص التحوط لمجموعة من البنود التي يكون لها مراكز مخاطر متعادلة',@HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions),
 (52,5, N'52',N'Tax income (expense)', N'دخل (مصروف) الضريبة',@IncomeTaxExpenseContinuingOperations),
-(53,5, N'53',N'Profit (loss) from discontinued operations', N'الربح (الخسارة) من العمليات المتوقفة',@ProfitLossFromDiscontinuedOperations)
-
+(53,5, N'53',N'Profit (loss) from discontinued operations', N'الربح (الخسارة) من العمليات المتوقفة',@ProfitLossFromDiscontinuedOperations),
+(6,NULL, N'6',N'Other comprehensive income [abstract]', N'دخل شامل آخر [ملخص]',@OtherComprehensiveIncome),
+(61,6, N'61',N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax', N'مكونات الدخل الشامل الآخر التي لن يعاد تصنيفها إلى الربح أو الخسارة، قبل الضريبة [ملخص]',@ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax),
+(6101,61, N'6101',N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) من الاستثمارات في أدوات حقوق الملكية',@OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments),
+(6102,61, N'6102',N'Other comprehensive income, before tax, gains (losses) on revaluation', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) الناشئة عن التحويل',@OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation),
+(6103,61, N'6103',N'Other comprehensive income, before tax, gains (losses) on remeasurements of defined benefit plans', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) من إعادة قياس خطط المنافع المحددة',@OtherComprehensiveIncomeBeforeTaxGainsLossesOnRemeasurementsOfDefinedBenefitPlans),
+(6104,61, N'6104',N'Other comprehensive income, before tax, change in fair value of financial liability attributable to ', N'دخل شامل آخر، قبل الضريبة، التغير في القيمة العادلة للالتزام المالي المنسوب إلى التغير في مخاطر ائتم',@OtherComprehensiveIncomeBeforeTaxChangeInFairValueOfFinancialLiabilityAttributableToChangeInCreditRiskOfLiability),
+(6105,61, N'6105',N'Other comprehensive income, before tax, gains (losses) on hedging instruments that hedge investments', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) من أدوات التحوط التي تحوط للاستثمارات في أدوات حقوق الم',@OtherComprehensiveIncomeBeforeTaxGainsLossesOnHedgingInstrumentsThatHedgeInvestmentsInEquityInstruments),
+(6106,61, N'6106',N'Other comprehensive income, before tax, insurance finance income (expenses) from insurance contracts', N'',@OtherComprehensiveIncomeBeforeTaxInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillNotB),
+(6107,61, N'6107',N'Share of other comprehensive income of associates and joint ventures accounted for using equity meth', N'حصة الدخل الشامل الآخر للمنشآت الزميلة والمشاريع المشتركة التي يتم محاسبتها باستخدام طريقة حقوق المل',@ShareOfOtherComprehensiveIncomeOfAssociatesAndJointVenturesAccountedForUsingEquityMethodThatWillNotBeReclassifiedToProfitOrLoss),
+(62,6, N'62',N'Components of other comprehensive income that will be reclassified to profit or loss, before tax [ab', N'مكونات الدخل الشامل الآخر التي سيعاد تصنيفها إلى الربح أو الخسارة، قبل الضريبة [ملخص]',@ComponentsOfOtherComprehensiveIncomeThatWillBeReclassifiedToProfitOrLossBeforeTax),
+(6201,62, N'6201',N'Exchange differences on translation', N'فروقات الصرف على الترجمة',@OtherComprehensiveIncomeBeforeTaxExchangeDifferencesOnTranslation),
+(620101,6201, N'620101',N'Gains (losses) on exchange differences on translation, before tax', N'الأرباح (الخسائر) من فروق الصرف عند التحويل، قبل الضريبة',@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax),
+(620102,6201, N'620102',N'Reclassification adjustments on exchange differences on translation, before tax', N'تعديلات إعادة التصنيف على فروق الصرف عند التحويل، قبل الضريبة',@ReclassificationAdjustmentsOnExchangeDifferencesOnTranslationBeforeTax),
+(6202,62, N'6202',N'Available-for-sale financial assets', N'الأصول المالية المتوفرة برسم البيع',@OtherComprehensiveIncomeBeforeTaxAvailableforsaleFinancialAssets),
+(620201,6202, N'620201',N'Gains (losses) on remeasuring available-for-sale financial assets, before tax', N'الأرباح (الخسائر) من إعادة قياس الأصول المالية المتوافرة برسم البيع، قبل الضريبة',@GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax),
+(620202,6202, N'620202',N'Reclassification adjustments on available-for-sale financial assets, before tax', N'تعديلات إعادة التصنيف على الأصول المالية المتوافرة برسم البيع، قبل الضريبة',@ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax),
+(7,NULL, N'7',N'Control accounts', N'حسابات المراقبة',@ControlAccountsExtension),
+(71,7, N'71',N'Traders control accounts', N'مراقبة حسابات العملاء',@TradersControlAccountsExtension),
+(7101,71, N'7101',N'Suppliers control accounts', N'مراقبة حسابات الموردين',@SuppliersControlAccountsExtension),
+(710100,7101, N'710100',N'Suppliers control accounts -', N'مراقبة حسابات الموردين -',NULL),
+(7102,71, N'7102',N'Customer control accounts', N'مراقبة حسابات الزبائن',@CustomersControlAccountsExtension),
+(710200,7102, N'710200',N'Customer control accounts -', N'مراقبة حسابات الزبائن -',NULL),
+(7103,71, N'7103',N'Payroll control', N'مراقبة الرواتب',@PayrollControlExtension),
+(7109,71, N'7109',N'Others control accounts', N'مراقبة حسابات الآخرين',@OthersAccountsControlExtension),
+(710900,7109, N'710900',N'Others control accounts -', N'مراقبة حسابات الآخرين -',NULL),
+(72,7, N'72',N'Guarantees', N'حسابات مراقبة الضمانات',@GuaranteesExtension),
+(7200,72, N'7200',N'Guarantees -', N'حسابات مراقبة الضمانات -',NULL),
+(720001,7200, N'720001',N'Collection Guarantee', N'ضمانات تحصيل',@CollectionGuaranteeExtension),
+(720002,7200, N'720002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension)
 
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
@@ -256,8 +284,6 @@ DECLARE @AC1204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC1205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1205');
 DECLARE @AC120501 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120501');
 DECLARE @AC120502 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120502');
-DECLARE @AC120503 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120503');
-DECLARE @AC120504 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120504');
 DECLARE @AC1206 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1206');
 DECLARE @AC1207 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1207');
 DECLARE @AC120701 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120701');
@@ -352,8 +378,10 @@ DECLARE @AC430604 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC4307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4307');
 DECLARE @AC4399 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4399');
 DECLARE @AC44 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'44');
-DECLARE @AC4401 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4401');
 DECLARE @AC4402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4402');
+DECLARE @AC4403 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4403');
+DECLARE @AC4404 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4404');
+DECLARE @AC4405 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4405');
 DECLARE @AC5 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5');
 DECLARE @AC51 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'51');
 DECLARE @AC5101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5101');
@@ -368,3 +396,32 @@ DECLARE @AC5109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC5110 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5110');
 DECLARE @AC52 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'52');
 DECLARE @AC53 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'53');
+DECLARE @AC6 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6');
+DECLARE @AC61 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'61');
+DECLARE @AC6101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6101');
+DECLARE @AC6102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6102');
+DECLARE @AC6103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6103');
+DECLARE @AC6104 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6104');
+DECLARE @AC6105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6105');
+DECLARE @AC6106 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6106');
+DECLARE @AC6107 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6107');
+DECLARE @AC62 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'62');
+DECLARE @AC6201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6201');
+DECLARE @AC620101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'620101');
+DECLARE @AC620102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'620102');
+DECLARE @AC6202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'6202');
+DECLARE @AC620201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'620201');
+DECLARE @AC620202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'620202');
+DECLARE @AC7 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7');
+DECLARE @AC71 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'71');
+DECLARE @AC7101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7101');
+DECLARE @AC710100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710100');
+DECLARE @AC7102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7102');
+DECLARE @AC710200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710200');
+DECLARE @AC7103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7103');
+DECLARE @AC7109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7109');
+DECLARE @AC710900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710900');
+DECLARE @AC72 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'72');
+DECLARE @AC7200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7200');
+DECLARE @AC720001 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720001');
+DECLARE @AC720002 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720002');

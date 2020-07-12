@@ -13,8 +13,8 @@ END;
 DELETE FROM @Contracts; DELETE FROM @ContractUsers;
 INSERT INTO @Contracts([Index],	
 	[Code], [Name],				[Name2],				[CenterId]) VALUES
-(0,	N'CS1',	N'GM Safe',			N'خزنة المدير العام',	@101CBanan),
-(1,	N'CS2',	N'Admin Petty Cash',N'النثرية الإدارية',	@101CBanan)
+(0,	N'CS1',	N'GM Safe',			N'خزنة المدير العام',	@101CHQ),
+(1,	N'CS2',	N'Admin Petty Cash',N'النثرية الإدارية',	@101CHQ)
 INSERT INTO @ContractUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
 (0,0,@amtaam),
@@ -44,7 +44,7 @@ END;
 DELETE FROM @Contracts; DELETE FROM @ContractUsers;
 INSERT INTO @Contracts([Index],	
 	[Code], [Name],					[Name2],		[CenterId]) VALUES
-(0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101CBanan);
+(0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101CHQ);
 INSERT INTO @ContractUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
 (0,0,@amtaam)
@@ -82,7 +82,7 @@ INSERT INTO @Contracts([Index],
 (2,	N'C03',N'Sabco',							N'سابكو',					@101CB10),
 (3,	N'C04',	N'al-Washm',						N'شركة الوشم',				@101CB10),
 (4,	N'C05',N'TAGI restaurants',					N'مطاعم تاجي',				@101CB10),
-(5,	N'C06',N'It3aam',							N'شركة إطعام',				@101CConsulting),
+(5,	N'C06',N'It3aam',							N'شركة إطعام',				@101MiscIT),
 (6,	N'C07',N'Rafeef',							N'شركة رفيف',				@101CBSmart),
 (7,	N'C08',N'Golden Earth',						N'غولدن إيرث',				@101CBSmart);
 EXEC [api].[Contracts__Save]

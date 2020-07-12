@@ -552,7 +552,6 @@
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryResourceDefinitionList.sql" />
     <None Include="Provisioning\100_105\01_Security\a_Users.sql" />
     <None Include="Provisioning\100_105\01_Security\b_Permissions.sql" />
-    <None Include="Provisioning\100_105\02_Basic\a_Lookups.sql" />
     <None Include="Provisioning\100_105\02_Basic\b_Centers.sql" />
     <None Include="Provisioning\100_105\05_Contracts\00_Agents.sql" />
     <None Include="Provisioning\100_105\05_Contracts\01_CashCustodians.sql" />
@@ -564,8 +563,6 @@
     <None Include="Provisioning\100_105\05_Contracts\08_Employees.sql" />
     <None Include="Provisioning\100_105\06_Accounts\b_Accounts.sql" />
     <None Include="Provisioning\100_105\06_Accounts\c105_Accounts.sql" />
-    <None Include="Provisioning\100_105\04_Resources\101_employee-benefits.sql" />
-    <None Include="Provisioning\100_105\04_Resources\101_property-plant-and-equipment.sql" />
     <None Include="Provisioning\100_105\04_Resources\102_employee-benefits.sql" />
     <None Include="Provisioning\100_105\04_Resources\102_property-plant-and-equipment.sql" />
     <None Include="Provisioning\100_105\04_Resources\104_finished_goods.sql" />
@@ -626,6 +623,8 @@
     <None Include="Provisioning\101\73_revenue-templates.sql" />
     <None Include="Provisioning\101\74_revenue-recognition-vouchers.sql" />
     <Build Include="api\Stored Procedures\api.Contracts__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.AccountTypes__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -673,7 +672,7 @@
     <None Include="106.Soreti.publish.xml" />
     <None Include="Provisioning\000\x_SampleContracts.sql" />
     <None Include="Provisioning\107\30_Resources.sql" />
-    <None Include="Provisioning\000\s_Centers.sql" />
+    <None Include="Provisioning\000\u_Lookups.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

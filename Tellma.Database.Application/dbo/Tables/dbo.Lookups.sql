@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[Lookups] (
 	[Id]				INT					CONSTRAINT [PK_Lookups] PRIMARY KEY NONCLUSTERED IDENTITY,
 	[DefinitionId]		INT					NOT NULL CONSTRAINT [FK_Lookups__DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
-	[Name]				NVARCHAR (255)		NOT NULL, -- appears in select lists
-	[Name2]				NVARCHAR (255),
-	[Name3]				NVARCHAR (255),
+	[Name]				NVARCHAR (50)		NOT NULL, -- appears in select lists
+	[Name2]				NVARCHAR (50),
+	[Name3]				NVARCHAR (50),
 	[IsActive]			BIT					NOT NULL DEFAULT 1,
 	[Code]				NVARCHAR(10), -- code for inter-tenant reporting
 	[SortKey]			DECIMAL (9,4),

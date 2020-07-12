@@ -21,9 +21,8 @@ IF @OverwriteDb = 0 RETURN
 :r .\000\p_DocumentDefinitions.sql
 :r .\000\q_ReportDefinitions.sql
 :r .\000\r_AccountClassifications.sql
-:r .\000\s_Centers.sql
 :r .\000\t_Accounts.sql
-
+:r .\000\u_Lookups.sql
 :r .\000\x_SampleContracts.sql
 :r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
@@ -33,11 +32,8 @@ BEGIN
 	:r .\100_105\01_Security\a_Users.sql
 	:r .\100_105\01_Security\b_Permissions.sql
 
-	:r .\100_105\02_Basic\a_Lookups.sql
 	:r .\100_105\02_Basic\b_Centers.sql
 
-	:r .\100_105\04_Resources\101_property-plant-and-equipment.sql
-	:r .\100_105\04_Resources\101_employee-benefits.sql
 	:r .\100_105\04_Resources\102_employee-benefits.sql
 	:r .\100_105\04_Resources\102_property-plant-and-equipment.sql
 	:r .\100_105\04_Resources\104_finished_goods.sql

@@ -64,8 +64,7 @@
 (522, 52, N'522', N'Expenses from other than operating activites', NULL),
 (7, NULL, N'7', N'Control Accounts', @ControlAccountsExtension),
 (71, 7, N'71', N'Control Accounts', @ControlAccountsExtension),
-(711, 71, N'711', N'Document Control', @DocumentControlExtension),
-(712, 71, N'712', N'Final account control', @FinalAccountsControlExtension)
+(711, 71, N'711', N'Document Control', @TradersControlAccountsExtension)
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @AccountClassifications,
