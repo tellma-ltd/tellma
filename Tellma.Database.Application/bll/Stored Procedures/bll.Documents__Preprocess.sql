@@ -259,17 +259,17 @@ END
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Contracts C ON E.ContractId = C.Id;
-	-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
-	WITH RU AS (
-		SELECT [ResourceId], MIN(UnitId) AS UnitId
-		FROM dbo.ResourceUnits
-		GROUP BY [ResourceId]
-		HAVING COUNT(*) = 1
-	)
+	-- When the resource has exactly one non-null unit Id, and the account does not allow PureUnit set it as the Entry's UnitId
 	UPDATE E
-	SET E.[UnitId] = RU.UnitId
+	SET E.[UnitId] = R.UnitId
 	FROM @E E
-	JOIN RU ON E.ResourceId = RU.ResourceId;
+	JOIN dbo.Resources R ON E.ResourceId = R.Id
+	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
+	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+	WHERE
+		RD.UnitCardinality = N'Single'
+	AND AC.[AllowsPureUnit] = 0
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET

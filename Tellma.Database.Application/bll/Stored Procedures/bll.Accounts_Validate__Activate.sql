@@ -24,11 +24,13 @@ BEGIN
 			SUM(E.[Direction] * E.[Value]) <> 0
 		OR	SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccountHasNonZeroBalance'
+		N'Error_TheAccount0HasNonZeroBalance',
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3])
 	FROM ActiveAccounts AA
+	JOIN dbo.Accounts A ON AA.[AccountId] = A.[Id]
 END
 
 SELECT TOP(@Top) * FROM @ValidationErrors;
