@@ -1294,7 +1294,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showResourceParameter) {
         // Determine whether the resource specifies a single well defined unit
         const resourceDef = this.resourceDefinition();
-        const singleUnitDefined = !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId && (!accountType || !accountType.AllowsPureUnit);
+        const singleUnitDefined = !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId && !!accountType && !accountType.AllowsPureUnit;
         const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
         this._columns.push({
