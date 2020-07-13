@@ -1008,7 +1008,6 @@ namespace Tellma.Data
                     int i = 0;
                     var entity = new LineDefinitionEntryContractDefinition
                     {
-                        Id = reader.GetInt32(i++),
                         LineDefinitionEntryId = reader.GetInt32(i++),
                         ContractDefinitionId = reader.GetInt32(i++),
                     };
@@ -1024,7 +1023,6 @@ namespace Tellma.Data
                     int i = 0;
                     var entity = new LineDefinitionEntryNotedContractDefinition
                     {
-                        Id = reader.GetInt32(i++),
                         LineDefinitionEntryId = reader.GetInt32(i++),
                         NotedContractDefinitionId = reader.GetInt32(i++),
                     };
@@ -1040,7 +1038,6 @@ namespace Tellma.Data
                     int i = 0;
                     var entity = new LineDefinitionEntryResourceDefinition
                     {
-                        Id = reader.GetInt32(i++),
                         LineDefinitionEntryId = reader.GetInt32(i++),
                         ResourceDefinitionId = reader.GetInt32(i++),
                     };
