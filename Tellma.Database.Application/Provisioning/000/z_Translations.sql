@@ -981,12 +981,12 @@ WHERE [Concept] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [Tabl
 -- Report Definitions
 UPDATE dbo.Units
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Units', [Id], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Units', [Id], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Units', [Id], @TernaryLanguageId, 's'),
-	[Description]  = dbo.fn_TranslateFromEnglish(N'Units', [Id], @PrimaryLanguageId, 'n'),
-	[Description2] = dbo.fn_TranslateFromEnglish(N'Units', [Id], @SecondaryLanguageId, 'n'),
-	[Description3] = dbo.fn_TranslateFromEnglish(N'Units', [Id], @TernaryLanguageId, 'n')
+	[Name]  = dbo.fn_TranslateFromEnglish(N'Units', [Code], @PrimaryLanguageId, 's'),
+	[Name2] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @SecondaryLanguageId, 's'),
+	[Name3] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @TernaryLanguageId, 's'),
+	[Description]  = dbo.fn_TranslateFromEnglish(N'Units', [Code], @PrimaryLanguageId, 'n'),
+	[Description2] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @SecondaryLanguageId, 'n'),
+	[Description3] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @TernaryLanguageId, 'n')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Units');
 -- Lookups
 UPDATE dbo.Lookups

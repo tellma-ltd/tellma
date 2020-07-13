@@ -99,10 +99,6 @@ INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType])
 (25201,252, N'Mehira Scheme - Phase 1', N'مخطط مهيرة - المرحلة الأولى', N'25201', N'ConstructionExpenseControl'),
 (25202,252, N'Mehira Scheme - Phase 2', N'مخطط مهيرة - المرحلة الثانية', N'25202', N'ConstructionExpenseControl');
 
--- There is already a center
-UPDATE @Centers SET [Id] = (SELECT MIN([Id]) FROM dbo.Centers)
-WHERE [Index] = 0
-
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
