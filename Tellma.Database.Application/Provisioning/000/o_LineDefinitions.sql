@@ -38,7 +38,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --[RuleType],			[RoleId]) VALUES
 --(0,0,0,N'ByRole',	@ComptrollerRL),
 --(0,1,0,N'ByRole',	@FinanceManagerRL);
-PRINT N'';-- If @LineDefinitionEntryResource(Contract)Definitions is null, it accepts all resource(contract) definitions compatible with account types, otherwise restricts it,
+PRINT N'';
+-- If @LineDefinitionEntryResource(Contract)Definitions is null, it accepts all resource(contract) definitions compatible with account types, otherwise restricts it,
 --91: CostReallocationToConstructionInProgress
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
