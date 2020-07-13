@@ -41,7 +41,9 @@
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 (0,0, @ManualLineLD, 1),
+(1,9, @CostReallocationToConstructionInProgressLD, 1),
 (2,9, @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD, 1),
+(3,9, @CostReallocationToCurrentInventoriesInTransitLD, 1),
 (0,10, @CashPaymentToOtherLD, 1),
 (4,10, @CashTransferExchangeLD, 1),
 (0,11, @DepositCashToBankLD, 1),

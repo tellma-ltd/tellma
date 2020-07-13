@@ -1,6 +1,8 @@
 ﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (0, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
+(91, N'CostReallocationToConstructionInProgress', N'Capitalization of a project expenditures', N'Project', N'Projects', 0, 1),
 (92, N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment', N'Capitalization of an investment property expenditures ', N'Investment Property', N'Investment Properties', 0, 1),
+(93, N'CostReallocationToCurrentInventoriesInTransit', N'Capitalization of expenditures on inventories in transit', N'Goods In Transit', N'Goods In Transit', 0, 1),
 (100, N'CashPaymentToOther', N'cash payment to other than suppliers, customers, and employees', N'Payment to Other', N'Payments to Others', 0, 1),
 (104, N'CashTransferExchange', N'cash transfer exchange', N'Cash Transfer', N'Cash Transfers', 0, 1),
 (110, N'DepositCashToBank', N'deposit cash in bank', N'Cash Deposit', N'Cash Deposits', 0, 1),
@@ -12,7 +14,7 @@
 (302, N'StockReceiptFromTradePayable', N'Receiving goods to inventory from supplier/contractor', N'Stock', N'Stock', 0, 0),
 (303, N'PPEReceiptFromTradePayable', N'Receiving property, plant and equipment from supplier/contractor', N'Fixed Asset', N'Fixed Assets', 0, 1),
 (304, N'ConsumableServiceReceiptFromTradePayable', N'Receiving services/consumables from supplier/lessor/consultant, ...', N'Consumable/Service', N'Consumables/Services', 0, 1),
-(305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1)
+(305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1);
 --0: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -36,8 +38,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --[RuleType],			[RoleId]) VALUES
 --(0,0,0,N'ByRole',	@ComptrollerRL),
 --(0,1,0,N'ByRole',	@FinanceManagerRL);
-PRINT N'';
---70: PUC Costs Reallocation
+PRINT N'';-- If @LineDefinitionEntryResource(Contract)Definitions is null, it accepts all resource(contract) definitions compatible with account types, otherwise restricts it,
+--91: CostReallocationToConstructionInProgress
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
 		DECLARE @CenterId INT, @PostingDate DATE;
@@ -95,32 +97,32 @@ SET [GenerateScript] = N'
 
 		SELECT * FROM @WideLines;
 	'
-WHERE [Index] = 70;
+WHERE [Index] = 91;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
-(0,70,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
-(1,70,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
+(0,91,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ProductionExpenseControl'''),
+(1,91,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
-(0,70,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
-(1,70,	-1, @ExpenseByNature);
+(0,91,	+1, @ConstructionInProgress),
+(1,91,	-1, @ExpenseByNature);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ResourceDefinitionId]) VALUES
-(1,1,70,	@EmployeeBenefitRD);
+(1,1,91,	@EmployeeBenefitRD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
 															[InheritsFromHeader]) VALUES
-(0,70,	N'AccountId',			1,	N'Expenditure',			4,4,0),
-(1,70,	N'ResourceId',			1,	N'Item',				5,5,0),
-(2,70,	N'Quantity',			1,	N'Quantity',			5,5,0),
-(3,70,	N'UnitId',				1,	N'Unit',				5,5,0),
-(4,70,	N'MonetaryValue',		1,	N'Amount',				4,4,0),
-(5,70,	N'CurrencyId',			1,	N'Currency',			4,4,0),
-(6,70,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
-(7,70,	N'Memo',				1,	N'Memo',				4,4,1),
-(8,70,	N'CenterId',			1,	N'Project',				4,4,1);
---75: PUC Costs Reallocation
+(0,91,	N'AccountId',			1,	N'Expenditure',			4,4,0),
+(1,91,	N'ResourceId',			1,	N'Item',				5,5,0),
+(2,91,	N'Quantity',			1,	N'Quantity',			5,5,0),
+(3,91,	N'UnitId',				1,	N'Unit',				5,5,0),
+(4,91,	N'MonetaryValue',		1,	N'Amount',				4,4,0),
+(5,91,	N'CurrencyId',			1,	N'Currency',			4,4,0),
+(6,91,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
+(7,91,	N'Memo',				1,	N'Memo',				4,4,1),
+(8,91,	N'CenterId',			1,	N'Project',				4,4,1);
+--92: CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
 		DECLARE @CenterId INT, @PostingDate DATE;
@@ -178,31 +180,114 @@ SET [GenerateScript] = N'
 
 		SELECT * FROM @WideLines;
 	'
-WHERE [Index] = 75;
+WHERE [Index] = 92;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
-(0,75,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
-(1,75,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
+(0,92,N'CenterId',		N'Scheme',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
+(1,92,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
-(0,75,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
-(1,75,	-1, @ExpenseByNature);
+(0,92,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
+(1,92,	-1, @ExpenseByNature);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ResourceDefinitionId]) VALUES
-(1,1,75,	@EmployeeBenefitRD);
+(1,1,92,	@EmployeeBenefitRD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
 															[InheritsFromHeader]) VALUES
-(0,75,	N'AccountId',			1,	N'Expenditure',			4,4,0),
-(1,75,	N'ResourceId',			1,	N'Item',				5,5,0),
-(2,75,	N'Quantity',			1,	N'Quantity',			5,5,0),
-(3,75,	N'UnitId',				1,	N'Unit',				5,5,0),
-(4,75,	N'MonetaryValue',		1,	N'Amount',				4,4,0),
-(5,75,	N'CurrencyId',			1,	N'Currency',			4,4,0),
-(6,75,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
-(7,75,	N'Memo',				1,	N'Memo',				4,4,1),
-(8,75,	N'CenterId',			1,	N'Project',				4,4,1);
+(0,92,	N'AccountId',			1,	N'Expenditure',			4,4,0),
+(1,92,	N'ResourceId',			1,	N'Item',				5,5,0),
+(2,92,	N'Quantity',			1,	N'Quantity',			5,5,0),
+(3,92,	N'UnitId',				1,	N'Unit',				5,5,0),
+(4,92,	N'MonetaryValue',		1,	N'Amount',				4,4,0),
+(5,92,	N'CurrencyId',			1,	N'Currency',			4,4,0),
+(6,92,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
+(7,92,	N'Memo',				1,	N'Memo',				4,4,1),
+(8,92,	N'CenterId',			1,	N'Scheme',				4,4,1);
+--93: CostReallocationToCurrentInventoriesInTransit
+UPDATE @LineDefinitions
+SET [GenerateScript] = N'
+		DECLARE @CenterId INT, @PostingDate DATE;
+		
+		DECLARE @WideLines WideLineList;
+				
+		SELECT @CenterId = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CenterId'') AS INT);
+		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
+		DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N''ExpenseByNature'');
+
+		WITH ExpenseByNatureAccounts AS (
+			SELECT A.[Id]
+			FROM dbo.Accounts A
+			JOIN dbo.AccountTypes [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
+		)
+		INSERT INTO @WideLines(
+			[Index], [PostingDate],
+			[AccountId0], [CurrencyId0], [ContractId0], [ResourceId0], [UnitId0], [EntryTypeId0], [DueDate0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
+			[AccountId1], [CurrencyId1], [ContractId1], [ResourceId1], [UnitId1], [EntryTypeId1], [DueDate1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
+		)
+		SELECT
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]) - 1 AS [Index], 
+			@PostingDate,
+			NULL			AS [AccountId0],
+			[CurrencyId]	AS [CurrencyId0],
+			NULL			AS [ContractId0],
+			NULL			AS [ResourceId0],
+			NULL			AS [UnitId0],
+			NULL			AS [EntryTypeId0],
+			NULL			As [DueDate0],
+			@CenterId		AS [Centerid0],
+			SUM([Direction] * [Quantity]) AS [Quantity0],
+			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue0],
+			SUM([Direction] * [Value]) AS [Value0],
+
+			[AccountId]		AS [AccountId1],
+			[CurrencyId]	AS [CurrencyId1],
+			[ContractId]	AS [ContractId1],
+			[ResourceId]	AS [ResourceId1],
+			[UnitId]		AS [UnitId1],
+			[EntryTypeId]	AS [EntryTypeId1],
+			[DueDate]		As [DueDate1],
+			@CenterId		AS [Centerid1],
+			SUM([Direction] * [Quantity]) AS [Quantity1],
+			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue1],
+			SUM([Direction] * [Value]) AS [Value1]
+		FROM dbo.Entries E 
+		JOIN dbo.Lines L ON E.LineId = L.Id
+		WHERE E.[CenterId] = @CenterId
+		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
+		AND L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]
+
+		SELECT * FROM @WideLines;
+	'
+WHERE [Index] = 93;
+INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
+		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
+(0,93,N'CenterId',		N'Shipment',		N'Required',	N'Center',	N'CenterType = ''TransitExpenseControl'''),
+(1,93,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId]) VALUES
+(0,93,	+1, @CurrentInventoriesInTransit),
+(1,93,	-1, @ExpenseByNature);
+INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
+			[ResourceDefinitionId]) VALUES
+(1,1,93,	@EmployeeBenefitRD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
+															[ReadOnlyState],
+															[InheritsFromHeader]) VALUES
+(0,93,	N'AccountId',			1,	N'Expenditure',			4,4,0),
+(1,93,	N'ResourceId',			1,	N'Item',				5,5,0),
+(2,93,	N'Quantity',			1,	N'Quantity',			5,5,0),
+(3,93,	N'UnitId',				1,	N'Unit',				5,5,0),
+(4,93,	N'MonetaryValue',		1,	N'Amount',				4,4,0),
+(5,93,	N'CurrencyId',			1,	N'Currency',			4,4,0),
+(6,93,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
+(7,93,	N'Memo',				1,	N'Memo',				4,4,1),
+(8,93,	N'CenterId',			1,	N'Shipment',			4,4,1);
 --100:CashPaymentToOther
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -219,8 +304,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (1,100,	-1, @CashAndCashEquivalents);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,1,100,		@CashOnHandAccountCD), -- do we have to list them? They are simply the union of AccountTypeContractDefinitions
-(1,1,100,		@BankAccountCD);
+(0,1,100,	@CashOnHandAccountCD), -- do we have to list them? They are simply the union of AccountTypeContractDefinitions
+(1,1,100,	@BankAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
@@ -238,15 +323,15 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name]) VALUES
 (0,100,-3,	N'Insufficient Balance'),
 (1,100,-3,	N'Other reasons');
---104:CashTransferExchange
+--104:CashTransferExchange => make into a separate document with transfer only, exchange only, exchange and transfer
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId1]),
 		[NotedAgentName1] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
-		[CenterId1] = [CenterId0],
-		[CenterId2] = [CenterId0],
+		[CenterId0] = COALESCE((SELECT [CenterId] FROM dbo.Contracts WHERE [Id] = [ContractId0]), [CenterId2]),
+		[CenterId1] = COALESCE((SELECT [CenterId] FROM dbo.Contracts WHERE [Id] = [ContractId1]), [CenterId2]),
 		[CurrencyId2] = dbo.fn_FunctionalCurrencyId(),
 		[MonetaryValue0] = IIF([CurrencyId0]=[CurrencyId1],[MonetaryValue1],[MonetaryValue0]),
 		[MonetaryValue2] = wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1])
@@ -274,10 +359,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,104,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
 (4,104,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
 (5,104,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
-(6,104,	N'CenterId',			0,	N'Segment',			4,4,1),
+(6,104,	N'CenterId',			2,	N'Business Unit',	1,4,1),
 (7,104,	N'Memo',				0,	N'Memo',			1,2,1);
-
---110:DepositCashToBank
+--110:DepositCashToBank -- Make this and the next into a separate document (BankDepositVoucher)
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -290,9 +374,9 @@ SET [Script] = N'
 '
 WHERE [Index] = 110;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
-(0,110,+1,	@BalancesWithBanks,@InternalCashTransferExtension),
-(1,110,-1,	@CashOnHand, @InternalCashTransferExtension);
+[Direction],[AccountTypeId],	[EntryTypeId]) VALUES
+(0,110,+1,	@BalancesWithBanks,	@InternalCashTransferExtension),
+(1,110,-1,	@CashOnHand,		@InternalCashTransferExtension);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,110,		@BankAccountCD),
@@ -332,7 +416,7 @@ INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntr
 (0,1,111,		@CashOnHandAccountCD);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ResourceDefinitionId]) VALUES
-(0,1,111,		@CheckReceivedRD);
+(0,1,111,	@CheckReceivedRD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -848,9 +932,10 @@ EXEC [api].[LineDefinitions__Save]
 	@WorkflowSignatures = @WorkflowSignatures,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 -- Declarations
--- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+DECLARE @CostReallocationToConstructionInProgressLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToConstructionInProgress');
 DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
+DECLARE @CostReallocationToCurrentInventoriesInTransitLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToCurrentInventoriesInTransit');
 DECLARE @CashPaymentToOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToOther');
 DECLARE @CashTransferExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransferExchange');
 DECLARE @DepositCashToBankLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'DepositCashToBank');
@@ -863,6 +948,7 @@ DECLARE @StockReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefiniti
 DECLARE @PPEReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEReceiptFromTradePayable');
 DECLARE @ConsumableServiceReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptFromTradePayable');
 DECLARE @RentalReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RentalReceiptFromTradePayable');
+
 /*
 DECLARE @TranslationsLD TABLE (
 	[Word] NVARCHAR (50),
