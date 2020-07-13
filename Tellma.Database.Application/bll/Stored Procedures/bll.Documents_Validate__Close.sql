@@ -32,7 +32,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top) 
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentDoesNotHaveAnyFinalizedLines'
+		N'Error_TheDocumentDoesNotHaveAnyPostedLines'
 	FROM @Ids
 	WHERE [Index] NOT IN (SELECT [Index] FROM SatisfactoryDocuments);
 

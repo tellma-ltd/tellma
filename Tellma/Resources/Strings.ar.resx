@@ -826,17 +826,32 @@
   <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
     <value>مسار {0} يحتوي على حقل أساسي {1} مستخدم كحقل تنقل</value>
   </data>
+  <data name="Error_Account0QuantityBalanceIsWrong" xml:space="preserve">
+    <value>سطر الحساب ({0}) ينبغي أن يتغير إما بـ0 أو بـ1 لأنه يستخدم الذات كوحدة قياس.</value>
+  </data>
+  <data name="Error_Account0RequiresAnEntryWithPureQuantity" xml:space="preserve">
+    <value>سطر الحساب ({0}) ينبغي أن يكون معه سطر آخر يستخدم الذات كوحدة قياس.</value>
+  </data>
+  <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
+    <value>نوع الحساب ({0}) مستخدم في الحساب ({1}).</value>
+  </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
   </data>
+  <data name="Error_CannotAssign0Documents" xml:space="preserve">
+    <value>لا يمكن إرسال مستند في حالة {0}.</value>
+  </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>لا يمكنك إيقاف نشاط المستخدم خاصتك</value>
   </data>
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
     <value>تعذر حذف بيان من نوع {0} لأنه مستخدم</value>
+  </data>
+  <data name="Error_CannotDeleteSystemRecords" xml:space="preserve">
+    <value>البيانات المعرفة من النظام لا يمكن حذفها.</value>
   </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>لا يمكنك حذف المستخدم خاصتك</value>
@@ -855,6 +870,9 @@
   </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>لا يمكن توقيع مستند في حالة {1}.</value>
+  </data>
+  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
+    <value>لا يمكن حذف توقيع من مستند في حالة {1}.</value>
   </data>
   <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
     <value>لا يمكن حذف توقيع من مستند في حالة {1}.</value>
@@ -973,6 +991,9 @@
   <data name="Error_LineMustBeInState0First" xml:space="preserve">
     <value>السطر لم يصل إلى حالة {0} بعد.</value>
   </data>
+  <data name="Error_LineStateIsNotNegative" xml:space="preserve">
+    <value>السطر لم ينته بتوقيع سلبي بعد.</value>
+  </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي</value>
   </data>
@@ -1030,11 +1051,41 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>
   </data>
+  <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
+    <value>الحساب ({0}) فيه رصيد.</value>
+  </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>الحساب ({0}) غير منشط.</value>
   </data>
+  <data name="Error_TheAccount0IsUsedInDocument12" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1}.</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع نوع سطر غير متناسب ({3}).</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع المركز ({3}).</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithContract3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العقد ({3}).</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العملة ({3}).</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع المورد ({3}).</value>
+  </data>
+  <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
+    <value>تصنيف الحساب ({0}) تحته حساب ({1}) فيه رصيد.</value>
+  </data>
+  <data name="Error_TheAccountClassification0IsNotLeaf" xml:space="preserve">
+    <value>تصنيف الحساب ({0}) أصل له فروع.</value>
+  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1}).</value>
+  </data>
+  <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
+    <value>نوع الحساب ({0}) تحته حساب فيه رصيد ({1}).</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>المبلغ ينبغي أن يكون أكبر من 0.</value>
@@ -1048,14 +1099,44 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>الكود ({0}) مستخدم حاليا</value>
   </data>
+  <data name="Error_TheContract01HasNoUsers" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
+  </data>
+  <data name="Error_TheContract01IsUsedInAccount2" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} مستخدم في الحساب ({2}).</value>
+  </data>
+  <data name="Error_TheContract01IsUsedInDocument23" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} مستخدم في المستند {3} من نوع {2}.</value>
+  </data>
+  <data name="Error_TheContractDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>تعريف العقد ({0}) مستخدم في نوع الحساب ({1}).</value>
+  </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>سعر صرف العملة ({0}) في التاريخ {1} مكرر أكثر من مرة.</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
+    <value>العملة ({0}) مستخدمة في الحساب ({1}).</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInDocument12" xml:space="preserve">
+    <value>العملة ({0}) مستخدمة في المستند {2} من نوع {1}.</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedInResource12" xml:space="preserve">
+    <value>العملة ({0}) مستخدمة في البيان ({2}) من نوع {1}.</value>
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية.</value>
   </data>
+  <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
+    <value>بعض الأسطر ليست مرحلة بعد.</value>
+  </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>المستند يحتوي على أسطر في حالة منفذ.</value>
+  </data>
+  <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
+    <value>بعض الأسطر تتطلب مزيدا من التوقيعات.</value>
+  </data>
+  <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
+    <value>المستند حاليا في عهدة المستخدم ({0})</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>هذا المستند مقفل، قم بفتحه أولا.</value>
@@ -1068,6 +1149,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
+  </data>
+  <data name="Error_TheField0IsIncompatible" xml:space="preserve">
+    <value>قيمة الحقل {0} غير متنسابة مع طبيعة الحساب.</value>
   </data>
   <data name="Error_TheField0IsReadOnly" xml:space="preserve">
     <value>حقل {0} غير قابل للتعديل.</value>
@@ -1096,11 +1180,17 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>الاسم ({0}) مستخدم حاليا</value>
   </data>
+  <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
+    <value>المركز الأصل ({0}) ليس منشطا.</value>
+  </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>حقل السبب مطلوب لأن نوع الحساب هو ({0}).</value>
+  </data>
+  <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>مورد الحساب ({0}) عملته ({1}) بينما الحساب عملته ({2}).</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>الدور ({0}) غير منشط</value>

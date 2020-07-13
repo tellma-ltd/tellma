@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
     SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_CannotDeleteSystemTypes'
+		N'Error_CannotDeleteSystemRecords'
 	FROM @Ids FE
     JOIN [dbo].[AccountTypes] BE ON FE.[Id] = BE.[Id]
 	WHERE BE.[IsSystem] = 1;
