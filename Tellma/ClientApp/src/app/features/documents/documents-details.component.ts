@@ -1360,7 +1360,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         filter = `Id eq ${resource.UnitId}`;
       }
 
-      if (!!resource.Units) {
+      if (!!resource.Units && resource.Units.length > 0) {
         const unitsFilter = resource.Units.map(e => `Id eq ${e.UnitId}`).join(' or ');
         if (!!filter) {
           filter += ` or ${unitsFilter}`;

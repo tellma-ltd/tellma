@@ -306,7 +306,7 @@ namespace Tellma.Controllers
                                         Constants.Error_Field0LengthMaximumOf1 :
                                         Constants.Error_Field0LengthMaximumOf1MinimumOf2;
 
-                                    string msg = _localizer[msgName, displayName];
+                                    string msg = _localizer[msgName, displayName, strLengthAtt.MaximumLength, strLengthAtt.MinimumLength];
                                     validationResult = new ValidationResult(msg);
                                 }
                                 else if (validationAtt is EmailAddressAttribute)
