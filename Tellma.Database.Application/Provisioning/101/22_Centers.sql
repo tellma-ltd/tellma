@@ -12,9 +12,9 @@
 	(2,0, N'IT Solutions',		N'حلول تقنية',				N'2',	N'Abstract'),
 	-- Babylon projects cross year boundaries
 	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'BusinessUnit'),
-	(210,21,N'Campus BU',		N'بابل: وحدة الأعمال',		N'2100',	N'CostOfSales'), -- only expense by nature
+	(2100,21,N'B10/HCM BU',		N'بابل: وحدة الأعمال',		N'2100',N'CostOfSales'), -- only expense by nature
 	(211,21,N'B10/HCM  Projects',N'مشاريع بابل',			N'211',	N'Abstract'), 
-	(2111,2,N'B10/HCM - IUA',	N'بابل - IUA',				N'2111',	N'ProductionExpenseControl'),
+	(2111,2,N'B10/HCM - IUA',	N'بابل - IUA',				N'2111',N'ProductionExpenseControl'),
 	
 	-- For bsmart, we don't have phases. Every job is actually a separate client. Job expenditures are expensed immediately
 	(2200,2,N'BSmart',			N'بيسمارت',					N'2200',	N'BusinessUnit'),
@@ -35,9 +35,9 @@
 	(25,2,N'Joint',				N'مشترك',					N'25',	N'BusinessUnit'),
 	(2500,25,N'Joint ventures',	N'وحدة أعمال مشتركة',		N'2500',N'CostOfSales'), -- everything
 	(251,3,	N'JV WIP',			N'مشاريع مشتركة قيد التنفيذ',N'251',N'Abstract'),
-	(2510,3,N'IUA Project',		N'مشروع جامعة أفريقيا',	N'251',	N'CostOfSales'), -- everything
+	(2510,3,N'IUA Project',		N'مشروع جامعة أفريقيا',	N'2510',N'CostOfSales'), -- everything
 
-	(2900,2,N'Misc. IT',		N'حلول تقنية أخرى',		N'2900',	N'BusinessUnit'),
+	(2900,2,N'Misc. IT',		N'حلول تقنية أخرى',		N'2900',N'BusinessUnit'),
 
 	(299,2,	N'Project - TBA',	N'المشاريع - للتخصيص',		N'299',	N'SharedExpenseControl'), -- like comp. dep. of Abu Bakr to be absorbed by DL
 	(3,0,	N'Subletting',		N'تأجير',					N'3',	N'BusinessUnit')
