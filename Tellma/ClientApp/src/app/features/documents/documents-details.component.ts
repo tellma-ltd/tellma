@@ -1340,8 +1340,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public readonlyUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
+    const accountType = this.accountType(entry);
     const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
-    return !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId;
+    return !!resourceDef && resourceDef.UnitCardinality === 'Single'
+      && !!resource && !!resource.UnitId && !!accountType && !accountType.AllowsPureUnit;
   }
 
   public readonlyValueUnitId(entry: Entry): number {
