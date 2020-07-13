@@ -1368,6 +1368,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
     }
 
+    // If account type allows pure, add it to the filter
+    const accountType = this.accountType(entry);
+    if (!!accountType && accountType.AllowsPureUnit) {
+      const pureFilter = `UnitType eq 'Pure'`;
+      if (!!filter) {
+        filter += ` or ${pureFilter}`;
+      } else {
+        filter = pureFilter;
+      }
+    }
+
     return filter;
   }
 

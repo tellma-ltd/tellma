@@ -2,7 +2,7 @@
 // tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
-import { EntityDescriptor, ChoicePropDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
@@ -28,6 +28,7 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   Code?: string;
   Concept?: string;
   IsAssignable?: boolean;
+  AllowsPureUnit?: boolean;
   EntryTypeParentId?: number;
   DueDateLabel?: string;
   DueDateLabel2?: string;
@@ -110,6 +111,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Code: { control: 'text', label: () => trx.instant('Code') },
         Concept: { control: 'text', label: () => trx.instant('AccountType_Concept') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
+        AllowsPureUnit: { control: 'boolean', label: () => trx.instant('AccountType_AllowsPureUnit') },
         EntryTypeParentId: { control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { control: 'navigation', label: () => trx.instant('AccountType_EntryTypeParent'), type: 'EntryType', foreignKeyName: 'EntryTypeParentId' },
         DueDateLabel: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.primaryPostfix },
@@ -185,31 +187,3 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
 
   return _cache;
 }
-
-// // Helper functions
-// function optionalChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
-//   return {
-//     control: 'choice',
-//     label: () => trx.instant('AccountType_' + propName),
-//     choices: ['N', 'A', 'E'],
-//     format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
-//   };
-// }
-
-// function requiredChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
-//   return {
-//     control: 'choice',
-//     label: () => trx.instant('AccountType_' + propName),
-//     choices: ['A', 'E'],
-//     format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
-//   };
-// }
-
-// function entryChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
-//   return {
-//     control: 'choice',
-//     label: () => trx.instant('AccountType_' + propName),
-//     choices: ['N', 'E'],
-//     format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
-//   };
-// }

@@ -40,6 +40,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
     }
 
     result.IsAssignable = true;
+    result.AllowsPureUnit = false;
 
     return result;
   }

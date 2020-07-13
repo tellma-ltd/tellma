@@ -63,6 +63,10 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
 
+        [Display(Name = "AccountType_AllowsPureUnit")]
+        [AlwaysAccessible]
+        public bool? AllowsPureUnit { get; set; }
+
         [Display(Name = "AccountType_EntryTypeParent")]
         [AlwaysAccessible]
         public int? EntryTypeParentId { get; set; }

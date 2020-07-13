@@ -426,8 +426,6 @@ namespace Tellma.Controllers.Dto
         public string IdentifierLabel3 { get; set; }
         public string IdentifierVisibility { get; set; }
 
-        public string ResidualMonetaryValueVisibility { get; set; }
-        public string ResidualValueVisibility { get; set; }
         public string ReorderLevelVisibility { get; set; }
         public string EconomicOrderQuantityVisibility { get; set; }
         public string UnitCardinality { get; set; }

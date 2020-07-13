@@ -223,8 +223,6 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.IdentifierLabel2) ||
         areServerErrors(model.serverErrors.IdentifierLabel3) ||
         areServerErrors(model.serverErrors.IdentifierVisibility) ||
-        areServerErrors(model.serverErrors.ResidualMonetaryValueVisibility) ||
-        areServerErrors(model.serverErrors.ResidualValueVisibility) ||
         areServerErrors(model.serverErrors.ReorderLevelVisibility) ||
         areServerErrors(model.serverErrors.EconomicOrderQuantityVisibility) ||
         areServerErrors(model.serverErrors.UnitCardinality) ||

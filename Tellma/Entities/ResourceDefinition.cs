@@ -283,14 +283,6 @@ namespace Tellma.Entities
         [VisibilityDisplay(Name = "Resource_Identifier"), VisibilityChoiceList]
         public string IdentifierVisibility { get; set; }
 
-        // PPE
-
-        [VisibilityDisplay(Name = "Resource_ResidualMonetaryValue"), VisibilityChoiceList]
-        public string ResidualMonetaryValueVisibility { get; set; }
-
-        [VisibilityDisplay(Name = "Resource_ResidualValue"), VisibilityChoiceList]
-        public string ResidualValueVisibility { get; set; }
-
         // Inventory
 
         [VisibilityDisplay(Name = "Resource_ReorderLevel"), VisibilityChoiceList]

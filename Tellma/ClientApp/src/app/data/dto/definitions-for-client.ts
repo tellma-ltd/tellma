@@ -372,8 +372,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     IdentifierLabel2: string;
     IdentifierLabel3: string;
     IdentifierVisibility: Visibility;
-    ResidualMonetaryValueVisibility: Visibility;
-    ResidualValueVisibility: Visibility;
     ReorderLevelVisibility: Visibility;
     EconomicOrderQuantityVisibility: Visibility;
     UnitCardinality: DefinitionCardinality;

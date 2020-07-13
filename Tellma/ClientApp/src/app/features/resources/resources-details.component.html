@@ -357,36 +357,6 @@
         </t-text-editor>
     </t-form-group>
 
-    <!-- ResidualMonetaryValue -->
-    <t-form-group *ngIf="ResidualMonetaryValue_isVisible(model)" class="t-form-group"
-        [label]="('Resource_ResidualMonetaryValue' | translate) + currencyPostfix(model)"
-        [serverErrors]="model?.serverErrors?.ResidualMonetaryValue">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualMonetaryValue">
-            <div>
-                {{ model?.ResidualMonetaryValue | accounting:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
-            </div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualMonetaryValue"
-            [ngModelOptions]="{ updateOn: 'blur' }" [required]="ResidualMonetaryValue_isRequired"
-            [minDecimalPlaces]="MonetaryValue_decimals(model)" [maxDecimalPlaces]="MonetaryValue_decimals(model)">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- ResidualValue -->
-    <t-form-group *ngIf="ResidualValue_isVisible(model)" class="t-form-group"
-        [label]="('Resource_ResidualValue' | translate) + functionalPostfix"
-        [serverErrors]="model?.serverErrors?.ResidualValue">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualValue">
-            <div>
-                {{ model?.ResidualValue | accounting:'1.' + functionalDecimals + '-' + functionalDecimals }}
-            </div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="ResidualValue_isRequired" [minDecimalPlaces]="functionalDecimals"
-            [maxDecimalPlaces]="functionalDecimals">
-        </t-decimal-editor>
-    </t-form-group>
-
     <!-- Reorder Level -->
     <t-form-group *ngIf="ReorderLevel_isVisible" class="t-form-group" [label]="'Resource_ReorderLevel' | translate"
         [serverErrors]="model?.serverErrors?.ReorderLevel">

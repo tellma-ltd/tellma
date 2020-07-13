@@ -397,6 +397,7 @@ namespace Tellma.Entities
 
             // Misc
             nameof(AccountType.EntryTypeParentId),
+            nameof(AccountType.AllowsPureUnit),
 
             // Labels
             nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),

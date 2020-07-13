@@ -93,8 +93,6 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     IdentifierLabel3?: string;
     IdentifierVisibility?: Visibility;
 
-    ResidualMonetaryValueVisibility?: Visibility;
-    ResidualValueVisibility?: Visibility;
     ReorderLevelVisibility?: Visibility;
     EconomicOrderQuantityVisibility?: Visibility;
     UnitCardinality?: DefinitionCardinality;
@@ -221,8 +219,6 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 IdentifierLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.ternaryPostfix },
                 IdentifierVisibility: visibilityPropDescriptor('Resource_Identifier', trx),
 
-                ResidualMonetaryValueVisibility: visibilityPropDescriptor('Resource_ResidualMonetaryValue', trx),
-                ResidualValueVisibility: visibilityPropDescriptor('Resource_ResidualValue', trx),
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),
                 UnitCardinality: cardinalityPropDescriptor('ResourceDefinition_UnitCardinality', trx),

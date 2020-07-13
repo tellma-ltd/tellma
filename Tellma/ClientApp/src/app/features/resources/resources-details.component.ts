@@ -464,25 +464,9 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Resource_Identifier');
   }
 
-  public ResidualMonetaryValue_isVisible(_: ResourceForSave): boolean {
-    return !!this.definition.ResidualMonetaryValueVisibility;
-  }
-
-  public get ResidualMonetaryValue_isRequired(): boolean {
-    return this.definition.ResidualMonetaryValueVisibility === 'Required';
-  }
-
   public currencyPostfix(model: ResourceForSave): string {
     return !!model && !!model.CurrencyId ? ` (${this.ws.getMultilingualValue('Currency', model.CurrencyId, 'Name')})` :
       ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
-  }
-
-  public ResidualValue_isVisible(model: ResourceForSave): boolean {
-    // If the residual monetary value is visible: appears only when the currency is not functional
-    // If the residual monetary value is invisible: appears anyway
-    return !!this.definition.ResidualValueVisibility && ((!!model &&
-      !!model.CurrencyId && model.CurrencyId !== this.ws.settings.FunctionalCurrencyId) ||
-      !this.ResidualMonetaryValue_isVisible(model));
   }
 
   public get functionalDecimals(): number {
@@ -491,10 +475,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public get functionalPostfix(): string {
     return ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
-  }
-
-  public get ResidualValue_isRequired(): boolean {
-    return this.definition.ResidualValueVisibility === 'Required';
   }
 
   public get ReorderLevel_isVisible(): boolean {
@@ -630,11 +610,5 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public savePreprocessing = (entity: ResourceForSave) => {
     // Server validation on hidden properties will be confusing to the user
-    const def = this.definition;
-    if (def.ResidualValueVisibility === 'Required') {
-      if (!this.ResidualValue_isVisible(entity) && !!entity.ResidualMonetaryValue) {
-        entity.ResidualValue = entity.ResidualMonetaryValue;
-      }
-    }
   }
 }

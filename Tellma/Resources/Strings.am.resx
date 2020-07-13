@@ -118,6 +118,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>ተጨማሪ ማጣቀሻ መሰየሚያ</value>
   </data>
+  <data name="AccountType_AllowsPureUnit" xml:space="preserve">
+    <value>ራስን ዩኒት ይፈቅዳል</value>
+  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>ሐሳብ</value>
   </data>
@@ -2061,12 +2064,6 @@
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>አስይዝ ደረጃ</value>
-  </data>
-  <data name="Resource_ResidualMonetaryValue" xml:space="preserve">
-    <value>ቀሪ የገንዘብ ዋጋ</value>
-  </data>
-  <data name="Resource_ResidualValue" xml:space="preserve">
-    <value>ትራፊ እሴት</value>
   </data>
   <data name="Resource_Unit" xml:space="preserve">
     <value>መለኪያ</value>
