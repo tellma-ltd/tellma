@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -57,19 +58,22 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     context.Response.OnStarting(() =>
                     {
-                        // The report contains the overall duration of the request as well an optional breakdown
-                        var report = instrumentation.GetReport();
-                        var serializedReport = JsonConvert.SerializeObject(report, new JsonSerializerSettings
+                        if (context.Response.StatusCode == StatusCodes.Status200OK)
                         {
-                            NullValueHandling = NullValueHandling.Ignore
-                        });
+                            // The report contains the overall duration of the request as well an optional breakdown
+                            var report = instrumentation.GetReport();
+                            var serializedReport = JsonConvert.SerializeObject(report, new JsonSerializerSettings
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            });
 
-                        context.Response.Headers.Add("x-instrumentation", serializedReport);
+                            context.Response.Headers.Add("x-instrumentation", serializedReport);
+                        }
 
                         // return
                         return Task.CompletedTask;
                     });
-            }
+                }
 
                 await next.Invoke();
             });
