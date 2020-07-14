@@ -23,13 +23,13 @@ INSERT INTO @Parameters([Index], [HeaderIndex], [Key], [Label], Visibility) VALU
 (6, 6, N'CenterId', NULL, N'Optional');
 
 INSERT INTO @Select([Index], [HeaderIndex], [Path], [Label]) VALUES
-(0, 6, N'Line/Document/Code', N'Code', N'NULL'),
-(1, 6, N'Line/State', NULL, N'NULL'),
-(2, 6, N'Account', NULL, N'NULL'),
-(3, 6, N'Center', NULL, N'NULL'),
-(4, 6, N'Currency', NULL, N'NULL'),
-(5, 6, N'AlgebraicMonetaryValue', N'Monetary Value', N'NULL'),
-(6, 6, N'AlgebraicValue', N'Value', N'NULL');
+(0, 6, N'Line/Document/Code', N'Code'),
+(1, 6, N'Line/State', NULL),
+(2, 6, N'Account', NULL),
+(3, 6, N'Center', NULL),
+(4, 6, N'Currency', NULL),
+(5, 6, N'AlgebraicMonetaryValue', N'Monetary Value'),
+(6, 6, N'AlgebraicValue', N'Value');
 
 INSERT INTO @Rows([Index], [HeaderIndex], [Path], [OrderDirection], [AutoExpand]) VALUES
 (0, 0, N'Account', NULL, 1),
