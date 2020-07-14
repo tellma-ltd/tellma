@@ -13,8 +13,8 @@ BEGIN
 	),
 	JournalSummary AS (
 		SELECT ResourceId,
-			SUM(OpeningQuantity) AS OpeningQuantity, SUM(QuantityIn) AS QuantityIn, SUM(QuantityOut) AS QuantityOut, SUM(EndingQuantity) AS EndingQuantity,
-			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(EndingMass) AS EndingMass
+			SUM(OpeningQuantity) AS OpeningQuantity, SUM(QuantityIn) AS QuantityIn, SUM(QuantityOut) AS QuantityOut, SUM(ClosingQuantity) AS EndingQuantity,
+			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(ClosingMass) AS EndingMass
 		FROM [map].[SummaryEntries](
 			@FromDate,
 			@ToDate
