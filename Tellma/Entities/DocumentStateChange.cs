@@ -7,6 +7,7 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "DocumentStateChange", Plural = "DocumentStateChanges")]
     public class DocumentStateChange : EntityWithKey<int>
     {
+        [NotNull]
         public int? DocumentId { get; set; }
 
         [Display(Name = "StateHistory_FromState")]
@@ -19,6 +20,7 @@ namespace Tellma.Entities
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

@@ -833,7 +833,7 @@
     <value>与帐户线“{0}”需要与自单元另一条线。</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>帐户“{0}”服务的平衡将变为负。</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>帐户类型 '{0}' 帐户 '{1}' 中使用。</value>
@@ -952,14 +952,8 @@
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>用户“{0}”不是的角色“{1}”的部件。</value>
   </data>
-  <data name="Error_IncompatibleUserRole" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>无效的登录尝试。如果你还没有确认您的电子邮件了，请检查您的电子邮件收件箱</value>
-  </data>
-  <data name="Error_IsCurrent0IsIncompatibleWithAccountType1" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>属性{0}必须在导入文件</value>
@@ -1108,9 +1102,6 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>该代码已经被使用“{0}”。</value>
   </data>
-  <data name="Error_TheCommentIsMadeByAnotherUser0" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
   <data name="Error_TheContract01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
   </data>
@@ -1119,9 +1110,6 @@
   </data>
   <data name="Error_TheContract01IsUsedInDocument23" xml:space="preserve">
     <value>{0} '{1}' 在{2} {3}被使用。</value>
-  </data>
-  <data name="Error_TheContractDefinition0IsNotCompatibleWithContract1" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_TheContractDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>合约定义“{0}”中的帐户类型“{1}”中使用。</value>
@@ -1164,9 +1152,6 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>与ID的实体“{0}”被指定多次。</value>
-  </data>
-  <data name="Error_TheEntryCausesOffLimitBalance0" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>的{0}的值是与该帐户不兼容。</value>
@@ -1257,9 +1242,6 @@
   </data>
   <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
     <value>用户“{0}”不具有足够的权限来代表用户登录“{1}”。</value>
-  </data>
-  <data name="Error_UserCannotSignLine" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
     <value>值“{0}”字段为{1}不应超过一个字符</value>

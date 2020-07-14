@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -306,6 +307,17 @@ namespace Tellma.Entities.Descriptors
                     }
                     else
                     {
+                        #region IsNotNull
+
+                        bool isNotNull = false;
+                        var isNotNullAttribute = propInfo.GetCustomAttribute<NotNullAttribute>(inherit: true);
+                        if (isNotNullAttribute != null)
+                        {
+                            isNotNull = true;
+                        }
+
+                        #endregion
+
                         #region MaxLength
 
                         int maxLength = -1;
@@ -318,7 +330,7 @@ namespace Tellma.Entities.Descriptors
                         #endregion
 
                         // Simple
-                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, maxLength);
+                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, isNotNull, maxLength);
                     }
 
                     propertiesDic.Add(propInfo.Name, propDesc);

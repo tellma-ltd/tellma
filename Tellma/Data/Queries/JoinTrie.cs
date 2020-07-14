@@ -19,10 +19,11 @@ namespace Tellma.Data.Queries
         /// </summary>
         /// <param name="entityDescriptor">The <see cref="EntityDescriptor"/> of the root type of this join tree</param>
         /// <param name="foreignKeyName">Optionally: the foreign key pointing to the parent join tree</param>
-        public JoinTrie(TypeDescriptor entityDescriptor, string foreignKeyName = null)
+        public JoinTrie(TypeDescriptor entityDescriptor, string foreignKeyName = null, bool isFkNotNull = false)
         {
             EntityDescriptor = entityDescriptor ?? throw new ArgumentNullException(nameof(entityDescriptor));
             ForeignKeyName = foreignKeyName;
+            IsFkNotNull = isFkNotNull;
         }
 
         /// <summary>
@@ -33,7 +34,12 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The foreign key on the *parent* Entity
         /// </summary>
-        public string ForeignKeyName { get; private set; } // e.g. 'ContractId'
+        public string ForeignKeyName { get; } // e.g. 'ContractId'
+
+        /// <summary>
+        /// This is a required foreign key, 
+        /// </summary>
+        public bool IsFkNotNull { get; }
 
         /// <summary>
         /// The symbol of the path leading up to the current node, root node usually has the symbol "P"
@@ -92,8 +98,9 @@ namespace Tellma.Data.Queries
             else
             {
                 string source = sources(EntityDescriptor.Type);
+                string leftOrInner = IsFkNotNull ? "INNER" : "LEFT";
                 builder.AppendLine();
-                builder.Append($"LEFT JOIN {source} As [{Symbol}] ON [{parentSymbol}].[{ForeignKeyName}] = [{Symbol}].[Id]");
+                builder.Append($"{leftOrInner} JOIN {source} As [{Symbol}] ON [{parentSymbol}].[{ForeignKeyName}] = [{Symbol}].[Id]");
             }
 
             foreach (var key in Keys)
@@ -153,16 +160,17 @@ namespace Tellma.Data.Queries
                         throw new InvalidOperationException($"Navigation property '{step}' does not exist on type {currentDesc.Name}");
                     }
 
+                    if (navProp.ForeignKey == null)
+                    {
+                        throw new InvalidOperationException($"Navigation property '{step}' on type {currentDesc.Name} is missing its foreign key");
+                    }
+
                     if (!currentTree.ContainsKey(step))
                     {
                         string foreignKeyName = navProp.ForeignKey.Name;
-                        if (string.IsNullOrWhiteSpace(foreignKeyName))
-                        {
-                            // Programmer mistake
-                            throw new InvalidOperationException($"Navigation property '{step}' on type {currentDesc.Name} is not adorned with the name of the foreign key property");
-                        }
+                        bool isNotNull = navProp.ForeignKey.IsNotNull;
 
-                        currentTree[step] = new JoinTrie(navProp.TypeDescriptor, foreignKeyName: foreignKeyName);
+                        currentTree[step] = new JoinTrie(navProp.TypeDescriptor, foreignKeyName: foreignKeyName, isFkNotNull: isNotNull);
                     }
 
                     currentTree = currentTree[step];

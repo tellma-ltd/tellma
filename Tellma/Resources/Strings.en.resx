@@ -832,6 +832,9 @@
   <data name="Error_Account0RequiresAnEntryWithPureQuantity" xml:space="preserve">
     <value>Line with account '{0}' requires another line with the self unit.</value>
   </data>
+  <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
+    <value>Account '{0}' service balance will become negative.</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>Account type '{0}' is used in account '{1}'.</value>
   </data>

@@ -832,6 +832,9 @@
   <data name="Error_Account0RequiresAnEntryWithPureQuantity" xml:space="preserve">
     <value>سطر الحساب ({0}) ينبغي أن يكون معه سطر آخر يستخدم الذات كوحدة قياس.</value>
   </data>
+  <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
+    <value>رصيد الحساب ({0}) سيصبح سالبا.</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>نوع الحساب ({0}) مستخدم في الحساب ({1}).</value>
   </data>

@@ -54,6 +54,11 @@ namespace Tellma.Entities.Descriptors
         public int MaxLength { get; }
 
         /// <summary>
+        /// Signifies a properties adorned with the 
+        /// </summary>
+        public bool IsNotNull { get; set; }
+
+        /// <summary>
         /// For <see cref="NavigationPropertyDescriptor"/>s, returns the entity descriptor of the property type.
         /// For <see cref="CollectionPropertyDescriptor"/>s, returns the entity descriptor of the collection's entity type.
         /// For simple properties, throws an exception
@@ -83,6 +88,7 @@ namespace Tellma.Entities.Descriptors
             string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
+            bool isNotNull,
             int maxLength = -1)
         {
             PropertyInfo = propInfo ?? throw new ArgumentNullException(nameof(propInfo));
@@ -94,6 +100,7 @@ namespace Tellma.Entities.Descriptors
             IsHierarchyId = Type == typeof(HierarchyId);
             IsGeography = Type == typeof(Geography);
             MaxLength = maxLength;
+            IsNotNull = isNotNull;
         }
     }
 }
