@@ -833,7 +833,7 @@
     <value>መለያ መስመር «{0} 'የራስ አሃድ ጋር ሌላ መስመር ይጠይቃል.</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>መለያ »{0}» አገልግሎት ቀሪ አሉታዊ ይሆናል.</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ አይነት «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>

@@ -833,7 +833,7 @@
     <value>与帐户线“{0}”需要与自单元另一条线。</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>帐户“{0}”服务的平衡将变为负。</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>帐户类型 '{0}' 帐户 '{1}' 中使用。</value>
