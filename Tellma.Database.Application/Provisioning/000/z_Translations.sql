@@ -867,6 +867,34 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 (N'Lookups',N'Red', N'en', N'Red ', N'n'),(N'Lookups',N'Red', N'ar', N'أحمر', N'n'),(N'Lookups',N'Red', N'am', N'ቀይ', N'n'),(N'Roles',N'Red', N'cn', N'红', N'n'),
 (N'Lookups',N'DarkGreen', N'en', N'Dark Green', N'n'),(N'Lookups',N'DarkGreen', N'ar', N'أخضر غامق', N'n'),(N'Lookups',N'DarkGreen', N'am', N'ደማቅ አረንጓዴ', N'n'),(N'Roles',N'DarkGreen', N'cn', N'深绿色', N'n'),
 (N'Lookups',N'LightBrown', N'en', N'Light Brown', N'n'),(N'Lookups',N'LightBrown', N'ar', N'البني الفاتح', N'n'),(N'Lookups',N'LightBrown', N'am', N'የፈካ ቡኒ', N'n'),(N'Roles',N'LightBrown', N'cn', N'浅褐色', N'n');
+-- Report Definition
+INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
+(N'ReportDefinitions',N'comprehensive-income', N'en', N'Statement of comprehensive income', N'n'),(N'ReportDefinitions',N'comprehensive-income', N'ar', N'بيان الدخل الشامل', N'n'),(N'ReportDefinitions',N'comprehensive-income', N'am', N'አጠቃላይ ገቢ መግለጫ', N'n'),(N'ReportDefinitions',N'comprehensive-income', N'zh', N'全面收益表', N'n'),
+(N'ReportDefinitions',N'trial-balance-currency', N'en', N'Trial Balance - Currency', N'n'),(N'ReportDefinitions',N'trial-balance-currency', N'ar', N'ميزان المراجعة بالعملة', N'n'),(N'ReportDefinitions',N'trial-balance-currency', N'am', N'በችሎት ሒሳብ - ምንዛሬ', N'n'),(N'ReportDefinitions',N'trial-balance-currency', N'zh', N'试算表 - 货币', N'n'),
+(N'ReportDefinitions',N'financial-position', N'en', N'Statement of financial position', N'n'),(N'ReportDefinitions',N'financial-position', N'ar', N'بيان المركز المالي', N'n'),(N'ReportDefinitions',N'financial-position', N'am', N'የፋይናንስ አቋም መግለጫ', N'n'),(N'ReportDefinitions',N'financial-position', N'zh', N'财务状况表', N'n'),
+(N'ReportDefinitions',N'cash-flow', N'en', N'Statement of cash flow - Direct Method', N'n'),(N'ReportDefinitions',N'cash-flow', N'ar', N'قائمة التدفقات النقدية - الطريقة المباشرة', N'n'),(N'ReportDefinitions',N'cash-flow', N'am', N'የጥሬ ገንዘብ ፍሰት መግለጫ - ቀጥታ ስልት', N'n'),(N'ReportDefinitions',N'cash-flow', N'zh', N'现金流量表 - 直接法', N'n'),
+(N'ReportDefinitions',N'trial-balance', N'en', N'Trial Balance', N'n'),(N'ReportDefinitions',N'trial-balance', N'ar', N'ميزان المراجعة', N'n'),(N'ReportDefinitions',N'trial-balance', N'am', N'በችሎት ባላንስ', N'n'),(N'ReportDefinitions',N'trial-balance', N'zh', N'试算表', N'n'),
+(N'ReportDefinitions',N'trial-balance-state', N'en', N'Trial Balance By State', N'n'),(N'ReportDefinitions',N'trial-balance-state', N'ar', N'ميزان المراجعة بالحالة', N'n'),(N'ReportDefinitions',N'trial-balance-state', N'am', N'በችሎት ባላንስ በ ስቴት', N'n'),(N'ReportDefinitions',N'trial-balance-state', N'zh', N'试算表由国家', N'n'),
+(N'ReportDefinitions',N'journal', N'en', N'Accounting Journal', N'n'),(N'ReportDefinitions',N'journal', N'ar', N'دفتر اليومية', N'n'),(N'ReportDefinitions',N'journal', N'am', N'አካውንቲንግ ጆርናል', N'n'),(N'ReportDefinitions',N'journal', N'zh', N'会计杂志', N'n');
+
+-- Report Parameters
+INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
+(N'ReportParameterDefinitions',N'fromDate', N'en', N'From Date', N'n'),(N'ReportParameterDefinitions',N'fromDate', N'ar', N'من تاريخ', N'n'),(N'ReportParameterDefinitions',N'fromDate', N'am', N'ቀን ጀምሮ', N'n'),(N'ReportParameterDefinitions',N'fromDate', N'zh', N'从日期', N'n'),
+(N'ReportParameterDefinitions',N'toDate', N'en', N'To Date', N'n'),(N'ReportParameterDefinitions',N'toDate', N'ar', N'إلى تاريخ', N'n'),(N'ReportParameterDefinitions',N'toDate', N'am', N'ቀን ወደ', N'n'),(N'ReportParameterDefinitions',N'toDate', N'zh', N'至今', N'n'),
+(N'ReportParameterDefinitions',N'Date', N'en', N'As Of Date', N'n'),(N'ReportParameterDefinitions',N'Date', N'ar', N'بتاريخ', N'n'),(N'ReportParameterDefinitions',N'Date', N'am', N'ቀን ጀምሮ', N'n'),(N'ReportParameterDefinitions',N'Date', N'zh', N'截至日期', N'n'),
+(N'ReportParameterDefinitions',N'DocumentState', N'en', N'Document State', N'n'),(N'ReportParameterDefinitions',N'DocumentState', N'ar', N'حالة القيد', N'n'),(N'ReportParameterDefinitions',N'DocumentState', N'am', N'የሰነድ ክልል', N'n'),(N'ReportParameterDefinitions',N'DocumentState', N'zh', N'文档状态', N'n'),
+(N'ReportParameterDefinitions',N'LineState', N'en', N'Line State', N'n'),(N'ReportParameterDefinitions',N'LineState', N'ar', N'حالة السطر', N'n'),(N'ReportParameterDefinitions',N'LineState', N'am', N'የመስመር ክልል', N'n'),(N'ReportParameterDefinitions',N'LineState', N'zh', N'线路状态。', N'n');
+-- Report Select
+INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
+(N'ReportSelectDefinitions',N'Line/Document/Code', N'en', N'Code', N'n'),(N'ReportSelectDefinitions',N'Line/Document/Code', N'ar', N'الكود', N'n'),(N'ReportSelectDefinitions',N'Line/Document/Code', N'am', N'ኮድ', N'n'),(N'ReportSelectDefinitions',N'Line/Document/Code', N'zh', N'码', N'n'),
+(N'ReportSelectDefinitions',N'AlgebraicMonetaryValue', N'en', N'Monetary Value', N'n'),(N'ReportSelectDefinitions',N'AlgebraicMonetaryValue', N'ar', N'المبلغ', N'n'),(N'ReportSelectDefinitions',N'AlgebraicMonetaryValue', N'am', N'የገንዘብ ዋጋ', N'n'),(N'ReportSelectDefinitions',N'AlgebraicMonetaryValue', N'zh', N'货币价值', N'n'),
+(N'ReportSelectDefinitions',N'AlgebraicValue', N'en', N'Value', N'n'),(N'ReportSelectDefinitions',N'AlgebraicValue', N'ar', N'القيمة', N'n'),(N'ReportSelectDefinitions',N'AlgebraicValue', N'am', N'ዋጋ', N'n'),(N'ReportSelectDefinitions',N'AlgebraicValue', N'zh', N'值', N'n');
+-- Report Measure
+INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
+(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'en', N'Revenue (Expense)', N'n'),(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'ar', N'الإيراد (المصروف)', N'n'),(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'am', N'ገቢ (የወጪ)', N'n'),(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'zh', N'收入（支出）', N'n'),
+(N'ReportMeasureDefinitions',N'Balance', N'en', N'Balance', N'n'),(N'ReportMeasureDefinitions',N'Balance', N'ar', N'الرصيد', N'n'),(N'ReportMeasureDefinitions',N'Balance', N'am', N'ሚዛን', N'n'),(N'ReportMeasureDefinitions',N'Balance', N'zh', N'平衡', N'n'),
+(N'ReportMeasureDefinitions',N'Changes', N'en', N'Changes', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'ar', N'التغير', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'am', N'ለውጦች', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'zh', N'变化', N'n');-- Users
+
 -- Users
 UPDATE dbo.Users
 SET
@@ -995,3 +1023,31 @@ SET
 	[Name2] = dbo.fn_TranslateFromEnglish(N'Lookups', [Name], @SecondaryLanguageId, 'n'),
 	[Name3] = dbo.fn_TranslateFromEnglish(N'Lookups', [Name], @TernaryLanguageId, 'n')
 WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Lookups' AND [Form] = N'n')
+-- Report Definitions
+UPDATE dbo.ReportDefinitions
+SET
+	[Title]  = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @PrimaryLanguageId, 'n'),
+	[Title2] = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @SecondaryLanguageId, 'n'),
+	[Title3] = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @TernaryLanguageId, 'n')
+WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportDefinitions')
+-- ReportParameter Definitions
+UPDATE dbo.ReportParameterDefinitions
+SET
+	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @PrimaryLanguageId, 'n'),
+	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @SecondaryLanguageId, 'n'),
+	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @TernaryLanguageId, 'n')
+WHERE [Key] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportParameterDefinitions');
+-- ReportSelect Definitions
+UPDATE dbo.ReportSelectDefinitions
+SET
+	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Path], @PrimaryLanguageId, 'n'),
+	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Path], @SecondaryLanguageId, 'n'),
+	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Path], @TernaryLanguageId, 'n')
+WHERE [Path] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportSelectDefinitions')
+-- ReportMeasure Definitions
+UPDATE dbo.ReportMeasureDefinitions
+SET
+	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @PrimaryLanguageId, 'n'),
+	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @SecondaryLanguageId, 'n'),
+	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @TernaryLanguageId, 'n')
+WHERE [Label] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportMeasureDefinitions')
