@@ -16,7 +16,7 @@ RETURN
 			SUM(E.[AlgebraicMonetaryValue]) AS [MonetaryValue],
 			SUM(E.[AlgebraicQuantity]) AS [Quantity],
 			SUM(E.[AlgebraicMass]) AS [Mass],
-			SUM(E.[AlgebraicValue]) AS [Opening]
+			SUM(E.[AlgebraicValue]) AS [Value]
 		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		WHERE 
@@ -57,14 +57,22 @@ RETURN
 			COALESCE(OpeningBalances.[ResourceId], Movements.[ResourceId]) AS [ResourceId],
 			COALESCE(OpeningBalances.[UnitId], Movements.[UnitId]) AS [UnitId],
 			COALESCE(OpeningBalances.[ContractId], Movements.[ContractId]) AS [ContractId],			
-			COALESCE(OpeningBalances.[EntryTypeId], Movements.[EntryTypeId]) AS [EntryTypeId],	
-			ISNULL(OpeningBalances.[Quantity],0) AS OpeningQuantity, ISNULL(OpeningBalances.[Mass],0) AS OpeningMass, ISNULL(OpeningBalances.[Opening],0) AS Opening,
-			ISNULL(Movements.[QuantityIn],0) AS QuantityIn, ISNULL(Movements.[QuantityOut],0) AS QuantityOut,
-			ISNULL(Movements.[MassIn],0) AS MassIn, ISNULL(Movements.[MassOut],0) AS MassOut,
-			ISNULL(Movements.[Debit], 0) AS [Debit], ISNULL(Movements.[Credit], 0) AS [Credit],
-			ISNULL(OpeningBalances.[Quantity], 0) + ISNULL(Movements.[QuantityIn], 0) - ISNULL(Movements.[QuantityOut],0) AS EndingQuantity,
-			ISNULL(OpeningBalances.[Mass], 0) + ISNULL(Movements.[MassIn], 0) - ISNULL(Movements.[MassOut],0) AS EndingMass,
-			ISNULL(OpeningBalances.[Opening], 0) + ISNULL(Movements.[Debit], 0) - ISNULL(Movements.[Credit],0) AS [Closing]
+			COALESCE(OpeningBalances.[EntryTypeId], Movements.[EntryTypeId]) AS [EntryTypeId],
+
+			ISNULL(OpeningBalances.[MonetaryValue],0) AS [OpeningMonetaryValue],
+			ISNULL(OpeningBalances.[Quantity],0) AS [OpeningQuantity],
+			ISNULL(OpeningBalances.[Mass],0) AS [OpeningMass],
+			ISNULL(OpeningBalances.[Value],0) AS [Opening],
+
+			ISNULL(Movements.[MonetaryValueIn],0) AS [MonetaryValueIn], ISNULL(Movements.[MonetaryValueOut],0) AS [MonetaryValueOut],
+			ISNULL(Movements.[QuantityIn],0) AS [QuantityIn],	ISNULL(Movements.[QuantityOut],0) AS [QuantityOut],
+			ISNULL(Movements.[MassIn],0) AS [MassIn],			ISNULL(Movements.[MassOut],0) AS [MassOut],
+			ISNULL(Movements.[Debit], 0) AS [Debit],			ISNULL(Movements.[Credit], 0) AS [Credit],
+
+			ISNULL(OpeningBalances.[MonetaryValue], 0) + ISNULL(Movements.[MonetaryValueIn], 0) - ISNULL(Movements.[MonetaryValueOut],0) AS [ClosingMonetaryValue],
+			ISNULL(OpeningBalances.[Quantity], 0) + ISNULL(Movements.[QuantityIn], 0) - ISNULL(Movements.[QuantityOut],0) AS [ClosingQuantity],
+			ISNULL(OpeningBalances.[Mass], 0) + ISNULL(Movements.[MassIn], 0) - ISNULL(Movements.[MassOut],0) AS [ClosingMass],
+			ISNULL(OpeningBalances.[Value], 0) + ISNULL(Movements.[Debit], 0) - ISNULL(Movements.[Credit],0) AS [Closing]
 		FROM OpeningBalances
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
@@ -76,8 +84,9 @@ RETURN
 		[UnitId],
 		[ContractId],
 		[EntryTypeId],
-		[OpeningQuantity],	[QuantityIn],	[QuantityOut],	[EndingQuantity],
-		[OpeningMass],		[MassIn],		[MassOut],		[EndingMass],
-		[Opening],			[Debit],		[Credit],		[Closing]
+		[OpeningMonetaryValue],	[MonetaryValueIn],	[MonetaryValueOut],	[ClosingMonetaryValue]
+		[OpeningQuantity],		[QuantityIn],		[QuantityOut],		[ClosingQuantity],
+		[OpeningMass],			[MassIn],			[MassOut],			[ClosingMass],
+		[Opening],				[Debit],			[Credit],			[Closing]
 	FROM Register R
 ;
