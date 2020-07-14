@@ -7,9 +7,11 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "DocumentAssignment", Plural = "DocumentAssignments")]
     public class DocumentAssignment : EntityWithKey<int>
     {
+        [NotNull]
         public int? DocumentId { get; set; }
 
         [Display(Name = "Document_Assignee")]
+        [NotNull]
         public int? AssigneeId { get; set; }
 
         [Display(Name = "Document_Comment")]
@@ -19,6 +21,7 @@ namespace Tellma.Entities
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "Document_OpenedAt")]

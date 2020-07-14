@@ -11,6 +11,7 @@ namespace Tellma.Entities
         [Display(Name = "Account_Type")]
         [Required]
         [AlwaysAccessible]
+        [NotNull]
         public int? AccountTypeId { get; set; }
 
         [Display(Name = "Account_Center")]
@@ -72,12 +73,14 @@ namespace Tellma.Entities
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query
