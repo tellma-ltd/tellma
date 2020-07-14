@@ -877,9 +877,6 @@
   <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
     <value>የ {0} ሰነድ ከ ፊርማ መሰረዝ አይቻልም.</value>
   </data>
-  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
-    <value>አይደለም {0} ሰነድ UN-መግባት ይችላሉ.</value>
-  </data>
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>ብቻ ረቂቅ መስመሮች ሊሰረዙ ይችላሉ.</value>
   </data>

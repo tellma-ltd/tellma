@@ -877,9 +877,6 @@
   <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
     <value>لا يمكن حذف توقيع من مستند في حالة {1}.</value>
   </data>
-  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
-    <value>لا يمكن حذف توقيع من مستند في حالة {1}.</value>
-  </data>
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>لا يمكن حذف الأسطر ما لم تكن في حالة جديد.</value>
   </data>
