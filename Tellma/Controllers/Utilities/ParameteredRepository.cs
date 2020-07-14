@@ -1,9 +1,9 @@
 ﻿using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using System.Collections.Generic;
 using System.Linq;
 using System.Data.SqlClient;
+using System;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -21,7 +21,7 @@ namespace Tellma.Controllers.Utilities
         public ParameteredRepository(IRepository repo, params (string ParamName, object Value)[] additionalParameters)
         {
             _repo = repo;
-            _additionalParameters = additionalParameters.Select(p => new SqlParameter(p.ParamName, p.Value)).ToArray();
+            _additionalParameters = additionalParameters.Select(p => new SqlParameter(p.ParamName, p.Value ?? DBNull.Value)).ToArray();
         }
 
         public AggregateQuery<T> AggregateQuery<T>() where T : Entity

@@ -75,8 +75,8 @@ namespace Tellma.Controllers
         protected override IRepository GetRepository()
         {
             return new ParameteredRepository<SummaryEntry>(_repo,
-                ("@FromDate", GetDate("FromDate", true)),
-                ("@ToDate", GetDate("ToDate", true))
+                ("@FromDate", GetDate("FromDate", isRequired: false)),
+                ("@ToDate", GetDate("ToDate", isRequired: false))
             );
         }
 

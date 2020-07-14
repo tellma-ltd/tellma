@@ -55,10 +55,9 @@ export function metadata_SummaryEntry(wss: WorkspaceService, trx: TranslateServi
             select: [],
             apiEndpoint: 'summary-entries',
             parameters: [
-                { key: 'FromDate', isRequired: true, desc: { control: 'date', label: () => trx.instant('FromDate') } },
-                { key: 'ToDate', isRequired: true, desc: { control: 'date', label: () => trx.instant('ToDate') } },
+                { key: 'FromDate', isRequired: false, desc: { control: 'date', label: () => trx.instant('FromDate') } },
+                { key: 'ToDate', isRequired: false, desc: { control: 'date', label: () => trx.instant('ToDate') } },
             ],
-            masterScreenUrl: 'summary-entries',
             orderby: () => ['AccountId'],
             inactiveFilter: null,
             format: (__: Entity) => '',
