@@ -1,10 +1,22 @@
 ﻿INSERT INTO @Accounts([Index], [AccountTypeId], [ClassificationId],[Code],[Name],[Name2],[CurrencyId],[CenterId], [ResourceDefinitionId],[ContractDefinitionId], [NotedContractDefinitionId]) VALUES
 (11010100,@Land,@AC110101, '11010100', N'Land -', N'أراضي -',@SDG,NULL, @LandMemberRD,NULL,NULL),
 (11010200,@Buildings,@AC110102, '11010200', N'Buildings -', N'مباني -',@SDG,NULL, @BuildingsMemberRD,NULL,NULL),
+(11010300,@Machinery,@AC110103, '11010300', N'Machinery -', N'الالات -',@SDG,NULL, @MachineryMemberRD,NULL,NULL),
+(11010310,@Machinery,@AC110103, '11010310', N'Power generating assets', N'أصول مولدة للطاقة',@SDG,NULL, @PowerGeneratingAssetsMemberRD,NULL,NULL),
 (11010600,@MotorVehicles,@AC110106, '11010600', N'Motor Vehicles -', N'العربات -',@SDG,NULL, @MotorVehiclesMemberRD,NULL,NULL),
+(11010700,@FixturesAndFittings,@AC110107, '11010700', N'Fixtures and fittings -', N'التركيبات والتجهيزات -',@SDG,NULL, @FixturesAndFittingsMemberRD,NULL,NULL),
+(11010710,@FixturesAndFittings,@AC110107, '11010710', N'Network infrastructure', N'البنية التحتية للشبكة',@SDG,NULL, @NetworkInfrastructureMemberRD,NULL,NULL),
+(11010720,@FixturesAndFittings,@AC110107, '11010720', N'Leasehold improvements', N'تحسينات عقارية',@SDG,NULL, @LeaseholdImprovementsMemberRD,NULL,NULL),
+(11010810,@OfficeEquipment,@AC110108, '11010810', N'Office equipment -', N'المعدات المكتبية -',@SDG,NULL, @OfficeEquipmentMemberRD,NULL,NULL),
+(11010820,@OfficeEquipment,@AC110108, '11010820', N'Computer equipment', N'معدات الحاسوب',@SDG,NULL, @ComputerEquipmentMemberRD,NULL,NULL),
+(11010830,@OfficeEquipment,@AC110108, '11010830', N'Communication and network equipment', N'الاتصالات ومعدات الشبكة',@SDG,NULL, @CommunicationAndNetworkEquipmentMemberRD,NULL,NULL),
+(11010900,@BearerPlants,@AC110109, '11010900', N'Bearer plants -', N'النباتات المثمرة -',@SDG,NULL, @BearerPlantsMemberRD,NULL,NULL),
+(11011100,@MiningAssets,@AC110111, '11011100', N'Mining assets -', N'أصول التعدين -',NULL,NULL, @MiningAssetsMemberRD,NULL,NULL),
+(11011200,@OilAndGasAssets,@AC110112, '11011200', N'Oil and gas assets -', N'أصول النفط والغاز -',@SDG,NULL, @OilAndGasAssetsMemberRD,NULL,NULL),
 (11011301,@ConstructionInProgress,@AC110113, '11011301', N'Construction in progress (by project)', N'الإنشاءات قيد الإنجاز (بالمشروع)',@SDG,NULL, NULL,NULL,NULL),
+(11019900,@OtherPropertyPlantAndEquipment,@AC110199, '11019900', N'Other property, plant and equipment -', N'الممتلكات والمصانع والمعدات الأخرى -',@SDG,NULL, @OtherPropertyPlantAndEquipmentMemberRD,NULL,NULL),
 (11020101,@InvestmentPropertyCompleted,@AC110201, '11020101', N'Investment property completed (by investment)', N'العقارات الاستثمارية المستكملة (بالمشروع)',@SDG,NULL, NULL,NULL,NULL),
-(11020201,@InvestmentPropertyUnderConstructionOrDevelopment,@AC110202, '11020201', N'Investment property under construction or development (by investment)', N'عقارات استثمارية قيد الإنشاء أو التطوير (بالمشروع)',@SDG,NULL, NULL,NULL,NULL),
+(11020201,@InvestmentPropertyUnderConstructionOrDevelopment,@AC110202, '11020201', N'Inv. prop. under const. or dev.', N'عقارات استثمارية قيد الإنشاء أو التطوير (بالمشروع)',@SDG,NULL, NULL,NULL,NULL),
 (11080501,@NoncurrentValueAddedTaxReceivables,@AC110805, '11080501', N'Non-current value added tax receivables', N'الذمم المدينة لضريبة القيمة المضافة غير المتداولة',@SDG,NULL, NULL,NULL,@SupplierCD),
 (12010110,@Merchandise,@AC120101, '12010110', N'Current merchandise', N'السلع الحالية',@SDG,NULL, NULL,@WarehouseCD,NULL),
 (12010120,@CurrentFoodAndBeverage,@AC120101, '12010120', N'Current food and beverage', N'الأطعمة والمشروبات',@SDG,NULL, NULL,NULL,NULL),
@@ -144,6 +156,7 @@
 (71090002,@CashReceiptsFromOthersControlExtension,@AC710900, '71090002', N'Cash receipts from others control', N'مراقبة الدفعيات من الآخرين',NULL,NULL, NULL,@CustomerCD,NULL),
 (72000100,@CollectionGuaranteeExtension,@AC720001, '72000100', N'Checks Guarantee -', N'شيكات ضمان',NULL,NULL, NULL,@CustomerCD,NULL),
 (72000200,@CollectionGuaranteeExtension,@AC720002, '72000200', N'Checks Dishonored', N'شيكات مرتجعة',NULL,NULL, NULL,@CustomerCD,NULL)
+
 EXEC [api].[Accounts__Save]
 	@Entities = @Accounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -157,6 +170,14 @@ END;
 DELETE FROM @IndexedIds;
 INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.Accounts
 WHERE AccountTypeId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [IsActive] = 0)
+-- Detailed rental properties reveivable, staff debtors, sundry debtors
+OR CODE IN (N'12020701' , N'12050101', N'12050201')
+-- Detailed Cash on hand
+OR CODE BETWEEN N'12070111' AND N'12070113'
+-- Detaild bank account
+OR CODE BETWEEN N'12070131' AND N'12070133'
+--OR CODE BETWEEN N'12070131' AND N'12070133'
+
 
 EXEC [api].[Accounts__Activate]
 	@IndexedIds = @IndexedIds,

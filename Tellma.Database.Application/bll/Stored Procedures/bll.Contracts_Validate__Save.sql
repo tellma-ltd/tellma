@@ -42,4 +42,6 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
 
+
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -29,7 +29,7 @@
 	[Text1]						NVARCHAR (50),
 	[Text2]						NVARCHAR (50), 
 -- Specific to resources
-	[Identifier]				NVARCHAR (10),
+	[Identifier]				NVARCHAR (50),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
 	-- for non current, unit = usage unit (must NOT be pure). 

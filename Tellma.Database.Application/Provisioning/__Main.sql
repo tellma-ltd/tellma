@@ -23,7 +23,6 @@ IF @OverwriteDb = 0 RETURN
 :r .\000\r_AccountClassifications.sql
 :r .\000\t_Accounts.sql
 :r .\000\u_Lookups.sql
-:r .\000\x_SampleContracts.sql
 :r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
 

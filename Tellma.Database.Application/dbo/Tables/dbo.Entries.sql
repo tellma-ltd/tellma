@@ -45,5 +45,15 @@ CREATE INDEX [IX_Entries__LineId] ON [dbo].[Entries]([LineId]);
 GO
 CREATE INDEX [IX_Entries__AccountId] ON [dbo].[Entries]([AccountId]);
 GO
+CREATE INDEX [IX_Entries__CurrencyId] ON [dbo].[Entries]([CurrencyId]);
+GO
+CREATE INDEX [IX_Entries__CenterId] ON [dbo].[Entries]([CenterId]);
+GO
+CREATE INDEX [IX_Entries__ResourceId] ON [dbo].[Entries]([ResourceId]);
+GO
+CREATE INDEX [IX_Entries__UnitId] ON [dbo].[Entries]([UnitId]);
+GO
+CREATE INDEX [IX_Entries__ContractId] ON [dbo].[Entries]([ContractId]);
+GO
 CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO

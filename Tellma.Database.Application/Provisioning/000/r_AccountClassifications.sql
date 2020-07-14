@@ -223,7 +223,7 @@ WHERE AccountTypeParentId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [IsActive]
 
 EXEC [api].[AccountClassifications__Activate]
 	@IndexedIds = @IndexedIds,
-	@IsActive =0,
+	@IsActive = 0,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
