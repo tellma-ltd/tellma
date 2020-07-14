@@ -73,3 +73,16 @@
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
 	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @ContractDefinitionIds [IdList];
+	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
+
+	DECLARE @Agent1 INT;
+	DECLARE @CashOnHandAccount1 INT, @BankAccount1 INT;
+	DECLARE @Supplier1 INT, @Customer1 INT, @Employee1 INT, @Warehouse1 INT, @Creditor1 INT, @Debtor1 INT, @Partner1 INT;
+
+	DECLARE @Agent2 INT;
+	DECLARE @CashOnHandAccount2 INT, @BankAccount2 INT;
+	DECLARE @Supplier2 INT, @Customer2 INT, @Employee2 INT, @Warehouse2 INT, @Creditor2 INT, @Debtor2 INT, @Partner2 INT;
+
+	DECLARE @Agent3 INT;
+	DECLARE @CashOnHandAccount3 INT, @BankAccount3 INT;
+	DECLARE @Supplier3 INT, @Customer3 INT, @Employee3 INT, @Warehouse3 INT, @Creditor3 INT, @Debtor3 INT, @Partner3 INT;

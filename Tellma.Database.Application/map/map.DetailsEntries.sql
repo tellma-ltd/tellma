@@ -7,9 +7,12 @@ With EB AS ( -- TODO: Test with Resources having both pure and non pure units
 		E.*,
 		IIF(EU.UnitType = N'Pure',
 			E.[Quantity],
-			E.[Quantity] * -- Quantity in E.UnitId
-			EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
-		 *	(RBU.[UnitAmount]) / (RBU.[BaseAmount])
+			CAST(
+				E.[Quantity] -- Quantity in E.UnitId
+			*	EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
+			*	RBU.[UnitAmount] / RBU.[BaseAmount]
+			 AS DECIMAL (19,4)
+			)
 		 ) As [BaseQuantity],-- Quantity in Base unit of that resource
 		 IIF(RBU.[UnitType] = N'Mass', 1, R.[UnitMass]) AS [Density]
 	FROM dbo.Entries E

@@ -2,7 +2,7 @@
 BEGIN
 DECLARE @AT TABLE (
 	[Index] INT, [AllowsPureUnit] BIT, [Code] NVARCHAR(50),
-	[Node] HIERARCHYID, [EntryTypeParentCode] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX)
+	[Node] HIERARCHYID, [EntryTypeParentConcept] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX)
 )
 --Script
 INSERT INTO @AT VALUES(0,0,'1', '/1/', NULL,N'StatementOfFinancialPositionAbstract', N'Statement of financial position [abstract]',N'')
@@ -298,7 +298,7 @@ INSERT INTO @AT VALUES(289,0,'422', '/4/2/2/', NULL,N'DishonouredGuaranteeExtens
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [AllowsPureUnit],
 		[EntryTypeParentId], [Description])
 SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [AllowsPureUnit],
-		(SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = RC.EntryTypeParentCode), [Description]
+		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = RC.EntryTypeParentConcept), [Description]
 FROM @AT RC;
 UPDATE @AccountTypes SET IsAssignable = 1
 WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)

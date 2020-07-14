@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Accounts] (
 	[Id]						INT				CONSTRAINT [PK_Accounts] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[AccountTypeId]				INT				NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
+	[AccountTypeId]				INT				NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[CenterId]					INT				CONSTRAINT [FK_Accounts__CenterId] REFERENCES [dbo].[Centers] ([Id]),
 	[Name]						NVARCHAR (255)	NOT NULL,
 	[Name2]						NVARCHAR (255),
@@ -24,4 +24,6 @@
 );
 GO
 CREATE CLUSTERED INDEX [IX_Accounts__Code] ON dbo.Accounts([Code]) --WHERE [Code] IS NOT NULL;
+GO
+CREATE INDEX [IX_Accounts__AccountTypeId] ON [dbo].[Accounts]([AccountTypeId]);
 GO
