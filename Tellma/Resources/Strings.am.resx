@@ -952,14 +952,8 @@
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>የተጠቃሚ «{0} '' {1}» ሚና አባል አይደለም.</value>
   </data>
-  <data name="Error_IncompatibleUserRole" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>በመለያ-ውስጥ ልክ ያልኾነ ሙከራ. በእርስዎ ኢሜይል አረጋግጧል አይደለም ከሆነ እስካሁን የኢሜይል ገቢ መልዕክት ሳጥን ምልክት ያድርጉ</value>
-  </data>
-  <data name="Error_IsCurrent0IsIncompatibleWithAccountType1" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} በመጣው ፋይል ውስጥ መሆን አለበት</value>
@@ -1108,9 +1102,6 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheCommentIsMadeByAnotherUser0" xml:space="preserve">
-    <value>#VALUE!</value>
-  </data>
   <data name="Error_TheContract01HasNoUsers" xml:space="preserve">
     <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
   </data>
@@ -1119,9 +1110,6 @@
   </data>
   <data name="Error_TheContract01IsUsedInDocument23" xml:space="preserve">
     <value>{0} «{1}« {2} {3} ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheContractDefinition0IsNotCompatibleWithContract1" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_TheContractDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>ውል ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
@@ -1164,9 +1152,6 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
-  </data>
-  <data name="Error_TheEntryCausesOffLimitBalance0" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>{0} ዋጋ መለያ ጋር አይጣጣምም.</value>
@@ -1257,9 +1242,6 @@
   </data>
   <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
     <value>የተጠቃሚ «{0}» ተጠቃሚ ወክሎ ለመግባት በቂ ፍቃዶች የሉትም «{1}».</value>
-  </data>
-  <data name="Error_UserCannotSignLine" xml:space="preserve">
-    <value>#VALUE!</value>
   </data>
   <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
     <value>መስክ {1} ለ እሴት «{0} 'አንድ ቁምፊ መብለጥ የለበትም</value>

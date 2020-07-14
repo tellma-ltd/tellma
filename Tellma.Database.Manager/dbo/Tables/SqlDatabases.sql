@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[SqlDatabases]
 (
-	[Id]				INT PRIMARY KEY IDENTITY(101, 1), 
+	[Id]				INT PRIMARY KEY CONSTRAINT [CK_SqlDatabases_Id] CHECK ([Id] > 0), 
     [DatabaseName]		NVARCHAR(255) NOT NULL, 
     [ServerId]			INT NOT NULL, 
     [Description]		NVARCHAR(1024) NULL, 

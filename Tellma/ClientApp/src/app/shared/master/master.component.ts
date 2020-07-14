@@ -332,8 +332,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       // (hasChanged === true) means we navigated to this screen with different url params than last time
       // (masterStatus !== loaded) means we navigated to this master screen for the first time
-      // (masterStatus !== loadeding) means the url state has NOT changed from within the screen
-      // (s.lastMasterEndpoint != this.endpoint) means another master screen was opened before coming here
+      // (masterStatus !== loading) means the url state has NOT changed from within the screen
+      // (s.mdLastKey != this.endpoint) means another master screen was opened before coming here
       // In either of the above cases, we need to refresh
       if (hasChanged || (s.masterStatus !== MasterStatus.loaded && s.masterStatus !== MasterStatus.loading) ||
         this.workspace.current.mdLastKey !== this.apiEndpoint) {
@@ -347,6 +347,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy() {
+    if (this.state.masterStatus === MasterStatus.loading) {
+      delete this.state.masterStatus; // So that coming back will trigger a refresh
+    }
+
     // This cancels any asynchronous backend calls
     this.notifyDestruct$.next();
     this._subscriptions.unsubscribe();
@@ -1236,7 +1240,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   public get createTooltip(): string {
     return !this.canCreatePermissions ? this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions') :
-     !this.notArchived ? this.translate.instant('Error_DefinitionIsArchived') : '';
+      !this.notArchived ? this.translate.instant('Error_DefinitionIsArchived') : '';
   }
 
   public get canImportPermissions(): boolean {
@@ -1451,21 +1455,21 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.showExportSpinner = true;
-    obs$.pipe(tap(
-      (blob: Blob) => {
+    obs$.pipe(
+      tap((blob: Blob) => {
         this.showExportSpinner = false;
         const fileName = `${this.exportFileName || this.masterCrumb} ${from}-${to}.csv`;
         downloadBlob(blob, fileName);
-      },
-      (friendlyError: any) => {
+      }),
+      catchError(friendlyError => {
         this.showExportSpinner = false;
         this.displayErrorModal(friendlyError.error);
-      },
-      () => {
+        return of();
+      }),
+      finalize(() => {
         this.showExportSpinner = false;
-      }
-    ),
-      finalize(() => this.cdr.markForCheck())
+        this.cdr.markForCheck();
+      })
     ).subscribe();
   }
 
