@@ -109,7 +109,7 @@ namespace Tellma.Entities
         #region Resource Only
 
         [Display(Name = "Resource_Identifier")]
-        [StringLength(10)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Identifier { get; set; } // Check
 

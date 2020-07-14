@@ -9,13 +9,13 @@ SET NOCOUNT ON;
 	WITH
 	ParentNodesToDelete AS
 	(
-		SELECT [Node] FROM dbo.AccountTypes
+		SELECT [Node] FROM dbo.[AccountTypes]
 		WHERE [Id] IN (SELECT [Id] FROM @Ids)
 	),
 	IdsToDelete AS
 	(
 		SELECT [Id]
-		FROM dbo.AccountTypes C
+		FROM dbo.[AccountTypes] C
 		JOIN ParentNodesToDelete P
 		ON C.[Node].IsDescendantOf(P.[Node]) = 1
 	)
@@ -25,19 +25,21 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].IsSystem',
-		N'Error_SystemTypesCannotBeDeleted'
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_CannotDeleteSystemRecords'
 	FROM @IndexesToDelete
 	WHERE [Id] IN (
-		SELECT [Id] FROM dbo.AccountTypes
+		SELECT [Id] FROM dbo.[AccountTypes]
 	);
 
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheTypeIsUsedInAccount0',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account
+		N'Error_AccountType0IsUsedInAccount1',
+		dbo.fn_Localize(T.[Name], T.[Name2], T.[Name3]) AS [AccountType],
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account]
 	FROM @IndexesToDelete FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[AccountTypeId]
+	JOIN dbo.[AccountTypes] T ON FE.[Id] = T.[Id]
+	JOIN dbo.[Accounts] A ON FE.[Id] = A.[AccountTypeId]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

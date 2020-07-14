@@ -141,77 +141,73 @@ SET NOCOUNT ON;
 	-- TODO if both contract and resource are specified, make sure they have consistent CenterId
 
 	-- Trying to change the account type
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3',
+		N'Error_TheAccount0IsUsedInDocument12',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
-		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId
+		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N]
 	FROM @Entities FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
+	JOIN [dbo].[Accounts] A ON FE.[Id] = A.[Id]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
-	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
+	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
+	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
+	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
 	WHERE L.[State] >= 0
 	AND FE.[AccountTypeId] <> A.[AccountTypeId]
 
 	-- Setting the center value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3WithCenter4',
-		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
-		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
+		N'Error_TheAccount0IsUsedInDocument12WithCenter3',
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS [Account],
+		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS [DocumentDefinition],
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS Center
+		[dbo].fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [Center]
 	FROM @Entities FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
+	JOIN [dbo].[Accounts] A ON FE.[Id] = A.[Id]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
-	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.[Centers] RC ON RC.Id = E.[CenterId]
+	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
+	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
+	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
+	JOIN [dbo].[Centers] RC ON RC.Id = E.[CenterId]
 	WHERE L.[State] >= 0
 	AND FE.[CenterId] IS NOT NULL
 	AND FE.[CenterId] <> E.[CenterId]
 
 	-- Setting the Contract value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different agent
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3WithAgent4',
+		N'Error_TheAccount0IsUsedInDocument12WithContract3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
 		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Contract]
 	FROM @Entities FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
-	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
-	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.[Contracts] AG ON AG.Id = E.[ContractId]
+	JOIN [dbo].[Accounts] A ON FE.[Id] = A.[Id]
+	JOIN [dbo].[Entries] E ON E.[AccountId] = FE.[Id]
+	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
+	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
+	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
+	JOIN [dbo].[Contracts] AG ON AG.Id = E.[ContractId]
 	WHERE L.[State] >= 0
 	AND FE.[ContractId] IS NOT NULL
 	AND FE.[ContractId] <> E.[ContractId]
 
 	-- Setting the resource value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different resource
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3WithResource4',
+		N'Error_TheAccount0IsUsedInDocument12WithResource3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
@@ -226,14 +222,13 @@ SET NOCOUNT ON;
 
 	-- Setting the currency value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different currency
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3WithCurrency4',
+		N'Error_TheAccount0IsUsedInDocument12WithCurrency3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Currency]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
@@ -248,14 +243,13 @@ SET NOCOUNT ON;
 
 	-- Changing the Account entry type is allowed provided that the entry type used in the entries are
 	-- compatible with the new classification
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3HavingIncompatibleEntryType4',
+		N'Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
 		dbo.fn_Localize(EEC.[Name], EEC.[Name2], EEC.[Name3]) AS [EntryType]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]

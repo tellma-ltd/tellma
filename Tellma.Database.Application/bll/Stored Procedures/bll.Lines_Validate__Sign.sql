@@ -113,22 +113,24 @@ SET NOCOUNT ON;
 		);
 	END
 
-	-- cannot sign a line by Agent, if Contract/Agent/UserId is null
+	-- Cannot sign a line by Contract, if Contract/Users is empty
 	IF @RuleType = N'ByContract'
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAgent0HasNoUserId',
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS AgentName
+		N'Error_TheContract01HasNoUsers',
+		dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS [ContractDefinition],
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Contract]
 	FROM @Ids FE
-	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
-	JOIN dbo.Entries E ON L.[Id] = E.[LineId]
-	JOIN dbo.[Contracts] AG ON AG.[Id] = E.[ContractId]
-	JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND W.ToState = @ToState
-	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-	LEFT JOIN dbo.[ContractUsers] CU ON AG.[Id] = CU.[ContractId]
-	WHERE WS.RuleType = N'ByContract' AND WS.[RuleTypeEntryIndex]  = E.[Index]
-	AND CU.UserId IS NULL
+	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
+	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
+	JOIN dbo.[Contracts] C ON C.[Id] = E.[ContractId]
+	JOIN dbo.[ContractDefinitions] CD ON C.[DefinitionId] = CD.[Id]
+	JOIN dbo.[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
+	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
+	LEFT JOIN dbo.[ContractUsers] CU ON C.[Id] = CU.[ContractId]
+	WHERE WS.[RuleType] = N'ByContract' AND WS.[RuleTypeEntryIndex]  = E.[Index]
+	AND CU.[UserId] IS NULL
 
 	-- Cannot sign a line with no Entries
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

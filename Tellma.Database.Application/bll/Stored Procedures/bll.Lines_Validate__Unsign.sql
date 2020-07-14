@@ -8,13 +8,11 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Cannot unsign the lines unless the document state is ACTIVE
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		CASE
-			WHEN D.[State] = 1 THEN N'Error_TheDocumentIsInPostedState'
-			WHEN D.[State] = -1 THEN N'Error_TheDocumentIsInCancelledState'
-		END
+		N'Error_CannotUnsignDocumentInState0',
+		N'localize:Document_State_' + (CASE WHEN D.[State] = 1 THEN N'1' WHEN D.[State] = -1 THEN N'minus_1' END)
 	FROM @Ids FE
 	JOIN [dbo].[Lines] L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
