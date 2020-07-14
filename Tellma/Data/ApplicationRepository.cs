@@ -275,7 +275,7 @@ namespace Tellma.Data
                 // Fact tables
                 nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
                 nameof(DetailsEntry) => "[map].[DetailsEntries]()",
-                nameof(SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate, NULL, NULL, NULL, NULL, NULL, NULL)",
+                nameof(SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
                 nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
                 _ => throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries"),
             };

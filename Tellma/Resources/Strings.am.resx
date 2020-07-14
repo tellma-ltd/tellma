@@ -2320,6 +2320,54 @@
   <data name="SummaryEntry" xml:space="preserve">
     <value>ማጠቃለያ Entry</value>
   </data>
+  <data name="SummaryEntry_Closing" xml:space="preserve">
+    <value>በመዝጋት ላይ</value>
+  </data>
+  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
+    <value>የመገናኛ መዝጋት</value>
+  </data>
+  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
+    <value>የመዝጊያ መጠን</value>
+  </data>
+  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
+    <value>መዝጊያ ብዛት</value>
+  </data>
+  <data name="SummaryEntry_Credit" xml:space="preserve">
+    <value>ክሬዲት</value>
+  </data>
+  <data name="SummaryEntry_Debit" xml:space="preserve">
+    <value>ዴቢት</value>
+  </data>
+  <data name="SummaryEntry_MassIn" xml:space="preserve">
+    <value>የጅምላ ውስጥ</value>
+  </data>
+  <data name="SummaryEntry_MassOut" xml:space="preserve">
+    <value>የጅምላ ውጪ</value>
+  </data>
+  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
+    <value>መጠን</value>
+  </data>
+  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
+    <value>መጠን ውጪ</value>
+  </data>
+  <data name="SummaryEntry_Opening" xml:space="preserve">
+    <value>ቀዳዳ</value>
+  </data>
+  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
+    <value>በመክፈት ላይ ቅዳሴ</value>
+  </data>
+  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
+    <value>የመክፈቻ መጠን</value>
+  </data>
+  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
+    <value>በመክፈት ላይ ብዛት</value>
+  </data>
+  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
+    <value>ብዛት ውስጥ</value>
+  </data>
+  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
+    <value>ብዛት ውጪ</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>ባህል</value>
   </data>

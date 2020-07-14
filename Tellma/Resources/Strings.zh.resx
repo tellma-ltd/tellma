@@ -2320,6 +2320,54 @@
   <data name="SummaryEntry" xml:space="preserve">
     <value>摘要入口</value>
   </data>
+  <data name="SummaryEntry_Closing" xml:space="preserve">
+    <value>闭幕</value>
+  </data>
+  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
+    <value>闭幕弥撒</value>
+  </data>
+  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
+    <value>关闭量</value>
+  </data>
+  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
+    <value>关闭数量</value>
+  </data>
+  <data name="SummaryEntry_Credit" xml:space="preserve">
+    <value>信用</value>
+  </data>
+  <data name="SummaryEntry_Debit" xml:space="preserve">
+    <value>借方</value>
+  </data>
+  <data name="SummaryEntry_MassIn" xml:space="preserve">
+    <value>大众在</value>
+  </data>
+  <data name="SummaryEntry_MassOut" xml:space="preserve">
+    <value>质量超限</value>
+  </data>
+  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
+    <value>量</value>
+  </data>
+  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
+    <value>挤出量</value>
+  </data>
+  <data name="SummaryEntry_Opening" xml:space="preserve">
+    <value>开盘</value>
+  </data>
+  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
+    <value>开幕弥撒</value>
+  </data>
+  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
+    <value>开口量</value>
+  </data>
+  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
+    <value>开业数量</value>
+  </data>
+  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
+    <value>在数量</value>
+  </data>
+  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
+    <value>量输出</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>文化</value>
   </data>

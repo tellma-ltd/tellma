@@ -2320,6 +2320,54 @@
   <data name="SummaryEntry" xml:space="preserve">
     <value>سطر مجمل</value>
   </data>
+  <data name="SummaryEntry_Closing" xml:space="preserve">
+    <value>الرصيد الختامي</value>
+  </data>
+  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
+    <value>الوزن الختامي</value>
+  </data>
+  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
+    <value>المبلغ الختامي</value>
+  </data>
+  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
+    <value>الكمية الختامية</value>
+  </data>
+  <data name="SummaryEntry_Credit" xml:space="preserve">
+    <value>الرصيد الصادر</value>
+  </data>
+  <data name="SummaryEntry_Debit" xml:space="preserve">
+    <value>الرصيد الوارد</value>
+  </data>
+  <data name="SummaryEntry_MassIn" xml:space="preserve">
+    <value>الوزن الوارد</value>
+  </data>
+  <data name="SummaryEntry_MassOut" xml:space="preserve">
+    <value>الوزن الصادر</value>
+  </data>
+  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
+    <value>المبلغ الوارد</value>
+  </data>
+  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
+    <value>المبلغ الصادر</value>
+  </data>
+  <data name="SummaryEntry_Opening" xml:space="preserve">
+    <value>الرصيد الافتتاحي</value>
+  </data>
+  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
+    <value>الوزن الافتتاحي</value>
+  </data>
+  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
+    <value>المبلغ الافتتاحي</value>
+  </data>
+  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
+    <value>الكمية الافتتاحية</value>
+  </data>
+  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
+    <value>الكمية الواردة</value>
+  </data>
+  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
+    <value>الكمية الصادرة</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>اللغة</value>
   </data>

@@ -13,7 +13,7 @@ import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
 import { DetailsEntry } from '~/app/data/entities/details-entry';
-import { formatDate, formatNumber } from '@angular/common';
+import { formatDate } from '@angular/common';
 import { LineForQuery } from '~/app/data/entities/line';
 import { Document, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
@@ -270,7 +270,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private doFetch(): Observable<void> {
     const s = this.state;
 
-    if (this.missingRequiredParameters) {
+    if (!this.argumentsAreReady) {
       s.reportStatus = ReportStatus.information;
       s.information = () => this.translate.instant('FillRequiredFields');
       return of();
@@ -319,10 +319,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private get missingRequiredParameters(): boolean {
+  private get argumentsAreReady(): boolean {
     const args = this.state.arguments;
     if (this.isAccount) {
-      return !args.from_date || !args.to_date || !args.account_id || (this.showSegmentParameter && !args.segment_id);
+      return !!args.from_date && !!args.to_date && !!args.account_id && (!this.showSegmentParameter || !!args.segment_id);
     }
 
     if (this.isContract) {
