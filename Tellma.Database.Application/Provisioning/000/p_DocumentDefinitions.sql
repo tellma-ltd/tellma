@@ -1,34 +1,42 @@
 ﻿INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 (0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'newspaper', N'Financials', 1040),
-(7, N'CostsReallocation',2, N'Merchandise in transit, projects under construction, work in progress',N'Costs Reallocation Voucher', N'Cost Reallocation Vouchers', N'CRA',N'recycle', N'Financials', 1050),
-(8, N'ClosingPeriodVoucher',2, N'PPE Depreciation, Intangible Amortization, Exchange Variance, Settling trade accounts',N'Closing Month Voucher', N'Closing Month Vouchers', N'CPV',N'history', N'Financials', 1050),
-(9, N'ClosingYearVoucher',2, N'Fiscal Close, Manual',N'Closing Year Voucher', N'Closing Year Vouchers', N'CYV',N'anchor', N'Financials', 1060),
-(10, N'PaymentIssueToNonTradingAgents',2, N'payment to partner, debtor, creditor, to other cash, to bank, to exchange, to other',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'PIO',N'money-check-alt', N'Cash', 1080),
-(11, N'DepositCashToBank',2, N'cash to bank (same currency), check to bank (same currency)',N'Cash Transfer - Exchange', N'Cash Transfers - Exchanges', N'CTE',NULL, N'Cash', 1090),
+(7, N'ProjectCompletionVoucher',2, N'Converts a project (investment property) under construction or development to a fixed Asset (Investment Property)',N'Project Completion Voucher', N'Project Completion Vouchers', N'PCV',N'door-closed', N'Financials', 1050),
+(8, N'ClosingPeriodVoucher',2, N'PPE Depreciation, Intangible Amortization, Exchange Variance, Settling trade accounts',N'Closing Month Voucher', N'Closing Month Vouchers', N'MCV',N'history', N'Financials', 1050),
+(9, N'ClosingYearVoucher',2, N'Fiscal Close, Manual',N'Closing Year Voucher', N'Closing Year Vouchers', N'YCV',N'anchor', N'Financials', 1060),
+
+(10, N'CashTransferExchange',2, N'transfer only, exchange only, transfer and exchange',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CTE',N'money-check-alt', N'Cash', 1080),
+(11, N'DepositToBank',2, N'cash to bank (same currency), check to bank (same currency)',N'Cash Transfer - Exchange', N'Cash Transfers - Exchanges', N'CTB',NULL, N'Cash', 1090),
 (12, N'PaymentReceiptFromNonTradingAgents',2, N'payment from partner, debtor, creditor, other',N'Cash Receipt Voucher', N'Cash Receipt Vouchers', N'PRO',NULL, N'Cash', 1100),
+(13, N'PaymentIssueToNonTradingAgents',2, N'payment to partner, debtor, creditor, to other cash, to bank, to exchange, to other',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'PIO',N'money-check-alt', N'Cash', 1080),
+
 (20, N'StockIssueToNonTradingAgent',2, N'Stock issue to production/maintenance/job/Consumption/Reclassification',N'Stock Issue Voucher (NT)', N'Stock Issue Vouchers (NT)', N'MIO',NULL, N'Inventory', 1120),
 (21, N'StockTransfer',2, N'transfer between warehouses',N'Stock Transfer', N'Stock Transfers (NT)', N'MTV',N'dolly-flatbed', N'Inventory', 1130),
 (22, N'StockReceiptFromNonTradingAgent',2, N'FG receipt from production, RM/production supplies return from production/maintenance/job/consumption/Reclassification',N'Stock Receipt Voucher (NT)', N'Stock Receipt Voucher (NT)', N'MRO',NULL, N'Inventory', 1140),
 (23, N'InventoryAdjustment',2, N'Shortage, Overage, impairment, reversal of impairment',N'Inventory Adjustment', N'Inventory Adjustments', N'MAV',N'edit', N'Inventory', 1150),
+
 (30, N'PaymentIssueToTradePayable',2, N'payment to supplier, purchase invoice, stock/PPE/C/S receipt from supplier',N'Cash Payment (Supplier)', N'Cash Payments (Supplier)', N'PIS',N'money-check-alt', N'Purchasing', 1170),
 (31, N'RefundFromTradePayable',2, N'refund from supplier, credit note (supplier), stock return to supplier, ppe return to supplier',N'Supplier Refund Voucher', N'Suppliers Refund Vouchers', N'PRS',NULL, N'Purchasing', 1180),
 (32, N'WithholdingTaxFromTradePayable',2, N'Witholding tax from suppliers/lessors',N'WT (Supplier)', N'WT (Suppliers)', N'WTS',N'folder-minus', N'Purchasing', 1190),
 (33, N'ImportFromTradePayable',2, N'Shipment In Transit, Payment, Commercial Invoice, Related Expenses',N'Import Shipment', N'Import Shipments', N'IRS',N'pallet', N'Purchasing', 1200),
 (34, N'GoodReceiptFromImport',2, N'goods receipt from import (PPE treated as stock till mise in use)',N'Good Receipt (Import)', N'Goods Receipts (Import)', N'GRI',NULL, N'Purchasing', 1210),
 (35, N'GoodServiceReceiptFromTradePayable',2, N'PPE/consumables/services/rental receipt from supplier, purchase invoice, debit note (supplier)',N'Purchases Receipt', N'Purchases Receipts', N'GSRS',NULL, N'Purchasing', 1220),
+
 (40, N'PaymentReceiptFromTradeReceivable',2, N'payment from customer, sales invoice, Goods/Service issue to customer',N'Cash Receipt (Customer)', N'Cash Receipts (Customers)', N'PRC',N'grin-hearts', N'Sales', 1240),
 (41, N'RefundToTradeReceivable',2, N'payment to customer, credit note (customer), stock receipt from customer',N'Customer Refund', N'Customer Refunds', N'PIC',NULL, N'Sales', 1250),
 (42, N'WithholdingTaxByTradeReceivable',2, N'Witholding tax by customers/lessees',N'WT (Customer)', N'WT (Customers)', N'WTC',N'folder-plus', N'Sales', 1260),
 (43, N'GoodIssueToExport',2, N'goods issue to export, payment, sales invoice, FOB destination',N'Export Shipment', N'Goods Issues (Exports)', N'GIE',NULL, N'Sales', 1270),
 (44, N'ExportToTradeReceivable',2, N'goods delivery from export',N'Goods Delivery (Export)', N'Goods Deliveries (Exports)', N'EIC',N'ship', N'Sales', 1280),
 (45, N'GoodServiceIssueToTradeReceivable',2, N'stock/rental/service issue to customer, sales invoice, debit note (customer)',N'Good/Service Issue (Customer)', N'Goods/Services Issue (Customer)', N'GSIC',NULL, N'Sales', 1290),
+
 (50, N'SteelProduction',2, N'DM/DL/OH to WIP/Byproduct, DM/DL/OH + WIP to WIP/Byproduct, DM/DL/OH + WIP to FG/Byproduct',N'Steel Production Voucher', N'Steel Production Vouchers', N'PV1',NULL, N'Production', 1310),
 (51, N'PlasticProduction',2, N'',N'Plastic Production Voucher', N'Plastic Production Vouchers', N'PV2',NULL, N'Production', 1320),
 (52, N'PaintProduction',2, N'',N'Paint Production Voucher', N'Paint Production Vouchers', N'PV3',NULL, N'Production', 1330),
 (53, N'VehicleAssembly',2, N'',N'Vehicle Assembly Voucher', N'Vehicle Assembly Vouchers', N'PV4',NULL, N'Production', 1340),
 (54, N'GrainProcessing',2, N'',N'Grain Processing Voucher', N'Grain Processing Vouchers', N'PV5',NULL, N'Production', 1350),
 (55, N'OilMilling',2, N'',N'Oil Milling Voucher', N'Oil Milling Vouchers', N'PV6',NULL, N'Production', 1360),
+
 (69, N'Maintenance',2, N'DM/DL/OH to Job, then total allocated to machine',N'Internal Maintenance Job', N'Internal Maintenance Jobs', N'IMJ',N'user-cog', N'Production', 1380),
+
 (70, N'PaymentIssueToEmployee',2, N'payment - employee benefits, payment - employee loan, salary, overtime, absence, deduction, due installments, Bonus',N'Cash Payment', N'Cash Payments', N'PIE',N'hand-holding-usd', N'HumanCapital', 1400),
 (71, N'EmployeeLoan',2, N'salary advance, long term loan, loan installments',N'Employee Loan Voucher', N'', N'ELN',N'tasks', N'HumanCapital', 1410),
 (72, N'AttendanceRegister',2, N'arrivals, departures',N'Attendance Register', N'Attendance Register', N'SRE',N'user-clock', N'HumanCapital', 1420),
@@ -41,21 +49,32 @@
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 (0,0, @ManualLineLD, 1),
+(1,7, @ProjectCompletionToPropertyPlantAndEquipmentLD, 1),
+(2,7, @ProjectCompletionToInventoryLD, 1),
+(3,7, @ProjectCompletionToInvestmentPropertyLD, 1),
+(1,8, @PPEDepreciationLD, 1),
+(2,8, @IntangibleAmortizationLD, 1),
+(3,8, @ExchangeVarianceLD, 1),
+(4,8, @TradeSettlementLD, 1),
 (1,9, @CostReallocationToConstructionInProgressLD, 1),
 (2,9, @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD, 1),
 (3,9, @CostReallocationToCurrentInventoriesInTransitLD, 1),
-(0,10, @CashPaymentToOtherLD, 1),
-(4,10, @CashTransferExchangeLD, 1),
+(0,10, @CashTransferExchangeLD, 1),
+(1,10, @CashTransferLD, 1),
+(2,10, @CashExchangeLD, 1),
 (0,11, @DepositCashToBankLD, 1),
 (1,11, @DepositCheckToBankLD, 1),
-(0,12, @CashReceiptFromOtherLD, 1),
-(1,12, @CheckReceiptFromOtherInCashierLD, 1),
+(0,12, @CashReceiptFromOtherToCashierLD, 1),
+(1,12, @CheckReceiptFromOtherToCashierLD, 1),
+(0,13, @CashPaymentToOtherLD, 1),
 (0,30, @CashPaymentToTradePayableLD, 1),
 (1,30, @InvoiceFromTradePayableLD, 1),
 (2,30, @StockReceiptFromTradePayableLD, 1),
 (3,30, @PPEReceiptFromTradePayableLD, 1),
 (4,30, @ConsumableServiceReceiptFromTradePayableLD, 1),
-(5,30, @RentalReceiptFromTradePayableLD, 1);
+(5,30, @RentalReceiptFromTradePayableLD, 1),
+(0,31, @CashPaymentFromTradePayableLD, 1),
+(1,31, @CreditNoteFromTradePayableLD, 1);
 
 
 EXEC dal.DocumentDefinitions__Save
