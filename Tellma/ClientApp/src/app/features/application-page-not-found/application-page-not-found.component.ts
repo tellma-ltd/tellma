@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
@@ -8,8 +8,13 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 })
 export class ApplicationPageNotFoundComponent {
 
-  constructor(private router: Router, private workspace: WorkspaceService) { }
+  /**
+   * In popup mode we hide the home button as it won't work properly and is pointless anyways
+   */
+  @Input()
+  showHome = true;
 
+  constructor(private router: Router, private workspace: WorkspaceService) { }
 
   public onHome() {
     const tenantId = this.workspace.ws.tenantId;

@@ -24,7 +24,7 @@ import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { ResourceDefinitionForClient, ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 't-statement',
@@ -38,9 +38,38 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private notifyDestruct$ = new Subject<void>();
   private api = this.apiService.detailsEntriesApi(this.notifyDestruct$); // Only for intellisense
 
-  private numericKeys = ['account_id', 'segment_id', 'contract_id', 'resource_id', 'entry_type_id', 'center_id'];
-  private stringKeys = ['from_date', 'to_date', 'currency_id'];
-  private booleanKeys = ['include_completed'];
+  private get numericKeys(): string[] {
+    switch (this.type) {
+      case 'account':
+        return ['account_id', 'segment_id', 'contract_id', 'resource_id', 'entry_type_id', 'center_id'];
+      case 'contract':
+        return ['contract_id', 'account_id', 'resource_id'];
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
+    }
+  }
+
+  private get stringKeys(): string[] {
+    switch (this.type) {
+      case 'account':
+        return ['from_date', 'to_date', 'currency_id'];
+      case 'contract':
+        return ['from_date', 'to_date'];
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
+    }
+  }
+
+  private get booleanKeys(): string[] {
+    switch (this.type) {
+      case 'account':
+        return ['include_completed'];
+      case 'contract':
+        return ['include_completed'];
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
+    }
+  }
 
   public actionErrorMessage: string;
 
@@ -49,6 +78,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
+
+  /**
+   * For contract statement
+   */
+  private definitionId: number;
+
+  private get contractDefinition(): ContractDefinitionForClient {
+    return this.ws.definitions.Contracts[this.definitionId];
+  }
 
   constructor(
     private route: ActivatedRoute, private router: Router, private customUserSettings: CustomUserSettingsService,
@@ -77,34 +115,42 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       const s = this.state;
       const args = s.arguments;
 
-      if (this.isAccount) {
-        for (const key of this.stringKeys) {
-          const paramValue = params.get(key) || undefined;
-          if (args[key] !== paramValue) {
-            args[key] = paramValue;
-            fetchIsNeeded = true;
-          }
-        }
-
-        for (const key of this.numericKeys) {
-          const paramValue = (+params.get(key)) || undefined;
-          if (args[key] !== paramValue) {
-            args[key] = paramValue;
-            fetchIsNeeded = true;
-          }
-        }
-
-        for (const key of this.booleanKeys) {
-          const paramValue: boolean = (params.get(key) || false).toString() === 'true';
-          if (args[key] !== paramValue) {
-            args[key] = paramValue;
-            fetchIsNeeded = true;
-          }
+      for (const key of this.stringKeys) {
+        const paramValue = params.get(key) || undefined;
+        if (args[key] !== paramValue) {
+          args[key] = paramValue;
+          fetchIsNeeded = true;
         }
       }
 
-      if (this.isContract) {
-        // TODO
+      for (const key of this.numericKeys) {
+        const paramValue = (+params.get(key)) || undefined;
+        if (args[key] !== paramValue) {
+          args[key] = paramValue;
+          fetchIsNeeded = true;
+        }
+      }
+
+      for (const key of this.booleanKeys) {
+        const paramValue: boolean = (params.get(key) || false).toString() === 'true';
+        if (args[key] !== paramValue) {
+          args[key] = paramValue;
+          fetchIsNeeded = true;
+        }
+      }
+
+      switch (this.type) {
+        case 'account':
+          break;
+        case 'contract':
+          const defId = +params.get('definitionId');
+          if (!!defId && !!this.ws.definitions.Contracts[defId]) {
+            this.definitionId = defId;
+          }
+          break;
+        default:
+          console.error(`Unhandled report type ${this.type}`); // Future proofing
+          break;
       }
 
       // Other screen parameters
@@ -172,6 +218,17 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
   }
 
+  private get argumentsKey(): string {
+    switch (this.type) {
+      case 'account':
+        return 'account-statement/arguments';
+      case 'contract':
+        return `contract-statement/${this.definitionId}/arguments`;
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
+    }
+  }
+
   private parametersChanged(): void {
 
     // Update the URL
@@ -182,7 +239,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
     // Save the arguments in user settings
     const argsString = JSON.stringify(this.state.arguments);
-    this.customUserSettings.save('account-statement/arguments', argsString);
+    this.customUserSettings.save(this.argumentsKey, argsString);
 
     // Refresh the results
     this.fetch();
@@ -192,13 +249,13 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.workspace.currentTenant;
   }
 
-  private get isAccount() {
-    return this.type === 'account';
-  }
+  // private get isAccount() {
+  //   return this.type === 'account';
+  // }
 
-  private get isContract() {
-    return this.type === 'contract';
-  }
+  // private get isContract() {
+  //   return this.type === 'contract';
+  // }
 
   public fetch() {
     this.notifyFetch$.next();
@@ -268,9 +325,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private doFetch(): Observable<void> {
+    // For robustness grab a reference to the state object, in case it changes later
     const s = this.state;
 
-    if (!this.argumentsAreReady) {
+    if (!this.requiredParametersAreSet) {
       s.reportStatus = ReportStatus.information;
       s.information = () => this.translate.instant('FillRequiredFields');
       return of();
@@ -281,7 +339,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       s.result = [];
       return of();
     } else {
-      // For robustness grab a reference to the state object, in case it changes later
       s.reportStatus = ReportStatus.loading;
       s.result = [];
 
@@ -319,35 +376,47 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private get argumentsAreReady(): boolean {
+  private get requiredParametersAreSet(): boolean {
     const args = this.state.arguments;
-    if (this.isAccount) {
-      return !!args.from_date && !!args.to_date && !!args.account_id && (!this.showSegmentParameter || !!args.segment_id);
-    }
 
-    if (this.isContract) {
-      // TODO
+    switch (this.type) {
+      case 'account':
+        return !!args.from_date && !!args.to_date && !!args.account_id && (!this.showSegmentParameter || !!args.segment_id);
+      case 'contract':
+        return !!args.from_date && !!args.to_date && !!args.contract_id && !!args.account_id;
+      default:
+        console.error(`Unknown report type ${this.type}`); // Future proofing
     }
   }
 
   private get loadingRequiredParameters(): boolean {
-    // Some times the account Id or resource Id from the Url refer to entities that are not loaded
-    // Given that computing the statement query requires knowledge of these entities (not just their Ids)
-    // We have to wait until the details pickers have loaded the entities for us, until then this
-    // property returns true, and the statement query is not executed
-    if (!!this.accountId && !this.account()) {
-      return true;
+    switch (this.type) {
+      case 'account':
+        // Some times the account Id or resource Id from the Url refer to entities that are not loaded
+        // Given that computing the statement query requires knowledge of these entities (not just their Ids)
+        // We have to wait until the details pickers have loaded the entities for us, until then this
+        // property returns true, and the statement query is not executed
+        if (!!this.accountId && !this.account()) {
+          return true;
+        }
+
+        if (this.showResourceParameter && !this.readonlyResource_Manual && !!this.resourceId && !this.ws.get('Resource', this.resourceId)) {
+          return true;
+        }
+
+        if (this.showContractParameter && !this.readonlyContract_Manual && !!this.contractId && !this.ws.get('Contract', this.contractId)) {
+          return true;
+        }
+
+        return false;
+      case 'contract':
+      // TODO
+
+
+      default:
+        console.error(`Unknown report type ${this.type}`); // Future proofing
     }
 
-    if (this.showResourceParameter && !this.readonlyResource_Manual && !!this.resourceId && !this.ws.get('Resource', this.resourceId)) {
-      return true;
-    }
-
-    if (this.showContractParameter && !this.readonlyContract_Manual && !!this.contractId && !this.ws.get('Contract', this.contractId)) {
-      return true;
-    }
-
-    return false;
   }
 
   public onParameterLoaded(): void {
@@ -359,13 +428,27 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   // UI Bindings
 
+  public get found(): boolean {
+    switch (this.type) {
+      case 'account':
+        return true;
+      case 'contract':
+        return !!this.contractDefinition;
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
+        return false;
+    }
+  }
+
   public get title() {
-    if (this.isAccount) {
-      return this.translate.instant('AccountStatement');
-    } else if (this.isContract) {
-      // TODO
-    } else {
-      return '???';
+    switch (this.type) {
+      case 'account':
+        return this.translate.instant('AccountStatement');
+      case 'contract':
+        return this.translate.instant('StatementOf0', { 0: this.ws.getMultilingualValueImmediate(this.contractDefinition, 'TitleSingular') });
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
+        return '???';
     }
   }
 
@@ -528,10 +611,13 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   DEFAULT_PAGE_SIZE = 60;
 
   public get stateKey(): string {
-    if (this.isAccount) {
-      return 'account-statement';
-    } else {
-      // TODO
+    switch (this.type) {
+      case 'account':
+        return 'account-statement';
+      case 'contract':
+        return `contract-statement/${this.definitionId}`;
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
   }
 
@@ -582,12 +668,13 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public link(finalSegment: string): string {
-    if (this.isAccount) {
-      return `../${finalSegment}`;
-    }
-
-    if (this.isContract) {
-      return `../../${finalSegment}`;
+    switch (this.type) {
+      case 'account':
+        return `../${finalSegment}`;
+      case 'contract':
+        return `../../${finalSegment}`;
+      default:
+        console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
   }
 
@@ -782,10 +869,18 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
+  public get labelContract_Smart(): string {
+    return this.ws.getMultilingualValueImmediate(this.contractDefinition, 'TitleSingular');
+  }
+
   public get definitionIdsContract_Manual(): number[] {
     const account = this.account();
     return [account.ContractDefinitionId];
     // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
+  }
+
+  public get definitionIdsContract_Smart(): number [] {
+    return [this.definitionId];
   }
 
   // Noted Contract
@@ -1086,23 +1181,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       this._columnsResource !== resource ||
       this._columnsSettings !== settings ||
       this._columnsParametersHaveChanged) {
-
-      // console.log('------- Column Refresh -------');
-      // if (this._columnsAccount !== account) {
-      //   console.log('New Account!', account);
-      // }
-      // if (this._columnsAccountType !== accountType) {
-      //   console.log('New Account Type!', accountType);
-      // }
-      // if (this._columnsResource !== resource) {
-      //   console.log('New Resource!', resource);
-      // }
-      // if (this._columnsSettings !== settings) {
-      //   console.log('New Settings!', settings);
-      // }
-      // if (this._columnsParametersHaveChanged) {
-      //   console.log('Params Have Changed!');
-      // }
 
       this._columnsAccount = account;
       this._columnsAccountType = accountType;

@@ -11,7 +11,7 @@
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>
-    <t-application-page-not-found>
+    <t-application-page-not-found [showHome]="!isPopupMode">
     </t-application-page-not-found>
 </ng-template>
 
