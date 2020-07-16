@@ -25,7 +25,7 @@ SET NOCOUNT ON;
 		FE.Code
 	FROM @Entities FE 
 	JOIN [dbo].[Contracts] BE ON FE.Code = BE.Code
-	WHERE ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
+	WHERE (BE.DefinitionId = @DefinitionId) AND ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
 
 		-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

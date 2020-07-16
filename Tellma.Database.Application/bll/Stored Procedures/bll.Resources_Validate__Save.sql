@@ -55,8 +55,8 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name] AND BE.[DefinitionId] = @DefinitionId AND FE.[Identifier] = BE.[Identifier]
-	WHERE (FE.Id <> BE.Id);
+	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name] AND FE.[Identifier] = BE.[Identifier]
+	WHERE BE.DefinitionId = @DefinitionId AND  (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -65,8 +65,8 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2] AND BE.[DefinitionId] = @DefinitionId AND FE.[Identifier] = BE.[Identifier]
-	WHERE (FE.Id <> BE.Id);
+	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2] AND FE.[Identifier] = BE.[Identifier]
+	WHERE BE.[DefinitionId] = @DefinitionId AND (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -75,8 +75,8 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3] AND BE.[DefinitionId] = @DefinitionId AND FE.[Identifier] = BE.[Identifier]
-	WHERE (FE.Id <> BE.Id);
+	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3] AND FE.[Identifier] = BE.[Identifier]
+	WHERE BE.[DefinitionId] = @DefinitionId AND (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

@@ -1,4 +1,5 @@
-﻿IF (1=0)
+﻿UPDATE dbo.Accounts SET CurrencyId = N'SDG' WHERE CurrencyId = N'XXX'
+IF (1=0)
 SELECT
 N'Partners Withdrawals',		N'Abu Ammar Car Loan',		N'M. Ali Car Loan',	N'El-Amin Car Loan',			
 N'Office Rent',	N'Internet Prepayment',	 N'Car Rent Prepayment', N'House Rent Prepayment', N'Maintenance Prepayment',		

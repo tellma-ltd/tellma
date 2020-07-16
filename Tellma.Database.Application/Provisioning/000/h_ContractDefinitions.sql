@@ -80,5 +80,3 @@ DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Co
 DECLARE @CashOnHandAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'CashOnHandAccount');
 DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Warehouse');
 DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Shipper');
-
-

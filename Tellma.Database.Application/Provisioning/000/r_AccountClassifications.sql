@@ -17,7 +17,7 @@
 (110199,1101, N'110199',N'Other property, plant and equipment', N'الممتلكات والمصانع والمعدات الأخرى',@OtherPropertyPlantAndEquipment),
 (1102,11, N'1102',N'Investment property', N'العقارات الاستثمارية',@InvestmentProperty),
 (110201,1102, N'110201',N'Investment property completed', N'العقارات الاستثمارية المستكملة',@InvestmentPropertyCompleted),
-(110202,1102, N'110202',N'Investment property under construction or development', N'العقارات الاستثمارية قيد الإنشاء أو التطوير',@InvestmentPropertyUnderConstructionOrDevelopment),
+(110202,1102, N'110202',N'Investment property under construction or development (by investment)', N'العقارات الاستثمارية قيد الإنشاء أو التطوير',@InvestmentPropertyUnderConstructionOrDevelopment),
 (1103,11, N'1103',N'Goodwill', N'الشهرة',@Goodwill),
 (1104,11, N'1104',N'Intangible assets other than goodwill', N'الأصول غير الملموسة باستثناء الشهرة',@IntangibleAssetsOtherThanGoodwill),
 (1105,11, N'1105',N'Investments accounted for using equity method', N'الاستثمارات التي يتم محاسبتها باستخدام طريقة حقوق الملكية',@InvestmentAccountedForUsingEquityMethod),
@@ -53,9 +53,9 @@
 (1202,12, N'1202',N'Trade and other current receivables', N'الذمم المدينة التجارية والأخرى المتداولة',@TradeAndOtherCurrentReceivables),
 (120201,1202, N'120201',N'Current trade receivables', N'الذمم المدينة االتجارية المتداولة',@CurrentTradeReceivables),
 (120202,1202, N'120202',N'Current receivables due from related parties', N'الذمم المدينة المتداولة المستحقة من أطراف ذات علاقة',@TradeAndOtherCurrentReceivablesDueFromRelatedParties),
-(120203,1202, N'120203',N'Current prepayments', N'إجمالي الدفعات المسبقة الحالية',@CurrentPrepayments),
+(120203,1202, N'120203',N'Current prepayments', N'الدفعات المسبقة المتداولة',@CurrentPrepayments),
 (120204,1202, N'120204',N'Current accrued income', N'الدخل المستحق الحالي',@CurrentAccruedIncome),
-(120205,1202, N'120205',N'Current billed but not received', N'وصفت الحالي ولكن لم تتلق',@CurrentBilledButNotReceivedExtension),
+(120205,1202, N'120205',N'Current billed but not received', N'فواتير بدون استلام للسلع والخدمات',@CurrentBilledButNotReceivedExtension),
 (120206,1202, N'120206',N'Current receivables from taxes other than income tax', N'الذمم المدينة المتداولة من الضرائب عدا عن ضريبة الدخل',@CurrentReceivablesFromTaxesOtherThanIncomeTax),
 (120207,1202, N'120207',N'Current receivables from rental of properties', N'الذمم المدينة المتداولة من إيجار العقارات',@CurrentReceivablesFromRentalOfProperties),
 (120298,1202, N'120298',N'Other current receivables', N'ذمم مدينة متداولة أخرى',@OtherCurrentReceivables),
@@ -63,8 +63,8 @@
 (1203,12, N'1203',N'Current tax assets, current', N'الأصول الضريبية المتداولة، جارية',@CurrentTaxAssetsCurrent),
 (1204,12, N'1204',N'Current biological assets', N'الأصول البيولوجية المتداولة',@CurrentBiologicalAssets),
 (1205,12, N'1205',N'Other current financial assets', N'أصول مالية متداولة أخرى',@OtherCurrentFinancialAssets),
-(120501,1205, N'120501',N'Staff Debtors', N'المدينين الموظفين',@LoansExtension),
-(120502,1205, N'120502',N'Sundry debtors', N'المدينين المتنوعة',@LoansExtension),
+(120501,1205, N'120501',N'Staff Debtors', N'مدينون موظفون',@LoansExtension),
+(120502,1205, N'120502',N'Sundry debtors', N'مدينون آخرون',@LoansExtension),
 (1206,12, N'1206',N'Other current non-financial assets', N'أصول غير مالية متداولة أخرى',@OtherCurrentNonfinancialAssets),
 (1207,12, N'1207',N'Cash and cash equivalents', N'النقد والنقد المعادل',@CashAndCashEquivalents),
 (120701,1207, N'120701',N'Cash', N'نقد',@Cash),
@@ -73,14 +73,14 @@
 (1208,12, N'1208',N'Current non-cash assets pledged as collateral for which transferee has right by contract or custom t', N'الأصول غير النقدية المتداولة كضمان التي المنقول له الحق العقد أو العرف لبيع أو إعادة رهن الضمان',@CurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral),
 (1209,12, N'1209',N'Non-current assets or disposal groups classified as held for sale or as held for distribution to own', N'الموجودات غير المتداولة أو مجموعات التصرف المصنفة كاستثمارات محتفظ بها للبيع أو عقد لتوزيعها على أصح',@NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners),
 (2,NULL, N'2',N'Equity', N'حقوق الملكية',@Equity),
-(20,2, N'20',N'Equity', N'حقوق الملكية',NULL),
-(2000,20, N'2000',N'Equity', N'حقوق الملكية',NULL),
+(20,2, N'20',N'Equity.', N'حقوق الملكية.',@Equity),
+(2000,20, N'2000',N'Equity..', N'حقوق الملكية..',@Equity),
 (200001,2000, N'200001',N'Issued capital', N'رأس المال المصدر',@IssuedCapital),
 (200002,2000, N'200002',N'Retained earnings', N'الأرباح المستبقاة',@RetainedEarnings),
 (200003,2000, N'200003',N'Share premium', N'علاوة إصدار',@SharePremium),
 (200004,2000, N'200004',N'Treasury shares', N'أسهم الخزينة',@TreasuryShares),
 (200005,2000, N'200005',N'Other equity interest', N'حصة مالكين أخرى',@OtherEquityInterest),
-(200006,2000, N'200006',N'Other reserves', N'',@OtherReserves),
+(200006,2000, N'200006',N'Other reserves', N'احتياطي آخر',@OtherReserves),
 (3,NULL, N'3',N'Liabilities', N'الالتزامات',@Liabilities),
 (31,3, N'31',N'Non-current liabilities', N'الالتزامات غير الجارية',@NoncurrentLiabilities),
 (3101,31, N'3101',N'Non-current provisions', N'المخصصات غير المتداولة',@NoncurrentProvisions),
@@ -102,9 +102,10 @@
 (320201,3202, N'320201',N'Current trade payables', N'الذمم الدائنة االتجارية المتداولة',@TradeAndOtherCurrentPayablesToTradeSuppliers),
 (320202,3202, N'320202',N'Current payables to related parties', N'الذمم الدائنة المتداولة إلى الأطراف ذات العلاقة',@TradeAndOtherCurrentPayablesToRelatedParties),
 (320203,3202, N'320203',N'Deferred income classified as current', N'الدخل المؤجل المصنف على أنه متداول',@DeferredIncomeClassifiedAsCurrent),
-(320204,3202, N'320204',N'Accruals classified as current', N'مستحقات تصنف الحالي',@AccrualsClassifiedAsCurrent),
-(320205,3202, N'320205',N'Current payables on social security and taxes other than income tax', N'الذمم الدائنة المتداولة على الضمان الاجتماعي والضرائب عدا عن ضريبة الدخل',@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax),
-(320206,3202, N'320206',N'Current retention payables', N'دائنة الاحتفاظ الحالية',@CurrentRetentionPayables),
+(320204,3202, N'320204',N'Accruals classified as current', N'الاستحقاقات المصنفة على أنها متداولة',@AccrualsClassifiedAsCurrent),
+(320205,3202, N'320205',N'Current billed but not delivered to trade customers', N'مطالبات دون تسليم سلع وخدمات إلى الزبائن',@CurrentBilledButNotIssuedExtension),
+(320206,3202, N'320206',N'Current payables on social security and taxes other than income tax', N'الذمم الدائنة المتداولة على الضمان الاجتماعي والضرائب عدا عن ضريبة الدخل',@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax),
+(320207,3202, N'320207',N'Current retention payables', N'دائنة الاحتفاظ الحالية',@CurrentRetentionPayables),
 (320299,3202, N'320299',N'Other current payables', N'ذمم دائنة متداولة اخرى',@OtherCurrentPayables),
 (3203,32, N'3203',N'Current tax liabilities, current', N'الالتزامات الضريبية المتداولة، جارية',@CurrentTaxLiabilitiesCurrent),
 (3204,32, N'3204',N'Other current financial liabilities', N'التزامات مالية متداولة أخرى',@OtherCurrentFinancialLiabilities),
@@ -125,8 +126,12 @@
 (4106,41, N'4106',N'Franchise fee income', N'دخل رسوم الترخيص',@FranchiseFeeIncome),
 (4107,41, N'4107',N'Interest income', N'دخل الفائدة',@RevenueFromInterest),
 (4108,41, N'4108',N'Dividend income', N'دخل أرباح الأسهم',@RevenueFromDividends),
+(410801,4108, N'410801',N'Dividend income (by investment type)', N'دخل أرباح الأسهم (باسم نوع المساهمة)',@RevenueFromDividends),
 (4199,41, N'4199',N'Other revenue', N'إيراد آخر',@OtherRevenue),
+(419900,4199, N'419900',N'Revenue from sale of byproducts', N'إيراد بيع المخلفات',@OtherRevenue),
 (42,4, N'42',N'Other income', N'دخل آخر',@OtherIncome),
+(4200,42, N'4200',N'Other income.', N'دخل آخر.',@OtherIncome),
+(420000,4200, N'420000',N'Other income..', N'دخل آخر..',@OtherIncome),
 (43,4, N'43',N'Expenses by nature', N'النفقات حسب طبيعتها',@ExpenseByNature),
 (4301,43, N'4301',N'Raw materials and consumables used', N'المواد الخام والقابلة للاستهلاك المستخدمة',@RawMaterialsAndConsumablesUsed),
 (4302,43, N'4302',N'Cost of merchandise sold', N'تكلفة البضائع المباعة',@CostOfMerchandiseSold),
@@ -158,16 +163,19 @@
 (430604,4306, N'430604',N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances', N'خسارة انخفاض القيمة (عكس خسارة الانخفاض في القيمة) المعترف بها في الربح أو الخسارة، والقروض والسلف',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances),
 (4307,43, N'4307',N'Tax expense other than income tax expense', N'مصروف ضريبة غير مصروف ضريبة الدخل',@TaxExpenseOtherThanIncomeTaxExpense),
 (4399,43, N'4399',N'Other expenses', N'مصاريف أخرى',@OtherExpenseByNature),
+(439900,4399, N'439900',N'Other expenses.', N'مصاريف أخرى.',@OtherExpenseByNature),
 (44,4, N'44',N'Other gains (losses)', N'أرباح (خسائر) الأخرى',@OtherGainsLosses),
 (4402,44, N'4402',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
+(440201,4402, N'440201',N'Gain (loss) on disposal (by type)', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات (بالنوع)',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
 (4403,44, N'4403',N'Gains (losses) on disposals of investment properties', N'الأرباح (الخسائر) من عمليات التصرف بالعقارات الاستثمارية',@GainsLossesOnDisposalsOfInvestmentProperties),
 (4404,44, N'4404',N'The gains (losses) on disposals of investments.', N'الأرباح (الخسائر) من التصرف بالاستثمارات',@GainsLossesOnDisposalsOfInvestments),
-(5,NULL, N'5',N'Other profit (loss)', N'الربح الآخر (خسارة)',NULL),
-(51,5, N'51',N'Other profit (loss) from continuing operation', N'الربح الآخر (الخسارة) من استمرار العملية',NULL),
+(5,NULL, N'5',N'Other profit (loss)', N'الربح الآخر (الخسارة)',NULL),
+(51,5, N'51',N'Other profit (loss) from continuing operation', N'الربح الآخر (الخسارة) من العمليات المستمرة',NULL),
 (5101,51, N'5101',N'Gains (losses) on net monetary position', N'الأرباح (الخسائر) من صافي المركز المالي',@GainsLossesOnNetMonetaryPosition),
 (5102,51, N'5102',N'Gain (loss) arising from derecognition of financial assets measured at amortised cost', N'الأرباح (الخسائر) من إلغاء الاعتراف بالأصول المالية المقاسة بالتكلفة المطفأة',@GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost),
 (5103,51, N'5103',N'Finance income', N'الدخل التمويلي',@FinanceIncome),
 (5104,51, N'5104',N'Finance costs', N'تكاليف التمويل',@FinanceCosts),
+(510400,5104, N'510400',N'Finance costs.', N'تكاليف التمويل.',@FinanceCosts),
 (5105,51, N'5105',N'Impairment gain and reversal of impairment loss (impairment loss) determined in accordance with IFRS', N'أرباح انخفاض القيمة وعكس خسارة انخفاض القيمة (خسارة انخفاض القيمة) المحددة وفقا للمعيار الدولي لإعدا',@ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9),
 (5106,51, N'5106',N'Share of profit (loss) of associates and joint ventures accounted for using equity method', N'حصة الشركات الزميلة والمشاريع المشتركة من الربح (الخسارة) التي تمت محاسبتها باستخدام طريقة حقوق المل',@ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod),
 (5107,51, N'5107',N'Other income (expense) from subsidiaries, jointly controlled entities and associates', N'دخل (مصروف) آخر من الشركات التابعة والمنشآت الخاضعة لسيطرة مشتركة والشركات الزميلة',@OtherIncomeExpenseFromSubsidiariesJointlyControlledEntitiesAndAssociates),
@@ -176,7 +184,7 @@
 (5110,51, N'5110',N'Hedging gains (losses) for hedge of group of items with offsetting risk positions', N'أرباح (خسائر) التحوط فيما يخص التحوط لمجموعة من البنود التي يكون لها مراكز مخاطر متعادلة',@HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions),
 (52,5, N'52',N'Tax income (expense)', N'دخل (مصروف) الضريبة',@IncomeTaxExpenseContinuingOperations),
 (53,5, N'53',N'Profit (loss) from discontinued operations', N'الربح (الخسارة) من العمليات المتوقفة',@ProfitLossFromDiscontinuedOperations),
-(6,NULL, N'6',N'Other comprehensive income [abstract]', N'دخل شامل آخر [ملخص]',@OtherComprehensiveIncome),
+(6,NULL, N'6',N'Other comprehensive income', N'دخل شامل آخر',@OtherComprehensiveIncome),
 (61,6, N'61',N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax', N'مكونات الدخل الشامل الآخر التي لن يعاد تصنيفها إلى الربح أو الخسارة، قبل الضريبة [ملخص]',@ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax),
 (6101,61, N'6101',N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) من الاستثمارات في أدوات حقوق الملكية',@OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments),
 (6102,61, N'6102',N'Other comprehensive income, before tax, gains (losses) on revaluation', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) الناشئة عن التحويل',@OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation),
@@ -195,16 +203,17 @@
 (7,NULL, N'7',N'Control accounts', N'حسابات المراقبة',@ControlAccountsExtension),
 (71,7, N'71',N'Traders control accounts', N'مراقبة حسابات العملاء',@TradersControlAccountsExtension),
 (7101,71, N'7101',N'Suppliers control accounts', N'مراقبة حسابات الموردين',@SuppliersControlAccountsExtension),
-(710100,7101, N'710100',N'Suppliers control accounts -', N'مراقبة حسابات الموردين -',NULL),
+(710100,7101, N'710100',N'Suppliers control accounts.', N'مراقبة حسابات الموردين.',@SuppliersControlAccountsExtension),
 (7102,71, N'7102',N'Customer control accounts', N'مراقبة حسابات الزبائن',@CustomersControlAccountsExtension),
-(710200,7102, N'710200',N'Customer control accounts -', N'مراقبة حسابات الزبائن -',NULL),
+(710200,7102, N'710200',N'Customer control accounts.', N'مراقبة حسابات الزبائن.',@CustomersControlAccountsExtension),
 (7103,71, N'7103',N'Payroll control', N'مراقبة الرواتب',@PayrollControlExtension),
 (7109,71, N'7109',N'Others control accounts', N'مراقبة حسابات الآخرين',@OthersAccountsControlExtension),
-(710900,7109, N'710900',N'Others control accounts -', N'مراقبة حسابات الآخرين -',NULL),
+(710900,7109, N'710900',N'Others control accounts.', N'مراقبة حسابات الآخرين.',@OthersAccountsControlExtension),
 (72,7, N'72',N'Guarantees', N'حسابات مراقبة الضمانات',@GuaranteesExtension),
-(7200,72, N'7200',N'Guarantees -', N'حسابات مراقبة الضمانات -',NULL),
+(7200,72, N'7200',N'Guarantees.', N'حسابات مراقبة الضمانات.',@GuaranteesExtension),
 (720001,7200, N'720001',N'Collection Guarantee', N'ضمانات تحصيل',@CollectionGuaranteeExtension),
-(720002,7200, N'720002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension)
+(720002,7200, N'720002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension),
+(8,NULL, N'8',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension)
 
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
@@ -231,7 +240,6 @@ BEGIN
 	Print 'AccountClassifications: Deactivating: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-
 --Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC11 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'11');
@@ -339,6 +347,7 @@ DECLARE @AC320203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC320204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'320204');
 DECLARE @AC320205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'320205');
 DECLARE @AC320206 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'320206');
+DECLARE @AC320207 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'320207');
 DECLARE @AC320299 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'320299');
 DECLARE @AC3203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3203');
 DECLARE @AC3204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3204');
@@ -359,8 +368,12 @@ DECLARE @AC4105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC4106 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4106');
 DECLARE @AC4107 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4107');
 DECLARE @AC4108 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4108');
+DECLARE @AC410801 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410801');
 DECLARE @AC4199 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4199');
+DECLARE @AC419900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'419900');
 DECLARE @AC42 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'42');
+DECLARE @AC4200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4200');
+DECLARE @AC420000 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'420000');
 DECLARE @AC43 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'43');
 DECLARE @AC4301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4301');
 DECLARE @AC4302 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4302');
@@ -392,8 +405,10 @@ DECLARE @AC430603 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC430604 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430604');
 DECLARE @AC4307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4307');
 DECLARE @AC4399 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4399');
+DECLARE @AC439900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439900');
 DECLARE @AC44 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'44');
 DECLARE @AC4402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4402');
+DECLARE @AC440201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440201');
 DECLARE @AC4403 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4403');
 DECLARE @AC4404 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4404');
 DECLARE @AC5 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5');
@@ -402,6 +417,7 @@ DECLARE @AC5101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC5102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5102');
 DECLARE @AC5103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5103');
 DECLARE @AC5104 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5104');
+DECLARE @AC510400 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'510400');
 DECLARE @AC5105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5105');
 DECLARE @AC5106 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5106');
 DECLARE @AC5107 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5107');
@@ -439,3 +455,4 @@ DECLARE @AC72 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = 
 DECLARE @AC7200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7200');
 DECLARE @AC720001 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720001');
 DECLARE @AC720002 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720002');
+DECLARE @AC8 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8');

@@ -563,7 +563,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'OtherPropertyPlantAndEquipment', N'en', N'Other property, plant and equipment', N's'),('AccountTypes', N'OtherPropertyPlantAndEquipment', N'ar', N'الممتلكات والمصانع والمعدات الأخرى', N's'),
 ('AccountTypes', N'InvestmentProperty', N'en', N'Investment property', N's'),('AccountTypes', N'InvestmentProperty', N'ar', N'العقارات الاستثمارية', N's'),
 ('AccountTypes', N'InvestmentPropertyCompleted', N'en', N'Investment property completed', N's'),('AccountTypes', N'InvestmentPropertyCompleted', N'ar', N'العقارات الاستثمارية المستكملة', N's'),
-('AccountTypes', N'InvestmentPropertyUnderConstructionOrDevelopment', N'en', N'Investment property under construction or development', N's'),('AccountTypes', N'InvestmentPropertyUnderConstructionOrDevelopment', N'ar', N'العقارات الاستثمارية قيد الإنشاء أو التطوير', N's'),
+('AccountTypes', N'InvestmentPropertyUnderConstructionOrDevelopment', N'en', N'Investment property under construction or development (by investment)', N's'),('AccountTypes', N'InvestmentPropertyUnderConstructionOrDevelopment', N'ar', N'العقارات الاستثمارية قيد الإنشاء أو التطوير', N's'),
 ('AccountTypes', N'Goodwill', N'en', N'Goodwill', N's'),('AccountTypes', N'Goodwill', N'ar', N'الشهرة', N's'),
 ('AccountTypes', N'IntangibleAssetsOtherThanGoodwill', N'en', N'Intangible assets other than goodwill', N's'),('AccountTypes', N'IntangibleAssetsOtherThanGoodwill', N'ar', N'الأصول غير الملموسة باستثناء الشهرة', N's'),
 ('AccountTypes', N'InvestmentAccountedForUsingEquityMethod', N'en', N'Investments accounted for using equity method', N's'),('AccountTypes', N'InvestmentAccountedForUsingEquityMethod', N'ar', N'الاستثمارات التي يتم محاسبتها باستخدام طريقة حقوق الملكية', N's'),
@@ -613,12 +613,14 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'CurrentTradeReceivables', N'en', N'Current trade receivables', N's'),('AccountTypes', N'CurrentTradeReceivables', N'ar', N'الذمم المدينة االتجارية المتداولة', N's'),
 ('AccountTypes', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'en', N'Current receivables due from related parties', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'ar', N'الذمم المدينة المتداولة المستحقة من أطراف ذات علاقة', N's'),
 ('AccountTypes', N'CurrentPrepaymentsAndCurrentAccruedIncome', N'en', N'Current prepayments and current accrued income', N's'),('AccountTypes', N'CurrentPrepaymentsAndCurrentAccruedIncome', N'ar', N'الدفعات المسبقة المتداولة والدخل المستحق الحالي', N's'),
-('AccountTypes', N'CurrentPrepayments', N'en', N'Current prepayments', N's'),('AccountTypes', N'CurrentPrepayments', N'ar', N'إجمالي الدفعات المسبقة الحالية', N's'),
+('AccountTypes', N'CurrentPrepayments', N'en', N'Current prepayments', N's'),('AccountTypes', N'CurrentPrepayments', N'ar', N'الدفعات المسبقة المتداولة', N's'),
+('AccountTypes', N'CurrentAdvancesToSuppliers', N'en', N'Current advances to suppliers', N's'),('AccountTypes', N'CurrentAdvancesToSuppliers', N'ar', N'سلف حالية للموردين', N's'),
+('AccountTypes', N'CurrentPrepaidExpenses', N'en', N'Current prepaid expenses', N's'),('AccountTypes', N'CurrentPrepaidExpenses', N'ar', N'المصاريف المدفوعة مسبقا الحالية', N's'),
 ('AccountTypes', N'CurrentAccruedIncome', N'en', N'Current accrued income', N's'),('AccountTypes', N'CurrentAccruedIncome', N'ar', N'الدخل المستحق الحالي', N's'),
-('AccountTypes', N'CurrentBilledButNotReceivedExtension', N'en', N'Current billed but not received', N's'),('AccountTypes', N'CurrentBilledButNotReceivedExtension', N'ar', N'وصفت الحالي ولكن لم تتلق', N's'),
+('AccountTypes', N'CurrentBilledButNotReceivedExtension', N'en', N'Current billed but not received', N's'),('AccountTypes', N'CurrentBilledButNotReceivedExtension', N'ar', N'فواتير بدون استلام للسلع والخدمات', N's'),
 ('AccountTypes', N'CurrentReceivablesFromTaxesOtherThanIncomeTax', N'en', N'Current receivables from taxes other than income tax', N's'),('AccountTypes', N'CurrentReceivablesFromTaxesOtherThanIncomeTax', N'ar', N'الذمم المدينة المتداولة من الضرائب عدا عن ضريبة الدخل', N's'),
 ('AccountTypes', N'CurrentValueAddedTaxReceivables', N'en', N'Current value added tax receivables', N's'),('AccountTypes', N'CurrentValueAddedTaxReceivables', N'ar', N'الذمم المدينة لضريبة القيمة المضافة الحالية', N's'),
-('AccountTypes', N'WithholdingTaxReceivablesExtension', N'en', N'Withholding tax receivables', N's'),('AccountTypes', N'WithholdingTaxReceivablesExtension', N'ar', N'ذمم الضريبة', N's'),
+('AccountTypes', N'WithholdingTaxReceivablesExtension', N'en', N'Withholding tax receivables', N's'),('AccountTypes', N'WithholdingTaxReceivablesExtension', N'ar', N'الذمم المدينة لضريية الخصم', N's'),
 ('AccountTypes', N'CurrentReceivablesFromRentalOfProperties', N'en', N'Current receivables from rental of properties', N's'),('AccountTypes', N'CurrentReceivablesFromRentalOfProperties', N'ar', N'الذمم المدينة المتداولة من إيجار العقارات', N's'),
 ('AccountTypes', N'OtherCurrentReceivables', N'en', N'Other current receivables', N's'),('AccountTypes', N'OtherCurrentReceivables', N'ar', N'ذمم مدينة متداولة أخرى', N's'),
 ('AccountTypes', N'AllowanceAccountForCreditLossesOfTradeAndOtherCurrentReceivablesExtension', N'en', N'Allowance account for credit losses of trade and other current receivables', N's'),('AccountTypes', N'AllowanceAccountForCreditLossesOfTradeAndOtherCurrentReceivablesExtension', N'ar', N'حساب مخصص خسائر الائتمان للذمم مدينة تجارية وأخرى الحالية', N's'),
@@ -648,7 +650,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'SharePremium', N'en', N'Share premium', N's'),('AccountTypes', N'SharePremium', N'ar', N'علاوة إصدار', N's'),
 ('AccountTypes', N'TreasuryShares', N'en', N'Treasury shares', N's'),('AccountTypes', N'TreasuryShares', N'ar', N'أسهم الخزينة', N's'),
 ('AccountTypes', N'OtherEquityInterest', N'en', N'Other equity interest', N's'),('AccountTypes', N'OtherEquityInterest', N'ar', N'حصة مالكين أخرى', N's'),
-('AccountTypes', N'OtherReserves', N'en', N'Other reserves', N's'),('AccountTypes', N'OtherReserves', N'ar', N'', N's'),
+('AccountTypes', N'OtherReserves', N'en', N'Other reserves', N's'),('AccountTypes', N'OtherReserves', N'ar', N'احتياطي آخر', N's'),
 ('AccountTypes', N'RevaluationSurplus', N'en', N'Revaluation surplus', N's'),('AccountTypes', N'RevaluationSurplus', N'ar', N'فائض إعادة التقييم', N's'),
 ('AccountTypes', N'ReserveOfExchangeDifferencesOnTranslation', N'en', N'Reserve of exchange differences on translation', N's'),('AccountTypes', N'ReserveOfExchangeDifferencesOnTranslation', N'ar', N'احتياطي فروق الصرف من التحويل', N's'),
 ('AccountTypes', N'ReserveOfCashFlowHedges', N'en', N'Reserve of cash flow hedges', N's'),('AccountTypes', N'ReserveOfCashFlowHedges', N'ar', N'احتياطي تحوطات التدفقات النقدية', N's'),
@@ -708,9 +710,12 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'TradeAndOtherCurrentPayables', N'en', N'Trade and other current payables', N's'),('AccountTypes', N'TradeAndOtherCurrentPayables', N'ar', N'الذمم الدائنة التجارية والأخرى المتداولة', N's'),
 ('AccountTypes', N'TradeAndOtherCurrentPayablesToTradeSuppliers', N'en', N'Current trade payables', N's'),('AccountTypes', N'TradeAndOtherCurrentPayablesToTradeSuppliers', N'ar', N'الذمم الدائنة االتجارية المتداولة', N's'),
 ('AccountTypes', N'TradeAndOtherCurrentPayablesToRelatedParties', N'en', N'Current payables to related parties', N's'),('AccountTypes', N'TradeAndOtherCurrentPayablesToRelatedParties', N'ar', N'الذمم الدائنة المتداولة إلى الأطراف ذات العلاقة', N's'),
+('AccountTypes', N'AccrualsAndDeferredIncomeClassifiedAsCurrent', N'en', N'Accruals and deferred income classified as current', N's'),('AccountTypes', N'AccrualsAndDeferredIncomeClassifiedAsCurrent', N'ar', N'الاستحقاقات والدخل المؤجل المصنّف على أنه متداول', N's'),
 ('AccountTypes', N'DeferredIncomeClassifiedAsCurrent', N'en', N'Deferred income classified as current', N's'),('AccountTypes', N'DeferredIncomeClassifiedAsCurrent', N'ar', N'الدخل المؤجل المصنف على أنه متداول', N's'),
-('AccountTypes', N'AccrualsClassifiedAsCurrent', N'en', N'Accruals classified as current', N's'),('AccountTypes', N'AccrualsClassifiedAsCurrent', N'ar', N'مستحقات تصنف الحالي', N's'),
+('AccountTypes', N'RentDeferredIncomeClassifiedAsCurrent', N'en', N'Rent deferred income classified as current', N's'),('AccountTypes', N'RentDeferredIncomeClassifiedAsCurrent', N'ar', N'الدخل المؤجل للإيجار المصنف على أنه جاري', N's'),
+('AccountTypes', N'AccrualsClassifiedAsCurrent', N'en', N'Accruals classified as current', N's'),('AccountTypes', N'AccrualsClassifiedAsCurrent', N'ar', N'الاستحقاقات المصنفة على أنها متداولة', N's'),
 ('AccountTypes', N'ShorttermEmployeeBenefitsAccruals', N'en', N'Short-term employee benefits accruals', N's'),('AccountTypes', N'ShorttermEmployeeBenefitsAccruals', N'ar', N'مستحقات منافع الموظفين قصيرة الاجل', N's'),
+('AccountTypes', N'CurrentBilledButNotIssuedExtension', N'en', N'Current billed but not delivered to trade customers', N's'),('AccountTypes', N'CurrentBilledButNotIssuedExtension', N'ar', N'مطالبات دون تسليم سلع وخدمات إلى الزبائن', N's'),
 ('AccountTypes', N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', N'en', N'Current payables on social security and taxes other than income tax', N's'),('AccountTypes', N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', N'ar', N'الذمم الدائنة المتداولة على الضمان الاجتماعي والضرائب عدا عن ضريبة الدخل', N's'),
 ('AccountTypes', N'CurrentValueAddedTaxPayables', N'en', N'Current value added tax payables', N's'),('AccountTypes', N'CurrentValueAddedTaxPayables', N'ar', N'الذمم الدائنة لضريبة القيمة المضافة الحالية', N's'),
 ('AccountTypes', N'CurrentExciseTaxPayables', N'en', N'Current excise tax payables', N's'),('AccountTypes', N'CurrentExciseTaxPayables', N'ar', N'الذمم الدائنة المتداولة للاستبقاء', N's'),
@@ -799,7 +804,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'en', N'Hedging gains (losses) for hedge of group of items with offsetting risk positions', N's'),('AccountTypes', N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'ar', N'أرباح (خسائر) التحوط فيما يخص التحوط لمجموعة من البنود التي يكون لها مراكز مخاطر متعادلة', N's'),
 ('AccountTypes', N'IncomeTaxExpenseContinuingOperations', N'en', N'Tax income (expense)', N's'),('AccountTypes', N'IncomeTaxExpenseContinuingOperations', N'ar', N'دخل (مصروف) الضريبة', N's'),
 ('AccountTypes', N'ProfitLossFromDiscontinuedOperations', N'en', N'Profit (loss) from discontinued operations', N's'),('AccountTypes', N'ProfitLossFromDiscontinuedOperations', N'ar', N'الربح (الخسارة) من العمليات المتوقفة', N's'),
-('AccountTypes', N'OtherComprehensiveIncome', N'en', N'Other comprehensive income [abstract]', N's'),('AccountTypes', N'OtherComprehensiveIncome', N'ar', N'دخل شامل آخر [ملخص]', N's'),
+('AccountTypes', N'OtherComprehensiveIncome', N'en', N'Other comprehensive income', N's'),('AccountTypes', N'OtherComprehensiveIncome', N'ar', N'دخل شامل آخر', N's'),
 ('AccountTypes', N'ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'en', N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax [abstract]', N's'),('AccountTypes', N'ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'ar', N'مكونات الدخل الشامل الآخر التي لن يعاد تصنيفها إلى الربح أو الخسارة، قبل الضريبة [ملخص]', N's'),
 ('AccountTypes', N'OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments', N'en', N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments', N's'),('AccountTypes', N'OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments', N'ar', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) من الاستثمارات في أدوات حقوق الملكية', N's'),
 ('AccountTypes', N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation', N'en', N'Other comprehensive income, before tax, gains (losses) on revaluation', N's'),('AccountTypes', N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation', N'ar', N'دخل شامل آخر، قبل الضريبة، الأرباح (الخسائر) الناشئة عن التحويل', N's'),
@@ -829,7 +834,8 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'CashReceiptsFromOthersControlExtension', N'en', N'Cash receipts from others control', N's'),('AccountTypes', N'CashReceiptsFromOthersControlExtension', N'ar', N'مراقبة الدفعيات من الآخرين', N's'),
 ('AccountTypes', N'GuaranteesExtension', N'en', N'Guarantees', N's'),('AccountTypes', N'GuaranteesExtension', N'ar', N'حسابات مراقبة الضمانات', N's'),
 ('AccountTypes', N'CollectionGuaranteeExtension', N'en', N'Collection Guarantee', N's'),('AccountTypes', N'CollectionGuaranteeExtension', N'ar', N'ضمانات تحصيل', N's'),
-('AccountTypes', N'DishonouredGuaranteeExtension', N'en', N'Dishonoured Guarantee', N's'),('AccountTypes', N'DishonouredGuaranteeExtension', N'ar', N'ضمانات مرتجعة', N's')
+('AccountTypes', N'DishonouredGuaranteeExtension', N'en', N'Dishonoured Guarantee', N's'),('AccountTypes', N'DishonouredGuaranteeExtension', N'ar', N'ضمانات مرتجعة', N's'),
+('AccountTypes', N'MigrationAccountsExtension', N'en', N'Migration accounts', N's'),('AccountTypes', N'MigrationAccountsExtension', N'ar', N'حسابات مرحلة', N's')
 -- Units
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 (N'Units',N'pure', N'en', N'pure', N's'),(N'Units',N'pure', N'ar', N'صافي', N's'),(N'Units',N'pure', N'am', N'ንፁህ', N's'),(N'Units',N'pure', N'cn', N'纯', N's'),(N'Units',N'pure', N'en', N'Unique Instance', N'n'),(N'Units',N'pure', N'ar', N'صنف فريد من نوعه', N'n'),(N'Units',N'pure', N'am', N'ልዩ ተቋም', N'n'),(N'Units',N'pure', N'cn', N'唯一实例', N'n'),
@@ -893,7 +899,13 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 (N'ReportMeasureDefinitions',N'Revenue (Expense)', N'en', N'Revenue (Expense)', N'n'),(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'ar', N'الإيراد (المصروف)', N'n'),(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'am', N'ገቢ (የወጪ)', N'n'),(N'ReportMeasureDefinitions',N'Revenue (Expense)', N'zh', N'收入（支出）', N'n'),
 (N'ReportMeasureDefinitions',N'Balance', N'en', N'Balance', N'n'),(N'ReportMeasureDefinitions',N'Balance', N'ar', N'الرصيد', N'n'),(N'ReportMeasureDefinitions',N'Balance', N'am', N'ሚዛን', N'n'),(N'ReportMeasureDefinitions',N'Balance', N'zh', N'平衡', N'n'),
-(N'ReportMeasureDefinitions',N'Changes', N'en', N'Changes', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'ar', N'التغير', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'am', N'ለውጦች', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'zh', N'变化', N'n');-- Users
+(N'ReportMeasureDefinitions',N'Changes', N'en', N'Changes', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'ar', N'التغير', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'am', N'ለውጦች', N'n'),(N'ReportMeasureDefinitions',N'Changes', N'zh', N'变化', N'n'),
+(N'ReportMeasureDefinitions',N'Opening', N'en', N'Opening', N'n'),(N'ReportMeasureDefinitions',N'Opening', N'ar', N'اقتتاحي', N'n'),(N'ReportMeasureDefinitions',N'Opening', N'am', N'ቀዳዳ', N'n'),(N'ReportMeasureDefinitions',N'Opening', N'zh', N'开盘', N'n'),
+(N'ReportMeasureDefinitions',N'Debit', N'en', N'Debit', N'n'),(N'ReportMeasureDefinitions',N'Debit', N'ar', N'مدين', N'n'),(N'ReportMeasureDefinitions',N'Debit', N'am', N'ዴቢት', N'n'),(N'ReportMeasureDefinitions',N'Debit', N'zh', N'借方', N'n'),
+(N'ReportMeasureDefinitions',N'Credit', N'en', N'Credit', N'n'),(N'ReportMeasureDefinitions',N'Credit', N'ar', N'دائن', N'n'),(N'ReportMeasureDefinitions',N'Credit', N'am', N'ክሬዲት', N'n'),(N'ReportMeasureDefinitions',N'Credit', N'zh', N'信用', N'n'),
+(N'ReportMeasureDefinitions',N'Closing', N'en', N'Closing', N'n'),(N'ReportMeasureDefinitions',N'Closing', N'ar', N'ختامي', N'n'),(N'ReportMeasureDefinitions',N'Closing', N'am', N'በመዝጋት ላይ', N'n'),(N'ReportMeasureDefinitions',N'Closing', N'zh', N'闭幕', N'n');
+
+-- Users
 
 -- Users
 UPDATE dbo.Users

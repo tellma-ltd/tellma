@@ -1,4 +1,5 @@
-﻿DELETE FROM @AccountTypesIndexedIds;
+﻿UPDATE dbo.Accounts SET CurrencyId = N'SDG' WHERE CurrencyId = N'XXX'
+DELETE FROM @AccountTypesIndexedIds;
 INSERT INTO @AccountTypesIndexedIds ([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountTypes
 WHERE [Concept] IN (
 (N'LandAndBuildings'),

@@ -98,7 +98,7 @@ BEGIN
 	:r .\106\05_Contracts\07_Creditors.sql
 	:r .\106\05_Contracts\08_Employees.sql
 
-	:r .\106\06_Accounts\a_AccountClassifications.sql
+	--:r .\106\06_Accounts\a_AccountClassifications.sql
 	:r .\106\06_Accounts\b_Accounts.sql
 END
 IF @DB = N'107' -- SSIA, SDG, en/ar
