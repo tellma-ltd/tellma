@@ -905,6 +905,12 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.EconomicOrderQuantityVisibility, display);
                     isRequired = def.EconomicOrderQuantityVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.Unit):
+                    if (def.UnitCardinality == null)
+                    {
+                        display = null;
+                    }
+                    break;
                 case nameof(Resource.UnitId):
                     if (def.UnitCardinality == null)
                     {
@@ -920,6 +926,7 @@ namespace Tellma.Controllers
                     isRequired = def.UnitMassVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.UnitMassUnitId):
+                case nameof(Resource.UnitMassUnit):
                     display = PropertyDisplay(def.UnitMassVisibility, display);
                     isRequired = def.UnitMassVisibility == Visibility.Required && def.DefaultUnitMassUnitId == null;
                     break;

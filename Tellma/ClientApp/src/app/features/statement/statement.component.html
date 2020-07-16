@@ -1,4 +1,4 @@
-<div class="h-100 d-flex flex-column">
+<div *ngIf="found;else pageNotFound" class="h-100 d-flex flex-column">
 
     <!-- Title and Parameters -->
     <div class="row border-bottom bg-white">
@@ -14,7 +14,7 @@
 
         <!-- Parameters -->
         <div class="mx-auto mb-3 w-100" style="max-width: 900px" [class.d-none]="collapseParameters">
-            <div class="row m-0 px-0 px-lg-1 py-1">
+            <div class="row m-0 px-0 px-lg-1 py-1" [ngSwitch]="type">
                 <!-- From Date -->
                 <t-form-group class="t-form-group" [label]="('FromDate' | translate) + ' *'">
                     <t-date-picker [(ngModel)]="fromDate" [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
@@ -32,69 +32,93 @@
                     </t-centers-picker>
                 </t-form-group>
 
-                <!-- Account -->
-                <t-form-group class="t-form-group" [label]="('Entry_Account' | translate) + ' *'">
-                    <t-accounts-picker [(ngModel)]="accountId" [additionalSelect]="accountAdditionalSelect"
-                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                    </t-accounts-picker>
-                </t-form-group>
+                <ng-container *ngSwitchCase="'contract'">
 
-                <!-- Currency -->
-                <t-form-group class="t-form-group" [label]="'Entry_Currency' | translate" *ngIf="showCurrencyParameter">
-                    <t-currencies-picker [(ngModel)]="currencyId" [additionalSelect]="currencyAdditionalSelect"
-                        [ensureAdditionalSelect]="true" [showCreate]="false">
-                    </t-currencies-picker>
-                </t-form-group>
+                    <!-- Contract -->
+                    <t-form-group class="t-form-group" [label]="labelContract_Smart">
+                        <t-contracts-picker [(ngModel)]="contractId"
+                            [definitionIds]="definitionIdsContract_Smart" [additionalSelect]="contractAdditionalSelect"
+                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                        </t-contracts-picker>
+                    </t-form-group>
 
-                <!-- Contract -->
-                <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContractParameter">
-                    <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
-                        [definitionIds]="definitionIdsContract_Manual" [additionalSelect]="contractAdditionalSelect"
-                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                    </t-contracts-picker>
-                    <t-view-link *ngIf="readonlyContract_Manual"
-                        [link]="link('contracts/') + ws.get('Contract', readonlyValueContractId_Manual)?.DefinitionId"
-                        [itemId]="readonlyValueContractId_Manual">
-                        {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual, 'Name') }}
-                    </t-view-link>
-                </t-form-group>
+                    <!-- <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
+                        <t-selector>
+                            
+                        </t-selector>
+                    </t-form-group> -->
 
-                <!-- Resource -->
-                <t-form-group class="t-form-group" [label]="labelResource_Manual" *ngIf="showResourceParameter">
-                    <t-resources-picker *ngIf="!readonlyResource_Manual" [(ngModel)]="resourceId"
-                        [definitionIds]="definitionIdsResource_Manual" [additionalSelect]="resourceAdditionalSelect"
-                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                    </t-resources-picker>
-                    <t-view-link *ngIf="readonlyResource_Manual"
-                        [link]="link('resources/') + ws.get('Resource', readonlyValueResourceId_Manual)?.DefinitionId"
-                        [itemId]="readonlyValueResourceId_Manual">
-                        {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual, 'Name') }}
-                    </t-view-link>
-                </t-form-group>
+                </ng-container>
 
-                <!-- Entry Type -->
-                <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate"
-                    *ngIf="showEntryTypeParameter">
-                    <t-entry-types-picker *ngIf="!readonlyEntryType_Manual" [(ngModel)]="entryTypeId"
-                        [filter]="filterEntryType_Manual" [showCreate]="false">
-                    </t-entry-types-picker>
-                    <t-view-link *ngIf="readonlyEntryType_Manual" [link]="link('entry-types')"
-                        [itemId]="readonlyValueEntryTypeId_Manual">
-                        {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId_Manual, 'Name') }}
-                    </t-view-link>
-                </t-form-group>
+                <ng-container *ngSwitchCase="'account'">
 
-                <!-- Center -->
-                <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenterParameter">
-                    <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true"
-                        [showCreate]="false">
-                    </t-centers-picker>
-                    <t-view-link *ngIf="readonlyCenter_Manual"
-                        [link]="link('centers/') + ws.get('Center', readonlyValueCenterId_Manual)?.DefinitionId"
-                        [itemId]="readonlyValueCenterId_Manual">
-                        {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual, 'Name') }}
-                    </t-view-link>
-                </t-form-group>
+                    <!-- Account -->
+                    <t-form-group class="t-form-group" [label]="('Entry_Account' | translate) + ' *'">
+                        <t-accounts-picker [(ngModel)]="accountId" [additionalSelect]="accountAdditionalSelect"
+                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                        </t-accounts-picker>
+                    </t-form-group>
+
+                    <!-- Currency -->
+                    <t-form-group class="t-form-group" [label]="'Entry_Currency' | translate"
+                        *ngIf="showCurrencyParameter">
+                        <t-currencies-picker [(ngModel)]="currencyId" [additionalSelect]="currencyAdditionalSelect"
+                            [ensureAdditionalSelect]="true" [showCreate]="false">
+                        </t-currencies-picker>
+                    </t-form-group>
+
+                    <!-- Contract -->
+                    <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContractParameter">
+                        <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
+                            [definitionIds]="definitionIdsContract_Manual" [additionalSelect]="contractAdditionalSelect"
+                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                        </t-contracts-picker>
+                        <t-view-link *ngIf="readonlyContract_Manual"
+                            [link]="link('contracts/') + ws.get('Contract', readonlyValueContractId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueContractId_Manual">
+                            {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
+                    <!-- Resource -->
+                    <t-form-group class="t-form-group" [label]="labelResource_Manual" *ngIf="showResourceParameter">
+                        <t-resources-picker *ngIf="!readonlyResource_Manual" [(ngModel)]="resourceId"
+                            [definitionIds]="definitionIdsResource_Manual" [additionalSelect]="resourceAdditionalSelect"
+                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                        </t-resources-picker>
+                        <t-view-link *ngIf="readonlyResource_Manual"
+                            [link]="link('resources/') + ws.get('Resource', readonlyValueResourceId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueResourceId_Manual">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
+                    <!-- Entry Type -->
+                    <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate"
+                        *ngIf="showEntryTypeParameter">
+                        <t-entry-types-picker *ngIf="!readonlyEntryType_Manual" [(ngModel)]="entryTypeId"
+                            [filter]="filterEntryType_Manual" [showCreate]="false">
+                        </t-entry-types-picker>
+                        <t-view-link *ngIf="readonlyEntryType_Manual" [link]="link('entry-types')"
+                            [itemId]="readonlyValueEntryTypeId_Manual">
+                            {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
+                    <!-- Center -->
+                    <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenterParameter">
+                        <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true"
+                            [showCreate]="false">
+                        </t-centers-picker>
+                        <t-view-link *ngIf="readonlyCenter_Manual"
+                            [link]="link('centers/') + ws.get('Center', readonlyValueCenterId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueCenterId_Manual">
+                            {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
+
+                </ng-container>
 
                 <!-- IncludeCompleted -->
                 <t-form-group class="t-form-group" [label]="'IncludeCompleted' | translate">
@@ -163,7 +187,7 @@
                 </button>
 
                 <!-- Expand/Collapse -->
-                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button font-weight-normal" type="button"
                     title="{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}"
                     (click)="onToggleCollapseParameters()">
                     <fa-icon [icon]="collapseParameters ? 'angle-down' : 'angle-up'"></fa-icon>
@@ -296,6 +320,11 @@
     </div> -->
 </div>
 
+<!-- If definitionId is invalid -->
+<ng-template #pageNotFound>
+    <t-application-page-not-found [showHome]="!isPopupMode">
+    </t-application-page-not-found>
+</ng-template>
 
 <!-- Error Modal -->
 <ng-template #errorModal let-modal>

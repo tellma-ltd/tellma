@@ -482,7 +482,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         s.collectionName = response.CollectionName;
 
         // add to the relevant collection depending on mode
-        if (this.isTreeMode) {
+        if (isTree) {
           const ids = addToWorkspace(response, this.workspace);
           const entityWs = this.workspace.current[response.CollectionName];
           s.updateTreeNodes(ids, entityWs, TreeRefreshMode.cleanSlate, this.searchOrFilter);

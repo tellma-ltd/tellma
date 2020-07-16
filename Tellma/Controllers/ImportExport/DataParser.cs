@@ -132,7 +132,7 @@ namespace Tellma.Controllers.ImportExport
                     else
                     {
                         // More than 1 match in the db list => error                        
-                        if (matches.Skip(1).Any()) // given the earlier check, this can only mean more than one
+                        if (matches.Skip(1).Any())
                         {
                             var typeDisplay = parentIdProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
                             var keyPropDisplay = parentIdProp.KeyPropertyMetadata.Display();
@@ -310,7 +310,7 @@ namespace Tellma.Controllers.ImportExport
                         // Get the user key value (usually the code or the name)
                         object userKeyValue = fkProp.KeyType switch
                         {
-                            KeyType.String => stringField,
+                            KeyType.String => stringField?.Trim(),
                             KeyType.Int => int.Parse(stringField),
                             _ => null
                         };
@@ -331,8 +331,7 @@ namespace Tellma.Controllers.ImportExport
                             mapping.Entity.EntityMetadata.ParentMatches = matches;
                             continue;
                         }
-
-                        if (matches == null || !matches.Any())
+                        else if (matches == null || !matches.Any()) // No matches at all -> Problem
                         {
                             var typeDisplay = fkProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
                             var propDisplay = fkProp.KeyPropertyMetadata.Display();
@@ -342,23 +341,20 @@ namespace Tellma.Controllers.ImportExport
                                 return false;
                             }
                         }
-                        else
+                        else if (matches.Skip(1).Any()) // More than one match -> Problem
                         {
-                            if (matches.Skip(1).Any()) // More than one match
+                            var typeDisplay = fkProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
+                            var keyPropDisplay = fkProp.KeyPropertyMetadata.Display();
+                            if (!errors.AddImportError(rowNumber, prop.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
                             {
-                                var typeDisplay = fkProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
-                                var keyPropDisplay = fkProp.KeyPropertyMetadata.Display();
-                                if (!errors.AddImportError(rowNumber, prop.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
-                                {
-                                    return false;
-                                }
+                                return false;
                             }
-                            else
-                            {
-                                var single = matches.Single();
-                                var id = single.GetId();
-                                prop.Metadata.Descriptor.SetValue(mapping.Entity, id);
-                            }
+                        }
+                        else // Exactly one match -> Perfect
+                        {
+                            var single = matches.Single();
+                            var id = single.GetId();
+                            prop.Metadata.Descriptor.SetValue(mapping.Entity, id);
                         }
                     }
                     else

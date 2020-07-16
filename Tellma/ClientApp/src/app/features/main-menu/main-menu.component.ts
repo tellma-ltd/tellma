@@ -259,13 +259,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
-      // // translate all the labels to the current language
-      // for (const sectionKey of Object.keys(menu)) {
-      //   for (const item of menu[sectionKey].items) {
-      //     item.label = this.translate.instant(item.label);
-      //   }
-      // }
-
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
       this.addDefinitions(menu, ws.definitions.Contracts, 'contracts');
@@ -274,6 +267,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.addReportDefinitions(menu);
 
+      // Set the mainMenu field and sort the items based on sortKey
       this._mainMenu = Object.keys(menu).map(sectionKey => ({
         label: this.translate.instant('Menu_' + sectionKey),
         items: menu[sectionKey].items.sort((x1, x2) => x1.sortKey - x2.sortKey),
@@ -423,6 +417,20 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           icon: definition.MainMenuIcon || 'folder',
           link: `../${url}/${definitionId}`
         });
+
+        // if (url === 'contracts') {
+
+
+        //   menu[definition.MainMenuSection].items.push({
+        //     label: this.translate.instant('StatementOf0', {
+        //       0 : this.workspace.currentTenant.getMultilingualValueImmediate(definition, 'TitleSingular')
+        //     }),
+        //     sortKey: definition.MainMenuSortKey + 1,
+        //     icon: definition.MainMenuIcon || 'folder',
+        //     link: `../contract-statement/${definitionId}`,
+        //     paramsFunc: null // TODO
+        //   });
+        // }
       }
     }
   }

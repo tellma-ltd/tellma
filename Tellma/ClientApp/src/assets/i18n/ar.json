@@ -734,6 +734,7 @@
   "State": "الحالة",
   "StateHistory_FromState": "من حالة",
   "StateHistory_ToState": "إلى حالة",
+  "StatementOf0": "كشف حساب {{0}}",
   "Step1": "الخطوة الأولى",
   "Step2": "الخطوة الثانية",
   "Success": "تم بنجاح",
