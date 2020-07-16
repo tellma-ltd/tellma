@@ -877,9 +877,6 @@
   <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
     <value>无法从{0}文档中删除签名。</value>
   </data>
-  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
-    <value>不能未签署{0}文件。</value>
-  </data>
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>只有线路草案可以被删除。</value>
   </data>

@@ -877,9 +877,6 @@
   <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
     <value>Cannot delete a signature from a {0} document.</value>
   </data>
-  <data name="Error_CannotUnsignDocumentInState0" xml:space="preserve">
-    <value>Cannot un-sign a {0} document.</value>
-  </data>
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>Only draft lines can be deleted.</value>
   </data>
