@@ -35,7 +35,13 @@ INSERT INTO @Contracts(
 	NULL,		NULL),
 (	2,			N'CA3',		N'Travel Cash - USD',	N'USD',				@107C_Headquarters,	NULL,			NULL,			NULL,		NULL,		NULL,
 	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL);
+	NULL,		NULL),
+(	3,			N'CA4',		N'Cashier',				NULL,				@107C_MehiraScheme,	NULL,			NULL,			NULL,		NULL,		NULL,
+	NULL,		NULL,		N'الصندوق',				NULL,				NULL,				NULL,			NULL,			NULL,		NULL,		NULL,		NULL,
+	NULL,		NULL)
+	
+	
+	;
 
 EXEC [api].[Contracts__Save]
 	@DefinitionId = @CashOnHandAccountCD,
@@ -52,6 +58,7 @@ END;
 SELECT @CashOnHandAccount1 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA1';
 SELECT @CashOnHandAccount2 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA2';
 SELECT @CashOnHandAccount3 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA3';
+SELECT @CashOnHandAccount4 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA4';
 
 -- Adding sample bank accounts
 DELETE FROM @Contracts -- Text1: Branch, Lookup1: Bank Account type

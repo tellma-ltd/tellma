@@ -396,7 +396,8 @@ END
 		FROM dbo.Accounts A
 		JOIN LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
 		WHERE
-			(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+			(A.[IsActive] = 1)
+		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
@@ -427,7 +428,8 @@ END
 		FROM dbo.Accounts A
 		JOIN LineEntries2 LE ON LE.[AccountTypeId] = A.[AccountTypeId]
 		WHERE
-			(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+			(A.[IsActive] = 1)
+		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])

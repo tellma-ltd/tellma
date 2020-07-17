@@ -211,6 +211,9 @@
 	UPDATE @ResourceDefinitions
 	SET 
 		[CurrencyVisibility] = N'Required',
+		[FromDateVisibility] = N'Required',
+		[FromDateLabel] = N'Check Date',
+		[FromDateLabel2] = N'تاريخ الشيك',
 		[Text1Visibility] = N'Required',
 		[Text1Label] = N'Check Number',
 		[UnitCardinality] = N'None',

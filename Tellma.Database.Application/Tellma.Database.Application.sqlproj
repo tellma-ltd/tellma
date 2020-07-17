@@ -627,6 +627,7 @@
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Activate.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

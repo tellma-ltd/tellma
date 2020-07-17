@@ -86,3 +86,7 @@
 	DECLARE @Agent3 INT;
 	DECLARE @CashOnHandAccount3 INT, @BankAccount3 INT;
 	DECLARE @Supplier3 INT, @Customer3 INT, @Employee3 INT, @Warehouse3 INT, @Creditor3 INT, @Debtor3 INT, @Partner3 INT;
+
+	DECLARE @Agent4 INT;
+	DECLARE @CashOnHandAccount4 INT, @BankAccount4 INT;
+	DECLARE @Supplier4 INT, @Customer4 INT, @Employee4 INT, @Warehouse4 INT, @Creditor4 INT, @Debtor4 INT, @Partner4 INT;
