@@ -378,16 +378,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,110,	N'ContractId',			1,	N'From Cash Account',1,2,1),
-(1,110,	N'ContractId',			0,	N'To Bank Account',	1,2,1),
-(2,110,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(0,110,	N'ContractId',			1,	N'From Cash Account',1,2,0),
+(1,110,	N'ContractId',			0,	N'To Bank Account',	1,2,0),
+(2,110,	N'CurrencyId',			1,	N'Currency',		1,2,0),
 (3,110,	N'MonetaryValue',		1,	N'Amount',			1,3,0),
---(4,110,	N'CenterId',			0,	N'Segment',			4,4,1),
 (5,110,	N'Memo',				0,	N'Memo',			1,2,1);
 --111:DepositCheckToBank
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
-		DECLARE @ContractId0 INT, ContractId1 INT, @PostingDate DATE;
+		DECLARE @ContractId0 INT, @ContractId1 INT, @PostingDate DATE;
 		
 		DECLARE @WideLines WideLineList;
 				
@@ -395,7 +394,7 @@ SET [GenerateScript] = N'
 		SELECT @ContractId1 = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''ContractId1'') AS INT);
 		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
 
-		DECLARE @CurrencyId INT = (SELECT [CurrencyId] FROM dbo.Contracts WHERE [Id] = ContractId0);
+		DECLARE @CurrencyId NCHAR (3) = (SELECT [CurrencyId] FROM dbo.Contracts WHERE [Id] = @ContractId0);
 		DECLARE @EntryTypeId INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'''');
 		WITH CheckOnHandAccounts AS
 		(
@@ -403,7 +402,7 @@ SET [GenerateScript] = N'
 			JOIN dbo.AccountTypes ATC ON A.AccountTypeId = ATC.[Id]
 			JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 			WHERE ATP.[Concept] = N''CashOnHand''
-		),
+		)
 		INSERT INTO @WideLines(
 			[Index], [PostingDate],
 			[AccountId0], [CurrencyId0], [ContractId0], [ResourceId0], [UnitId0], [EntryTypeId0], [DueDate0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],[ExternalReference0],
@@ -414,28 +413,28 @@ SET [GenerateScript] = N'
 			@PostingDate,
 			NULL			AS [AccountId0],
 			@CurrencyId		AS [CurrencyId0],
-			@@ContractId0	AS [ContractId0],
+			@ContractId0	AS [ContractId0],
 			NULL			AS [ResourceId0],
 			NULL			AS [UnitId0],
 			@EntryTypeId	AS [EntryTypeId0],
 			NULL			As [DueDate0],
 			NULL			AS [CenterId0],
 			NULL			AS [Quantity0],
-			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue0],
-			SUM([Direction] * [Value]) AS [Value0],
+			SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue0],
+			SUM(E.[Direction] * E.[Value]) AS [Value0],
 			R.[Text1]		AS [ExternalReference0],
 
-			[AccountId]		AS [AccountId1],
-			[CurrencyId]	AS [CurrencyId1],
-			[ContractId]	AS [ContractId1],
-			[ResourceId]	AS [ResourceId1],
-			[UnitId]		AS [UnitId1],
+			E.[AccountId]		AS [AccountId1],
+			E.[CurrencyId]	AS [CurrencyId1],
+			E.[ContractId]	AS [ContractId1],
+			E.[ResourceId]	AS [ResourceId1],
+			E.[UnitId]		AS [UnitId1],
 			@EntryTypeId	AS [EntryTypeId1],
-			[DueDate]		As [DueDate1],
+			E.[DueDate]		As [DueDate1],
 			NULL			AS [CenterId1],
 			NULL			AS [Quantity1],
-			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue1],
-			SUM([Direction] * [Value]) AS [Value1]
+			SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue1],
+			SUM(E.[Direction] * E.[Value]) AS [Value1]
 		FROM dbo.Entries E 
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
@@ -443,7 +442,7 @@ SET [GenerateScript] = N'
 		AND E.[AccountId] IN (SELECT [Id] FROM CheckOnHandAccounts)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
-		GROUP BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate]
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate], R.[text1]
 
 		SELECT * FROM @WideLines;
 	'
@@ -461,8 +460,9 @@ SET [Script] = N'
 		[NotedAgentName1] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
 		[CurrencyId0] = (SELECT [CurrencyId] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
 		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
-		[MonetaryValue0] = (SELECT [MonetaryAmount] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
-		[MonetaryValue1] = (SELECT [MonetaryAmount] FROM dbo.Resources WHERE [Id] = [ResourceId1])
+		[CenterId1]
+		[MonetaryValue0] = (SELECT [MonetaryValue] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
+		[MonetaryValue1] = (SELECT [MonetaryValue] FROM dbo.Resources WHERE [Id] = [ResourceId1])
 		-- Add the checkinfo to the bank line
 '
 WHERE [Index] = 111;
@@ -474,9 +474,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,111,	N'ContractId',			1,	N'From Cash Account',1,2,1),
-(1,111,	N'ContractId',			0,	N'To Bank Account',	1,2,1),
-(2,111,	N'ResourceId',			1,	N'Check Received',	1,2,1),
+(0,111,	N'ContractId',			1,	N'From Cash Account',1,2,0),
+(1,111,	N'ContractId',			0,	N'To Bank Account',	1,2,0),
+(2,111,	N'ResourceId',			1,	N'Check Received',	1,2,0),
 --(4,111,	N'CenterId',			0,	N'Segment',			4,4,1),
 (5,111,	N'Memo',				0,	N'Memo',			1,2,1);
 --120:CashReceiptFromOther
