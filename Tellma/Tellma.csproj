@@ -95,6 +95,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-brands-400.svg" />
     <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-brands-400.woff2" />
     <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-regular-400.svg" />

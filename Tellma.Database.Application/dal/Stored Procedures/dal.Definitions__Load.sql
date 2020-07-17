@@ -42,7 +42,7 @@ SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 -- Get the contract definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [ContractDefinitionId] FROM [dbo].[LineDefinitionEntryContractDefinitions]
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [ContractdefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [ContractDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
@@ -52,7 +52,7 @@ WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCon
 -- Get the noted contract definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [NotedContractDefinitionId] FROM [dbo].[LineDefinitionEntryNotedContractDefinitions]
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [NotedContractdefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [NotedContractDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
@@ -62,7 +62,7 @@ WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryNot
 -- Get the resource definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions]
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [ResourcedefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [ResourceDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
