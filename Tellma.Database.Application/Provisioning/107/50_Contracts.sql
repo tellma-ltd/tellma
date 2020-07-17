@@ -141,16 +141,16 @@ END;
 DELETE FROM @Contracts -- 
 INSERT INTO @Contracts( -- text1: email, text2: phone, Gender:, Color, Marital Status, Date Of Birth, 
 	[Index],	[Code],		[Name],				[CurrencyId],			[CenterId],				[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
-	[Int1],		[Int2],		[Lookup1Id],		[Lookup2Id],			[Lookup3Id],			[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
+	[Int1],		[Int2],		[Name2],			[Lookup1Id],			[Lookup2Id],			[Lookup3Id],	[Lookup4Id],[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
-(	0,			N'E001',	N'Employee 1',		@FunctionalCurrencyId,	@107C_Headquarters,		NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL,		NULL,				NULL,					NULL,					NULL,			NULL,		NULL,		@Agent1,	NULL,
+(	0,			N'E001',	N'Ali',				@FunctionalCurrencyId,	@107C_MehiraScheme,		NULL,			NULL,		NULL,		NULL,		NULL,
+	NULL,		NULL,		N'علي',				NULL,					NULL,					NULL,			NULL,		NULL,		NULL,		@Agent1,	NULL,
 	NULL,		NULL),
-(	1,			N'E002',	N'Employee 2',		NUll,					@107C_Headquarters,		NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL,		NULL,				NULL,					NULL,					NULL,			NULL,		NULL,		NULL,		N'TX-22',
+(	1,			N'E002',	N'Osman',			NUll,					@107C_MehiraScheme,		NULL,			NULL,		NULL,		NULL,		NULL,
+	NULL,		NULL,		N'عثمان',			NULL,					NULL,					NULL,			NULL,		NULL,		NULL,		NULL,		N'TX-22',
 	NULL,		NULL),
 (	2,			N'E003',	N'Employee 3',		NUll,					@107C_Headquarters,		NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL,		NULL,				NULL,					NULL,					NULL,			NULL,		NULL,		@Agent3,	NULL,
+	NULL,		NULL,		N'موظف 3',			NULL,					NULL,					NULL,			NULL,		NULL,		NULL,		@Agent3,	NULL,
 	NULL,		NULL);
 EXEC [api].[Contracts__Save]
 	@DefinitionId = @EmployeeCD,
