@@ -62,3 +62,20 @@ BEGIN
 	Print '107 Lands: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+
+DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+INSERT INTO @Resources([Index],
+[Code],     [Name],			        [Name2],			    [CenterId],         [Text1],        [Lookup1Id],  [UnitId]) VALUES(
+0,N'MV01',  N'Hyundai Santa Cruz', N'هيونداي سانتا كروز',	@107C_MehiraScheme, N'2KH-14414',   @HyundaiLKP, @mo);
+
+EXEC api.Resources__Save
+	@DefinitionId = @MotorVehiclesMemberRD,
+	@Entities = @Resources,
+	@ResourceUnits = @ResourceUnits,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print '107 Motor Vehicles: Inserting: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;

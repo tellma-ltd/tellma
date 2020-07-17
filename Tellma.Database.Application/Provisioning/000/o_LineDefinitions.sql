@@ -1,20 +1,31 @@
 ﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (0, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
+(71, N'ProjectCompletionToPropertyPlantAndEquipment', N'real estate project turning into properties to use', N'For Use', N'For Use', 0, 0),
+(72, N'ProjectCompletionToInventory', N'real estate project turning into properties for sale', N'For Sale', N'For Sale', 0, 0),
+(73, N'ProjectCompletionToInvestmentProperty', N'real estate project turning into properties for rent', N'For Rent', N'For Rent', 0, 0),
+(81, N'PPEDepreciation', N'Depreciating assets that are time based, and using the number of days as criteria', N'Depreciation', N'Assets Depreciation', 0, 0),
+(82, N'IntangibleAmortization', N'', N'Amortization', N'Amortization', 0, 0),
+(83, N'ExchangeVariance', N'', N'Exchange Variance', N'Exchange Variances', 0, 0),
+(84, N'TradeSettlement', N'Adjusting trade payables and trade receivables balances', N'Settlement', N'Settlements', 0, 0),
 (91, N'CostReallocationToConstructionInProgress', N'Capitalization of a project expenditures', N'Project', N'Projects', 0, 0),
 (92, N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment', N'Capitalization of an investment property expenditures ', N'Investment Property', N'Investment Properties', 0, 0),
 (93, N'CostReallocationToCurrentInventoriesInTransit', N'Capitalization of expenditures on inventories in transit', N'Goods In Transit', N'Goods In Transit', 0, 0),
-(100, N'CashPaymentToOther', N'cash payment to other than suppliers, customers, and employees', N'Payment to Other', N'Payments to Others', 0, 1),
-(104, N'CashTransferExchange', N'cash transfer exchange', N'Cash Transfer', N'Cash Transfers', 0, 1),
+(100, N'CashTransferExchange', N'cash transfer and currency exchange', N'Transfer & Exchange', N'Cash Transfers', 0, 1),
+(101, N'CashTransfer', N'cash transfer, same currency', N'Transfer', N'Transfers', 0, 1),
+(102, N'CashExchange', N'currency exchange, same account', N'Exchange', N'Exchanges', 0, 1),
 (110, N'DepositCashToBank', N'deposit cash in bank', N'Cash Deposit', N'Cash Deposits', 0, 1),
 (111, N'DepositCheckToBank', N'deposit checks in bank', N'Check Deposit', N'Check Deposits', 0, 0),
-(120, N'CashReceiptFromOther', N'cash receipt by cashier or bank from other than customers, suppliers or employees', N'Cash Payment', N'Cash Payments', 0, 1),
-(121, N'CheckReceiptFromOtherInCashier', N'check receipt by cashier from other than customers, suppliers or employees', N'Check Payment', N'Check Payments', 0, 1),
+(120, N'CashReceiptFromOtherToCashier', N'cash receipt by cashier or bank from other than customers, suppliers or employees', N'Cash Payment', N'Cash Payments', 0, 1),
+(121, N'CheckReceiptFromOtherToCashier', N'check receipt by cashier from other than customers, suppliers or employees', N'Check Payment', N'Check Payments', 0, 1),
+(130, N'CashPaymentToOther', N'cash payment to other than suppliers, customers, and employees', N'Payment to Other', N'Payments to Others', 0, 1),
 (300, N'CashPaymentToTradePayable', N'issuing Payment to supplier/lessor/..', N'Payment', N'Payments', 0, 1),
 (301, N'InvoiceFromTradePayable', N'Receiving Invoice from supplier/lessor', N'Invoice', N'Invoices', 0, 1),
 (302, N'StockReceiptFromTradePayable', N'Receiving goods to inventory from supplier/contractor', N'Stock', N'Stock', 0, 0),
 (303, N'PPEReceiptFromTradePayable', N'Receiving property, plant and equipment from supplier/contractor', N'Fixed Asset', N'Fixed Assets', 0, 1),
 (304, N'ConsumableServiceReceiptFromTradePayable', N'Receiving services/consumables from supplier/lessor/consultant, ...', N'Consumable/Service', N'Consumables/Services', 0, 1),
-(305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1);
+(305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1),
+(310, N'CashPaymentFromTradePayable', N'refund', N'Payment', N'Payments', 0, 1),
+(311, N'CreditNoteFromTradePayable', N'credit note', N'Credit Note', N'Credit Notes', 0, 1);
 --0: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -879,22 +890,34 @@ EXEC [api].[LineDefinitions__Save]
 	@WorkflowSignatures = @WorkflowSignatures,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 -- Declarations
+-- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+DECLARE @ProjectCompletionToPropertyPlantAndEquipmentLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ProjectCompletionToPropertyPlantAndEquipment');
+DECLARE @ProjectCompletionToInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ProjectCompletionToInventory');
+DECLARE @ProjectCompletionToInvestmentPropertyLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ProjectCompletionToInvestmentProperty');
+DECLARE @PPEDepreciationLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEDepreciation');
+DECLARE @IntangibleAmortizationLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IntangibleAmortization');
+DECLARE @ExchangeVarianceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
+DECLARE @TradeSettlementLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'TradeSettlement');
 DECLARE @CostReallocationToConstructionInProgressLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToConstructionInProgress');
 DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
 DECLARE @CostReallocationToCurrentInventoriesInTransitLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToCurrentInventoriesInTransit');
-DECLARE @CashPaymentToOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToOther');
 DECLARE @CashTransferExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransferExchange');
+DECLARE @CashTransferLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransfer');
+DECLARE @CashExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashExchange');
 DECLARE @DepositCashToBankLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'DepositCashToBank');
 DECLARE @DepositCheckToBankLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'DepositCheckToBank');
-DECLARE @CashReceiptFromOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashReceiptFromOther');
-DECLARE @CheckReceiptFromOtherInCashierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CheckReceiptFromOtherInCashier');
+DECLARE @CashReceiptFromOtherToCashierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashReceiptFromOtherToCashier');
+DECLARE @CheckReceiptFromOtherToCashierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CheckReceiptFromOtherToCashier');
+DECLARE @CashPaymentToOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToOther');
 DECLARE @CashPaymentToTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToTradePayable');
 DECLARE @InvoiceFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InvoiceFromTradePayable');
 DECLARE @StockReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'StockReceiptFromTradePayable');
 DECLARE @PPEReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEReceiptFromTradePayable');
 DECLARE @ConsumableServiceReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptFromTradePayable');
 DECLARE @RentalReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RentalReceiptFromTradePayable');
+DECLARE @CashPaymentFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentFromTradePayable');
+DECLARE @CreditNoteFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CreditNoteFromTradePayable');
 
 /*
 DECLARE @TranslationsLD TABLE (

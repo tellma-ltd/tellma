@@ -21,7 +21,7 @@ DELETE FROM @LookupDefinitionIds;
 INSERT INTO @LookupDefinitionIds([Id]) VALUES
 (@ITEquipmentManufacturerLKD),
 (@OperatingSystemLKD),
---(@BodyColorLKD),
+(@BodyColorLKD),
 (@VehicleMakeLKD),
 --(@SteelThicknessLKD),
 --(@PaperOriginLKD),
