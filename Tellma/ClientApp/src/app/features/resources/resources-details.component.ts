@@ -11,11 +11,6 @@ import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Currency } from '~/app/data/entities/currency';
 import { LatLngLiteral } from '@agm/core';
-// import { AceConfigInterface } from 'ngx-ace-wrapper';
-
-// import 'brace';
-// import 'brace/mode/json';
-// import 'brace/theme/clouds';
 
 @Component({
   selector: 't-resources-details',
