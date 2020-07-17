@@ -208,13 +208,8 @@ export function friendlify(error: any, trx: TranslateService): FriendlyError {
 
       case 400: // Bad Request
       case 422: // Unprocessible entity
-        if (error.error instanceof Blob) {
-          // TODO: Need a better solution to handle blobs
-          return friendlyStructure(res.status, trx.instant('Error_UnkownClientError'));
-        } else {
-          // These two status codes mean a friendly error is already coming from the server
-          return friendlyStructure(res.status, res.error);
-        }
+        // These two status codes mean a friendly error is already coming from the server
+        return friendlyStructure(res.status, res.error);
 
       case 401:  // Unauthorized
         return friendlyStructure(res.status, trx.instant('Error_LoginSessionExpired'));

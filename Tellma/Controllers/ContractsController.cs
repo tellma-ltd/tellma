@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
@@ -368,6 +369,20 @@ namespace Tellma.Controllers
                 trx.Complete();
                 return (null, null);
             }
+        }
+
+        protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
+        {
+            // Remove the RoleId property from the template, it's supposed to be hidden
+            var wkbProp = mapping.SimpleProperty(nameof(Resource.LocationWkb));
+
+            if (wkbProp != null)
+            {
+                mapping.SimpleProperties = mapping.SimpleProperties.Where(p => p != wkbProp);
+                mapping.NormalizeIndices(); // Fix the gap we created in the previous line
+            }
+
+            return base.ProcessDefaultMapping(mapping);
         }
     }
 
