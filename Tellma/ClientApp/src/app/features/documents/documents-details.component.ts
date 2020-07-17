@@ -693,22 +693,31 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public labelDocumentDebitContract(_: DocumentForSave): string {
+    // First try the document definition
     let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitContractLabel');
-    if (!label) {
-      const contractDefId = this.definition.DebitContractDefinitionId;
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the contract definition
+    if (this.definition.DebitContractDefinitionIds.length === 1) {
+      const contractDefId = this.definition.DebitContractDefinitionIds[0];
       const contractDef = this.ws.definitions.Contracts[contractDefId];
       if (!!contractDef) {
         label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
-      } else {
-        label = this.translate.instant('Contract');
       }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Contract');
     }
 
     return label;
   }
 
   public documentDebitContractDefinitionIds(_: DocumentForSave): number[] {
-    return [this.definition.DebitContractDefinitionId];
+    return this.definition.DebitContractDefinitionIds;
   }
 
   // CreditContract
@@ -728,22 +737,31 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public labelDocumentCreditContract(_: DocumentForSave): string {
+    // First try the document definition
     let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditContractLabel');
-    if (!label) {
-      const contractDefId = this.definition.CreditContractDefinitionId;
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the contract definition
+    if (this.definition.CreditContractDefinitionIds.length === 1) {
+      const contractDefId = this.definition.CreditContractDefinitionIds[0];
       const contractDef = this.ws.definitions.Contracts[contractDefId];
       if (!!contractDef) {
         label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
-      } else {
-        label = this.translate.instant('Contract');
       }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Contract');
     }
 
     return label;
   }
 
   public documentCreditContractDefinitionIds(_: DocumentForSave): number[] {
-    return [this.definition.CreditContractDefinitionId];
+    return this.definition.CreditContractDefinitionIds;
   }
 
   // NotedContract
@@ -763,22 +781,31 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public labelDocumentNotedContract(_: DocumentForSave): string {
+    // First try the document definition
     let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedContractLabel');
-    if (!label) {
-      const contractDefId = this.definition.NotedContractDefinitionId;
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the contract definition
+    if (this.definition.NotedContractDefinitionIds.length === 1) {
+      const contractDefId = this.definition.NotedContractDefinitionIds[0];
       const contractDef = this.ws.definitions.Contracts[contractDefId];
       if (!!contractDef) {
         label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
-      } else {
-        label = this.translate.instant('Contract');
       }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Contract');
     }
 
     return label;
   }
 
   public documentNotedContractDefinitionIds(_: DocumentForSave): number[] {
-    return [this.definition.NotedContractDefinitionId];
+    return this.definition.NotedContractDefinitionIds;
   }
 
   // Segment

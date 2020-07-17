@@ -120,7 +120,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     DebitContractVisibility: boolean;
     DebitContractRequiredState: LineState;
     DebitContractReadOnlyState: LineState;
-    DebitContractDefinitionId: number;
+    DebitContractDefinitionIds: number[];
     DebitContractLabel: string;
     DebitContractLabel2: string;
     DebitContractLabel3: string;
@@ -129,7 +129,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CreditContractVisibility: boolean;
     CreditContractRequiredState: LineState;
     CreditContractReadOnlyState: LineState;
-    CreditContractDefinitionId: number;
+    CreditContractDefinitionIds: number[];
     CreditContractLabel: string;
     CreditContractLabel2: string;
     CreditContractLabel3: string;
@@ -138,7 +138,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     NotedContractVisibility: boolean;
     NotedContractRequiredState: LineState;
     NotedContractReadOnlyState: LineState;
-    NotedContractDefinitionId: number;
+    NotedContractDefinitionIds: number[];
     NotedContractLabel: string;
     NotedContractLabel2: string;
     NotedContractLabel3: string;

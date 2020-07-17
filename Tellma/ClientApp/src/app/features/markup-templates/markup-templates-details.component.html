@@ -234,8 +234,10 @@
 
                 <!-- Editor Content -->
                 <div class="flex-grow-1">
-                    <ace class="w-100 h-100" [config]="config" [value]="model.Body"
-                        (valueChange)="onAceValueChange($event, model)"></ace>
+                    <textarea class="w-100 h-100 form-control t-studio-input text-nowrap border-0" spellcheck="false"
+                        [ngModel]="model.Body" (ngModelChange)="onBodyChange($event, model)"></textarea>
+                    <!-- <ace class="w-100 h-100" [config]="config" [value]="model.Body"
+                        (valueChange)="onAceValueChange($event, model)"></ace> -->
                 </div>
             </div>
 
@@ -328,7 +330,7 @@
                                 <div class="d-inline small mx-1 text-muted" *ngIf="fileDownloadName">
                                     <span class="t-vertical-align-middle">{{ fileDownloadName }}</span>
                                 </div>
-                                
+
                                 <!-- File Size -->
                                 <div class="d-inline small mx-1 text-muted">
                                     <span class="t-vertical-align-middle">{{ fileSizeDisplay }}</span>

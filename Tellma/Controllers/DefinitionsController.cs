@@ -574,9 +574,9 @@ namespace Tellma.Controllers
                                 result.DebitContractLabel ??= colDef.Label;
                                 result.DebitContractLabel2 ??= colDef.Label2;
                                 result.DebitContractLabel3 ??= colDef.Label3;
-                            }
 
-                            result.DebitContractDefinitionIds ??= entryDef.ContractDefinitionIds;
+                                result.DebitContractDefinitionIds = entryDef.ContractDefinitionIds;
+                            }
 
                             if (colDef.RequiredState < (result.DebitContractRequiredState ?? 5))
                             {
@@ -598,9 +598,9 @@ namespace Tellma.Controllers
                                 result.CreditContractLabel = colDef.Label;
                                 result.CreditContractLabel2 = colDef.Label2;
                                 result.CreditContractLabel3 = colDef.Label3;
-                            }
-
-                            result.CreditContractDefinitionIds ??= entryDef.ContractDefinitionIds;
+                             
+                                result.CreditContractDefinitionIds = entryDef.ContractDefinitionIds;
+                            }                            
 
                             if (colDef.RequiredState < (result.CreditContractRequiredState ?? 5))
                             {
@@ -622,9 +622,9 @@ namespace Tellma.Controllers
                                 result.NotedContractLabel = colDef.Label;
                                 result.NotedContractLabel2 = colDef.Label2;
                                 result.NotedContractLabel3 = colDef.Label3;
-                            }
 
-                            result.NotedContractDefinitionIds ??= entryDef.NotedContractDefinitionIds;
+                                result.NotedContractDefinitionIds = entryDef.NotedContractDefinitionIds;
+                            }
 
                             if (colDef.RequiredState < (result.NotedContractRequiredState ?? 5))
                             {

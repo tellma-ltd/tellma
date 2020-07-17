@@ -9,13 +9,6 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { MarkupTemplateForSave, metadata_MarkupTemplate, MarkupTemplate } from '~/app/data/entities/markup-template';
 import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
-import { AceConfigInterface } from 'ngx-ace-wrapper';
-
-import 'brace';
-import 'brace/mode/html';
-import 'brace/theme/monokai';
-// import 'brace/theme/terminal';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
 import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob } from '~/app/data/util';
@@ -35,7 +28,6 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   private markupChanged$ = new Subject<MarkupTemplateForSave>();
   private markupTemplatesApi = this.api.markupTemplatesApi(this.notifyDestruct$); // for intellisense
   private localState = new MasterDetailsStore();  // Used in popup mode
-  // private _aceIsEdit: boolean; // Patch since ace fires valueChanged when it is init
 
   private _sections: { [key: string]: boolean } = {
     Metadata: false,
@@ -45,15 +37,6 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   public expand = '';
   public collapseEditor = false;
   public collapseMetadata = true;
-  public config: AceConfigInterface = {
-    mode: 'html',
-    theme: 'monokai',
-    readOnly: false,
-    useWorker: false,
-    showPrintMargin: false
-  };
-
-  public readonlyConfig = { ... this.config, readOnly: true };
 
   public fileDownloadName: string; // For downloading
   public blob: Blob; // For downloading/printing
@@ -344,8 +327,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     this.loading = false;
   }
 
-  public onAceValueChange(value: string, model: MarkupTemplateForSave) {
-    // This is because the ace component triggers value change on init
+  public onBodyChange(value: string, model: MarkupTemplateForSave) {
     if (model.Body !== value) {
       model.Body = value;
       this.markupChanged$.next(model);
