@@ -1783,11 +1783,17 @@
 
     <!-- body -->
     <div class="modal-body">
-        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="param.DataType">
+        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="dataType(param.DataType)">
             <!-- Center -->
             <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
+            </t-form-group>
+
+            <!-- Contract -->
+            <t-form-group *ngSwitchCase="'Contract'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-contracts-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter" [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-contracts-picker>
             </t-form-group>
             
             <!-- Date -->            

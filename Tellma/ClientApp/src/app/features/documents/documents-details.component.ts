@@ -3376,6 +3376,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return label;
   }
 
+  public dataType(dt: string) {
+    return !!dt ? dt.split('/')[0] : null;
+  }
+
+  public dataTypeDefinitionIds(dt: string): number[] {
+    if (!!dt) {
+      const defId = +dt.split('/')[1];
+      if (!!defId) {
+        return [defId];
+      }
+    }
+
+    return null;
+  }
+
   public onAutoGenerate(lineDefId: number, doc: Document, isEdit: boolean): void {
     if (!isEdit) {
       return;

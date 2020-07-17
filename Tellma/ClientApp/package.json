@@ -38,7 +38,6 @@
     "bootstrap": "^4.5.0",
     "classlist.js": "^1.1.20150312",
     "geojson-bounds": "^1.0.2",
-    "ngx-ace-wrapper": "^9.0.1",
     "rxjs": "^6.5.5",
     "tslib": "^1.13.0",
     "zone.js": "^0.10.3"

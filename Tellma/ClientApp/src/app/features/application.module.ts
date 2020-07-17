@@ -186,9 +186,6 @@ import { OutboxComponent } from './outbox/outbox.component';
 import { IfrsConceptsMasterComponent } from './ifrs-concepts/ifrs-concepts-master.component';
 import { IfrsConceptsDetailsComponent } from './ifrs-concepts/ifrs-concepts-details.component';
 import { IfrsConceptsPickerComponent } from './ifrs-concepts/ifrs-concepts-picker.component';
-import { AceModule } from 'ngx-ace-wrapper';
-import { ACE_CONFIG } from 'ngx-ace-wrapper';
-import { AceConfigInterface } from 'ngx-ace-wrapper';
 import { MarkupTemplatesMasterComponent } from './markup-templates/markup-templates-master.component';
 import { MarkupTemplatesDetailsComponent } from './markup-templates/markup-templates-details.component';
 import { DocumentsPickerComponent } from './documents/documents-picker.component';
@@ -553,9 +550,6 @@ const routes: Routes = [
   }
 ];
 
-const DEFAULT_ACE_CONFIG: AceConfigInterface = {
-};
-
 @NgModule({
   declarations: [
     ApplicationShellComponent,
@@ -634,16 +628,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
   imports: [
     SharedModule,
     RouterModule.forChild(routes),
-    AceModule,
     AgmCoreModule.forRoot({
       apiKey: '<Google Maps API Key Here>'
     })
-  ],
-  providers: [
-    {
-      provide: ACE_CONFIG,
-      useValue: DEFAULT_ACE_CONFIG
-    }
   ]
 })
 export class ApplicationModule {
@@ -651,11 +638,11 @@ export class ApplicationModule {
     // Icons to be used in the web app
     library.addIcons(
       // Document icons
-    //  faThumbsUp, faThumbsDown, faPaperclip, faExclamation, faLockOpen,
+      //  faThumbsUp, faThumbsDown, faPaperclip, faExclamation, faLockOpen,
 
       // File icons
-     // faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileCode,
-      //faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH, faArchive,
+      // faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileCode,
+      // faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH, faArchive,
 
       // Main menu icons, IMPORTANT: Keep in sync with definition-common.ts
       faAnchor,
