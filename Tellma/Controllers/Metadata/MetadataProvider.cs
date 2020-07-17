@@ -831,49 +831,31 @@ namespace Tellma.Controllers
                     isRequired = def.Text2Visibility == Visibility.Required;
                     break;
                 case nameof(Resource.Currency):
-                    display = PropertyDisplay(def.CurrencyVisibility, display);
-                    isRequired = def.CurrencyVisibility == Visibility.Required;
-                    break;
                 case nameof(Resource.CurrencyId):
                     display = PropertyDisplay(def.CurrencyVisibility, display);
                     isRequired = def.CurrencyVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Center):
-                    display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required;
-                    break;
                 case nameof(Resource.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
                     isRequired = def.CenterVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Lookup1):
-                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
-                    isRequired = def.Lookup1Visibility == Visibility.Required;
-                    break;
                 case nameof(Resource.Lookup1Id):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
                     isRequired = def.Lookup1Visibility == Visibility.Required;
                     break;
                 case nameof(Resource.Lookup2):
-                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
-                    isRequired = def.Lookup2Visibility == Visibility.Required;
-                    break;
                 case nameof(Resource.Lookup2Id):
                     display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
                     isRequired = def.Lookup2Visibility == Visibility.Required;
                     break;
                 case nameof(Resource.Lookup3):
-                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
-                    isRequired = def.Lookup3Visibility == Visibility.Required;
-                    break;
                 case nameof(Resource.Lookup3Id):
                     display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
                     isRequired = def.Lookup3Visibility == Visibility.Required;
                     break;
                 case nameof(Resource.Lookup4):
-                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
-                    isRequired = def.Lookup4Visibility == Visibility.Required;
-                    break;
                 case nameof(Resource.Lookup4Id):
                     display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
                     isRequired = def.Lookup4Visibility == Visibility.Required;
@@ -906,11 +888,6 @@ namespace Tellma.Controllers
                     isRequired = def.EconomicOrderQuantityVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Unit):
-                    if (def.UnitCardinality == null)
-                    {
-                        display = null;
-                    }
-                    break;
                 case nameof(Resource.UnitId):
                     if (def.UnitCardinality == null)
                     {
