@@ -1,9 +1,12 @@
-﻿DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
+﻿
+DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
+DECLARE @ProjectCompletionVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ProjectCompletionVoucherDD AS NVARCHAR(50));
 DECLARE @ClosingPeriodVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ClosingPeriodVoucherDD AS NVARCHAR(50));
 DECLARE @ClosingYearVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ClosingYearVoucherDD AS NVARCHAR(50));
-DECLARE @PaymentIssueToNonTradingAgentsDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentIssueToNonTradingAgentsDD AS NVARCHAR(50));
-DECLARE @DepositCashToBankDDPath NVARCHAR(50) = N'documents/' + CAST(@DepositCashToBankDD AS NVARCHAR(50));
+DECLARE @CashTransferExchangeDDPath NVARCHAR(50) = N'documents/' + CAST(@CashTransferExchangeDD AS NVARCHAR(50));
+DECLARE @DepositToBankDDPath NVARCHAR(50) = N'documents/' + CAST(@DepositToBankDD AS NVARCHAR(50));
 DECLARE @PaymentReceiptFromNonTradingAgentsDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentReceiptFromNonTradingAgentsDD AS NVARCHAR(50));
+DECLARE @PaymentIssueToNonTradingAgentsDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentIssueToNonTradingAgentsDD AS NVARCHAR(50));
 DECLARE @StockIssueToNonTradingAgentDDPath NVARCHAR(50) = N'documents/' + CAST(@StockIssueToNonTradingAgentDD AS NVARCHAR(50));
 DECLARE @StockTransferDDPath NVARCHAR(50) = N'documents/' + CAST(@StockTransferDD AS NVARCHAR(50));
 DECLARE @StockReceiptFromNonTradingAgentDDPath NVARCHAR(50) = N'documents/' + CAST(@StockReceiptFromNonTradingAgentDD AS NVARCHAR(50));

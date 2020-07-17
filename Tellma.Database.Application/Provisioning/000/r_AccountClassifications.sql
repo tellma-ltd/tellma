@@ -41,6 +41,7 @@
 (1110,11, N'1110',N'Deferred tax assets', N'أصول الضريبة المؤجلة',@DeferredTaxAssets),
 (1111,11, N'1111',N'Current tax assets, non-current', N'الأصول الضريبية المتداولة، غير جارية',@CurrentTaxAssetsNoncurrent),
 (1112,11, N'1112',N'Other non-current financial assets', N'أصول مالية غير متداولة أخرى',@OtherNoncurrentFinancialAssets),
+(111200,1112, N'111200',N'Non-current staff loans', N'قروض طويلة الأجل لموظفين',@NonCurrentLoansExtension),
 (1113,11, N'1113',N'Other non-current non-financial assets', N'أصول غير مالية غير متداولة أخرى',@OtherNoncurrentNonfinancialAssets),
 (1114,11, N'1114',N'Non-current non-cash assets pledged as collateral for which transferee has right by contract or cust', N'الأصول غير النقدية وغير المتداولة المرهونة كضمان والتي يكون للمنشأة المنقول إليها الحق بموجب عقد ما ',@NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral),
 (12,1, N'12',N'Current assets', N'الأصول المتداولة',@CurrentAssets),
@@ -63,8 +64,7 @@
 (1203,12, N'1203',N'Current tax assets, current', N'الأصول الضريبية المتداولة، جارية',@CurrentTaxAssetsCurrent),
 (1204,12, N'1204',N'Current biological assets', N'الأصول البيولوجية المتداولة',@CurrentBiologicalAssets),
 (1205,12, N'1205',N'Other current financial assets', N'أصول مالية متداولة أخرى',@OtherCurrentFinancialAssets),
-(120501,1205, N'120501',N'Staff Debtors', N'مدينون موظفون',@LoansExtension),
-(120502,1205, N'120502',N'Sundry debtors', N'مدينون آخرون',@LoansExtension),
+(120501,1205, N'120501',N'Staff loans', N'سلفيات متداولة لموظفين',@CurrentLoansExtension),
 (1206,12, N'1206',N'Other current non-financial assets', N'أصول غير مالية متداولة أخرى',@OtherCurrentNonfinancialAssets),
 (1207,12, N'1207',N'Cash and cash equivalents', N'النقد والنقد المعادل',@CashAndCashEquivalents),
 (120701,1207, N'120701',N'Cash', N'نقد',@Cash),
@@ -283,6 +283,7 @@ DECLARE @AC1109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC1110 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1110');
 DECLARE @AC1111 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1111');
 DECLARE @AC1112 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1112');
+DECLARE @AC111200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111200');
 DECLARE @AC1113 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1113');
 DECLARE @AC1114 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1114');
 DECLARE @AC12 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'12');
@@ -306,7 +307,6 @@ DECLARE @AC1203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC1204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1204');
 DECLARE @AC1205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1205');
 DECLARE @AC120501 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120501');
-DECLARE @AC120502 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120502');
 DECLARE @AC1206 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1206');
 DECLARE @AC1207 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1207');
 DECLARE @AC120701 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120701');

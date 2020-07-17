@@ -22,10 +22,15 @@
 (301, N'InvoiceFromTradePayable', N'Receiving Invoice from supplier/lessor', N'Invoice', N'Invoices', 0, 1),
 (302, N'StockReceiptFromTradePayable', N'Receiving goods to inventory from supplier/contractor', N'Stock', N'Stock', 0, 0),
 (303, N'PPEReceiptFromTradePayable', N'Receiving property, plant and equipment from supplier/contractor', N'Fixed Asset', N'Fixed Assets', 0, 1),
-(304, N'ConsumableServiceReceiptFromTradePayable', N'Receiving services/consumables from supplier/lessor/consultant, ...', N'Consumable/Service', N'Consumables/Services', 0, 1),
+(304, N'ConsumableServiceReceiptFromTradePayable', N'Receiving services/consumables from supplier/lessor/consultant, ...', N'Consumable - Service', N'Consumables - Services', 0, 1),
 (305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1),
-(310, N'CashPaymentFromTradePayable', N'refund', N'Payment', N'Payments', 0, 1),
-(311, N'CreditNoteFromTradePayable', N'credit note', N'Credit Note', N'Credit Notes', 0, 1);
+(310, N'CashPaymentFromTradePayable', N'refund', N'Refund', N'Refunds', 0, 1),
+(400, N'CashReceiptFromTradeReceivable', N'Receiving cash payment from customer/lessee', N'Cash', N'Cash', 0, 1),
+(401, N'CheckReceiptFromTradeReceivable', N'Receiving check payment from customer/lessee', N'check', N'Checks', 0, 1),
+(402, N'InvoiceToTradeReceivable', N'Issuing invoice to customer/lessee', N'Invoice', N'Invoices', 0, 1),
+(403, N'StockIssueToTradeReceivable', N'Issuing stock to customer', N'Stock', N'Stock', 0, 0),
+(404, N'ServiceDeliveryToTradeReceivable', N'Delivering service to customer', N'Service', N'Services', 0, 0);
+
 --0: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -472,7 +477,7 @@ SET [Script] = N'
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
 		[CenterId0]			= [CenterId1]
 '
-WHERE [Index] = 1;
+WHERE [Index] = 300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId],[EntryTypeId]) VALUES
 (0,300,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
@@ -489,7 +494,57 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
 (6,300,	N'NotedDate',			1,	N'Check Date',		4,4,0),
 (7,300,	N'PostingDate',			1,	N'Paid On',			1,4,1);
---(8,300,	N'CenterId',			1,	N'Segment',			4,4,1);
+--400:CashReceiptFromTradeReceivable
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE @ProcessedWideLines
+	SET
+	--	[Monetary
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId1])
+'
+WHERE [Index] = 400;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+(0,400,+1,	@CashAndCashEquivalents, @ReceiptsFromSalesOfGoodsAndRenderingOfServices),-- Could be in cashier or in bank
+(1,400,-1,	@CashReceiptsFromCustomersControlExtension, NULL);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,400,	N'Memo',				0,	N'Memo',			1,4,1),
+(1,400,	N'ContractId',			1,	N'Customer',		1,4,1),
+(2,400,	N'CurrencyId',			1,	N'Invoice Currency',1,2,1),
+(3,400,	N'MonetaryValue',		1,	N'Invoice Amount',	1,2,0),
+(4,400,	N'CurrencyId',			0,	N'Payment Currency',1,2,1),
+(5,400,	N'MonetaryValue',		0,	N'Payment Amount',	1,2,0),
+(6,400,	N'ContractId',			0,	N'Bank/Cashier',	3,4,0),
+(7,400,	N'PostingDate',			0,	N'Paid On',			1,4,1);
+--401:CheckReceiptFromTradeReceivable
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE @ProcessedWideLines
+	SET
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId1])
+'
+WHERE [Index] = 401;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+(0,401,+1,	@CashOnHand,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices), -- only in cashier
+(1,401,-1,	@CashReceiptsFromCustomersControlExtension, NULL);
+INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[ResourceDefinitionId]) VALUES
+(0,0,401,@CheckReceivedRD)
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,401,	N'Memo',				0,	N'Memo',			1,4,1),
+(1,401,	N'ContractId',			1,	N'Customer',		1,3,1),
+(2,401,	N'CurrencyId',			1,	N'Invoice Currency',1,2,1),
+(3,401,	N'MonetaryValue',		1,	N'Invoice Amount',	1,2,0),
+(4,401,	N'ContractId',			0,	N'Bank/Cashier',	3,4,0),
+(5,401,	N'ResourceId',			0,	N'Check',			3,4,0),
+(6,401,	N'PostingDate',			0,	N'Paid On',			1,4,1);
 GOTO DONE_LD
 --3:PaymentToEmployee (used in a payroll voucher)
 UPDATE @LineDefinitions
@@ -890,7 +945,6 @@ EXEC [api].[LineDefinitions__Save]
 	@WorkflowSignatures = @WorkflowSignatures,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 -- Declarations
--- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 DECLARE @ProjectCompletionToPropertyPlantAndEquipmentLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ProjectCompletionToPropertyPlantAndEquipment');
 DECLARE @ProjectCompletionToInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ProjectCompletionToInventory');
@@ -917,7 +971,11 @@ DECLARE @PPEReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinition
 DECLARE @ConsumableServiceReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptFromTradePayable');
 DECLARE @RentalReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RentalReceiptFromTradePayable');
 DECLARE @CashPaymentFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentFromTradePayable');
-DECLARE @CreditNoteFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CreditNoteFromTradePayable');
+DECLARE @CashReceiptFromTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashReceiptFromTradeReceivable');
+DECLARE @CheckReceiptFromTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CheckReceiptFromTradeReceivable');
+DECLARE @InvoiceToTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InvoiceToTradeReceivable');
+DECLARE @StockIssueToTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'StockIssueToTradeReceivable');
+DECLARE @ServiceDeliveryToTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ServiceDeliveryToTradeReceivable');
 
 /*
 DECLARE @TranslationsLD TABLE (

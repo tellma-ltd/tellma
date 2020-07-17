@@ -208,6 +208,17 @@
 		N'FinishedGrain'
 	);
 
+	UPDATE @ResourceDefinitions
+	SET 
+		[CurrencyVisibility] = N'Required',
+		[Text1Visibility] = N'Required',
+		[Text1Label] = N'Check Number',
+		[UnitCardinality] = N'None',
+		[MonetaryValueVisibility] = N'Required'
+	WHERE [Code] IN (
+		N'CheckReceived'
+	);
+
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
