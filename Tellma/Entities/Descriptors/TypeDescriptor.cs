@@ -264,7 +264,7 @@ namespace Tellma.Entities.Descriptors
                         #region getEntityDesc
 
                         Type collectionType = propInfo.PropertyType.GetGenericArguments().SingleOrDefault();
-                        Func<TypeDescriptor> getCollectionEntityDescriptor = () => Get(collectionType);
+                        TypeDescriptor getCollectionEntityDescriptor() => Get(collectionType);
 
                         #endregion
 
@@ -298,7 +298,7 @@ namespace Tellma.Entities.Descriptors
 
                         #region getEntityDesc
 
-                        Func<TypeDescriptor> getEntityDesc = () => Get(propInfo.PropertyType);
+                        TypeDescriptor getEntityDesc() => Get(propInfo.PropertyType);
 
                         #endregion
 
@@ -307,16 +307,6 @@ namespace Tellma.Entities.Descriptors
                     }
                     else
                     {
-                        #region IsNotNull
-
-                        bool isNotNull = false;
-                        var isNotNullAttribute = propInfo.GetCustomAttribute<NotNullAttribute>(inherit: true);
-                        if (isNotNullAttribute != null)
-                        {
-                            isNotNull = true;
-                        }
-
-                        #endregion
 
                         #region MaxLength
 
@@ -330,7 +320,7 @@ namespace Tellma.Entities.Descriptors
                         #endregion
 
                         // Simple
-                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, isNotNull, maxLength);
+                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, maxLength);
                     }
 
                     propertiesDic.Add(propInfo.Name, propDesc);

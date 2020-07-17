@@ -20,7 +20,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_Currency")]
         [StringLength(3)]
-        [NotNull]
         public string CurrencyId { get; set; }
 
         [Display(Name = "Entry_Contract")]
@@ -30,7 +29,6 @@ namespace Tellma.Entities
         public int? ResourceId { get; set; }
 
         [Display(Name = "Entry_Center")]
-        [NotNull]
         public int? CenterId { get; set; }
 
         [Display(Name = "Entry_EntryType")]
@@ -84,21 +82,18 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? Index { get; set; }
 
-        [NotNull]
         public int? LineId { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
-        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

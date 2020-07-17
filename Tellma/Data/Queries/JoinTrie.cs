@@ -19,11 +19,10 @@ namespace Tellma.Data.Queries
         /// </summary>
         /// <param name="entityDescriptor">The <see cref="EntityDescriptor"/> of the root type of this join tree</param>
         /// <param name="foreignKeyName">Optionally: the foreign key pointing to the parent join tree</param>
-        public JoinTrie(TypeDescriptor entityDescriptor, string foreignKeyName = null, bool isFkNotNull = false)
+        public JoinTrie(TypeDescriptor entityDescriptor, string foreignKeyName = null)
         {
             EntityDescriptor = entityDescriptor ?? throw new ArgumentNullException(nameof(entityDescriptor));
             ForeignKeyName = foreignKeyName;
-            IsFkNotNull = isFkNotNull;
         }
 
         /// <summary>
@@ -35,11 +34,6 @@ namespace Tellma.Data.Queries
         /// The foreign key on the *parent* Entity
         /// </summary>
         public string ForeignKeyName { get; } // e.g. 'ContractId'
-
-        /// <summary>
-        /// This is a required foreign key, 
-        /// </summary>
-        public bool IsFkNotNull { get; }
 
         /// <summary>
         /// The symbol of the path leading up to the current node, root node usually has the symbol "P"
@@ -98,9 +92,8 @@ namespace Tellma.Data.Queries
             else
             {
                 string source = sources(EntityDescriptor.Type);
-                string leftOrInner = IsFkNotNull ? "INNER" : "LEFT";
                 builder.AppendLine();
-                builder.Append($"{leftOrInner} JOIN {source} As [{Symbol}] ON [{parentSymbol}].[{ForeignKeyName}] = [{Symbol}].[Id]");
+                builder.Append($"LEFT JOIN {source} As [{Symbol}] ON [{parentSymbol}].[{ForeignKeyName}] = [{Symbol}].[Id]");
             }
 
             foreach (var key in Keys)
@@ -168,9 +161,8 @@ namespace Tellma.Data.Queries
                     if (!currentTree.ContainsKey(step))
                     {
                         string foreignKeyName = navProp.ForeignKey.Name;
-                        bool isNotNull = navProp.ForeignKey.IsNotNull;
 
-                        currentTree[step] = new JoinTrie(navProp.TypeDescriptor, foreignKeyName: foreignKeyName, isFkNotNull: isNotNull);
+                        currentTree[step] = new JoinTrie(navProp.TypeDescriptor, foreignKeyName: foreignKeyName);
                     }
 
                     currentTree = currentTree[step];

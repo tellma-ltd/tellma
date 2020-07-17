@@ -11,7 +11,6 @@ namespace Tellma.Entities
         [Display(Name = "Definition")]
         [Required]
         [AlwaysAccessible]
-        [NotNull]
         public int? DefinitionId { get; set; }
 
         [Display(Name = "Line_PostingDate")]
@@ -39,7 +38,6 @@ namespace Tellma.Entities
     public class Line : LineForSave<Entry>
     {
         [Display(Name = "Line_Document")]
-        [NotNull]
         public int? DocumentId { get; set; }
 
         [Display(Name = "State")]
@@ -72,14 +70,12 @@ namespace Tellma.Entities
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
-        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        [NotNull]
         public int? ModifiedById { get; set; }
 
         public int? Index { get; set; }

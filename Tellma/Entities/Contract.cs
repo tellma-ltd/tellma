@@ -140,7 +140,6 @@ namespace Tellma.Entities
         #region Common with Resource
 
         [Display(Name = "Definition")]
-        [NotNull]
         public int? DefinitionId { get; set; }
 
         public string ImageId { get; set; }
@@ -153,14 +152,12 @@ namespace Tellma.Entities
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
-        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

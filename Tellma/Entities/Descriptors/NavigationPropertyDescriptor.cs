@@ -36,7 +36,7 @@ namespace Tellma.Entities.Descriptors
             Func<Entity, object> getter,
             bool isParent,
             PropertyDescriptor foreignKey,
-            Func<TypeDescriptor> getTypeDescriptor) : base(propInfo, name, setter, getter, isNotNull: false)
+            Func<TypeDescriptor> getTypeDescriptor) : base(propInfo, name, setter, getter)
         {
             _getTypeDescriptor = getTypeDescriptor;
             IsParent = isParent;
