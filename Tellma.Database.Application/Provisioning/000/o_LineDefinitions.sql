@@ -460,7 +460,6 @@ SET [Script] = N'
 		[NotedAgentName1] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
 		[CurrencyId0] = (SELECT [CurrencyId] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
 		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
-		[CenterId1]
 		[MonetaryValue0] = (SELECT [MonetaryValue] FROM dbo.Resources WHERE [Id] = [ResourceId1]),
 		[MonetaryValue1] = (SELECT [MonetaryValue] FROM dbo.Resources WHERE [Id] = [ResourceId1])
 		-- Add the checkinfo to the bank line

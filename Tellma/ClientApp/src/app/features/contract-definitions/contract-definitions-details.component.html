@@ -323,7 +323,7 @@
                         <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
                             [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
                             <label class="small"
-                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.primaryPostfix }}</label>
+                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
 
                             <select class="form-control t-studio-input" id="{{propLower}}definitionId"
                                 [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"
