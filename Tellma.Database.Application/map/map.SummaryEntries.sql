@@ -84,7 +84,7 @@ RETURN
 		[UnitId],
 		[ContractId],
 		[EntryTypeId],
-		[OpeningMonetaryValue],	[MonetaryValueIn],	[MonetaryValueOut],	[ClosingMonetaryValue]
+		[OpeningMonetaryValue],	[MonetaryValueIn],	[MonetaryValueOut],	[ClosingMonetaryValue],
 		[OpeningQuantity],		[QuantityIn],		[QuantityOut],		[ClosingQuantity],
 		[OpeningMass],			[MassIn],			[MassOut],			[ClosingMass],
 		[Opening],				[Debit],			[Credit],			[Closing]

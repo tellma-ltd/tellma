@@ -1783,38 +1783,50 @@
 
     <!-- body -->
     <div class="modal-body">
-        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="dataType(param.DataType)">
-            <!-- Center -->
-            <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
-            </t-form-group>
+      <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="dataType(param.DataType)">
+        <!-- Center -->
+        <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
+        </t-form-group>
 
-            <!-- Contract -->
-            <t-form-group *ngSwitchCase="'Contract'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-contracts-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter" [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-contracts-picker>
-            </t-form-group>
-            
-            <!-- Date -->            
-            <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
-            </t-form-group>
-            
-            <!-- String -->            
-            <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
-            </t-form-group>
+        <!-- Currency -->
+        <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-currencies-picker>
+        </t-form-group>
 
-            <!-- Default -->
-            <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
-            </t-form-group>
+        <!-- Contract -->
+        <t-form-group *ngSwitchCase="'Contract'" class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <t-contracts-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter" [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-contracts-picker>
+        </t-form-group>
 
-        </ng-container>
+        <!-- Date -->
+        <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
+        </t-form-group>
+
+        <!-- Decimal -->
+        <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
+        </t-form-group>
+
+        <!-- String -->
+        <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
+        </t-form-group>
+
+        <!-- Default -->
+        <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
+                      [label]="parameterLabel(param)">
+          <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
+        </t-form-group>
+
+      </ng-container>
     </div>
 
     <!-- footer -->

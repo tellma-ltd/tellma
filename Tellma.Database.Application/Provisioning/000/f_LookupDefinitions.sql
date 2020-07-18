@@ -11,7 +11,8 @@
 (9, N'GrainType', N'Grain Type', N'Grain Types', N'seedling', N'Administration',10),
 (10, N'Quality', N'Quality Level', N'Quality Levels', N'certificate', N'Administration',11),
 (11, N'BankAccountType', N'Bank Account Type', N'Bank Account Types', N'ellipsis-h', N'Administration',12),
-(12, N'MarketSegment', N'Market Segment', N'Market Segments', N'search-dollar', N'Administration',13);
+(12, N'MarketSegment', N'Market Segment', N'Market Segments', N'search-dollar', N'Administration',13),
+(13, N'Bank', N'Bank', N'Banks', N'university', N'Administration',14);
 
 EXEC api.LookupDefinitions__Save
 	@Entities = @LookupDefinitions,
@@ -37,3 +38,4 @@ DECLARE @GrainTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code]
 DECLARE @QualityLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Quality');
 DECLARE @BankAccountTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'BankAccountType');
 DECLARE @MarketSegmentLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'MarketSegment');
+DECLARE @BankLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Bank');

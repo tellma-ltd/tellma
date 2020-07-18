@@ -52,7 +52,9 @@ SET [UserCardinality] = N'Multiple'
 WHERE [Code] IN ( N'BankAccount', N'Warehouse')
 
 UPDATE @ContractDefinitions
-SET [Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD
+SET
+	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD,
+	[Lookup4Visibility] = N'Required', [Lookup4Label] = N'Bank',		[Lookup4DefinitionId] = @BankLKD
 WHERE [Code] IN ( N'BankAccount')
 
 UPDATE @ContractDefinitions

@@ -227,6 +227,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'trophy',
           'truck',
           'umbrella-beach',
+          'university',
           'undo',
           'upload',
           'user-check',
