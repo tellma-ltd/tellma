@@ -22,6 +22,7 @@ using System.Text;
 using Tellma.Entities.Descriptors;
 using Tellma.Services.Utilities;
 using Tellma.Controllers.ImportExport;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Tellma.Controllers
 {
@@ -1135,7 +1136,9 @@ namespace Tellma.Controllers
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var docDef = Definition();
             var meta = GetMetadataForSave();
-            var lineDefs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
+            var defs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data;
+            var lineDefs = defs?.Lines;
+            var manualLineDefId = defs?.ManualLinesDefinitionId;
 
             // SQL may return keys representing line and entry properties that inherit from a common document property
             // This dictionary maps the keys of the former properties to the keys of the later properties, and is used
@@ -1153,7 +1156,7 @@ namespace Tellma.Controllers
                     if (doc.SerialNumber == null || doc.SerialNumber == 0)
                     {
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                            _localizer[Services.Utilities.Constants.Error_Field0IsRequired, _localizer["Document_SerialNumber"]]);
+                            _localizer[Constants.Error_Field0IsRequired, _localizer["Document_SerialNumber"]]);
                     }
                     else if (duplicateSerialNumbers.ContainsKey(doc))
                     {
@@ -1233,10 +1236,35 @@ namespace Tellma.Controllers
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
+                        // Center is required
+                        if (entry.CenterId == null)
+                        {
+                            string fieldLabel;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                fieldLabel = _localizer["Entry_Center"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(entry.CenterId));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                                else
+                                {
+                                    throw new BadRequestException($"Line #{lineIndex + 1}: CenterId is still NULL after preprocess");
+                                }
+                            }
+
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                        }
+
                         // If the currency is functional, value must equal monetary value
                         if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
                         {
-                            var currencyName = _settingsCache.GetCurrentSettingsIfCached().Data
+                            var currencyName = settings
                                 .Localize(settings.FunctionalCurrencyName,
                                             settings.FunctionalCurrencyName2,
                                             settings.FunctionalCurrencyName3);
