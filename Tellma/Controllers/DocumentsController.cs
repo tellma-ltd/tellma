@@ -1246,7 +1246,7 @@ namespace Tellma.Controllers
                             }
                             else
                             {
-                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(entry.CenterId));
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId));
                                 if (columnDef != null)
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
@@ -1258,6 +1258,31 @@ namespace Tellma.Controllers
                             }
 
                             ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                        }
+
+                        // Currency is required
+                        if (entry.CurrencyId == null)
+                        {
+                            string fieldLabel;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                fieldLabel = _localizer["Entry_Currency"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                                else
+                                {
+                                    throw new BadRequestException($"Line #{lineIndex + 1}: CurrencyId is still NULL after preprocess");
+                                }
+                            }
+
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId)),
                                 _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
                         }
 
