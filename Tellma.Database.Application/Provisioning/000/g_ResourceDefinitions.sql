@@ -44,7 +44,6 @@
 (42, N'EmployeeBenefit', N'Employee Benefit', N'Employees Benefits', N'user-check', N'HumanCapital',20),
 (43, N'CheckReceived', N'Check Received', N'Checks Received', N'money-check', N'Financials',30);
 
-
 	UPDATE @ResourceDefinitions
 	SET 
 		[IdentifierVisibility]				= N'Optional',
@@ -135,14 +134,6 @@
 	);
 
 	UPDATE @ResourceDefinitions
-	SET [IdentifierVisibility] = N'Required'
-	WHERE [Code] IN (
-		--N'LandMember', N'BuildingsMember', N'LeaseholdImprovementsMember', N'ConstructionInProgressMember',
-		--N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember',
-		'PropertyIntendedForSaleInOrdinaryCourseOfBusiness'
-	);
-
-	UPDATE @ResourceDefinitions
 		SET [Decimal1Visibility] = N'Optional', [Decimal1Label] = N'Area (m^2)'
 		WHERE [Code] IN (
 			N'LandMember', N'BuildingsMember', N'LeaseholdImprovementsMember', N'ConstructionInProgressMember',
@@ -160,6 +151,13 @@
 		N'OtherPropertyPlantAndEquipmentMember',
 		N'InvestmentPropertyCompletedMember', N'InvestmentPropertyUnderConstructionOrDevelopmentMember'
 	);
+
+	UPDATE @ResourceDefinitions
+	SET
+		[UnitCardinality] = N'None' , Decimal1Visibility = N'Optional', 
+		[Decimal1Label] = N'Area (m^2)', Decimal1Label2 = N'مساحة (م^2)'
+	WHERE [Code] = N'PropertyIntendedForSaleInOrdinaryCourseOfBusiness'
+
 
 	UPDATE @ResourceDefinitions
 	SET 
@@ -202,7 +200,7 @@
 	UPDATE @ResourceDefinitions
 	SET 
 		[Lookup3Visibility] = N'Required',
-		[Lookup3Label] = N'Qlaity Level',
+		[Lookup3Label] = N'Quality Level',
 		[Lookup3DefinitionId] = @QualityLKD
 	WHERE [Code] IN (
 		N'FinishedGrain'
@@ -217,7 +215,10 @@
 		[Text1Visibility] = N'Required',
 		[Text1Label] = N'Check Number',
 		[UnitCardinality] = N'None',
-		[MonetaryValueVisibility] = N'Required'
+		[MonetaryValueVisibility] = N'Required',
+		[Lookup4Visibility] = N'Required',
+		[Lookup4Label] = N'Bank',
+		[Lookup4DefinitionId] = @BankLKD
 	WHERE [Code] IN (
 		N'CheckReceived'
 	);

@@ -803,7 +803,7 @@ INSERT INTO dbo.[AccountTypeResourceDefinitions]
 (@FinishedGoods,									@FinishedOilRD),
 (@FinishedGoods,									@ByproductGrainRD),
 (@FinishedGoods,									@ByproductOilRD),
---(@PropertyIntendedForSaleInOrdinaryCourseOfBusiness, ),
+(@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 --(@WorkInProgress,									@WorkInProgressRD),
 (@RawMaterials,										@RawGrainRD),
 (@RawMaterials,										@RawVehicleRD),
@@ -895,6 +895,7 @@ INSERT INTO dbo.[AccountTypeContractDefinitions]
 (@Merchandise,										@WarehouseCD),
 (@CurrentFoodAndBeverage,							@WarehouseCD),
 (@CurrentAgriculturalProduce,						@WarehouseCD),
+
 (@FinishedGoods,									@WarehouseCD),
 (@WorkInProgress,									@WarehouseCD),
 (@RawMaterials,										@WarehouseCD),

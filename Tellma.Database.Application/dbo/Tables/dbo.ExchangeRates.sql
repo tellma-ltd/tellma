@@ -6,6 +6,8 @@
 	CONSTRAINT [IX_ExchangeRates__CurrencyId_ValidAsOf] UNIQUE ([CurrencyId], [ValidAsOf]),
 	[AmountInCurrency]		DECIMAL (19,6)		NOT NULL DEFAULT 1 CHECK([AmountInCurrency] > 0),
 	[AmountInFunctional]	DECIMAL (19,6)		NOT NULL CHECK([AmountInFunctional] > 0),
+	--[AmountPerCentralBank]	DECIMAL (19,6)		NOT NULL CHECK([AmountInFunctional] > 0),
+	--[AmountPerMarket]	DECIMAL (19,6)		NOT NULL CHECK([AmountInFunctional] > 0),
 	[Rate]					AS [AmountInFunctional]/[AmountInCurrency] PERSISTED,
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

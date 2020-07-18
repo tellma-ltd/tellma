@@ -25,6 +25,7 @@ BEGIN
 	DECLARE @D [dbo].[DocumentList], @L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
 
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -368,7 +369,7 @@ END
 	WHERE
 		ER.ValidAsOf <= ISNULL(L.[PostingDate], @Today)
 	AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
-	AND L.[DefinitionId] <> @ManualLineLD;
+	AND L.[DefinitionId] NOT IN (@ManualLineLD, @ExchangeVarianceLineLD);
 
 	-- Set the Account based on provided info so far
 	With LineEntries AS (

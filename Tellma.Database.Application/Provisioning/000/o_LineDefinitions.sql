@@ -7,6 +7,7 @@
 (82, N'IntangibleAmortization', N'', N'Amortization', N'Amortization', 0, 0),
 (83, N'ExchangeVariance', N'', N'Exchange Variance', N'Exchange Variances', 0, 0),
 (84, N'TradeSettlement', N'Adjusting trade payables and trade receivables balances', N'Settlement', N'Settlements', 0, 0),
+(85, N'Hyperinflation', N'Adjusting according to IAS 29', N'Hyperinflation', N'Hyperinflation', 0, 0),
 (91, N'CostReallocationToConstructionInProgress', N'Capitalization of a project expenditures', N'Project', N'Projects', 0, 0),
 (92, N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment', N'Capitalization of an investment property expenditures ', N'Investment Property', N'Investment Properties', 0, 0),
 (93, N'CostReallocationToCurrentInventoriesInTransit', N'Capitalization of expenditures on inventories in transit', N'Goods In Transit', N'Goods In Transit', 0, 0),
@@ -55,7 +56,87 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --(0,0,0,N'ByRole',	@ComptrollerRL),
 --(0,1,0,N'ByRole',	@FinanceManagerRL);
 PRINT N'';
--- If @LineDefinitionEntryResource(Contract)Definitions is null, it accepts all resource(contract) definitions compatible with account types, otherwise restricts it,
+--72:ProjectCompletionToInventory
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE @ProcessedWideLines
+	SET
+		[MonetaryValue1] = [MonetaryValue0], -- TODO: When we add V29, we need to change this
+		[CenterId1] = [CenterId0]
+'
+WHERE [Index] = 72;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+(0,72,+1,	@PropertyIntendedForSaleInOrdinaryCourseOfBusiness, @IncreaseDecreaseThroughProductionExtension),
+(1,72,-1,	@InvestmentPropertyUnderConstructionOrDevelopment, NULL)
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,72,	N'ResourceId',			0,	N'Property',		1,2,0),
+(1,72,	N'MonetaryValue',		0,	N'Cost',			1,2,0),
+(2,72,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(3,72,	N'CenterId',			0,	N'Business Unit',	1,4,1),
+(4,72,	N'CenterId',			1,	N'Project',			1,4,1),
+(6,72,	N'PostingDate',			0,	N'Posting Date',	4,4,1),
+(7,72,	N'Memo',				0,	N'Memo',			1,2,1);
+--83: ExchangeVariance
+UPDATE @LineDefinitions -- Assumes only one foreign currency if we have several foreign currency accounts, we need to pass a collection of the currencies and their rates
+SET [GenerateScript] = N'
+		DECLARE @CurrencyId NCHAR (3), @ExchangeRate DECIMAL (19,6), @PostingDate DATE;
+		
+		DECLARE @WideLines WideLineList;
+				
+		SELECT @CurrencyId = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CurrencyId'') AS NCHAR (3));
+		SELECT @ExchangeRate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''ExchangeRate'') AS DECIMAL (19,6));
+		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
+
+		DECLARE @FunctionalCurrencyId NCHAR (3) = [dbo].[fn_FunctionalCurrencyId]();
+		DECLARE @LocalCurrencyId NCHAR (3);
+		SELECT @LocalCurrencyId = [Id] FROM dbo.Currencies WHERE [IsActive] = 1 AND [Id] <> @FunctionalCurrencyId;
+
+		INSERT INTO @WideLines (
+			[Index],
+			[Memo],
+			[PostingDate],
+			[CurrencyId0],
+			[CenterId0],
+			[MonetaryValue0],
+			[Value0]
+		)
+		SELECT
+			0,
+			@CurrencyId  + N'' Exchange variance @ '' + CAST(@ExchangeRate AS NVARCHAR (10)),
+			@PostingDate,
+			@LocalCurrencyId,
+			NULL,
+			SUM([Direction] * [MonetaryValue] * IIF(E.CurrencyId = @FunctionalCurrencyID, @ExchangeRate, 1)),
+			0
+		FROM dbo.Entries E 
+		JOIN dbo.Lines L ON E.LineId = L.Id
+		WHERE L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate
+		HAVING SUM([Direction] * [MonetaryValue] * IIF(E.CurrencyId = @FunctionalCurrencyID, @ExchangeRate, 1)) <> 0;
+
+		SELECT * FROM @WideLines;
+	'
+WHERE [Index] = 83;
+INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
+		[Key],			[Label],					[Visibility],	[DataType],	[Filter]) VALUES
+(0,83,N'CurrencyId',	N'Foreign Currency',		N'Required',	N'Currency',NULL),
+(1,83,N'ExchangeRate',	N'Official Exchange Rate',	N'Required',	N'Decimal', NULL),
+(2,83,N'PostingDate',	N'As Of Date',				N'Required',	N'Date',	NULL);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId]) VALUES
+(0,83,	+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
+															[ReadOnlyState],
+															[InheritsFromHeader]) VALUES
+(0,83,	N'Memo',				0,	N'Memo',				4,4,0),
+(2,83,	N'MonetaryValue',		0,	N'Gain (Loss)',			4,4,0),
+(4,83,	N'PostingDate',			0,	N'Posting Date',		4,4,1),
+(6,83,	N'CenterId',			0,	N'Business Unit',		4,4,0);
 --91: CostReallocationToConstructionInProgress
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
@@ -440,6 +521,7 @@ SET [GenerateScript] = N'
 		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 		WHERE E.[ContractId] = @ContractId1
 		AND E.[AccountId] IN (SELECT [Id] FROM CheckOnHandAccounts)
+		AND E.[CurrencyId] = @CurrencyId
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
 		GROUP BY E.[AccountId], E.[CurrencyId], E.[ContractId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], E.[DueDate], R.[text1]
@@ -1027,6 +1109,7 @@ DECLARE @PPEDepreciationLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Co
 DECLARE @IntangibleAmortizationLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IntangibleAmortization');
 DECLARE @ExchangeVarianceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
 DECLARE @TradeSettlementLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'TradeSettlement');
+DECLARE @HyperinflationLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'Hyperinflation');
 DECLARE @CostReallocationToConstructionInProgressLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToConstructionInProgress');
 DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
 DECLARE @CostReallocationToCurrentInventoriesInTransitLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToCurrentInventoriesInTransit');
