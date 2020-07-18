@@ -849,6 +849,7 @@ INSERT INTO dbo.[AccountTypeResourceDefinitions]
 (@RevenueFromRenderingOfServices,					@RevenueServiceRD),
 --(@RevenueFromDividends,							@InvestmentAccountedForUsingEquityMethodRD),
 --(@RevenueFromDividends,							@InvestmentsInSubsidiariesJointVenturesAndAssociatesRD),
+(@RawMaterialsAndConsumablesUsed,					@RawMaterialsRD),
 (@EmployeeBenefitsExpense,							@EmployeeBenefitRD),
 (@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitRD),
 (@WagesAndSalaries,									@EmployeeBenefitRD),

@@ -62,7 +62,7 @@ SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[MonetaryValue1] = [MonetaryValue0], -- TODO: When we add V29, we need to change this
-		[CenterId1] = [CenterId0]
+		[CurrencyId1] = [CurrencyId0]
 '
 WHERE [Index] = 72;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],

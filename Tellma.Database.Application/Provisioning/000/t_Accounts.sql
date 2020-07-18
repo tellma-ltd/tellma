@@ -133,6 +133,7 @@
 (41990001,@OtherRevenue,@AC419900, '41990001', N'Revenue from sale of byproducts (by item type)', N'إيراد بيع المخلفات (باسم المنتج)',NULL,NULL, NULL,NULL,NULL),
 (42000001,@OtherIncome,@AC420000, '42000001', N'Other income 1', N'دخل آخر 1',NULL,NULL, NULL,NULL,NULL),
 (42000002,@OtherIncome,@AC420000, '42000002', N'Other income 2', N'دخل آخر 2',NULL,NULL, NULL,NULL,NULL),
+(43010000,@RawMaterialsAndConsumablesUsed,@AC430100, '43010000', N'Construction materials', N'مواد بناء',NULL,NULL, @RawMaterialsRD,NULL,NULL),
 (43030101,@InsuranceExpense,@AC430301, '43030101', N'Insurance expense 1', N'مصروف التأمين 1',@XXX,NULL, NULL,NULL,@SupplierCD),
 (43030102,@InsuranceExpense,@AC430301, '43030102', N'Insurance expense 2', N'مصروف التأمين 2',@XXX,NULL, NULL,NULL,@SupplierCD),
 (43030201,@ProfessionalFeesExpense,@AC430302, '43030201', N'Professional fees expense 1', N'مصروف الرسوم المهنية 1',@XXX,NULL, NULL,NULL,@SupplierCD),

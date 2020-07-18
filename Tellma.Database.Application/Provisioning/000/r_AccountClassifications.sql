@@ -134,6 +134,7 @@
 (420000,4200, N'420000',N'Other income..', N'دخل آخر..',@OtherIncome),
 (43,4, N'43',N'Expenses by nature', N'النفقات حسب طبيعتها',@ExpenseByNature),
 (4301,43, N'4301',N'Raw materials and consumables used', N'المواد الخام والقابلة للاستهلاك المستخدمة',@RawMaterialsAndConsumablesUsed),
+(430100,4301, N'430100',N'Raw materials and consumables used.', N'المواد الخام والقابلة للاستهلاك المستخدمة.',@RawMaterialsAndConsumablesUsed),
 (4302,43, N'4302',N'Cost of merchandise sold', N'تكلفة البضائع المباعة',@CostOfMerchandiseSold),
 (4303,43, N'4303',N'Services expense', N'مصروف الخدمات',@ServicesExpense),
 (430301,4303, N'430301',N'Insurance expense', N'مصروف التأمين',@InsuranceExpense),
@@ -376,6 +377,7 @@ DECLARE @AC4200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC420000 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'420000');
 DECLARE @AC43 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'43');
 DECLARE @AC4301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4301');
+DECLARE @AC430100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430100');
 DECLARE @AC4302 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4302');
 DECLARE @AC4303 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4303');
 DECLARE @AC430301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430301');
