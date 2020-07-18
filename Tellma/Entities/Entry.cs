@@ -12,7 +12,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_Direction")]
         [AlwaysAccessible]
-        [ChoiceList(new object[] { (short)-1, (short)1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
+        [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
         public short? Direction { get; set; }
 
         [Display(Name = "Entry_Account")]
