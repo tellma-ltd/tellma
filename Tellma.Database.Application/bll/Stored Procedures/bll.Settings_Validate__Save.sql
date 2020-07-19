@@ -31,6 +31,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	WHERE L.[State] = 4
 	AND E.[CurrencyId] <> dbo.fn_FunctionalCurrencyId()
-	AND E.[Value] <> 0
+	AND E.[MonetaryValue] <> 0
 	
  	SELECT TOP (@Top) * FROM @ValidationErrors;
