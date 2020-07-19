@@ -846,6 +846,7 @@ INSERT INTO dbo.[AccountTypeResourceDefinitions]
 (@RevenueFromSaleOfGoods,							@FinishedOilRD),
 (@RevenueFromSaleOfGoods,							@ByproductGrainRD),
 (@RevenueFromSaleOfGoods,							@ByproductOilRD),
+(@RevenueFromSaleOfGoods,							@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 (@RevenueFromRenderingOfServices,					@RevenueServiceRD),
 --(@RevenueFromDividends,							@InvestmentAccountedForUsingEquityMethodRD),
 --(@RevenueFromDividends,							@InvestmentsInSubsidiariesJointVenturesAndAssociatesRD),

@@ -630,7 +630,7 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes),
     AgmCoreModule.forRoot({
-      apiKey: '<Google Maps API Key Here>'
+      apiKey: '<Google API Key goes here>'
     })
   ]
 })

@@ -21,6 +21,7 @@ RETURN
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		WHERE 
 			(@fromDate IS NOT NULL AND L.[PostingDate] < @fromDate)
+			AND L.[State] = 4 -- TODO, return state as well
 		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[ContractId], E.[EntryTypeId]
 	),
 	Movements AS (
@@ -46,7 +47,8 @@ RETURN
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		WHERE 
 			(@fromDate IS NULL OR L.[PostingDate] >= @fromDate)
-		AND (@toDate IS NULL OR L.[PostingDate] < DATEADD(DAY, 1, @toDate))
+		AND (@toDate IS NULL OR L.[PostingDate] <= @toDate)
+		AND L.[State] = 4 -- TODO, return state as well
 		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[ContractId], E.[EntryTypeId]
 	),
 	Register AS (

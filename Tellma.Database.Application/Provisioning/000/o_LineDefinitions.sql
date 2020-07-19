@@ -110,7 +110,7 @@ SET [GenerateScript] = N'
 			@PostingDate,
 			@LocalCurrencyId,
 			NULL,
-			SUM([Direction] * [MonetaryValue] * IIF(E.CurrencyId = @FunctionalCurrencyID, @ExchangeRate, 1)),
+			-SUM([Direction] * [MonetaryValue] * IIF(E.CurrencyId = @FunctionalCurrencyID, @ExchangeRate, 1)),
 			0
 		FROM dbo.Entries E 
 		JOIN dbo.Lines L ON E.LineId = L.Id
@@ -463,6 +463,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,110,	N'ContractId',			0,	N'To Bank Account',	1,2,0),
 (2,110,	N'CurrencyId',			1,	N'Currency',		1,2,0),
 (3,110,	N'MonetaryValue',		1,	N'Amount',			1,3,0),
+(4,110,	N'PostingDate',			1,	N'Posting Date',	4,4,1),
 (5,110,	N'Memo',				0,	N'Memo',			1,2,1);
 --111:DepositCheckToBank
 UPDATE @LineDefinitions
@@ -558,7 +559,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,111,	N'ContractId',			1,	N'From Cash Account',1,2,0),
 (1,111,	N'ContractId',			0,	N'To Bank Account',	1,2,0),
 (2,111,	N'ResourceId',			1,	N'Check Received',	1,2,0),
---(4,111,	N'CenterId',			0,	N'Segment',			4,4,1),
+(4,111,	N'PostingDate',			1,	N'Posting Date',	4,4,1),
 (5,111,	N'Memo',				0,	N'Memo',			1,2,1);
 --120:CashReceiptFromOther
 UPDATE @LineDefinitions
@@ -584,7 +585,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,120,	N'NotedAgentName',		0,	N'From',				3,3,0),
 (4,120,	N'ContractId',			0,	N'Bank/Cashier',		3,3,0),
 (5,120,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
---(7,120,	N'CenterId',			0,	N'Segment',				4,4,1),
+(4,120,	N'PostingDate',			1,	N'Posting Date',	4,4,1),
 (8,120,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
 --121:CheckReceiptFromOtherInCashier
 UPDATE @LineDefinitions
@@ -613,7 +614,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,121,	N'NotedAgentName',		0,	N'From',				3,3,0),
 (5,121,	N'ContractId',			0,	N'Cashier',				3,3,0),
 (6,121,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
---(7,121,	N'CenterId',			0,	N'Segment',				4,4,1),
+(4,121,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (8,121,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
 --300:CashPaymentToTradePayable: Supplier (=> Cash Purchase Voucher),-- CashPaymentToEmployee (=> Employee Payment Voucher),-- CashPaymentToCustomer (=> Customer refund Voucher)
 UPDATE @LineDefinitions
