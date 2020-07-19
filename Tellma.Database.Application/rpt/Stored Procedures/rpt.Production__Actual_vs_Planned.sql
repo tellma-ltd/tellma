@@ -12,7 +12,7 @@ BEGIN
 			J.[ResourceId],
 			SUM(J.[AlgebraicMass]) AS [Mass],
 			SUM(J.[AlgebraicQuantity]) AS [Quantity]
-		FROM [map].[DetailsEntries]() J
+		FROM [map].[DetailsEntries2](NULL) J
 		JOIN dbo.Lines L ON J.LineId = L.Id
 		JOIN dbo.[Accounts] A ON J.AccountId = A.[Id]
 		WHERE J.[EntryTypeId] = @InventoryProductionExtension 

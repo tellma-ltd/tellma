@@ -629,6 +629,7 @@
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Activate.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="map\map.DetailsEntries2.sql" />
+    <Build Include="map\map.SummaryEntries2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

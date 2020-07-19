@@ -1,7 +1,13 @@
 ﻿CREATE PROCEDURE [rpt].[FinancialRatios] -- [rpt].[FinancialRatios] @fromDate = N'2019.01.01', @ToDate =  N'2019.01.31'
 	@FromDate DATE,
-	@ToDate DATE
+	@toDate DATE,
+	@PresentationCurrencyId NCHAR (3) = NULL
 AS
+BEGIN
+	SET NOCOUNT ON;
+	IF @PresentationCurrencyId IS NULL
+		SET @PresentationCurrencyId = dbo.fn_FunctionalCurrencyId();
+
 	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenue');
 	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNatureAbstract');
 	DECLARE @EquityAndLiabilitiesAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EquityAndLiabilitiesAbstract');
@@ -24,7 +30,7 @@ AS
 	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@RevenueNode) = 1;
 	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(AlgebraicValue), 0)
-	FROM map.DetailsEntries() E
+	FROM map.DetailsEntries2(@PresentationCurrencyId) E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
@@ -34,7 +40,7 @@ AS
 	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@ExpenseByNatureAbstractNode) = 1;
 	SELECT @CapitalEmployed = ISNULL(SUM(AlgebraicValue), 0)
-	FROM map.DetailsEntries() E
+	FROM map.DetailsEntries2(@PresentationCurrencyId) E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
@@ -62,3 +68,4 @@ AS
 		@OperatingProfitMargin		AS OperatingProfitMargin,
 		@AssetsTurnover				AS AssetsTurnover,
 		@ReturnOnCapitalEmployed	AS ReturnOnCapitalEmployed;
+END

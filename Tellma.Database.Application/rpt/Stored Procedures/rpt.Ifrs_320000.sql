@@ -1,10 +1,13 @@
 ﻿CREATE PROCEDURE [rpt].[Ifrs_320000]-- EXEC [rpt].[Ifrs_320000] @fromDate='2019.01.1', @toDate = '2019.03.31'
 --[320000] Statement of comprehensive income, profit or loss, by nature of expense
 	@fromDate DATE, 
-	@toDate DATE
+	@toDate DATE,
+	@PresentationCurrencyId NCHAR (3) = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
+	IF @PresentationCurrencyId IS NULL
+		SET @PresentationCurrencyId = dbo.fn_FunctionalCurrencyId();
 	
 	CREATE TABLE [dbo].#IfrsDisclosureDetails (
 		[Concept]			NVARCHAR (255)		NOT NULL,
@@ -18,7 +21,7 @@ BEGIN
 	)
 
 	SELECT [AT].[Concept], SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries] () E
+	FROM [map].[DetailsEntries2] (@PresentationCurrencyId) E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]

@@ -1,10 +1,13 @@
 ﻿CREATE PROCEDURE [rpt].[Ifrs_220000]
 --[220000] Statement of financial position, order of liquidity
 --EXEC [rpt].[Ifrs_220000] @toDate = '2019.03.31'
-	@toDate DATE
+	@toDate DATE,
+	@PresentationCurrencyId NCHAR (3) = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
+	IF @PresentationCurrencyId IS NULL
+		SET @PresentationCurrencyId = dbo.fn_FunctionalCurrencyId();
 	
 	CREATE TABLE [dbo].#IfrsDisclosureDetails (
 		[Concept]			NVARCHAR (255)		NOT NULL,
@@ -75,7 +78,7 @@ BEGIN
 			[Value]
 	)
 	SELECT M.[Concept],	SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries] () E
+	FROM [map].[DetailsEntries2] (@PresentationCurrencyId) E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
