@@ -585,7 +585,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,120,	N'NotedAgentName',		0,	N'From',				3,3,0),
 (4,120,	N'ContractId',			0,	N'Bank/Cashier',		3,3,0),
 (5,120,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
-(4,120,	N'PostingDate',			1,	N'Posting Date',	4,4,1),
+(6,120,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (8,120,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
 --121:CheckReceiptFromOtherInCashier
 UPDATE @LineDefinitions
@@ -614,7 +614,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,121,	N'NotedAgentName',		0,	N'From',				3,3,0),
 (5,121,	N'ContractId',			0,	N'Cashier',				3,3,0),
 (6,121,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
-(4,121,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
+(7,121,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (8,121,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
 --300:CashPaymentToTradePayable: Supplier (=> Cash Purchase Voucher),-- CashPaymentToEmployee (=> Employee Payment Voucher),-- CashPaymentToCustomer (=> Customer refund Voucher)
 UPDATE @LineDefinitions
