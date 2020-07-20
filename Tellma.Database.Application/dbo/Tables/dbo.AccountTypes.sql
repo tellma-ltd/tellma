@@ -10,6 +10,7 @@
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),
 	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [UX_AccountTypes__Node] UNIQUE CLUSTERED,
+	[IsMonetary]				BIT					DEFAULT 1,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
 	[AllowsPureUnit]			BIT					DEFAULT 0,
 	[EntryTypeParentId]			INT					CONSTRAINT [FK_AccountTypes__EntryTypeParentId] REFERENCES [dbo].[EntryTypes] ([Id]),	

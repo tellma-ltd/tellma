@@ -18,7 +18,7 @@ RETURN
 			SUM(E.[AlgebraicQuantity]) AS [Quantity],
 			SUM(E.[AlgebraicMass]) AS [Mass],
 			SUM(E.[AlgebraicValue]) AS [Value]
-		FROM [map].[DetailsEntries2](@PresentationCurrencyId) E
+		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		WHERE 
 			(@fromDate IS NOT NULL AND L.[PostingDate] < @fromDate)
@@ -44,7 +44,7 @@ RETURN
 
 			SUM(CASE WHEN [Direction] > 0 THEN E.[Value] ELSE 0 END) AS [Debit],
 			SUM(CASE WHEN [Direction] < 0 THEN E.[Value] ELSE 0 END) AS [Credit]
-		FROM [map].[DetailsEntries2](@PresentationCurrencyId) E
+		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		WHERE 
 			(@fromDate IS NULL OR L.[PostingDate] >= @fromDate)

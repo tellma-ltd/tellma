@@ -24,6 +24,8 @@
 	[Quantity]					DECIMAL (19,4),
 	[UnitId]					INT				CONSTRAINT [FK_Entries__UnitId] REFERENCES [dbo].[Units] ([Id]),
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
+	[RValue]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- re-instated in functional currency
+	[PValue]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in presentation currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
 	[Time1]						DATETIME2 (2),	-- from time
 	[Time2]						DATETIME2 (2),	-- to time

@@ -78,7 +78,7 @@ BEGIN
 			[Value]
 	)
 	SELECT M.[Concept],	SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries2] (@PresentationCurrencyId) E
+	FROM [map].[DetailsEntries] () E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]

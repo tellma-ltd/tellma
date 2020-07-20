@@ -1,13 +1,10 @@
 ﻿CREATE PROCEDURE [rpt].[Ifrs_610000]
 --[610000] Statement of changes in equity
 	@fromDate DATE, 
-	@toDate DATE,
-	@PresentationCurrencyId NCHAR (3) = NULL
+	@toDate DATE
 AS
 BEGIN
 	SET NOCOUNT ON;
-	IF @PresentationCurrencyId IS NULL
-		SET @PresentationCurrencyId = dbo.fn_FunctionalCurrencyId();
 	CREATE TABLE [dbo].#IfrsDisclosureDetails (
 		[RowConcept]		NVARCHAR (255)		NOT NULL,
 		[ColumnConcept]		NVARCHAR (255)		NOT NULL,
@@ -21,49 +18,24 @@ BEGIN
 			[Value]
 	)
 	SELECT
-		[AT].[Concept] AS [RowConcept],
+		[ATP].[Concept] AS [RowConcept],
 		[ET].[Concept] AS [ColumnConcept],
 		SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries2] (@PresentationCurrencyId) E
+	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	JOIN dbo.[AccountTypes] [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+	JOIN dbo.[AccountTypes] [ATP] ON [ATC].[Node].IsDescendantOf([ATP].[Node]) = 1
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
-	WHERE (@fromDate <= D.[PostingDate]) AND (D.[PostingDate] < DATEADD(DAY, 1, @toDate))
-	-- TODO: consider subtypes of the ones below
-	AND [AT].[Concept] IN (
-		N'IssuedCapital',
-		N'RetainedEarnings',
-		N'SharePremium',
-		N'TreasuryShares',
-		N'OtherEquityInterest',
-		N'OtherReserves'
-	)
-	GROUP BY [AT].[Concept], [ET].[Concept]
-	/*
-	-- We need to assign the accounts whose AccountType = OtherReserves to one of the below...
-RevaluationSurplusMember
-ReserveOfExchangeDifferencesOnTranslationMember
-ReserveOfCashFlowHedgesMember
-ReserveOfGainsAndLossesOnHedgingInstrumentsThatHedgeInvestmentsInEquityInstrumentsMember
-ReserveOfChangeInValueOfTimeValueOfOptionsMember
-ReserveOfChangeInValueOfForwardElementsOfForwardContractsMember
-ReserveOfChangeInValueOfForeignCurrencyBasisSpreadsMember
-ReserveOfGainsAndLossesOnFinancialAssetsMeasuredAtFairValueThroughOtherComprehensiveIncomeMember
-ReserveOfInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillBeReclassifiedToProfitOrLossMember
-ReserveOfInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillNotBeReclassifiedToProfitOrLossMember
-ReserveOfFinanceIncomeExpensesFromReinsuranceContractsHeldExcludedFromProfitOrLossMember
-ReserveOfGainsAndLossesOnRemeasuringAvailableforsaleFinancialAssetsMember
-ReserveOfSharebasedPaymentsMember
-ReserveOfRemeasurementsOfDefinedBenefitPlansMember
-AmountRecognisedInOtherComprehensiveIncomeAndAccumulatedInEquityRelatingToNoncurrentAssetsOrDisposalGroupsHeldForSaleMember
-ReserveOfGainsAndLossesFromInvestmentsInEquityInstrumentsMember
-ReserveOfChangeInFairValueOfFinancialLiabilityAttributableToChangeInCreditRiskOfLiabilityMember
-ReserveForCatastropheMember
-ReserveForEqualisationMember
-ReserveOfDiscretionaryParticipationFeaturesMember
-
-	*/
+	WHERE [ATP].[Concept] IN (
+			N'IssuedCapital',
+			N'RetainedEarnings',
+			N'SharePremium',
+			N'TreasuryShares',
+			N'OtherEquityInterest',
+			N'OtherReserves'
+		) 
+	AND (@fromDate <= L.[PostingDate]) AND (L.[PostingDate] < DATEADD(DAY, 1, @toDate))
+	GROUP BY [ATP].[Concept], [ET].[Concept]
 RETURN 0
 END

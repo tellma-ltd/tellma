@@ -19,15 +19,13 @@ BEGIN
 			[Concept],
 			[Value]
 	)
-	SELECT [AT].[Concept] , SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries2] (@PresentationCurrencyId) E
+	SELECT [ATP].[Concept] , SUM(E.[AlgebraicValue]) AS [Value]
+	FROM [map].[DetailsEntries] () E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
-	WHERE L.[PostingDate] < DATEADD(DAY, 1, @toDate)
-	-- TODO: consider subtypes of the ones below as well
-	-- The #Mapping table can be persisted and used to add the column IFRS220000_ConceptId to the fact table.
-	AND [AT].[Concept] IN (
+	JOIN dbo.[AccountTypes] [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+	JOIN dbo.[AccountTypes] [ATP] ON [ATC].[Node].IsDescendantOf([ATP].[Node]) = 1
+	WHERE [ATP].[Concept] IN (
 		N'PropertyPlantAndEquipment',				
 		N'InvestmentProperty',						
 		N'Goodwill',								
@@ -76,8 +74,9 @@ BEGIN
 		N'OtherCurrentFinancialLiabilities',		
 		N'OtherCurrentNonfinancialLiabilities',	
 		N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale'
-	)
-	GROUP BY [AT].[Concept] 
+	)	
+	AND L.[PostingDate] < DATEADD(DAY, 1, @toDate)
+	GROUP BY [ATP].[Concept] 
 	
 	-- TODO: Calculate NoncontrollingInterests by adding weighted average of Equity for tenants
 /*

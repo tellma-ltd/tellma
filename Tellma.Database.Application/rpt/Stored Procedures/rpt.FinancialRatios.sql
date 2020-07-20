@@ -30,7 +30,7 @@ BEGIN
 	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@RevenueNode) = 1;
 	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(AlgebraicValue), 0)
-	FROM map.DetailsEntries2(@PresentationCurrencyId) E
+	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
@@ -40,7 +40,7 @@ BEGIN
 	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@ExpenseByNatureAbstractNode) = 1;
 	SELECT @CapitalEmployed = ISNULL(SUM(AlgebraicValue), 0)
-	FROM map.DetailsEntries2(@PresentationCurrencyId) E
+	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
