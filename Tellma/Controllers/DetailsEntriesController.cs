@@ -61,6 +61,33 @@ namespace Tellma.Controllers
             , _logger);
         }
 
+        //[HttpGet("contract-accounts")]
+        //public async Task<ActionResult<EntitiesResponse<Account>>> GetContractAccounts(CancellationToken cancellation)
+        //{
+
+        //    return await ControllerUtilities.InvokeActionImpl(async () =>
+        //    {
+        //        var serverTime = DateTimeOffset.UtcNow;
+        //        var data = await _service.GetContractAccounts(cancellation);
+
+        //        // Flatten and Trim
+        //        var relatedEntities = FlattenAndTrim(data, cancellation);
+
+        //        // Prepare result
+        //        var result = new EntitiesResponse<Account>
+        //        {
+        //            ServerTime = serverTime,
+        //            CollectionName = GetCollectionName(typeof(Account)),
+        //            Result = data,
+        //            RelatedEntities = relatedEntities,
+        //        };
+
+        //        // Return result
+        //        return Ok(result);
+        //    }
+        //    , _logger);
+        //}
+
         protected override FactWithIdServiceBase<DetailsEntry, int> GetFactWithIdService()
         {
             return _service;
@@ -129,7 +156,7 @@ namespace Tellma.Controllers
                 // OR State == Completed
                 stateFilter = $"({stateFilter} or {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Completed})";
             }
-            
+
             StringBuilder undatedFilterBldr = new StringBuilder(stateFilter);
 
             if (args.AccountId != null)
@@ -274,5 +301,28 @@ namespace Tellma.Controllers
             data = data.Skip(args.Skip).ToList(); // Skip in memory
             return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
         }
+
+        //public async Task<List<Account>> GetContractAccounts(int contractId, CancellationToken cancellation)
+        //{
+        //    string accountIdProp = nameof(DetailsEntry.AccountId);
+        //    string contractIdProp = nameof(DetailsEntry.ContractId);
+        //    string algebraicValueSum = $"sum({nameof(DetailsEntry.AlgebraicValue)})";
+
+        //    var (data, _) = await GetAggregate(new GetAggregateArguments
+        //    {
+        //        Select = $"{accountIdProp},{algebraicValueSum}",
+        //        Filter = $""
+        //    },
+        //    cancellation);
+
+        //    var dic = data.Select(e => ((int?)e[accountIdProp], (decimal?)e[algebraicValueSum]))
+
+        //    var ids = data.Select(e => e[accountIdProp]).Where(e => e != null).Select(e => (int)e).ToList();
+        //    var result = await GetByIds(ids, new SelectExpandArguments { Select = "$Details" }, cancellation);
+
+        //    var dic = data.Se
+
+        //    return result;
+        //}
     }
 }

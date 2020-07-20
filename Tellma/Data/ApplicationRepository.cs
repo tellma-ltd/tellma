@@ -2891,6 +2891,7 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
@@ -2899,7 +2900,31 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable resourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ResourceDefinitions);
+            var resourceDefinitionsTvp = new SqlParameter("@AccountTypeResourceDefinitions", resourceDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(AccountTypeResourceDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable contractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ContractDefinitions);
+            var contractDefinitionsTvp = new SqlParameter("@AccountTypeContractDefinitions", contractDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(AccountTypeContractDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable notedContractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedContractDefinitions);
+            var notedContractDefinitionsTvp = new SqlParameter("@AccountTypeNotedContractDefinitions", notedContractDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(AccountTypeNotedContractDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(resourceDefinitionsTvp);
+            cmd.Parameters.Add(contractDefinitionsTvp);
+            cmd.Parameters.Add(notedContractDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -2926,7 +2951,31 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable resourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ResourceDefinitions);
+                var resourceDefinitionsTvp = new SqlParameter("@AccountTypeResourceDefinitions", resourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable contractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ContractDefinitions);
+                var contractDefinitionsTvp = new SqlParameter("@AccountTypeContractDefinitions", contractDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeContractDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable notedContractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedContractDefinitions);
+                var notedContractDefinitionsTvp = new SqlParameter("@AccountTypeNotedContractDefinitions", notedContractDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedContractDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(resourceDefinitionsTvp);
+                cmd.Parameters.Add(contractDefinitionsTvp);
+                cmd.Parameters.Add(notedContractDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;

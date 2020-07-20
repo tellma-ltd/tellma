@@ -92,30 +92,6 @@
     </t-entry-types-picker>
   </t-form-group>
 
-  <!-- Description -->
-  <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
-    [serverErrors]="model?.serverErrors?.Description">
-    <div *ngIf="!isEdit">{{ model?.Description }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
-    </t-text-editor>
-  </t-form-group>
-
-  <!-- Description2 -->
-  <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-    [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
-    <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
-    </t-text-editor>
-  </t-form-group>
-
-  <!-- Description3 -->
-  <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-    [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
-    <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
-    </t-text-editor>
-  </t-form-group>
-
   <!-- IsAssignable -->
   <t-form-group class="t-form-group" [label]="'IsAssignable' | translate"
     [serverErrors]="model?.serverErrors?.IsAssignable">
@@ -136,6 +112,16 @@
     </div>
   </t-form-group>
 
+  <!-- IsMonetary -->
+  <t-form-group class="t-form-group" [label]="'AccountType_IsMonetary' | translate"
+    [serverErrors]="model?.serverErrors?.IsMonetary">
+    <div *ngIf="!isEdit">{{ (model?.IsMonetary ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsMonetary" id="ismonetary">
+      <label class="custom-control-label t-pointer" for="ismonetary">&zwnj;</label>
+    </div>
+  </t-form-group>
+
   <!-- Is Active -->
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <t-auto-cell collection="AccountType" [entity]="model" path="IsActive"></t-auto-cell>
@@ -148,9 +134,54 @@
 
   <ul ngbNav #tabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs" [destroyOnHide]="true">
 
+    <!-- Descriptions -->
+    <li ngbNavItem="description">
+      <a ngbNavLink>
+        <span *ngIf="showDescriptionsError(model)" class="text-danger">
+          <fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
+        <span class="small t-slightly-bold">{{ 'Description' | translate }}</span>
+      </a>
+      <ng-template ngbNavContent>
+        <div class="row m-0 pt-2 pt-sm-3">
+
+          <!-- Description -->
+          <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
+            [serverErrors]="model?.serverErrors?.Description">
+            <div *ngIf="!isEdit">{{ model?.Description }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+
+          <!-- Description2 -->
+          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+            [label]="('Description' | translate) + ws.secondaryPostfix"
+            [serverErrors]="model?.serverErrors?.Description2">
+            <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+
+          <!-- Description3 -->
+          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
+            [label]="('Description' | translate) + ws.ternaryPostfix"
+            [serverErrors]="model?.serverErrors?.Description3">
+            <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+        </div>
+      </ng-template>
+    </li>
+
     <!-- Labels -->
     <li ngbNavItem="labels">
       <a ngbNavLink>
+        <span *ngIf="showLabelsError(model)" class="text-danger">
+          <fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
         <span class="small t-slightly-bold">{{ 'Labels' | translate }}</span>
       </a>
       <ng-template ngbNavContent>
@@ -378,6 +409,106 @@
         </div>
       </ng-template>
     </li>
+
+    <!-- ResourceDefinitions -->
+    <li ngbNavItem="resourceDefs">
+      <a ngbNavLink>
+        <span *ngIf="showResourceDefinitionsError(model)" class="text-danger">
+          <fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
+        <span
+          class="small t-slightly-bold">{{ ('AccountType_ResourceDefinitions' | translate) + ' (' + (model?.ResourceDefinitions?.length | number) + ')'  }}</span>
+      </a>
+      <ng-template ngbNavContent>
+        <t-table [dataSource]="model?.ResourceDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+          [columnTemplates]="{
+          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+        }">
+        </t-table>
+
+        <!-- Header -->
+        <ng-template #header>{{ 'Account_ResourceDefinition' | translate}}</ng-template>
+        <ng-template #row let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.ResourceDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../resource-definitions" [itemId]="item?.ResourceDefinitionId">
+              {{ getMultilingualValue(ws.ResourceDefinition[item.ResourceDefinitionId], 'TitleSingular', ws) }}
+            </t-view-link>
+            <t-resource-definitions-picker *ngIf="isEdit" [(ngModel)]="item.ResourceDefinitionId"
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH" filter="State ne 'Hidden'">
+            </t-resource-definitions-picker>
+          </t-form-group-cell>
+        </ng-template>
+
+      </ng-template>
+    </li>
+
+    <!-- ContractDefinitions -->
+    <li ngbNavItem="contractDefs">
+      <a ngbNavLink>
+        <span *ngIf="showContractDefinitionsError(model)" class="text-danger">
+          <fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
+        <span
+          class="small t-slightly-bold">{{ ('AccountType_ContractDefinitions' | translate) + ' (' + (model?.ContractDefinitions?.length | number) + ')'  }}</span>
+      </a>
+      <ng-template ngbNavContent>
+        <t-table [dataSource]="model?.ContractDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+          [columnTemplates]="{
+          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+        }">
+        </t-table>
+
+        <!-- Header -->
+        <ng-template #header>{{ 'Account_ContractDefinition' | translate}}</ng-template>
+        <ng-template #row let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.ContractDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../contract-definitions" [itemId]="item?.ContractDefinitionId">
+              {{ getMultilingualValue(ws.ContractDefinition[item.ContractDefinitionId], 'TitleSingular', ws) }}
+            </t-view-link>
+            <t-contract-definitions-picker *ngIf="isEdit" [(ngModel)]="item.ContractDefinitionId"
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH">
+            </t-contract-definitions-picker>
+          </t-form-group-cell>
+        </ng-template>
+
+      </ng-template>
+    </li>
+    
+    <!-- NotedContractDefinitions -->
+    <li ngbNavItem="notedcontractDefs">
+      <a ngbNavLink>
+        <span *ngIf="showNotedContractDefinitionsError(model)" class="text-danger">
+          <fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
+        <span
+          class="small t-slightly-bold">{{ ('AccountType_NotedContractDefinitions' | translate) + ' (' + (model?.NotedContractDefinitions?.length | number) + ')'  }}</span>
+      </a>
+      <ng-template ngbNavContent>
+        <t-table [dataSource]="model?.NotedContractDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+          [columnTemplates]="{
+          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+        }">
+        </t-table>
+
+        <!-- Header -->
+        <ng-template #header>{{ 'Account_NotedContractDefinition' | translate}}</ng-template>
+        <ng-template #row let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedContractDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../contract-definitions" [itemId]="item?.NotedContractDefinitionId">
+              {{ getMultilingualValue(ws.ContractDefinition[item.NotedContractDefinitionId], 'TitleSingular', ws) }}
+            </t-view-link>
+            <t-contract-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedContractDefinitionId"
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH">
+            </t-contract-definitions-picker>
+          </t-form-group-cell>
+        </ng-template>
+
+      </ng-template>
+    </li>
+
   </ul>
   <div class="w-100" [ngbNavOutlet]="tabs"></div>
 

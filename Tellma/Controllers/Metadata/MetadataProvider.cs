@@ -503,6 +503,25 @@ namespace Tellma.Controllers
                                     }
                                 };
                             }
+                            else if (propDesc.Type == typeof(short?))
+                            {
+                                format = (obj) => obj?.ToString();
+                                parse = (str) =>
+                                {
+                                    if (string.IsNullOrWhiteSpace(str))
+                                    {
+                                        return null;
+                                    }
+                                    else if (short.TryParse(str, out short result))
+                                    {
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        throw new ParseException(_localizer["Error_Value0IsNotAValid1Example2", str, _localizer["Short"], format(5)]);
+                                    }
+                                };
+                            }
                             else if (propDesc.Type == typeof(byte?))
                             {
                                 format = (obj) => obj?.ToString();

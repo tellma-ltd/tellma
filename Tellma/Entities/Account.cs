@@ -79,6 +79,9 @@ namespace Tellma.Entities
 
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
+        
+        [NotMapped]
+        public decimal? Balance { get; set; }
 
         // For Query
 

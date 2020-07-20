@@ -136,6 +136,9 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>外部参考标签</value>
   </data>
+  <data name="AccountType_IsMonetary" xml:space="preserve">
+    <value>是货币</value>
+  </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>注意代理名称标签</value>
   </data>
@@ -1073,7 +1076,7 @@
     <value>帐户 '{0}' 在{1} {2}与货币 '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>帐户 '{0}' 在{1} {2}与资源 '{3}' 中使用。</value>
+    <value>帐户 '{0}' 是{1} {2}与资源 '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
     <value>帐户分类“{0}”的帐户“{1}”与非零平衡。</value>
@@ -2184,6 +2187,9 @@
   </data>
   <data name="ShortDay7" xml:space="preserve">
     <value>苏</value>
+  </data>
+  <data name="ShortInteger" xml:space="preserve">
+    <value>短整型</value>
   </data>
   <data name="ShortMonth1" xml:space="preserve">
     <value>一月</value>

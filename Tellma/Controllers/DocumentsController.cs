@@ -1305,7 +1305,7 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // If a common header property is different than any of its constitutents, return readonly error
+                    // If a common header property is different than any of its constituents, return readonly error
                     // it means one of the constituents is readonly and has been changed by the preprocess SQL => return readonly error
                     // IMPORTANT: Any changes to the switch statements must be mirrored in SavePreprocessAsync
                     foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
@@ -1706,8 +1706,6 @@ namespace Tellma.Controllers
             return base.ProcessDefaultMapping(mapping);
         }
 
-        #region Details Select
-
         protected override SelectExpression ParseSelect(string select)
         {
             // We provide a shorthand notation for common and huge select
@@ -1732,7 +1730,6 @@ namespace Tellma.Controllers
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
         private static readonly SelectExpression _detailsSelectExpression = new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
 
-        #endregion
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]

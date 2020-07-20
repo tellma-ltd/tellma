@@ -8,6 +8,7 @@ namespace Tellma.Entities
     public class AccountTypeResourceDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "Account_ResourceDefinition")]
+        [Required]
         public int? ResourceDefinitionId { get; set; }
     }
 
@@ -19,26 +20,13 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ResourceDefinitionId))]
         public ResourceDefinition ResourceDefinition { get; set; }
 
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
+        [Display(Name = "ModifiedBy")]
+        public int? SavedById { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
+        // For Query
 
         [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
-
-        // For query
-
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
-        [Display(Name = "ModifiedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        [ForeignKey(nameof(SavedById))]
+        public User SavedBy { get; set; }
     }
 }

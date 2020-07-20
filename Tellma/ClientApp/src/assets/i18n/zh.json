@@ -24,6 +24,7 @@
   "AccountType_DueDateLabel": "截止日期标签",
   "AccountType_EntryTypeParent": "输入型亲",
   "AccountType_ExternalReferenceLabel": "外部参考标签",
+  "AccountType_IsMonetary": "是货币",
   "AccountType_NotedAgentNameLabel": "注意代理名称标签",
   "AccountType_NotedAmountLabel": "注意金额标签",
   "AccountType_NotedContractDefinitions": "注意合同的定义",

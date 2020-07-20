@@ -36,7 +36,7 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
             select: ['ValidAsOf', 'CurrencyId'],
             apiEndpoint: 'exchange-rates',
             masterScreenUrl: 'exchange-rates',
-            orderby: () => ['ValidAsOf desc', 'CurrencyId'],
+            orderby: () => ['ValidAsOf', 'CurrencyId'],
             inactiveFilter: null,
             format: (item: ExchangeRate) => `${!!item.ValidAsOf} ${ws.getMultilingualValue('Currency', item.CurrencyId, 'Name')}`,
             properties: {

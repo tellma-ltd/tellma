@@ -444,16 +444,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const skipParam = s.skip;
       const orderby = isTree ? 'Node' : s.orderby;
       const search = s.search;
-
-      // compute the filter
-      let filter = this.filter();
-      if (!s.inactive && this.showIncludeInactive) {
-        if (!!filter) {
-          filter = `(${filter}) and (${this.inactiveFilter})`;
-        } else {
-          filter = this.inactiveFilter;
-        }
-      }
+      const filter = this.computeFilter(s);
 
       // Retrieve the entities
       obs$ = this.crud.getFact({
@@ -743,7 +734,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get parentIdsKey(): string {
-    return `${this.collection + (!!this.definitionId ? '/' + this.definitionId : '')}/parent_ids`;
+    const prefix = this.workspace.isApp ? (this.workspace.ws.tenantId + '/') : '';
+    const screen = this.collection + (!!this.definitionId ? '/' + this.definitionId : '');
+
+    return `${prefix}${screen}/parent_ids`;
   }
 
   private get parentIdsFromUserSettings(): (string | number)[] {
@@ -1421,6 +1415,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     const from = this.fromExport;
     const to = this.toExport;
     const s = this.state;
+    const filter = this.computeFilter(s);
 
     let obs$: Observable<Blob>;
     if (this.exportMode === 'ForImport') {
@@ -1429,7 +1424,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         skip: this.exportSkip,
         orderby: s.orderby,
         search: s.search,
-        filter: this.filter()
+        filter
       });
     } else if (this.exportMode === 'WhatISee') {
       const colPaths = this.tableColumnPaths;
@@ -1438,7 +1433,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         skip: this.exportSkip,
         orderby: s.orderby,
         search: s.search,
-        filter: this.filter(),
+        filter,
         select: this.computeSelectForExport(),
         countEntities: false
       }).pipe(
@@ -1735,8 +1730,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   // filter-related stuff
 
-  private filter(): string {
-    const filterState = this.state.builtInFilterSelections;
+  private computeFilter(s: MasterDetailsStore): string {
+    const filterState = s.builtInFilterSelections;
     const disjunctions: string[] = [];
     const groupNames = Object.keys(this.filterDefinition);
     for (const groupName of groupNames) {
@@ -1765,8 +1760,19 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     const custom = this.state.customFilter;
 
     // AND the custom filter and the built-in filter together
-    return (!!custom && !!builtin) ? `(${custom}) and (${builtin})` :
+    let filter = (!!custom && !!builtin) ? `(${custom}) and (${builtin})` :
       !!custom ? custom : !!builtin ? builtin : null;
+
+    // Add inactive if specified
+    if (!s.inactive && this.showIncludeInactive) {
+      if (!!filter) {
+        filter = `(${filter}) and (${this.inactiveFilter})`;
+      } else {
+        filter = this.inactiveFilter;
+      }
+    }
+
+    return filter;
   }
 
   public get inactiveFilter(): string {

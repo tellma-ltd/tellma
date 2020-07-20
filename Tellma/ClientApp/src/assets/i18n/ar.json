@@ -24,6 +24,7 @@
   "AccountType_DueDateLabel": "اسم تاريخ الاستحقاق",
   "AccountType_EntryTypeParent": "جذر الغرض",
   "AccountType_ExternalReferenceLabel": "اسم المرجع الخارجي",
+  "AccountType_IsMonetary": "ذو طبيعة نقدية",
   "AccountType_NotedAgentNameLabel": "اسم اسم الذمة المعنية",
   "AccountType_NotedAmountLabel": "اسم المبلغ المعني",
   "AccountType_NotedContractDefinitions": "تعريفات العقود المعنية",

@@ -59,6 +59,10 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
+        [Display(Name = "AccountType_IsMonetary")]
+        [AlwaysAccessible]
+        public bool? IsMonetary { get; set; }
+
         [Display(Name = "IsAssignable")]
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
@@ -206,17 +210,8 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsSystem { get; set; }
 
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
         [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
+        public int? SavedById { get; set; }
 
         // For Query
 
@@ -227,13 +222,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ParentId))]
         public AccountType Parent { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
         [Display(Name = "ModifiedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        [ForeignKey(nameof(SavedById))]
+        public User SavedBy { get; set; }
 
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]

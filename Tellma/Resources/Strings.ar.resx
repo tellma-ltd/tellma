@@ -136,6 +136,9 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الخارجي</value>
   </data>
+  <data name="AccountType_IsMonetary" xml:space="preserve">
+    <value>ذو طبيعة نقدية</value>
+  </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>اسم اسم الذمة المعنية</value>
   </data>
@@ -2184,6 +2187,9 @@
   </data>
   <data name="ShortDay7" xml:space="preserve">
     <value>الأحد</value>
+  </data>
+  <data name="ShortInteger" xml:space="preserve">
+    <value>عدد صحيح صغير</value>
   </data>
   <data name="ShortMonth1" xml:space="preserve">
     <value>يناير</value>

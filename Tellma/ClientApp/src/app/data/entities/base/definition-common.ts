@@ -178,7 +178,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'money-bill-wave',
           'money-check-alt',
           'money-check',
-          'neywork-wired',
+          'network-wired',
           'newspaper',
           'object-group',
           'palette',

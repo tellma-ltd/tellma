@@ -831,7 +831,7 @@ namespace Tellma.Controllers
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
             // Remove the UserId property from the template, it's supposed to be hidden
-            var roleMemberships = mapping.CollectionProperty(nameof(Role.Members));
+            var roleMemberships = mapping.CollectionProperty(nameof(User.Roles));
             var userProp = roleMemberships.SimpleProperty(nameof(RoleMembership.UserId));
 
             roleMemberships.SimpleProperties = roleMemberships.SimpleProperties.Where(p => p != userProp);

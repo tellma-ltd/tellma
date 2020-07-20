@@ -456,10 +456,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     // Add include inactive filter, if any
     if (!this.includeInactive) {
       const inactiveFilter = this.inactiveFilter();
-      if (!!result) {
-        result = `${inactiveFilter} and ${result}`;
-      } else {
-        result = inactiveFilter;
+      if (inactiveFilter) {
+        if (!!result) {
+          result = `${inactiveFilter} and ${result}`;
+        } else {
+          result = inactiveFilter;
+        }
       }
     }
 

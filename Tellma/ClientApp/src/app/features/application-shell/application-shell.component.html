@@ -34,12 +34,6 @@
     <!-- Collapsible Navbar -->
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav px-4 px-md-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            [routerLink]="['./documents', { 'orderby': 'AssignedAt desc' }]" (click)="onCollapse()">
-            {{ 'Documents' | translate }}
-          </a>
-        </li> -->
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
             (click)="onCollapse()">

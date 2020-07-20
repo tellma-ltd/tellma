@@ -33,6 +33,7 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   DueDateLabel?: string;
   DueDateLabel2?: string;
   DueDateLabel3?: string;
+  IsMonetary?: boolean;
   Time1Label?: string;
   Time1Label2?: string;
   Time1Label3?: string;
@@ -67,10 +68,7 @@ export interface AccountType extends AccountTypeForSave<AccountTypeContractDefin
   ChildCount?: number;
   IsActive?: boolean;
   IsSystem?: boolean;
-  CreatedAt?: string;
-  CreatedById?: number | string;
-  ModifiedAt?: string;
-  ModifiedById?: number | string;
+  SavedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -108,6 +106,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
         Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+        IsMonetary: { control: 'boolean', label: () => trx.instant('AccountType_IsMonetary') },
         Code: { control: 'text', label: () => trx.instant('Code') },
         Concept: { control: 'text', label: () => trx.instant('AccountType_Concept') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
@@ -149,10 +148,10 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
 
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+
+        // Audit info
+        SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }
       }
     };
 

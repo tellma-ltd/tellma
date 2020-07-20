@@ -24,6 +24,7 @@
   "AccountType_DueDateLabel": "መጠናቀቅ ያለበት ቀን መሰየሚያ",
   "AccountType_EntryTypeParent": "ምዝግብ አይነት ወላጅ",
   "AccountType_ExternalReferenceLabel": "የውጭ ማጣቀሻ መሰየሚያ",
+  "AccountType_IsMonetary": "የሆነው ገንዘብ ከዚህ",
   "AccountType_NotedAgentNameLabel": "እንደተጠቀሰው ወኪል ስም መሰየሚያ",
   "AccountType_NotedAmountLabel": "እንደተጠቀሰው መጠን መለያ ስም",
   "AccountType_NotedContractDefinitions": "እንደተጠቀሰው ኮንትራት ፍቺዎች",

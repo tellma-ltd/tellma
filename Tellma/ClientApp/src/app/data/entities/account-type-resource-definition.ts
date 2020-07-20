@@ -6,8 +6,5 @@ export interface AccountTypeResourceDefinitionForSave extends EntityForSave {
 
 export interface AccountTypeResourceDefinition extends AccountTypeResourceDefinitionForSave {
     AccountTypeId?: number;
-    CreatedAt?: string;
-    CreatedById?: number | string;
-    ModifiedAt?: string;
-    ModifiedById?: number | string;
+    SavedById?: number | string;
 }

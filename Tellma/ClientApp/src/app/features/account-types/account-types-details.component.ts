@@ -16,7 +16,8 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Parent,EntryTypeParent';
+  public expand = `Parent,EntryTypeParent,
+ContractDefinitions/ContractDefinition,NotedContractDefinitions/NotedContractDefinition,ResourceDefinitions/ResourceDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -87,4 +88,27 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   isInactive: (model: AccountType) => string = (at: AccountType) =>
     // !!at && at.IsSystem ? 'Error_CannotModifySystemItem' :
     !!at && !at.IsActive ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
+
+
+  public showDescriptionsError(model: AccountType): boolean {
+    return !!model && !!model.serverErrors && (!!model.serverErrors.Description ||
+      !!model.serverErrors.Description2 || !!model.serverErrors.Description3);
+  }
+
+  public showLabelsError(model: AccountType): boolean {
+    return !!model && !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(e => e.endsWith('Label') || e.endsWith('Label2') || e.endsWith('Label3'));
+  }
+
+  public showContractDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.ContractDefinitions && model.ContractDefinitions.some(e => !!e.serverErrors);
+  }
+
+  public showNotedContractDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.NotedContractDefinitions && model.NotedContractDefinitions.some(e => !!e.serverErrors);
+  }
+
+  public showResourceDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.ResourceDefinitions && model.ResourceDefinitions.some(e => !!e.serverErrors);
+  }
 }
