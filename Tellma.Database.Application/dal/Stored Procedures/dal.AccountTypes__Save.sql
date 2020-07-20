@@ -90,8 +90,7 @@ SET NOCOUNT ON;
 				t.[NotedDateLabel]			= s.[NotedDateLabel],
 				t.[NotedDateLabel2]			= s.[NotedDateLabel2],
 				t.[NotedDateLabel3]			= s.[NotedDateLabel3],
-				t.[ModifiedAt]				= @Now,
-				t.[ModifiedById]			= @UserId
+				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([ParentId],[Code],[Concept],
 					[Name],[Name2],[Name3],

@@ -7,13 +7,12 @@ AS
 	DELETE FROM [dbo].[AccountTypes]
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
-	-- TODO: needs testing, it is not working after deleting ParentId
-	-- OR, we may simply prevent using Delete and use Delete With Descendants only
+
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
-		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E.[Code])
 		FROM [dbo].[AccountTypes] E
-		LEFT JOIN [dbo].[AccountTypes] E2 ON E.[ParentNode] = E2.[Node]
+		LEFT JOIN [dbo].[AccountTypes] E2 ON E.[ParentId] = E2.[Id]
 	),
 	Paths ([Node], [Id]) AS (  
 		-- This section provides the value for the roots of the hierarchy  
@@ -27,7 +26,7 @@ AS
 		JOIN Paths P ON C.[ParentId] = P.[Id]
 	)
 	MERGE INTO [dbo].[AccountTypes] As t
-	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
+	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 
 	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
