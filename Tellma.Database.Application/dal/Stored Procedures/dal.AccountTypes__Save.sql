@@ -1,5 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
+	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
+	@AccountTypeContractDefinitions AccountTypeContractDefinitionList READONLY,
+	@AccountTypeNotedContractDefinitions AccountTypeNotedContractDefinitionList READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -158,6 +161,69 @@ SET NOCOUNT ON;
 					)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
+
+	-- AccountTypeResourceDefinitions
+	WITH BEATRD AS (
+		SELECT * FROM dbo.[AccountTypeResourceDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATRD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[ResourceDefinitionId]
+		FROM @AccountTypeResourceDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[ResourceDefinitionId]		= s.[ResourceDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[ResourceDefinitionId])
+		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
+	-- AccountTypeContractDefinitions
+	WITH BEATCD AS (
+		SELECT * FROM dbo.[AccountTypeContractDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATCD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[ContractDefinitionId]
+		FROM @AccountTypeContractDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[ContractDefinitionId]		= s.[ContractDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[ContractDefinitionId])
+		VALUES (s.[AccountTypeId], s.[ContractDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
+	-- AccountTypeNotedContractDefinitions
+	WITH BEATNCD AS (
+		SELECT * FROM dbo.[AccountTypeNotedContractDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATNCD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedContractDefinitionId]
+		FROM @AccountTypeNotedContractDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[NotedContractDefinitionId]		= s.[NotedContractDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[NotedContractDefinitionId])
+		VALUES (s.[AccountTypeId], s.[NotedContractDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- The following code is needed for bulk import, when the reliance is on Parent Index
 	MERGE [dbo].[AccountTypes] As t

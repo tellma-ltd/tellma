@@ -343,24 +343,6 @@ END
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> @ManualLineLD;
 
-	-- for each account type, if there is only one compatible center, use it
-	WITH SingleCenterEntries AS (
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], C.[CenterType]
-		FROM @PreprocessedEntries E
-		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-		JOIN dbo.[AccountTypeCenterTypes] ATCT ON LDE.AccountTypeId = ATCT.AccountTypeId
-		JOIN dbo.Centers C ON ATCT.CenterType = C.CenterType
-		WHERE C.[IsActive] = 1
-		GROUP BY E.[Index], E.[LineIndex], E.[DocumentIndex], C.[CenterType]
-		HAVING COUNT(*) = 1
-	)
-	UPDATE E
-	SET E.[CenterId] = C.[Id]
-	FROM @PreprocessedEntries E
-	JOIN SingleCenterEntries SCE ON E.[Index] = SCE.[Index] AND E.[LineIndex] = SCE.[LineIndex] AND E.[DocumentIndex] = SCE.[DocumentIndex]
-	JOIN dbo.Centers C ON SCE.[CenterType] = C.[CenterType]
-	WHERE C.[IsActive] = 1
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
 	SET E.[Value] = ROUND(ER.[Rate] * E.[MonetaryValue], C.[E])

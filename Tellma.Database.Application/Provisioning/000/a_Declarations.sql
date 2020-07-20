@@ -27,6 +27,9 @@
 	DECLARE @Roles dbo.RoleList,@Members [dbo].[RoleMembershipList], @Permissions dbo.PermissionList;
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
+	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
+	DECLARE @AccountTypeContractDefinitions AccountTypeContractDefinitionList;
+	DECLARE @AccountTypeNotedContractDefinitions AccountTypeNotedContractDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDimensionDefinitionList;

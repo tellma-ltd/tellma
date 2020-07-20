@@ -576,7 +576,6 @@
     <Build Include="map\map.ResourceDefinitions.sql" />
     <None Include="Provisioning\108\00_Setup\Script.sql" />
     <Build Include="map\map.ContractUsers.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypeCenterTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__UpdateState.sql" />
     <Build Include="dal\Stored Procedures\dal.ContractDefinitions__UpdateState.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__UpdateState.sql" />
@@ -630,6 +629,9 @@
     <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="map\map.DetailsEntries2.sql" />
     <Build Include="map\map.SummaryEntries2.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeContractDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedContractDefinitionList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
