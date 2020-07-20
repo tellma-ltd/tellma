@@ -697,11 +697,11 @@ SELECT
 FROM dbo.AccountTypes
 
 INSERT INTO @AccountTypeResourceDefinitions([Index],
-[AccountTypeId],									[ResourceDefinitionId]) VALUES
+[HeaderIndex],											[ResourceDefinitionId]) VALUES
 (0,@Land,												@LandMemberRD),
-(1,@Buildings,										@BuildingsMemberRD),
-(2,@Machinery,										@MachineryMemberRD), 
-(3,@Machinery,										@PowerGeneratingAssetsMemberRD), 
+(1,@Buildings,											@BuildingsMemberRD),
+(2,@Machinery,											@MachineryMemberRD), 
+(3,@Machinery,											@PowerGeneratingAssetsMemberRD), 
 (4,@Vehicles,											@MotorVehiclesMemberRD),
 (5,@FixturesAndFittings,								@FixturesAndFittingsMemberRD),
 (6,@FixturesAndFittings,								@NetworkInfrastructureMemberRD),
@@ -715,7 +715,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (14,@OilAndGasAssets,									@OilAndGasAssetsMemberRD),
 (15,@ConstructionInProgress,							@ConstructionInProgressMemberRD),
 (16,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,
-													@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
+														@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
 (17,@OtherPropertyPlantAndEquipment,					@OtherPropertyPlantAndEquipmentMemberRD),
 
 (18,@InvestmentPropertyCompleted,						@InvestmentPropertyCompletedMemberRD),
@@ -813,10 +813,9 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 (103,@CollectionGuaranteeExtension,						@CheckReceivedRD),
 (104,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
-UPDATE @AccountTypeResourceDefinitions SET HeaderIndex = AccountTypeId;
 
 INSERT INTO @AccountTypeContractDefinitions([Index],
-[AccountTypeId],									[ContractDefinitionId]) VALUES
+[HeaderIndex],										[ContractDefinitionId]) VALUES
 (0,@NoncurrentTradeReceivables,						@CustomerCD),
 (1,@NoncurrentReceivablesDueFromRelatedParties,
 													@CustomerCD),
@@ -862,16 +861,14 @@ INSERT INTO @AccountTypeContractDefinitions([Index],
 (37,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerCD),
 (38,@CollectionGuaranteeExtension,					@CustomerCD),
 (39,@DishonouredGuaranteeExtension,					@CustomerCD);
-UPDATE @AccountTypeContractDefinitions SET HeaderIndex = AccountTypeId;
 
 INSERT INTO @AccountTypeNotedContractDefinitions([Index],
-[AccountTypeId],									[NotedContractDefinitionId]) VALUES
+[HeaderIndex],										[NotedContractDefinitionId]) VALUES
 (0,@CurrentValueAddedTaxReceivables,				@SupplierCD),
 (1,@CurrentValueAddedTaxPayables,					@CustomerCD),
 (2,@CurrentEmployeeIncomeTaxPayablesExtension,		@EmployeeCD),
 (3,@CurrentSocialSecurityPayablesExtension,			@EmployeeCD),
 (4,@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeCD);
-UPDATE @AccountTypeNotedContractDefinitions SET HeaderIndex = AccountTypeId;
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,

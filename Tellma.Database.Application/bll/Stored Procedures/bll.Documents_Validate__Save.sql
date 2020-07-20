@@ -119,3 +119,13 @@ SET NOCOUNT ON;
 	END
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+
+	-- TODO
+	/*
+	If Account type is InvestmentPropertyUnderConstructionOrDevelopment then CenterType must be: PUC or Leaf BU
+	If Account type is Inventories in transit then center type must be : Transit expense or Leaf BU
+	If Account type is PUC then center type must be: PUC or Leaf BU
+	If Account type is Expense by nature then center type must be leaf
+	otherwise, Account type must be BU
+
+	*/

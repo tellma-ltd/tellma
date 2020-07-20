@@ -3,6 +3,5 @@
 	[HeaderIndex]				INT			DEFAULT 0,
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]						INT			DEFAULT 0,
-	[AccountTypeId]				INT NOT NULL,
 	[ContractDefinitionId]		INT NOT NULL
 );

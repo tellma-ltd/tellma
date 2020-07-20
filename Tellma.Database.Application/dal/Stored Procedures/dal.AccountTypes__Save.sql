@@ -62,7 +62,7 @@ SET NOCOUNT ON;
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
-				t.[IsMonetary]				= IIF(t.[IsMonetary]=0,s.[IsMonetary],t.[IsMonetary]),
+				t.[IsMonetary]				= IIF(t.[IsSystem]=0,s.[IsMonetary],t.[IsMonetary]),
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[AllowsPureUnit]			= IIF(t.[IsSystem]=0,s.[AllowsPureUnit],t.[AllowsPureUnit]),
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
