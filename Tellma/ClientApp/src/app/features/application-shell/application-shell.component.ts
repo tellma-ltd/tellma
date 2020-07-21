@@ -24,6 +24,7 @@ import { clearServerErrors, applyServerErrors } from '~/app/shared/details/detai
 import { Document as TellmaDocument } from '~/app/data/entities/document';
 import { InboxRecord } from '~/app/data/entities/inbox-record';
 import { GetResponse } from '~/app/data/dto/get-response';
+import { ContextMenuComponent } from '~/app/shared/context-menu/context-menu.component';
 
 @Component({
   selector: 't-application-shell',
@@ -52,6 +53,8 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   @ViewChild('inboxModal', { static: true})
   inboxModal: TemplateRef<any>;
+
+  public menu: ContextMenuComponent;
 
   constructor(
     public workspace: WorkspaceService, public nav: NavigationService,

@@ -94,6 +94,8 @@ import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cel
 import { SerialEditorComponent } from './serial-editor/serial-editor.component';
 import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.component';
 import { AccountingPipe } from './accounting/accounting.pipe';
+import { ContextMenuModule } from '@ctrl/ngx-rightclick';
+import { ContextMenuComponent } from '../shared/context-menu/context-menu.component';
 
 @NgModule({
   declarations: [
@@ -127,6 +129,7 @@ import { AccountingPipe } from './accounting/accounting.pipe';
     FormGroupCellComponent,
     MapBoundsFitterComponent,
     AccountingPipe,
+    ContextMenuComponent,
   ],
   imports: [
     CommonModule,
@@ -143,24 +146,26 @@ import { AccountingPipe } from './accounting/accounting.pipe';
     NgbDatepickerModule,
     NgbNavModule,
     NgbTooltipModule,
-    NgxChartsModule
+    NgxChartsModule,
+    ContextMenuModule
   ],
   exports: [
     // Modules
     CommonModule,
+    TranslateModule,
+    FormsModule,
+    FontAwesomeModule,
     HttpClientModule,
     ScrollingModule,
+    DragDropModule,
     NgbDropdownModule,
     NgbModalModule,
     NgbCollapseModule,
     NgbPopoverModule,
     NgbNavModule,
     NgbTooltipModule,
-    TranslateModule,
-    FormsModule,
-    FontAwesomeModule,
     NgxChartsModule,
-    DragDropModule,
+    ContextMenuModule,
 
     // Components & others
     SpinnerComponent,
@@ -191,10 +196,14 @@ import { AccountingPipe } from './accounting/accounting.pipe';
     LabelPipe,
     MapBoundsFitterComponent,
     AccountingPipe,
+    ContextMenuComponent,
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization }
+  ],
+  entryComponents: [
+    ContextMenuComponent
   ]
 })
 export class SharedModule {

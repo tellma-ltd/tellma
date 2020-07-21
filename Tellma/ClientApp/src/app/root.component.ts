@@ -1,4 +1,4 @@
-import { Component, ApplicationRef, Inject } from '@angular/core';
+import { Component, ApplicationRef, Inject, ViewContainerRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
