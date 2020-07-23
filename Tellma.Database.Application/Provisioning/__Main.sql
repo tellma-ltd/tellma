@@ -2,8 +2,6 @@
 :r .\000\b_AdminUser.sql
 IF @OverwriteDb = 0 RETURN
 
-
-
 :r .\000\d_RuleTypes.sql
 :r .\000\e_EntryTypes.sql
 

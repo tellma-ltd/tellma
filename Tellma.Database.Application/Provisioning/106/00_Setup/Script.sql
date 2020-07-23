@@ -59,7 +59,7 @@ INSERT INTO @ResourceDefinitionIds([Id]) VALUES
 --(@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
 (@OtherPropertyPlantAndEquipmentMemberRD),
 (@InvestmentPropertyCompletedMemberRD),
-(@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
+--(@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 (@RawGrainRD),
 (@FinishedGrainRD),
 (@ByproductGrainRD),

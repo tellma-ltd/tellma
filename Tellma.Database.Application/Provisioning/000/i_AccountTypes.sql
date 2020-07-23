@@ -28,7 +28,7 @@ INSERT INTO @AT VALUES(19,1,0,'111113', '/1/1/1/1/13/', N'ChangesInPropertyPlant
 INSERT INTO @AT VALUES(20,1,0,'111199', '/1/1/1/1/99/', N'ChangesInPropertyPlantAndEquipment',N'OtherPropertyPlantAndEquipment', N'Other property, plant and equipment',N'The amount of property, plant and equipment that the entity does not separately disclose in the same statement or note. [Refer: Property, plant and equipment]')
 INSERT INTO @AT VALUES(21,0,0,'1112', '/1/1/1/2/', NULL,N'InvestmentProperty', N'Investment property',N'The amount of property (land or a building - or part of a building - or both) held (by the owner or by the lessee as a right-of-use asset) to earn rentals or for capital appreciation or both, rather than for: (a) use in the production or supply of goods or services or for administrative purposes; or (b) sale in the ordinary course of business.')
 INSERT INTO @AT VALUES(22,1,0,'11121', '/1/1/1/2/1/', N'ChangesInInvestmentProperty',N'InvestmentPropertyCompleted', N'Investment property completed',N'The amount of investment property whose construction or development is complete. [Refer: Investment property]')
-INSERT INTO @AT VALUES(23,0,0,'11122', '/1/1/1/2/2/', NULL,N'InvestmentPropertyUnderConstructionOrDevelopment', N'Investment property under construction or development (by investment)',N'The amount of property that is being constructed or developed for future use as investment property. [Refer: Investment property]')
+INSERT INTO @AT VALUES(23,0,0,'11122', '/1/1/1/2/2/', NULL,N'InvestmentPropertyUnderConstructionOrDevelopment', N'Investment property under construction or development',N'The amount of property that is being constructed or developed for future use as investment property. [Refer: Investment property]')
 INSERT INTO @AT VALUES(24,0,0,'1113', '/1/1/1/3/', N'ChangesInGoodwill',N'Goodwill', N'Goodwill',N'The amount of assets representing the future economic benefits arising from other assets acquired in a business combination that are not individually identified and separately recognised. [Refer: Business combinations [member]]')
 INSERT INTO @AT VALUES(25,1,0,'1114', '/1/1/1/4/', N'ChangesInIntangibleAssetsOtherThanGoodwill',N'IntangibleAssetsOtherThanGoodwill', N'Intangible assets other than goodwill',N'The amount of identifiable non-monetary assets without physical substance. This amount does not include goodwill. [Refer: Goodwill]')
 INSERT INTO @AT VALUES(26,0,0,'1115', '/1/1/1/5/', NULL,N'InvestmentAccountedForUsingEquityMethod', N'Investments accounted for using equity method',N'The amount of investments accounted for using the equity method. The equity method is a method of accounting whereby the investment is initially recognised at cost and adjusted thereafter for the post-acquisition change in the investor''s share of net assets of the investee. The investor''s profit or loss includes its share of the profit or loss of the investee. The investor''s other comprehensive income includes its share of the other comprehensive income of the investee. [Refer: At cost [member]]')
@@ -203,105 +203,116 @@ INSERT INTO @AT VALUES(194,0,1,'1222412', '/1/2/2/2/4/1/2/', NULL,N'CurrentFinan
 INSERT INTO @AT VALUES(195,0,1,'122242', '/1/2/2/2/4/2/', NULL,N'CurrentFinancialLiabilitiesAtAmortisedCost', N'Current financial liabilities at amortised cost',N'The amount of current financial liabilities measured at amortised cost. [Refer: Financial liabilities at amortised cost]')
 INSERT INTO @AT VALUES(196,0,1,'12225', '/1/2/2/2/5/', NULL,N'OtherCurrentNonfinancialLiabilities', N'Other current non-financial liabilities',N'The amount of current non-financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities]')
 INSERT INTO @AT VALUES(197,0,1,'12226', '/1/2/2/2/6/', NULL,N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale', N'Liabilities included in disposal groups classified as held for sale',N'The amount of liabilities included in disposal groups classified as held for sale. [Refer: Liabilities; Disposal groups classified as held for sale [member]]')
-INSERT INTO @AT VALUES(198,0,0,'2', '/2/', NULL,N'IncomeStatementAbstract', N'Profit or loss [abstract]',N'The total of income less expenses from continuing and discontinued operations, excluding the components of other comprehensive income. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(198,0,0,'2', '/2/', NULL,N'IncomeStatementAbstract', N'Profit or loss [abstract]',N'')
 INSERT INTO @AT VALUES(199,0,0,'21', '/2/1/', NULL,N'ProfitLoss', N'Profit (loss)',N'The total of income less expenses from continuing and discontinued operations, excluding the components of other comprehensive income. [Refer: Other comprehensive income]')
 INSERT INTO @AT VALUES(200,0,0,'211', '/2/1/1/', NULL,N'ProfitLossFromContinuingOperations', N'Profit (loss) from continuing operations',N'The profit (loss) from continuing operations. [Refer: Continuing operations [member]; Profit (loss)]')
 INSERT INTO @AT VALUES(201,0,0,'2111', '/2/1/1/1/', NULL,N'ProfitLossBeforeTax', N'Profit (loss) before tax',N'The profit (loss) before tax expense or income. [Refer: Profit (loss)]')
 INSERT INTO @AT VALUES(202,0,0,'211101', '/2/1/1/1/1/', NULL,N'ProfitLossFromOperatingActivities', N'Profit (loss) from operating activities',N'The profit (loss) from operating activities of the entity. [Refer: Profit (loss)]')
 INSERT INTO @AT VALUES(203,0,0,'2111011', '/2/1/1/1/1/1/', NULL,N'Revenue', N'Revenue',N'The income arising in the course of an entity''s ordinary activities. Income is increases in economic benefits during the accounting period in the form of inflows or enhancements of assets or decreases of liabilities that result in an increase in equity, other than those relating to contributions from equity participants.')
 INSERT INTO @AT VALUES(204,0,0,'21110111', '/2/1/1/1/1/1/1/', NULL,N'RevenueFromSaleOfGoods', N'Revenue from sale of goods',N'The amount of revenue arising from the sale of goods. [Refer: Revenue]')
-INSERT INTO @AT VALUES(205,0,0,'21110112', '/2/1/1/1/1/1/2/', NULL,N'RevenueFromRenderingOfServices', N'Revenue from rendering of services',N'The amount of revenue arising from the rendering of services. [Refer: Revenue]')
-INSERT INTO @AT VALUES(206,0,0,'21110113', '/2/1/1/1/1/1/3/', NULL,N'RevenueFromConstructionContracts', N'Revenue from construction contracts',N'The amount of revenue arising from construction contracts. Construction contracts are contracts specifically negotiated for the construction of an asset or a combination of assets that are closely interrelated or interdependent in terms of their design, technology and function or their ultimate purpose or use. [Refer: Revenue]')
-INSERT INTO @AT VALUES(207,0,0,'21110114', '/2/1/1/1/1/1/4/', NULL,N'RevenueFromRoyalties', N'Royalty income',N'The amount of income arising from royalties.')
-INSERT INTO @AT VALUES(208,0,0,'21110115', '/2/1/1/1/1/1/5/', NULL,N'LicenceFeeIncome', N'Licence fee income',N'The amount of income arising from licence fees.')
-INSERT INTO @AT VALUES(209,0,0,'21110116', '/2/1/1/1/1/1/6/', NULL,N'FranchiseFeeIncome', N'Franchise fee income',N'The amount of income arising from franchise fees.')
-INSERT INTO @AT VALUES(210,0,0,'21110117', '/2/1/1/1/1/1/7/', NULL,N'RevenueFromInterest', N'Interest income',N'The amount of income arising from interest.')
-INSERT INTO @AT VALUES(211,0,0,'21110118', '/2/1/1/1/1/1/8/', NULL,N'RevenueFromDividends', N'Dividend income',N'The amount of dividends recognised as income. Dividends are distributions of profits to holders of equity investments in proportion to their holdings of a particular class of capital.')
-INSERT INTO @AT VALUES(212,0,0,'21110119', '/2/1/1/1/1/1/9/', NULL,N'OtherRevenue', N'Other revenue',N'The amount of revenue arising from sources that the entity does not separately disclose in the same statement or note. [Refer: Revenue]')
-INSERT INTO @AT VALUES(213,0,0,'2111012', '/2/1/1/1/1/2/', NULL,N'OtherIncome', N'Other income',N'The amount of operating income that the entity does not separately disclose in the same statement or note.')
-INSERT INTO @AT VALUES(214,0,0,'2111013', '/2/1/1/1/1/3/', NULL,N'ChangesInInventoriesOfFinishedGoodsAndWorkInProgress', N'Decrease (increase) in inventories of finished goods and work in progress',N'The decrease (increase) in inventories of finished goods and work in progress. [Refer: Inventories; Current finished goods; Current work in progress]')
-INSERT INTO @AT VALUES(215,0,0,'2111014', '/2/1/1/1/1/4/', NULL,N'OtherWorkPerformedByEntityAndCapitalised', N'Other work performed by entity and capitalised',N'The amount of the entity''s own work capitalised from items originally classified as costs that the entity does not separately disclose in the same statement or note.')
-INSERT INTO @AT VALUES(216,0,0,'2111015', '/2/1/1/1/1/5/', NULL,N'ExpenseByNature', N'Expenses by nature',N'The amount of expenses aggregated according to their nature (for example, depreciation, purchases of materials, transport costs, employee benefits and advertising costs), and not reallocated among functions within the entity.')
-INSERT INTO @AT VALUES(217,0,0,'21110151', '/2/1/1/1/1/5/1/', NULL,N'RawMaterialsAndConsumablesUsed', N'Raw materials and consumables used',N'The amount of raw materials and consumables used in the production process or in the rendering of services. [Refer: Current raw materials]')
-INSERT INTO @AT VALUES(218,0,0,'21110152', '/2/1/1/1/1/5/2/', NULL,N'CostOfMerchandiseSold', N'Cost of merchandise sold',N'The amount of merchandise that was sold during the period and recognised as an expense.')
-INSERT INTO @AT VALUES(219,0,0,'21110153', '/2/1/1/1/1/5/3/', NULL,N'ServicesExpense', N'Services expense',N'The amount of expense arising from services.')
-INSERT INTO @AT VALUES(220,0,0,'211101531', '/2/1/1/1/1/5/3/1/', NULL,N'InsuranceExpense', N'Insurance expense',N'The amount of expense arising from purchased insurance.')
-INSERT INTO @AT VALUES(221,0,0,'211101532', '/2/1/1/1/1/5/3/2/', NULL,N'ProfessionalFeesExpense', N'Professional fees expense',N'The amount of fees paid or payable for professional services.')
-INSERT INTO @AT VALUES(222,0,0,'211101533', '/2/1/1/1/1/5/3/3/', NULL,N'TransportationExpense', N'Transportation expense',N'The amount of expense arising from transportation services.')
-INSERT INTO @AT VALUES(223,0,0,'211101534', '/2/1/1/1/1/5/3/4/', NULL,N'BankAndSimilarCharges', N'Bank and similar charges',N'The amount of bank and similar charges recognised by the entity as an expense.')
-INSERT INTO @AT VALUES(224,0,0,'211101535', '/2/1/1/1/1/5/3/5/', NULL,N'TravelExpense', N'Travel expense',N'The amount of expense arising from travel.')
-INSERT INTO @AT VALUES(225,0,0,'211101536', '/2/1/1/1/1/5/3/6/', NULL,N'CommunicationExpense', N'Communication expense',N'The amount of expense arising from communication.')
-INSERT INTO @AT VALUES(226,0,0,'211101537', '/2/1/1/1/1/5/3/7/', NULL,N'UtilitiesExpense', N'Utilities expense',N'The amount of expense arising from purchased utilities.')
-INSERT INTO @AT VALUES(227,0,0,'211101538', '/2/1/1/1/1/5/3/8/', NULL,N'AdvertisingExpense', N'Advertising expense',N'The amount of expense arising from advertising.')
-INSERT INTO @AT VALUES(228,0,0,'21110154', '/2/1/1/1/1/5/4/', NULL,N'EmployeeBenefitsExpense', N'Employee benefits expense',N'The expense of all forms of consideration given by an entity in exchange for a service rendered by employees or for the termination of employment.')
-INSERT INTO @AT VALUES(229,0,0,'211101541', '/2/1/1/1/1/5/4/1/', NULL,N'ShorttermEmployeeBenefitsExpense', N'Short-term employee benefits expense',N'The amount of expense from employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services.')
-INSERT INTO @AT VALUES(230,0,0,'2111015411', '/2/1/1/1/1/5/4/1/1/', NULL,N'WagesAndSalaries', N'Wages and salaries',N'A class of employee benefits expense that represents wages and salaries. [Refer: Employee benefits expense]')
-INSERT INTO @AT VALUES(231,0,0,'2111015412', '/2/1/1/1/1/5/4/1/2/', NULL,N'SocialSecurityContributions', N'Social security contributions',N'A class of employee benefits expense that represents social security contributions. [Refer: Employee benefits expense]')
-INSERT INTO @AT VALUES(232,0,0,'2111015413', '/2/1/1/1/1/5/4/1/3/', NULL,N'OtherShorttermEmployeeBenefits', N'Other short-term employee benefits',N'The amount of expense from employee benefits (other than termination benefits), which are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services, that the entity does not separately disclose in the same statement or note. [Refer: Employee benefits expense]')
-INSERT INTO @AT VALUES(233,0,0,'211101542', '/2/1/1/1/1/5/4/2/', NULL,N'PostemploymentBenefitExpenseDefinedContributionPlans', N'Post-employment benefit expense, defined contribution plans',N'The amount of post-employment benefit expense relating to defined contribution plans. Defined contribution plans are post-employment benefit plans under which an entity pays fixed contributions into a separate entity (a fund) and will have no legal or constructive obligation to pay further contributions if the fund does not hold sufficient assets to pay all employee benefits relating to employee service in the current and prior periods.')
-INSERT INTO @AT VALUES(234,0,0,'211101543', '/2/1/1/1/1/5/4/3/', NULL,N'PostemploymentBenefitExpenseDefinedBenefitPlans', N'Post-employment benefit expense, defined benefit plans',N'The amount of post-employment benefit expense relating to defined benefit plans. [Refer: Defined benefit plans [member]]')
-INSERT INTO @AT VALUES(235,0,0,'211101544', '/2/1/1/1/1/5/4/4/', NULL,N'TerminationBenefitsExpense', N'Termination benefits expense',N'The amount of expense in relation to termination benefits. Termination benefits are employee benefits provided in exchange for the termination of an employee''s employment as a result of either: (a) an entity''s decision to terminate an employee''s employment before the normal retirement date; or (b) an employee''s decision to accept an offer of benefits in exchange for the termination of employment. [Refer: Employee benefits expense]')
-INSERT INTO @AT VALUES(236,0,0,'211101545', '/2/1/1/1/1/5/4/5/', NULL,N'OtherLongtermBenefits', N'Other long-term employee benefits',N'The amount of long-term employee benefits other than post-employment benefits and termination benefits. Such benefits may include long-term paid absences, jubilee or other long-service benefits, long-term disability benefits, long-term profit-sharing and bonuses and long-term deferred remuneration. [Refer: Employee benefits expense]')
-INSERT INTO @AT VALUES(237,0,0,'211101546', '/2/1/1/1/1/5/4/6/', NULL,N'OtherEmployeeExpense', N'Other employee expense',N'The amount of employee expenses that the entity does not separately disclose in the same statement or note.')
-INSERT INTO @AT VALUES(238,0,0,'21110155', '/2/1/1/1/1/5/5/', NULL,N'DepreciationAmortisationAndImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss', N'Depreciation, amortisation and impairment loss (reversal of impairment loss) recognised in profit or loss',N'The amount of depreciation expense, amortisation expense and impairment loss (reversal of impairment loss) recognised in profit or loss. [Refer: Depreciation and amortisation expense; Impairment loss (reversal of impairment loss) recognised in profit or loss]')
-INSERT INTO @AT VALUES(239,0,0,'211101551', '/2/1/1/1/1/5/5/1/', NULL,N'DepreciationAndAmortisationExpense', N'Depreciation and amortisation expense',N'The amount of depreciation and amortisation expense. Depreciation and amortisation are the systematic allocations of depreciable amounts of assets over their useful lives.')
-INSERT INTO @AT VALUES(240,0,0,'2111015511', '/2/1/1/1/1/5/5/1/1/', NULL,N'DepreciationExpense', N'Depreciation expense',N'The amount of depreciation expense. Depreciation is the systematic allocation of depreciable amounts of tangible assets over their useful lives.')
-INSERT INTO @AT VALUES(241,0,0,'2111015512', '/2/1/1/1/1/5/5/1/2/', NULL,N'AmortisationExpense', N'Amortisation expense',N'The amount of amortisation expense. Amortisation is the systematic allocation of depreciable amounts of intangible assets over their useful lives.')
-INSERT INTO @AT VALUES(242,0,0,'211101552', '/2/1/1/1/1/5/5/2/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss', N'Reversal of impairment loss (impairment loss) recognised in profit or loss',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
-INSERT INTO @AT VALUES(243,0,0,'21110155211', '/2/1/1/1/1/5/5/2/1/', NULL,N'WritedownsReversalsOfInventories', N'Write-downs (reversals of write-downs) of inventories',N'The amount recognised resulting from the write-down of inventories to net realisable value or reversals of those write-downs. [Refer: Inventories]')
-INSERT INTO @AT VALUES(244,0,0,'2111015522', '/2/1/1/1/1/5/5/2/2/', NULL,N'WritedownsReversalsOfPropertyPlantAndEquipment', N'Write-downs (reversals of write-downs) of property, plant and equipment',N'The amount recognised resulting from the write-down of property, plant and equipment to its recoverable amount or reversals of those write-downs. [Refer: Property, plant and equipment]')
-INSERT INTO @AT VALUES(245,0,0,'2111015523', '/2/1/1/1/1/5/5/2/3/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeReceivables', N'Impairment loss (reversal of impairment loss) recognised in profit or loss, trade receivables',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss for trade receivables. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss; Trade receivables]')
-INSERT INTO @AT VALUES(246,0,0,'2111015524', '/2/1/1/1/1/5/5/2/4/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances', N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss for loans and advances. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
-INSERT INTO @AT VALUES(247,0,0,'21110157', '/2/1/1/1/1/5/7/', NULL,N'TaxExpenseOtherThanIncomeTaxExpense', N'Tax expense other than income tax expense',N'The amount of tax expense exclusive of income tax expense.')
-INSERT INTO @AT VALUES(248,0,0,'21110159', '/2/1/1/1/1/5/9/', NULL,N'OtherExpenseByNature', N'Other expenses',N'The amount of expenses that the entity does not separately disclose in the same statement or note when the entity uses the ''nature of expense'' form for its analysis of expenses. [Refer: Expenses, by nature]')
-INSERT INTO @AT VALUES(249,0,0,'2111016', '/2/1/1/1/1/6/', NULL,N'OtherGainsLosses', N'Other gains (losses)',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
-INSERT INTO @AT VALUES(250,1,0,'21110162', '/2/1/1/1/1/6/2/', NULL,N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'Gain (loss) on disposal of property, plant and equipment',N'The gains (losses) on disposals of property, plant and equipment. [Refer: Property, plant and equipment]')
-INSERT INTO @AT VALUES(251,1,0,'21110163', '/2/1/1/1/1/6/3/', NULL,N'GainsLossesOnDisposalsOfInvestmentProperties', N'Gains (losses) on disposals of investment properties',N'The gains (losses) on disposals of investment properties. [Refer: Investment property]')
-INSERT INTO @AT VALUES(252,0,0,'21110164', '/2/1/1/1/1/6/4/', NULL,N'GainsLossesOnDisposalsOfInvestments', N'The gains (losses) on disposals of investments.',N'The gains (losses) on disposals of investments.')
-INSERT INTO @AT VALUES(253,0,0,'211103', '/2/1/1/1/3/', NULL,N'GainsLossesOnNetMonetaryPosition', N'Gains (losses) on net monetary position',N'The gains (losses) representing the difference resulting from the restatement of non-monetary assets, owners'' equity and items in the statement of comprehensive income and the adjustment of index linked assets and liabilities in hyperinflationary reporting.')
-INSERT INTO @AT VALUES(254,0,0,'211104', '/2/1/1/1/4/', NULL,N'GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost', N'Gain (loss) arising from derecognition of financial assets measured at amortised cost',N'The gain (loss) arising from the derecognition of financial assets measured at amortised cost. [Refer: Financial assets at amortised cost]')
-INSERT INTO @AT VALUES(255,0,0,'211105', '/2/1/1/1/5/', NULL,N'FinanceIncome', N'Finance income',N'The amount of income associated with interest and other financing activities of the entity.')
-INSERT INTO @AT VALUES(256,0,0,'211106', '/2/1/1/1/6/', NULL,N'FinanceCosts', N'Finance costs',N'The amount of costs associated with financing activities of the entity.')
-INSERT INTO @AT VALUES(257,0,0,'211107', '/2/1/1/1/7/', NULL,N'ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9', N'Impairment gain and reversal of impairment loss (impairment loss) determined in accordance with IFRS 9',N'The amount of impairment loss, impairment gain or reversal of impairment loss that is recognised in profit or loss in accordance with paragraph 5.5.8 of IFRS 9 and that arises from applying the impairment requirements in Section 5.5 of IFRS 9.')
-INSERT INTO @AT VALUES(258,0,0,'211108', '/2/1/1/1/8/', NULL,N'ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod', N'Share of profit (loss) of associates and joint ventures accounted for using equity method',N'The entity''s share of the profit (loss) of associates and joint ventures accounted for using the equity method. [Refer: Associates [member]; Investments accounted for using equity method; Joint ventures [member]; Profit (loss)]')
-INSERT INTO @AT VALUES(259,0,0,'211109', '/2/1/1/1/9/', NULL,N'OtherIncomeExpenseFromSubsidiariesJointlyControlledEntitiesAndAssociates', N'Other income (expense) from subsidiaries, jointly controlled entities and associates',N'The amount of income or expense from subsidiaries, jointly controlled entities and associates that the entity does not separately disclose in the same statement or note. [Refer: Associates [member]; Subsidiaries [member]]')
-INSERT INTO @AT VALUES(260,0,0,'211110', '/2/1/1/1/10/', NULL,N'GainsLossesArisingFromDifferenceBetweenPreviousCarryingAmountAndFairValueOfFinancialAssetsReclassifiedAsMeasuredAtFairValue', N'Gains (losses) arising from difference between previous amortised cost and fair value of financial assets reclassified out of amortised cost into fair value through profit or loss measurement category',N'The gains (losses) arising from the difference between the previous amortised cost and the fair value of financial assets reclassified out of the amortised cost into the fair value through profit or loss measurement category. [Refer: At fair value [member]; Financial assets at amortised cost]')
-INSERT INTO @AT VALUES(261,0,0,'211111', '/2/1/1/1/11/', NULL,N'CumulativeGainLossPreviouslyRecognisedInOtherComprehensiveIncomeArisingFromReclassificationOfFinancialAssetsOutOfFairValueThroughOtherComprehensiveIncomeIntoFairValueThroughProfitOrLossMeasurementCategory', N'Cumulative gain (loss) previously recognised in other comprehensive income arising from reclassification of financial assets out of fair value through other comprehensive income into fair value through profit or loss measurement category',N'The cumulative gain (loss) previously recognised in other comprehensive income arising from the reclassification of financial assets out of the fair value through other comprehensive income into the fair value through profit or loss measurement category. [Refer: Financial assets measured at fair value through other comprehensive income; Financial assets at fair value through profit or loss; Other comprehensive income]')
-INSERT INTO @AT VALUES(262,0,0,'211112', '/2/1/1/1/12/', NULL,N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'Hedging gains (losses) for hedge of group of items with offsetting risk positions',N'The hedging gains (losses) for hedge of group of items with offsetting risk positions.')
-INSERT INTO @AT VALUES(263,0,0,'2112', '/2/1/1/2/', NULL,N'IncomeTaxExpenseContinuingOperations', N'Tax income (expense)',N'The aggregate amount included in the determination of profit (loss) for the period in respect of current tax and deferred tax. [Refer: Current tax expense (income); Deferred tax expense (income)]')
-INSERT INTO @AT VALUES(264,0,0,'212', '/2/1/2/', NULL,N'ProfitLossFromDiscontinuedOperations', N'Profit (loss) from discontinued operations',N'The profit (loss) from discontinued operations. [Refer: Discontinued operations [member]; Profit (loss)]')
-INSERT INTO @AT VALUES(265,0,0,'3', '/3/', NULL,N'OtherComprehensiveIncome', N'Other comprehensive income',N'')
-INSERT INTO @AT VALUES(266,0,0,'31', '/3/1/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will not be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(267,0,0,'311', '/3/1/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) from changes in the fair value of investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(268,0,0,'312', '/3/1/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation', N'Other comprehensive income, before tax, gains (losses) on revaluation',N'The amount of other comprehensive income, before tax, related to gains (losses) in relation to changes in the revaluation surplus. [Refer: Other comprehensive income, before tax; Revaluation surplus]')
-INSERT INTO @AT VALUES(269,0,0,'313', '/3/1/3/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRemeasurementsOfDefinedBenefitPlans', N'Other comprehensive income, before tax, gains (losses) on remeasurements of defined benefit plans',N'The amount of other comprehensive income, before tax, related to gains (losses) on remeasurements of defined benefit plans, which comprise actuarial gains and losses; the return on plan assets, excluding amounts included in net interest on the net defined benefit liability (asset); and any change in the effect of the asset ceiling, excluding amounts included in net interest on the net defined benefit liability (asset). [Refer: Other comprehensive income, before tax; Defined benefit plans [member]; Plan assets [member]; Net defined benefit liability (asset)]')
-INSERT INTO @AT VALUES(270,0,0,'314', '/3/1/4/', NULL,N'OtherComprehensiveIncomeBeforeTaxChangeInFairValueOfFinancialLiabilityAttributableToChangeInCreditRiskOfLiability', N'Other comprehensive income, before tax, change in fair value of financial liability attributable to change in credit risk of liability',N'The amount of other comprehensive income, before tax, related to change in the fair value of financial liability attributable to change in the credit risk of the liability. [Refer: Other comprehensive income, before tax; Credit risk [member]]')
-INSERT INTO @AT VALUES(271,0,0,'315', '/3/1/5/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnHedgingInstrumentsThatHedgeInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) on hedging instruments that hedge investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) on hedging instruments that hedge investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(272,0,0,'316', '/3/1/6/', NULL,N'OtherComprehensiveIncomeBeforeTaxInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillNotBeReclassifiedToProfitOrLoss', N'Other comprehensive income, before tax, insurance finance income (expenses) from insurance contracts issued excluded from profit or loss that will not be reclassified to profit or loss',N'The amount of other comprehensive income, before tax, related to insurance finance income (expenses) from insurance contracts issued that will not be reclassified subsequently to profit or loss. [Refer: Insurance finance income (expenses); Insurance contracts issued [member]]')
-INSERT INTO @AT VALUES(273,0,0,'317', '/3/1/7/', NULL,N'ShareOfOtherComprehensiveIncomeOfAssociatesAndJointVenturesAccountedForUsingEquityMethodThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Share of other comprehensive income of associates and joint ventures accounted for using equity method that will not be reclassified to profit or loss, before tax',N'Share of the other comprehensive income of associates and joint ventures accounted for using the equity method that will not be reclassified to profit or loss, before tax.')
-INSERT INTO @AT VALUES(274,0,0,'32', '/3/2/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(275,0,0,'321', '/3/2/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxExchangeDifferencesOnTranslation', N'Exchange differences on translation',N'The amount of other comprehensive income, before tax, related to exchange differences on translation of financial statements of foreign operations. [Refer: Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(276,0,0,'3211', '/3/2/1/1/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationBeforeTax', N'Gains (losses) on exchange differences on translation, before tax',N'The gains (losses) recognised in other comprehensive income on exchange differences on the translation of financial statements of foreign operations, before tax. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(277,0,0,'3212', '/3/2/1/2/', NULL,N'ReclassificationAdjustmentsOnExchangeDifferencesOnTranslationBeforeTax', N'Reclassification adjustments on exchange differences on translation, before tax',N'The amount of reclassification adjustments related to exchange differences when the financial statements of foreign operations are translated, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(278,0,0,'322', '/3/2/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxAvailableforsaleFinancialAssets', N'Available-for-sale financial assets',N'The amount of other comprehensive income, before tax, related to available-for-sale financial assets. [Refer: Financial assets available-for-sale; Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(279,0,0,'3221', '/3/2/2/1/', NULL,N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax', N'Gains (losses) on remeasuring available-for-sale financial assets, before tax',N'The gains (losses) recognised in other comprehensive income on remeasuring available-for-sale financial assets, before tax. [Refer: Financial assets available-for-sale]')
-INSERT INTO @AT VALUES(280,0,0,'3222', '/3/2/2/2/', NULL,N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax', N'Reclassification adjustments on available-for-sale financial assets, before tax',N'The amount of reclassification adjustments related to available-for-sale financial assets, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Financial assets available-for-sale; Other comprehensive income]')
-INSERT INTO @AT VALUES(281,0,0,'4', '/4/', NULL,N'ControlAccountsExtension', N'Control accounts',N'')
-INSERT INTO @AT VALUES(282,0,0,'41', '/4/1/', NULL,N'TradersControlAccountsExtension', N'Traders control accounts',N'')
-INSERT INTO @AT VALUES(283,0,0,'411', '/4/1/1/', NULL,N'SuppliersControlAccountsExtension', N'Suppliers control accounts',N'')
-INSERT INTO @AT VALUES(284,0,1,'4111', '/4/1/1/1/', NULL,N'CashPaymentsToSuppliersControlExtension', N'Cash payments to suppliers control',N'')
-INSERT INTO @AT VALUES(285,0,0,'4112', '/4/1/1/2/', NULL,N'GoodsAndServicesReceivedFromSuppliersControlExtensions', N'Goods/services received from suppliers control',N'')
-INSERT INTO @AT VALUES(286,0,0,'412', '/4/1/2/', NULL,N'CustomersControlAccountsExtension', N'Customer control accounts',N'')
-INSERT INTO @AT VALUES(287,0,1,'4121', '/4/1/2/1/', NULL,N'CashReceiptsFromCustomersControlExtension', N'Cash receipts from customers control',N'')
-INSERT INTO @AT VALUES(288,0,0,'4122', '/4/1/2/2/', NULL,N'GoodsAndServicesIssuedToCustomersControlExtension', N'Goods/Services delivered to customers control',N'')
-INSERT INTO @AT VALUES(289,0,0,'413', '/4/1/3/', NULL,N'PayrollControlExtension', N'Payroll control',N'')
-INSERT INTO @AT VALUES(290,0,0,'419', '/4/1/9/', NULL,N'OthersAccountsControlExtension', N'Others control accounts',N'')
-INSERT INTO @AT VALUES(291,0,1,'4191', '/4/1/9/1/', NULL,N'CashPaymentsToOthersControlExtension', N'Cash payments to others control',N'')
-INSERT INTO @AT VALUES(292,0,1,'4192', '/4/1/9/2/', NULL,N'CashReceiptsFromOthersControlExtension', N'Cash receipts from others control',N'')
-INSERT INTO @AT VALUES(293,0,1,'42', '/4/2/', NULL,N'GuaranteesExtension', N'Guarantees',N'')
-INSERT INTO @AT VALUES(294,0,1,'421', '/4/2/1/', NULL,N'CollectionGuaranteeExtension', N'Collection Guarantee',N'e.g., checks, LG, ..')
-INSERT INTO @AT VALUES(295,0,1,'422', '/4/2/2/', NULL,N'DishonouredGuaranteeExtension', N'Dishonoured Guarantee',N'e.g., dishonored check, invalid LG, etc')
-INSERT INTO @AT VALUES(296,0,1,'5', '/5/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
+INSERT INTO @AT VALUES(205,0,0,'211101111', '/2/1/1/1/1/1/1/1/', NULL,N'RevenueFromSaleOfFoodAndBeverage', N'Revenue from sale of food and beverage',N'The amount of revenue arising from the sale of food and beverage. [Refer: Revenue]')
+INSERT INTO @AT VALUES(206,0,0,'211101112', '/2/1/1/1/1/1/1/2/', NULL,N'RevenueFromSaleOfAgriculturalProduce', N'Revenue from sale of agricultural produce',N'The amount of revenue arising from the sale of agricultural produce. [Refer: Revenue]')
+INSERT INTO @AT VALUES(207,0,0,'21110112', '/2/1/1/1/1/1/2/', NULL,N'RevenueFromRenderingOfServices', N'Revenue from rendering of services',N'The amount of revenue arising from the rendering of services. [Refer: Revenue]')
+INSERT INTO @AT VALUES(208,0,0,'21110113', '/2/1/1/1/1/1/3/', NULL,N'RevenueFromConstructionContracts', N'Revenue from construction contracts',N'The amount of revenue arising from construction contracts. Construction contracts are contracts specifically negotiated for the construction of an asset or a combination of assets that are closely interrelated or interdependent in terms of their design, technology and function or their ultimate purpose or use. [Refer: Revenue]')
+INSERT INTO @AT VALUES(209,0,0,'21110114', '/2/1/1/1/1/1/4/', NULL,N'RevenueFromRoyalties', N'Royalty income',N'The amount of income arising from royalties.')
+INSERT INTO @AT VALUES(210,0,0,'21110115', '/2/1/1/1/1/1/5/', NULL,N'LicenceFeeIncome', N'Licence fee income',N'The amount of income arising from licence fees.')
+INSERT INTO @AT VALUES(211,0,0,'21110116', '/2/1/1/1/1/1/6/', NULL,N'FranchiseFeeIncome', N'Franchise fee income',N'The amount of income arising from franchise fees.')
+INSERT INTO @AT VALUES(212,0,0,'21110117', '/2/1/1/1/1/1/7/', NULL,N'RevenueFromInterest', N'Interest income',N'The amount of income arising from interest.')
+INSERT INTO @AT VALUES(213,0,0,'21110118', '/2/1/1/1/1/1/8/', NULL,N'RevenueFromDividends', N'Dividend income',N'The amount of dividends recognised as income. Dividends are distributions of profits to holders of equity investments in proportion to their holdings of a particular class of capital.')
+INSERT INTO @AT VALUES(214,0,0,'21110119', '/2/1/1/1/1/1/9/', NULL,N'OtherRevenue', N'Other revenue',N'The amount of revenue arising from sources that the entity does not separately disclose in the same statement or note. [Refer: Revenue]')
+INSERT INTO @AT VALUES(215,0,0,'2111012', '/2/1/1/1/1/2/', NULL,N'OtherIncome', N'Other income',N'The amount of operating income that the entity does not separately disclose in the same statement or note.')
+INSERT INTO @AT VALUES(216,0,0,'2111013', '/2/1/1/1/1/3/', NULL,N'ChangesInInventoriesOfFinishedGoodsAndWorkInProgress', N'Decrease (increase) in inventories of finished goods and work in progress',N'The decrease (increase) in inventories of finished goods and work in progress. [Refer: Inventories; Current finished goods; Current work in progress]')
+INSERT INTO @AT VALUES(217,0,0,'2111014', '/2/1/1/1/1/4/', NULL,N'OtherWorkPerformedByEntityAndCapitalised', N'Other work performed by entity and capitalised',N'The amount of the entity''s own work capitalised from items originally classified as costs that the entity does not separately disclose in the same statement or note.')
+INSERT INTO @AT VALUES(218,0,0,'2111015', '/2/1/1/1/1/5/', NULL,N'ExpenseByNature', N'Expenses by nature',N'The amount of expenses aggregated according to their nature (for example, depreciation, purchases of materials, transport costs, employee benefits and advertising costs), and not reallocated among functions within the entity.')
+INSERT INTO @AT VALUES(219,0,0,'21110151', '/2/1/1/1/1/5/1/', NULL,N'RawMaterialsAndConsumablesUsed', N'Raw materials and consumables used',N'The amount of raw materials and consumables used in the production process or in the rendering of services. [Refer: Current raw materials]')
+INSERT INTO @AT VALUES(220,0,0,'21110152', '/2/1/1/1/1/5/2/', NULL,N'CostOfMerchandiseSold', N'Cost of goods sold',N'The amount of merchandise that was sold during the period and recognised as an expense.')
+INSERT INTO @AT VALUES(221,0,0,'21110153', '/2/1/1/1/1/5/3/', NULL,N'ServicesExpense', N'Services expense',N'The amount of expense arising from services.')
+INSERT INTO @AT VALUES(222,0,0,'211101531', '/2/1/1/1/1/5/3/1/', NULL,N'InsuranceExpense', N'Insurance expense',N'The amount of expense arising from purchased insurance.')
+INSERT INTO @AT VALUES(223,0,0,'211101532', '/2/1/1/1/1/5/3/2/', NULL,N'ProfessionalFeesExpense', N'Professional fees expense',N'The amount of fees paid or payable for professional services.')
+INSERT INTO @AT VALUES(224,0,0,'211101533', '/2/1/1/1/1/5/3/3/', NULL,N'TransportationExpense', N'Transportation expense',N'The amount of expense arising from transportation services.')
+INSERT INTO @AT VALUES(225,0,0,'211101534', '/2/1/1/1/1/5/3/4/', NULL,N'BankAndSimilarCharges', N'Bank and similar charges',N'The amount of bank and similar charges recognised by the entity as an expense.')
+INSERT INTO @AT VALUES(226,0,0,'211101535', '/2/1/1/1/1/5/3/5/', NULL,N'TravelExpense', N'Travel expense',N'The amount of expense arising from travel.')
+INSERT INTO @AT VALUES(227,0,0,'211101536', '/2/1/1/1/1/5/3/6/', NULL,N'CommunicationExpense', N'Communication expense',N'The amount of expense arising from communication.')
+INSERT INTO @AT VALUES(228,0,0,'211101537', '/2/1/1/1/1/5/3/7/', NULL,N'UtilitiesExpense', N'Utilities expense',N'The amount of expense arising from purchased utilities.')
+INSERT INTO @AT VALUES(229,0,0,'211101538', '/2/1/1/1/1/5/3/8/', NULL,N'AdvertisingExpense', N'Advertising expense',N'The amount of expense arising from advertising.')
+INSERT INTO @AT VALUES(230,0,0,'21110154', '/2/1/1/1/1/5/4/', NULL,N'EmployeeBenefitsExpense', N'Employee benefits expense',N'The expense of all forms of consideration given by an entity in exchange for a service rendered by employees or for the termination of employment.')
+INSERT INTO @AT VALUES(231,0,0,'211101541', '/2/1/1/1/1/5/4/1/', NULL,N'ShorttermEmployeeBenefitsExpense', N'Short-term employee benefits expense',N'The amount of expense from employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services.')
+INSERT INTO @AT VALUES(232,0,0,'2111015411', '/2/1/1/1/1/5/4/1/1/', NULL,N'WagesAndSalaries', N'Wages and salaries',N'A class of employee benefits expense that represents wages and salaries. [Refer: Employee benefits expense]')
+INSERT INTO @AT VALUES(233,0,0,'2111015412', '/2/1/1/1/1/5/4/1/2/', NULL,N'SocialSecurityContributions', N'Social security contributions',N'A class of employee benefits expense that represents social security contributions. [Refer: Employee benefits expense]')
+INSERT INTO @AT VALUES(234,0,0,'2111015413', '/2/1/1/1/1/5/4/1/3/', NULL,N'OtherShorttermEmployeeBenefits', N'Other short-term employee benefits',N'The amount of expense from employee benefits (other than termination benefits), which are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services, that the entity does not separately disclose in the same statement or note. [Refer: Employee benefits expense]')
+INSERT INTO @AT VALUES(235,0,0,'211101542', '/2/1/1/1/1/5/4/2/', NULL,N'PostemploymentBenefitExpenseDefinedContributionPlans', N'Post-employment benefit expense, defined contribution plans',N'The amount of post-employment benefit expense relating to defined contribution plans. Defined contribution plans are post-employment benefit plans under which an entity pays fixed contributions into a separate entity (a fund) and will have no legal or constructive obligation to pay further contributions if the fund does not hold sufficient assets to pay all employee benefits relating to employee service in the current and prior periods.')
+INSERT INTO @AT VALUES(236,0,0,'211101543', '/2/1/1/1/1/5/4/3/', NULL,N'PostemploymentBenefitExpenseDefinedBenefitPlans', N'Post-employment benefit expense, defined benefit plans',N'The amount of post-employment benefit expense relating to defined benefit plans. [Refer: Defined benefit plans [member]]')
+INSERT INTO @AT VALUES(237,0,0,'211101544', '/2/1/1/1/1/5/4/4/', NULL,N'TerminationBenefitsExpense', N'Termination benefits expense',N'The amount of expense in relation to termination benefits. Termination benefits are employee benefits provided in exchange for the termination of an employee''s employment as a result of either: (a) an entity''s decision to terminate an employee''s employment before the normal retirement date; or (b) an employee''s decision to accept an offer of benefits in exchange for the termination of employment. [Refer: Employee benefits expense]')
+INSERT INTO @AT VALUES(238,0,0,'211101545', '/2/1/1/1/1/5/4/5/', NULL,N'OtherLongtermBenefits', N'Other long-term employee benefits',N'The amount of long-term employee benefits other than post-employment benefits and termination benefits. Such benefits may include long-term paid absences, jubilee or other long-service benefits, long-term disability benefits, long-term profit-sharing and bonuses and long-term deferred remuneration. [Refer: Employee benefits expense]')
+INSERT INTO @AT VALUES(239,0,0,'211101546', '/2/1/1/1/1/5/4/6/', NULL,N'OtherEmployeeExpense', N'Other employee expense',N'The amount of employee expenses that the entity does not separately disclose in the same statement or note.')
+INSERT INTO @AT VALUES(240,0,0,'21110155', '/2/1/1/1/1/5/5/', NULL,N'DepreciationAmortisationAndImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss', N'Depreciation, amortisation and impairment loss (reversal of impairment loss) recognised in profit or loss',N'The amount of depreciation expense, amortisation expense and impairment loss (reversal of impairment loss) recognised in profit or loss. [Refer: Depreciation and amortisation expense; Impairment loss (reversal of impairment loss) recognised in profit or loss]')
+INSERT INTO @AT VALUES(241,0,0,'211101551', '/2/1/1/1/1/5/5/1/', NULL,N'DepreciationAndAmortisationExpense', N'Depreciation and amortisation expense',N'The amount of depreciation and amortisation expense. Depreciation and amortisation are the systematic allocations of depreciable amounts of assets over their useful lives.')
+INSERT INTO @AT VALUES(242,0,0,'2111015511', '/2/1/1/1/1/5/5/1/1/', NULL,N'DepreciationExpense', N'Depreciation expense',N'The amount of depreciation expense. Depreciation is the systematic allocation of depreciable amounts of tangible assets over their useful lives.')
+INSERT INTO @AT VALUES(243,0,0,'2111015512', '/2/1/1/1/1/5/5/1/2/', NULL,N'AmortisationExpense', N'Amortisation expense',N'The amount of amortisation expense. Amortisation is the systematic allocation of depreciable amounts of intangible assets over their useful lives.')
+INSERT INTO @AT VALUES(244,0,0,'211101552', '/2/1/1/1/1/5/5/2/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss', N'Reversal of impairment loss (impairment loss) recognised in profit or loss',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
+INSERT INTO @AT VALUES(245,0,0,'21110155211', '/2/1/1/1/1/5/5/2/1/', NULL,N'WritedownsReversalsOfInventories', N'Write-downs (reversals of write-downs) of inventories',N'The amount recognised resulting from the write-down of inventories to net realisable value or reversals of those write-downs. [Refer: Inventories]')
+INSERT INTO @AT VALUES(246,0,0,'2111015522', '/2/1/1/1/1/5/5/2/2/', NULL,N'WritedownsReversalsOfPropertyPlantAndEquipment', N'Write-downs (reversals of write-downs) of property, plant and equipment',N'The amount recognised resulting from the write-down of property, plant and equipment to its recoverable amount or reversals of those write-downs. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(247,0,0,'2111015523', '/2/1/1/1/1/5/5/2/3/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeReceivables', N'Impairment loss (reversal of impairment loss) recognised in profit or loss, trade receivables',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss for trade receivables. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss; Trade receivables]')
+INSERT INTO @AT VALUES(248,0,0,'2111015524', '/2/1/1/1/1/5/5/2/4/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances', N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss for loans and advances. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
+INSERT INTO @AT VALUES(249,0,0,'21110157', '/2/1/1/1/1/5/7/', NULL,N'TaxExpenseOtherThanIncomeTaxExpense', N'Tax expense other than income tax expense',N'The amount of tax expense exclusive of income tax expense.')
+INSERT INTO @AT VALUES(250,0,0,'21110159', '/2/1/1/1/1/5/9/', NULL,N'OtherExpenseByNature', N'Other expenses',N'The amount of expenses that the entity does not separately disclose in the same statement or note when the entity uses the ''nature of expense'' form for its analysis of expenses. [Refer: Expenses, by nature]')
+INSERT INTO @AT VALUES(251,0,0,'2111016', '/2/1/1/1/1/6/', NULL,N'OtherGainsLosses', N'Other gains (losses)',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
+INSERT INTO @AT VALUES(252,1,0,'21110162', '/2/1/1/1/1/6/2/', NULL,N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'Gain (loss) on disposal of property, plant and equipment',N'The gains (losses) on disposals of property, plant and equipment. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(253,1,0,'211101621', '/2/1/1/1/1/6/2/1/', NULL,N'GainsOnDisposalsOfPropertyPlantAndEquipment', N'Gains on disposals of property, plant and equipment',N'The gain on the disposal of property, plant and equipment. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(254,1,0,'211101622', '/2/1/1/1/1/6/2/2/', NULL,N'LossesOnDisposalsOfPropertyPlantAndEquipment', N'Losses on disposals of property, plant and equipment',N'The losses on the disposal of property, plant and equipment. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(255,1,0,'21110163', '/2/1/1/1/1/6/3/', NULL,N'GainsLossesOnDisposalsOfInvestmentProperties', N'Gains (losses) on disposals of investment properties',N'The gains (losses) on disposals of investment properties. [Refer: Investment property]')
+INSERT INTO @AT VALUES(256,1,0,'211101631', '/2/1/1/1/1/6/3/1/', NULL,N'GainsOnDisposalsOfInvestmentProperties', N'Gains on disposals of investment properties',N'The gain on disposals of investment properties. [Refer: Investment property]')
+INSERT INTO @AT VALUES(257,1,0,'211101632', '/2/1/1/1/1/6/3/2/', NULL,N'LossesOnDisposalsOfInvestmentProperties', N'Losses on disposals of investment properties',N'The losses on disposals of investment properties. [Refer: Investment property]')
+INSERT INTO @AT VALUES(258,0,0,'21110164', '/2/1/1/1/1/6/4/', NULL,N'GainsLossesOnDisposalsOfInvestments', N'The gains (losses) on disposals of investments.',N'The gains (losses) on disposals of investments.')
+INSERT INTO @AT VALUES(259,0,0,'211101641', '/2/1/1/1/1/6/4/1/', NULL,N'GainsOnDisposalsOfInvestments', N'Gains on disposals of investments',N'The gain on the disposal of investments.')
+INSERT INTO @AT VALUES(260,0,0,'211101642', '/2/1/1/1/1/6/4/2/', NULL,N'LossesOnDisposalsOfInvestments', N'Losses on disposals of investments',N'The losses on the disposal of investments.')
+INSERT INTO @AT VALUES(261,0,0,'21110165', '/2/1/1/1/1/6/5/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationRecognisedInProfitOrLoss', N'Foreign exchange gain (loss)',N'The amount of exchange differences recognised in profit or loss that arise from foreign currency transactions, excluding those arising on financial instruments measured at fair value through profit or loss in accordance with IFRS 9. [Refer: At fair value [member]; Financial instruments, class [member]]')
+INSERT INTO @AT VALUES(262,0,0,'211101651', '/2/1/1/1/1/6/5/1/', NULL,N'NetForeignExchangeGain', N'Net foreign exchange gain',N'The net gain arising from foreign exchange differences. [Refer: Foreign exchange gain (loss)]')
+INSERT INTO @AT VALUES(263,0,0,'211101652', '/2/1/1/1/1/6/5/2/', NULL,N'NetForeignExchangeLoss', N'Net foreign exchange loss',N'The net loss arising from foreign exchange differences. [Refer: Foreign exchange gain (loss)]')
+INSERT INTO @AT VALUES(264,0,0,'211103', '/2/1/1/1/3/', NULL,N'GainsLossesOnNetMonetaryPosition', N'Gains (losses) on net monetary position',N'The gains (losses) representing the difference resulting from the restatement of non-monetary assets, owners'' equity and items in the statement of comprehensive income and the adjustment of index linked assets and liabilities in hyperinflationary reporting.')
+INSERT INTO @AT VALUES(265,0,0,'211104', '/2/1/1/1/4/', NULL,N'GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost', N'Gain (loss) arising from derecognition of financial assets measured at amortised cost',N'The gain (loss) arising from the derecognition of financial assets measured at amortised cost. [Refer: Financial assets at amortised cost]')
+INSERT INTO @AT VALUES(266,0,0,'211105', '/2/1/1/1/5/', NULL,N'FinanceIncome', N'Finance income',N'The amount of income associated with interest and other financing activities of the entity.')
+INSERT INTO @AT VALUES(267,0,0,'211106', '/2/1/1/1/6/', NULL,N'FinanceCosts', N'Finance costs',N'The amount of costs associated with financing activities of the entity.')
+INSERT INTO @AT VALUES(268,0,0,'211107', '/2/1/1/1/7/', NULL,N'ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9', N'Impairment gain and reversal of impairment loss (impairment loss) determined in accordance with IFRS 9',N'The amount of impairment loss, impairment gain or reversal of impairment loss that is recognised in profit or loss in accordance with paragraph 5.5.8 of IFRS 9 and that arises from applying the impairment requirements in Section 5.5 of IFRS 9.')
+INSERT INTO @AT VALUES(269,0,0,'211108', '/2/1/1/1/8/', NULL,N'ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod', N'Share of profit (loss) of associates and joint ventures accounted for using equity method',N'The entity''s share of the profit (loss) of associates and joint ventures accounted for using the equity method. [Refer: Associates [member]; Investments accounted for using equity method; Joint ventures [member]; Profit (loss)]')
+INSERT INTO @AT VALUES(270,0,0,'211109', '/2/1/1/1/9/', NULL,N'OtherIncomeExpenseFromSubsidiariesJointlyControlledEntitiesAndAssociates', N'Other income (expense) from subsidiaries, jointly controlled entities and associates',N'The amount of income or expense from subsidiaries, jointly controlled entities and associates that the entity does not separately disclose in the same statement or note. [Refer: Associates [member]; Subsidiaries [member]]')
+INSERT INTO @AT VALUES(271,0,0,'211110', '/2/1/1/1/10/', NULL,N'GainsLossesArisingFromDifferenceBetweenPreviousCarryingAmountAndFairValueOfFinancialAssetsReclassifiedAsMeasuredAtFairValue', N'Gains (losses) arising from difference between previous amortised cost and fair value of financial assets reclassified out of amortised cost into fair value through profit or loss measurement category',N'The gains (losses) arising from the difference between the previous amortised cost and the fair value of financial assets reclassified out of the amortised cost into the fair value through profit or loss measurement category. [Refer: At fair value [member]; Financial assets at amortised cost]')
+INSERT INTO @AT VALUES(272,0,0,'211111', '/2/1/1/1/11/', NULL,N'CumulativeGainLossPreviouslyRecognisedInOtherComprehensiveIncomeArisingFromReclassificationOfFinancialAssetsOutOfFairValueThroughOtherComprehensiveIncomeIntoFairValueThroughProfitOrLossMeasurementCategory', N'Cumulative gain (loss) previously recognised in other comprehensive income arising from reclassification of financial assets out of fair value through other comprehensive income into fair value through profit or loss measurement category',N'The cumulative gain (loss) previously recognised in other comprehensive income arising from the reclassification of financial assets out of the fair value through other comprehensive income into the fair value through profit or loss measurement category. [Refer: Financial assets measured at fair value through other comprehensive income; Financial assets at fair value through profit or loss; Other comprehensive income]')
+INSERT INTO @AT VALUES(273,0,0,'211112', '/2/1/1/1/12/', NULL,N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'Hedging gains (losses) for hedge of group of items with offsetting risk positions',N'The hedging gains (losses) for hedge of group of items with offsetting risk positions.')
+INSERT INTO @AT VALUES(274,0,0,'2112', '/2/1/1/2/', NULL,N'IncomeTaxExpenseContinuingOperations', N'Tax income (expense)',N'The aggregate amount included in the determination of profit (loss) for the period in respect of current tax and deferred tax. [Refer: Current tax expense (income); Deferred tax expense (income)]')
+INSERT INTO @AT VALUES(275,0,0,'212', '/2/1/2/', NULL,N'ProfitLossFromDiscontinuedOperations', N'Profit (loss) from discontinued operations',N'The profit (loss) from discontinued operations. [Refer: Discontinued operations [member]; Profit (loss)]')
+INSERT INTO @AT VALUES(276,0,0,'3', '/3/', NULL,N'OtherComprehensiveIncome', N'Other comprehensive income',N'')
+INSERT INTO @AT VALUES(277,0,0,'31', '/3/1/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will not be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(278,0,0,'311', '/3/1/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) from changes in the fair value of investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(279,0,0,'312', '/3/1/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation', N'Other comprehensive income, before tax, gains (losses) on revaluation',N'The amount of other comprehensive income, before tax, related to gains (losses) in relation to changes in the revaluation surplus. [Refer: Other comprehensive income, before tax; Revaluation surplus]')
+INSERT INTO @AT VALUES(280,0,0,'313', '/3/1/3/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRemeasurementsOfDefinedBenefitPlans', N'Other comprehensive income, before tax, gains (losses) on remeasurements of defined benefit plans',N'The amount of other comprehensive income, before tax, related to gains (losses) on remeasurements of defined benefit plans, which comprise actuarial gains and losses; the return on plan assets, excluding amounts included in net interest on the net defined benefit liability (asset); and any change in the effect of the asset ceiling, excluding amounts included in net interest on the net defined benefit liability (asset). [Refer: Other comprehensive income, before tax; Defined benefit plans [member]; Plan assets [member]; Net defined benefit liability (asset)]')
+INSERT INTO @AT VALUES(281,0,0,'314', '/3/1/4/', NULL,N'OtherComprehensiveIncomeBeforeTaxChangeInFairValueOfFinancialLiabilityAttributableToChangeInCreditRiskOfLiability', N'Other comprehensive income, before tax, change in fair value of financial liability attributable to change in credit risk of liability',N'The amount of other comprehensive income, before tax, related to change in the fair value of financial liability attributable to change in the credit risk of the liability. [Refer: Other comprehensive income, before tax; Credit risk [member]]')
+INSERT INTO @AT VALUES(282,0,0,'315', '/3/1/5/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnHedgingInstrumentsThatHedgeInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) on hedging instruments that hedge investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) on hedging instruments that hedge investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(283,0,0,'316', '/3/1/6/', NULL,N'OtherComprehensiveIncomeBeforeTaxInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillNotBeReclassifiedToProfitOrLoss', N'Other comprehensive income, before tax, insurance finance income (expenses) from insurance contracts issued excluded from profit or loss that will not be reclassified to profit or loss',N'The amount of other comprehensive income, before tax, related to insurance finance income (expenses) from insurance contracts issued that will not be reclassified subsequently to profit or loss. [Refer: Insurance finance income (expenses); Insurance contracts issued [member]]')
+INSERT INTO @AT VALUES(284,0,0,'317', '/3/1/7/', NULL,N'ShareOfOtherComprehensiveIncomeOfAssociatesAndJointVenturesAccountedForUsingEquityMethodThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Share of other comprehensive income of associates and joint ventures accounted for using equity method that will not be reclassified to profit or loss, before tax',N'Share of the other comprehensive income of associates and joint ventures accounted for using the equity method that will not be reclassified to profit or loss, before tax.')
+INSERT INTO @AT VALUES(285,0,0,'32', '/3/2/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(286,0,0,'321', '/3/2/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxExchangeDifferencesOnTranslation', N'Exchange differences on translation',N'The amount of other comprehensive income, before tax, related to exchange differences on translation of financial statements of foreign operations. [Refer: Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(287,0,0,'3211', '/3/2/1/1/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationBeforeTax', N'Gains (losses) on exchange differences on translation, before tax',N'The gains (losses) recognised in other comprehensive income on exchange differences on the translation of financial statements of foreign operations, before tax. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(288,0,0,'3212', '/3/2/1/2/', NULL,N'ReclassificationAdjustmentsOnExchangeDifferencesOnTranslationBeforeTax', N'Reclassification adjustments on exchange differences on translation, before tax',N'The amount of reclassification adjustments related to exchange differences when the financial statements of foreign operations are translated, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(289,0,0,'322', '/3/2/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxAvailableforsaleFinancialAssets', N'Available-for-sale financial assets',N'The amount of other comprehensive income, before tax, related to available-for-sale financial assets. [Refer: Financial assets available-for-sale; Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(290,0,0,'3221', '/3/2/2/1/', NULL,N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax', N'Gains (losses) on remeasuring available-for-sale financial assets, before tax',N'The gains (losses) recognised in other comprehensive income on remeasuring available-for-sale financial assets, before tax. [Refer: Financial assets available-for-sale]')
+INSERT INTO @AT VALUES(291,0,0,'3222', '/3/2/2/2/', NULL,N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax', N'Reclassification adjustments on available-for-sale financial assets, before tax',N'The amount of reclassification adjustments related to available-for-sale financial assets, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Financial assets available-for-sale; Other comprehensive income]')
+INSERT INTO @AT VALUES(292,0,0,'4', '/4/', NULL,N'ControlAccountsExtension', N'Control accounts',N'')
+INSERT INTO @AT VALUES(293,0,0,'41', '/4/1/', NULL,N'TradersControlAccountsExtension', N'Traders control accounts',N'')
+INSERT INTO @AT VALUES(294,0,0,'411', '/4/1/1/', NULL,N'SuppliersControlAccountsExtension', N'Suppliers control accounts',N'')
+INSERT INTO @AT VALUES(295,0,1,'4111', '/4/1/1/1/', NULL,N'CashPaymentsToSuppliersControlExtension', N'Cash payments to suppliers control',N'')
+INSERT INTO @AT VALUES(296,0,0,'4112', '/4/1/1/2/', NULL,N'GoodsAndServicesReceivedFromSuppliersControlExtensions', N'Goods/services received from suppliers control',N'')
+INSERT INTO @AT VALUES(297,0,0,'412', '/4/1/2/', NULL,N'CustomersControlAccountsExtension', N'Customer control accounts',N'')
+INSERT INTO @AT VALUES(298,0,1,'4121', '/4/1/2/1/', NULL,N'CashReceiptsFromCustomersControlExtension', N'Cash receipts from customers control',N'')
+INSERT INTO @AT VALUES(299,0,0,'4122', '/4/1/2/2/', NULL,N'GoodsAndServicesIssuedToCustomersControlExtension', N'Goods/Services delivered to customers control',N'')
+INSERT INTO @AT VALUES(300,0,0,'413', '/4/1/3/', NULL,N'PayrollControlExtension', N'Payroll control',N'')
+INSERT INTO @AT VALUES(301,0,0,'419', '/4/1/9/', NULL,N'OthersAccountsControlExtension', N'Others control accounts',N'')
+INSERT INTO @AT VALUES(302,0,1,'4191', '/4/1/9/1/', NULL,N'CashPaymentsToOthersControlExtension', N'Cash payments to others control',N'')
+INSERT INTO @AT VALUES(303,0,1,'4192', '/4/1/9/2/', NULL,N'CashReceiptsFromOthersControlExtension', N'Cash receipts from others control',N'')
+INSERT INTO @AT VALUES(304,0,1,'42', '/4/2/', NULL,N'GuaranteesExtension', N'Guarantees',N'')
+INSERT INTO @AT VALUES(305,0,1,'421', '/4/2/1/', NULL,N'CollectionGuaranteeExtension', N'Collection Guarantee',N'e.g., checks, LG, ..')
+INSERT INTO @AT VALUES(306,0,1,'422', '/4/2/2/', NULL,N'DishonouredGuaranteeExtension', N'Dishonoured Guarantee',N'e.g., dishonored check, invalid LG, etc')
+INSERT INTO @AT VALUES(307,0,1,'5', '/5/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
 
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [AllowsPureUnit], [IsMonetary],
 		[EntryTypeParentId], [Description])
@@ -330,8 +341,6 @@ WHERE [Concept] IN (
 	N'TradeAndOtherCurrentPayablesToTradeSuppliers',
 	N'TradeAndOtherCurrentPayablesToRelatedParties'
 );
-
-
 
 	--[Time1Label], [Time1Label2], [Time1Label3],
 	--[Time2Label], [Time2Label2], [Time2Label3],
@@ -562,6 +571,8 @@ DECLARE @ProfitLossBeforeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Con
 DECLARE @ProfitLossFromOperatingActivities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProfitLossFromOperatingActivities');
 DECLARE @Revenue INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'Revenue');
 DECLARE @RevenueFromSaleOfGoods INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromSaleOfGoods');
+DECLARE @RevenueFromSaleOfFoodAndBeverage INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromSaleOfFoodAndBeverage');
+DECLARE @RevenueFromSaleOfAgriculturalProduce INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromSaleOfAgriculturalProduce');
 DECLARE @RevenueFromRenderingOfServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfServices');
 DECLARE @RevenueFromConstructionContracts INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromConstructionContracts');
 DECLARE @RevenueFromRoyalties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRoyalties');
@@ -608,8 +619,17 @@ DECLARE @TaxExpenseOtherThanIncomeTaxExpense INT = (SELECT [Id] FROM dbo.Account
 DECLARE @OtherExpenseByNature INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherExpenseByNature');
 DECLARE @OtherGainsLosses INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherGainsLosses');
 DECLARE @GainsLossesOnDisposalsOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment');
+DECLARE @GainsOnDisposalsOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsOnDisposalsOfPropertyPlantAndEquipment');
+DECLARE @LossesOnDisposalsOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'LossesOnDisposalsOfPropertyPlantAndEquipment');
 DECLARE @GainsLossesOnDisposalsOfInvestmentProperties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnDisposalsOfInvestmentProperties');
+DECLARE @GainsOnDisposalsOfInvestmentProperties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsOnDisposalsOfInvestmentProperties');
+DECLARE @LossesOnDisposalsOfInvestmentProperties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'LossesOnDisposalsOfInvestmentProperties');
 DECLARE @GainsLossesOnDisposalsOfInvestments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnDisposalsOfInvestments');
+DECLARE @GainsOnDisposalsOfInvestments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsOnDisposalsOfInvestments');
+DECLARE @LossesOnDisposalsOfInvestments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'LossesOnDisposalsOfInvestments');
+DECLARE @GainsLossesOnExchangeDifferencesOnTranslationRecognisedInProfitOrLoss INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnExchangeDifferencesOnTranslationRecognisedInProfitOrLoss');
+DECLARE @NetForeignExchangeGain INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NetForeignExchangeGain');
+DECLARE @NetForeignExchangeLoss INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NetForeignExchangeLoss');
 DECLARE @GainsLossesOnNetMonetaryPosition INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnNetMonetaryPosition');
 DECLARE @GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost');
 DECLARE @FinanceIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'FinanceIncome');
@@ -702,7 +722,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (1,@Buildings,											@BuildingsMemberRD),
 (2,@Machinery,											@MachineryMemberRD), 
 (3,@Machinery,											@PowerGeneratingAssetsMemberRD), 
-(4,@Vehicles,											@MotorVehiclesMemberRD),
+(4,@MotorVehicles,										@MotorVehiclesMemberRD),
 (5,@FixturesAndFittings,								@FixturesAndFittingsMemberRD),
 (6,@FixturesAndFittings,								@NetworkInfrastructureMemberRD),
 (7,@FixturesAndFittings,								@LeaseholdImprovementsMemberRD),
@@ -721,154 +741,217 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (18,@InvestmentPropertyCompleted,						@InvestmentPropertyCompletedMemberRD),
 (19,@InvestmentPropertyUnderConstructionOrDevelopment,	@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 
-(20,@Merchandise,										@TradeMedicineRD),
-(21,@Merchandise,										@TradeConstructionMaterialRD),
-(22,@Merchandise,										@TradeSparePartRD),
---(23,@CurrentFoodAndBeverage,							@CurrentFoodAndBeverageRD),
---(24,@CurrentAgriculturalProduce,						@CurrentAgriculturalProduceRD),
-(25,@FinishedGoods,									@FinishedGrainRD),
-(26,@FinishedGoods,									@FinishedVehicleRD),
-(27,@FinishedGoods,									@FinishedOilRD),
-(28,@FinishedGoods,									@ByproductGrainRD),
-(29,@FinishedGoods,									@ByproductOilRD),
-(30,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
---(31,@WorkInProgress,									@WorkInProgressRD),
-(32,@RawMaterials,										@RawGrainRD),
-(33,@RawMaterials,										@RawVehicleRD),
---(34,@ProductionSupplies,								@ProductionSuppliesRD),
---(35,@CurrentPackagingAndStorageMaterials,				@CurrentPackagingAndStorageMaterialsRD),
---(36,@SpareParts,										@SparePartsRD),
---(37,@CurrentFuel,										@CurrentFuelRD),
+(20,@Merchandise,										@MerchandiseRD),
+(21,@Merchandise,										@TradeMedicineRD),
+(22,@Merchandise,										@TradeConstructionMaterialRD),
+(23,@Merchandise,										@TradeSparePartRD),
+(24,@CurrentFoodAndBeverage,							@CurrentFoodAndBeverageRD),
+(25,@CurrentAgriculturalProduce,						@CurrentAgriculturalProduceRD),
+(26,@FinishedGoods,										@FinishedGoodsRD),
+(27,@FinishedGoods,										@FinishedGrainRD),
+(28,@FinishedGoods,										@FinishedVehicleRD),
+(29,@FinishedGoods,										@FinishedOilRD),
+(30,@FinishedGoods,										@ByproductGrainRD),
+(31,@FinishedGoods,										@ByproductOilRD),
+(32,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(33,@WorkInProgress,									@WorkInProgressRD),
+(34,@RawMaterials,@RawMaterialsRD),
+(35,@RawMaterials,										@RawGrainRD),
+(36,@RawMaterials,										@RawVehicleRD),
+(37,@ProductionSupplies,								@ProductionSuppliesRD),
+(38,@CurrentPackagingAndStorageMaterials,				@CurrentPackagingAndStorageMaterialsRD),
+(39,@SpareParts,										@SparePartsRD),
+(40,@CurrentFuel,										@CurrentFuelRD),
+(41,@OtherInventories,									@OtherInventoriesRD),
 
-(38,@CashOnHand,										@CheckReceivedRD), -- for checks to be deposited
+(42,@CashOnHand,										@CheckReceivedRD), -- for checks to be deposited
+(43,@OtherCashAndCashEquivalents,						@CheckReceivedRD),
+(44,@LongtermWarrantyProvision,							@FinishedVehicleRD),
+(45,@ShorttermWarrantyProvision,						@FinishedVehicleRD),
 
-(39,@RevaluationSurplus,								@LandMemberRD),
-(40,@RevaluationSurplus,								@BuildingsMemberRD),
---(41,@RevaluationSurplus,								@MachineryMemberRD), 
---(42,@RevaluationSurplus,								@PowerGeneratingAssetsMemberRD), 
---(43,@RevaluationSurplus,								@MotorVehiclesMemberRD),
---(44,@RevaluationSurplus,								@FixturesAndFittingsMemberRD),
---(45,@RevaluationSurplus,								@NetworkInfrastructureMemberRD),
---(46,@RevaluationSurplus,								@LeaseholdImprovementsMemberRD),
---(47,@RevaluationSurplus,								@OfficeEquipmentMemberRD),
---(48,@RevaluationSurplus,								@ComputerEquipmentMemberRD),
---(49,@RevaluationSurplus,								@CommunicationAndNetworkEquipmentMemberRD),
---(50,@RevaluationSurplus,								@ComputerEquipmentMemberRD),
---(51,@RevaluationSurplus,								@BearerPlantsMemberRD),
---(52,@RevaluationSurplus,								@TangibleExplorationAndEvaluationAssetsMemberRD),
---(53,@RevaluationSurplus,								@MiningAssetsMemberRD),
---(54,@RevaluationSurplus,								@OilAndGasAssetsMemberRD),
---(55,@RevaluationSurplus,								@ConstructionInProgressMemberRD),
---(56,@RevaluationSurplus,								@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
---(57,@RevaluationSurplus,								@OtherPropertyPlantAndEquipmentMemberRD),
-(58,@RevaluationSurplus,								@InvestmentPropertyCompletedMemberRD),
-(59	,@RevaluationSurplus,								@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
+(46,@RevaluationSurplus,								@LandMemberRD),
+(47,@RevaluationSurplus,								@BuildingsMemberRD),
+(48,@RevaluationSurplus,								@MachineryMemberRD), 
+(49,@RevaluationSurplus,								@PowerGeneratingAssetsMemberRD), 
+(50,@RevaluationSurplus,								@MotorVehiclesMemberRD),
+(51,@RevaluationSurplus,								@FixturesAndFittingsMemberRD),
+(52,@RevaluationSurplus,								@NetworkInfrastructureMemberRD),
+(53,@RevaluationSurplus,								@LeaseholdImprovementsMemberRD),
+(54,@RevaluationSurplus,								@OfficeEquipmentMemberRD),
+(55,@RevaluationSurplus,								@ComputerEquipmentMemberRD),
+(56,@RevaluationSurplus,								@CommunicationAndNetworkEquipmentMemberRD),
+(57,@RevaluationSurplus,								@ComputerEquipmentMemberRD),
+(58,@RevaluationSurplus,								@BearerPlantsMemberRD),
+(59,@RevaluationSurplus,								@TangibleExplorationAndEvaluationAssetsMemberRD),
+(60,@RevaluationSurplus,								@MiningAssetsMemberRD),
+(61,@RevaluationSurplus,								@OilAndGasAssetsMemberRD),
+(62,@RevaluationSurplus,								@ConstructionInProgressMemberRD),
+(63,@RevaluationSurplus,								@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
+(64,@RevaluationSurplus,								@OtherPropertyPlantAndEquipmentMemberRD),
+(65,@RevaluationSurplus,								@InvestmentPropertyCompletedMemberRD),
+(66,@RevaluationSurplus,								@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 
-(60,@RevenueFromSaleOfGoods,							@TradeMedicineRD),
-(61,@RevenueFromSaleOfGoods,							@TradeConstructionMaterialRD),
-(62,@RevenueFromSaleOfGoods,							@TradeSparePartRD),
---(63,@RevenueFromSaleOfGoods,							@CurrentFoodAndBeverageRD),
---(64,@RevenueFromSaleOfGoods,							@CurrentAgriculturalProduceRD),
-(65,@RevenueFromSaleOfGoods,							@FinishedGrainRD),
-(66,@RevenueFromSaleOfGoods,							@FinishedVehicleRD),
-(67,@RevenueFromSaleOfGoods,							@FinishedOilRD),
-(68,@RevenueFromSaleOfGoods,							@ByproductGrainRD),
-(69,@RevenueFromSaleOfGoods,							@ByproductOilRD),
-(70,@RevenueFromSaleOfGoods,							@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
-(71,@RevenueFromRenderingOfServices,					@RevenueServiceRD),
---(72,@RevenueFromDividends,							@InvestmentAccountedForUsingEquityMethodRD),
---(73,@RevenueFromDividends,							@InvestmentsInSubsidiariesJointVenturesAndAssociatesRD),
-(74,@RawMaterialsAndConsumablesUsed,					@RawMaterialsRD),
-(75,@EmployeeBenefitsExpense,							@EmployeeBenefitRD),
-(76,@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitRD),
-(77,@WagesAndSalaries,									@EmployeeBenefitRD),
-(78,@SocialSecurityContributions,						@EmployeeBenefitRD), 
-(79,@OtherShorttermEmployeeBenefits,					@EmployeeBenefitRD), 
-(80,@PostemploymentBenefitExpenseDefinedContributionPlans,	
-													@EmployeeBenefitRD),
-(81,@PostemploymentBenefitExpenseDefinedBenefitPlans,
-													@EmployeeBenefitRD), 
-(82,@TerminationBenefitsExpense,						@EmployeeBenefitRD),
-(83,@OtherLongtermBenefits,							@EmployeeBenefitRD), 
-(84,@OtherEmployeeExpense,								@EmployeeBenefitRD),
+(67,@RevenueFromSaleOfGoods,							@MerchandiseRD),
+(68,@RevenueFromSaleOfGoods,							@TradeMedicineRD),
+(69,@RevenueFromSaleOfGoods,							@TradeConstructionMaterialRD),
+(70,@RevenueFromSaleOfGoods,							@TradeSparePartRD),
+(71,@RevenueFromSaleOfGoods,							@CurrentFoodAndBeverageRD),
+(72,@RevenueFromSaleOfGoods,							@CurrentAgriculturalProduceRD),
+(73,@RevenueFromSaleOfGoods,							@FinishedGoodsRD),
+(74,@RevenueFromSaleOfGoods,							@FinishedGrainRD),
+(75,@RevenueFromSaleOfGoods,							@FinishedVehicleRD),
+(76,@RevenueFromSaleOfGoods,							@FinishedOilRD),
+(77,@RevenueFromSaleOfGoods,							@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 
---(85,@DepreciationExpense,								@LandMemberRD),
-(86,@DepreciationExpense,								@BuildingsMemberRD),
-(87,@DepreciationExpense,								@MachineryMemberRD), 
-(88,@DepreciationExpense,								@PowerGeneratingAssetsMemberRD), 
-(89,@DepreciationExpense,								@MotorVehiclesMemberRD),
-(90,@DepreciationExpense,								@FixturesAndFittingsMemberRD),
-(91,@DepreciationExpense,								@NetworkInfrastructureMemberRD),
-(92,@DepreciationExpense,								@LeaseholdImprovementsMemberRD),
-(93,@DepreciationExpense,								@OfficeEquipmentMemberRD),
-(94,@DepreciationExpense,								@ComputerEquipmentMemberRD),
-(95,@DepreciationExpense,								@CommunicationAndNetworkEquipmentMemberRD),
-(96,@DepreciationExpense,								@BearerPlantsMemberRD),
-(97,@DepreciationExpense,								@TangibleExplorationAndEvaluationAssetsMemberRD),
-(98,@DepreciationExpense,								@MiningAssetsMemberRD),
-(99,@DepreciationExpense,								@OilAndGasAssetsMemberRD),
-(100,@DepreciationExpense,								@ConstructionInProgressMemberRD),
-(101,@DepreciationExpense,								@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
-(102,@DepreciationExpense,								@OtherPropertyPlantAndEquipmentMemberRD),
+(78,@RevenueFromRenderingOfServices,					@RevenueServiceRD),
 
-(103,@CollectionGuaranteeExtension,						@CheckReceivedRD),
-(104,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
+(79,@OtherRevenue,@ByproductGrainRD),
+(80,@OtherRevenue,@ByproductOilRD),
+
+--(81,@RevenueFromDividends,							@InvestmentAccountedForUsingEquityMethodRD),
+--(82,@RevenueFromDividends,							@InvestmentsInSubsidiariesJointVenturesAndAssociatesRD),
+(83,@RawMaterialsAndConsumablesUsed,					@RawMaterialsRD),
+
+(84,@CostOfMerchandiseSold,								@CurrentAgriculturalProduceRD),
+(85,@CostOfMerchandiseSold,								@CurrentFoodAndBeverageRD),
+(86,@CostOfMerchandiseSold,								@FinishedGoodsRD),
+(87,@CostOfMerchandiseSold,								@FinishedGrainRD),
+(88,@CostOfMerchandiseSold,								@FinishedOilRD),
+(89,@CostOfMerchandiseSold,								@FinishedVehicleRD),
+(90,@CostOfMerchandiseSold,								@MerchandiseRD),
+(91,@CostOfMerchandiseSold,								@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(92,@CostOfMerchandiseSold,								@TradeConstructionMaterialRD),
+(93,@CostOfMerchandiseSold,								@TradeMedicineRD),
+(94,@CostOfMerchandiseSold,								@TradeSparePartRD),
+
+(105,@EmployeeBenefitsExpense,							@EmployeeBenefitRD),
+(106,@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitRD),
+(107,@WagesAndSalaries,									@EmployeeBenefitRD),
+(108,@SocialSecurityContributions,						@EmployeeBenefitRD), 
+(109,@OtherShorttermEmployeeBenefits,					@EmployeeBenefitRD), 
+(100,@PostemploymentBenefitExpenseDefinedContributionPlans,	
+														@EmployeeBenefitRD),
+(101,@PostemploymentBenefitExpenseDefinedBenefitPlans,	@EmployeeBenefitRD), 
+(102,@TerminationBenefitsExpense,						@EmployeeBenefitRD),
+(103,@OtherLongtermBenefits,							@EmployeeBenefitRD), 
+(104,@OtherEmployeeExpense,								@EmployeeBenefitRD),
+
+(115,@DepreciationExpense,								@LandMemberRD),
+(116,@DepreciationExpense,								@BuildingsMemberRD),
+(117,@DepreciationExpense,								@MachineryMemberRD), 
+(118,@DepreciationExpense,								@PowerGeneratingAssetsMemberRD), 
+(119,@DepreciationExpense,								@MotorVehiclesMemberRD),
+(120,@DepreciationExpense,								@FixturesAndFittingsMemberRD),
+(121,@DepreciationExpense,								@NetworkInfrastructureMemberRD),
+(122,@DepreciationExpense,								@LeaseholdImprovementsMemberRD),
+(123,@DepreciationExpense,								@OfficeEquipmentMemberRD),
+(124,@DepreciationExpense,								@ComputerEquipmentMemberRD),
+(125,@DepreciationExpense,								@CommunicationAndNetworkEquipmentMemberRD),
+(126,@DepreciationExpense,								@BearerPlantsMemberRD),
+(127,@DepreciationExpense,								@TangibleExplorationAndEvaluationAssetsMemberRD),
+(128,@DepreciationExpense,								@MiningAssetsMemberRD),
+(129,@DepreciationExpense,								@OilAndGasAssetsMemberRD),
+(130,@DepreciationExpense,								@ConstructionInProgressMemberRD),
+(131,@DepreciationExpense,								@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
+(132,@DepreciationExpense,								@OtherPropertyPlantAndEquipmentMemberRD),
+
+(143,@CollectionGuaranteeExtension,						@CheckReceivedRD),
+(144,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
 
 INSERT INTO @AccountTypeContractDefinitions([Index],
 [HeaderIndex],										[ContractDefinitionId]) VALUES
-(0,@NoncurrentTradeReceivables,						@CustomerCD),
-(1,@NoncurrentReceivablesDueFromRelatedParties,
-													@CustomerCD),
-(2,@NoncurrentPrepayments,							@SupplierCD),
-(3,@NoncurrentAccruedIncome,						@CustomerCD),
-(4,@NonCurrentLoansExtension,						@EmployeeCD),
-(5,@Merchandise,									@WarehouseCD),
-(6,@CurrentFoodAndBeverage,							@WarehouseCD),
-(7,@CurrentAgriculturalProduce,						@WarehouseCD),
+(0,@NonCurrentLoansExtension,						@EmployeeCD),
+(1,@NoncurrentTradeReceivables,						@CustomerCD),
+(2,@NoncurrentReceivablesDueFromRelatedParties,		@CustomerCD),
+(3,@NoncurrentPrepayments,							@SupplierCD),
 
-(8,@FinishedGoods,									@WarehouseCD),
-(9,@WorkInProgress,									@WarehouseCD),
-(10,@RawMaterials,									@WarehouseCD),
-(11,@ProductionSupplies,							@WarehouseCD),
-(12,@CurrentPackagingAndStorageMaterials,			@WarehouseCD),
-(13,@SpareParts,									@WarehouseCD),
-(14,@CurrentFuel,									@WarehouseCD),
-(15,@CurrentInventoriesInTransit,					@shipperCD),
-(16,@CurrentTradeReceivables,						@CustomerCD),
-(17,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,
-													@CustomerCD),
-(18,@CurrentPrepayments,							@EmployeeCD),
-(19,@CurrentAdvancesToSuppliers,					@SupplierCD), -- Advance pay to Suppliers
-(20,@CurrentPrepaidExpenses,						@SupplierCD), -- Advance pay to Lessors and other Subscription providers
-(21,@CurrentAccruedIncome,							@CustomerCD),
-(22,@CurrentBilledButNotReceivedExtension,			@SupplierCD),
-(23,@CurrentLoansExtension,							@EmployeeCD),
-(24,@CashOnHand,									@CashOnHandAccountCD),
-(25,@BalancesWithBanks,								@BankAccountCD),
+(4,@NoncurrentAccruedIncome,						@CustomerCD),
+(5,@NoncurrentReceivablesFromSaleOfProperties,		@CustomerCD),
+(6,@NoncurrentReceivablesFromRentalOfProperties,	@CustomerCD),
 
-(26,@TradeAndOtherCurrentPayablesToTradeSuppliers,	@SupplierCD),
-(27,@TradeAndOtherCurrentPayablesToRelatedParties,	@SupplierCD),
-(28,@DeferredIncomeClassifiedAsCurrent,				@CustomerCD), -- Advance pay from customers
-(29,@RentDeferredIncomeClassifiedAsCurrent,			@CustomerCD), -- Advance pay from Lessees and other subscribers
-(30,@AccrualsClassifiedAsCurrent,					@SupplierCD),
-(31,@AccrualsClassifiedAsCurrent,					@EmployeeCD), -- last  5 days unpaid
-(32,@CurrentBilledButNotIssuedExtension,			@CustomerCD),
-(33,@CurrentRetentionPayables,						@SupplierCD),
-(34,@CashPaymentsToSuppliersControlExtension,		@SupplierCD),
-(35,@GoodsAndServicesReceivedFromSuppliersControlExtensions,
+(7,@Merchandise,									@WarehouseCD),
+(8,@CurrentFoodAndBeverage,							@WarehouseCD),
+(9,@CurrentAgriculturalProduce,						@WarehouseCD),
+(10,@FinishedGoods,									@WarehouseCD),
+(11,@WorkInProgress,								@WarehouseCD),
+(12,@RawMaterials,									@WarehouseCD),
+(13,@ProductionSupplies,							@WarehouseCD),
+(14,@CurrentPackagingAndStorageMaterials,			@WarehouseCD),
+(15,@SpareParts,									@WarehouseCD),
+(16,@CurrentFuel,									@WarehouseCD),
+(116,@CurrentInventoriesInTransit,					@ShipperCD),
+(17,@OtherInventories,								@WarehouseCD),
+(18,@CurrentTradeReceivables,						@CustomerCD),
+(19,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,
+													@CustomerCD),
+(20,@CurrentPrepayments,							@EmployeeCD),
+(21,@CurrentAdvancesToSuppliers,					@SupplierCD),
+(22,@CurrentPrepaidExpenses,						@SupplierCD),
+(23,@CurrentAccruedIncome,							@CustomerCD),
+(24,@CurrentBilledButNotReceivedExtension,			@SupplierCD),
+(25,@CurrentReceivablesFromRentalOfProperties,		@CustomerCD),
+(26,@CurrentLoansExtension,							@EmployeeCD),
+(27,@CashOnHand,									@CashOnHandAccountCD),
+(28,@BalancesWithBanks,								@BankAccountCD),
+(29,@OtherCashAndCashEquivalents,					@BankAccountCD),
+(30,@NoncurrentProvisionsForEmployeeBenefits,		@EmployeeCD),
+(31,@CurrentProvisionsForEmployeeBenefits,			@EmployeeCD),
+
+(32,@TradeAndOtherCurrentPayablesToTradeSuppliers,	@SupplierCD),
+
+(33,@TradeAndOtherCurrentPayablesToRelatedParties,	@SupplierCD),
+(34,@DeferredIncomeClassifiedAsCurrent,				@CustomerCD),
+(35,@RentDeferredIncomeClassifiedAsCurrent,			@CustomerCD),
+(36,@AccrualsClassifiedAsCurrent,					@SupplierCD),
+(37,@ShorttermEmployeeBenefitsAccruals,				@EmployeeCD),
+(38,@CurrentBilledButNotIssuedExtension,			@CustomerCD),
+(39,@CurrentRetentionPayables,						@SupplierCD),
+(40,@CashPaymentsToSuppliersControlExtension,		@SupplierCD),
+(41,@GoodsAndServicesReceivedFromSuppliersControlExtensions,
 													@SupplierCD),
-(36,@CashReceiptsFromCustomersControlExtension,		@CustomerCD),
-(37,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerCD),
-(38,@CollectionGuaranteeExtension,					@CustomerCD),
-(39,@DishonouredGuaranteeExtension,					@CustomerCD);
+(42,@CashReceiptsFromCustomersControlExtension,		@CustomerCD),
+(43,@GoodsAndServicesIssuedToCustomersControlExtension,
+													@CustomerCD),
+(44,@CollectionGuaranteeExtension,					@CustomerCD),
+(45,@DishonouredGuaranteeExtension,					@CustomerCD);
 
 INSERT INTO @AccountTypeNotedContractDefinitions([Index],
 [HeaderIndex],										[NotedContractDefinitionId]) VALUES
-(0,@CurrentValueAddedTaxReceivables,				@SupplierCD),
-(1,@CurrentValueAddedTaxPayables,					@CustomerCD),
-(2,@CurrentEmployeeIncomeTaxPayablesExtension,		@EmployeeCD),
-(3,@CurrentSocialSecurityPayablesExtension,			@EmployeeCD),
-(4,@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeCD);
+(0,@NoncurrentValueAddedTaxReceivables,				@SupplierCD),
+(1,@CurrentValueAddedTaxReceivables,				@SupplierCD),
+(2,@WithholdingTaxReceivablesExtension,				@CustomerCD),
+(3,@CurrentReceivablesFromRentalOfProperties,		@CustomerCD),
+(4,@CurrentValueAddedTaxPayables,					@CustomerCD),
+(5,@CurrentSocialSecurityPayablesExtension,			@EmployeeCD),
+(6,@CurrentEmployeeIncomeTaxPayablesExtension,		@EmployeeCD),
+(7,@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeCD),
+(8,@ProvidentFundPayableExtension,					@EmployeeCD),
+(9,@WithholdingTaxPayableExtension,					@SupplierCD),
+(10,@CostSharingPayableExtension,					@EmployeeCD),
+(11,@DividendTaxPayableExtension,					@PartnerCD),
+(12,@RevenueFromSaleOfGoods,						@CustomerCD),
+(13,@RevenueFromSaleOfFoodAndBeverage,				@CustomerCD),
+(14,@RevenueFromSaleOfAgriculturalProduce,			@CustomerCD),
+(15,@RevenueFromRenderingOfServices,				@CustomerCD),
+(16,@OtherRevenue,									@CustomerCD),
+(17,@CostOfMerchandiseSold,							@CustomerCD),
+(18,@InsuranceExpense,								@SupplierCD),
+(19,@ProfessionalFeesExpense,						@SupplierCD),
+(20,@TransportationExpense,							@SupplierCD),
+(21,@BankAndSimilarCharges,							@SupplierCD),
+(22,@TravelExpense,									@SupplierCD),
+(23,@CommunicationExpense,							@SupplierCD),
+(24,@UtilitiesExpense,								@SupplierCD),
+(25,@AdvertisingExpense,							@SupplierCD),
+(26,@WagesAndSalaries,								@EmployeeCD),
+(27,@SocialSecurityContributions,					@EmployeeCD),
+(28,@OtherShorttermEmployeeBenefits,				@EmployeeCD),
+(29,@PostemploymentBenefitExpenseDefinedContributionPlans,
+													@EmployeeCD),
+(30,@PostemploymentBenefitExpenseDefinedBenefitPlans,@EmployeeCD),
+(31,@TerminationBenefitsExpense,					@EmployeeCD),
+(32,@OtherLongtermBenefits,							@EmployeeCD),
+(33,@OtherEmployeeExpense,							@EmployeeCD);
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
@@ -883,146 +966,146 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-DELETE FROM @IndexedIds;
-INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountTypes WHERE [Concept] NOT IN (
-N'StatementOfFinancialPositionAbstract',
-N'Assets',
-N'NoncurrentAssets',
-N'PropertyPlantAndEquipment',
-N'OfficeEquipment',
-N'NoncurrentReceivables',
-N'NoncurrentTradeReceivables',
-N'NoncurrentReceivablesDueFromRelatedParties',
-N'NoncurrentPrepaymentsAndNoncurrentAccruedIncome',
-N'NoncurrentPrepayments',
-N'NoncurrentAccruedIncome',
-N'NoncurrentReceivablesFromTaxesOtherThanIncomeTax',
-N'OtherNoncurrentReceivables',
-N'CurrentAssets',
-N'Inventories',
-N'WorkInProgress',
-N'CurrentInventoriesInTransit',
-N'OtherInventories',
-N'TradeAndOtherCurrentReceivables',
-N'CurrentTradeReceivables',
-N'TradeAndOtherCurrentReceivablesDueFromRelatedParties',
-N'CurrentPrepaymentsAndCurrentAccruedIncome',
-N'CurrentPrepayments',
-N'CurrentAccruedIncome',
-N'CurrentBilledButNotReceivedExtension',
-N'CurrentReceivablesFromTaxesOtherThanIncomeTax',
-N'CurrentValueAddedTaxReceivables',
-N'OtherCurrentReceivables',
-N'OtherCurrentFinancialAssets',
-N'CashAndCashEquivalents',
-N'Cash',
-N'CashOnHand',
-N'BalancesWithBanks',
-N'OtherCashAndCashEquivalents',
-N'EquityAndLiabilities',
-N'Equity',
-N'IssuedCapital',
-N'RetainedEarnings',
-N'OtherReserves',
-N'RevaluationSurplus',
-N'StatutoryReserve',
-N'Liabilities',
-N'NoncurrentLiabilities',
-N'NoncurrentProvisions',
-N'NoncurrentProvisionsForEmployeeBenefits',
-N'OtherLongtermProvisions',
-N'NoncurrentPayables',
-N'OtherNoncurrentFinancialLiabilities',
-N'CurrentLiabilities',
-N'CurrentProvisions',
-N'CurrentProvisionsForEmployeeBenefits',
-N'OtherShorttermProvisions',
-N'TradeAndOtherCurrentPayables',
-N'TradeAndOtherCurrentPayablesToTradeSuppliers',
-N'TradeAndOtherCurrentPayablesToRelatedParties',
-N'DeferredIncomeClassifiedAsCurrent',
-N'AccrualsClassifiedAsCurrent',
-N'ShorttermEmployeeBenefitsAccruals',
-N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax',
-N'CurrentValueAddedTaxPayables',
-N'CurrentSocialSecurityPayablesExtension',
-N'CurrentEmployeeIncomeTaxPayablesExtension',
-N'DividendTaxPayableExtension',
-N'OtherCurrentPayables',
-N'OtherCurrentFinancialLiabilities',
-N'IncomeStatementAbstract',
-N'ProfitLoss',
-N'ProfitLossFromContinuingOperations',
-N'ProfitLossBeforeTax',
-N'ProfitLossFromOperatingActivities',
-N'Revenue',
-N'RevenueFromSaleOfGoods',
-N'RevenueFromRenderingOfServices',
-N'RevenueFromDividends',
-N'OtherRevenue',
-N'OtherIncome',
-N'ExpenseByNature',
-N'RawMaterialsAndConsumablesUsed',
-N'CostOfMerchandiseSold',
-N'ServicesExpense',
-N'InsuranceExpense',
-N'ProfessionalFeesExpense',
-N'TransportationExpense',
-N'BankAndSimilarCharges',
-N'TravelExpense',
-N'CommunicationExpense',
-N'UtilitiesExpense',
-N'AdvertisingExpense',
-N'EmployeeBenefitsExpense',
-N'ShorttermEmployeeBenefitsExpense',
-N'WagesAndSalaries',
-N'SocialSecurityContributions',
-N'OtherShorttermEmployeeBenefits',
-N'PostemploymentBenefitExpenseDefinedContributionPlans',
-N'PostemploymentBenefitExpenseDefinedBenefitPlans',
-N'TerminationBenefitsExpense',
-N'OtherLongtermBenefits',
-N'OtherEmployeeExpense',
-N'DepreciationAmortisationAndImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss',
-N'DepreciationAndAmortisationExpense',
-N'DepreciationExpense',
-N'AmortisationExpense',
-N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss',
-N'WritedownsReversalsOfPropertyPlantAndEquipment',
-N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeReceivables',
-N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances',
-N'TaxExpenseOtherThanIncomeTaxExpense',
-N'OtherExpenseByNature',
-N'OtherGainsLosses',
-N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment',
-N'GainsLossesOnNetMonetaryPosition',
-N'FinanceIncome',
-N'FinanceCosts',
-N'ControlAccountsExtension',
-N'TradersControlAccountsExtension',
-N'SuppliersControlAccountsExtension',
-N'CashPaymentsToSuppliersControlExtension',
-N'GoodsAndServicesReceivedFromSuppliersControlExtensions',
-N'CustomersControlAccountsExtension',
-N'CashReceiptsFromCustomersControlExtension',
-N'GoodsAndServicesIssuedToCustomersControlExtension',
-N'PayrollControlExtension',
-N'OthersAccountsControlExtension',
-N'CashPaymentsToOthersControlExtension',
-N'CashReceiptsFromOthersControlExtension',
-N'GuaranteesExtension',
-N'CollectionGuaranteeExtension',
-N'DishonouredGuaranteeExtension')
-EXEC [api].[AccountTypes__Activate]
-	@IndexedIds = @IndexedIds,
-	@IsActive =0,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+--DELETE FROM @IndexedIds;
+--INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountTypes WHERE [Concept] NOT IN (
+--N'StatementOfFinancialPositionAbstract',
+--N'Assets',
+--N'NoncurrentAssets',
+--N'PropertyPlantAndEquipment',
+--N'OfficeEquipment',
+--N'NoncurrentReceivables',
+--N'NoncurrentTradeReceivables',
+--N'NoncurrentReceivablesDueFromRelatedParties',
+--N'NoncurrentPrepaymentsAndNoncurrentAccruedIncome',
+--N'NoncurrentPrepayments',
+--N'NoncurrentAccruedIncome',
+--N'NoncurrentReceivablesFromTaxesOtherThanIncomeTax',
+--N'OtherNoncurrentReceivables',
+--N'CurrentAssets',
+--N'Inventories',
+--N'WorkInProgress',
+--N'CurrentInventoriesInTransit',
+--N'OtherInventories',
+--N'TradeAndOtherCurrentReceivables',
+--N'CurrentTradeReceivables',
+--N'TradeAndOtherCurrentReceivablesDueFromRelatedParties',
+--N'CurrentPrepaymentsAndCurrentAccruedIncome',
+--N'CurrentPrepayments',
+--N'CurrentAccruedIncome',
+--N'CurrentBilledButNotReceivedExtension',
+--N'CurrentReceivablesFromTaxesOtherThanIncomeTax',
+--N'CurrentValueAddedTaxReceivables',
+--N'OtherCurrentReceivables',
+--N'OtherCurrentFinancialAssets',
+--N'CashAndCashEquivalents',
+--N'Cash',
+--N'CashOnHand',
+--N'BalancesWithBanks',
+--N'OtherCashAndCashEquivalents',
+--N'EquityAndLiabilities',
+--N'Equity',
+--N'IssuedCapital',
+--N'RetainedEarnings',
+--N'OtherReserves',
+--N'RevaluationSurplus',
+--N'StatutoryReserve',
+--N'Liabilities',
+--N'NoncurrentLiabilities',
+--N'NoncurrentProvisions',
+--N'NoncurrentProvisionsForEmployeeBenefits',
+--N'OtherLongtermProvisions',
+--N'NoncurrentPayables',
+--N'OtherNoncurrentFinancialLiabilities',
+--N'CurrentLiabilities',
+--N'CurrentProvisions',
+--N'CurrentProvisionsForEmployeeBenefits',
+--N'OtherShorttermProvisions',
+--N'TradeAndOtherCurrentPayables',
+--N'TradeAndOtherCurrentPayablesToTradeSuppliers',
+--N'TradeAndOtherCurrentPayablesToRelatedParties',
+--N'DeferredIncomeClassifiedAsCurrent',
+--N'AccrualsClassifiedAsCurrent',
+--N'ShorttermEmployeeBenefitsAccruals',
+--N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax',
+--N'CurrentValueAddedTaxPayables',
+--N'CurrentSocialSecurityPayablesExtension',
+--N'CurrentEmployeeIncomeTaxPayablesExtension',
+--N'DividendTaxPayableExtension',
+--N'OtherCurrentPayables',
+--N'OtherCurrentFinancialLiabilities',
+--N'IncomeStatementAbstract',
+--N'ProfitLoss',
+--N'ProfitLossFromContinuingOperations',
+--N'ProfitLossBeforeTax',
+--N'ProfitLossFromOperatingActivities',
+--N'Revenue',
+--N'RevenueFromSaleOfGoods',
+--N'RevenueFromRenderingOfServices',
+--N'RevenueFromDividends',
+--N'OtherRevenue',
+--N'OtherIncome',
+--N'ExpenseByNature',
+--N'RawMaterialsAndConsumablesUsed',
+--N'CostOfMerchandiseSold',
+--N'ServicesExpense',
+--N'InsuranceExpense',
+--N'ProfessionalFeesExpense',
+--N'TransportationExpense',
+--N'BankAndSimilarCharges',
+--N'TravelExpense',
+--N'CommunicationExpense',
+--N'UtilitiesExpense',
+--N'AdvertisingExpense',
+--N'EmployeeBenefitsExpense',
+--N'ShorttermEmployeeBenefitsExpense',
+--N'WagesAndSalaries',
+--N'SocialSecurityContributions',
+--N'OtherShorttermEmployeeBenefits',
+--N'PostemploymentBenefitExpenseDefinedContributionPlans',
+--N'PostemploymentBenefitExpenseDefinedBenefitPlans',
+--N'TerminationBenefitsExpense',
+--N'OtherLongtermBenefits',
+--N'OtherEmployeeExpense',
+--N'DepreciationAmortisationAndImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss',
+--N'DepreciationAndAmortisationExpense',
+--N'DepreciationExpense',
+--N'AmortisationExpense',
+--N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss',
+--N'WritedownsReversalsOfPropertyPlantAndEquipment',
+--N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeReceivables',
+--N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances',
+--N'TaxExpenseOtherThanIncomeTaxExpense',
+--N'OtherExpenseByNature',
+--N'OtherGainsLosses',
+--N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment',
+--N'GainsLossesOnNetMonetaryPosition',
+--N'FinanceIncome',
+--N'FinanceCosts',
+--N'ControlAccountsExtension',
+--N'TradersControlAccountsExtension',
+--N'SuppliersControlAccountsExtension',
+--N'CashPaymentsToSuppliersControlExtension',
+--N'GoodsAndServicesReceivedFromSuppliersControlExtensions',
+--N'CustomersControlAccountsExtension',
+--N'CashReceiptsFromCustomersControlExtension',
+--N'GoodsAndServicesIssuedToCustomersControlExtension',
+--N'PayrollControlExtension',
+--N'OthersAccountsControlExtension',
+--N'CashPaymentsToOthersControlExtension',
+--N'CashReceiptsFromOthersControlExtension',
+--N'GuaranteesExtension',
+--N'CollectionGuaranteeExtension',
+--N'DishonouredGuaranteeExtension')
+--EXEC [api].[AccountTypes__Activate]
+--	@IndexedIds = @IndexedIds,
+--	@IsActive =0,
+--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Account Types: Deactivating: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+--IF @ValidationErrorsJson IS NOT NULL 
+--BEGIN
+--	Print 'Account Types: Deactivating: ' + @ValidationErrorsJson
+--	GOTO Err_Label;
+--END;
 
 DECLARE @ServicesExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Id] = @ServicesExpense);
 UPDATE dbo.[AccountTypes] SET IsSystem = 1 WHERE [Node].IsDescendantOf(@ServicesExpenseNode) = 0;

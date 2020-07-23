@@ -16,12 +16,12 @@ SET [AgentVisibility] = N'Optional'
 WHERE [Code] IN (N'CashOnHandAccount', N'Employee', N'Supplier', N'Customer', N'Partner')
 
 UPDATE @ContractDefinitions
-SET [CenterVisibility] = N'Optional'
-WHERE [Code] IN (N'CashOnHandAccount', N'Employee', N'Supplier')
+SET [CurrencyVisibility] = N'Required'
+WHERE [Code] IN (N'CashOnHandAccount', N'BankAccount', N'Customer')
 
 UPDATE @ContractDefinitions
-SET [CurrencyVisibility] = N'Required'
-WHERE [Code] IN (N'BankAccount', N'Customer')
+SET [CenterVisibility] = N'Optional'
+WHERE [Code] IN (N'CashOnHandAccount', N'Employee', N'Supplier')
 
 UPDATE @ContractDefinitions
 SET [CenterVisibility] = N'Optional'

@@ -12,9 +12,10 @@ BEGIN
 END;
 DELETE FROM @Contracts; DELETE FROM @ContractUsers;
 INSERT INTO @Contracts([Index],	
-	[Code], [Name],				[Name2],				[CenterId]) VALUES
-(0,	N'CS1',	N'GM Safe',			N'خزنة المدير العام',	@101CHQ),
-(1,	N'CS2',	N'Admin Petty Cash',N'النثرية الإدارية',	@101CHQ)
+	[Code], [Name],				[Name2],						[CenterId], [CurrencyId]) VALUES
+(0,	N'CS1',	N'GM Safe - USD',	N'خزنة المدير العام - دولار',	@101CHQ,	N'USD'),
+(1,	N'CS2',	N'GM Safe - SDF',	N'خزنة المدير العام - جنيه',	@101CHQ,	N'SDG'),
+(2,	N'CS3',	N'Admin Petty Cash',N'النثرية الإدارية',			@101CHQ,	N'SDG')
 INSERT INTO @ContractUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
 (0,0,@amtaam),
@@ -43,8 +44,8 @@ BEGIN
 END;
 DELETE FROM @Contracts; DELETE FROM @ContractUsers;
 INSERT INTO @Contracts([Index],	
-	[Code], [Name],					[Name2],		[CenterId]) VALUES
-(0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101CHQ);
+	[Code], [Name],					[Name2],		[CenterId], [CurrencyId]) VALUES
+(0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101CHQ,		N'SDG');
 INSERT INTO @ContractUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
 (0,0,@amtaam)
@@ -76,15 +77,15 @@ BEGIN
 END;
 DELETE FROM @Contracts; DELETE FROM @ContractUsers;
 INSERT INTO @Contracts([Index],	
-	[Code], [Name],								[Name2],					[CenterId]) VALUES
-(0,	N'C01',N'International African University', N'جامعة أفريقيا العالمية',	NULL),
-(1,	N'C02',N'Mico poultry',						N'ميكو',					@101CB10),
-(2,	N'C03',N'Sabco',							N'سابكو',					@101CB10),
-(3,	N'C04',	N'al-Washm',						N'شركة الوشم',				@101CB10),
-(4,	N'C05',N'TAGI restaurants',					N'مطاعم تاجي',				@101CB10),
-(5,	N'C06',N'It3aam',							N'شركة إطعام',				@101MiscIT),
-(6,	N'C07',N'Rafeef',							N'شركة رفيف',				@101CBSmart),
-(7,	N'C08',N'Golden Earth',						N'غولدن إيرث',				@101CBSmart);
+	[Code], [Name],								[Name2],					[CenterId], [CurrencyId]) VALUES
+(0,	N'C01',N'International African University', N'جامعة أفريقيا العالمية',	NULL,		N'USD'),
+(1,	N'C02',N'Mico poultry',						N'ميكو',					@101CB10,	N'USD'),
+(2,	N'C03',N'Sabco',							N'سابكو',					@101CB10,	N'USD'),
+(3,	N'C04',N'al-Washm',							N'شركة الوشم',				@101CB10,	N'SAR'),
+(4,	N'C05',N'TAGI restaurants',					N'مطاعم تاجي',				@101CB10,	N'SAR'),
+(5,	N'C06',N'It3aam',							N'شركة إطعام',				@101MiscIT,	N'USD'),
+(6,	N'C07',N'Rafeef',							N'شركة رفيف',				@101CBSmart,N'SDG'),
+(7,	N'C08',N'Golden Earth',						N'غولدن إيرث',				@101CBSmart,N'USD');
 EXEC [api].[Contracts__Save]
 	@DefinitionId = @CustomerCD,
 	@Entities = @Contracts,
