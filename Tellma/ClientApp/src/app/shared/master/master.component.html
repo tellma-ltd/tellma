@@ -313,7 +313,8 @@
             <div class="t-tile-container p-0 p-sm-1" [class.t-popup-tile-container]="isPopupMode"
               *ngFor="let id of flatIds; trackBy: trackById">
               <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark"
-                [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onChoose(id)">
+                [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onChoose(id)"
+                [tContextMenu]="recordContextMenu" [tContext]="id" [tDisableMenu]="disableContextMenu">
                 <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
                 </ng-container>
               </div>
@@ -323,7 +324,8 @@
           <ng-container *ngIf="isTreeMode">
             <div class="w-100 border bg-white" style="border-top-width: 0!important"
               *ngFor="let node of treeNodes; trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)">
-              <div class="t-tree-tile" [class.t-highlight]="isRecentlyViewed(node.id)">
+              <div class="t-tree-tile" [class.t-highlight]="isRecentlyViewed(node.id)"
+                [tContextMenu]="recordContextMenu" [tContext]="node.id" [tDisableMenu]="disableContextMenu">
                 <div [style.padding-left]="paddingLeft(node)" [style.padding-right]="paddingRight(node)">
                   <button class="border-0 px-4 w-100 h-100" style="background-color: transparent"
                     [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
@@ -404,7 +406,8 @@
 
             <!-- Flat -->
             <ng-container *ngIf="isFlatMode">
-              <tr *ngFor="let id of flatIds" [class.t-highlight]="isRecentlyViewed(id)">
+              <tr *ngFor="let id of flatIds" [class.t-highlight]="isRecentlyViewed(id)"
+                [tContextMenu]="recordContextMenu" [tContext]="id" [tDisableMenu]="disableContextMenu">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: id }">
@@ -431,7 +434,8 @@
             <!-- Tree -->
             <ng-container *ngIf="isTreeMode">
               <tr *ngFor="let node of treeNodes;trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)"
-                [class.t-highlight]="isRecentlyViewed(node.id)" [style.opacity]="node.fromResult ? 1 : 1">
+                [class.t-highlight]="isRecentlyViewed(node.id)" [style.opacity]="node.fromResult ? 1 : 1"
+                [tContextMenu]="recordContextMenu" [tContext]="node.id" [tDisableMenu]="disableContextMenu">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: node.id }">
@@ -766,5 +770,31 @@
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Dismiss' | translate }}
     </button>
+  </div>
+</ng-template>
+
+<!-- Context menu for results -->
+<ng-template #recordContextMenu let-id let-close="close">
+  <div class="dropdown">
+    <ul class="dropdown-menu show shadow-sm">
+      <li class="dropdown-item px-0 py-1" (click)="onEditFromContextMenu(id); close();" [class.disabled]="!canCreate"
+        *ngIf="showCreate">
+        <div class="t-menu-icon">
+          <fa-icon icon="pen"></fa-icon>
+        </div>
+        <div class="t-menu-text">
+          {{ 'Edit' | translate }}
+        </div>
+      </li>
+      <li class="dropdown-item px-0 py-1" (click)="onDeleteFromContextMenu(id, deleteModal); close();"
+        [class.disabled]="!canDelete" *ngIf="showDelete">
+        <div class="t-menu-icon">
+          <fa-icon icon="trash"></fa-icon>
+        </div>
+        <div class="t-menu-text">
+          {{ 'Delete' | translate }}
+        </div>
+      </li>
+    </ul>
   </div>
 </ng-template>

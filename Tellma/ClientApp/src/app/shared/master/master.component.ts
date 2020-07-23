@@ -1194,7 +1194,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return !!this.entityDescriptor.definitionIds && !this.definitionId;
   }
 
-  public onChoose(id: number | string) {
+  public onChoose(id: number | string, isEdit?: boolean) {
     if (this.isPopupMode) {
       this.choose.emit(id);
     } else {
@@ -1209,8 +1209,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         // (2) Add state_key param to let the details screen use the same state object
         const definitionId = this.workspace.current[this.collection][id].DefinitionId;
         const extras = { state_key: this.mdStateKey };
+        this.workspace.isEdit = isEdit;
         this.router.navigate(['.', definitionId, id, extras], { relativeTo: this.route });
       } else {
+        this.workspace.isEdit = isEdit;
         this.router.navigate(['.', id], { relativeTo: this.route });
       }
     }
@@ -1619,11 +1621,15 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public onDelete() {
+    const ids = this.checkedIds;
+    this.onDeleteImpl(ids);
+  }
+
+  private onDeleteImpl(ids: (string | number)[]) {
     // clear any previous errors
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
 
-    const ids = this.checkedIds;
     this.crud.delete(ids).pipe(tap(
       () => {
         // Update the UI to reflect deletion of items
@@ -1640,6 +1646,23 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     ),
       finalize(() => this.cdr.markForCheck())
     ).subscribe();
+  }
+
+  public onDeleteFromContextMenu(id: string | number, deleteModal: TemplateRef<any>) {
+    if (this.canDelete) {
+      // Check only that box
+      this.checked = {};
+      this.checked[id] = true;
+      this.cdr.markForCheck();
+
+      this.modalService.open(deleteModal);
+    }
+  }
+
+  public onEditFromContextMenu(id: string | number) {
+    if (this.canCreate) {
+      this.onChoose(id, true);
+    }
   }
 
   public onDeleteWithDescendants() {
@@ -1998,6 +2021,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.saveParentIdsToUserSettings([]);
+  }
+
+  public get disableContextMenu(): boolean {
+    return this.isPopupMode || (!this.showDelete && !this.showCreate);
   }
 }
 

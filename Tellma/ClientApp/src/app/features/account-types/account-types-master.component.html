@@ -6,7 +6,7 @@
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
   ]" [filterDefinition]="{
     'CreatedBy' : [
-      { template: createdByMe, expression: 'CreatedById eq me'}
+      { template: createdByMe, expression: 'SavedById eq me'}
     ]
   }">
 </t-master>

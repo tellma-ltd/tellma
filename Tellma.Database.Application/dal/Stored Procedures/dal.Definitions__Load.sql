@@ -22,10 +22,13 @@ SELECT * FROM [map].[ReportColumnDefinitions]() ORDER BY [Index];
 SELECT * FROM [map].[ReportMeasureDefinitions]() ORDER BY [Index];
 
 -- Get the document definitions
-SELECT * FROM [map].[DocumentDefinitions]();
-SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index];
+DECLARE @DocDefIds [dbo].[IdList];
+INSERT INTO @DocDefIds ([Id]) SELECT [Id] FROM [map].[DocumentDefinitions]() WHERE [State] <> N'Hidden' OR [Code] = N'ManualJournalVoucher'
+
+SELECT * FROM [map].[DocumentDefinitions]() WHERE [Id] IN (SELECT [Id] FROM @DocDefIds);
+SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @DocDefIds) ORDER BY [Index];
 SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [MarkupTemplateId] FROM [dbo].[DocumentDefinitionMarkupTemplates])
-SELECT * FROM [dbo].[DocumentDefinitionMarkupTemplates] ORDER BY [Index];
+SELECT * FROM [dbo].[DocumentDefinitionMarkupTemplates] WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @DocDefIds) ORDER BY [Index];
 
 -- Load relevant information from Account Types
 SELECT T.[Id], T.[EntryTypeParentId] FROM [map].[AccountTypes]() T 

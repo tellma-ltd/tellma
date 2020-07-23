@@ -1,15 +1,19 @@
-import { Component, ApplicationRef, Inject, ViewContainerRef } from '@angular/core';
+// tslint:disable:member-ordering
+import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { interval, concat } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { interval, concat, fromEvent, Subscription } from 'rxjs';
+import { first, filter, take, tap } from 'rxjs/operators';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 import { DOCUMENT } from '@angular/common';
+import { ContextMenuService } from './data/context-menu.service';
+import { Overlay, OverlayRef, ConnectedPosition } from '@angular/cdk/overlay';
+import { TemplatePortal } from '@angular/cdk/portal';
 
 @Component({
   selector: 't-root',
@@ -49,7 +53,8 @@ export class RootComponent {
     private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
     private api: ApiService, private storage: StorageService, private progress: ProgressOverlayService,
     private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig,
-    @Inject(DOCUMENT) private document: Document) {
+    @Inject(DOCUMENT) private document: Document, private overlay: Overlay, contextMenu: ContextMenuService,
+    private viewContainerRef: ViewContainerRef) {
 
     // This came at long last with ng-bootstrap v4.1.0 allowing us to specify that
     // all dropdowns should be appended to the body by default
@@ -61,7 +66,21 @@ export class RootComponent {
       if (e instanceof NavigationEnd && e.url.indexOf('/app/') !== -1) {
         this.storage.setItem('last_visited_url', e.url);
       }
+
+      // Hide any active context menu before navigating
+      if (e instanceof NavigationStart) {
+        this.hideContextMenu();
+      }
     });
+
+    // When the entire window loses focus, hide context menus
+    // window.onblur = this.hideContextMenu;
+
+    // Hide the context menu if any scrolling whatsoever takes place
+    document.addEventListener('scroll', this.hideContextMenu, true);
+
+    // This allows any component in the app to display a context menu with ease
+    contextMenu.registerShowMenu(this.showContextMenu);
 
     // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
     const appIsStable$ = appRef.isStable.pipe(first(isStable => isStable === true));
@@ -91,7 +110,7 @@ export class RootComponent {
       // reflect the change too
       const culture = this.translate.currentLang;
       this.setWorkspaceCulture(culture);
-      if (!!document) {
+      if (!!this.document) {
         // TODO Load from configuration instead
         this.document.title = this.translate.instant('AppName');
       }
@@ -142,7 +161,7 @@ export class RootComponent {
     this.workspace.notifyStateChanged();
 
     // set RTL on the DOM document
-    if (isRtl && !!document) {
+    if (isRtl && !!this.document) {
       this.document.body.classList.add('t-rtl');
     } else {
       this.document.body.classList.remove('t-rtl');
@@ -160,5 +179,131 @@ export class RootComponent {
 
   get labelNames(): string[] {
     return this.progress.labelNames;
+  }
+
+  // Context menu stuff
+
+  private overlayRef: OverlayRef;
+  private sub: Subscription;
+
+  private showContextMenu = ($event: MouseEvent, ctxMenu: TemplateRef<any>, ctx: any) => {
+    if (!ctxMenu) {
+      return;
+    }
+
+    // Close any existing context menu, this unsubscribes sub
+    this.hideContextMenu();
+
+    // Prevents the browser context menu
+    $event.preventDefault();
+
+    // const positions: ConnectedPosition[] = [
+    //   {
+    //     originX: 'start',
+    //     originY: 'top',
+    //     overlayX: 'end',
+    //     overlayY: 'bottom',
+    //   }
+    // ];
+
+    const positions: ConnectedPosition[] = [
+      {
+        originX: 'start',
+        originY: 'bottom',
+        overlayX: 'start',
+        overlayY: 'top',
+      },
+      {
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'bottom',
+      },
+      {
+        originX: 'end',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'top',
+      },
+      {
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'end',
+        overlayY: 'top',
+      },
+      {
+        originX: 'end',
+        originY: 'center',
+        overlayX: 'start',
+        overlayY: 'center',
+      },
+      {
+        originX: 'start',
+        originY: 'center',
+        overlayX: 'end',
+        overlayY: 'center',
+      },
+    ];
+
+    const positionStrategy = this.overlay.position()
+      .flexibleConnectedTo({ x: $event.clientX, y: $event.clientY, width: 0, height: 0 })
+      .withPositions(positions)
+      .withFlexibleDimensions(false)
+      .withPush(false);
+
+    // Create the overlay in the screen where the context menu will be hosted
+    this.overlayRef = this.overlay.create({ positionStrategy });
+
+    // Handle RTL UI
+    if (this.workspace.ws.isRtl) {
+      this.overlayRef.setDirection('rtl');
+    }
+
+    // Add the context menu to the overlay
+    this.overlayRef.attach(new TemplatePortal(ctxMenu, this.viewContainerRef, { $implicit: ctx, close: this.hideContextMenu }));
+
+    // Make sure it closes when clicking outside of it
+    this.sub = new Subscription();
+    this.sub.add(fromEvent<MouseEvent>(this.document, 'mousedown')
+      .pipe(
+        filter(event => {
+          const clickTarget = event.target as HTMLElement;
+          return !this.insideContextMenu(clickTarget);
+        }),
+        take(1)
+      ).subscribe(() => this.hideContextMenu()));
+
+    // Prevent the context menu itself from launching the browser context menu
+    this.sub.add(fromEvent<MouseEvent>(this.document, 'contextmenu')
+      .pipe(
+        tap(e => {
+          const clickTarget = e.target as HTMLElement;
+          if (this.insideContextMenu(clickTarget)) {
+            // Right click inside the context menu does nothing
+            e.preventDefault();
+          } else if (e !== $event) {
+            // Right click anywhere else dismisses the context menu
+            this.hideContextMenu();
+          }
+        }),
+      ).subscribe());
+
+    // TODO: Other events that are expected to dismiss the context menu
+  }
+
+  private hideContextMenu = () => {
+    if (!!this.overlayRef) {
+      this.overlayRef.dispose();
+      delete this.overlayRef;
+    }
+
+    if (!!this.sub) {
+      this.sub.unsubscribe();
+      delete this.sub;
+    }
+  }
+
+  private insideContextMenu = (target: HTMLElement): boolean => {
+    return !!this.overlayRef && !!this.overlayRef.overlayElement && this.overlayRef.overlayElement.contains(target);
   }
 }

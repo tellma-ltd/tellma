@@ -446,4 +446,10 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   get isMdScreen(): boolean {
     return window.matchMedia(`(min-width: 768px)`).matches;
   }
+
+  // Favorites management
+
+  public deleteFavorite(url: string) {
+
+  }
 }

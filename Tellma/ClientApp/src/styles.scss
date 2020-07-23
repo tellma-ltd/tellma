@@ -23,13 +23,16 @@ $primary-disabled: #69c3d1;
 // customize bootstrap colors and then import bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";
 
+// For angular overlay to work
+@import '~@angular/cdk/overlay-prebuilt.css';
+
 // Remove any other round corners
 .modal-content,
 .dropdown-menu {
   border-radius: 0;
 }
 
-.dropdown-menu {
+.dropdown-menu.show {
   font-size: 80%;
 }
 
@@ -1775,23 +1778,21 @@ button:focus {
   }
 }
 
-// for right click menu
-.cdk-overlay-container {
-  position: fixed;
-  z-index: 1000;
-  pointer-events: none;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-.ngx-contextmenu.cdk-overlay-pane {
-  position: absolute;
-  pointer-events: auto;
-  box-sizing: border-box;
+$menu-padding: 46px;
+
+.t-menu-icon {
+  width: $menu-padding;
+  display: inline-block;
+  text-align: center;
+  color: $gray-700;
 }
 
-// not required but can help with mobile right click
-.target {
-  user-select: none;
+.t-menu-text {
+  margin-right: $menu-padding / 2;
+  display: inline-block;
+}
+
+.t-rtl .t-menu-text {
+  margin-right: 0;
+  margin-left: $menu-padding / 2;
 }
