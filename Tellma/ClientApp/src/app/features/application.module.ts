@@ -159,8 +159,10 @@ import {
   faUserTag,
   faUserTie,
   faUtensils,
-  faWarehouse
+  faWarehouse,
+  faStar
 } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
 import { ResourcesMasterComponent } from './resources/resources-master.component';
@@ -770,6 +772,8 @@ export class ApplicationModule {
       faSign,
       faSitemap,
       faSpa,
+      faStar,
+      faStarAlternative,
       faStoreSlash,
       faStream,
       faSuitcaseRolling,

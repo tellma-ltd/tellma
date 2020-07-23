@@ -37,7 +37,7 @@ export class ContextMenuDirective {
 
   @HostListener('contextmenu', ['$event'])
   handleMenu($event: MouseEvent) {
-    if (!this.tDisableMenu) {
+    if (!this.tDisableMenu && !$event.ctrlKey) {
       this.ctx.showMenu($event, this.tContextMenu, this.tContext);
     }
   }

@@ -74,7 +74,7 @@ export class RootComponent {
     });
 
     // When the entire window loses focus, hide context menus
-    // window.onblur = this.hideContextMenu;
+    window.onblur = this.hideContextMenu;
 
     // Hide the context menu if any scrolling whatsoever takes place
     document.addEventListener('scroll', this.hideContextMenu, true);

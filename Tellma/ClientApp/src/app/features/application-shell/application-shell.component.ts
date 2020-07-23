@@ -1,3 +1,4 @@
+// tslint:disable:member-ordering
 import { Component, OnInit, OnDestroy, Inject, TemplateRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -24,6 +25,10 @@ import { clearServerErrors, applyServerErrors } from '~/app/shared/details/detai
 import { Document as TellmaDocument } from '~/app/data/entities/document';
 import { InboxRecord } from '~/app/data/entities/inbox-record';
 import { GetResponse } from '~/app/data/dto/get-response';
+import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
+import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 't-application-shell',
@@ -50,15 +55,18 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   @ViewChild('myAccountModal', { static: true })
   myAccountModal: TemplateRef<any>;
 
-  @ViewChild('inboxModal', { static: true})
+  @ViewChild('inboxModal', { static: true })
   inboxModal: TemplateRef<any>;
 
+  @ViewChild('favoriteModal', { static: true })
+  favoriteModal: TemplateRef<any>;
+
   constructor(
-    public workspace: WorkspaceService, public nav: NavigationService,
+    public workspace: WorkspaceService, public nav: NavigationService, private router: Router,
     private translate: TranslateService, private progress: ProgressOverlayService,
     private auth: AuthService, private storage: StorageService, private api: ApiService,
     @Inject(DOCUMENT) private document: Document, private modalService: NgbModal,
-    private notificationsService: ServerNotificationsService) {
+    private notificationsService: ServerNotificationsService, private userSettings: CustomUserSettingsService) {
   }
 
   ngOnInit() {
@@ -449,7 +457,156 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   // Favorites management
 
-  public deleteFavorite(url: string) {
+  private _favoritesUserSettings: UserSettingsForClient;
+  private _favorites: Favorite[] = [];
 
+  public get favorites(): Favorite[] {
+    if (this._favoritesUserSettings !== this.ws.userSettings) {
+      this._favoritesUserSettings = this.ws.userSettings;
+
+      let success = false;
+      const favoritesJson = this.ws.userSettings.CustomSettings.favorites;
+      if (!!favoritesJson) {
+        try {
+          this._favorites = JSON.parse(favoritesJson);
+          success = true;
+        } catch { }
+      }
+
+      if (!success) {
+        this._favorites = [];
+      }
+    }
+
+    return this._favorites;
   }
+
+  public favoriteToSave: Favorite;
+  public favoriteMode: 'basic' | 'advanced' = 'basic';
+
+  public get isBasic(): boolean {
+    return this.favoriteMode === 'basic';
+  }
+
+  public get isAdvanced(): boolean {
+    return this.favoriteMode === 'advanced';
+  }
+
+  public onBasicFavoriteEditMode() {
+    this.favoriteMode = 'basic';
+  }
+
+  public onAdvancedFavoriteEditMode() {
+    this.favoriteMode = 'advanced';
+  }
+
+  public onToggleFavoriteEditMode() {
+    if (this.favoriteMode === 'basic') {
+      this.favoriteMode = 'advanced';
+    } else {
+      this.favoriteMode = 'basic';
+    }
+  }
+
+  public onAddFavorite() {
+    const url = this.storage.getItem('last_visited_url');
+    if (!url) {
+      return;
+    }
+
+    const matchIndex = this.favorites.findIndex(e => e.url === url);
+    if (matchIndex < 0) {
+      // if there is no favorite with the given URL -> add a new one
+      const newFavorite: Favorite = { id: 0, label: '', url };
+      this.onEditFavorite(newFavorite);
+    } else {
+      // if a favorite exists with the given url -> edit that one
+      const existingFavorite = this.favorites[matchIndex];
+      this.onEditFavorite(existingFavorite);
+    }
+  }
+
+  public onEditFavorite(favorite: Favorite) {
+    // Clone the favorite and launch the edit modal
+    this.favoriteToSave = JSON.parse(JSON.stringify(favorite));
+    this.showEditFavoriteModal();
+  }
+
+  private showEditFavoriteModal() {
+    this.workspace.ignoreKeyDownEvents = true;
+    this.modalService.open(this.favoriteModal)
+    .result.then(
+      (confirm) => this.onCloseEditFavorite(confirm),
+      () => this.onCloseEditFavorite(),
+    );
+  }
+
+  private onCloseEditFavorite(confirm = false) {
+    this.workspace.ignoreKeyDownEvents = false;
+
+    if (confirm) {
+      // If it's new, give it an id
+      const toSave = this.favoriteToSave;
+      if (toSave.id === 0) {
+        toSave.id = this.maxId + 1;
+      }
+
+      // If it doesn't exist, push it into the favorites list
+      const index = this.favorites.findIndex(e => e.id === toSave.id);
+      if (index < 0) {
+        this.favorites.push(toSave);
+      } else {
+        this.favorites[index] = toSave;
+      }
+
+      // Optimistic save (if it fails, the client will de-sync from the backend)
+      this.saveFavorites();
+    }
+
+    delete this.favoriteToSave;
+  }
+
+  public onDeleteFavorite(favorite: Favorite) {
+    this._favorites = this.favorites.filter(e => e.id !== favorite.id);
+    this.saveFavorites();
+  }
+
+  public onDragDropFavorite(e: CdkDragDrop<Favorite[]>) {
+    const favorites = this.favorites;
+    const currIndex = this.workspace.ws.isRtl ? (favorites.length - e.currentIndex - 1) : e.currentIndex;
+    const prevIndex = e.previousIndex;
+    if (prevIndex !== currIndex) {
+      moveItemInArray(favorites, prevIndex, currIndex);
+      this.saveFavorites();
+    }
+  }
+
+  private get maxId(): number {
+    let maxId = 0;
+    for (const fav of this.favorites) {
+      if (maxId < fav.id) {
+        maxId = fav.id;
+      }
+    }
+
+    return maxId;
+  }
+
+  private saveFavorites() {
+    const favoritesJson = JSON.stringify(this.favorites);
+    this.userSettings.save('favorites', favoritesJson);
+  }
+
+  public onClickFavorite(url: string) {
+    this.onCollapse();
+    this.router.navigateByUrl(url);
+  }
+}
+
+export interface Favorite {
+  id: number;
+  label: string;
+  label2?: string;
+  label3?: string;
+  url: string; // Acts like id
 }
