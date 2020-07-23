@@ -77,6 +77,7 @@
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
 	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @ContractDefinitionIds [IdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
+	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 
 	DECLARE @Agent1 INT;
 	DECLARE @CashOnHandAccount1 INT, @BankAccount1 INT;

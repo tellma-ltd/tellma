@@ -17,7 +17,7 @@
 (110199,1101, N'110199',N'Other property, plant and equipment', N'الممتلكات والمصانع والمعدات الأخرى',@OtherPropertyPlantAndEquipment),
 (1102,11, N'1102',N'Investment property', N'العقارات الاستثمارية',@InvestmentProperty),
 (110201,1102, N'110201',N'Investment property completed', N'العقارات الاستثمارية المستكملة',@InvestmentPropertyCompleted),
-(110202,1102, N'110202',N'Investment property under construction or development (by investment)', N'العقارات الاستثمارية قيد الإنشاء أو التطوير',@InvestmentPropertyUnderConstructionOrDevelopment),
+(110202,1102, N'110202',N'Investment property under construction or development', N'العقارات الاستثمارية قيد الإنشاء أو التطوير',@InvestmentPropertyUnderConstructionOrDevelopment),
 (1103,11, N'1103',N'Goodwill', N'الشهرة',@Goodwill),
 (1104,11, N'1104',N'Intangible assets other than goodwill', N'الأصول غير الملموسة باستثناء الشهرة',@IntangibleAssetsOtherThanGoodwill),
 (1105,11, N'1105',N'Investments accounted for using equity method', N'الاستثمارات التي يتم محاسبتها باستخدام طريقة حقوق الملكية',@InvestmentAccountedForUsingEquityMethod),
@@ -41,7 +41,8 @@
 (1110,11, N'1110',N'Deferred tax assets', N'أصول الضريبة المؤجلة',@DeferredTaxAssets),
 (1111,11, N'1111',N'Current tax assets, non-current', N'الأصول الضريبية المتداولة، غير جارية',@CurrentTaxAssetsNoncurrent),
 (1112,11, N'1112',N'Other non-current financial assets', N'أصول مالية غير متداولة أخرى',@OtherNoncurrentFinancialAssets),
-(111200,1112, N'111200',N'Non-current staff loans', N'قروض طويلة الأجل لموظفين',@NonCurrentLoansExtension),
+(111210,1112, N'111210',N'Non-current staff loans', N'قروض طويلة الأجل لموظفين',@NonCurrentLoansExtension),
+(111220,1112, N'111220',N'Non-current sundry debtors', N'قروض طويلة الأجل لآخرين',@NonCurrentLoansExtension),
 (1113,11, N'1113',N'Other non-current non-financial assets', N'أصول غير مالية غير متداولة أخرى',@OtherNoncurrentNonfinancialAssets),
 (1114,11, N'1114',N'Non-current non-cash assets pledged as collateral for which transferee has right by contract or cust', N'الأصول غير النقدية وغير المتداولة المرهونة كضمان والتي يكون للمنشأة المنقول إليها الحق بموجب عقد ما ',@NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral),
 (12,1, N'12',N'Current assets', N'الأصول المتداولة',@CurrentAssets),
@@ -105,7 +106,7 @@
 (320204,3202, N'320204',N'Accruals classified as current', N'الاستحقاقات المصنفة على أنها متداولة',@AccrualsClassifiedAsCurrent),
 (320205,3202, N'320205',N'Current billed but not delivered to trade customers', N'مطالبات دون تسليم سلع وخدمات إلى الزبائن',@CurrentBilledButNotIssuedExtension),
 (320206,3202, N'320206',N'Current payables on social security and taxes other than income tax', N'الذمم الدائنة المتداولة على الضمان الاجتماعي والضرائب عدا عن ضريبة الدخل',@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax),
-(320207,3202, N'320207',N'Current retention payables', N'دائنة الاحتفاظ الحالية',@CurrentRetentionPayables),
+(320207,3202, N'320207',N'Current retention payables', N'الذمم الدائنة الحالية للمبالغ المتحفظ عليها',@CurrentRetentionPayables),
 (320299,3202, N'320299',N'Other current payables', N'ذمم دائنة متداولة اخرى',@OtherCurrentPayables),
 (3203,32, N'3203',N'Current tax liabilities, current', N'الالتزامات الضريبية المتداولة، جارية',@CurrentTaxLiabilitiesCurrent),
 (3204,32, N'3204',N'Other current financial liabilities', N'التزامات مالية متداولة أخرى',@OtherCurrentFinancialLiabilities),
@@ -116,8 +117,9 @@
 (3206,32, N'3206',N'Liabilities included in disposal groups classified as held for sale', N'الالتزامات المدرجة في مجموعات التصرف المصنفة على أنه محتفظ بها برسم البيع',@LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale),
 (4,NULL, N'4',N'Profit (loss) from operating activities', N'الربح (الخسارة) من الأنشطة التشغيلية',@ProfitLossFromOperatingActivities),
 (41,4, N'41',N'Revenue', N'الإيراد',@Revenue),
-(4101,41, N'4101',N'Revenue from sale of goods', N'الإيراد من بيع السلع',@RevenueFromSaleOfGoods),
-(410101,4101, N'410101',N'Revenue from sale of goods (by product type)', N'الإيرادات من بيع السلع (بنوع المنتج)',@RevenueFromSaleOfGoods),
+(4101,41, N'4101',N'Revenue from sales of merchandise', N'الإيرادات من بيع السلع',@RevenueFromSaleOfGoods),
+(410101,4101, N'410101',N'Revenue from sales of Merchandise.', N'الإيرادات من بيع السلع.',@RevenueFromSaleOfGoods),
+(410102,4101, N'410102',N'Revenue from sales of finished goods', N'الإيرادات من بيع السلع الجاهزة.',@RevenueFromSaleOfGoods),
 (4102,41, N'4102',N'Revenue from rendering of services', N'الإيراد من تقديم الخدمات',@RevenueFromRenderingOfServices),
 (410201,4102, N'410201',N'Revenue from rendering of services (by service type)', N'الإيرادات من تقديم الخدمات (بنوع الخدمة)',@RevenueFromRenderingOfServices),
 (4103,41, N'4103',N'Revenue from construction contracts', N'الإيراد من عقود الإنشاء',@RevenueFromConstructionContracts),
@@ -135,7 +137,9 @@
 (43,4, N'43',N'Expenses by nature', N'النفقات حسب طبيعتها',@ExpenseByNature),
 (4301,43, N'4301',N'Raw materials and consumables used', N'المواد الخام والقابلة للاستهلاك المستخدمة',@RawMaterialsAndConsumablesUsed),
 (430100,4301, N'430100',N'Raw materials and consumables used.', N'المواد الخام والقابلة للاستهلاك المستخدمة.',@RawMaterialsAndConsumablesUsed),
-(4302,43, N'4302',N'Cost of merchandise sold', N'تكلفة البضائع المباعة',@CostOfMerchandiseSold),
+(4302,43, N'4302',N'Cost of goods sold', N'تكلفة البضائع المباعة',@CostOfMerchandiseSold),
+(430201,4302, N'430201',N'Cost of merchandise sold.', N'تكلفة البضائع المباعة.',@CostOfMerchandiseSold),
+(430202,4302, N'430202',N'Cost of finished goods sold.', N'تكلفة المنتج التام المباع',@CostOfMerchandiseSold),
 (4303,43, N'4303',N'Services expense', N'مصروف الخدمات',@ServicesExpense),
 (430301,4303, N'430301',N'Insurance expense', N'مصروف التأمين',@InsuranceExpense),
 (430302,4303, N'430302',N'Professional fees expense', N'مصروف الرسوم المهنية',@ProfessionalFeesExpense),
@@ -166,10 +170,11 @@
 (4399,43, N'4399',N'Other expenses', N'مصاريف أخرى',@OtherExpenseByNature),
 (439900,4399, N'439900',N'Other expenses.', N'مصاريف أخرى.',@OtherExpenseByNature),
 (44,4, N'44',N'Other gains (losses)', N'أرباح (خسائر) الأخرى',@OtherGainsLosses),
-(4402,44, N'4402',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
-(440201,4402, N'440201',N'Gain (loss) on disposal (by type)', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات (بالنوع)',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
-(4403,44, N'4403',N'Gains (losses) on disposals of investment properties', N'الأرباح (الخسائر) من عمليات التصرف بالعقارات الاستثمارية',@GainsLossesOnDisposalsOfInvestmentProperties),
-(4404,44, N'4404',N'The gains (losses) on disposals of investments.', N'الأرباح (الخسائر) من التصرف بالاستثمارات',@GainsLossesOnDisposalsOfInvestments),
+(4400,44, N'4400',N'Other gains (losses).', N'أرباح (خسائر) الأخرى.',@OtherGainsLosses),
+(440002,4400, N'440002',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
+(440003,4400, N'440003',N'Gains (losses) on disposals of investment properties', N'الأرباح (الخسائر) من عمليات التصرف بالعقارات الاستثمارية',@GainsLossesOnDisposalsOfInvestmentProperties),
+(440004,4400, N'440004',N'The gains (losses) on disposals of investments.', N'الأرباح (الخسائر) من التصرف بالاستثمارات',@GainsLossesOnDisposalsOfInvestments),
+(440005,4400, N'440005',N'Foreign exchange gain (loss)', N'أرباح (خسائر) الصرف الأجنبي',@GainsLossesOnExchangeDifferencesOnTranslationRecognisedInProfitOrLoss),
 (5,NULL, N'5',N'Other profit (loss)', N'الربح الآخر (الخسارة)',NULL),
 (51,5, N'51',N'Other profit (loss) from continuing operation', N'الربح الآخر (الخسارة) من العمليات المستمرة',NULL),
 (5101,51, N'5101',N'Gains (losses) on net monetary position', N'الأرباح (الخسائر) من صافي المركز المالي',@GainsLossesOnNetMonetaryPosition),
@@ -214,8 +219,7 @@
 (7200,72, N'7200',N'Guarantees.', N'حسابات مراقبة الضمانات.',@GuaranteesExtension),
 (720001,7200, N'720001',N'Collection Guarantee', N'ضمانات تحصيل',@CollectionGuaranteeExtension),
 (720002,7200, N'720002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension),
-(8,NULL, N'8',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension)
-
+(8,NULL, N'8',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension);
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @AccountClassifications,
@@ -227,20 +231,20 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-DELETE FROM @IndexedIds;
-INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications
-WHERE AccountTypeParentId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [IsActive] = 0)
+--DELETE FROM @IndexedIds;
+--INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications
+--WHERE AccountTypeParentId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [IsActive] = 0)
 
-EXEC [api].[AccountClassifications__Activate]
-	@IndexedIds = @IndexedIds,
-	@IsActive = 0,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+--EXEC [api].[AccountClassifications__Activate]
+--	@IndexedIds = @IndexedIds,
+--	@IsActive = 0,
+--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'AccountClassifications: Deactivating: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+--IF @ValidationErrorsJson IS NOT NULL 
+--BEGIN
+--	Print 'AccountClassifications: Deactivating: ' + @ValidationErrorsJson
+--	GOTO Err_Label;
+--END;
 --Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC11 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'11');
@@ -284,7 +288,8 @@ DECLARE @AC1109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC1110 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1110');
 DECLARE @AC1111 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1111');
 DECLARE @AC1112 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1112');
-DECLARE @AC111200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111200');
+DECLARE @AC111210 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111210');
+DECLARE @AC111220 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111220');
 DECLARE @AC1113 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1113');
 DECLARE @AC1114 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1114');
 DECLARE @AC12 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'12');
@@ -361,6 +366,7 @@ DECLARE @AC4 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N
 DECLARE @AC41 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'41');
 DECLARE @AC4101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4101');
 DECLARE @AC410101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410101');
+DECLARE @AC410102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410102');
 DECLARE @AC4102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4102');
 DECLARE @AC410201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410201');
 DECLARE @AC4103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4103');
@@ -379,6 +385,8 @@ DECLARE @AC43 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = 
 DECLARE @AC4301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4301');
 DECLARE @AC430100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430100');
 DECLARE @AC4302 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4302');
+DECLARE @AC430201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430201');
+DECLARE @AC430202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430202');
 DECLARE @AC4303 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4303');
 DECLARE @AC430301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430301');
 DECLARE @AC430302 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430302');
@@ -409,10 +417,11 @@ DECLARE @AC4307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC4399 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4399');
 DECLARE @AC439900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439900');
 DECLARE @AC44 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'44');
-DECLARE @AC4402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4402');
-DECLARE @AC440201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440201');
-DECLARE @AC4403 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4403');
-DECLARE @AC4404 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4404');
+DECLARE @AC4400 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4400');
+DECLARE @AC440002 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440002');
+DECLARE @AC440003 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440003');
+DECLARE @AC440004 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440004');
+DECLARE @AC440005 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440005');
 DECLARE @AC5 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5');
 DECLARE @AC51 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'51');
 DECLARE @AC5101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'5101');
