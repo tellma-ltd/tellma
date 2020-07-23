@@ -143,24 +143,24 @@ import { AccountingPipe } from './accounting/accounting.pipe';
     NgbDatepickerModule,
     NgbNavModule,
     NgbTooltipModule,
-    NgxChartsModule
+    NgxChartsModule,
   ],
   exports: [
     // Modules
     CommonModule,
+    TranslateModule,
+    FormsModule,
+    FontAwesomeModule,
     HttpClientModule,
     ScrollingModule,
+    DragDropModule,
     NgbDropdownModule,
     NgbModalModule,
     NgbCollapseModule,
     NgbPopoverModule,
     NgbNavModule,
     NgbTooltipModule,
-    TranslateModule,
-    FormsModule,
-    FontAwesomeModule,
     NgxChartsModule,
-    DragDropModule,
 
     // Components & others
     SpinnerComponent,

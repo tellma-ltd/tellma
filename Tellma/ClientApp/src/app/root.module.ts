@@ -29,7 +29,7 @@ import { SignInCallbackGuard } from './data/sign-in-callback.guard';
 import { BaseAddressGuard } from './data/base-address.guard';
 import { CustomTranslationsLoader } from './data/custom-translations-loader';
 import { ProgressOverlayService } from './data/progress-overlay.service';
-import { BlobErrorHttpInterceptor } from './data/blob-error-http-interceptor';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient, progress: ProgressOverlayService) {
@@ -144,6 +144,7 @@ export const routes: Routes = [
       preloadingStrategy: PreloadAllModules,
       enableTracing: false
     }),
+    OverlayModule,
     HttpClientModule,
     NgbCollapseModule,
     NgbDropdownModule,
@@ -159,7 +160,6 @@ export const routes: Routes = [
   ],
   providers: [
     { provide: OAuthStorage, useValue: localStorage },
-    { provide: HTTP_INTERCEPTORS, useClass: BlobErrorHttpInterceptor, multi: true },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RootHttpInterceptor,
