@@ -34,7 +34,7 @@
     <!-- Collapsible Navbar -->
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav px-4 px-md-0 flex-nowrap" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl" cdkDropList
-        cdkDropListOrientation="horizontal" (cdkDropListDropped)="onDragDropFavorite($event)">
+        [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
 
         <!-- Favorites -->
         <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
@@ -49,7 +49,7 @@
             style="height:50px">
             {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
           </div>
-          <div *cdkDragPlaceholder class="bg-secondary t-transparent p-2">{{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+          <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
           </div>
         </li>
 

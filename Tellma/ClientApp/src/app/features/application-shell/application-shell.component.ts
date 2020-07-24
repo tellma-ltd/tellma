@@ -27,7 +27,7 @@ import { InboxRecord } from '~/app/data/entities/inbox-record';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
-import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { moveItemInArray, CdkDragDrop, DropListOrientation } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
 
 @Component({
@@ -600,6 +600,10 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   public onClickFavorite(url: string) {
     this.onCollapse();
     this.router.navigateByUrl(url);
+  }
+
+  public get menuOrientation(): DropListOrientation {
+    return this.isMdScreen ? 'horizontal' : 'vertical';
   }
 }
 
