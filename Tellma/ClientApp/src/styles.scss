@@ -20,11 +20,13 @@ $white: #ffffff;
 $whitish: rgba(255, 255, 255, 0.75);
 $primary-disabled: #69c3d1;
 
+$md-width: 768px;
+
 // customize bootstrap colors and then import bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";
 
 // For angular overlay to work
-@import '~@angular/cdk/overlay-prebuilt.css';
+@import "~@angular/cdk/overlay-prebuilt.css";
 
 // Remove any other round corners
 .modal-content,
@@ -37,15 +39,21 @@ $primary-disabled: #69c3d1;
 }
 
 // this solves a problem in responsive tables that contain dropdowns
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: $md-width - 1) {
   .table-responsive .dropdown-menu {
     position: static !important;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: $md-width) {
   .table-responsive {
     overflow: visible;
+  }
+}
+
+@media only screen and (min-width: $md-width) {
+  .t-md-zero-width {
+    width: 0;
   }
 }
 
@@ -1165,7 +1173,7 @@ div.custom-control.custom-checkbox.t-labelless-checkbox {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: $md-width) {
   .t-form-group {
     flex: 0 0 50%;
     max-width: 50%;
@@ -1370,7 +1378,7 @@ tr.t-highlight {
   justify-content: flex-start;
 }
 
-@media (min-width: 768px) {
+@media (min-width: $md-width) {
   .t-details-image-container {
     padding-top: 0;
     padding-bottom: 0;

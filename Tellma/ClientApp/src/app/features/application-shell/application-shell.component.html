@@ -33,81 +33,52 @@
 
     <!-- Collapsible Navbar -->
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav px-4 px-md-0 flex-nowrap" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl" cdkDropList
-        [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
-
-        <!-- Favorites -->
-        <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
-          cdkDrag>
-          <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
-            (click)="onClickFavorite(favorite.url)">
-            {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
-          </button>
-
-          <!-- Drag preview -->
-          <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
-            style="height:50px">
-            {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
-          </div>
-          <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
-          </div>
-        </li>
-
-        <!-- Context menu for results -->
-        <ng-template #favoriteMenu let-favorite let-close="close">
-          <div class="dropdown">
-            <ul class="dropdown-menu show shadow-sm">
-              <li class="dropdown-item px-0 py-1" (click)="onEditFavorite(favorite); close();">
-                <div class="t-menu-icon">
-                  <fa-icon icon="pen"></fa-icon>
-                </div>
-                <div class="t-menu-text">
-                  {{ 'Edit' | translate }}
-                </div>
-              </li>
-              <li class="dropdown-item px-0 py-1" (click)="onDeleteFavorite(favorite); close();">
-                <div class="t-menu-icon">
-                  <fa-icon icon="trash"></fa-icon>
-                </div>
-                <div class="t-menu-text">
-                  {{ 'Delete' | translate }}
-                </div>
-              </li>
-            </ul>
-          </div>
-        </ng-template>
-
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
-            (click)="onCollapse()">
-            {{ 'Users' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
-            (click)="onCollapse()">
-            {{ 'Roles' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./units"
-            (click)="onCollapse()">
-            {{ 'Units' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
-            (click)="onCollapse()">
-            {{ 'Currencies' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
-            (click)="onCollapse()">
-            {{ 'Settings' | translate }}
-          </a>
-        </li> -->
-      </ol>
+      <!-- <div class="h-100 d-flex align-items-stretch flex-grow-1 overflow-auto" style="width: 0;"> -->
+        <ol class="nav navbar-nav px-4 px-md-0 flex-nowrap flex-grow-1 t-md-zero-width overflow-auto" cdkDropList
+          [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
+  
+          <!-- Favorites -->
+          <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
+            cdkDrag>
+            <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
+              (click)="onClickFavorite(favorite.url)">
+              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+            </button>
+  
+            <!-- Drag preview -->
+            <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
+              style="height:50px">
+              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+            </div>
+            <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
+            </div>
+          </li>
+  
+          <!-- Context menu for results -->
+          <ng-template #favoriteMenu let-favorite let-close="close">
+            <div class="dropdown">
+              <ul class="dropdown-menu show shadow-sm">
+                <li class="dropdown-item px-0 py-1" (click)="onEditFavorite(favorite); close();">
+                  <div class="t-menu-icon">
+                    <fa-icon icon="pen"></fa-icon>
+                  </div>
+                  <div class="t-menu-text">
+                    {{ 'Edit' | translate }}
+                  </div>
+                </li>
+                <li class="dropdown-item px-0 py-1" (click)="onDeleteFavorite(favorite); close();">
+                  <div class="t-menu-icon">
+                    <fa-icon icon="trash"></fa-icon>
+                  </div>
+                  <div class="t-menu-text">
+                    {{ 'Delete' | translate }}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </ng-template>
+        </ol>
+      <!-- </div> -->
 
       <ol class="nav navbar-nav flex-nowrap">
 
@@ -118,42 +89,6 @@
             <fa-icon icon="star"></fa-icon>
           </button>
         </li>
-
-        <!-- Add to Favorites -->
-        <!-- <li class="nav-item">
-          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center"
-            (click)="onAddFavorite()" [title]="'AddScreenToFavorites' | translate">
-            <fa-icon icon="star"></fa-icon>
-          </button>
-        </li> -->
-
-        <!-- Add to Favorites -->
-        <!-- <li class="nav-item" ngbDropdown #favoritesDrop="ngbDropdown" container=""
-          (openChange)="onDropdownAddFavorite($event)">
-          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center" ngbDropdownToggle
-            [title]="'AddScreenToFavorites' | translate">
-            <fa-icon icon="star"></fa-icon>
-          </button>
-          <div class="dropdown-menu m-0 shadow px-1 py-0" style="min-width: 15rem;" [class.dropdown-menu-right]="!isRtl"
-            ngbDropdownMenu>
-            <div class="p-2 t-large font-weight-bold">{{ 'AddScreenToFavorites' | translate }}</div>
-            <div class="p-2">
-              <t-text-editor *ngIf="favoriteToSave" [(ngModel)]="favoriteToSave.label"
-                [placeholder]="('Label' | translate) + '...'"></t-text-editor>
-            </div>
-            <div class="d-flex px-2 pb-2 justify-content-end">
-              <button class="btn btn-sm btn-primary" (click)="onSaveFavorite(favoritesDrop)"
-                [disabled]="!favoriteToSave?.label">
-                <fa-icon icon="save"></fa-icon>
-                &nbsp;{{ 'Save' | translate }}
-              </button>
-              <button class="btn btn-sm btn-light text-primary t-white-button" (click)="favoritesDrop.close()">
-                <fa-icon icon="times"></fa-icon>
-                &nbsp;{{ 'Cancel' | translate }}
-              </button>
-            </div>
-          </div>
-        </li> -->
 
         <!-- Inbox Button (Desktop) -->
         <li class="nav-item" ngbDropdown #inboxDrop="ngbDropdown" container="" (openChange)="onDropdownInbox($event)"
@@ -205,7 +140,7 @@
               </div>
             </div>
             &nbsp;&nbsp;
-            <div class="d-flex flex-column justify-content-center">
+            <div class="d-flex flex-column justify-content-center align-self-center">
               <div style="line-height:1.1rem">{{ userName }}</div>
               <div class="small font-weight-bold"> {{ companyName }}</div>
             </div>

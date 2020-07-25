@@ -31,7 +31,7 @@ export class ContextMenuDirective {
    * In milliseconds: How long to keep pressing on a touch screen before the context menu is triggered
    */
   @Input()
-  longpressDuration = 600;
+  longpressDuration = 750;
 
   constructor(private ctx: ContextMenuService) { }
 
@@ -44,7 +44,7 @@ export class ContextMenuDirective {
 
   // For mobile users
   @HostListener('touchstart', ['$event'])
-  handleMouseDown($event: any) {
+  handleTouchStart($event: any) {
     if (this.longpressDuration >= 0) {
       $event.stopPropagation();
       $event.clientY = $event.touches[0].clientY;
@@ -58,7 +58,17 @@ export class ContextMenuDirective {
   }
 
   @HostListener('touchend')
-  handleMouseUp() {
+  handleTouchEnd() {
+    clearTimeout(this.mouseDownTimeoutId);
+  }
+
+  @HostListener('touchmove') // Drag n Drop
+  handleTouchMove() {
+    clearTimeout(this.mouseDownTimeoutId);
+  }
+
+  @HostListener('touchcancel')
+  handleTouchCancel() {
     clearTimeout(this.mouseDownTimeoutId);
   }
 }

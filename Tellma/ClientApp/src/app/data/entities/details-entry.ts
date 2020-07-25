@@ -153,7 +153,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
                 NotedContractId: { control: 'number', label: () => `${trx.instant('Entry_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedContract: { control: 'navigation', label: () => trx.instant('Entry_NotedContract'), type: 'Contract', foreignKeyName: 'ContractId' },
+                NotedContract: { control: 'navigation', label: () => trx.instant('Entry_NotedContract'), type: 'Contract', foreignKeyName: 'NotedContractId' },
                 NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NotedDate: { control: 'date', label: () => trx.instant('Entry_NotedDate') },
