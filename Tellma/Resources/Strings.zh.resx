@@ -76,20 +76,20 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>分类</value>
   </data>
-  <data name="Account_Contract" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Account_ContractDefinition" xml:space="preserve">
-    <value>契约定义</value>
-  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
+  </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Account_CustodianDefinition" xml:space="preserve">
+    <value>护法定义</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
   </data>
-  <data name="Account_NotedContractDefinition" xml:space="preserve">
-    <value>注意合同的定义</value>
+  <data name="Account_NotedRelationDefinition" xml:space="preserve">
+    <value>注意到关系定义</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>概念</value>
   </data>
-  <data name="AccountType_ContractDefinitions" xml:space="preserve">
-    <value>合同定义</value>
+  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
+    <value>护法定义</value>
   </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>截止日期标签</value>
@@ -145,11 +145,11 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>注意金额标签</value>
   </data>
-  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
-    <value>注意合同的定义</value>
-  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
+  </data>
+  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
+    <value>注意关联定义</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -160,17 +160,17 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>时间2标签</value>
   </data>
-  <data name="AccountTypeContractDefinition" xml:space="preserve">
-    <value>帐户类型合同的定义</value>
+  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
+    <value>帐户类型定义护法</value>
   </data>
-  <data name="AccountTypeContractDefinitions" xml:space="preserve">
-    <value>帐户类型合同的定义</value>
+  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
+    <value>帐户类型定义护法</value>
   </data>
-  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
-    <value>帐户类型注意到合同定义</value>
+  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
+    <value>帐户类型注意到关系定义</value>
   </data>
-  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
-    <value>帐户类型注意到合同定义</value>
+  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
+    <value>帐户类型注意到关联定义</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>帐户类型资源定义</value>
@@ -339,48 +339,6 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>确认密码</value>
-  </data>
-  <data name="Contract" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Contract_Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Contract_BankAccountNumber" xml:space="preserve">
-    <value>银行帐号</value>
-  </data>
-  <data name="Contract_Job" xml:space="preserve">
-    <value>工作</value>
-  </data>
-  <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
-    <value>税号</value>
-  </data>
-  <data name="Contract_User" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="Contract_Users" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="ContractDefinition" xml:space="preserve">
-    <value>契约定义</value>
-  </data>
-  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
-    <value>用户基数</value>
-  </data>
-  <data name="ContractDefinitions" xml:space="preserve">
-    <value>合同定义</value>
-  </data>
-  <data name="Contracts" xml:space="preserve">
-    <value>代理</value>
-  </data>
-  <data name="ContractUser" xml:space="preserve">
-    <value>合同用户</value>
-  </data>
-  <data name="ContractUser_User" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="ContractUsers" xml:space="preserve">
-    <value>合约用户</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>版权所有©{0}巴南IT，Ltd.保留所有权利。</value>
@@ -553,14 +511,14 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
-  <data name="Document_CreditContract" xml:space="preserve">
-    <value>信贷合同</value>
+  <data name="Document_CreditCustodian" xml:space="preserve">
+    <value>信用护法</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Document_DebitContract" xml:space="preserve">
-    <value>借记合同</value>
+  <data name="Document_DebitCustodian" xml:space="preserve">
+    <value>借记护法</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>属性1</value>
@@ -577,8 +535,8 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>文本属性2</value>
   </data>
-  <data name="Document_NotedContract" xml:space="preserve">
-    <value>注意合同</value>
+  <data name="Document_NotedRelation" xml:space="preserve">
+    <value>注意到关系</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
@@ -748,14 +706,11 @@
   <data name="Entry_Center" xml:space="preserve">
     <value>责任中心</value>
   </data>
-  <data name="Entry_Contract" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Entry_ContractType" xml:space="preserve">
-    <value>合同类型</value>
-  </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>货币</value>
+  </data>
+  <data name="Entry_Custodian" xml:space="preserve">
+    <value>代理人</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>方向</value>
@@ -787,11 +742,11 @@
   <data name="Entry_NotedAmount" xml:space="preserve">
     <value>关联量</value>
   </data>
-  <data name="Entry_NotedContract" xml:space="preserve">
-    <value>相关代理</value>
-  </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
+  </data>
+  <data name="Entry_NotedRelation" xml:space="preserve">
+    <value>相关代理</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>数量</value>
@@ -885,9 +840,6 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
-  </data>
-  <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>合同DefinitionId“{0}”未能找到。</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>该日期不能存档日期之前{0}</value>
@@ -1036,6 +988,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>属性{0}上式{1}是一个集合，并且因此在一个{2}路径不允许的。</value>
   </data>
+  <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>关系DefinitionId“{0}”未能找到。</value>
+  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>资源DefinitionId“{0}”未能找到。</value>
   </data>
@@ -1069,11 +1024,11 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与中心 '{3}' 中使用。</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithContract3" xml:space="preserve">
-    <value>帐户 '{0}' 在{1} {2}与合同 '{3}' 中使用。</value>
-  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与货币 '{3}' 中使用。</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
+    <value>帐户 '{0}' 在{1} {2}与托管人 '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与资源 '{3}' 中使用。</value>
@@ -1101,18 +1056,6 @@
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>该代码已经被使用“{0}”。</value>
-  </data>
-  <data name="Error_TheContract01HasNoUsers" xml:space="preserve">
-    <value>{0} '{1}' 没有定义的用户。</value>
-  </data>
-  <data name="Error_TheContract01IsUsedInAccount2" xml:space="preserve">
-    <value>在帐户用于{0} '{1}' '{2}'。</value>
-  </data>
-  <data name="Error_TheContract01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' 在{2} {3}被使用。</value>
-  </data>
-  <data name="Error_TheContractDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>合约定义“{0}”中的帐户类型“{1}”中使用。</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>汇率货币“{0}”上日期{1}被复制。</value>
@@ -1191,6 +1134,18 @@
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>目的字段是必需的，因为该帐户类型是“{0}”。</value>
+  </data>
+  <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
+    <value>{0} '{1}' 没有定义的用户。</value>
+  </data>
+  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
+    <value>在帐户用于{0} '{1}' '{2}'。</value>
+  </data>
+  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} '{1}' 在{2} {3}被使用。</value>
+  </data>
+  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>关联定义“{0}”中的帐户类型“{1}”中使用。</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>帐户资源 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
@@ -1830,6 +1785,48 @@
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
     <value>您的外部登录插件</value>
+  </data>
+  <data name="Relation" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Relation_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Relation_BankAccountNumber" xml:space="preserve">
+    <value>银行帐号</value>
+  </data>
+  <data name="Relation_Job" xml:space="preserve">
+    <value>工作</value>
+  </data>
+  <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
+    <value>税号</value>
+  </data>
+  <data name="Relation_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="Relation_Users" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="RelationDefinition" xml:space="preserve">
+    <value>关系定义</value>
+  </data>
+  <data name="RelationDefinition_UserCardinality" xml:space="preserve">
+    <value>用户基数</value>
+  </data>
+  <data name="RelationDefinitions" xml:space="preserve">
+    <value>关联定义</value>
+  </data>
+  <data name="Relations" xml:space="preserve">
+    <value>代理</value>
+  </data>
+  <data name="RelationUser" xml:space="preserve">
+    <value>用户关系</value>
+  </data>
+  <data name="RelationUser_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="RelationUsers" xml:space="preserve">
+    <value>用户相</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>记住账号？</value>

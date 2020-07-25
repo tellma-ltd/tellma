@@ -3,7 +3,7 @@ import { WorkspaceService } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { metadata_Role } from '../role';
-import { metadata_Contract } from '../contract';
+import { metadata_Relation } from '../relations';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
@@ -28,7 +28,7 @@ import { metadata_MarkupTemplate } from '../markup-template';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
 import { metadata_Agent } from '../agent';
-import { metadata_ContractDefinition } from '../contract-definition';
+import { metadata_RelationDefinition } from '../relations-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
 import { metadata_LookupDefinition } from '../lookup-definition';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -43,7 +43,7 @@ export const metadata: {
     Unit: metadata_Unit,
     User: metadata_User,
     Agent: metadata_Agent,
-    Contract: metadata_Contract,
+    Relation: metadata_Relation,
     Role: metadata_Role,
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
@@ -63,7 +63,7 @@ export const metadata: {
     MarkupTemplate: metadata_MarkupTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
-    ContractDefinition: metadata_ContractDefinition,
+    RelationDefinition: metadata_RelationDefinition,
     ResourceDefinition: metadata_ResourceDefinition,
     LookupDefinition: metadata_LookupDefinition,
 
@@ -111,12 +111,12 @@ export interface EntityDescriptor {
     definitionIds?: number[];
 
     /**
-     * The plural name of the entity (e.g. Contracts).
+     * The plural name of the entity (e.g. Relations).
      */
     titlePlural: () => string;
 
     /**
-     * The singular name of the entity (e.g. Contract).
+     * The singular name of the entity (e.g. Relation).
      */
     titleSingular: () => string;
 
@@ -313,7 +313,7 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     /**
      * Determines the type of this property
      */
-    type: string; // e.g. Contract
+    type: string; // e.g. Relation
 
     /**
      * Determines the name of the collection holding the entities represented by this property

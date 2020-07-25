@@ -189,8 +189,8 @@
                     },
                     new ViewInfo
                     {
-                        Id = "contract-definitions",
-                        Name = "ContractDefinitions",
+                        Id = "relation-definitions",
+                        Name = "RelationDefinitions",
                         Read = true,
                         Update = true,
                         Delete = true,

@@ -17,7 +17,7 @@ import { ExportForImportArguments } from './dto/export-for-import-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
-import { Contract } from './entities/contract';
+import { Relation } from './entities/relations';
 import { Role } from './entities/role';
 import { Settings } from './entities/settings';
 import { SettingsForClient } from './dto/settings-for-client';
@@ -308,10 +308,10 @@ export class ApiService {
     };
   }
 
-  public contractsApi(definitionId: number, cancellationToken$: Observable<void>) {
+  public relationsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Contract>(`contracts/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Contract>(`contracts/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<Relation>(`relations/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Relation>(`relations/${definitionId}`, cancellationToken$)
     };
   }
 
@@ -915,9 +915,9 @@ export class ApiService {
     };
   }
 
-  public contractDefinitionsApi(cancellationToken$: Observable<void>) {
+  public relationDefinitionsApi(cancellationToken$: Observable<void>) {
     return {
-      updateState: this.updateDefinitionStateFactory('contract-definitions', cancellationToken$)
+      updateState: this.updateDefinitionStateFactory('relation-definitions', cancellationToken$)
     };
   }
 

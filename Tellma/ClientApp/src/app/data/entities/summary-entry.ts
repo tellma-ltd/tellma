@@ -12,7 +12,7 @@ export interface SummaryEntry extends Entity {
     CurrencyId?: string;
     ResourceId?: number;
     UnitId?: number;
-    ContractId?: number;
+    CustodianId?: number;
     EntryTypeId?: number;
 
     // Quantity
@@ -72,8 +72,8 @@ export function metadata_SummaryEntry(wss: WorkspaceService, trx: TranslateServi
                 Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
                 UnitId: { control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { control: 'navigation', label: () => trx.instant('Entry_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
-                ContractId: { control: 'number', label: () => `${trx.instant('Entry_Contract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Contract: { control: 'navigation', label: () => trx.instant('Entry_Contract'), type: 'Contract', foreignKeyName: 'ContractId' },
+                CustodianId: { control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { control: 'navigation', label: () => trx.instant('Entry_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Entry_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
 

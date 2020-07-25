@@ -88,10 +88,10 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-agents-picker>
 
-                            <t-contracts-picker *ngSwitchCase="'Contract'" [(ngModel)]="arguments[p.key]"
+                            <t-relations-picker *ngSwitchCase="'Relation'" [(ngModel)]="arguments[p.key]"
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </t-contracts-picker>
+                            </t-relations-picker>
 
                             <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
@@ -127,10 +127,10 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-users-picker>
 
-                            <t-contract-definitions-picker *ngSwitchCase="'ContractDefinition'"
+                            <t-relation-definitions-picker *ngSwitchCase="'RelationDefinition'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </t-contract-definitions-picker>
+                            </t-relation-definitions-picker>
 
                             <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"

@@ -12,7 +12,7 @@ import { APPLICATION_VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
 import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { metadata_Contract } from '~/app/data/entities/contract';
+import { metadata_Relation } from '~/app/data/entities/relations';
 import { metadata_Document } from '~/app/data/entities/document';
 
 interface ConcreteViewInfo {
@@ -278,9 +278,9 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
         }
       }
 
-      const contracts = this.ws.definitions.Contracts;
-      for (const definitionId of Object.keys(contracts).map(e => +e)) {
-        const entityDesc = metadata_Contract(this.workspace, this.translate, definitionId);
+      const relations = this.ws.definitions.Relations;
+      for (const definitionId of Object.keys(relations).map(e => +e)) {
+        const entityDesc = metadata_Relation(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
             name: entityDesc.titlePlural,
@@ -293,7 +293,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
             }
           };
         } else {
-          console.error(`Could not find contract definitionId '${definitionId}'`);
+          console.error(`Could not find relation definitionId '${definitionId}'`);
         }
       }
 

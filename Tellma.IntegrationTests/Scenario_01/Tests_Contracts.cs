@@ -52,7 +52,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Contract>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Relation>>();
 
             // Assert the result makes sense
             Assert.Equal("Contract", responseData.CollectionName);
@@ -73,7 +73,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Contract>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Relation>>();
 
             // Assert the result makes sense
             Assert.Equal("Contract", responseData.CollectionName);
@@ -96,7 +96,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test05()
         {
             // Prepare a well formed entity
-            var dtoForSave = new ContractForSave
+            var dtoForSave = new RelationForSave
             {
                 Name = "John Wick",
                 Name2 = "جون ويك",
@@ -105,7 +105,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                 IsRelated = false
             };
 
-            var dtoForSave2 = new ContractForSave
+            var dtoForSave2 = new RelationForSave
             {
                 Name = "Jason Bourne",
                 Name2 = "جيسن بورن",
@@ -115,7 +115,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Save it
-            var dtosForSave = new List<ContractForSave> { dtoForSave, dtoForSave2 };
+            var dtosForSave = new List<RelationForSave> { dtoForSave, dtoForSave2 };
             var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
@@ -123,7 +123,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert that the response is well-formed singleton of Contract
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Contract>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Relation>>();
             Assert.Collection(responseData.Result,
                 e => Assert.NotEqual(0, e.Id),
                 e => Assert.NotEqual(0, e.Id));
@@ -157,7 +157,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test06()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<Contract>("Contract_JohnWick");
+            var entity = Shared.Get<Relation>("Contract_JohnWick");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
@@ -165,7 +165,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of contract
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Contract>>();
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Relation>>();
             Assert.Equal("Contract", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
@@ -179,8 +179,8 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test07()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
-            var list = new List<ContractForSave> {
-                new ContractForSave
+            var list = new List<RelationForSave> {
+                new RelationForSave
                 {
                     Name = "Another Name",
                     Name2 = "Another Name",
@@ -213,7 +213,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
-            var dtoForSave = new ContractForSave
+            var dtoForSave = new RelationForSave
             {
                 Name = "  Matilda", // Leading space
                 Name2 = "ماتيلدا",
@@ -222,11 +222,11 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<ContractForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<RelationForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Contract>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Relation>>();
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
@@ -246,7 +246,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<Contract>("Contract_Matilda");
+            var entity = Shared.Get<Relation>("Contract_Matilda");
             var id = entity.Id;
 
             // Query the delete API
@@ -260,7 +260,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test10()
         {
             // Get the Id
-            var entity = Shared.Get<Contract>("Contract_Matilda");
+            var entity = Shared.Get<Relation>("Contract_Matilda");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -277,7 +277,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
-            var entity = Shared.Get<Contract>("Contract_JohnWick");
+            var entity = Shared.Get<Relation>("Contract_JohnWick");
             var id = entity.Id;
 
             // Call the API
@@ -288,7 +288,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Contract>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Relation>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
@@ -300,7 +300,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<Contract>("Contract_JohnWick");
+            var entity = Shared.Get<Relation>("Contract_JohnWick");
             var id = entity.Id;
 
             // Call the API
@@ -311,7 +311,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Contract>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Relation>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
@@ -323,7 +323,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test13()
         {
             // Get the Id
-            var entity = Shared.Get<Contract>("Contract_JohnWick");
+            var entity = Shared.Get<Relation>("Contract_JohnWick");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -332,7 +332,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of Contract
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Contract>>();
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Relation>>();
             Assert.Equal("Contract", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;

@@ -8,8 +8,8 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
 import { UnitsDetailsComponent } from './units/units-details.component';
 import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
 import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
-import { ContractsMasterComponent } from './contracts/contracts-master.component';
-import { ContractsDetailsComponent } from './contracts/contracts-details.component';
+import { RelationsMasterComponent } from './relations/relations-master.component';
+import { RelationsDetailsComponent } from './relations/relations-details.component';
 import { RolesMasterComponent } from './roles/roles-master.component';
 import { RolesDetailsComponent } from './roles/roles-details.component';
 import { UsersDetailsComponent } from './users/users-details.component';
@@ -178,7 +178,7 @@ import { AccountTypesPickerComponent } from './account-types/account-types-picke
 import { AccountsMasterComponent } from './accounts/accounts-master.component';
 import { AccountsDetailsComponent } from './accounts/accounts-details.component';
 import { AccountsPickerComponent } from './accounts/accounts-picker.component';
-import { ContractsPickerComponent } from './contracts/contracts-picker.component';
+import { RelationsPickerComponent } from './relations/relations-picker.component';
 import { ResourcesPickerComponent } from './resources/resources-picker.component';
 import { ReportComponent } from './report/report.component';
 import { ReportResultsComponent } from './report-results/report-results.component';
@@ -210,9 +210,9 @@ import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { AgmCoreModule } from '@agm/core';
-import { ContractDefinitionsDetailsComponent } from './contract-definitions/contract-definitions-details.component';
-import { ContractDefinitionsMasterComponent } from './contract-definitions/contract-definitions-master.component';
-import { ContractDefinitionsPickerComponent } from './contract-definitions/contract-definitions-picker.component';
+import { RelationDefinitionsDetailsComponent } from './relation-definitions/relation-definitions-details.component';
+import { RelationDefinitionsMasterComponent } from './relation-definitions/relation-definitions-master.component';
+import { RelationDefinitionsPickerComponent } from './relation-definitions/relation-definitions-picker.component';
 import { ResourceDefinitionsDetailsComponent } from './resource-definitions/resource-definitions-details.component';
 import { ResourceDefinitionsMasterComponent } from './resource-definitions/resource-definitions-master.component';
 import { ResourceDefinitionsPickerComponent } from './resource-definitions/resource-definitions-picker.component';
@@ -221,7 +221,7 @@ import { LookupDefinitionsDetailsComponent } from './lookup-definitions/lookup-d
 import { LookupDefinitionsPickerComponent } from './lookup-definitions/lookup-definitions-picker.component';
 import { StatementComponent } from './statement/statement.component';
 import { AccountStatementComponent } from './statement/account-statement.component';
-import { ContractStatementComponent } from './statement/contract-statement.component';
+import { RelationStatementComponent } from './statement/relation-statement.component';
 
 const routes: Routes = [
   {
@@ -266,20 +266,20 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Contracts
+      // Relations
       {
-        path: 'contracts',
-        component: ContractsMasterComponent,
+        path: 'relations',
+        component: RelationsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'contracts/:definitionId',
-        component: ContractsMasterComponent,
+        path: 'relations/:definitionId',
+        component: RelationsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'contracts/:definitionId/:id',
-        component: ContractsDetailsComponent,
+        path: 'relations/:definitionId/:id',
+        component: RelationsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -488,15 +488,15 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Contract Definitions
+      // Relation Definitions
       {
-        path: 'contract-definitions',
-        component: ContractDefinitionsMasterComponent,
+        path: 'relation-definitions',
+        component: RelationDefinitionsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'contract-definitions/:id',
-        component: ContractDefinitionsDetailsComponent,
+        path: 'relation-definitions/:id',
+        component: RelationDefinitionsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -538,8 +538,8 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'contract-statement/:definitionId',
-        component: ContractStatementComponent,
+        path: 'relation-statement/:definitionId',
+        component: RelationStatementComponent,
         canDeactivate: [SaveInProgressGuard]
       },
 
@@ -574,8 +574,8 @@ const routes: Routes = [
     UnitsDetailsComponent,
     ApplicationPageNotFoundComponent,
     MainMenuComponent,
-    ContractsMasterComponent,
-    ContractsDetailsComponent,
+    RelationsMasterComponent,
+    RelationsDetailsComponent,
     RolesMasterComponent,
     RolesDetailsComponent,
     UsersDetailsComponent,
@@ -598,7 +598,7 @@ const routes: Routes = [
     AccountsMasterComponent,
     AccountsDetailsComponent,
     AccountsPickerComponent,
-    ContractsPickerComponent,
+    RelationsPickerComponent,
     ResourcesPickerComponent,
     ReportComponent,
     ReportResultsComponent,
@@ -629,9 +629,9 @@ const routes: Routes = [
     AgentsDetailsComponent,
     AgentsMasterComponent,
     AgentsPickerComponent,
-    ContractDefinitionsDetailsComponent,
-    ContractDefinitionsMasterComponent,
-    ContractDefinitionsPickerComponent,
+    RelationDefinitionsDetailsComponent,
+    RelationDefinitionsMasterComponent,
+    RelationDefinitionsPickerComponent,
     ResourceDefinitionsDetailsComponent,
     ResourceDefinitionsMasterComponent,
     ResourceDefinitionsPickerComponent,
@@ -640,7 +640,7 @@ const routes: Routes = [
     LookupDefinitionsPickerComponent,
     StatementComponent,
     AccountStatementComponent,
-    ContractStatementComponent,
+    RelationStatementComponent,
   ],
   imports: [
     SharedModule,

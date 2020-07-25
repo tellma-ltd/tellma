@@ -76,20 +76,20 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>ምደባ</value>
   </data>
-  <data name="Account_Contract" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Account_ContractDefinition" xml:space="preserve">
-    <value>የኮንትራት ፍቺ</value>
-  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
+  </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Account_CustodianDefinition" xml:space="preserve">
+    <value>ጠባቂ ትርጓሜ</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
-  <data name="Account_NotedContractDefinition" xml:space="preserve">
-    <value>እንደተጠቀሰው የኮንትራት ፍቺ</value>
+  <data name="Account_NotedRelationDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>ሐሳብ</value>
   </data>
-  <data name="AccountType_ContractDefinitions" xml:space="preserve">
-    <value>የኮንትራት ፍቺዎች</value>
+  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
+    <value>ጠባቂ ፍቺዎች</value>
   </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>መጠናቀቅ ያለበት ቀን መሰየሚያ</value>
@@ -145,11 +145,11 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>እንደተጠቀሰው መጠን መለያ ስም</value>
   </data>
-  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
-    <value>እንደተጠቀሰው ኮንትራት ፍቺዎች</value>
-  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
+  </data>
+  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
@@ -160,17 +160,17 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>ሰዓት 2 መሰየሚያ</value>
   </data>
-  <data name="AccountTypeContractDefinition" xml:space="preserve">
-    <value>የመለያ አይነት ኮንትራት ፍቺ</value>
+  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
+    <value>የመለያ አይነት የምዝግቦች ፍቺ</value>
   </data>
-  <data name="AccountTypeContractDefinitions" xml:space="preserve">
-    <value>የመለያ አይነት ኮንትራት ፍቺዎች</value>
+  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
+    <value>የመለያ አይነት የምዝግቦች ፍቺዎች</value>
   </data>
-  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
-    <value>የመለያ አይነት በመቆየቱ የኮንትራት ፍቺ</value>
+  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
+    <value>የመለያ አይነት በመቆየቱ ግንኙነት ፍቺ</value>
   </data>
-  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
-    <value>የመለያ አይነት ኮንትራት ትርጓሜ በመቆየቱ</value>
+  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
+    <value>የመለያ አይነት በመቆየቱ ግንኙነት ፍቺዎች</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>የመለያ አይነት ሃብት ፍቺ</value>
@@ -339,48 +339,6 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>የይለፍ ቃል አረጋግጥ</value>
-  </data>
-  <data name="Contract" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Contract_Agent" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Contract_BankAccountNumber" xml:space="preserve">
-    <value>የባንክ ሂሳብ ቁጥር</value>
-  </data>
-  <data name="Contract_Job" xml:space="preserve">
-    <value>ሥራ</value>
-  </data>
-  <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
-    <value>የግብር መለያ ቁጥር</value>
-  </data>
-  <data name="Contract_User" xml:space="preserve">
-    <value>ተጠቃሚ</value>
-  </data>
-  <data name="Contract_Users" xml:space="preserve">
-    <value>ተጠቃሚዎች</value>
-  </data>
-  <data name="ContractDefinition" xml:space="preserve">
-    <value>የኮንትራት ፍቺ</value>
-  </data>
-  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
-    <value>የተጠቃሚ የቁጥሮች</value>
-  </data>
-  <data name="ContractDefinitions" xml:space="preserve">
-    <value>የኮንትራት ፍቺዎች</value>
-  </data>
-  <data name="Contracts" xml:space="preserve">
-    <value>ወኪሎች</value>
-  </data>
-  <data name="ContractUser" xml:space="preserve">
-    <value>የኮንትራት ተጠቃሚ</value>
-  </data>
-  <data name="ContractUser_User" xml:space="preserve">
-    <value>ተጠቃሚ</value>
-  </data>
-  <data name="ContractUsers" xml:space="preserve">
-    <value>ውሌ ተጠቃሚዎች</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>የቅጂ መብት © {0} ተልማ, ኃላፊነቱ የተወሰነ ሁሉም መብቶች የተጠበቁ ናቸው.</value>
@@ -553,13 +511,13 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>አስተያየት</value>
   </data>
-  <data name="Document_CreditContract" xml:space="preserve">
+  <data name="Document_CreditCustodian" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Document_DebitContract" xml:space="preserve">
+  <data name="Document_DebitCustodian" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
@@ -577,7 +535,7 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 2</value>
   </data>
-  <data name="Document_NotedContract" xml:space="preserve">
+  <data name="Document_NotedRelation" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
@@ -748,14 +706,11 @@
   <data name="Entry_Center" xml:space="preserve">
     <value>ኃላፊነት ማዕከል</value>
   </data>
-  <data name="Entry_Contract" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Entry_ContractType" xml:space="preserve">
-    <value>የኮንትራት ዓይነት</value>
-  </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
+  </data>
+  <data name="Entry_Custodian" xml:space="preserve">
+    <value>ወኪል</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>አቅጣጫ</value>
@@ -787,11 +742,11 @@
   <data name="Entry_NotedAmount" xml:space="preserve">
     <value>እንደተጠቀሰው መጠን</value>
   </data>
-  <data name="Entry_NotedContract" xml:space="preserve">
-    <value>እንደተጠቀሰው ወኪል</value>
-  </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን</value>
+  </data>
+  <data name="Entry_NotedRelation" xml:space="preserve">
+    <value>እንደተጠቀሰው ወኪል</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>ብዛት</value>
@@ -885,9 +840,6 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ ላይ ሳለ አንድ ስህተት ተከስቷል.</value>
-  </data>
-  <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>የኮንትራት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>ቀኑ ማህደሩ ቀን በፊት ሊሆን አይችልም {0}</value>
@@ -1036,6 +988,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>አይነት {1} ላይ ንብረት {0} ስብስብ ነው, ስለዚህ ወደ {2} መንገድ ላይ አይፈቀድም.</value>
   </data>
+  <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>ግንኙነት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
+  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ሀብት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
@@ -1069,11 +1024,11 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>መለያ »{0} 'ማዕከል ጋር {1} {2}« {3} »ላይ ጥቅም ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithContract3" xml:space="preserve">
-    <value>መለያ »{0} 'ውል ጋር {1} {2}« {3} »ላይ ጥቅም ላይ ውሏል.</value>
-  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>መለያ »{0}» ምንዛሬ ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
+    <value>መለያ »{0}» ጠባቂ ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>መለያ »{0}» ሀብት ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
@@ -1101,18 +1056,6 @@
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheContract01HasNoUsers" xml:space="preserve">
-    <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
-  </data>
-  <data name="Error_TheContract01IsUsedInAccount2" xml:space="preserve">
-    <value>ሂሳብ ውስጥ ጥቅም ላይ ነው {0} «{1}» «{2}».</value>
-  </data>
-  <data name="Error_TheContract01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} «{1}« {2} {3} ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheContractDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>ውል ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>ቀን {1} ላይ የገንዘብ ምንዛሪ የምንዛሬ ተመን «{0}» የተባዙ ነው.</value>
@@ -1191,6 +1134,18 @@
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>የመለያ አይነት ነው ምክንያቱም ዓላማ መስክ «{0}» ያስፈልጋል.</value>
+  </data>
+  <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
+    <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
+  </data>
+  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
+    <value>ሂሳብ ውስጥ ጥቅም ላይ ነው {0} «{1}» «{2}».</value>
+  </data>
+  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} «{1}« {2} {3} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>ግንኙነት ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>መለያ ምንዛሬ ያለው ሳለ መለያ ሃብት «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>
@@ -1830,6 +1785,48 @@
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
     <value>የእርስዎ የውጭ ይግቡ መግባቶች</value>
+  </data>
+  <data name="Relation" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Relation_Agent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Relation_BankAccountNumber" xml:space="preserve">
+    <value>የባንክ ሂሳብ ቁጥር</value>
+  </data>
+  <data name="Relation_Job" xml:space="preserve">
+    <value>ሥራ</value>
+  </data>
+  <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
+    <value>የግብር መለያ ቁጥር</value>
+  </data>
+  <data name="Relation_User" xml:space="preserve">
+    <value>ተጠቃሚ</value>
+  </data>
+  <data name="Relation_Users" xml:space="preserve">
+    <value>ተጠቃሚዎች</value>
+  </data>
+  <data name="RelationDefinition" xml:space="preserve">
+    <value>ግንኙነት ፍቺ</value>
+  </data>
+  <data name="RelationDefinition_UserCardinality" xml:space="preserve">
+    <value>የተጠቃሚ የቁጥሮች</value>
+  </data>
+  <data name="RelationDefinitions" xml:space="preserve">
+    <value>ግንኙነት ፍቺዎች</value>
+  </data>
+  <data name="Relations" xml:space="preserve">
+    <value>ወኪሎች</value>
+  </data>
+  <data name="RelationUser" xml:space="preserve">
+    <value>ግንኙነት ተጠቃሚ</value>
+  </data>
+  <data name="RelationUser_User" xml:space="preserve">
+    <value>ተጠቃሚ</value>
+  </data>
+  <data name="RelationUsers" xml:space="preserve">
+    <value>ግንኙነት ተጠቃሚዎች</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>አስታወስከኝ?</value>

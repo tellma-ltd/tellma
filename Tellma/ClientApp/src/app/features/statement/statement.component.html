@@ -32,14 +32,14 @@
                     </t-centers-picker>
                 </t-form-group>
 
-                <ng-container *ngSwitchCase="'contract'">
+                <ng-container *ngSwitchCase="'relation'">
 
-                    <!-- Contract -->
-                    <t-form-group class="t-form-group" [label]="labelContract_Smart">
-                        <t-contracts-picker [(ngModel)]="contractId"
-                            [definitionIds]="definitionIdsContract_Smart" [additionalSelect]="contractAdditionalSelect"
+                    <!-- Relation -->
+                    <t-form-group class="t-form-group" [label]="labelRelation_Smart">
+                        <t-relations-picker [(ngModel)]="relationId"
+                            [definitionIds]="definitionIdsRelation_Smart" [additionalSelect]="relationAdditionalSelect"
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                        </t-contracts-picker>
+                        </t-relations-picker>
                     </t-form-group>
 
                     <!-- <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
@@ -67,16 +67,16 @@
                         </t-currencies-picker>
                     </t-form-group>
 
-                    <!-- Contract -->
-                    <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContractParameter">
-                        <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
-                            [definitionIds]="definitionIdsContract_Manual" [additionalSelect]="contractAdditionalSelect"
+                    <!-- Custodian -->
+                    <t-form-group class="t-form-group" [label]="labelCustodian_Manual" *ngIf="showCustodianParameter">
+                        <t-relations-picker *ngIf="!readonlyCustodian_Manual" [(ngModel)]="custodianId"
+                            [definitionIds]="definitionIdsCustodian_Manual" [additionalSelect]="relationAdditionalSelect"
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                        </t-contracts-picker>
-                        <t-view-link *ngIf="readonlyContract_Manual"
-                            [link]="link('contracts/') + ws.get('Contract', readonlyValueContractId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueContractId_Manual">
-                            {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual, 'Name') }}
+                        </t-relations-picker>
+                        <t-view-link *ngIf="readonlyCustodian_Manual"
+                            [link]="link('relations/') + ws.get('Relation', readonlyValueCustodianId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueCustodianId_Manual">
+                            {{ ws.getMultilingualValue('Relation', readonlyValueCustodianId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 

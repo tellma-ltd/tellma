@@ -1,16 +1,16 @@
 <t-details-picker [masterTemplate]="master" (entityLoaded)="onEntityLoaded()"
     [ensureAdditionalSelect]="ensureAdditionalSelect" [detailsTemplate]="showCreate ? details : null"
-    collection="Contract" [definitionIds]="definitionIds" [filter]="filter" [additionalSelect]="additionalSelect">
+    collection="Relation" [definitionIds]="definitionIds" [filter]="filter" [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- The Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString"
     let-definitionId="definitionId">
     <div class="modal-body">
-        <t-contracts-details mode="popup" [idString]="idString" [initialText]="initialText"
+        <t-relations-details mode="popup" [idString]="idString" [initialText]="initialText"
             [definitionId]="definitionId" (cancel)="modal.close(false);"
             (saved)="modal.close(true); update.call(null, $event);" [additionalSelect]="additionalSelect">
-        </t-contracts-details>
+        </t-relations-details>
     </div>
 </ng-template>
 
@@ -18,9 +18,9 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId"
     let-filter="filter">
     <div class="modal-body">
-        <t-contracts-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
+        <t-relations-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
             [showCreate]="showCreate" (choose)="modal.close(true); update.call(null, $event);"
             (create)="modal.close(false); create.call()" [additionalSelect]="additionalSelect">
-        </t-contracts-master>
+        </t-relations-master>
     </div>
 </ng-template>

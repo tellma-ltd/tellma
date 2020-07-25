@@ -2,28 +2,28 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Contract, ContractForSave } from '~/app/data/entities/contract';
+import { Relation, RelationForSave } from '~/app/data/entities/relations';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { LatLngLiteral } from '@agm/core';
 
 @Component({
-  selector: 't-contracts-details',
-  templateUrl: './contracts-details.component.html'
+  selector: 't-relations-details',
+  templateUrl: './relations-details.component.html'
 })
-export class ContractsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class RelationsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private contractsApi = this.api.contractsApi(null, this.notifyDestruct$); // for intellisense
+  private relationsApi = this.api.relationsApi(null, this.notifyDestruct$); // for intellisense
   private _definitionId: number;
 
   @Input()
   public set definitionId(t: number) {
     if (this._definitionId !== t) {
-      this.contractsApi = this.api.contractsApi(t, this.notifyDestruct$);
+      this.relationsApi = this.api.relationsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
@@ -33,13 +33,13 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   @Input()
-  previewDefinition: ContractDefinitionForClient; // Used in preview mode
+  previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
   public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent,Users/User';
 
   create = () => {
-    const result: ContractForSave = {};
+    const result: RelationForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -54,16 +54,16 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return result;
   }
 
-  clone = (item: Contract): Contract => {
+  clone = (item: Relation): Relation => {
 
     if (!!item) {
-      const clone = JSON.parse(JSON.stringify(item)) as Contract;
+      const clone = JSON.parse(JSON.stringify(item)) as Relation;
       clone.Id = null;
 
       if (!!clone.Users) {
         clone.Users.forEach(e => {
           e.Id = null;
-          delete e.ContractId;
+          delete e.RelationId;
           delete e.CreatedAt;
           delete e.CreatedById;
           delete e.ModifiedAt;
@@ -102,11 +102,11 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   get view(): string {
-    return `contracts/${this.definitionId}`;
+    return `relations/${this.definitionId}`;
   }
 
-  private get definition(): ContractDefinitionForClient {
-    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null);
+  private get definition(): RelationDefinitionForClient {
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Relations[this.definitionId] : null);
   }
 
   // UI Bindings
@@ -115,26 +115,26 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition;
   }
 
-  public onActivate = (model: Contract): void => {
+  public onActivate = (model: Relation): void => {
     if (!!model && !!model.Id) {
-      this.contractsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.relationsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: Contract): void => {
+  public onDeactivate = (model: Relation): void => {
     if (!!model && !!model.Id) {
-      this.contractsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.relationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onEditDefinition = (_: Contract) => {
+  public onEditDefinition = (_: Relation) => {
     const ws = this.workspace;
     ws.isEdit = true;
-    this.router.navigate(['../../../contract-definitions', this.definitionId], { relativeTo: this.route })
+    this.router.navigate(['../../../relation-definitions', this.definitionId], { relativeTo: this.route })
       .then(success => {
         if (!success) {
           delete ws.isEdit;
@@ -143,13 +143,13 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
       .catch(() => delete ws.isEdit);
   }
 
-  public showActivate = (model: Contract) => !!model && !model.IsActive;
-  public showDeactivate = (model: Contract) => !!model && model.IsActive;
-  public showEditDefinition = (model: Contract) => this.ws.canDo('contract-definitions', 'Update', null);
+  public showActivate = (model: Relation) => !!model && !model.IsActive;
+  public showDeactivate = (model: Relation) => !!model && model.IsActive;
+  public showEditDefinition = (model: Relation) => this.ws.canDo('relation-definitions', 'Update', null);
 
-  public canActivateDeactivateItem = (model: Contract) => this.ws.canDo(this.view, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Relation) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: Contract) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Relation) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
@@ -386,7 +386,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entity_Text2');
   }
 
-  // Contract Only
+  // Relation Only
 
   public get Agent_isVisible(): boolean {
     return !!this.definition.AgentVisibility;
@@ -424,7 +424,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.UserCardinality === 'Single';
   }
 
-  public getUserId(model: ContractForSave): number {
+  public getUserId(model: RelationForSave): number {
     if (!!model && !!model.Users && !!model.Users[0]) {
       return model.Users[0].UserId;
     }
@@ -432,7 +432,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return undefined;
   }
 
-  public setUserId(model: ContractForSave, userId: number): void {
+  public setUserId(model: RelationForSave, userId: number): void {
     if (!!model) {
       if (!!userId) {
         model.Users = [{ UserId: userId }];
@@ -446,11 +446,11 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.UserCardinality === 'Multiple';
   }
 
-  public Users_count(model: ContractForSave): number {
+  public Users_count(model: RelationForSave): number {
     return !!model && !!model.Users ? model.Users.length : 0;
   }
 
-  public Users_showError(model: ContractForSave): boolean {
+  public Users_showError(model: RelationForSave): boolean {
     return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
   }
 
@@ -464,7 +464,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.LocationVisibility;
   }
 
-  public Map_showError(model: ContractForSave): boolean {
+  public Map_showError(model: RelationForSave): boolean {
     return !!model && !!model.serverErrors && !!model.serverErrors.LocationJson;
   }
 

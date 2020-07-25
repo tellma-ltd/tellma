@@ -7,21 +7,21 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
-  selector: 't-contracts-master',
-  templateUrl: './contracts-master.component.html'
+  selector: 't-relations-master',
+  templateUrl: './relations-master.component.html'
 })
-export class ContractsMasterComponent extends MasterBaseComponent implements OnInit {
+export class RelationsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private contractsApi = this.api.contractsApi(null, this.notifyDestruct$); // for intellisense
+  private relationsApi = this.api.relationsApi(null, this.notifyDestruct$); // for intellisense
   private _definitionId: number;
 
   @Input()
   public set definitionId(t: number) {
     if (this._definitionId !== t) {
-      this.contractsApi = this.api.contractsApi(t, this.notifyDestruct$);
+      this.relationsApi = this.api.relationsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
@@ -54,19 +54,19 @@ export class ContractsMasterComponent extends MasterBaseComponent implements OnI
   }
 
   get view(): string {
-    return `contracts/${this.definitionId}`;
+    return `relations/${this.definitionId}`;
   }
 
   public get c() {
-    return this.workspace.currentTenant.Contract;
+    return this.workspace.currentTenant.Relation;
   }
 
   public get ws() {
     return this.workspace.currentTenant;
   }
 
-  public get definition(): ContractDefinitionForClient {
-    return !!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null;
+  public get definition(): RelationDefinitionForClient {
+    return !!this.definitionId ? this.ws.definitions.Relations[this.definitionId] : null;
   }
 
   public get found(): boolean {
@@ -74,7 +74,7 @@ export class ContractsMasterComponent extends MasterBaseComponent implements OnI
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.contractsApi.activate(ids, { returnEntities: true }).pipe(
+    const obs$ = this.relationsApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -83,7 +83,7 @@ export class ContractsMasterComponent extends MasterBaseComponent implements OnI
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.contractsApi.deactivate(ids, { returnEntities: true }).pipe(
+    const obs$ = this.relationsApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -99,13 +99,13 @@ export class ContractsMasterComponent extends MasterBaseComponent implements OnI
   public get masterCrumb(): string {
     return !!this.definition ?
       this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural') :
-      this.translate.instant('Contracts');
+      this.translate.instant('Relations');
   }
 
   public get summary(): string {
     return !!this.definition ?
       this.ws.getMultilingualValueImmediate(this.definition, 'TitleSingular') :
-      this.translate.instant('Contracts');
+      this.translate.instant('Relation');
   }
 
   public get Image_isVisible(): boolean {

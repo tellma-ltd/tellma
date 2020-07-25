@@ -1,5 +1,5 @@
-<t-details collection="ContractDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'ContractDefinitions' | translate"
+<t-details collection="RelationDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'RelationDefinitions' | translate"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[
         { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
@@ -207,23 +207,23 @@
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text2', propLower: 'text2' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Agent', propLower: 'agent', fieldName: 'Contract_Agent' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Agent', propLower: 'agent', fieldName: 'Relation_Agent' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'TaxIdentificationNumber', propLower: 'taxidentificationnumber', fieldName: 'Contract_TaxIdentificationNumber' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'TaxIdentificationNumber', propLower: 'taxidentificationnumber', fieldName: 'Relation_TaxIdentificationNumber' }">
                     </ng-container>
                     <!-- <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Job', propLower: 'job', fieldName: 'Contract_Job' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Job', propLower: 'job', fieldName: 'Relation_Job' }">
                     </ng-container> -->
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'BankAccountNumber', propLower: 'bankaccountnumber', fieldName: 'Contract_BankAccountNumber' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'BankAccountNumber', propLower: 'bankaccountnumber', fieldName: 'Relation_BankAccountNumber' }">
                     </ng-container>
 
                     <!-- User Cardinality -->
                     <div class="form-group"
                         [class.is-invalid]="invalid(usercardinality, serverErrors(model, 'UserCardinality'))">
                         <label class="small"
-                            for="usercardinality">{{ 'ContractDefinition_UserCardinality' | translate }}</label>
+                            for="usercardinality">{{ 'RelationDefinition_UserCardinality' | translate }}</label>
                         <select class="form-control t-studio-input" id="usercardinality"
                             [(ngModel)]="model.UserCardinality" (ngModelChange)="onDefinitionChange(model)"
                             #usercardinality="ngModel">
@@ -443,8 +443,8 @@
 
             <!-- Preview -->
             <div class="flex-grow-1 col">
-                <t-contracts-details mode="preview" [previewDefinition]="getForClient(model)" idString="new">
-                </t-contracts-details>
+                <t-relations-details mode="preview" [previewDefinition]="getForClient(model)" idString="new">
+                </t-relations-details>
             </div>
         </div>
     </div>

@@ -111,26 +111,26 @@
         </t-resources-picker>
     </t-form-group>
 
-    <!-- Contract Definition -->
-    <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
-        [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
-        <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId"
-            [choices]="choicesContractDefinitionId(model)" (ngModelChange)="onContractDefinitionChange($event, model)">
+    <!-- Custodian Definition -->
+    <t-form-group class="t-form-group" *ngIf="showCustodianDefinitionId(model)"
+        [label]="'Account_CustodianDefinition' | translate" [serverErrors]="model?.serverErrors?.CustodianDefinitionId">
+        <div *ngIf="!isEdit">{{ formatRelationDefinitionId(model.CustodianDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.CustodianDefinitionId"
+            [choices]="choicesCustodianDefinitionId(model)" (ngModelChange)="onCustodianDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
-    <!-- Contract -->
-    <t-form-group class="t-form-group" *ngIf="showContract(model)" [label]="labelContract(model)"
-        [serverErrors]="model?.serverErrors?.ContractId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../contracts/' + ws.get('Contract', model?.ContractId)?.DefinitionId"
-            [itemId]="model?.ContractId">
-            <t-auto-cell collection="Account" path="Contract" [entity]="model">
+    <!-- Custodian -->
+    <t-form-group class="t-form-group" *ngIf="showCustodian(model)" [label]="labelCustodian(model)"
+        [serverErrors]="model?.serverErrors?.CustodianId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../relations/' + ws.get('Relation', model?.Custodian)?.DefinitionId"
+            [itemId]="model?.CustodianId">
+            <t-auto-cell collection="Account" path="Custodian" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ContractId" [definitionIds]="definitionIdsContract(model)"
-            [additionalSelect]="contractAdditionalSelect">
-        </t-contracts-picker>
+        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId" [definitionIds]="definitionIdsCustodian(model)"
+            [additionalSelect]="relationAdditionalSelect">
+        </t-relations-picker>
     </t-form-group>
 
     <!-- Currency -->
@@ -181,13 +181,13 @@
         </t-entry-types-picker>
     </t-form-group>
 
-    <!-- Noted Contract Definition -->
-    <t-form-group class="t-form-group" *ngIf="showNotedContractDefinitionId(model)"
-        [label]="'Account_NotedContractDefinition' | translate"
-        [serverErrors]="model?.serverErrors?.NotedContractDefinitionId">
-        <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.NotedContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedContractDefinitionId"
-            [choices]="choicesNotedContractDefinitionId(model)">
+    <!-- Noted Relation Definition -->
+    <t-form-group class="t-form-group" *ngIf="showNotedRelationDefinitionId(model)"
+        [label]="'Account_NotedRelationDefinition' | translate"
+        [serverErrors]="model?.serverErrors?.NotedRelationDefinitionId">
+        <div *ngIf="!isEdit">{{ formatRelationDefinitionId(model.NotedRelationDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedRelationDefinitionId"
+            [choices]="choicesNotedRelationDefinitionId(model)">
         </t-selector>
     </t-form-group>
 

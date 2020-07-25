@@ -6,7 +6,7 @@ export interface EntryForSave extends EntityForSave {
     Direction?: 1 | -1;
     AccountId?: number;
     CurrencyId?: string;
-    ContractId?: number;
+    CustodianId?: number;
     ResourceId?: number;
     CenterId?: number;
     AccountIdentifier?: string;
@@ -20,7 +20,7 @@ export interface EntryForSave extends EntityForSave {
     Time2?: string;
     ExternalReference?: string;
     AdditionalReference?: string;
-    NotedContractId?: number;
+    NotedRelationId?: number;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
@@ -28,7 +28,6 @@ export interface EntryForSave extends EntityForSave {
 
 export interface Entry extends EntryForSave {
     LineId?: number;
-    ContractType?: string;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;

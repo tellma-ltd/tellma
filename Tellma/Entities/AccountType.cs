@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave<TContractDef, TNotedContractDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountTypeForSave<TCustodianDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -171,24 +171,24 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
 
-        [Display(Name = "AccountType_ContractDefinitions")]
-        [ForeignKey(nameof(AccountTypeContractDefinition.AccountTypeId))]
-        public List<TContractDef> ContractDefinitions { get; set; }
+        [Display(Name = "AccountType_CustodianDefinitions")]
+        [ForeignKey(nameof(AccountTypeCustodianDefinition.AccountTypeId))]
+        public List<TCustodianDef> CustodianDefinitions { get; set; }
 
-        [Display(Name = "AccountType_NotedContractDefinitions")]
-        [ForeignKey(nameof(AccountTypeNotedContractDefinition.AccountTypeId))]
-        public List<TNotedContractDef> NotedContractDefinitions { get; set; }
+        [Display(Name = "AccountType_NotedRelationDefinitions")]
+        [ForeignKey(nameof(AccountTypeNotedRelationDefinition.AccountTypeId))]
+        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
 
         [Display(Name = "AccountType_ResourceDefinitions")]
         [ForeignKey(nameof(AccountTypeResourceDefinition.AccountTypeId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeContractDefinitionForSave, AccountTypeNotedContractDefinitionForSave, AccountTypeResourceDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodianDefinitionForSave, AccountTypeNotedRelationDefinitionForSave, AccountTypeResourceDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeContractDefinition, AccountTypeNotedContractDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
+    public class AccountType : AccountTypeForSave<AccountTypeCustodianDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public string Path { get; set; }

@@ -42,12 +42,12 @@ namespace Tellma.Entities
         [ForeignKey(nameof(UnitId))]
         public Unit Unit { get; set; }
 
-        [Display(Name = "Entry_Contract")]
-        public int? ContractId { get; set; }
+        [Display(Name = "Entry_Custodian")]
+        public int? CustodianId { get; set; }
 
-        [Display(Name = "Entry_Contract")]
-        [ForeignKey(nameof(ContractId))]
-        public Contract Contract { get; set; }
+        [Display(Name = "Entry_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
 
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; }

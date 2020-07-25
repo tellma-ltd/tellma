@@ -17,7 +17,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = `Parent,EntryTypeParent,
-ContractDefinitions/ContractDefinition,NotedContractDefinitions/NotedContractDefinition,ResourceDefinitions/ResourceDefinition`;
+CustodianDefinitions/CustodianDefinition,NotedRelationDefinitions/NotedRelationDefinition,ResourceDefinitions/ResourceDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -100,12 +100,12 @@ ContractDefinitions/ContractDefinition,NotedContractDefinitions/NotedContractDef
       Object.keys(model.serverErrors).some(e => e.endsWith('Label') || e.endsWith('Label2') || e.endsWith('Label3'));
   }
 
-  public showContractDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.ContractDefinitions && model.ContractDefinitions.some(e => !!e.serverErrors);
+  public showCustodianDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.CustodianDefinitions && model.CustodianDefinitions.some(e => !!e.serverErrors);
   }
 
-  public showNotedContractDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.NotedContractDefinitions && model.NotedContractDefinitions.some(e => !!e.serverErrors);
+  public showNotedRelationDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.NotedRelationDefinitions && model.NotedRelationDefinitions.some(e => !!e.serverErrors);
   }
 
   public showResourceDefinitionsError(model: AccountType): boolean {

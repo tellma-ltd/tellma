@@ -76,20 +76,20 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>Classification</value>
   </data>
-  <data name="Account_Contract" xml:space="preserve">
-    <value>Contract</value>
-  </data>
-  <data name="Account_ContractDefinition" xml:space="preserve">
-    <value>Contract Definition</value>
-  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
+  </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>Custodian</value>
+  </data>
+  <data name="Account_CustodianDefinition" xml:space="preserve">
+    <value>Custodian Definition</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
-  <data name="Account_NotedContractDefinition" xml:space="preserve">
-    <value>Noted Contract Definition</value>
+  <data name="Account_NotedRelationDefinition" xml:space="preserve">
+    <value>Noted Relation Definition</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
-  <data name="AccountType_ContractDefinitions" xml:space="preserve">
-    <value>Contract Definitions</value>
+  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
+    <value>Custodian Definitions</value>
   </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>Due Date Label</value>
@@ -145,11 +145,11 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>Noted Amount Label</value>
   </data>
-  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
-    <value>Noted Contract Definitions</value>
-  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
+  </data>
+  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
+    <value>Noted Relation Definitions</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
@@ -160,17 +160,17 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>Time 2 Label</value>
   </data>
-  <data name="AccountTypeContractDefinition" xml:space="preserve">
-    <value>Account Type Contract Definition</value>
+  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
+    <value>Account Type Custodian Definition</value>
   </data>
-  <data name="AccountTypeContractDefinitions" xml:space="preserve">
-    <value>Account Type Contract Definitions</value>
+  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
+    <value>Account Type Custodian Definitions</value>
   </data>
-  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
-    <value>Account Type Noted Contract Definition</value>
+  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
+    <value>Account Type Noted Relation Definition</value>
   </data>
-  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
-    <value>Account Type Noted Contract Definitions</value>
+  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
+    <value>Account Type Noted Relation Definitions</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>Account Type Resource Definition</value>
@@ -339,48 +339,6 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>
-  </data>
-  <data name="Contract" xml:space="preserve">
-    <value>Contract</value>
-  </data>
-  <data name="Contract_Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="Contract_BankAccountNumber" xml:space="preserve">
-    <value>Bank Account Number</value>
-  </data>
-  <data name="Contract_Job" xml:space="preserve">
-    <value>Job</value>
-  </data>
-  <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
-    <value>Tax Identification Number</value>
-  </data>
-  <data name="Contract_User" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="Contract_Users" xml:space="preserve">
-    <value>Users</value>
-  </data>
-  <data name="ContractDefinition" xml:space="preserve">
-    <value>Contract Definition</value>
-  </data>
-  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
-    <value>User Cardinality</value>
-  </data>
-  <data name="ContractDefinitions" xml:space="preserve">
-    <value>Contract Definitions</value>
-  </data>
-  <data name="Contracts" xml:space="preserve">
-    <value>Contracts</value>
-  </data>
-  <data name="ContractUser" xml:space="preserve">
-    <value>Contract User</value>
-  </data>
-  <data name="ContractUser_User" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="ContractUsers" xml:space="preserve">
-    <value>Contract Users</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>Copyright © {0} Tellma, Ltd. All rights reserved.</value>
@@ -553,14 +511,14 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
-  <data name="Document_CreditContract" xml:space="preserve">
-    <value>Credit Contract</value>
+  <data name="Document_CreditCustodian" xml:space="preserve">
+    <value>Credit Custodian</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Document_DebitContract" xml:space="preserve">
-    <value>Debit Contract</value>
+  <data name="Document_DebitCustodian" xml:space="preserve">
+    <value>Debit Custodian</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -577,8 +535,8 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>Text Attribute 2</value>
   </data>
-  <data name="Document_NotedContract" xml:space="preserve">
-    <value>Noted Contract</value>
+  <data name="Document_NotedRelation" xml:space="preserve">
+    <value>Noted Relation</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
@@ -748,14 +706,11 @@
   <data name="Entry_Center" xml:space="preserve">
     <value>Center</value>
   </data>
-  <data name="Entry_Contract" xml:space="preserve">
-    <value>Contract</value>
-  </data>
-  <data name="Entry_ContractType" xml:space="preserve">
-    <value>Contract Type</value>
-  </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
+  </data>
+  <data name="Entry_Custodian" xml:space="preserve">
+    <value>Custodian</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>Direction</value>
@@ -787,11 +742,11 @@
   <data name="Entry_NotedAmount" xml:space="preserve">
     <value>Noted Amount</value>
   </data>
-  <data name="Entry_NotedContract" xml:space="preserve">
-    <value>Noted Contract</value>
-  </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
+  </data>
+  <data name="Entry_NotedRelation" xml:space="preserve">
+    <value>Noted Relation</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>Quantity</value>
@@ -885,9 +840,6 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
-  </data>
-  <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Contract DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>The date cannot be before the archive date {0}.</value>
@@ -1036,6 +988,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path.</value>
   </data>
+  <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Relation DefinitionId '{0}' could not be found.</value>
+  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
   </data>
@@ -1069,11 +1024,11 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with center '{3}'.</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithContract3" xml:space="preserve">
-    <value>Account '{0}' is used in {1} {2} with contract '{3}'.</value>
-  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with currency '{3}'.</value>
+  </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
+    <value>Account '{0}' is used in {1} {2} with custodian '{3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with resource '{3}'.</value>
@@ -1101,18 +1056,6 @@
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>The code '{0}' is already used.</value>
-  </data>
-  <data name="Error_TheContract01HasNoUsers" xml:space="preserve">
-    <value>The {0} '{1}' has no users defined.</value>
-  </data>
-  <data name="Error_TheContract01IsUsedInAccount2" xml:space="preserve">
-    <value>{0} '{1}' is used in account '{2}'.</value>
-  </data>
-  <data name="Error_TheContract01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' is used in {2} {3}.</value>
-  </data>
-  <data name="Error_TheContractDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>Contract definition '{0}' is used in account type '{1}'.</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>The exchange rate for currency '{0}' on date {1} is duplicated.</value>
@@ -1191,6 +1134,18 @@
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>The Purpose field is required because the account type is '{0}'.</value>
+  </data>
+  <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
+    <value>The {0} '{1}' has no users defined.</value>
+  </data>
+  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
+    <value>{0} '{1}' is used in account '{2}'.</value>
+  </data>
+  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} '{1}' is used in {2} {3}.</value>
+  </data>
+  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>Relation definition '{0}' is used in account type '{1}'.</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>Account resource '{0}' has currency '{1}' while the account has currency '{2}'.</value>
@@ -1830,6 +1785,48 @@
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
     <value>Your External Sign-ins</value>
+  </data>
+  <data name="Relation" xml:space="preserve">
+    <value>Relation</value>
+  </data>
+  <data name="Relation_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Relation_BankAccountNumber" xml:space="preserve">
+    <value>Bank Account Number</value>
+  </data>
+  <data name="Relation_Job" xml:space="preserve">
+    <value>Job</value>
+  </data>
+  <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
+    <value>Tax Identification Number</value>
+  </data>
+  <data name="Relation_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Relation_Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="RelationDefinition" xml:space="preserve">
+    <value>Relation Definition</value>
+  </data>
+  <data name="RelationDefinition_UserCardinality" xml:space="preserve">
+    <value>User Cardinality</value>
+  </data>
+  <data name="RelationDefinitions" xml:space="preserve">
+    <value>Relation Definitions</value>
+  </data>
+  <data name="Relations" xml:space="preserve">
+    <value>Relations</value>
+  </data>
+  <data name="RelationUser" xml:space="preserve">
+    <value>Relation User</value>
+  </data>
+  <data name="RelationUser_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="RelationUsers" xml:space="preserve">
+    <value>Relation Users</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Remember me?</value>

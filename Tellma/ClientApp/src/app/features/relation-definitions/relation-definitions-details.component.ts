@@ -8,26 +8,26 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { ContractDefinitionForSave, metadata_ContractDefinition, ContractDefinition } from '~/app/data/entities/contract-definition';
+import { RelationDefinitionForSave, metadata_RelationDefinition, RelationDefinition } from '~/app/data/entities/relations-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
-import { ContractDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { RelationDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
 @Component({
-  selector: 't-contract-definitions-details',
-  templateUrl: './contract-definitions-details.component.html',
+  selector: 't-relation-definitions-details',
+  templateUrl: './relation-definitions-details.component.html',
   styles: []
 })
-export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
+export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
-  private contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   create = () => {
-    const result: ContractDefinitionForSave = {};
+    const result: RelationDefinitionForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.TitleSingular = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -48,7 +48,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   private allVisibilityProps(): string[] {
-    const props = metadata_ContractDefinition(this.workspace, this.translate).properties;
+    const props = metadata_RelationDefinition(this.workspace, this.translate).properties;
     const result = [];
     for (const propName of Object.keys(props)) {
       if (propName.endsWith('Visibility')) {
@@ -59,9 +59,9 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  clone: (item: ContractDefinition) => ContractDefinition = (item: ContractDefinition) => {
+  clone: (item: RelationDefinition) => RelationDefinition = (item: RelationDefinition) => {
     if (!!item) {
-      const clone = JSON.parse(JSON.stringify(item)) as ContractDefinition;
+      const clone = JSON.parse(JSON.stringify(item)) as RelationDefinition;
       clone.Id = null;
 
       // if (!!clone.Rows) {
@@ -87,14 +87,14 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$);
+    this.relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$);
   }
 
   public get ws() {
     return this.workspace.currentTenant;
   }
 
-  public savePreprocessing = (entity: ContractDefinition) => {
+  public savePreprocessing = (entity: RelationDefinition) => {
     // Server validation on hidden properties will be confusing to the user
     for (const prop of this.allVisibilityProps()) {
       const value: DefinitionVisibility = entity[prop];
@@ -123,7 +123,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return true;
   }
 
-  public isInactive: (model: ContractDefinition) => string = (_: ContractDefinition) => null;
+  public isInactive: (model: RelationDefinition) => string = (_: RelationDefinition) => null;
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;
@@ -147,7 +147,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._sections[key];
   }
 
-  public sectionErrors(section: string, model: ContractDefinition) {
+  public sectionErrors(section: string, model: RelationDefinition) {
     if (section === 'Title') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.Code) ||
@@ -218,7 +218,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Text2Label3) ||
         areServerErrors(model.serverErrors.Text2Visibility) ||
 
-        // Contract Only
+        // Relation Only
         areServerErrors(model.serverErrors.AgentVisibility) ||
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
         areServerErrors(model.serverErrors.JobVisibility) ||
@@ -252,7 +252,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return obj.serverErrors[prop];
   }
 
-  public onDefinitionChange(model: ContractDefinition, prop?: string) {
+  public onDefinitionChange(model: RelationDefinition, prop?: string) {
     if (!!prop) {
       // Non-critical change, no need to refresh
       this.getForClient(model)[prop] = model[prop];
@@ -262,11 +262,11 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  private _currentModel: ContractDefinition;
+  private _currentModel: RelationDefinition;
   private _currentModelModified = false;
-  private _getForClientResult: ContractDefinitionForClient;
+  private _getForClientResult: RelationDefinitionForClient;
 
-  public getForClient(model: ContractDefinition): ContractDefinitionForClient {
+  public getForClient(model: RelationDefinition): RelationDefinitionForClient {
     if (!model) {
       return null;
     }
@@ -276,7 +276,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
       this._currentModel = model;
 
       // The mapping is trivial since the two data structures are identical
-      this._getForClientResult = { ...model } as ContractDefinitionForClient;
+      this._getForClientResult = { ...model } as RelationDefinitionForClient;
 
       // In definitions for client, a null visibility becomes undefined
       for (const propName of this.allVisibilityProps()) {
@@ -343,52 +343,52 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
   // Menu stuff
 
   public get allMainMenuSections(): SelectorChoice[] {
-    const desc = metadata_ContractDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
+    const desc = metadata_RelationDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuIcons(): SelectorChoice[] {
-    const desc = metadata_ContractDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
+    const desc = metadata_RelationDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
 
-  public onIconClick(model: ContractDefinition, icon: SelectorChoice): void {
+  public onIconClick(model: RelationDefinition, icon: SelectorChoice): void {
     model.MainMenuIcon = icon.value;
     this.onDefinitionChange(model, 'MainMenuSortKey');
   }
 
   // State Management
-  public onMakeHidden = (model: ContractDefinition): void => {
+  public onMakeHidden = (model: RelationDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Hidden') {
-      this.contractDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
+      this.relationDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onMakeVisible = (model: ContractDefinition): void => {
+  public onMakeVisible = (model: RelationDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Visible') {
-      this.contractDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
+      this.relationDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onMakeArchived = (model: ContractDefinition): void => {
+  public onMakeArchived = (model: RelationDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Archived') {
-      this.contractDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
+      this.relationDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showMakeHidden = (model: ContractDefinition) => !!model && model.State !== 'Hidden';
-  public showMakeVisible = (model: ContractDefinition) => !!model && model.State !== 'Visible';
-  public showMakeArchived = (model: ContractDefinition) => !!model && model.State !== 'Archived';
+  public showMakeHidden = (model: RelationDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeVisible = (model: RelationDefinition) => !!model && model.State !== 'Visible';
+  public showMakeArchived = (model: RelationDefinition) => !!model && model.State !== 'Archived';
 
-  public hasStatePermission = (model: ContractDefinition) => this.ws.canDo('contract-definitions', 'State', model.Id);
+  public hasStatePermission = (model: RelationDefinition) => this.ws.canDo('relation-definitions', 'State', model.Id);
 
-  public stateTooltip = (model: ContractDefinition) => this.hasStatePermission(model) ? '' :
+  public stateTooltip = (model: RelationDefinition) => this.hasStatePermission(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

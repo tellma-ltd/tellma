@@ -4,19 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    [EntityDisplay(Singular = "ContractUser", Plural = "ContractUsers")]
-    public class ContractUserForSave : EntityWithKey<int>
+    public class LineDefinitionEntryCustodianDefinitionForSave : EntityWithKey<int>
     {
-        [Display(Name = "ContractUser_User")]
-        [Required]
-        public int? UserId { get; set; }
+        public int? CustodianDefinitionId { get; set; }
     }
 
-    public class ContractUser : ContractUserForSave
+    public class LineDefinitionEntryCustodianDefinition : LineDefinitionEntryCustodianDefinitionForSave
     {
-        public int? ContractId { get; set; }
+        public int? LineDefinitionEntryId { get; set; }
 
-        // For Query
+        [ForeignKey(nameof(CustodianDefinitionId))]
+        public RelationDefinition CustodianDefinition { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -30,11 +28,7 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
 
-        // For Query
-
-        [Display(Name = "ContractUser_User")]
-        [ForeignKey(nameof(UserId))]
-        public User User { get; set; }
+        // For query
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -6,8 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    [EntityDisplay(Singular = "Contract", Plural = "Contracts")]
-    public class ContractForSaveBase<TContractUser> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
+    [EntityDisplay(Singular = "Relation", Plural = "Relations")]
+    public class RelationForSaveBase<TRelationUser> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -107,35 +107,35 @@ namespace Tellma.Entities
 
         #endregion
 
-        #region Contract Only
+        #region Relation Only
 
-        [Display(Name = "Contract_Agent")]
+        [Display(Name = "Relation_Agent")]
         public int? AgentId { get; set; }
 
-        [Display(Name = "Contract_TaxIdentificationNumber")]
+        [Display(Name = "Relation_TaxIdentificationNumber")]
         [StringLength(30)]
         public string TaxIdentificationNumber { get; set; }
 
-        [Display(Name = "Contract_Job")]
+        [Display(Name = "Relation_Job")]
         public int? JobId { get; set; }
 
-        [Display(Name = "Contract_BankAccountNumber")]
+        [Display(Name = "Relation_BankAccountNumber")]
         [StringLength(34)]
         public string BankAccountNumber { get; set; }
 
-        [Display(Name = "Contract_Users")]
-        [ForeignKey(nameof(ContractUser.ContractId))]
-        public List<TContractUser> Users { get; set; }
+        [Display(Name = "Relation_Users")]
+        [ForeignKey(nameof(RelationUser.RelationId))]
+        public List<TRelationUser> Users { get; set; }
 
         #endregion
     }
 
-    public class ContractForSave : ContractForSaveBase<ContractUserForSave>
+    public class RelationForSave : RelationForSaveBase<RelationUserForSave>
     {
 
     }
 
-    public class Contract : ContractForSaveBase<ContractUser>, ILocationEntity, IEntityWithImage
+    public class Relation : RelationForSaveBase<RelationUser>, ILocationEntity, IEntityWithImage
     {
         #region Common with Resource
 
@@ -164,7 +164,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Definition")]
         [ForeignKey(nameof(DefinitionId))]
-        public ContractDefinition Definition { get; set; }
+        public RelationDefinition Definition { get; set; }
 
         public Geography Location { get; set; }
 
@@ -206,9 +206,9 @@ namespace Tellma.Entities
 
         #endregion
 
-        #region Contract Only
+        #region Relation Only
 
-        [Display(Name = "Contract_Agent")]
+        [Display(Name = "Relation_Agent")]
         [ForeignKey(nameof(AgentId))]
         public Agent Agent { get; set; }
 

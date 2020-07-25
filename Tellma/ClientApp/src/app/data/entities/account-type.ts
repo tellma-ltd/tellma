@@ -7,16 +7,16 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { AccountTypeContractDefinitionForSave, AccountTypeContractDefinition } from './account-type-contract-definition';
-import { AccountTypeNotedContractDefinitionForSave, AccountTypeNotedContractDefinition } from './account-type-noted-contract-definition';
+import { AccountTypeCustodianDefinitionForSave, AccountTypeCustodianDefinition } from './account-type-custodian-definition';
+import { AccountTypeNotedRelationDefinitionForSave, AccountTypeNotedRelationDefinition } from './account-type-noted-relation-definition';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 
 export type RequiredAssignment = 'A' | 'E';
 export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
-export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinitionForSave,
-  TNotedContractDef = AccountTypeNotedContractDefinitionForSave,
+export interface AccountTypeForSave<TCustodianDef = AccountTypeCustodianDefinitionForSave,
+  TNotedRelationDef = AccountTypeNotedRelationDefinitionForSave,
   TResourceDef = AccountTypeResourceDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
@@ -56,12 +56,12 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  ContractDefinitions?: TContractDef[];
-  NotedContractDefinitions?: TNotedContractDef[];
+  CustodianDefinitions?: TCustodianDef[];
+  NotedRelationDefinitions?: TNotedRelationDef[];
   ResourceDefinitions?: TResourceDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeContractDefinition, AccountTypeNotedContractDefinition, AccountTypeResourceDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeCustodianDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;

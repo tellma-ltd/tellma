@@ -443,66 +443,66 @@
       </ng-template>
     </li>
 
-    <!-- ContractDefinitions -->
-    <li ngbNavItem="contractDefs">
+    <!-- CustodianDefinitions -->
+    <li ngbNavItem="custodianDefs">
       <a ngbNavLink>
-        <span *ngIf="showContractDefinitionsError(model)" class="text-danger">
+        <span *ngIf="showCustodianDefinitionsError(model)" class="text-danger">
           <fa-icon icon="exclamation-triangle">
           </fa-icon>&nbsp;
         </span>
         <span
-          class="small t-slightly-bold">{{ ('AccountType_ContractDefinitions' | translate) + ' (' + (model?.ContractDefinitions?.length | number) + ')'  }}</span>
+          class="small t-slightly-bold">{{ ('AccountType_CustodianDefinitions' | translate) + ' (' + (model?.CustodianDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
-        <t-table [dataSource]="model?.ContractDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+        <t-table [dataSource]="model?.CustodianDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
           'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_ContractDefinition' | translate}}</ng-template>
+        <ng-template #header>{{ 'Account_CustodianDefinition' | translate}}</ng-template>
         <ng-template #row let-item="item" let-index="index" let-update="update">
-          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.ContractDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../contract-definitions" [itemId]="item?.ContractDefinitionId">
-              {{ getMultilingualValue(ws.ContractDefinition[item.ContractDefinitionId], 'TitleSingular', ws) }}
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.CustodianDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../relation-definitions" [itemId]="item?.CustodianDefinitionId">
+              {{ getMultilingualValue(ws.RelationDefinition[item.CustodianDefinitionId], 'TitleSingular', ws) }}
             </t-view-link>
-            <t-contract-definitions-picker *ngIf="isEdit" [(ngModel)]="item.ContractDefinitionId"
+            <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="item.CustodianDefinitionId"
               (ngModelChange)="update.call(null, item)" [required]="!item.PH">
-            </t-contract-definitions-picker>
+            </t-relation-definitions-picker>
           </t-form-group-cell>
         </ng-template>
 
       </ng-template>
     </li>
     
-    <!-- NotedContractDefinitions -->
-    <li ngbNavItem="notedcontractDefs">
+    <!-- NotedRelationDefinitions -->
+    <li ngbNavItem="notedrelationDefs">
       <a ngbNavLink>
-        <span *ngIf="showNotedContractDefinitionsError(model)" class="text-danger">
+        <span *ngIf="showNotedRelationDefinitionsError(model)" class="text-danger">
           <fa-icon icon="exclamation-triangle">
           </fa-icon>&nbsp;
         </span>
         <span
-          class="small t-slightly-bold">{{ ('AccountType_NotedContractDefinitions' | translate) + ' (' + (model?.NotedContractDefinitions?.length | number) + ')'  }}</span>
+          class="small t-slightly-bold">{{ ('AccountType_NotedRelationDefinitions' | translate) + ' (' + (model?.NotedRelationDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
-        <t-table [dataSource]="model?.NotedContractDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+        <t-table [dataSource]="model?.NotedRelationDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
           'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_NotedContractDefinition' | translate}}</ng-template>
+        <ng-template #header>{{ 'Account_NotedRelationDefinition' | translate}}</ng-template>
         <ng-template #row let-item="item" let-index="index" let-update="update">
-          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedContractDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../contract-definitions" [itemId]="item?.NotedContractDefinitionId">
-              {{ getMultilingualValue(ws.ContractDefinition[item.NotedContractDefinitionId], 'TitleSingular', ws) }}
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedRelationDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../relation-definitions" [itemId]="item?.NotedRelationDefinitionId">
+              {{ getMultilingualValue(ws.RelationDefinition[item.NotedRelationDefinitionId], 'TitleSingular', ws) }}
             </t-view-link>
-            <t-contract-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedContractDefinitionId"
+            <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedRelationDefinitionId"
               (ngModelChange)="update.call(null, item)" [required]="!item.PH">
-            </t-contract-definitions-picker>
+            </t-relation-definitions-picker>
           </t-form-group-cell>
         </ng-template>
 
