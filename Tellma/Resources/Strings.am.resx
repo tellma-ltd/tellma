@@ -127,9 +127,6 @@
   <data name="AccountType_CustodianDefinitions" xml:space="preserve">
     <value>ጠባቂ ፍቺዎች</value>
   </data>
-  <data name="AccountType_DueDateLabel" xml:space="preserve">
-    <value>መጠናቀቅ ያለበት ቀን መሰየሚያ</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>ምዝግብ አይነት ወላጅ</value>
   </data>
@@ -720,9 +717,6 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>ዴቢት</value>
-  </data>
-  <data name="Entry_DueDate" xml:space="preserve">
-    <value>የመጨረሻ ማስረከቢያ ቀን</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>ዓላማ</value>

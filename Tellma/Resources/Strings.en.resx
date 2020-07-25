@@ -127,9 +127,6 @@
   <data name="AccountType_CustodianDefinitions" xml:space="preserve">
     <value>Custodian Definitions</value>
   </data>
-  <data name="AccountType_DueDateLabel" xml:space="preserve">
-    <value>Due Date Label</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Purpose Parent</value>
   </data>
@@ -720,9 +717,6 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>Debit</value>
-  </data>
-  <data name="Entry_DueDate" xml:space="preserve">
-    <value>Due Date</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>Purpose</value>

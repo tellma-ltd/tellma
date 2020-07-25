@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityWithKey } from './base/entity-with-key';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
@@ -20,7 +20,6 @@ export interface DetailsEntry extends EntityWithKey {
     AlgebraicQuantity?: number;
     NegativeAlgebraicQuantity?: number;
     UnitId?: number;
-    DueDate?: string;
     MonetaryValue?: number;
     AlgebraicMonetaryValue?: number;
     NegativeAlgebraicMonetaryValue?: number;
@@ -108,7 +107,6 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 EntryType: { control: 'navigation', label: () => trx.instant('Entry_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
                 ResourceId: { control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
-                DueDate: { control: 'date', label: () => trx.instant('Entry_DueDate') },
                 Quantity: { control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 AlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 NegativeAlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_NegativeAlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },

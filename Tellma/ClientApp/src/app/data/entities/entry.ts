@@ -11,7 +11,6 @@ export interface EntryForSave extends EntityForSave {
     CenterId?: number;
     AccountIdentifier?: string;
     EntryTypeId?: number;
-    DueDate?: string;
     MonetaryValue?: number;
     Quantity?: number;
     UnitId?: number;

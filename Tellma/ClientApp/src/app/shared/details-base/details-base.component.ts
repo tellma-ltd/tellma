@@ -124,8 +124,8 @@ export class DetailsBaseComponent implements ICanDeactivate, OnInit, OnDestroy {
 
   public additionalSelectForNav(nav: string, vanilla?: string): string {
     // IF there is an additional select, we need to make sure it is propagated to all details pickers
-    // in the details screen. E.g. if account details screen additional select = 'AccountType/DueDateLabel',
-    // then the details picker of account type should have an additional select of 'DueDateLabel'
+    // in the details screen. E.g. if account details screen additional select = 'AccountType/Time1Label',
+    // then the details picker of account type should have an additional select of 'Time1Label'
     if (!this.additionalSelect || !nav) {
       return null;
     } else {

@@ -4608,7 +4608,6 @@ namespace Tellma.Data
                     UnitId = reader.Int32(i++),
                     IsSystem = reader.Boolean(i++) ?? false,
                     Direction = reader.Int16(i++),
-                    DueDate = reader.DateTime(i++),
                     MonetaryValue = reader.Decimal(i++),
                     Quantity = reader.Decimal(i++),
                     Value = reader.Decimal(i++) ?? 0m,

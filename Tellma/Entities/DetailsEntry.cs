@@ -30,9 +30,6 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
 
-        [Display(Name = "Entry_DueDate")]
-        public DateTime? DueDate { get; set; }
-
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 

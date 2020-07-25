@@ -187,32 +187,6 @@
       <ng-template ngbNavContent>
         <div class="row m-0 pt-2 pt-sm-3">
 
-          <!-- DueDateLabel -->
-          <t-form-group class="t-form-group" [label]="('AccountType_DueDateLabel' | translate) + ws.primaryPostfix"
-            [serverErrors]="model?.serverErrors?.DueDateLabel">
-            <div *ngIf="!isEdit">{{ model?.DueDateLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.DueDateLabel" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
-
-          <!-- DueDateLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_DueDateLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.DueDateLabel2">
-            <div *ngIf="!isEdit">{{ model?.DueDateLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.DueDateLabel2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
-
-          <!-- DueDateLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_DueDateLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.DueDateLabel3">
-            <div *ngIf="!isEdit">{{ model?.DueDateLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.DueDateLabel3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
-
           <!-- Time1Label -->
           <t-form-group class="t-form-group" [label]="('AccountType_Time1Label' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.Time1Label">

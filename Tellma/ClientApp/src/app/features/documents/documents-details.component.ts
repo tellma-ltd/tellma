@@ -1410,26 +1410,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return filter;
   }
 
-  // DueDate
-
-  public showDueDate_Manual(entry: Entry): boolean {
-    // const resourceDefinition = this.resourceDefinition(entry);
-    // return !!resourceDefinition && !!resourceDefinition.DueDateVisibility;
-    const at = this.accountType(entry);
-    return !!at && !!at.DueDateLabel;
-  }
-
-  public labelDueDate_Manual(entry: Entry): string {
-    // const rd = this.resourceDefinition(entry);
-    // const at = this.accountType(entry);
-    // return !!rd.DueDateLabel ? this.ws.getMultilingualValueImmediate(rd, 'DueDateLabel') :
-    //   !!at.DueDateLabel ? this.ws.getMultilingualValueImmediate(at, 'DueDateLabel') :
-    //     this.translate.instant('Entry_DueDate');
-
-    const at = this.accountType(entry);
-    return this.ws.getMultilingualValueImmediate(at, 'DueDateLabel');
-  }
-
   // Time1
 
   public showTime1_Manual(entry: Entry): boolean {

@@ -127,9 +127,6 @@
   <data name="AccountType_CustodianDefinitions" xml:space="preserve">
     <value>تعريفات أصحاب العهد</value>
   </data>
-  <data name="AccountType_DueDateLabel" xml:space="preserve">
-    <value>اسم تاريخ الاستحقاق</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>جذر الغرض</value>
   </data>
@@ -720,9 +717,6 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>مدين</value>
-  </data>
-  <data name="Entry_DueDate" xml:space="preserve">
-    <value>تاريخ الاستحقاق</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>السبب</value>

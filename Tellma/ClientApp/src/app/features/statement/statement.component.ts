@@ -1296,15 +1296,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
       // All dynamic properties from account type label
       if (!!accountType) {
-        // DueDate
-        if (!!accountType.DueDateLabel) {
-          this._columns.push({
-            select: ['DueDate'],
-            label: () => this.ws.getMultilingualValueImmediate(accountType, 'DueDateLabel'),
-            display: (entry: DetailsEntry) => !!entry.DueDate ? formatDate(entry.DueDate, 'yyyy-MM-dd', locale) : '',
-            weight: 1
-          });
-        }
 
         // Time1
         if (!!accountType.Time1Label) {

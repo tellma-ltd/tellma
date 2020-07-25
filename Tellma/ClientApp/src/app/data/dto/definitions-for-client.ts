@@ -272,7 +272,7 @@ export interface LineDefinitionGenerateParameterForClient {
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
-    'CustodianId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' | 'DueDate' |
+    'CustodianId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
     'ExternalReference' | 'AdditionalReference' | 'NotedRelationId' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';

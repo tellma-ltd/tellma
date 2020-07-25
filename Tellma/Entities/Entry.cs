@@ -34,9 +34,6 @@ namespace Tellma.Entities
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; }
 
-        [Display(Name = "Entry_DueDate")]
-        public DateTime? DueDate { get; set; }
-
         [Display(Name = "Entry_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
 

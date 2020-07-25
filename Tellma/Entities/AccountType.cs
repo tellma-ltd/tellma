@@ -75,18 +75,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? EntryTypeParentId { get; set; }
 
-        [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Primary)]
-        [StringLength(50)]
-        public string DueDateLabel { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Secondary)]
-        [StringLength(50)]
-        public string DueDateLabel2 { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Ternary)]
-        [StringLength(50)]
-        public string DueDateLabel3 { get; set; }
-
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Primary)]
         [StringLength(50)]
         public string Time1Label { get; set; }

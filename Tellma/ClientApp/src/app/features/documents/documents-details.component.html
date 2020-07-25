@@ -485,8 +485,6 @@
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
-                            <span
-                                *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
                             <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
                                 <span>{{ getFieldValue(lineDefId, columnIndex, line) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
                             </div>
@@ -563,13 +561,6 @@
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-entry-types-picker>
-                            <t-date-picker *ngSwitchCase="'DueDate'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-date-picker>
                             <t-decimal-editor *ngSwitchCase="'MonetaryValue'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -1222,19 +1213,6 @@
                             (ngModelChange)="update.call(null, pair);" [filter]="filterUnitId(entry)">
                         </t-units-picker>
                     </ng-container>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
-            <!-- DueDate -->
-            <ng-container *ngIf="showDueDate_Manual(entry)">
-                <t-form-group-dynamic [label]="labelDueDate_Manual(entry)" [serverErrors]="entry.serverErrors?.DueDate">
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.DueDate">
-                        {{ entry.DueDate | date:'yyyy-MM-dd'}}
-                    </t-restricted>
-                    <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.DueDate"
-                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
-                    </t-date-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>

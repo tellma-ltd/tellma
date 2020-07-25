@@ -127,9 +127,6 @@
   <data name="AccountType_CustodianDefinitions" xml:space="preserve">
     <value>护法定义</value>
   </data>
-  <data name="AccountType_DueDateLabel" xml:space="preserve">
-    <value>截止日期标签</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>输入型亲</value>
   </data>
@@ -720,9 +717,6 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>借方</value>
-  </data>
-  <data name="Entry_DueDate" xml:space="preserve">
-    <value>截止日期</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>条目分类</value>

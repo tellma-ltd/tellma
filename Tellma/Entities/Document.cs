@@ -400,7 +400,6 @@ namespace Tellma.Entities
             nameof(AccountType.AllowsPureUnit),
 
             // Labels
-            nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
             nameof(AccountType.Time2Label), nameof(AccountType.Time2Label2), nameof(AccountType.Time2Label3),
             nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel2), nameof(AccountType.ExternalReferenceLabel3),
