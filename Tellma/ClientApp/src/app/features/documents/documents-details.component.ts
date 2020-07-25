@@ -24,7 +24,7 @@ import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
-import { metadata_Contract, Contract } from '~/app/data/entities/contract';
+import { metadata_Relation, Relation } from '~/app/data/entities/relations';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
@@ -143,7 +143,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
   public additionalSelectAccount = '$DocumentDetails';
   public additionalSelectResource = '$DocumentDetails';
-  public additionalSelectContract = '$DocumentDetails';
+  public additionalSelectRelation = '$DocumentDetails';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -292,9 +292,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
-      result.DebitContractIsCommon = false;
-      result.CreditContractIsCommon = false;
-      result.NotedContractIsCommon = false;
+      result.DebitCustodianIsCommon = false;
+      result.CreditCustodianIsCommon = false;
+      result.NotedRelationIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
       result.QuantityIsCommon = false;
@@ -312,9 +312,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       result.PostingDateIsCommon = !!def.PostingDateVisibility;
       result.MemoIsCommon = !!def.MemoIsCommonVisibility;
-      result.DebitContractIsCommon = !!def.DebitContractVisibility;
-      result.CreditContractIsCommon = !!def.CreditContractVisibility;
-      result.NotedContractIsCommon = !!def.NotedContractVisibility;
+      result.DebitCustodianIsCommon = !!def.DebitCustodianVisibility;
+      result.CreditCustodianIsCommon = !!def.CreditCustodianVisibility;
+      result.NotedRelationIsCommon = !!def.NotedRelationVisibility;
       result.Time1IsCommon = !!def.Time1Visibility;
       result.Time2IsCommon = !!def.Time2Visibility;
       result.QuantityIsCommon = !!def.QuantityVisibility;
@@ -676,136 +676,136 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_PostingDate');
   }
 
-  // DebitContract
+  // DebitCustodian
 
-  public showDocumentDebitContract(_: DocumentForSave): boolean {
-    return this.definition.DebitContractVisibility;
+  public showDocumentDebitCustodian(_: DocumentForSave): boolean {
+    return this.definition.DebitCustodianVisibility;
   }
 
-  public requireDocumentDebitContract(doc: Document): boolean {
+  public requireDocumentDebitCustodian(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDebitContract;
+    return this._requireDebitCustodian;
   }
 
-  public readonlyDocumentDebitContract(doc: Document): boolean {
+  public readonlyDocumentDebitCustodian(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDebitContract;
+    return this._readonlyDebitCustodian;
   }
 
-  public labelDocumentDebitContract(_: DocumentForSave): string {
+  public labelDocumentDebitCustodian(_: DocumentForSave): string {
     // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitContractLabel');
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitCustodianLabel');
     if (!!label) {
       return label;
     }
 
-    // Second try the contract definition
-    if (this.definition.DebitContractDefinitionIds.length === 1) {
-      const contractDefId = this.definition.DebitContractDefinitionIds[0];
-      const contractDef = this.ws.definitions.Contracts[contractDefId];
-      if (!!contractDef) {
-        label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
+    // Second try the relation definition
+    if (this.definition.DebitCustodianDefinitionIds.length === 1) {
+      const relationDefId = this.definition.DebitCustodianDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
       }
     }
 
     // Last resort: generic label
     if (!label) {
-      label = this.translate.instant('Contract');
+      label = this.translate.instant('Document_DebitCustodian');
     }
 
     return label;
   }
 
-  public documentDebitContractDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.DebitContractDefinitionIds;
+  public documentDebitCustodianDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.DebitCustodianDefinitionIds;
   }
 
-  // CreditContract
+  // CreditCustodian
 
-  public showDocumentCreditContract(_: DocumentForSave): boolean {
-    return this.definition.CreditContractVisibility;
+  public showDocumentCreditCustodian(_: DocumentForSave): boolean {
+    return this.definition.CreditCustodianVisibility;
   }
 
-  public requireDocumentCreditContract(doc: Document): boolean {
+  public requireDocumentCreditCustodian(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireCreditContract;
+    return this._requireCreditCustodian;
   }
 
-  public readonlyDocumentCreditContract(doc: Document): boolean {
+  public readonlyDocumentCreditCustodian(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyCreditContract;
+    return this._readonlyCreditCustodian;
   }
 
-  public labelDocumentCreditContract(_: DocumentForSave): string {
+  public labelDocumentCreditCustodian(_: DocumentForSave): string {
     // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditContractLabel');
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditCustodianLabel');
     if (!!label) {
       return label;
     }
 
-    // Second try the contract definition
-    if (this.definition.CreditContractDefinitionIds.length === 1) {
-      const contractDefId = this.definition.CreditContractDefinitionIds[0];
-      const contractDef = this.ws.definitions.Contracts[contractDefId];
-      if (!!contractDef) {
-        label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
+    // Second try the relation definition
+    if (this.definition.CreditCustodianDefinitionIds.length === 1) {
+      const relationDefId = this.definition.CreditCustodianDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
       }
     }
 
     // Last resort: generic label
     if (!label) {
-      label = this.translate.instant('Contract');
+      label = this.translate.instant('Document_CreditCustodian');
     }
 
     return label;
   }
 
-  public documentCreditContractDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.CreditContractDefinitionIds;
+  public documentCreditCustodianDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.CreditCustodianDefinitionIds;
   }
 
-  // NotedContract
+  // NotedRelation
 
-  public showDocumentNotedContract(_: DocumentForSave): boolean {
-    return this.definition.NotedContractVisibility;
+  public showDocumentNotedRelation(_: DocumentForSave): boolean {
+    return this.definition.NotedRelationVisibility;
   }
 
-  public requireDocumentNotedContract(doc: Document): boolean {
+  public requireDocumentNotedRelation(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireNotedContract;
+    return this._requireNotedRelation;
   }
 
-  public readonlyDocumentNotedContract(doc: Document): boolean {
+  public readonlyDocumentNotedRelation(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyNotedContract;
+    return this._readonlyNotedRelation;
   }
 
-  public labelDocumentNotedContract(_: DocumentForSave): string {
+  public labelDocumentNotedRelation(_: DocumentForSave): string {
     // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedContractLabel');
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedRelationLabel');
     if (!!label) {
       return label;
     }
 
-    // Second try the contract definition
-    if (this.definition.NotedContractDefinitionIds.length === 1) {
-      const contractDefId = this.definition.NotedContractDefinitionIds[0];
-      const contractDef = this.ws.definitions.Contracts[contractDefId];
-      if (!!contractDef) {
-        label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
+    // Second try the relation definition
+    if (this.definition.NotedRelationDefinitionIds.length === 1) {
+      const relationDefId = this.definition.NotedRelationDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
       }
     }
 
     // Last resort: generic label
     if (!label) {
-      label = this.translate.instant('Contract');
+      label = this.translate.instant('Document_NotedRelation');
     }
 
     return label;
   }
 
-  public documentNotedContractDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.NotedContractDefinitionIds;
+  public documentNotedRelationDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.NotedRelationDefinitionIds;
   }
 
   // Segment
@@ -936,12 +936,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _readonlyDocumentMemo: boolean;
   private _requireDocumentPostingDate: boolean;
   private _readonlyDocumentPostingDate: boolean;
-  private _requireDebitContract: boolean;
-  private _readonlyDebitContract: boolean;
-  private _requireCreditContract: boolean;
-  private _readonlyCreditContract: boolean;
-  private _requireNotedContract: boolean;
-  private _readonlyNotedContract: boolean;
+  private _requireDebitCustodian: boolean;
+  private _readonlyDebitCustodian: boolean;
+  private _requireCreditCustodian: boolean;
+  private _readonlyCreditCustodian: boolean;
+  private _requireNotedRelation: boolean;
+  private _readonlyNotedRelation: boolean;
   private _requireDocumentTime1: boolean;
   private _readonlyDocumentTime1: boolean;
   private _requireDocumentTime2: boolean;
@@ -958,12 +958,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentMemo = false;
       this._requireDocumentPostingDate = false;
       this._readonlyDocumentPostingDate = false;
-      this._requireDebitContract = false;
-      this._readonlyDebitContract = false;
-      this._requireCreditContract = false;
-      this._readonlyCreditContract = false;
-      this._requireNotedContract = false;
-      this._readonlyNotedContract = false;
+      this._requireDebitCustodian = false;
+      this._readonlyDebitCustodian = false;
+      this._requireCreditCustodian = false;
+      this._readonlyCreditCustodian = false;
+      this._requireNotedRelation = false;
+      this._readonlyNotedRelation = false;
       this._requireDocumentTime1 = false;
       this._readonlyDocumentTime1 = false;
       this._requireDocumentTime2 = false;
@@ -988,12 +988,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
       this._requireDocumentPostingDate = def.PostingDateRequiredState === 0;
       this._readonlyDocumentPostingDate = def.PostingDateReadOnlyState === 0;
-      this._requireDebitContract = def.DebitContractRequiredState === 0;
-      this._readonlyDebitContract = def.DebitContractReadOnlyState === 0;
-      this._requireCreditContract = def.CreditContractRequiredState === 0;
-      this._readonlyCreditContract = def.CreditContractReadOnlyState === 0;
-      this._requireNotedContract = def.NotedContractRequiredState === 0;
-      this._readonlyNotedContract = def.NotedContractReadOnlyState === 0;
+      this._requireDebitCustodian = def.DebitCustodianRequiredState === 0;
+      this._readonlyDebitCustodian = def.DebitCustodianReadOnlyState === 0;
+      this._requireCreditCustodian = def.CreditCustodianRequiredState === 0;
+      this._readonlyCreditCustodian = def.CreditCustodianReadOnlyState === 0;
+      this._requireNotedRelation = def.NotedRelationRequiredState === 0;
+      this._readonlyNotedRelation = def.NotedRelationReadOnlyState === 0;
       this._requireDocumentTime1 = def.Time1RequiredState === 0;
       this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0;
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
@@ -1030,34 +1030,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._readonlyDocumentPostingDate = true;
               }
               break;
-            case 'ContractId':
-              if (!this._requireDebitContract && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+            case 'CustodianId':
+              if (!this._requireDebitCustodian && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDebitContract = true;
+                this._requireDebitCustodian = true;
               }
-              if (!this._requireCreditContract && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+              if (!this._requireCreditCustodian && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireCreditContract = true;
+                this._requireCreditCustodian = true;
               }
 
-              if (!this._readonlyDebitContract && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+              if (!this._readonlyDebitCustodian && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDebitContract = true;
+                this._readonlyDebitCustodian = true;
               }
-              if (!this._readonlyCreditContract && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+              if (!this._readonlyCreditCustodian && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyCreditContract = true;
+                this._readonlyCreditCustodian = true;
               }
               break;
 
-            case 'NotedContractId':
-              if (!this._requireNotedContract &&
+            case 'NotedRelationId':
+              if (!this._requireNotedRelation &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireNotedContract = true;
+                this._requireNotedRelation = true;
               }
-              if (!this._readonlyNotedContract &&
+              if (!this._readonlyNotedRelation &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyNotedContract = true;
+                this._readonlyNotedRelation = true;
               }
               break;
 
@@ -1204,13 +1204,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           filter = filter + ` and ResourceDefinitionId eq null`;
         }
 
-        // ContractDefinitionId
-        const contract = this.ws.get('Contract', entry.ContractId) as Contract;
-        const contractDefId = !!contract ? contract.DefinitionId : null;
-        if (!!contractDefId) {
-          filter = filter + ` and ContractDefinitionId eq ${contractDefId}`;
+        // CustodianDefinitionId
+        const custodian = this.ws.get('Relation', entry.CustodianId) as Relation;
+        const custodianDefId = !!custodian ? custodian.DefinitionId : null;
+        if (!!custodianDefId) {
+          filter = filter + ` and CustodianDefinitionId eq ${custodianDefId}`;
         } else {
-          filter = filter + ` and ContractDefinitionId eq null`;
+          filter = filter + ` and CustodianDefinitionId eq null`;
         }
 
         // ResourceId
@@ -1219,10 +1219,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           filter = filter + ` and (ResourceId eq null or ResourceId eq ${resourceId})`;
         }
 
-        // ContractId
-        const contractId = entry.ContractId;
-        if (!!contractId) {
-          filter = filter + ` and (ContractId eq null or ContractId eq ${contractId})`;
+        // CustodianId
+        const custodianId = entry.CustodianId;
+        if (!!custodianId) {
+          filter = filter + ` and (CustodianId eq null or CustodianId eq ${custodianId})`;
         }
 
         // EntryTypeId
@@ -1241,14 +1241,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Center
 
   public readonlyCenter_Manual(entry: Entry): boolean {
-    return !!this.getAccountResourceContractCenterId(entry);
+    return !!this.getAccountResourceCustodianCenterId(entry);
   }
 
   public readonlyValueCenterId_Manual(entry: Entry): number {
-    return this.getAccountResourceContractCenterId(entry);
+    return this.getAccountResourceCustodianCenterId(entry);
   }
 
-  private getAccountResourceContractCenterId(entry: Entry): number {
+  private getAccountResourceCustodianCenterId(entry: Entry): number {
     // returns the center Id (if any) that will eventually be copied to the Entry in the bll
     if (!entry) {
       return null;
@@ -1256,75 +1256,74 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     const account = this.account(entry);
     const resource = this.resource(entry);
-    const contract = this.contract(entry);
+    const custodian = this.custodian(entry);
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
-    const contractCenterId = !!contract ? contract.CenterId : null;
+    const custodianCenterId = !!custodian ? custodian.CenterId : null;
 
-    return accountCenterId || resourceCenterId || contractCenterId;
+    return accountCenterId || resourceCenterId || custodianCenterId;
   }
 
-  // ContractId
+  // CustodianId
 
-  public showContract_Manual(entry: Entry): boolean {
+  public showCustodian_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.ContractDefinitionId;
+    return !!account && !!account.CustodianDefinitionId;
   }
 
-  public readonlyContract_Manual(entry: Entry): boolean {
+  public readonlyCustodian_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.ContractId;
+    return !!account && !!account.CustodianId;
   }
 
-  public readonlyValueContractId_Manual(entry: Entry): number {
+  public readonlyValueCustodianId_Manual(entry: Entry): number {
     const account = this.account(entry);
-    return !!account ? account.ContractId : null;
+    return !!account ? account.CustodianId : null;
   }
 
-  public labelContract_Manual(entry: Entry): string {
+  public labelCustodian_Manual(entry: Entry): string {
     const account = this.account(entry);
-    const defId = !!account ? account.ContractDefinitionId : null;
+    const defId = !!account ? account.CustodianDefinitionId : null;
 
-    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdsContract_Manual(entry: Entry): number[] {
+  public definitionIdsCustodian_Manual(entry: Entry): number[] {
     const account = this.account(entry);
-    return [account.ContractDefinitionId];
-    // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
+    return [account.CustodianDefinitionId];
   }
 
   /**
-   * The contract that will eventually be set in the entry after saving
+   * The custodian that will eventually be set in the entry after saving
    */
-  public contract(entry: Entry): Contract {
+  public custodian(entry: Entry): Relation {
     const account = this.account(entry);
-    const accountContractId = !!account ? account.ContractId : null;
-    const entryContractId = !!account && !!account.ContractDefinitionId ? entry.ContractId : null;
-    const contractId = accountContractId || entryContractId;
+    const accountCustodianId = !!account ? account.CustodianId : null;
+    const entryCustodianId = !!account && !!account.CustodianDefinitionId ? entry.CustodianId : null;
+    const custodianId = accountCustodianId || entryCustodianId;
 
-    return this.ws.get('Contract', contractId) as Contract;
+    return this.ws.get('Relation', custodianId) as Relation;
   }
 
-  // Noted Contract Id
+  // Noted Relation Id
 
-  public showNotedContract_Manual(entry: Entry): boolean {
+  public showNotedRelation_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.NotedContractDefinitionId;
+    return !!account && !!account.NotedRelationDefinitionId;
   }
 
-  public labelNotedContract_Manual(entry: Entry): string {
+  public labelNotedRelation_Manual(entry: Entry): string {
     const account = this.account(entry);
-    const defId = !!account ? account.NotedContractDefinitionId : null;
+    const defId = !!account ? account.NotedRelationDefinitionId : null;
 
-    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdsNotedContract_Manual(entry: Entry): number[] {
+  public definitionIdsNotedRelation_Manual(entry: Entry): number[] {
     const account = this.account(entry);
-    return [account.NotedContractDefinitionId];
-    // return !!at && !!at.NotedContractDefinitions ? at.NotedContractDefinitions.map(e => e.NotedContractDefinitionId) : [];
+    return [account.NotedRelationDefinitionId];
+    // return !!at && !!at.NotedRelationDefinitions ? at.NotedRelationDefinitions.map(e => e.NotedRelationDefinitionId) : [];
   }
 
   // ResourceId
@@ -1411,26 +1410,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return filter;
   }
 
-  // DueDate
-
-  public showDueDate_Manual(entry: Entry): boolean {
-    // const resourceDefinition = this.resourceDefinition(entry);
-    // return !!resourceDefinition && !!resourceDefinition.DueDateVisibility;
-    const at = this.accountType(entry);
-    return !!at && !!at.DueDateLabel;
-  }
-
-  public labelDueDate_Manual(entry: Entry): string {
-    // const rd = this.resourceDefinition(entry);
-    // const at = this.accountType(entry);
-    // return !!rd.DueDateLabel ? this.ws.getMultilingualValueImmediate(rd, 'DueDateLabel') :
-    //   !!at.DueDateLabel ? this.ws.getMultilingualValueImmediate(at, 'DueDateLabel') :
-    //     this.translate.instant('Entry_DueDate');
-
-    const at = this.accountType(entry);
-    return this.ws.getMultilingualValueImmediate(at, 'DueDateLabel');
-  }
-
   // Time1
 
   public showTime1_Manual(entry: Entry): boolean {
@@ -1459,10 +1438,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showCurrency(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !this.getAccountResourceContractCurrencyId(entry);
+    return !!account && !this.getAccountResourceCustodianCurrencyId(entry);
   }
 
-  private getAccountResourceContractCurrencyId(entry: Entry): string {
+  private getAccountResourceCustodianCurrencyId(entry: Entry): string {
     // returns the currency Id (if any) that will eventually be copied to the Entry in the bll
     if (!entry) {
       return null;
@@ -1470,13 +1449,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     const account = this.account(entry);
     const resource = this.resource(entry);
-    const contract = this.contract(entry);
+    const custodian = this.custodian(entry);
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
-    const contractCurrencyId = !!contract ? contract.CurrencyId : null;
+    const custodianCurrencyId = !!custodian ? custodian.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || contractCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || custodianCurrencyId;
   }
 
   public readonlyValueCurrencyId(entry: Entry): string {
@@ -1485,10 +1464,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return null;
     }
 
-    const accountResourceContractCurrencyId = this.getAccountResourceContractCurrencyId(entry);
+    const accountResourceCustodianCurrencyId = this.getAccountResourceCustodianCurrencyId(entry);
     const entryCurrencyId = entry.CurrencyId;
 
-    return accountResourceContractCurrencyId || entryCurrencyId;
+    return accountResourceCustodianCurrencyId || entryCurrencyId;
   }
 
   public get functionalId(): string {
@@ -1915,7 +1894,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignaturesSummary: RequiredSignature[];
   private _requiredSignaturesLineIdsHash: HashTable;
   private _requiredSignatureProps = [
-    'ToState', 'RuleType', 'RoleId', 'ContractId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
+    'ToState', 'RuleType', 'RoleId', 'CustodianId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
     'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
     'ReasonId', 'ReasonDetails'];
 
@@ -2572,9 +2551,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           !(
             (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
             (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-            (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
-            (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
-            (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
+            (doc.DebitCustodianIsCommon && col.ColumnName === 'CustodianId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
+            (doc.CreditCustodianIsCommon && col.ColumnName === 'CustodianId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
+            (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
             (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
@@ -2688,14 +2667,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  public definitionIdsContract_Smart(lineDefId: number, columnIndex: number): number[] {
+  public definitionIdsCustodian_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.ContractDefinitionIds ? entryDef.ContractDefinitionIds : [];
+    return !!entryDef && !!entryDef.CustodianDefinitionIds ? entryDef.CustodianDefinitionIds : [];
   }
 
-  public definitionIdsNotedContract_Smart(lineDefId: number, columnIndex: number): number[] {
+  public definitionIdsNotedRelation_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.NotedContractDefinitionIds ? entryDef.NotedContractDefinitionIds : [];
+    return !!entryDef && !!entryDef.NotedRelationDefinitionIds ? entryDef.NotedRelationDefinitionIds : [];
   }
 
   public definitionIdsResource_Smart(lineDefId: number, columnIndex: number): number[] {

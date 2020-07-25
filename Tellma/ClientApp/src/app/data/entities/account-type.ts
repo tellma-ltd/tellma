@@ -7,16 +7,16 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { AccountTypeContractDefinitionForSave, AccountTypeContractDefinition } from './account-type-contract-definition';
-import { AccountTypeNotedContractDefinitionForSave, AccountTypeNotedContractDefinition } from './account-type-noted-contract-definition';
+import { AccountTypeCustodianDefinitionForSave, AccountTypeCustodianDefinition } from './account-type-custodian-definition';
+import { AccountTypeNotedRelationDefinitionForSave, AccountTypeNotedRelationDefinition } from './account-type-noted-relation-definition';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 
 export type RequiredAssignment = 'A' | 'E';
 export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
-export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinitionForSave,
-  TNotedContractDef = AccountTypeNotedContractDefinitionForSave,
+export interface AccountTypeForSave<TCustodianDef = AccountTypeCustodianDefinitionForSave,
+  TNotedRelationDef = AccountTypeNotedRelationDefinitionForSave,
   TResourceDef = AccountTypeResourceDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
@@ -30,9 +30,6 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   IsAssignable?: boolean;
   AllowsPureUnit?: boolean;
   EntryTypeParentId?: number;
-  DueDateLabel?: string;
-  DueDateLabel2?: string;
-  DueDateLabel3?: string;
   IsMonetary?: boolean;
   Time1Label?: string;
   Time1Label2?: string;
@@ -56,12 +53,12 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  ContractDefinitions?: TContractDef[];
-  NotedContractDefinitions?: TNotedContractDef[];
+  CustodianDefinitions?: TCustodianDef[];
+  NotedRelationDefinitions?: TNotedRelationDef[];
   ResourceDefinitions?: TResourceDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeContractDefinition, AccountTypeNotedContractDefinition, AccountTypeResourceDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeCustodianDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;
@@ -113,9 +110,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         AllowsPureUnit: { control: 'boolean', label: () => trx.instant('AccountType_AllowsPureUnit') },
         EntryTypeParentId: { control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { control: 'navigation', label: () => trx.instant('AccountType_EntryTypeParent'), type: 'EntryType', foreignKeyName: 'EntryTypeParentId' },
-        DueDateLabel: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.primaryPostfix },
-        DueDateLabel2: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.secondaryPostfix },
-        DueDateLabel3: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.ternaryPostfix },
         Time1Label: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.primaryPostfix },
         Time1Label2: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.secondaryPostfix },
         Time1Label3: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.ternaryPostfix },
@@ -158,7 +152,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
     if (!ws.settings.SecondaryLanguageId) {
       delete entityDesc.properties.Name2;
       delete entityDesc.properties.Description2;
-      delete entityDesc.properties.DueDateLabel2;
       delete entityDesc.properties.Time1Label2;
       delete entityDesc.properties.Time2Label2;
       delete entityDesc.properties.ExternalReferenceLabel2;
@@ -171,7 +164,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
     if (!ws.settings.TernaryLanguageId) {
       delete entityDesc.properties.Name3;
       delete entityDesc.properties.Description3;
-      delete entityDesc.properties.DueDateLabel3;
       delete entityDesc.properties.Time1Label3;
       delete entityDesc.properties.Time2Label3;
       delete entityDesc.properties.ExternalReferenceLabel3;

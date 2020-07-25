@@ -94,9 +94,9 @@ namespace Tellma.Controllers
             };
         }
 
-        private static ContractDefinitionForClient MapContractDefinition(ContractDefinition def)
+        private static RelationDefinitionForClient MapRelationDefinition(RelationDefinition def)
         {
-            return new ContractDefinitionForClient
+            return new RelationDefinitionForClient
             {
                 State = def.State,
                 Code = def.Code,
@@ -179,7 +179,7 @@ namespace Tellma.Controllers
                 Text2Label3 = def.Text2Label3,
                 Text2Visibility = MapVisibility(def.Text2Visibility),
 
-                // Contract Only
+                // Relation Only
 
                 AgentVisibility = MapVisibility(def.AgentVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
@@ -406,8 +406,8 @@ namespace Tellma.Controllers
                     AccountTypeId = e.AccountTypeId,
                     EntryTypeId = e.EntryTypeId,
                     EntryTypeParentId = e.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
-                    ContractDefinitionIds = e.ContractDefinitions.Select(e => e.ContractDefinitionId.Value).ToList(),
-                    NotedContractDefinitionIds = e.NotedContractDefinitions.Select(e => e.NotedContractDefinitionId.Value).ToList(),
+                    CustodianDefinitionIds = e.CustodianDefinitions.Select(e => e.CustodianDefinitionId.Value).ToList(),
+                    NotedRelationDefinitionIds = e.NotedRelationDefinitions.Select(e => e.NotedRelationDefinitionId.Value).ToList(),
                     ResourceDefinitionIds = e.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
@@ -503,9 +503,9 @@ namespace Tellma.Controllers
                 MainMenuSection = def.MainMenuSection,
 
                 // These should not be null
-                CreditContractDefinitionIds = new List<int>(),
-                DebitContractDefinitionIds = new List<int>(),
-                NotedContractDefinitionIds = new List<int>(),
+                CreditCustodianDefinitionIds = new List<int>(),
+                DebitCustodianDefinitionIds = new List<int>(),
+                NotedRelationDefinitionIds = new List<int>(),
             };
 
             // Here we compute some values based on the associated line definitions
@@ -513,7 +513,7 @@ namespace Tellma.Controllers
                 .Select(e => lineDefsDic.GetValueOrDefault(e.LineDefinitionId))
                 .Where(e => e != null && e.Columns != null);
 
-            // ContractId
+            // Lines
             foreach (var lineDef in documentLineDefinitions)
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
@@ -560,80 +560,80 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // Contracts
+                    // Relations
                     else if (colDef.EntryIndex < lineDef.Entries.Count)
                     {
                         var entryDef = lineDef.Entries[colDef.EntryIndex];
 
-                        // DebitContract
-                        if (colDef.ColumnName == nameof(Entry.ContractId) && entryDef.Direction == 1)
+                        // DebitCustodian
+                        if (colDef.ColumnName == nameof(Entry.CustodianId) && entryDef.Direction == 1)
                         {
-                            result.DebitContractVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.DebitContractLabel))
+                            result.DebitCustodianVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.DebitCustodianLabel))
                             {
-                                result.DebitContractLabel ??= colDef.Label;
-                                result.DebitContractLabel2 ??= colDef.Label2;
-                                result.DebitContractLabel3 ??= colDef.Label3;
+                                result.DebitCustodianLabel ??= colDef.Label;
+                                result.DebitCustodianLabel2 ??= colDef.Label2;
+                                result.DebitCustodianLabel3 ??= colDef.Label3;
 
-                                result.DebitContractDefinitionIds = entryDef.ContractDefinitionIds;
+                                result.DebitCustodianDefinitionIds = entryDef.CustodianDefinitionIds;
                             }
 
-                            if (colDef.RequiredState < (result.DebitContractRequiredState ?? 5))
+                            if (colDef.RequiredState < (result.DebitCustodianRequiredState ?? 5))
                             {
-                                result.DebitContractRequiredState = colDef.RequiredState;
+                                result.DebitCustodianRequiredState = colDef.RequiredState;
                             }
 
-                            if (colDef.ReadOnlyState < (result.DebitContractReadOnlyState ?? 5))
+                            if (colDef.ReadOnlyState < (result.DebitCustodianReadOnlyState ?? 5))
                             {
-                                result.DebitContractReadOnlyState = colDef.ReadOnlyState;
+                                result.DebitCustodianReadOnlyState = colDef.ReadOnlyState;
                             }
                         }
 
-                        // CreditContract
-                        if (colDef.ColumnName == nameof(Entry.ContractId) && entryDef.Direction == -1)
+                        // CreditCustodian
+                        if (colDef.ColumnName == nameof(Entry.CustodianId) && entryDef.Direction == -1)
                         {
-                            result.CreditContractVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.CreditContractLabel))
+                            result.CreditCustodianVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.CreditCustodianLabel))
                             {
-                                result.CreditContractLabel = colDef.Label;
-                                result.CreditContractLabel2 = colDef.Label2;
-                                result.CreditContractLabel3 = colDef.Label3;
+                                result.CreditCustodianLabel = colDef.Label;
+                                result.CreditCustodianLabel2 = colDef.Label2;
+                                result.CreditCustodianLabel3 = colDef.Label3;
                              
-                                result.CreditContractDefinitionIds = entryDef.ContractDefinitionIds;
+                                result.CreditCustodianDefinitionIds = entryDef.CustodianDefinitionIds;
                             }                            
 
-                            if (colDef.RequiredState < (result.CreditContractRequiredState ?? 5))
+                            if (colDef.RequiredState < (result.CreditCustodianRequiredState ?? 5))
                             {
-                                result.CreditContractRequiredState = colDef.RequiredState;
+                                result.CreditCustodianRequiredState = colDef.RequiredState;
                             }
 
-                            if (colDef.ReadOnlyState < (result.CreditContractReadOnlyState ?? 5))
+                            if (colDef.ReadOnlyState < (result.CreditCustodianReadOnlyState ?? 5))
                             {
-                                result.CreditContractReadOnlyState = colDef.ReadOnlyState;
+                                result.CreditCustodianReadOnlyState = colDef.ReadOnlyState;
                             }
                         }
 
-                        // NotedContract
-                        if (colDef.ColumnName == nameof(Entry.NotedContractId))
+                        // NotedRelation
+                        if (colDef.ColumnName == nameof(Entry.NotedRelationId))
                         {
-                            result.NotedContractVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.NotedContractLabel))
+                            result.NotedRelationVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.NotedRelationLabel))
                             {
-                                result.NotedContractLabel = colDef.Label;
-                                result.NotedContractLabel2 = colDef.Label2;
-                                result.NotedContractLabel3 = colDef.Label3;
+                                result.NotedRelationLabel = colDef.Label;
+                                result.NotedRelationLabel2 = colDef.Label2;
+                                result.NotedRelationLabel3 = colDef.Label3;
 
-                                result.NotedContractDefinitionIds = entryDef.NotedContractDefinitionIds;
+                                result.NotedRelationDefinitionIds = entryDef.NotedRelationDefinitionIds;
                             }
 
-                            if (colDef.RequiredState < (result.NotedContractRequiredState ?? 5))
+                            if (colDef.RequiredState < (result.NotedRelationRequiredState ?? 5))
                             {
-                                result.NotedContractRequiredState = colDef.RequiredState;
+                                result.NotedRelationRequiredState = colDef.RequiredState;
                             }
 
-                            if (colDef.ReadOnlyState < (result.NotedContractReadOnlyState ?? 5))
+                            if (colDef.ReadOnlyState < (result.NotedRelationReadOnlyState ?? 5))
                             {
-                                result.NotedContractReadOnlyState = colDef.ReadOnlyState;
+                                result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
                             }
                         }
                     }
@@ -768,13 +768,13 @@ namespace Tellma.Controllers
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
-            var (version, lookupDefs, contractDefs, resourceDefs, reportDefs, docDefs, lineDefs) = await repo.Definitions__Load(cancellation);
+            var (version, lookupDefs, relationDefs, resourceDefs, reportDefs, docDefs, lineDefs) = await repo.Definitions__Load(cancellation);
 
-            // Map Lookups, Contracts, Resources, Reports (Straight forward)
+            // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
             {
                 Lookups = lookupDefs.ToDictionary(def => def.Id, def => MapLookupDefinition(def)),
-                Contracts = contractDefs.ToDictionary(def => def.Id, def => MapContractDefinition(def)),
+                Relations = relationDefs.ToDictionary(def => def.Id, def => MapRelationDefinition(def)),
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def))

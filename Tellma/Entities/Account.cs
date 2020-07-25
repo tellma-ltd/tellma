@@ -40,11 +40,11 @@ namespace Tellma.Entities
         [Display(Name = "Account_Classification")]
         public int? ClassificationId { get; set; }
 
-        [Display(Name = "Account_ContractDefinition")]
-        public int? ContractDefinitionId { get; set; }
+        [Display(Name = "Account_CustodianDefinition")]
+        public int? CustodianDefinitionId { get; set; }
 
-        [Display(Name = "Account_Contract")]
-        public int? ContractId { get; set; }
+        [Display(Name = "Account_Custodian")]
+        public int? CustodianId { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         public int? ResourceDefinitionId { get; set; }
@@ -59,8 +59,8 @@ namespace Tellma.Entities
         [Display(Name = "Account_EntryType")]
         public int? EntryTypeId { get; set; }
 
-        [Display(Name = "Account_NotedContractDefinition")]
-        public int? NotedContractDefinitionId { get; set; }
+        [Display(Name = "Account_NotedRelationDefinition")]
+        public int? NotedRelationDefinitionId { get; set; }
     }
 
     public class Account : AccountForSave
@@ -93,9 +93,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ClassificationId))]
         public AccountClassification Classification { get; set; }
 
-        [Display(Name = "Account_ContractDefinition")]
-        [ForeignKey(nameof(ContractDefinitionId))]
-        public ContractDefinition ContractDefinition { get; set; }
+        [Display(Name = "Account_CustodianDefinition")]
+        [ForeignKey(nameof(CustodianDefinitionId))]
+        public RelationDefinition CustodianDefinition { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         [ForeignKey(nameof(ResourceDefinitionId))]
@@ -109,9 +109,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
 
-        [Display(Name = "Account_Contract")]
-        [ForeignKey(nameof(ContractId))]
-        public Contract Contract { get; set; }
+        [Display(Name = "Account_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
 
         [Display(Name = "Account_Resource")]
         [ForeignKey(nameof(ResourceId))]
@@ -129,8 +129,8 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
-        [Display(Name = "Account_NotedContractDefinition")]
-        [ForeignKey(nameof(NotedContractDefinitionId))]
-        public ContractDefinition NotedContractDefinition { get; set; }
+        [Display(Name = "Account_NotedRelationDefinition")]
+        [ForeignKey(nameof(NotedRelationDefinitionId))]
+        public RelationDefinition NotedRelationDefinition { get; set; }
     }
 }

@@ -325,7 +325,21 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  onCancel(): void {
+  public onCancel(): void {
+    // prompt the user manually, since the Angular Router isn't involved
+    const canCancel = this.canDeactivate();
+    if (canCancel instanceof Observable) {
+      canCancel.subscribe(can => {
+        if (can) {
+          this.doCancel();
+        }
+      });
+    } else if (canCancel) {
+      this.doCancel();
+    }
+  }
+
+  private doCancel(): void {
     // clear the edit model and error messages
     this._editModel = null;
     this.clearErrors();

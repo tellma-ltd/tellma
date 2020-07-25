@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave<TContractDef, TNotedContractDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountTypeForSave<TCustodianDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -74,18 +74,6 @@ namespace Tellma.Entities
         [Display(Name = "AccountType_EntryTypeParent")]
         [AlwaysAccessible]
         public int? EntryTypeParentId { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Primary)]
-        [StringLength(50)]
-        public string DueDateLabel { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Secondary)]
-        [StringLength(50)]
-        public string DueDateLabel2 { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Ternary)]
-        [StringLength(50)]
-        public string DueDateLabel3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Primary)]
         [StringLength(50)]
@@ -171,24 +159,24 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
 
-        [Display(Name = "AccountType_ContractDefinitions")]
-        [ForeignKey(nameof(AccountTypeContractDefinition.AccountTypeId))]
-        public List<TContractDef> ContractDefinitions { get; set; }
+        [Display(Name = "AccountType_CustodianDefinitions")]
+        [ForeignKey(nameof(AccountTypeCustodianDefinition.AccountTypeId))]
+        public List<TCustodianDef> CustodianDefinitions { get; set; }
 
-        [Display(Name = "AccountType_NotedContractDefinitions")]
-        [ForeignKey(nameof(AccountTypeNotedContractDefinition.AccountTypeId))]
-        public List<TNotedContractDef> NotedContractDefinitions { get; set; }
+        [Display(Name = "AccountType_NotedRelationDefinitions")]
+        [ForeignKey(nameof(AccountTypeNotedRelationDefinition.AccountTypeId))]
+        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
 
         [Display(Name = "AccountType_ResourceDefinitions")]
         [ForeignKey(nameof(AccountTypeResourceDefinition.AccountTypeId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeContractDefinitionForSave, AccountTypeNotedContractDefinitionForSave, AccountTypeResourceDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodianDefinitionForSave, AccountTypeNotedRelationDefinitionForSave, AccountTypeResourceDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeContractDefinition, AccountTypeNotedContractDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
+    public class AccountType : AccountTypeForSave<AccountTypeCustodianDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public string Path { get; set; }

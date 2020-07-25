@@ -18,7 +18,7 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     TitlePlural2?: string;
     TitlePlural3?: string;
 
-    // Common with Contract
+    // Common with Relation
     CurrencyVisibility?: Visibility;
     CenterVisibility?: Visibility;
     ImageVisibility?: Visibility;
@@ -150,7 +150,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 TitlePlural2: { control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
                 TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
 
-                // Common with Contract
+                // Common with Relation
 
                 CurrencyVisibility: visibilityPropDescriptor('Entity_Currency', trx),
                 CenterVisibility: visibilityPropDescriptor('Entity_Center', trx),

@@ -182,8 +182,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'report-definitions', sortKey: 100
         },
         {
-          label: 'ContractDefinitions', icon: 'tools', link: '../contract-definitions',
-          view: 'contract-definitions', sortKey: 200
+          label: 'RelationDefinitions', icon: 'tools', link: '../relation-definitions',
+          view: 'relation-definitions', sortKey: 200
         },
         {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
@@ -261,7 +261,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
-      this.addDefinitions(menu, ws.definitions.Contracts, 'contracts');
+      this.addDefinitions(menu, ws.definitions.Relations, 'relations');
       this.addDefinitions(menu, ws.definitions.Resources, 'resources');
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
@@ -310,7 +310,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     const ws = this.workspace.currentTenant;
     const definitions = ws.definitions.Reports;
     if (!!definitions) {
-      const canViewContracts = Object.keys(ws.definitions.Contracts).some(v => this.canView(`contracts/${v}`));
+      const canViewRelations = Object.keys(ws.definitions.Relations).some(v => this.canView(`relations/${v}`));
       const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
       const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
       const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
@@ -328,8 +328,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         let canView: boolean;
         if (!definition.DefinitionId) {
           switch (definition.Collection) {
-            case 'Contract':
-              canView = canViewContracts;
+            case 'Relation':
+              canView = canViewRelations;
               break;
             case 'Resource':
               canView = canViewResources;
@@ -418,7 +418,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           link: `../${url}/${definitionId}`
         });
 
-        // if (url === 'contracts') {
+        // if (url === 'relations') {
 
 
         //   menu[definition.MainMenuSection].items.push({
@@ -427,7 +427,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         //     }),
         //     sortKey: definition.MainMenuSortKey + 1,
         //     icon: definition.MainMenuIcon || 'folder',
-        //     link: `../contract-statement/${definitionId}`,
+        //     link: `../relation-statement/${definitionId}`,
         //     paramsFunc: null // TODO
         //   });
         // }

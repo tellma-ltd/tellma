@@ -33,7 +33,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The foreign key on the *parent* Entity
         /// </summary>
-        public string ForeignKeyName { get; } // e.g. 'ContractId'
+        public string ForeignKeyName { get; } // e.g. 'RelationId'
 
         /// <summary>
         /// The symbol of the path leading up to the current node, root node usually has the symbol "P"

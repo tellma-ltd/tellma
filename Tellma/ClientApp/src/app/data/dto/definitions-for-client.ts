@@ -7,7 +7,7 @@ import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionSt
 export interface DefinitionsForClient {
     Documents: { [definitionId: number]: DocumentDefinitionForClient };
     Lines: { [definitionId: number]: LineDefinitionForClient };
-    Contracts: { [definitionId: number]: ContractDefinitionForClient };
+    Relations: { [definitionId: number]: RelationDefinitionForClient };
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
@@ -116,32 +116,32 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     PostingDateLabel2: string;
     PostingDateLabel3: string;
 
-    // Debit Contract
-    DebitContractVisibility: boolean;
-    DebitContractRequiredState: LineState;
-    DebitContractReadOnlyState: LineState;
-    DebitContractDefinitionIds: number[];
-    DebitContractLabel: string;
-    DebitContractLabel2: string;
-    DebitContractLabel3: string;
+    // Debit Custodian
+    DebitCustodianVisibility: boolean;
+    DebitCustodianRequiredState: LineState;
+    DebitCustodianReadOnlyState: LineState;
+    DebitCustodianDefinitionIds: number[];
+    DebitCustodianLabel: string;
+    DebitCustodianLabel2: string;
+    DebitCustodianLabel3: string;
 
-    // Credit Contract
-    CreditContractVisibility: boolean;
-    CreditContractRequiredState: LineState;
-    CreditContractReadOnlyState: LineState;
-    CreditContractDefinitionIds: number[];
-    CreditContractLabel: string;
-    CreditContractLabel2: string;
-    CreditContractLabel3: string;
+    // Credit Custodian
+    CreditCustodianVisibility: boolean;
+    CreditCustodianRequiredState: LineState;
+    CreditCustodianReadOnlyState: LineState;
+    CreditCustodianDefinitionIds: number[];
+    CreditCustodianLabel: string;
+    CreditCustodianLabel2: string;
+    CreditCustodianLabel3: string;
 
-    // Noted Contract
-    NotedContractVisibility: boolean;
-    NotedContractRequiredState: LineState;
-    NotedContractReadOnlyState: LineState;
-    NotedContractDefinitionIds: number[];
-    NotedContractLabel: string;
-    NotedContractLabel2: string;
-    NotedContractLabel3: string;
+    // Noted Relation
+    NotedRelationVisibility: boolean;
+    NotedRelationRequiredState: LineState;
+    NotedRelationReadOnlyState: LineState;
+    NotedRelationDefinitionIds: number[];
+    NotedRelationLabel: string;
+    NotedRelationLabel2: string;
+    NotedRelationLabel3: string;
 
     // Clearance
     ClearanceVisibility: Visibility;
@@ -235,8 +235,8 @@ export interface LineDefinitionEntryForClient {
     AccountTypeId?: number;
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
-    ContractDefinitionIds: number[];
-    NotedContractDefinitionIds: number[];
+    CustodianDefinitionIds: number[];
+    NotedRelationDefinitionIds: number[];
     ResourceDefinitionIds: number[];
 }
 
@@ -272,10 +272,10 @@ export interface LineDefinitionGenerateParameterForClient {
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
-    'ContractId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' | 'DueDate' |
+    'CustodianId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'AdditionalReference' | 'NotedContractId' |
-    'NotedContractName' | 'NotedAmount' | 'NotedDate';
+    'ExternalReference' | 'AdditionalReference' | 'NotedRelationId' |
+    'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 
@@ -385,7 +385,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
 }
 
-export interface ContractDefinitionForClient extends MasterDetailsDefinitionForClient {
+export interface RelationDefinitionForClient extends MasterDetailsDefinitionForClient {
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;
@@ -474,7 +474,7 @@ export interface ContractDefinitionForClient extends MasterDetailsDefinitionForC
     Text2Label3: string;
     Text2Visibility: Visibility;
 
-    // Contract Only
+    // Relation Only
 
     AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;

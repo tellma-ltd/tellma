@@ -34,8 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<AdminSettingsService>()
                 .AddScoped<AdminUsersService>()
                 .AddScoped<AgentsService>()
-                .AddScoped<ContractsService>()
-                .AddScoped<ContractsGenericService>()
+                .AddScoped<RelationsService>()
+                .AddScoped<RelationsGenericService>()
                 .AddScoped<CentersService>()
                 .AddScoped<CompaniesService>()
                 .AddScoped<CurrenciesService>()
@@ -62,7 +62,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<SettingsService>()
                 .AddScoped<SummaryEntriesService>()
                 .AddScoped<UnitsService>()
-                .AddScoped<ContractDefinitionsService>()
+                .AddScoped<RelationDefinitionsService>()
                 .AddScoped<ResourceDefinitionsService>()
                 .AddScoped<LookupDefinitionsService>()
                 .AddScoped<UsersService>()
@@ -92,8 +92,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(AccountType) => sp.GetRequiredService<AccountTypesService>(),
                 nameof(AdminUser) => sp.GetRequiredService<AdminUsersService>(),
                 nameof(Agent) => sp.GetRequiredService<AgentsService>(),
-                nameof(ContractDefinition) => sp.GetRequiredService<ContractDefinitionsService>(),
-                nameof(Contract) => definitionId == null ? sp.GetRequiredService<ContractsGenericService>() : (IFactServiceBase)sp.GetRequiredService<ContractsService>().SetDefinitionId(definitionId.Value),
+                nameof(RelationDefinition) => sp.GetRequiredService<RelationDefinitionsService>(),
+                nameof(Relation) => definitionId == null ? sp.GetRequiredService<RelationsGenericService>() : (IFactServiceBase)sp.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
                 nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),
@@ -139,8 +139,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(AccountType) => sp.GetRequiredService<AccountTypesService>(),
                 nameof(AdminUser) => sp.GetRequiredService<AdminUsersService>(),
                 nameof(Agent) => sp.GetRequiredService<AgentsService>(),
-                nameof(ContractDefinition) => sp.GetRequiredService<ContractDefinitionsService>(),
-                nameof(Contract) => definitionId == null ? sp.GetRequiredService<ContractsGenericService>() : (IFactWithIdService)sp.GetRequiredService<ContractsService>().SetDefinitionId(definitionId.Value),
+                nameof(RelationDefinition) => sp.GetRequiredService<RelationDefinitionsService>(),
+                nameof(Relation) => definitionId == null ? sp.GetRequiredService<RelationsGenericService>() : (IFactWithIdService)sp.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
                 nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),

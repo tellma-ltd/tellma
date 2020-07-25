@@ -186,7 +186,7 @@ namespace Tellma.Data
 
         public Query<Settings> Settings => Query<Settings>();
         public Query<User> Users => Query<User>();
-        public Query<Contract> Contracts => Query<Contract>();
+        public Query<Relation> Relations => Query<Relation>();
         public Query<Resource> Resources => Query<Resource>();
         public Query<Currency> Currencies => Query<Currency>();
         public Query<ExchangeRate> ExchangeRates => Query<ExchangeRate>();
@@ -230,9 +230,9 @@ namespace Tellma.Data
             {
                 nameof(Entities.Settings) => "[dbo].[Settings]",
                 nameof(User) => "[map].[Users]()",
-                nameof(Contract) => "[map].[Contracts]()",
-                nameof(ContractUser) => "[map].[ContractUsers]()",
-                nameof(ContractDefinition) => "[map].[ContractDefinitions]()",
+                nameof(Relation) => "[map].[Relations]()",
+                nameof(RelationUser) => "[map].[RelationUsers]()",
+                nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
                 nameof(Agent) => "[map].[Agents]()",
                 nameof(Unit) => "[map].[Units]()",
                 nameof(Permission) => "[dbo].[Permissions]",
@@ -247,8 +247,8 @@ namespace Tellma.Data
                 nameof(AccountClassification) => "[map].[AccountClassifications]()",
                 nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
-                nameof(AccountTypeContractDefinition) => "[map].[AccountTypeContractDefinitions]()",
-                nameof(AccountTypeNotedContractDefinition) => "[map].[AccountTypeNotedContractDefinitions]()",
+                nameof(AccountTypeCustodianDefinition) => "[map].[AccountTypeCustodianDefinitions]()",
+                nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
                 nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
                 nameof(Account) => "[map].[Accounts]()",
                 nameof(Center) => "[map].[Centers]()",
@@ -571,7 +571,7 @@ namespace Tellma.Data
 
         public async Task<(Guid,
             IEnumerable<LookupDefinition>,
-            IEnumerable<ContractDefinition>,
+            IEnumerable<RelationDefinition>,
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
             IEnumerable<DocumentDefinition>,
@@ -582,7 +582,7 @@ namespace Tellma.Data
 
             Guid version;
             var lookupDefinitions = new List<LookupDefinition>();
-            var contractDefinitions = new List<ContractDefinition>();
+            var relationDefinitions = new List<RelationDefinition>();
             var resourceDefinitions = new List<ResourceDefinition>();
             var reportDefinitions = new List<ReportDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
@@ -626,14 +626,14 @@ namespace Tellma.Data
                     lookupDefinitions.Add(entity);
                 }
 
-                // Next load contract definitions
-                var contractDefinitionProps = TypeDescriptor.Get<ContractDefinition>().SimpleProperties;
+                // Next load relation definitions
+                var relationDefinitionProps = TypeDescriptor.Get<RelationDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ContractDefinition();
-                    foreach (var prop in contractDefinitionProps)
+                    var entity = new RelationDefinition();
+                    foreach (var prop in relationDefinitionProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -642,7 +642,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    contractDefinitions.Add(entity);
+                    relationDefinitions.Add(entity);
                 }
 
                 // Next load resource definitions
@@ -913,8 +913,8 @@ namespace Tellma.Data
                 {
                     var entity = new LineDefinitionEntry
                     {
-                        ContractDefinitions = new List<LineDefinitionEntryContractDefinition>(),
-                        NotedContractDefinitions = new List<LineDefinitionEntryNotedContractDefinition>(),
+                        CustodianDefinitions = new List<LineDefinitionEntryCustodianDefinition>(),
+                        NotedRelationDefinitions = new List<LineDefinitionEntryNotedRelationDefinition>(),
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
                     };
 
@@ -1001,34 +1001,34 @@ namespace Tellma.Data
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
-                // Line Definition Entry Contract Definitions
+                // Line Definition Entry Custodian Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new LineDefinitionEntryContractDefinition
+                    var entity = new LineDefinitionEntryCustodianDefinition
                     {
                         LineDefinitionEntryId = reader.GetInt32(i++),
-                        ContractDefinitionId = reader.GetInt32(i++),
+                        CustodianDefinitionId = reader.GetInt32(i++),
                     };
 
                     var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.ContractDefinitions.Add(entity);
+                    lineDefEntry.CustodianDefinitions.Add(entity);
                 }
 
-                // Line Definition Entry Noted Contract Definitions
+                // Line Definition Entry Noted Relation Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new LineDefinitionEntryNotedContractDefinition
+                    var entity = new LineDefinitionEntryNotedRelationDefinition
                     {
                         LineDefinitionEntryId = reader.GetInt32(i++),
-                        NotedContractDefinitionId = reader.GetInt32(i++),
+                        NotedRelationDefinitionId = reader.GetInt32(i++),
                     };
 
                     var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.NotedContractDefinitions.Add(entity);
+                    lineDefEntry.NotedRelationDefinitions.Add(entity);
                 }
 
                 // Line Definition Entry Resource Definitions
@@ -1047,7 +1047,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (version, lookupDefinitions, contractDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions);
+            return (version, lookupDefinitions, relationDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions);
         }
 
         #endregion
@@ -1209,11 +1209,11 @@ namespace Tellma.Data
 
         #endregion
 
-        #region Contracts
+        #region Relations
 
-        public async Task<IEnumerable<ValidationError>> Contracts_Validate__Save(int definitionId, List<ContractForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Relations_Validate__Save(int definitionId, List<RelationForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Contracts_Validate__Save));
+            using var _ = _instrumentation.Block("Repo." + nameof(Relations_Validate__Save));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -1221,14 +1221,14 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(Contract)}List]",
+                TypeName = $"[dbo].[{nameof(Relation)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
-            var usersTvp = new SqlParameter("@ContractUsers", usersTable)
+            var usersTvp = new SqlParameter("@RelationUsers", usersTable)
             {
-                TypeName = $"[dbo].[{nameof(ContractUser)}List]",
+                TypeName = $"[dbo].[{nameof(RelationUser)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -1239,15 +1239,15 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Contracts_Validate__Save)}]";
+            cmd.CommandText = $"[bll].[{nameof(Relations_Validate__Save)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Contracts__Save(int definitionId, List<ContractForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<List<int>> Relations__Save(int definitionId, List<RelationForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Contracts__Save));
+            using var _ = _instrumentation.Block("Repo." + nameof(Relations__Save));
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -1257,14 +1257,14 @@ namespace Tellma.Data
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(Contract)}List]",
+                    TypeName = $"[dbo].[{nameof(Relation)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
-                var usersTvp = new SqlParameter("@ContractUsers", usersTable)
+                var usersTvp = new SqlParameter("@RelationUsers", usersTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ContractUser)}List]",
+                    TypeName = $"[dbo].[{nameof(RelationUser)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1283,7 +1283,7 @@ namespace Tellma.Data
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Contracts__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(Relations__Save)}]";
 
                 // Execute
                 if (returnIds)
@@ -1315,9 +1315,9 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task Contracts__Delete(IEnumerable<int> ids)
+        public async Task Relations__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Contracts__Delete));
+            using var _ = _instrumentation.Block("Repo." + nameof(Relations__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1332,7 +1332,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Contracts__Delete)}]";
+            cmd.CommandText = $"[dal].[{nameof(Relations__Delete)}]";
 
             // Execute
             try
@@ -1345,9 +1345,9 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Contracts_Validate__Delete(int definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Relations_Validate__Delete(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Contracts_Validate__Delete));
+            using var _ = _instrumentation.Block("Repo." + nameof(Relations_Validate__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1364,15 +1364,15 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Contracts_Validate__Delete)}]";
+            cmd.CommandText = $"[bll].[{nameof(Relations_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Contracts__Activate(List<int> ids, bool isActive)
+        public async Task Relations__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Contracts__Activate));
+            using var _ = _instrumentation.Block("Repo." + nameof(Relations__Activate));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1388,7 +1388,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Contracts__Activate)}]";
+            cmd.CommandText = $"[dal].[{nameof(Relations__Activate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
@@ -2907,24 +2907,24 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
-            DataTable contractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ContractDefinitions);
-            var contractDefinitionsTvp = new SqlParameter("@AccountTypeContractDefinitions", contractDefinitionsTable)
+            DataTable custodianDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodianDefinitions);
+            var custodianDefinitionsTvp = new SqlParameter("@AccountTypeCustodianDefinitions", custodianDefinitionsTable)
             {
-                TypeName = $"[dbo].[{nameof(AccountTypeContractDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(AccountTypeCustodianDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
-            DataTable notedContractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedContractDefinitions);
-            var notedContractDefinitionsTvp = new SqlParameter("@AccountTypeNotedContractDefinitions", notedContractDefinitionsTable)
+            DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
+            var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
             {
-                TypeName = $"[dbo].[{nameof(AccountTypeNotedContractDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             cmd.Parameters.Add(entitiesTvp);
             cmd.Parameters.Add(resourceDefinitionsTvp);
-            cmd.Parameters.Add(contractDefinitionsTvp);
-            cmd.Parameters.Add(notedContractDefinitionsTvp);
+            cmd.Parameters.Add(custodianDefinitionsTvp);
+            cmd.Parameters.Add(notedRelationDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -2958,24 +2958,24 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable contractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ContractDefinitions);
-                var contractDefinitionsTvp = new SqlParameter("@AccountTypeContractDefinitions", contractDefinitionsTable)
+                DataTable custodianDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodianDefinitions);
+                var custodianDefinitionsTvp = new SqlParameter("@AccountTypeCustodianDefinitions", custodianDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(AccountTypeContractDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountTypeCustodianDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable notedContractDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedContractDefinitions);
-                var notedContractDefinitionsTvp = new SqlParameter("@AccountTypeNotedContractDefinitions", notedContractDefinitionsTable)
+                DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
+                var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(AccountTypeNotedContractDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
-                cmd.Parameters.Add(contractDefinitionsTvp);
-                cmd.Parameters.Add(notedContractDefinitionsTvp);
+                cmd.Parameters.Add(custodianDefinitionsTvp);
+                cmd.Parameters.Add(notedRelationDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -4540,7 +4540,7 @@ namespace Tellma.Data
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
-            List<Contract> contracts,
+            List<Relation> relations,
             List<Resource> resources,
             List<EntryType> entryTypes,
             List<Center> centers,
@@ -4601,14 +4601,13 @@ namespace Tellma.Data
                     AccountId = reader.Int32(i++),
                     CurrencyId = reader.String(i++),
                     ResourceId = reader.Int32(i++),
-                    ContractId = reader.Int32(i++),
+                    CustodianId = reader.Int32(i++),
                     EntryTypeId = reader.Int32(i++),
-                    NotedContractId = reader.Int32(i++),
+                    NotedRelationId = reader.Int32(i++),
                     CenterId = reader.Int32(i++),
                     UnitId = reader.Int32(i++),
                     IsSystem = reader.Boolean(i++) ?? false,
                     Direction = reader.Int16(i++),
-                    DueDate = reader.DateTime(i++),
                     MonetaryValue = reader.Decimal(i++),
                     Quantity = reader.Decimal(i++),
                     Value = reader.Decimal(i++) ?? 0m,
@@ -4703,13 +4702,13 @@ namespace Tellma.Data
                 });
             }
 
-            // Contract
-            var list_Contract = new List<Contract>();
+            // Relation
+            var list_Relation = new List<Relation>();
             await reader.NextResultAsync(cancellation);
             while (await reader.ReadAsync(cancellation))
             {
                 int i = 0;
-                list_Contract.Add(new Contract
+                list_Relation.Add(new Relation
                 {
                     Id = reader.GetInt32(i++),
                     Name = reader.String(i++),
@@ -4719,10 +4718,10 @@ namespace Tellma.Data
 
                     EntityMetadata = new EntityMetadata
                     {
-                        { nameof(Contract.Name), FieldMetadata.Loaded },
-                        { nameof(Contract.Name2), FieldMetadata.Loaded },
-                        { nameof(Contract.Name3), FieldMetadata.Loaded },
-                        { nameof(Contract.DefinitionId), FieldMetadata.Loaded },
+                        { nameof(Relation.Name), FieldMetadata.Loaded },
+                        { nameof(Relation.Name2), FieldMetadata.Loaded },
+                        { nameof(Relation.Name3), FieldMetadata.Loaded },
+                        { nameof(Relation.DefinitionId), FieldMetadata.Loaded },
                     }
                 });
             }
@@ -4794,7 +4793,7 @@ namespace Tellma.Data
                 });
             }
 
-            return (lines, list_Account, list_Contract, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
+            return (lines, list_Account, list_Relation, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         #endregion
@@ -5357,11 +5356,11 @@ namespace Tellma.Data
 
         #endregion
 
-        #region ContractDefinitions
+        #region RelationDefinitions
 
-        public async Task<IEnumerable<ValidationError>> ContractDefinitions_Validate__Save(List<ContractDefinitionForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> RelationDefinitions_Validate__Save(List<RelationDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ContractDefinitions_Validate__Save));
+            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5369,7 +5368,7 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(ContractDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -5378,15 +5377,15 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(ContractDefinitions_Validate__Save)}]";
+            cmd.CommandText = $"[bll].[{nameof(RelationDefinitions_Validate__Save)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> ContractDefinitions__Save(List<ContractDefinitionForSave> entities, bool returnIds)
+        public async Task<List<int>> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ContractDefinitions__Save));
+            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -5396,7 +5395,7 @@ namespace Tellma.Data
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ContractDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -5404,7 +5403,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ContractDefinitions__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(RelationDefinitions__Save)}]";
 
                 if (returnIds)
                 {
@@ -5435,9 +5434,9 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task<IEnumerable<ValidationError>> ContractDefinitions_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> RelationDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ContractDefinitions_Validate__Delete));
+            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5454,15 +5453,15 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(ContractDefinitions_Validate__Delete)}]";
+            cmd.CommandText = $"[bll].[{nameof(RelationDefinitions_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ContractDefinitions__Delete(IEnumerable<int> ids)
+        public async Task RelationDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ContractDefinitions__Delete));
+            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5478,7 +5477,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(ContractDefinitions__Delete)}]";
+            cmd.CommandText = $"[dal].[{nameof(RelationDefinitions__Delete)}]";
 
             // Execute
             try
@@ -5491,9 +5490,9 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ContractDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
+        public async Task<IEnumerable<ValidationError>> RelationDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ContractDefinitions_Validate__UpdateState));
+            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__UpdateState));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5512,15 +5511,15 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(ContractDefinitions_Validate__UpdateState)}]";
+            cmd.CommandText = $"[bll].[{nameof(RelationDefinitions_Validate__UpdateState)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ContractDefinitions__UpdateState(List<int> ids, string state)
+        public async Task RelationDefinitions__UpdateState(List<int> ids, string state)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ContractDefinitions__UpdateState));
+            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions__UpdateState));
 
             var result = new List<int>();
 
@@ -5540,7 +5539,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(ContractDefinitions__UpdateState)}]";
+            cmd.CommandText = $"[dal].[{nameof(RelationDefinitions__UpdateState)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();

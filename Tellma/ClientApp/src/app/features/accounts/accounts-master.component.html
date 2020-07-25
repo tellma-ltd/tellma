@@ -8,10 +8,6 @@
           ]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
-            ],
-            'IsSmart' : [
-              { template: dumb, expression: 'IsSmart eq false'},  
-              { template: smart, expression: 'IsSmart eq true'}              
             ]
           }">
 </t-master>
@@ -44,7 +40,3 @@
 
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
-
-<!-- Filter Options -->
-<ng-template #smart> {{ 'Smart' | translate }} </ng-template>
-<ng-template #dumb> {{ 'Regular' | translate }} </ng-template>

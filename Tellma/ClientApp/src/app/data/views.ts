@@ -191,8 +191,8 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive', false)
         ]
     },
-    'contract-definitions': {
-        name: 'ContractDefinitions',
+    'relation-definitions': {
+        name: 'RelationDefinitions',
         read: true,
         update: true,
         delete: true,

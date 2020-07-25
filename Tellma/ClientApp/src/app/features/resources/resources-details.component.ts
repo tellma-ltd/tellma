@@ -181,7 +181,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
 
-  // Shared with Contract
+  // Shared with Relation
 
   public get Currency_isVisible(): boolean {
     return !!this.definition.CurrencyVisibility;

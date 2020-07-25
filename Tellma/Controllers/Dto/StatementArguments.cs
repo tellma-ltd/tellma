@@ -22,7 +22,7 @@ namespace Tellma.Controllers.Dto
 
         public int? SegmentId { get; set; }
 
-        public int? ContractId { get; set; }
+        public int? CustodianId { get; set; }
         
         public int? ResourceId { get; set; }
 

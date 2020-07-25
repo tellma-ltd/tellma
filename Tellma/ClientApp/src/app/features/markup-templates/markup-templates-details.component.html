@@ -146,7 +146,7 @@
                             #collection="ngModel" (ngModelChange)="onCollectionChange(model)" required>
                             <option value=""></option>
                             <option value="Document">{{ 'Documents' | translate }}</option>
-                            <option value="Contract">{{ 'Contracts' | translate }}</option>
+                            <option value="Relation">{{ 'Relations' | translate }}</option>
                         </select>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: collection, serverErrors: model.serverErrors?.Collection }">
@@ -293,10 +293,10 @@
                                         </t-documents-picker>
                                     </t-form-group>
                                     <t-form-group class="t-form-group col" [label]="detailsPickerLabel(model)"
-                                        *ngIf="model.Collection === 'Contract'">
-                                        <t-contracts-picker [(ngModel)]="id" [definitionIds]="[model.DefinitionId]"
+                                        *ngIf="model.Collection === 'Relation'">
+                                        <t-relations-picker [(ngModel)]="id" [definitionIds]="[model.DefinitionId]"
                                             (ngModelChange)="onParameterChange(model)" [showCreate]="false">
-                                        </t-contracts-picker>
+                                        </t-relations-picker>
                                     </t-form-group>
                                 </ng-container>
                             </div>

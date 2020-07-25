@@ -4,7 +4,6 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
@@ -16,13 +15,13 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationController]
-    public class ContractDefinitionsController : CrudControllerBase<ContractDefinitionForSave, ContractDefinition, int>
+    public class RelationDefinitionsController : CrudControllerBase<RelationDefinitionForSave, RelationDefinition, int>
     {
-        public const string BASE_ADDRESS = "contract-definitions";
+        public const string BASE_ADDRESS = "relation-definitions";
 
-        private readonly ContractDefinitionsService _service;
+        private readonly RelationDefinitionsService _service;
 
-        public ContractDefinitionsController(ContractDefinitionsService service, IServiceProvider sp) : base(sp)
+        public RelationDefinitionsController(RelationDefinitionsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
         }
@@ -49,12 +48,12 @@ namespace Tellma.Controllers
             _logger);
         }
 
-        protected override CrudServiceBase<ContractDefinitionForSave, ContractDefinition, int> GetCrudService()
+        protected override CrudServiceBase<RelationDefinitionForSave, RelationDefinition, int> GetCrudService()
         {
             return _service;
         }
 
-        protected override Task OnSuccessfulSave(List<ContractDefinition> data, Extras extras)
+        protected override Task OnSuccessfulSave(List<RelationDefinition> data, Extras extras)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
             return base.OnSuccessfulSave(data, extras);
@@ -67,18 +66,18 @@ namespace Tellma.Controllers
         }
     }
 
-    public class ContractDefinitionsService : CrudServiceBase<ContractDefinitionForSave, ContractDefinition, int>
+    public class RelationDefinitionsService : CrudServiceBase<RelationDefinitionForSave, RelationDefinition, int>
     {
         private readonly ApplicationRepository _repo;
 
-        private string View => ContractDefinitionsController.BASE_ADDRESS;
+        private string View => RelationDefinitionsController.BASE_ADDRESS;
 
-        public ContractDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public RelationDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
         }
 
-        public async Task<(List<ContractDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
+        public async Task<(List<RelationDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
         {
             // Check user permissions
             await CheckActionPermissions("State", ids);
@@ -100,12 +99,12 @@ namespace Tellma.Controllers
 
             // Validate
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var errors = await _repo.ContractDefinitions_Validate__UpdateState(ids, args.State, top: remainingErrorCount);
+            var errors = await _repo.RelationDefinitions_Validate__UpdateState(ids, args.State, top: remainingErrorCount);
             ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
             ModelState.ThrowIfInvalid();
 
             // Execute
-            await _repo.ContractDefinitions__UpdateState(ids, args.State);
+            await _repo.RelationDefinitions__UpdateState(ids, args.State);
 
             if (args.ReturnEntities ?? false)
             {
@@ -131,21 +130,21 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<ContractDefinition> Search(Query<ContractDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<RelationDefinition> Search(Query<RelationDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var titleP = nameof(ContractDefinition.TitlePlural);
-                var titleP2 = nameof(ContractDefinition.TitlePlural2);
-                var titleP3 = nameof(ContractDefinition.TitlePlural3);
+                var titleP = nameof(RelationDefinition.TitlePlural);
+                var titleP2 = nameof(RelationDefinition.TitlePlural2);
+                var titleP3 = nameof(RelationDefinition.TitlePlural3);
 
-                var titleS = nameof(ContractDefinition.TitleSingular);
-                var titleS2 = nameof(ContractDefinition.TitleSingular2);
-                var titleS3 = nameof(ContractDefinition.TitleSingular3);
-                var code = nameof(ContractDefinition.Code);
+                var titleS = nameof(RelationDefinition.TitleSingular);
+                var titleS2 = nameof(RelationDefinition.TitleSingular2);
+                var titleS3 = nameof(RelationDefinition.TitleSingular3);
+                var code = nameof(RelationDefinition.Code);
 
                 query = query.Filter($"{titleS} {Ops.contains} '{search}' or {titleS2} {Ops.contains} '{search}' or {titleS3} {Ops.contains} '{search}' or {titleP} {Ops.contains} '{search}' or {titleP2} {Ops.contains} '{search}' or {titleP3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
@@ -153,26 +152,26 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<ContractDefinitionForSave> entities)
+        protected override async Task SaveValidateAsync(List<RelationDefinitionForSave> entities)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ContractDefinitions_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.RelationDefinitions_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ContractDefinitionForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<RelationDefinitionForSave> entities, bool returnIds)
         {
-            return await _repo.ContractDefinitions__Save(entities, returnIds: returnIds);
+            return await _repo.RelationDefinitions__Save(entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ContractDefinitions_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.RelationDefinitions_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -182,11 +181,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.ContractDefinitions__Delete(ids);
+                await _repo.RelationDefinitions__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ContractDefinition"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["RelationDefinition"]]);
             }
         }
     }

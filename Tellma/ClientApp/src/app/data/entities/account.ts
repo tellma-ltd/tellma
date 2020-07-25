@@ -14,13 +14,13 @@ export interface AccountForSave extends EntityWithKey {
     Code?: string;
     AccountTypeId?: string;
     ClassificationId?: number;
-    ContractDefinitionId?: number;
-    ContractId?: number;
+    CustodianDefinitionId?: number;
+    CustodianId?: number;
     ResourceDefinitionId?: number;
     ResourceId?: number;
     CurrencyId?: string;
     EntryTypeId?: number;
-    NotedContractDefinitionId?: number;
+    NotedRelationDefinitionId?: number;
 }
 
 export interface Account extends AccountForSave {
@@ -71,15 +71,15 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
                 ClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Classification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'ClassificationId' },
-                ContractDefinitionId: {
+                CustodianDefinitionId: {
                     control: 'choice',
-                    label: () => trx.instant('Account_ContractDefinition'),
-                    choices: Object.keys(ws.definitions.Contracts).map(stringDefId => +stringDefId),
-                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Contracts[defId], 'TitlePlural')
+                    label: () => trx.instant('Account_CustodianDefinition'),
+                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },
-                ContractDefinition: { control: 'navigation', label: () => trx.instant('Account_ContractDefinition'), type: 'ContractDefinition', foreignKeyName: 'ContractDefinitionId' },
-                ContractId: { control: 'number', label: () => `${trx.instant('Account_Contract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Contract: { control: 'navigation', label: () => trx.instant('Account_Contract'), type: 'Contract', foreignKeyName: 'ContractId' },
+                CustodianDefinition: { control: 'navigation', label: () => trx.instant('Account_CustodianDefinition'), type: 'RelationDefinition', foreignKeyName: 'CustodianDefinitionId' },
+                CustodianId: { control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { control: 'navigation', label: () => trx.instant('Account_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
                 ResourceDefinitionId: {
                     control: 'choice',
                     label: () => trx.instant('Account_ResourceDefinition'),
@@ -93,13 +93,13 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 Currency: { control: 'navigation', label: () => trx.instant('Account_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Account_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
-                NotedContractDefinitionId: {
+                NotedRelationDefinitionId: {
                     control: 'choice',
-                    label: () => trx.instant('Account_NotedContractDefinition'),
-                    choices: Object.keys(ws.definitions.Contracts).map(stringDefId => +stringDefId),
-                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Contracts[defId], 'TitlePlural')
+                    label: () => trx.instant('Account_NotedRelationDefinition'),
+                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },
-                NotedContractDefinition: { control: 'navigation', label: () => trx.instant('Account_NotedContractDefinition'), type: 'ContractDefinition', foreignKeyName: 'NotedContractDefinitionId' },
+                NotedRelationDefinition: { control: 'navigation', label: () => trx.instant('Account_NotedRelationDefinition'), type: 'RelationDefinition', foreignKeyName: 'NotedRelationDefinitionId' },
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

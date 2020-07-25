@@ -6,21 +6,20 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityWithKey } from './base/entity-with-key';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
     CenterId?: number;
     Direction?: number;
     AccountId?: number;
-    ContractId: number;
+    CustodianId: number;
     EntryTypeId?: number;
     ResourceId?: number;
     Quantity?: number;
     AlgebraicQuantity?: number;
     NegativeAlgebraicQuantity?: number;
     UnitId?: number;
-    DueDate?: string;
     MonetaryValue?: number;
     AlgebraicMonetaryValue?: number;
     NegativeAlgebraicMonetaryValue?: number;
@@ -40,7 +39,7 @@ export interface DetailsEntry extends EntityWithKey {
     Time2?: string;
     ExternalReference?: string;
     AdditionalReference?: string;
-    NotedContractId?: number;
+    NotedRelationId?: number;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
@@ -102,13 +101,12 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 },
                 AccountId: { control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Account: { control: 'navigation', label: () => trx.instant('Entry_Account'), type: 'Account', foreignKeyName: 'AccountId' },
-                ContractId: { control: 'number', label: () => `${trx.instant('Entry_Contract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Contract: { control: 'navigation', label: () => trx.instant('Entry_Contract'), type: 'Contract', foreignKeyName: 'ContractId' },
+                CustodianId: { control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { control: 'navigation', label: () => trx.instant('Entry_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Entry_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
                 ResourceId: { control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
-                DueDate: { control: 'date', label: () => trx.instant('Entry_DueDate') },
                 Quantity: { control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 AlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 NegativeAlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_NegativeAlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
@@ -152,8 +150,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Time2: { control: 'datetime', label: () => trx.instant('Entry_Time2') },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                NotedContractId: { control: 'number', label: () => `${trx.instant('Entry_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedContract: { control: 'navigation', label: () => trx.instant('Entry_NotedContract'), type: 'Contract', foreignKeyName: 'ContractId' },
+                NotedRelationId: { control: 'number', label: () => `${trx.instant('Entry_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedRelation: { control: 'navigation', label: () => trx.instant('Entry_NotedRelation'), type: 'Relation', foreignKeyName: 'NotedRelationId' },
                 NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NotedDate: { control: 'date', label: () => trx.instant('Entry_NotedDate') },

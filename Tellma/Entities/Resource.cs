@@ -30,7 +30,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Code { get; set; } // Check
 
-        #region Common with Contract
+        #region Common with Relation
 
         [Display(Name = "Entity_Currency")]
         [StringLength(3)]

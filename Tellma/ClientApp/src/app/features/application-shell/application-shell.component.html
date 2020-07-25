@@ -33,40 +33,63 @@
 
     <!-- Collapsible Navbar -->
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav px-4 px-md-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
-            (click)="onCollapse()">
-            {{ 'Users' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
-            (click)="onCollapse()">
-            {{ 'Roles' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./units"
-            (click)="onCollapse()">
-            {{ 'Units' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
-            (click)="onCollapse()">
-            {{ 'Currencies' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
-            (click)="onCollapse()">
-            {{ 'Settings' | translate }}
-          </a>
-        </li>
-      </ol>
+      <!-- <div class="h-100 d-flex align-items-stretch flex-grow-1 overflow-auto" style="width: 0;"> -->
+        <ol class="nav navbar-nav px-4 px-md-0 flex-nowrap flex-grow-1 t-md-zero-width overflow-auto" cdkDropList
+          [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
+  
+          <!-- Favorites -->
+          <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
+            cdkDrag>
+            <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
+              (click)="onClickFavorite(favorite.url)">
+              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+            </button>
+  
+            <!-- Drag preview -->
+            <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
+              style="height:50px">
+              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+            </div>
+            <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
+            </div>
+          </li>
+  
+          <!-- Context menu for results -->
+          <ng-template #favoriteMenu let-favorite let-close="close">
+            <div class="dropdown">
+              <ul class="dropdown-menu show shadow-sm">
+                <li class="dropdown-item px-0 py-1" (click)="onEditFavorite(favorite); close();">
+                  <div class="t-menu-icon">
+                    <fa-icon icon="pen"></fa-icon>
+                  </div>
+                  <div class="t-menu-text">
+                    {{ 'Edit' | translate }}
+                  </div>
+                </li>
+                <li class="dropdown-item px-0 py-1" (click)="onDeleteFavorite(favorite); close();">
+                  <div class="t-menu-icon">
+                    <fa-icon icon="trash"></fa-icon>
+                  </div>
+                  <div class="t-menu-text">
+                    {{ 'Delete' | translate }}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </ng-template>
+        </ol>
+      <!-- </div> -->
 
-      <ol class="nav navbar-nav">
+      <ol class="nav navbar-nav flex-nowrap">
+
+        <!-- Add to Favorites -->
+        <li class="nav-item">
+          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center"
+            (click)="onAddFavorite()" [title]="'AddScreenToFavorites' | translate">
+            <fa-icon icon="star"></fa-icon>
+          </button>
+        </li>
+
         <!-- Inbox Button (Desktop) -->
         <li class="nav-item" ngbDropdown #inboxDrop="ngbDropdown" container="" (openChange)="onDropdownInbox($event)"
           *ngIf="isMdScreen">
@@ -117,7 +140,7 @@
               </div>
             </div>
             &nbsp;&nbsp;
-            <div class="d-flex flex-column justify-content-center">
+            <div class="d-flex flex-column justify-content-center align-self-center">
               <div style="line-height:1.1rem">{{ userName }}</div>
               <div class="small font-weight-bold"> {{ companyName }}</div>
             </div>
@@ -324,6 +347,71 @@
       &nbsp;{{ 'Save' | translate }}
     </button>
     <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+
+<!-- Edit Favorite Modal -->
+<ng-template #favoriteModal let-modal>
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'EditFavorite' | translate }}&nbsp;&nbsp;&nbsp;</h5>
+    <!-- <button type="button" (click)="onToggleFavoriteEditMode()"
+      class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+      {{ (isAdvanced ? 'Basic' : 'Advanced') | translate }}
+    </button> -->
+
+    <div class="btn-group btn-group-toggle t-toolbar-button">
+      <label class="btn btn-sm btn-light t-pointer" [class.active]="isBasic" title="{{ 'Basic' | translate }}"
+        (click)="onBasicFavoriteEditMode()">
+        <input type="radio" name="editMode">
+        {{ 'Basic' | translate }}
+      </label>
+      <label class="btn btn-sm btn-light t-pointer" [class.active]="isAdvanced" title="{{ 'Advanced' | translate }}"
+        (click)="onAdvancedFavoriteEditMode()">
+        <input type="radio" name="editMode">
+        {{ 'Advanced' | translate }}
+      </label>
+    </div>
+
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+    <t-form-group class="t-form-group" style="margin-top:0!important" [label]="'URL' | translate">
+      <t-text-editor [(ngModel)]="favoriteToSave.url"></t-text-editor>
+    </t-form-group>
+    <t-form-group class="t-form-group" style="margin-top:0!important"
+      [label]="('Label' | translate) + (isAdvanced ? ws.primaryPostfix : '')">
+      <t-text-editor [(ngModel)]="favoriteToSave.label" [focusIf]="true"></t-text-editor>
+    </t-form-group>
+
+    <ng-container *ngIf="isAdvanced">
+      <t-form-group class="t-form-group" *ngIf="!!ws.settings.SecondaryLanguageId" style="margin-top:0!important"
+        [label]="('Label' | translate) + ws.secondaryPostfix">
+        <t-text-editor [(ngModel)]="favoriteToSave.label2" [focusIf]="true"></t-text-editor>
+      </t-form-group>
+      <t-form-group class="t-form-group" *ngIf="!!ws.settings.TernaryLanguageId" style="margin-top:0!important"
+        [label]="('Label' | translate) + ws.ternaryPostfix">
+        <t-text-editor [(ngModel)]="favoriteToSave.label3" [focusIf]="true"></t-text-editor>
+      </t-form-group>
+    </ng-container>
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="modal.close(true)"
+      [disabled]="!favoriteToSave?.url || !favoriteToSave?.label">
+      <fa-icon icon="save"></fa-icon>
+      &nbsp;{{ 'Save' | translate }}
+    </button>
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)">
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>

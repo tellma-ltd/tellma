@@ -103,10 +103,10 @@ namespace Tellma.Controllers
             // Defaults
             entities.ForEach(entity =>
             {
-                // Can't have a contract without the contract definition
-                if (entity.ContractDefinitionId == null)
+                // Can't have a custodian without the custodian definition
+                if (entity.CustodianDefinitionId == null)
                 {
-                    entity.ContractId = null;
+                    entity.CustodianId = null;
                 }
 
                 // Can't have a resource without the resource definition

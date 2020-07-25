@@ -210,13 +210,13 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (lines, accounts, contracts, resources, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
+                var (lines, accounts, relations, resources, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
 
                 // Related entitiess
                 var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
                 {
                     { GetCollectionName(typeof(Account)), accounts },
-                    { GetCollectionName(typeof(Contract)), contracts },
+                    { GetCollectionName(typeof(Relation)), relations },
                     { GetCollectionName(typeof(Resource)), resources },
                     { GetCollectionName(typeof(EntryType)), entryTypes },
                     { GetCollectionName(typeof(Center)), centers },
@@ -719,7 +719,7 @@ namespace Tellma.Controllers
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
-            List<Contract> contracts,
+            List<Relation> relations,
             List<Resource> resources,
             List<EntryType> entryTypes,
             List<Center> centers,
@@ -814,7 +814,7 @@ namespace Tellma.Controllers
 
                 var query = _repo.Query<RequiredSignature>()
                     .AdditionalParameters(docIdsTvp)
-                    .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.Contract)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
+                    .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.Custodian)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync(cancellation);
@@ -865,9 +865,9 @@ namespace Tellma.Controllers
                     doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
                 }
 
-                doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
-                doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
-                doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);
+                doc.DebitCustodianIsCommon = docDef.DebitCustodianVisibility && (doc.DebitCustodianIsCommon ?? false);
+                doc.CreditCustodianIsCommon = docDef.CreditCustodianVisibility && (doc.CreditCustodianIsCommon ?? false);
+                doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
@@ -893,9 +893,9 @@ namespace Tellma.Controllers
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
                 doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
-                doc.DebitContractId = doc.DebitContractIsCommon.Value ? doc.DebitContractId : null;
-                doc.CreditContractId = doc.CreditContractIsCommon.Value ? doc.CreditContractId : null;
-                doc.NotedContractId = doc.NotedContractIsCommon.Value ? doc.NotedContractId : null;
+                doc.DebitCustodianId = doc.DebitCustodianIsCommon.Value ? doc.DebitCustodianId : null;
+                doc.CreditCustodianId = doc.CreditCustodianIsCommon.Value ? doc.CreditCustodianId : null;
+                doc.NotedRelationId = doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
                 doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
@@ -981,23 +981,23 @@ namespace Tellma.Controllers
                                 var entry = line.Entries[columnDef.EntryIndex];
                                 switch (columnDef.ColumnName)
                                 {
-                                    case nameof(Entry.ContractId):
+                                    case nameof(Entry.CustodianId):
                                         var entryDef = lineDef.Entries[columnDef.EntryIndex];
-                                        if (entryDef.Direction == 1 && doc.DebitContractIsCommon.Value)
+                                        if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
                                         {
-                                            entry.ContractId = doc.DebitContractId;
+                                            entry.CustodianId = doc.DebitCustodianId;
                                         }
-                                        else if (entryDef.Direction == -1 && doc.CreditContractIsCommon.Value)
+                                        else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
                                         {
-                                            entry.ContractId = doc.CreditContractId;
+                                            entry.CustodianId = doc.CreditCustodianId;
                                         }
 
                                         break;
 
-                                    case nameof(Entry.NotedContractId):
-                                        if (doc.NotedContractIsCommon.Value)
+                                    case nameof(Entry.NotedRelationId):
+                                        if (doc.NotedRelationIsCommon.Value)
                                         {
-                                            entry.NotedContractId = doc.NotedContractId;
+                                            entry.NotedRelationId = doc.NotedRelationId;
                                         }
 
                                         break;
@@ -1346,34 +1346,34 @@ namespace Tellma.Controllers
                             var entry = line.Entries[entryIndex];
                             switch (columnDef.ColumnName)
                             {
-                                case nameof(Entry.ContractId):
+                                case nameof(Entry.CustodianId):
                                     var entryDef = lineDef.Entries[entryIndex];
-                                    if (entryDef.Direction == 1 && doc.DebitContractIsCommon.Value)
+                                    if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.ContractId)), $"[{docIndex}].{nameof(Document.DebitContractId)}");
-                                        if (entry.ContractId != doc.DebitContractId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.DebitCustodianId)}");
+                                        if (entry.CustodianId != doc.DebitCustodianId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.DebitContractId));
+                                            AddReadOnlyError(docIndex, nameof(Document.DebitCustodianId));
                                         }
                                     }
-                                    else if (entryDef.Direction == -1 && doc.CreditContractIsCommon.Value)
+                                    else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.ContractId)), $"[{docIndex}].{nameof(Document.CreditContractId)}");
-                                        if (entry.ContractId != doc.CreditContractId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.CreditCustodianId)}");
+                                        if (entry.CustodianId != doc.CreditCustodianId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.CreditContractId));
+                                            AddReadOnlyError(docIndex, nameof(Document.CreditCustodianId));
                                         }
                                     }
 
                                     break;
 
-                                case nameof(Entry.NotedContractId):
-                                    if (doc.NotedContractIsCommon.Value)
+                                case nameof(Entry.NotedRelationId):
+                                    if (doc.NotedRelationIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.NotedContractId)), $"[{docIndex}].{nameof(Document.NotedContractId)}");
-                                        if (entry.NotedContractId != doc.NotedContractId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.NotedRelationId)), $"[{docIndex}].{nameof(Document.NotedRelationId)}");
+                                        if (entry.NotedRelationId != doc.NotedRelationId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.NotedContractId));
+                                            AddReadOnlyError(docIndex, nameof(Document.NotedRelationId));
                                         }
                                     }
 

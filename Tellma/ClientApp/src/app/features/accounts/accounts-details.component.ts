@@ -11,7 +11,7 @@ import { PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { Contract } from '~/app/data/entities/contract';
+import { Relation } from '~/app/data/entities/relations';
 import { AccountClassification } from '~/app/data/entities/account-classification';
 
 @Component({
@@ -23,8 +23,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType/ContractDefinitions,AccountType/NotedContractDefinitions,AccountType/ResourceDefinitions
-,Classification,Currency,Center,Contract,Resource/Currency,Contract/Currency,Resource/Center,Contract/Center,EntryType`;
+  public expand = `AccountType/CustodianDefinitions,AccountType/NotedRelationDefinitions,AccountType/ResourceDefinitions
+,Classification,Currency,Center,Custodian,Resource/Currency,Custodian/Currency,Resource/Center,Custodian/Center,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -96,10 +96,10 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       return true;
     }
 
-    // The center becomes readonly if either the resource or the contract have a center selected
+    // The center becomes readonly if either the resource or the custodian have a center selected
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    const contract = this.ws.get('Contract', model.ContractId) as Contract;
-    return (!!model.ResourceId && !!resource.CenterId) || (!!model.ContractId && !!contract.CenterId);
+    const custodian = this.ws.get('Relation', model.CustodianId) as Relation;
+    return (!!model.ResourceId && !!resource.CenterId) || (!!model.CustodianId && !!custodian.CenterId);
   }
 
   public readonlyValueCenterId(model: Account): number {
@@ -114,10 +114,10 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       }
     }
 
-    if (!!model.ContractId) {
-      const contract = this.ws.get('Contract', model.ContractId) as Contract;
-      if (!!contract.CenterId) {
-        return contract.CenterId;
+    if (!!model.CustodianId) {
+      const custodian = this.ws.get('Relation', model.CustodianId) as Relation;
+      if (!!custodian.CenterId) {
+        return custodian.CenterId;
       }
     }
 
@@ -134,10 +134,10 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       return true;
     }
 
-    // The currency becomes readonly if either the resource or the contract have a currency selected
+    // The currency becomes readonly if either the resource or the custodian have a currency selected
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    const contract = this.ws.get('Contract', model.ContractId) as Contract;
-    return (!!model.ResourceId && !!resource.CurrencyId) || (!!model.ContractId && !!contract.CurrencyId);
+    const custodian = this.ws.get('Relation', model.CustodianId) as Relation;
+    return (!!model.ResourceId && !!resource.CurrencyId) || (!!model.CustodianId && !!custodian.CurrencyId);
   }
 
   public readonlyValueCurrencyId(model: Account): string {
@@ -152,115 +152,115 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       }
     }
 
-    if (!!model.ContractId) {
-      const contract = this.ws.get('Contract', model.ContractId) as Contract;
-      if (!!contract.CurrencyId) {
-        return contract.CurrencyId;
+    if (!!model.CustodianId) {
+      const custodian = this.ws.get('Relation', model.CustodianId) as Relation;
+      if (!!custodian.CurrencyId) {
+        return custodian.CurrencyId;
       }
     }
 
     return null;
   }
 
-  // Noted Contract Definition
-  private _choicesNotedContractDefinitionIdAccountType: AccountType;
-  private _choicesNotedContractDefinitionIdResult: SelectorChoice[] = [];
-  public choicesNotedContractDefinitionId(model: Account): SelectorChoice[] {
+  // Noted Relation Definition
+  private _choicesNotedRelationDefinitionIdAccountType: AccountType;
+  private _choicesNotedRelationDefinitionIdResult: SelectorChoice[] = [];
+  public choicesNotedRelationDefinitionId(model: Account): SelectorChoice[] {
 
     const at = this.accountType(model);
-    if (this._choicesNotedContractDefinitionIdAccountType !== at) {
-      this._choicesNotedContractDefinitionIdAccountType = at;
+    if (this._choicesNotedRelationDefinitionIdAccountType !== at) {
+      this._choicesNotedRelationDefinitionIdAccountType = at;
 
-      if (!at || !at.NotedContractDefinitions) {
-        this._choicesNotedContractDefinitionIdResult = [];
+      if (!at || !at.NotedRelationDefinitions) {
+        this._choicesNotedRelationDefinitionIdResult = [];
       } else {
         const ws = this.ws;
         const defs = ws.definitions;
-        this._choicesNotedContractDefinitionIdResult = at.NotedContractDefinitions.map(d =>
+        this._choicesNotedRelationDefinitionIdResult = at.NotedRelationDefinitions.map(d =>
           ({
-            value: d.NotedContractDefinitionId,
-            name: () => ws.getMultilingualValueImmediate(defs.Contracts[d.NotedContractDefinitionId], 'TitleSingular')
+            value: d.NotedRelationDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Relations[d.NotedRelationDefinitionId], 'TitleSingular')
           }));
       }
     }
 
-    return this._choicesNotedContractDefinitionIdResult;
+    return this._choicesNotedRelationDefinitionIdResult;
   }
 
-  public showNotedContractDefinitionId(model: Account): boolean {
-    return this.choicesNotedContractDefinitionId(model).length > 0;
+  public showNotedRelationDefinitionId(model: Account): boolean {
+    return this.choicesNotedRelationDefinitionId(model).length > 0;
   }
 
-  // Contract Definition
-  private _choicesContractDefinitionIdAccountType: AccountType;
-  private _choicesContractDefinitionIdResult: SelectorChoice[] = [];
-  public choicesContractDefinitionId(model: Account): SelectorChoice[] {
+  // Custodian Definition
+  private _choicesCustodianDefinitionIdAccountType: AccountType;
+  private _choicesCustodianDefinitionIdResult: SelectorChoice[] = [];
+  public choicesCustodianDefinitionId(model: Account): SelectorChoice[] {
 
     const at = this.accountType(model);
-    if (this._choicesContractDefinitionIdAccountType !== at) {
-      this._choicesContractDefinitionIdAccountType = at;
+    if (this._choicesCustodianDefinitionIdAccountType !== at) {
+      this._choicesCustodianDefinitionIdAccountType = at;
 
-      if (!at || !at.ContractDefinitions) {
-        this._choicesContractDefinitionIdResult = [];
+      if (!at || !at.CustodianDefinitions) {
+        this._choicesCustodianDefinitionIdResult = [];
       } else {
         const ws = this.ws;
         const defs = ws.definitions;
-        this._choicesContractDefinitionIdResult = at.ContractDefinitions.map(d =>
+        this._choicesCustodianDefinitionIdResult = at.CustodianDefinitions.map(d =>
           ({
-            value: d.ContractDefinitionId,
-            name: () => ws.getMultilingualValueImmediate(defs.Contracts[d.ContractDefinitionId], 'TitleSingular')
+            value: d.CustodianDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Relations[d.CustodianDefinitionId], 'TitleSingular')
           }));
       }
     }
 
-    return this._choicesContractDefinitionIdResult;
+    return this._choicesCustodianDefinitionIdResult;
   }
 
-  public showContractDefinitionId(model: Account): boolean {
-    return this.choicesContractDefinitionId(model).length > 0;
+  public showCustodianDefinitionId(model: Account): boolean {
+    return this.choicesCustodianDefinitionId(model).length > 0;
   }
 
-  public formatContractDefinitionId(defId: number): string {
+  public formatRelationDefinitionId(defId: number): string {
     if (!defId) {
       return '';
     }
 
-    const def = this.ws.definitions.Contracts[defId];
+    const def = this.ws.definitions.Relations[defId];
     return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
   }
 
-  public onContractDefinitionChange(defId: number, model: Account) {
-    // Delete the ContractId if an incompatible definition is selected
+  public onCustodianDefinitionChange(defId: number, model: Account) {
+    // Delete the CustodianId if an incompatible definition is selected
     if (!defId) {
       // Will be deleted by the server anyways
       return;
     }
 
-    const contract = this.ws.get('Contract', model.ContractId) as Contract;
-    if (!!contract && contract.DefinitionId !== defId) {
-      delete model.ContractId;
+    const custodian = this.ws.get('Relation', model.CustodianId) as Relation;
+    if (!!custodian && custodian.DefinitionId !== defId) {
+      delete model.CustodianId;
     }
   }
 
-  // Contract
-  public showContract(model: AccountForSave): boolean {
-    return this.showContractDefinitionId(model) && !!model.ContractDefinitionId;
+  // Custodian
+  public showCustodian(model: AccountForSave): boolean {
+    return this.showCustodianDefinitionId(model) && !!model.CustodianDefinitionId;
   }
 
-  public labelContract(model: AccountForSave): string {
+  public labelCustodian(model: AccountForSave): string {
     let postfix = '';
-    if (!!model && !!model.ContractDefinitionId) {
-      const contractDef = this.ws.definitions.Contracts[model.ContractDefinitionId];
-      if (!!contractDef) {
-        postfix = ` (${this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular')})`;
+    if (!!model && !!model.CustodianDefinitionId) {
+      const relationDef = this.ws.definitions.Relations[model.CustodianDefinitionId];
+      if (!!relationDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')})`;
       }
     }
-    return this.translate.instant('Account_Contract') + postfix;
+    return this.translate.instant('Account_Custodian') + postfix;
   }
 
-  public definitionIdsContract(model: AccountForSave): number[] {
-    if (!!model && !!model.ContractDefinitionId) {
-      return [model.ContractDefinitionId];
+  public definitionIdsCustodian(model: AccountForSave): number[] {
+    if (!!model && !!model.CustodianDefinitionId) {
+      return [model.CustodianDefinitionId];
     } else {
       return [];
     }
@@ -368,8 +368,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get accountTypeAdditionalSelect(): string {
-    const defaultSelect = `ContractDefinitions/ContractDefinitionId,
-    NotedContractDefinitions/NotedContractDefinitionId,
+    const defaultSelect = `CustodianDefinitions/CustodianDefinitionId,
+    NotedRelationDefinitions/NotedRelationDefinitionId,
     ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
@@ -402,6 +402,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  public contractAdditionalSelect =
+  public relationAdditionalSelect =
     `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Center/Name,Center/Name2,Center/Name3`;
 }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinitionEntry", Plural = "LineDefinitionEntries")]
-    public class LineDefinitionEntryForSave<TContractDef, TNotedContractDef, TResourceDef> : EntityWithKey<int>
+    public class LineDefinitionEntryForSave<TCustodianDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>
     {
         public short? Direction { get; set; }
 
@@ -15,21 +15,21 @@ namespace Tellma.Entities
         [Display(Name = "LineDefinitionEntry_EntryType")]
         public int? EntryTypeId { get; set; }
 
-        [ForeignKey(nameof(LineDefinitionEntryContractDefinition.LineDefinitionEntryId))]
-        public List<TContractDef> ContractDefinitions { get; set; }
+        [ForeignKey(nameof(LineDefinitionEntryCustodianDefinition.LineDefinitionEntryId))]
+        public List<TCustodianDef> CustodianDefinitions { get; set; }
 
-        [ForeignKey(nameof(LineDefinitionEntryNotedContractDefinition.LineDefinitionEntryId))]
-        public List<TNotedContractDef> NotedContractDefinitions { get; set; }
+        [ForeignKey(nameof(LineDefinitionEntryNotedRelationDefinition.LineDefinitionEntryId))]
+        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
 
         [ForeignKey(nameof(LineDefinitionEntryResourceDefinition.LineDefinitionEntryId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryContractDefinitionForSave, LineDefinitionEntryNotedContractDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave>
+    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryCustodianDefinitionForSave, LineDefinitionEntryNotedRelationDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave>
     {
     }
 
-    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryContractDefinition, LineDefinitionEntryNotedContractDefinition, LineDefinitionEntryResourceDefinition>
+    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryCustodianDefinition, LineDefinitionEntryNotedRelationDefinition, LineDefinitionEntryResourceDefinition>
     {
         [AlwaysAccessible]
         public int? Index { get; set; }

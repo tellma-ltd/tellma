@@ -21,12 +21,12 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
-    DebitContractId?: number;
-    DebitContractIsCommon?: boolean;
-    CreditContractId?: number;
-    CreditContractIsCommon?: boolean;
-    NotedContractId?: number;
-    NotedContractIsCommon?: boolean;
+    DebitCustodianId?: number;
+    DebitCustodianIsCommon?: boolean;
+    CreditCustodianId?: number;
+    CreditCustodianIsCommon?: boolean;
+    NotedRelationId?: number;
+    NotedRelationIsCommon?: boolean;
     SegmentId?: number;
     Time1?: string;
     Time1IsCommon?: boolean;
@@ -112,15 +112,15 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
-                DebitContractId: { control: 'number', label: () => `${trx.instant('Document_DebitContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DebitContract: { control: 'navigation', label: () => trx.instant('Document_DebitContract'), type: 'Contract', foreignKeyName: 'DebitContractId' },
-                DebitContractIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitContract') }) },
-                CreditContractId: { control: 'number', label: () => `${trx.instant('Document_CreditContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CreditContract: { control: 'navigation', label: () => trx.instant('Document_CreditContract'), type: 'Contract', foreignKeyName: 'CreditContractId' },
-                CreditContractIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_CreditContract') }) },
-                NotedContractId: { control: 'number', label: () => `${trx.instant('Document_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedContract: { control: 'navigation', label: () => trx.instant('Document_NotedContract'), type: 'Contract', foreignKeyName: 'NotedContractId' },
-                NotedContractIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_NotedContract') }) },
+                DebitCustodianId: { control: 'number', label: () => `${trx.instant('Document_DebitCustodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DebitCustodian: { control: 'navigation', label: () => trx.instant('Document_DebitCustodian'), type: 'Relation', foreignKeyName: 'DebitCustodianId' },
+                DebitCustodianIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitCustodian') }) },
+                CreditCustodianId: { control: 'number', label: () => `${trx.instant('Document_CreditCustodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CreditCustodian: { control: 'navigation', label: () => trx.instant('Document_CreditCustodian'), type: 'Relation', foreignKeyName: 'CreditCustodianId' },
+                CreditCustodianIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_CreditCustodian') }) },
+                NotedRelationId: { control: 'number', label: () => `${trx.instant('Document_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedRelation: { control: 'navigation', label: () => trx.instant('Document_NotedRelation'), type: 'Relation', foreignKeyName: 'NotedRelationId' },
+                NotedRelationIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_NotedRelation') }) },
                 SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
                 Time1: { control: 'date', label: () => trx.instant('Document_Time1') },
@@ -218,7 +218,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['DebitContract', 'CreditContract', 'NotedContract', 'Unit', 'Currency']) {
+            for (const propName of ['DebitCustodian', 'CreditCustodian', 'NotedRelation', 'Unit', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

@@ -57,23 +57,23 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
-        [Display(Name = "Document_DebitContract")]
-        public int? DebitContractId { get; set; }
+        [Display(Name = "Document_DebitCustodian")]
+        public int? DebitCustodianId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_DebitContract")]
-        public bool? DebitContractIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_DebitCustodian")]
+        public bool? DebitCustodianIsCommon { get; set; }
 
-        [Display(Name = "Document_CreditContract")]
-        public int? CreditContractId { get; set; }
+        [Display(Name = "Document_CreditCustodian")]
+        public int? CreditCustodianId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_CreditContract")]
-        public bool? CreditContractIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_CreditCustodian")]
+        public bool? CreditCustodianIsCommon { get; set; }
 
-        [Display(Name = "Document_NotedContract")]
-        public int? NotedContractId { get; set; }
+        [Display(Name = "Document_NotedRelation")]
+        public int? NotedRelationId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_NotedContract")]
-        public bool? NotedContractIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_NotedRelation")]
+        public bool? NotedRelationIsCommon { get; set; }
 
         [Display(Name = "Document_Segment")]
         public int? SegmentId { get; set; }
@@ -176,17 +176,17 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-        [Display(Name = "Document_DebitContract")]
-        [ForeignKey(nameof(DebitContractId))]
-        public Contract DebitContract { get; set; }
+        [Display(Name = "Document_DebitCustodian")]
+        [ForeignKey(nameof(DebitCustodianId))]
+        public Relation DebitCustodian { get; set; }
 
-        [Display(Name = "Document_CreditContract")]
-        [ForeignKey(nameof(CreditContractId))]
-        public Contract CreditContract { get; set; }
+        [Display(Name = "Document_CreditCustodian")]
+        [ForeignKey(nameof(CreditCustodianId))]
+        public Relation CreditCustodian { get; set; }
 
-        [Display(Name = "Document_NotedContract")]
-        [ForeignKey(nameof(NotedContractId))]
-        public Contract NotedContract { get; set; }
+        [Display(Name = "Document_NotedRelation")]
+        [ForeignKey(nameof(NotedRelationId))]
+        public Relation NotedRelation { get; set; }
 
         [Display(Name = "Document_Segment")]
         [ForeignKey(nameof(SegmentId))]
@@ -273,9 +273,9 @@ namespace Tellma.Entities
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
-            .Concat(ContractPaths(nameof(Document.DebitContract)))
-            .Concat(ContractPaths(nameof(Document.CreditContract)))
-            .Concat(ContractPaths(nameof(Document.NotedContract)))
+            .Concat(RelationPaths(nameof(Document.DebitCustodian)))
+            .Concat(RelationPaths(nameof(Document.CreditCustodian)))
+            .Concat(RelationPaths(nameof(Document.NotedRelation)))
             .Concat(CenterPaths(nameof(Document.Segment)))
             .Concat(UnitPaths(nameof(Document.Unit)))
             .Concat(CurrencyPaths(nameof(Document.Currency)))
@@ -292,9 +292,9 @@ namespace Tellma.Entities
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
-            .Concat(EntryContractPaths(nameof(Entry.Contract)))
+            .Concat(EntryCustodianPaths(nameof(Entry.Custodian)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
-            .Concat(ContractPaths(nameof(Entry.NotedContract)))
+            .Concat(RelationPaths(nameof(Entry.NotedRelation)))
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -309,13 +309,13 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> EntryContractPaths(string path = null) => ContractPaths(path)
-            .Concat( // Entry Contract also adds the Currency and Center
-                CurrencyPaths(nameof(Contract.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+        public static IEnumerable<string> EntryCustodianPaths(string path = null) => RelationPaths(path)
+            .Concat( // Entry Custodian also adds the Currency and Center
+                CurrencyPaths(nameof(Relation.Currency)).Select(p => path == null ? p : $"{path}/{p}")
             ).Concat(
-                CenterPaths(nameof(Contract.Center)).Select(p => path == null ? p : $"{path}/{p}")
+                CenterPaths(nameof(Relation.Center)).Select(p => path == null ? p : $"{path}/{p}")
             );
-        public static IEnumerable<string> ContractPaths(string path = null) => ContractProps
+        public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
             .Concat( // Entry Resource also adds the Currency and Center
@@ -350,7 +350,7 @@ namespace Tellma.Entities
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
-            .Concat(ContractPaths(nameof(Account.Contract)))
+            .Concat(RelationPaths(nameof(Account.Custodian)))
             .Concat(ResourcePaths(nameof(Account.Resource)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
@@ -373,7 +373,7 @@ namespace Tellma.Entities
         public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         public static IEnumerable<string> ResourceUnitsProps => Enum();
         public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
-        public static IEnumerable<string> ContractProps => Enum(nameof(Contract.Name), nameof(Contract.Name2), nameof(Contract.Name3), nameof(Contract.DefinitionId));
+        public static IEnumerable<string> RelationProps => Enum(nameof(Relation.Name), nameof(Relation.Name2), nameof(Relation.Name3), nameof(Relation.DefinitionId));
         public static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
         public static IEnumerable<string> AccountProps => Enum(
             // Names
@@ -383,8 +383,8 @@ namespace Tellma.Entities
             nameof(Account.Code),
 
             // Definitions
-            nameof(Account.ContractDefinitionId),
-            nameof(Account.NotedContractDefinitionId),
+            nameof(Account.CustodianDefinitionId),
+            nameof(Account.NotedRelationDefinitionId),
             nameof(Account.ResourceDefinitionId)
         );
         public static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
@@ -400,7 +400,6 @@ namespace Tellma.Entities
             nameof(AccountType.AllowsPureUnit),
 
             // Labels
-            nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
             nameof(AccountType.Time2Label), nameof(AccountType.Time2Label2), nameof(AccountType.Time2Label3),
             nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel2), nameof(AccountType.ExternalReferenceLabel3),

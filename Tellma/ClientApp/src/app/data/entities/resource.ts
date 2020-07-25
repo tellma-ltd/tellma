@@ -10,7 +10,7 @@ import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 import { EntityForSave } from './base/entity-for-save';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
-    // Common with Contract
+    // Common with Relation
     Name?: string;
     Name2?: string;
     Name3?: string;

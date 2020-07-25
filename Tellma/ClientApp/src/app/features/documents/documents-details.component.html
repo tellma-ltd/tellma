@@ -169,22 +169,22 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Debit Contract -->
-    <t-form-group class="t-form-group" [label]="labelDocumentDebitContract(model)"
-        [serverErrors]="model?.serverErrors?.DebitContractId" *ngIf="showDocumentDebitContract(model)">
-        <ng-container *ngIf="model?.DebitContractIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitContractId">
-                <t-view-link [link]="'../../../contracts/' + ws.get('Contract', model?.DebitContractId)?.DefinitionId"
-                    [itemId]="model?.DebitContractId">
-                    {{ ws.getMultilingualValue('Contract', model?.DebitContractId, 'Name') }}
+    <!-- Debit Custodian -->
+    <t-form-group class="t-form-group" [label]="labelDocumentDebitCustodian(model)"
+        [serverErrors]="model?.serverErrors?.DebitCustodianId" *ngIf="showDocumentDebitCustodian(model)">
+        <ng-container *ngIf="model?.DebitCustodianIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitCustodianId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.DebitCustodianId)?.DefinitionId"
+                    [itemId]="model?.DebitCustodianId">
+                    {{ ws.getMultilingualValue('Relation', model?.DebitCustodianId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.DebitContractId"
-                [definitionIds]="documentDebitContractDefinitionIds(model)"
-                [required]="requireDocumentDebitContract(model)" [disabled]="readonlyDocumentDebitContract(model)">
-            </t-contracts-picker>
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.DebitCustodianId"
+                [definitionIds]="documentDebitCustodianDefinitionIds(model)"
+                [required]="requireDocumentDebitCustodian(model)" [disabled]="readonlyDocumentDebitCustodian(model)">
+            </t-relations-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitContractIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitCustodianIsCommon' }"></ng-container>
     </t-form-group>
 
     <ng-template #perLine>
@@ -207,40 +207,40 @@
         </div>
     </ng-template>
 
-    <!-- Credit Contract -->
-    <t-form-group class="t-form-group" [label]="labelDocumentCreditContract(model)"
-        [serverErrors]="model?.serverErrors?.CreditContractId" *ngIf="showDocumentCreditContract(model)">
-        <ng-container *ngIf="model?.CreditContractIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CreditContractId">
-                <t-view-link [link]="'../../../contracts/' + ws.get('Contract', model?.CreditContractId)?.DefinitionId"
-                    [itemId]="model?.CreditContractId">
-                    {{ ws.getMultilingualValue('Contract', model?.CreditContractId, 'Name') }}
+    <!-- Credit Custodian -->
+    <t-form-group class="t-form-group" [label]="labelDocumentCreditCustodian(model)"
+        [serverErrors]="model?.serverErrors?.CreditCustodianId" *ngIf="showDocumentCreditCustodian(model)">
+        <ng-container *ngIf="model?.CreditCustodianIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CreditCustodianId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.CreditCustodianId)?.DefinitionId"
+                    [itemId]="model?.CreditCustodianId">
+                    {{ ws.getMultilingualValue('Relation', model?.CreditCustodianId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.CreditContractId"
-                [definitionIds]="documentCreditContractDefinitionIds(model)"
-                [required]="requireDocumentCreditContract(model)" [disabled]="readonlyDocumentCreditContract(model)">
-            </t-contracts-picker>
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CreditCustodianId"
+                [definitionIds]="documentCreditCustodianDefinitionIds(model)"
+                [required]="requireDocumentCreditCustodian(model)" [disabled]="readonlyDocumentCreditCustodian(model)">
+            </t-relations-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditContractIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditCustodianIsCommon' }"></ng-container>
     </t-form-group>
 
-    <!-- Noted Contract -->
-    <t-form-group class="t-form-group" [label]="labelDocumentNotedContract(model)"
-        [serverErrors]="model?.serverErrors?.NotedContractId" *ngIf="showDocumentNotedContract(model)">
-        <ng-container *ngIf="model?.NotedContractIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedContractId">
-                <t-view-link [link]="'../../../contracts/' + ws.get('Contract', model?.NotedContractId)?.DefinitionId"
-                    [itemId]="model?.NotedContractId">
-                    {{ ws.getMultilingualValue('Contract', model?.NotedContractId, 'Name') }}
+    <!-- Noted Relation -->
+    <t-form-group class="t-form-group" [label]="labelDocumentNotedRelation(model)"
+        [serverErrors]="model?.serverErrors?.NotedRelationId" *ngIf="showDocumentNotedRelation(model)">
+        <ng-container *ngIf="model?.NotedRelationIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedRelationId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.NotedRelationId)?.DefinitionId"
+                    [itemId]="model?.NotedRelationId">
+                    {{ ws.getMultilingualValue('Relation', model?.NotedRelationId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.NotedContractId"
-                [definitionIds]="documentNotedContractDefinitionIds(model)"
-                [required]="requireDocumentNotedContract(model)" [disabled]="readonlyDocumentNotedContract(model)">
-            </t-contracts-picker>
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.NotedRelationId"
+                [definitionIds]="documentNotedRelationDefinitionIds(model)"
+                [required]="requireDocumentNotedRelation(model)" [disabled]="readonlyDocumentNotedRelation(model)">
+            </t-relations-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedContractIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedRelationIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Segment -->
@@ -467,10 +467,10 @@
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
-                            <t-view-link *ngSwitchCase="'ContractId'"
-                                [link]="'../../../contracts/' + ws.get('Contract', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                            <t-view-link *ngSwitchCase="'CustodianId'"
+                                [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Contract', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'ResourceId'"
                                 [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
@@ -485,8 +485,6 @@
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
-                            <span
-                                *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
                             <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
                                 <span>{{ getFieldValue(lineDefId, columnIndex, line) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
                             </div>
@@ -506,10 +504,10 @@
                                 *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                             <span
                                 *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <t-view-link *ngSwitchCase="'NotedContractId'"
-                                [link]="'../../../contracts/' + ws.get('Contract', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                            <t-view-link *ngSwitchCase="'NotedRelationId'"
+                                [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('AgContractent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <span
                                 *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
@@ -533,17 +531,16 @@
                             <t-currencies-picker *ngSwitchCase="'CurrencyId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                additionalSelect="E"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)" additionalSelect="E"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
-                            <t-contracts-picker *ngSwitchCase="'ContractId'"
+                            <t-relations-picker *ngSwitchCase="'CustodianId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="definitionIdsContract_Smart(lineDefId, columnIndex)"
+                                [definitionIds]="definitionIdsCustodian_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
-                            </t-contracts-picker>
+                            </t-relations-picker>
                             <t-resources-picker *ngSwitchCase="'ResourceId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -564,13 +561,6 @@
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-entry-types-picker>
-                            <t-date-picker *ngSwitchCase="'DueDate'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-date-picker>
                             <t-decimal-editor *ngSwitchCase="'MonetaryValue'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -629,13 +619,13 @@
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);"
                                 [ngModelOptions]="{ updateOn: 'blur' }">
                             </t-text-editor>
-                            <t-contracts-picker *ngSwitchCase="'NotedContractId'"
+                            <t-relations-picker *ngSwitchCase="'NotedRelationId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="definitionIdsNotedContract_Smart(lineDefId, columnIndex)"
+                                [definitionIds]="definitionIdsNotedRelation_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
-                            </t-contracts-picker>
+                            </t-relations-picker>
                             <t-text-editor *ngSwitchCase="'NotedAgentName'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -775,10 +765,10 @@
                                         [itemId]="signature.RoleId">
                                         <span>{{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</span>
                                     </t-view-link>
-                                    <t-view-link *ngIf="signature.RuleType === 'ByContract'"
-                                        [link]="'../../../contracts/' + ws.get('Contract', signature.ContractId)?.DefinitionId"
-                                        [itemId]="signature.ContractId">
-                                        <span>{{ ws.getMultilingualValue('Contract', signature.ContractId, 'Name') }}</span>
+                                    <t-view-link *ngIf="signature.RuleType === 'ByCustodian'"
+                                        [link]="'../../../relations/' + ws.get('Relation', signature.CustodianId)?.DefinitionId"
+                                        [itemId]="signature.CustodianId">
+                                        <span>{{ ws.getMultilingualValue('Relation', signature.CustodianId, 'Name') }}</span>
                                     </t-view-link>
                                     <t-view-link *ngIf="signature.RuleType === 'ByUser'" link="../../../users"
                                         [itemId]="signature.UserId">
@@ -1143,26 +1133,27 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Contract -->
-            <ng-container *ngIf="showContract_Manual(entry)">
-                <t-form-group-dynamic [label]="labelContract_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.ContractId">
+            <!-- Custodian -->
+            <ng-container *ngIf="showCustodian_Manual(entry)">
+                <t-form-group-dynamic [label]="labelCustodian_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.CustodianId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ContractId">
-                        <t-view-link [link]="'../../../contracts/' + ws.get('Contract', entry.ContractId)?.DefinitionId"
-                            [itemId]="entry.ContractId">
-                            {{ ws.getMultilingualValue('Contract', entry.ContractId, 'Name') }}
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CustodianId">
+                        <t-view-link
+                            [link]="'../../../relations/' + ws.get('Relation', entry.CustodianId)?.DefinitionId"
+                            [itemId]="entry.CustodianId">
+                            {{ ws.getMultilingualValue('Relation', entry.CustodianId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-contracts-picker *ngIf="!readonlyContract_Manual(entry)" [(ngModel)]="entry.ContractId"
-                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectContract"
-                            [definitionIds]="definitionIdsContract_Manual(entry)" required>
-                        </t-contracts-picker>
-                        <t-restricted *ngIf="readonlyContract_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.ContractId">
-                            {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual(entry), 'Name') }}
+                        <t-relations-picker *ngIf="!readonlyCustodian_Manual(entry)" [(ngModel)]="entry.CustodianId"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectRelation"
+                            [definitionIds]="definitionIdsCustodian_Manual(entry)" required>
+                        </t-relations-picker>
+                        <t-restricted *ngIf="readonlyCustodian_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.CustodianId">
+                            {{ ws.getMultilingualValue('Relation', readonlyValueCustodianId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
@@ -1222,19 +1213,6 @@
                             (ngModelChange)="update.call(null, pair);" [filter]="filterUnitId(entry)">
                         </t-units-picker>
                     </ng-container>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
-            <!-- DueDate -->
-            <ng-container *ngIf="showDueDate_Manual(entry)">
-                <t-form-group-dynamic [label]="labelDueDate_Manual(entry)" [serverErrors]="entry.serverErrors?.DueDate">
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.DueDate">
-                        {{ entry.DueDate | date:'yyyy-MM-dd'}}
-                    </t-restricted>
-                    <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.DueDate"
-                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
-                    </t-date-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>
@@ -1330,23 +1308,23 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Noted Contract -->
-            <ng-container *ngIf="showNotedContract_Manual(entry)">
-                <t-form-group-dynamic [label]="labelNotedContract_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.NotedContract">
+            <!-- Noted Relation -->
+            <ng-container *ngIf="showNotedRelation_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedRelation_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.NotedRelation">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedContractId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedRelationId">
                         <t-view-link
-                            [link]="'../../../contracts/' + ws.get('Contract', entry.NotedContractId)?.DefinitionId"
-                            [itemId]="entry.NotedContractId">
-                            {{ ws.getMultilingualValue('Contract', entry.NotedContractId, 'Name') }}
+                            [link]="'../../../relations/' + ws.get('Relation', entry.NotedRelationId)?.DefinitionId"
+                            [itemId]="entry.NotedRelationId">
+                            {{ ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-contracts-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedContractId"
+                    <t-relations-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedRelationId"
                         (ngModelChange)="update.call(null, pair);"
-                        [definitionIds]="definitionIdsNotedContract_Manual(entry)">
-                    </t-contracts-picker>
+                        [definitionIds]="definitionIdsNotedRelation_Manual(entry)">
+                    </t-relations-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>
@@ -1783,55 +1761,59 @@
 
     <!-- body -->
     <div class="modal-body">
-      <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="dataType(param.DataType)">
-        <!-- Center -->
-        <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
-        </t-form-group>
+        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters"
+            [ngSwitch]="dataType(param.DataType)">
+            <!-- Center -->
+            <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
+            </t-form-group>
 
-        <!-- Currency -->
-        <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-currencies-picker>
-        </t-form-group>
+            <!-- Currency -->
+            <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
+                </t-currencies-picker>
+            </t-form-group>
 
-        <!-- Contract -->
-        <t-form-group *ngSwitchCase="'Contract'" class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <t-contracts-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter" [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-contracts-picker>
-        </t-form-group>
+            <!-- Relation -->
+            <t-form-group *ngSwitchCase="'Relation'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-relations-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
+                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-relations-picker>
+            </t-form-group>
 
-        <!-- Date -->
-        <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
-        </t-form-group>
+            <!-- Date -->
+            <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
+            </t-form-group>
 
-        <!-- Decimal -->
-        <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
-        </t-form-group>
+            <!-- Decimal -->
+            <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
+            </t-form-group>
 
-        <!-- String -->
-        <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
-        </t-form-group>
+            <!-- String -->
+            <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
+            </t-form-group>
 
-        <!-- Default -->
-        <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
-                      [label]="parameterLabel(param)">
-          <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
-        </t-form-group>
+            <!-- Default -->
+            <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
+            </t-form-group>
 
-      </ng-container>
+        </ng-container>
     </div>
 
     <!-- footer -->
     <div class="modal-footer">
-        <button class="btn btn-primary" (click)="onDoAutoGenerate(modal)" [disabled]="!autoGenerateRequiredParamsAreSet">
+        <button class="btn btn-primary" (click)="onDoAutoGenerate(modal)"
+            [disabled]="!autoGenerateRequiredParamsAreSet">
             <fa-icon icon="bolt"></fa-icon>
             &nbsp;{{ autoGenerateLabel(autoGenerateLineDefId) }}
         </button>

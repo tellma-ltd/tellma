@@ -4,8 +4,8 @@ using Tellma.Services.Utilities;
 
 namespace Tellma.Entities
 {
-    [EntityDisplay(Singular = "ContractDefinition", Plural = "ContractDefinitions")]
-    public class ContractDefinitionForSave : EntityWithKey<int>
+    [EntityDisplay(Singular = "RelationDefinition", Plural = "RelationDefinitions")]
+    public class RelationDefinitionForSave : EntityWithKey<int>
     {
         #region Title & Code
 
@@ -263,25 +263,25 @@ namespace Tellma.Entities
 
         #endregion
 
-        #region Contract Only
+        #region Relation Only
 
-        [VisibilityDisplay(Name = "Contract_Agent")]
+        [VisibilityDisplay(Name = "Relation_Agent")]
         [VisibilityChoiceList]
         public string AgentVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Contract_TaxIdentificationNumber")]
+        [VisibilityDisplay(Name = "Relation_TaxIdentificationNumber")]
         [VisibilityChoiceList]
         public string TaxIdentificationNumberVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Contract_Job")]
+        [VisibilityDisplay(Name = "Relation_Job")]
         [VisibilityChoiceList]
         public string JobVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Contract_BankAccountNumber")]
+        [VisibilityDisplay(Name = "Relation_BankAccountNumber")]
         [VisibilityChoiceList]
         public string BankAccountNumberVisibility { get; set; }
 
-        [Display(Name = "ContractDefinition_UserCardinality")]
+        [Display(Name = "RelationDefinition_UserCardinality")]
         [ChoiceList(new object[] { "None", "Single", "Multiple" },
             new string[] { "Cardinality_None", "Cardinality_Single", "Cardinality_Multiple" })]
         public string UserCardinality { get; set; }
@@ -307,7 +307,7 @@ namespace Tellma.Entities
         #endregion
     }
 
-    public class ContractDefinition : ContractDefinitionForSave
+    public class RelationDefinition : RelationDefinitionForSave
     {
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },

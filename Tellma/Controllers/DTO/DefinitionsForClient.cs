@@ -24,9 +24,9 @@ namespace Tellma.Controllers.Dto
         public Dictionary<int, ResourceDefinitionForClient> Resources { get; set; }
 
         /// <summary>
-        /// Mapping from contract definition Id to contract definition
+        /// Mapping from relation definition Id to relation definition
         /// </summary>
-        public Dictionary<int, ContractDefinitionForClient> Contracts { get; set; }
+        public Dictionary<int, RelationDefinitionForClient> Relations { get; set; }
 
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition
@@ -163,32 +163,32 @@ namespace Tellma.Controllers.Dto
         public string PostingDateLabel2 { get; set; }
         public string PostingDateLabel3 { get; set; }
 
-        // Debit Contract
-        public bool DebitContractVisibility { get; set; }
-        public short? DebitContractRequiredState { get; set; }
-        public short? DebitContractReadOnlyState { get; set; }
-        public List<int> DebitContractDefinitionIds { get; set; }
-        public string DebitContractLabel { get; set; }
-        public string DebitContractLabel2 { get; set; }
-        public string DebitContractLabel3 { get; set; }
+        // Debit Custodian
+        public bool DebitCustodianVisibility { get; set; }
+        public short? DebitCustodianRequiredState { get; set; }
+        public short? DebitCustodianReadOnlyState { get; set; }
+        public List<int> DebitCustodianDefinitionIds { get; set; }
+        public string DebitCustodianLabel { get; set; }
+        public string DebitCustodianLabel2 { get; set; }
+        public string DebitCustodianLabel3 { get; set; }
 
-        // Credit Contract
-        public bool CreditContractVisibility { get; set; }
-        public short? CreditContractRequiredState { get; set; }
-        public short? CreditContractReadOnlyState { get; set; }
-        public List<int> CreditContractDefinitionIds { get; set; }
-        public string CreditContractLabel { get; set; }
-        public string CreditContractLabel2 { get; set; }
-        public string CreditContractLabel3 { get; set; }
+        // Credit Custodian
+        public bool CreditCustodianVisibility { get; set; }
+        public short? CreditCustodianRequiredState { get; set; }
+        public short? CreditCustodianReadOnlyState { get; set; }
+        public List<int> CreditCustodianDefinitionIds { get; set; }
+        public string CreditCustodianLabel { get; set; }
+        public string CreditCustodianLabel2 { get; set; }
+        public string CreditCustodianLabel3 { get; set; }
 
-        // Noted Contract
-        public bool NotedContractVisibility { get; set; }
-        public short? NotedContractRequiredState { get; set; }
-        public short? NotedContractReadOnlyState { get; set; }
-        public List<int> NotedContractDefinitionIds { get; set; }
-        public string NotedContractLabel { get; set; }
-        public string NotedContractLabel2 { get; set; }
-        public string NotedContractLabel3 { get; set; }
+        // Noted Relation
+        public bool NotedRelationVisibility { get; set; }
+        public short? NotedRelationRequiredState { get; set; }
+        public short? NotedRelationReadOnlyState { get; set; }
+        public List<int> NotedRelationDefinitionIds { get; set; }
+        public string NotedRelationLabel { get; set; }
+        public string NotedRelationLabel2 { get; set; }
+        public string NotedRelationLabel3 { get; set; }
 
         // Clearance
         public string ClearanceVisibility { get; set; }
@@ -290,8 +290,8 @@ namespace Tellma.Controllers.Dto
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
-        public List<int> ContractDefinitionIds { get; set; }
-        public List<int> NotedContractDefinitionIds { get; set; }
+        public List<int> CustodianDefinitionIds { get; set; }
+        public List<int> NotedRelationDefinitionIds { get; set; }
     }
 
     public class LineDefinitionColumnForClient
@@ -435,7 +435,7 @@ namespace Tellma.Controllers.Dto
         public string MonetaryValueVisibility { get; set; }
     }
 
-    public class ContractDefinitionForClient : MasterDetailDefinitionForClient
+    public class RelationDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }

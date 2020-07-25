@@ -22,8 +22,8 @@ namespace Tellma.Entities
         [StringLength(3)]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "Entry_Contract")]
-        public int? ContractId { get; set; }
+        [Display(Name = "Entry_Custodian")]
+        public int? CustodianId { get; set; }
 
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
@@ -33,9 +33,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; }
-
-        [Display(Name = "Entry_DueDate")]
-        public DateTime? DueDate { get; set; }
 
         [Display(Name = "Entry_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
@@ -63,8 +60,8 @@ namespace Tellma.Entities
         [StringLength(255)]
         public string AdditionalReference { get; set; }
 
-        [Display(Name = "Entry_NotedContract")]
-        public int? NotedContractId { get; set; }
+        [Display(Name = "Entry_NotedRelation")]
+        public int? NotedRelationId { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
         [StringLength(50)]
@@ -110,9 +107,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(UnitId))]
         public Unit Unit { get; set; }
 
-        [Display(Name = "Entry_Contract")]
-        [ForeignKey(nameof(ContractId))]
-        public Contract Contract { get; set; }
+        [Display(Name = "Entry_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
 
         [Display(Name = "Entry_Center")]
         [ForeignKey(nameof(CenterId))]
@@ -126,9 +123,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
 
-        [Display(Name = "Entry_NotedContract")]
-        [ForeignKey(nameof(NotedContractId))]
-        public Contract NotedContract { get; set; }
+        [Display(Name = "Entry_NotedRelation")]
+        [ForeignKey(nameof(NotedRelationId))]
+        public Relation NotedRelation { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

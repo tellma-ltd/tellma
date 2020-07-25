@@ -61,14 +61,14 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        //[HttpGet("contract-accounts")]
-        //public async Task<ActionResult<EntitiesResponse<Account>>> GetContractAccounts(CancellationToken cancellation)
+        //[HttpGet("custodian-accounts")]
+        //public async Task<ActionResult<EntitiesResponse<Account>>> GetCustodianAccounts(CancellationToken cancellation)
         //{
 
         //    return await ControllerUtilities.InvokeActionImpl(async () =>
         //    {
         //        var serverTime = DateTimeOffset.UtcNow;
-        //        var data = await _service.GetContractAccounts(cancellation);
+        //        var data = await _service.GetCustodianAccounts(cancellation);
 
         //        // Flatten and Trim
         //        var relatedEntities = FlattenAndTrim(data, cancellation);
@@ -169,9 +169,9 @@ namespace Tellma.Controllers
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.Document)}/{nameof(Document.SegmentId)} {Ops.eq} {args.SegmentId.Value}");
             }
 
-            if (args.ContractId != null)
+            if (args.CustodianId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ContractId)} {Ops.eq} {args.ContractId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodianId)} {Ops.eq} {args.CustodianId.Value}");
             }
 
             if (args.ResourceId != null)
@@ -302,10 +302,10 @@ namespace Tellma.Controllers
             return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
         }
 
-        //public async Task<List<Account>> GetContractAccounts(int contractId, CancellationToken cancellation)
+        //public async Task<List<Account>> GetCustodianAccounts(int custodianId, CancellationToken cancellation)
         //{
         //    string accountIdProp = nameof(DetailsEntry.AccountId);
-        //    string contractIdProp = nameof(DetailsEntry.ContractId);
+        //    string custodianIdProp = nameof(DetailsEntry.CustodianId);
         //    string algebraicValueSum = $"sum({nameof(DetailsEntry.AlgebraicValue)})";
 
         //    var (data, _) = await GetAggregate(new GetAggregateArguments

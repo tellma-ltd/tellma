@@ -50,7 +50,7 @@ namespace Tellma.Entities
 
         #endregion
 
-        #region Common with Contracts
+        #region Common with Relations
 
         [VisibilityDisplay(Name = "Entity_Currency"), VisibilityChoiceList]
         public string CurrencyVisibility { get; set; }

@@ -8,7 +8,7 @@ import { WorkspaceService, ReportStore, ReportStatus } from '~/app/data/workspac
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
-import { metadata_Contract, Contract } from '~/app/data/entities/contract';
+import { metadata_Relation, Relation } from '~/app/data/entities/relations';
 import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
@@ -24,7 +24,7 @@ import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { ResourceDefinitionForClient, ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { ResourceDefinitionForClient, RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 't-statement',
@@ -41,9 +41,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'segment_id', 'contract_id', 'resource_id', 'entry_type_id', 'center_id'];
-      case 'contract':
-        return ['contract_id', 'account_id', 'resource_id'];
+        return ['account_id', 'segment_id', 'custodian_id', 'resource_id', 'entry_type_id', 'center_id'];
+      case 'relation':
+        return ['relation_id', 'account_id', 'resource_id'];
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
@@ -53,7 +53,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return ['from_date', 'to_date', 'currency_id'];
-      case 'contract':
+      case 'relation':
         return ['from_date', 'to_date'];
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
@@ -64,7 +64,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return ['include_completed'];
-      case 'contract':
+      case 'relation':
         return ['include_completed'];
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
@@ -74,18 +74,18 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   public actionErrorMessage: string;
 
   @Input()
-  type: 'account' | 'contract';
+  type: 'account' | 'relation';
 
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
 
   /**
-   * For contract statement
+   * For relation statement
    */
   private definitionId: number;
 
-  private get contractDefinition(): ContractDefinitionForClient {
-    return this.ws.definitions.Contracts[this.definitionId];
+  private get relationDefinition(): RelationDefinitionForClient {
+    return this.ws.definitions.Relations[this.definitionId];
   }
 
   constructor(
@@ -142,9 +142,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       switch (this.type) {
         case 'account':
           break;
-        case 'contract':
+        case 'relation':
           const defId = +params.get('definitionId');
-          if (!!defId && !!this.ws.definitions.Contracts[defId]) {
+          if (!!defId && !!this.ws.definitions.Relations[defId]) {
             this.definitionId = defId;
           }
           break;
@@ -222,8 +222,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return 'account-statement/arguments';
-      case 'contract':
-        return `contract-statement/${this.definitionId}/arguments`;
+      case 'relation':
+        return `relation-statement/${this.definitionId}/arguments`;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
@@ -253,8 +253,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   //   return this.type === 'account';
   // }
 
-  // private get isContract() {
-  //   return this.type === 'contract';
+  // private get isRelation() {
+  //   return this.type === 'relation';
   // }
 
   public fetch() {
@@ -297,8 +297,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       args.segmentId = this.segmentId;
     }
 
-    if (!!this.contractId && this.showContractParameter) {
-      args.contractId = this.contractId;
+    if (!!this.custodianId && this.showCustodianParameter) {
+      args.custodianId = this.custodianId;
     }
 
     if (!!this.resourceId && this.showResourceParameter) {
@@ -382,8 +382,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return !!args.from_date && !!args.to_date && !!args.account_id && (!this.showSegmentParameter || !!args.segment_id);
-      case 'contract':
-        return !!args.from_date && !!args.to_date && !!args.contract_id && !!args.account_id;
+      case 'relation':
+        return !!args.from_date && !!args.to_date && !!args.relation_id && !!args.account_id;
       default:
         console.error(`Unknown report type ${this.type}`); // Future proofing
     }
@@ -404,12 +404,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           return true;
         }
 
-        if (this.showContractParameter && !this.readonlyContract_Manual && !!this.contractId && !this.ws.get('Contract', this.contractId)) {
+        if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !!this.custodianId && !this.ws.get('Relation', this.custodianId)) {
           return true;
         }
 
         return false;
-      case 'contract':
+      case 'relation':
       // TODO
 
 
@@ -432,8 +432,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return true;
-      case 'contract':
-        return !!this.contractDefinition;
+      case 'relation':
+        return !!this.relationDefinition;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
         return false;
@@ -444,8 +444,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return this.translate.instant('AccountStatement');
-      case 'contract':
-        return this.translate.instant('StatementOf0', { 0: this.ws.getMultilingualValueImmediate(this.contractDefinition, 'TitleSingular') });
+      case 'relation':
+        return this.translate.instant('StatementOf0', { 0: this.ws.getMultilingualValueImmediate(this.relationDefinition, 'TitleSingular') });
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
         return '???';
@@ -509,8 +509,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
         }
-        if (!!args.contractId) {
-          data.push(this.normalize([this.labelContract_Manual, this.ws.getMultilingualValue('Contract', args.contractId, 'Name')], columns.length));
+        if (!!args.custodianId) {
+          data.push(this.normalize([this.labelCustodian_Manual, this.ws.getMultilingualValue('Relation', args.custodianId, 'Name')], columns.length));
         }
         if (!!args.resourceId) {
           data.push(this.normalize([this.labelResource_Manual, this.ws.getMultilingualValue('Resource', args.resourceId, 'Name')], columns.length));
@@ -614,8 +614,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return 'account-statement';
-      case 'contract':
-        return `contract-statement/${this.definitionId}`;
+      case 'relation':
+        return `relation-statement/${this.definitionId}`;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
@@ -671,7 +671,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return `../${finalSegment}`;
-      case 'contract':
+      case 'relation':
         return `../../${finalSegment}`;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
@@ -784,16 +784,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Returns the currency Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceContractCurrencyId(): string {
+  private getAccountResourceCustodianCurrencyId(): string {
     const account = this.account();
     const resource = this.resource();
-    const contract = this.contract();
+    const custodian = this.custodian();
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
-    const contractCurrencyId = !!contract ? contract.CurrencyId : null;
+    const custodianCurrencyId = !!custodian ? custodian.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || contractCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || custodianCurrencyId;
   }
 
   /**
@@ -802,14 +802,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   public get showCurrencyParameter(): boolean {
     // Show the editable currency parameter
     const account = this.account();
-    return !!account && !this.getAccountResourceContractCurrencyId();
+    return !!account && !this.getAccountResourceCustodianCurrencyId();
   }
 
   /**
    * Returns the Id of the currency to show as a postfix to the monetary value column header
    */
   public get readonlyValueCurrencyId(): string {
-    const accountResourceCurrencyId = this.getAccountResourceContractCurrencyId();
+    const accountResourceCurrencyId = this.getAccountResourceCustodianCurrencyId();
     return accountResourceCurrencyId || this.currencyId;
   }
 
@@ -820,81 +820,93 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.ws.settings.FunctionalCurrencyId;
   }
 
-  // Contract
-  public contractAdditionalSelect = '$DocumentDetails';
+  // Custodian
+  public relationAdditionalSelect = '$DocumentDetails';
 
-  public get contractId(): number {
-    return this.state.arguments.contract_id;
+  public get custodianId(): number {
+    return this.state.arguments.custodian_id;
   }
 
-  public set contractId(v: number) {
+  public set custodianId(v: number) {
     const args = this.state.arguments;
-    if (args.contract_id !== v) {
-      args.contract_id = v;
+    if (args.custodian_id !== v) {
+      args.custodian_id = v;
+      this.parametersChanged();
+    }
+  }
+
+  // Relation
+  public get relationId(): number {
+    return this.state.arguments.relation_id;
+  }
+
+  public set relationId(v: number) {
+    const args = this.state.arguments;
+    if (args.relation_id !== v) {
+      args.relation_id = v;
       this.parametersChanged();
     }
   }
 
   /**
-   * Returns any uniquely identifiable contract from the parameters
+   * Returns any uniquely identifiable custodian from the parameters
    */
-  private contract(): Contract {
+  private custodian(): Relation {
     const account = this.account();
-    const accountContractId = !!account ? account.ContractId : null;
-    const paramContractId = !!account && !!account.ContractDefinitionId ? this.contractId : null;
-    const contractId = accountContractId || paramContractId;
+    const accountCustodianId = !!account ? account.CustodianId : null;
+    const paramCustodianId = !!account && !!account.CustodianDefinitionId ? this.custodianId : null;
+    const custodianId = accountCustodianId || paramCustodianId;
 
-    return this.ws.get('Contract', contractId) as Contract;
+    return this.ws.get('Relation', custodianId) as Relation;
   }
 
-  public get showContractParameter(): boolean {
+  public get showCustodianParameter(): boolean {
     const account = this.account();
-    return !!account && !!account.ContractDefinitionId;
+    return !!account && !!account.CustodianDefinitionId;
   }
 
-  public get readonlyContract_Manual(): boolean {
+  public get readonlyCustodian_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.ContractId;
+    return !!account && !!account.CustodianId;
   }
 
-  public get readonlyValueContractId_Manual(): number {
+  public get readonlyValueCustodianId_Manual(): number {
     const account = this.account();
-    return !!account ? account.ContractId : null;
+    return !!account ? account.CustodianId : null;
   }
 
-  public get labelContract_Manual(): string {
+  public get labelCustodian_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.ContractDefinitionId : null;
+    const defId = !!account ? account.CustodianDefinitionId : null;
 
-    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public get labelContract_Smart(): string {
-    return this.ws.getMultilingualValueImmediate(this.contractDefinition, 'TitleSingular');
+  public get labelRelation_Smart(): string {
+    return this.ws.getMultilingualValueImmediate(this.relationDefinition, 'TitleSingular');
   }
 
-  public get definitionIdsContract_Manual(): number[] {
+  public get definitionIdsCustodian_Manual(): number[] {
     const account = this.account();
-    return [account.ContractDefinitionId];
-    // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
+    return [account.CustodianDefinitionId];
   }
 
-  public get definitionIdsContract_Smart(): number [] {
+  public get definitionIdsRelation_Smart(): number [] {
     return [this.definitionId];
   }
 
-  // Noted Contract
+  // Noted Relation
 
-  public get showNotedContract_Manual(): boolean {
+  public get showNotedRelation_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.NotedContractDefinitionId;
+    return !!account && !!account.NotedRelationDefinitionId;
   }
 
-  public get labelNotedContract_Manual(): string {
+  public get labelNotedRelation_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.NotedContractDefinitionId : null;
+    const defId = !!account ? account.NotedRelationDefinitionId : null;
 
-    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
   }
 
   // Resource
@@ -1018,26 +1030,26 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get readonlyCenter_Manual(): boolean {
-    return !!this.getAccountResourceContractCenterId();
+    return !!this.getAccountResourceCustodianCenterId();
   }
 
   public get readonlyValueCenterId_Manual(): number {
-    return this.getAccountResourceContractCenterId();
+    return this.getAccountResourceCustodianCenterId();
   }
 
   /**
    * Returns the center Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceContractCenterId(): number {
+  private getAccountResourceCustodianCenterId(): number {
     const account = this.account();
     const resource = this.resource();
-    const contract = this.contract();
+    const custodian = this.custodian();
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
-    const contractCenterId = !!contract ? contract.CenterId : null;
+    const custodianCenterId = !!custodian ? custodian.CenterId : null;
 
-    return accountCenterId || resourceCenterId || contractCenterId;
+    return accountCenterId || resourceCenterId || custodianCenterId;
   }
 
   // Error Message
@@ -1105,7 +1117,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const opening = s.extras.openingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceContractCurrencyId() || this.currencyId || this.functionalId;
+      const currencyId = this.getAccountResourceCustodianCurrencyId() || this.currencyId || this.functionalId;
       const digitsInfo = this.digitsInfo(currencyId);
       return formatAccounting(opening, digitsInfo);
     }
@@ -1137,7 +1149,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const closing = s.extras.closingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceContractCurrencyId() || this.currencyId || this.functionalId;
+      const currencyId = this.getAccountResourceCustodianCurrencyId() || this.currencyId || this.functionalId;
       const digitsInfo = this.digitsInfo(currencyId);
       return formatAccounting(closing, digitsInfo);
     }
@@ -1231,26 +1243,26 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         weight: 1
       });
 
-      // Contract
-      if (this.showContractParameter && !this.readonlyContract_Manual && !this.contractId) {
+      // Custodian
+      if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !this.custodianId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Contract/Name,Contract/Name2,Contract/Name3'],
-          label: () => this.labelContract_Manual,
+          select: ['Custodian/Name,Custodian/Name2,Custodian/Name3'],
+          label: () => this.labelCustodian_Manual,
           display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Contract', entry.ContractId, 'Name');
+            return this.ws.getMultilingualValue('Relation', entry.CustodianId, 'Name');
           },
           weight: 1
         });
       }
 
-      // NotedContract
-      if (this.showNotedContract_Manual) {
+      // NotedRelation
+      if (this.showNotedRelation_Manual) {
         this._columns.push({
-          select: ['NotedContract/Name,NotedContract/Name2,NotedContract/Name3'],
-          label: () => this.labelNotedContract_Manual,
+          select: ['NotedRelation/Name,NotedRelation/Name2,NotedRelation/Name3'],
+          label: () => this.labelNotedRelation_Manual,
           display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Contract', entry.NotedContractId, 'Name');
+            return this.ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name');
           },
           weight: 1
         });
@@ -1284,15 +1296,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
       // All dynamic properties from account type label
       if (!!accountType) {
-        // DueDate
-        if (!!accountType.DueDateLabel) {
-          this._columns.push({
-            select: ['DueDate'],
-            label: () => this.ws.getMultilingualValueImmediate(accountType, 'DueDateLabel'),
-            display: (entry: DetailsEntry) => !!entry.DueDate ? formatDate(entry.DueDate, 'yyyy-MM-dd', locale) : '',
-            weight: 1
-          });
-        }
 
         // Time1
         if (!!accountType.Time1Label) {
@@ -1424,7 +1427,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      const definedCurrencyId = this.getAccountResourceContractCurrencyId() || this.currencyId;
+      const definedCurrencyId = this.getAccountResourceCustodianCurrencyId() || this.currencyId;
       if (!!this.account() && definedCurrencyId !== this.functionalId) {
 
         // Monetary Value

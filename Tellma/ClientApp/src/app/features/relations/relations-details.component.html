@@ -1,4 +1,4 @@
-<t-details *ngIf="found;else pageNotFound" collection="Contract" [definitionId]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Relation" [definitionId]="definitionId" [createFunc]="create"
   [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString"
   [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -44,7 +44,7 @@
   <div class="col-12 col-md-4 t-details-image-container" *ngIf="Image_isVisible">
     <t-restricted [metadata]="model?.EntityMetadata?.ImageId">
       <div class="border">
-        <t-image *ngIf="!!model" [src]="model.Id ? 'contracts/' + definitionId + '/' + model.Id + '/image' : null"
+        <t-image *ngIf="!!model" [src]="model.Id ? 'relations/' + definitionId + '/' + model.Id + '/image' : null"
           [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit" icon="camera"></t-image>
       </div>
     </t-restricted>
@@ -79,7 +79,7 @@
   </t-form-group>
 
   <!-- User (Cardinality Single) -->
-  <t-form-group *ngIf="User_isVisible" class="t-form-group" [label]="'Contract_User' | translate"
+  <t-form-group *ngIf="User_isVisible" class="t-form-group" [label]="'Relation_User' | translate"
     [serverErrors]="model?.serverErrors?.Users">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Users">
       <t-view-link link="../../../users" [itemId]="getUserId(model)">
@@ -303,10 +303,10 @@
   </t-form-group>
 
   <!-- Agent -->
-  <t-form-group class="t-form-group" *ngIf="Agent_isVisible" [label]="'Contract_Agent' | translate"
+  <t-form-group class="t-form-group" *ngIf="Agent_isVisible" [label]="'Relation_Agent' | translate"
     [serverErrors]="model?.serverErrors?.AgentId">
     <t-view-link *ngIf="!isEdit" link="../../../agents/" [itemId]="model?.AgentId">
-      <t-auto-cell collection="Contract" path="Agent" [entity]="model">
+      <t-auto-cell collection="Relation" path="Agent" [entity]="model">
       </t-auto-cell>
     </t-view-link>
     <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [required]="Agent_isRequired">
@@ -315,7 +315,7 @@
 
   <!-- Tax Identification Number -->
   <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
-    [label]="'Contract_TaxIdentificationNumber' | translate"
+    [label]="'Relation_TaxIdentificationNumber' | translate"
     [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
       <div>{{ model?.TaxIdentificationNumber }}</div>
@@ -327,7 +327,7 @@
 
   <!-- Bank Account Number -->
   <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible"
-    [label]="'Contract_BankAccountNumber' | translate" [serverErrors]="model?.serverErrors?.BankAccountNumber">
+    [label]="'Relation_BankAccountNumber' | translate" [serverErrors]="model?.serverErrors?.BankAccountNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
       <div>{{ model?.BankAccountNumber }}</div>
     </t-restricted>
@@ -353,7 +353,7 @@
             </fa-icon>&nbsp;
           </span>
           <span
-            class="small t-slightly-bold">{{ ('Contract_Users' | translate) + (!model.Id || model?.EntityMetadata?.Users === 2 ? ' (' + (Users_count(model) | number) + ')' : '') }}</span>
+            class="small t-slightly-bold">{{ ('Relation_Users' | translate) + (!model.Id || model?.EntityMetadata?.Users === 2 ? ' (' + (Users_count(model) | number) + ')' : '') }}</span>
         </a>
         <ng-template ngbNavContent>
           <t-restricted [metadata]="model?.EntityMetadata?.Users" [class.p-4]="model?.EntityMetadata?.Users === 1">
@@ -363,7 +363,7 @@
           </t-restricted>
 
           <!-- User -->
-          <ng-template #header_User>{{ 'ContractUser_User' | translate }}</ng-template>
+          <ng-template #header_User>{{ 'RelationUser_User' | translate }}</ng-template>
           <ng-template #row_User let-item="item" let-index="index" let-update="update">
             <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.UserId">
               <t-view-link *ngIf="!isEdit" link="../../../users" [itemId]="item.UserId">
