@@ -27,14 +27,14 @@ BEGIN
 		GOTO Err_Label;
 	END;
 	
-	SELECT @BasicSalary = [Id] FROM dbo.Resources WHERE [Name] = N'Basic';
-	SELECT @TransportationAllowance = [Id] FROM dbo.Resources WHERE [Name] = N'Transportation Allowance';
-	SELECT @DataPackage = [Id] FROM dbo.Resources WHERE [Name] = N'Data package';
-	SELECT @MealAllowance = [Id] FROM dbo.Resources WHERE [Name] = N'Meal Allowance';
-	SELECT @HourlyWage = [Id] FROM dbo.Resources WHERE [Name] = N'Labor (hourly)';
+	SELECT @BasicSalary = [Id] FROM dbo.[Resources] WHERE [Name] = N'Basic';
+	SELECT @TransportationAllowance = [Id] FROM dbo.[Resources] WHERE [Name] = N'Transportation Allowance';
+	SELECT @DataPackage = [Id] FROM dbo.[Resources] WHERE [Name] = N'Data package';
+	SELECT @MealAllowance = [Id] FROM dbo.[Resources] WHERE [Name] = N'Meal Allowance';
+	SELECT @HourlyWage = [Id] FROM dbo.[Resources] WHERE [Name] = N'Labor (hourly)';
 
-	SELECT @DayOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Day Overtime';
-	SELECT @NightOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Night Overtime';
-	SELECT @RestOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Rest Overtime';
-	SELECT @HolidayOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Holiday Overtime';
+	SELECT @DayOvertime = [Id] FROM dbo.[Resources] WHERE [Name] = N'Day Overtime';
+	SELECT @NightOvertime = [Id] FROM dbo.[Resources] WHERE [Name] = N'Night Overtime';
+	SELECT @RestOvertime = [Id] FROM dbo.[Resources] WHERE [Name] = N'Rest Overtime';
+	SELECT @HolidayOvertime = [Id] FROM dbo.[Resources] WHERE [Name] = N'Holiday Overtime';
 END

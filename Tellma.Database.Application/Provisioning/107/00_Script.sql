@@ -262,8 +262,8 @@ DELETE FROM LineDefinitionEntryResourceDefinitions
 WHERE ResourceDefinitionId IN (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [State] <> N'Visible')
 
 -- Activate needed resource definitions
-DELETE FROM @ContractDefinitionIds;
-INSERT INTO @ContractDefinitionIds([Id]) VALUES
+DELETE FROM @RelationDefinitionIds;
+INSERT INTO @RelationDefinitionIds([Id]) VALUES
 (@CreditorCD),
 (@DebtorCD),
 (@OwnerCD),
@@ -276,12 +276,12 @@ INSERT INTO @ContractDefinitionIds([Id]) VALUES
 (@WarehouseCD);
 --(@ShipperCD);
 
-EXEC [dal].[ContractDefinitions__UpdateState]
-	@Ids = @ContractDefinitionIds,
+EXEC [dal].[RelationDefinitions__UpdateState]
+	@Ids = @RelationDefinitionIds,
 	@State = N'Visible'
 
-DELETE FROM LineDefinitionEntryContractDefinitions
-WHERE ContractDefinitionId IN (SELECT [Id] FROM dbo.ContractDefinitions WHERE [State] <> N'Visible')
+DELETE FROM [LineDefinitionEntryCustodianDefinitions]
+WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')
 
-DELETE FROM LineDefinitionEntryNotedContractDefinitions
-WHERE NotedContractDefinitionId IN (SELECT [Id] FROM dbo.ContractDefinitions WHERE [State] <> N'Visible')
+DELETE FROM [LineDefinitionEntryNotedRelationDefinitions]
+WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')

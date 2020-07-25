@@ -57,7 +57,7 @@ SET NOCOUNT ON;
 		JOIN @Ids D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[CustodianId] IS NULL OR E.[CustodianId] = AB.[CustodianId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId])
@@ -74,7 +74,7 @@ SET NOCOUNT ON;
 		JOIN dbo.Entries E ON L.[Id] = E.[LineId]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[CustodianId] IS NULL OR E.[CustodianId] = AB.[CustodianId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId])
@@ -111,15 +111,15 @@ SET NOCOUNT ON;
 	
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [ContractId], [ResourceId], [CenterId],
-	[EntryTypeId], [DueDate], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [AdditionalReference], [NotedContractId], [NotedAgentName],
+	[Direction], [AccountId], [CurrencyId], [CustodianId], [ResourceId], [CenterId],
+	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
+	[Time2], [ExternalReference], [AdditionalReference], [NotedRelationId], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[ContractId],E.[ResourceId],E.[CenterId],
-	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedContractId],E.[NotedAgentName],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodianId],E.[ResourceId],E.[CenterId],
+	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
+	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
@@ -141,15 +141,15 @@ SET NOCOUNT ON;
 	
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [ContractId], [ResourceId], [CenterId],
-	[EntryTypeId], [DueDate], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [AdditionalReference], [NotedContractId], [NotedAgentName],
+	[Direction], [AccountId], [CurrencyId], [CustodianId], [ResourceId], [CenterId],
+	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
+	[Time2], [ExternalReference], [AdditionalReference], [NotedRelationId], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[ContractId],E.[ResourceId],E.[CenterId],
-	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedContractId],E.[NotedAgentName],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodianId],E.[ResourceId],E.[CenterId],
+	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
+	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];

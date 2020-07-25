@@ -64,8 +64,8 @@ BEGIN -- Inserting
 --	END;
 --	IF @DebugResources = 1
 --	BEGIN
---		--SELECT * FROM dbo.Resources;
---		INSERT INTO @R1Ids SELECT [Id] FROM dbo.Resources;
+--		--SELECT * FROM dbo.[Resources];
+--		INSERT INTO @R1Ids SELECT [Id] FROM dbo.[Resources];
 --		EXEC rpt.[sp_ResourcesInstances] @R1Ids;
 --	END
 END
@@ -102,7 +102,7 @@ END
 --	BEGIN
 --		--SELECT * FROM @R2;
 --		--SELECT * FROM @RP2;
---		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
+--		INSERT INTO @R2Ids SELECT [Id] FROM dbo.[Resources];
 --		EXEC rpt.[sp_ResourcesInstances] @R2Ids;
 --	END
 --END
@@ -131,7 +131,7 @@ END
 --	END
 --	IF @DebugResources = 1
 --	BEGIN
---		INSERT INTO @R3Ids SELECT [Id] FROM dbo.Resources;
+--		INSERT INTO @R3Ids SELECT [Id] FROM dbo.[Resources];
 --		EXEC rpt.[sp_ResourcesInstances] @R3Ids;
 --	END
 --END 

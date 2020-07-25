@@ -49,7 +49,8 @@ SET NOCOUNT ON;
 				[UnitId],
 				[UnitMass],
 				[UnitMassUnitId],
-				[MonetaryValue]				
+				[MonetaryValue],
+				[ParticipantId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -84,10 +85,11 @@ SET NOCOUNT ON;
 				t.[Identifier]				= s.[Identifier],
 				t.[ReorderLevel]			= s.[ReorderLevel],
 				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
-				t.[UnitId]				= s.[UnitId],
-				t.[UnitMass]			= s.[UnitMass],
-				t.[UnitMassUnitId]		= s.[UnitMassUnitId],
+				t.[UnitId]					= s.[UnitId],
+				t.[UnitMass]				= s.[UnitMass],
+				t.[UnitMassUnitId]			= s.[UnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
+				t.[ParticipantId]			= s.[ParticipantId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -123,7 +125,8 @@ SET NOCOUNT ON;
 				[UnitId],
 				[UnitMass],
 				[UnitMassUnitId],
-				[MonetaryValue]				
+				[MonetaryValue],
+				[ParticipantId]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -157,7 +160,8 @@ SET NOCOUNT ON;
 				s.[UnitId],
 				s.[UnitMass],
 				s.[UnitMassUnitId],
-				s.[MonetaryValue]			
+				s.[MonetaryValue],
+				s.[ParticipantId]
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -193,7 +197,7 @@ SET NOCOUNT ON;
 		DELETE;
 
 	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
-	UPDATE R --dbo.Resources
+	UPDATE R --dbo.[Resources]
 	SET R.ImageId = L.ImageId
 	FROM dbo.[Resources] R
 	JOIN @IndexedIds II ON R.Id = II.[Id]

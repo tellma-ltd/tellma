@@ -62,12 +62,12 @@ BEGIN
 	AND A.ResourceDefinitionId IS NULL;
 
 	UPDATE E
-	SET E.ContractId = NULL
+	SET E.[CustodianId] = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE L.DefinitionId = @ManualLineLD
-	AND A.ContractDefinitionId IS NULL;
+	AND A.[CustodianDefinitionId] IS NULL;
 
 	UPDATE E
 	SET E.EntryTypeId = NULL
@@ -84,11 +84,10 @@ BEGIN
 		E.[Direction]		= COALESCE(ES.[Direction], E.[Direction]),
 		E.[AccountId]		= COALESCE(ES.[AccountId], E.[AccountId]),
 		E.[CurrencyId]		= COALESCE(ES.[CurrencyId], E.[CurrencyId]),
-		E.[ContractId]		= COALESCE(ES.[ContractId], E.[ContractId]),
+		E.[CustodianId]		= COALESCE(ES.[CustodianId], E.[CustodianId]),
 		E.[ResourceId]		= COALESCE(ES.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(ES.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(ES.[EntryTypeId], E.[EntryTypeId]),
-		E.[DueDate]			= COALESCE(ES.[DueDate], E.[DueDate]),
 		E.[MonetaryValue]	= COALESCE(L.[Multiplier] * ES.[MonetaryValue], E.[MonetaryValue]),
 		E.[Quantity]		= COALESCE(L.[Multiplier] * ES.[Quantity], E.[Quantity]),
 		E.[UnitId]			= COALESCE(ES.[UnitId], E.[UnitId]),
@@ -97,7 +96,7 @@ BEGIN
 		E.[Time2]			= COALESCE(ES.[Time2], E.[Time2]),
 		E.[ExternalReference]= COALESCE(ES.[ExternalReference], E.[ExternalReference]),
 		E.[AdditionalReference]= COALESCE(ES.[AdditionalReference], E.[AdditionalReference]),
-		E.[NotedContractId]	= COALESCE(ES.[NotedContractId], E.[NotedContractId]),
+		E.[NotedRelationId]	= COALESCE(ES.[NotedRelationId], E.[NotedRelationId]),
 		E.[NotedAgentName]	= COALESCE(ES.[NotedAgentName], E.[NotedAgentName]),
 		E.[NotedAmount]		= COALESCE(ES.[NotedAmount], E.[NotedAmount]),
 		E.[NotedDate]		= COALESCE(ES.[NotedDate], E.[NotedDate])
@@ -117,13 +116,13 @@ BEGIN
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'CurrencyId';
 	UPDATE E
-	SET E.[ContractId] = BE.[ContractId]
+	SET E.[CustodianId] = BE.[CustodianId]
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-	AND LDC.ColumnName = N'ContractId';
+	AND LDC.ColumnName = N'CustodianId';
 	UPDATE E
 	SET E.ResourceId = BE.ResourceId
 	FROM @E E
@@ -148,14 +147,6 @@ BEGIN
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'EntryTypeId';
-	UPDATE E
-	SET E.DueDate = BE.DueDate
-	FROM @E E
-	JOIN dbo.Entries BE ON E.Id = BE.Id
-	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-	AND LDC.ColumnName = N'DueDate';
 	UPDATE E
 	SET E.MonetaryValue = BE.MonetaryValue
 	FROM @E E
@@ -213,13 +204,13 @@ BEGIN
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'AdditionalReference';
 	UPDATE E
-	SET E.[NotedContractId] = BE.[NotedContractId]
+	SET E.[NotedRelationId] = BE.[NotedRelationId]
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-	AND LDC.ColumnName = N'NotedContractId';
+	AND LDC.ColumnName = N'NotedRelationId';
 	UPDATE E
 	SET E.NotedAgentName = BE.NotedAgentName
 	FROM @E E
@@ -253,7 +244,7 @@ END
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Resources R ON E.ResourceId = R.Id;
+	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
 	-- for all lines, Get currency and center from Contracts if available.
 	UPDATE E 
 	SET
@@ -261,12 +252,12 @@ END
 		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Contracts C ON E.ContractId = C.Id;
+	JOIN dbo.[Relations] C ON E.[CustodianId] = C.Id;
 	-- When the resource has exactly one non-null unit Id, and the account does not allow PureUnit set it as the Entry's UnitId
 	UPDATE E
 	SET E.[UnitId] = R.UnitId
 	FROM @E E
-	JOIN dbo.Resources R ON E.ResourceId = R.Id
+	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
 	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
@@ -277,7 +268,7 @@ END
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[ContractId]		= COALESCE(A.[ContractId], E.[ContractId]),
+		E.[CustodianId]		= COALESCE(A.[CustodianId], E.[CustodianId]),
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
@@ -359,21 +350,21 @@ END
 	-- Set the Account based on provided info so far
 	With LineEntries AS (
 		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-				C.[DefinitionId] AS ContractDefinitionId, E.[ContractId], E.[CenterId], E.[CurrencyId]
+				C.[DefinitionId] AS [CustodianDefinitionId], E.[CustodianId], E.[CenterId], E.[CurrencyId]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 		JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeId] = ATP.[Id]
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
+		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
+		LEFT JOIN dbo.[Relations] C ON E.[CustodianId] = C.[Id]
 		WHERE L.DefinitionId <> @ManualLineLD
 		--WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
 		--	SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
 		--	WHERE [LineDefinitionEntryId] = LDE.[Id]
 		--))
 		--AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] IN (
-		--	SELECT [ContractDefinitionId] FROM [LineDefinitionEntryContractDefinitions]
+		--	SELECT [CustodianDefinitionId] FROM [LineDefinitionEntryCustodianDefinitions]
 		--	WHERE [LineDefinitionEntryId] = LDE.[Id]		
 		--))
 	),
@@ -387,8 +378,8 @@ END
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-		AND (A.[ContractDefinitionId] IS NULL AND LE.[ContractDefinitionId] IS NULL OR A.[ContractDefinitionId] = LE.[ContractDefinitionId])
-		AND (A.[ContractId] IS NULL OR A.[ContractId] = LE.[ContractId])
+		AND (A.[CustodianDefinitionId] IS NULL AND LE.[CustodianDefinitionId] IS NULL OR A.[CustodianDefinitionId] = LE.[CustodianDefinitionId])
+		AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
 		GROUP BY LE.[Index], LE.[LineIndex], LE.[DocumentIndex]
 	)
 	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
@@ -399,14 +390,14 @@ END
 
 	With LineEntries2 AS (
 		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-				C.[DefinitionId] AS ContractDefinitionId, E.[ContractId], E.[CenterId], E.[CurrencyId]
+				C.[DefinitionId] AS [CustodianDefinitionId], E.[CustodianId], E.[CenterId], E.[CurrencyId]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 		JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeId] = ATP.[Id]
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
+		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
+		LEFT JOIN dbo.[Relations] C ON E.[CustodianId] = C.[Id]
 		WHERE L.DefinitionId <> @ManualLineLD
 	),
 	ConformantAccounts2 AS (
@@ -419,8 +410,8 @@ END
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-		AND (A.[ContractDefinitionId] IS NULL AND LE.[ContractDefinitionId] IS NULL OR A.[ContractDefinitionId] = LE.[ContractDefinitionId])
-		AND (A.[ContractId] IS NULL OR A.[ContractId] = LE.[ContractId])
+		AND (A.[CustodianDefinitionId] IS NULL AND LE.[CustodianDefinitionId] IS NULL OR A.[CustodianDefinitionId] = LE.[CustodianDefinitionId])
+		AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
 	)
 	UPDATE E -- Set account to null, if non conformant
 	SET E.AccountId = NULL

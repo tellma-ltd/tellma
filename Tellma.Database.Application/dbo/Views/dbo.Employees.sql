@@ -6,6 +6,6 @@ SELECT
 -- CONVERT(NVARCHAR (255), BirthDate, 104) As DOB, 
 IsActive As [Active ?], TaxIdentificationNumber As TIN
 --, Gender
-FROM [dbo].[Contracts]
-WHERE [DefinitionId] IN (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'employees')
+FROM [dbo].[Relations]
+WHERE [DefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'employees')
 AND [IsActive] = 1;

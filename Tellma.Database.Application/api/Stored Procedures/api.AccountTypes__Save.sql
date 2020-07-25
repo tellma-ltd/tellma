@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [api].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeContractDefinitions AccountTypeContractDefinitionList READONLY,
-	@AccountTypeNotedContractDefinitions AccountTypeNotedContractDefinitionList READONLY,
+	@AccountTypeCustodianDefinitions [AccountTypeCustodianDefinitionList] READONLY,
+	@AccountTypeNotedRelationDefinitions [AccountTypeNotedRelationDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -15,8 +15,8 @@ SET NOCOUNT ON;
 	EXEC [bll].[AccountTypes_Validate__Save]
 		@Entities = @Entities,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeContractDefinitions = @AccountTypeContractDefinitions,
-		@AccountTypeNotedContractDefinitions = @AccountTypeNotedContractDefinitions;
+		@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -31,6 +31,6 @@ SET NOCOUNT ON;
 	EXEC [dal].[AccountTypes__Save]
 		@Entities = @Entities,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeContractDefinitions = @AccountTypeContractDefinitions,
-		@AccountTypeNotedContractDefinitions = @AccountTypeNotedContractDefinitions;
+		@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
 END;

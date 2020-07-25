@@ -8,12 +8,11 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
 	[CurrencyId]				NCHAR (3)		,
-	[ContractId]				INT,
+	[CustodianId]				INT,
 	[ResourceId]				INT,
 	[CenterId]					INT,
 	[EntryTypeId]				INT,
 	--[BatchCode]					NVARCHAR (50),
-	[DueDate]					DATE,
 	[MonetaryValue]				DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[Quantity]					DECIMAL (19,4),
 	[UnitId]					INT,
@@ -23,7 +22,7 @@
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[NotedContractId]			INT,
+	[NotedRelationId]			INT,
 	[NotedAgentName]			NVARCHAR (50),
 	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE

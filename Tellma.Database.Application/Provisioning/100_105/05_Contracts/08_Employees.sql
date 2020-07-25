@@ -1,4 +1,4 @@
-﻿	DECLARE @employees dbo.[ContractList];
+﻿	DECLARE @employees dbo.[RelationList];
 
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
@@ -72,13 +72,13 @@ BEGIN
 	(2,			N'Hisham',	N'هشام',	'2019.09.01',	N'E3');
 
 	END
-	INSERT INTO @ContractUsers([Index],[HeaderIndex], [UserId])
+	INSERT INTO @RelationUsers([Index],[HeaderIndex], [UserId])
 	VALUES(0,0,@AdminUserId)
 
-	EXEC [api].[Contracts__Save]
+	EXEC [api].[Relations__Save]
 		@DefinitionId = @EmployeeCD,
 		@Entities = @employees,
-		@ContractUsers = @ContractUsers,
+		@RelationUsers = @RelationUsers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -94,17 +94,17 @@ BEGIN
 		@MesfinWolde int;
 
 	SELECT 
-		@BadegeKebede = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Badege Kebede'), 
-		@TizitaNigussie = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Tizita Nigussie'), 
-		@Ashenafi = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ashenafi Fantahun'), 
-		@YisakFikadu = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Yisak Fikadu'), 
-		@ZewdineshHora = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Zewdinesh Hora'), 
-		@TigistNegash = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Tigist Negash'), 
-		@RomanZenebe = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Roman Zenebe'), 
-		@Mestawet = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mestawet G/Egziyabhare'), 
-		@AyelechHora = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ayelech Hora'), 
-		@YigezuLegesse = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Yigezu Legesse'), 
-		@MesfinWolde = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mesfin Wolde');
+		@BadegeKebede = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Badege Kebede'), 
+		@TizitaNigussie = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Tizita Nigussie'), 
+		@Ashenafi = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Ashenafi Fantahun'), 
+		@YisakFikadu = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Yisak Fikadu'), 
+		@ZewdineshHora = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Zewdinesh Hora'), 
+		@TigistNegash = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Tigist Negash'), 
+		@RomanZenebe = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Roman Zenebe'), 
+		@Mestawet = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Mestawet G/Egziyabhare'), 
+		@AyelechHora = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Ayelech Hora'), 
+		@YigezuLegesse = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Yigezu Legesse'), 
+		@MesfinWolde = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Mesfin Wolde');
 
 	--UPDATE dbo.Centers
 	--SET ManagerId = CASE 

@@ -21,9 +21,6 @@
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
 
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
-	--[DebitContractDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__DebitAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
-	--[CreditContractDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__CreditAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
-	--[NotedContractDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__NotedAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
 	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),

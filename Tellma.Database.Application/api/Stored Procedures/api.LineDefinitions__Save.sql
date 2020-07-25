@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList READONLY,
+	@LineDefinitionEntryCustodianDefinitions [LineDefinitionEntryCustodianDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions [LineDefinitionEntryNotedRelationDefinitionList] READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
@@ -19,9 +19,9 @@ SET NOCOUNT ON;
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
-		@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
+		@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
+		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
@@ -41,9 +41,9 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
-		@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
+		@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
+		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionEntries = @LineDefinitionEntries,

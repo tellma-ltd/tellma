@@ -86,7 +86,7 @@ BEGIN -- Inserting
 	CAST([Mass] AS DECIMAL (19,4)) AS [Mass],
 	CAST([Value] AS DECIMAL (19,4)) AS [Value]
 	FROM CompactLines CL
-	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
+	LEFT JOIN dbo.[Resources] R ON CL.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.[Units] MUM ON R.MassUnitId = MUM.Id
 	LEFT JOIN dbo.[Units] MUV ON R.VolumeUnitId = MUV.Id
 	JOIN dbo.[AccountClassifications] A ON CL.[AccountId] = A.[Id]

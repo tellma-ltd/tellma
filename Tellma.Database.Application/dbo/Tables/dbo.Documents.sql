@@ -20,13 +20,19 @@
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
-	-- Agent Definition is specified in DocumentDefinition
-	[DebitContractId]				INT	CONSTRAINT [FK_Documents__DebitContractId] REFERENCES dbo.[Contracts]([Id]), 
-	[DebitContractIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[CreditContractId]				INT	CONSTRAINT [FK_Documents__CreditContractId] REFERENCES dbo.[Contracts]([Id]), 
-	[CreditContractIsCommon]		BIT				NOT NULL DEFAULT 0,
-	[NotedContractId]				INT	CONSTRAINT [FK_Documents__NotedContractId] REFERENCES dbo.[Contracts]([Id]), 
-	[NotedContractIsCommon]			BIT				NOT NULL DEFAULT 0,
+
+	[DebitResourceId]				INT	CONSTRAINT [FK_Documents__DebitResourceId] REFERENCES dbo.[Resources]([Id]), 
+	[DebitResourceIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[CreditResourceId]				INT	CONSTRAINT [FK_Documents__CreditResourceId] REFERENCES dbo.[Resources]([Id]), 
+	[CreditResourceIsCommon]		BIT				NOT NULL DEFAULT 0,	
+
+	[DebitCustodianId]				INT	CONSTRAINT [FK_Documents__DebitCustodianId] REFERENCES dbo.[Relations]([Id]), 
+	[DebitCustodianIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[CreditCustodianId]				INT	CONSTRAINT [FK_Documents__CreditCustodianId] REFERENCES dbo.[Relations]([Id]), 
+	[CreditCustodianIsCommon]		BIT				NOT NULL DEFAULT 0,
+
+	[NotedRelationId]				INT	CONSTRAINT [FK_Documents__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
+	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[SegmentId]						INT	CONSTRAINT [FK_Documents__SegmentId] REFERENCES dbo.[Centers]([Id]), 
 	[Time1]							DATETIME2 (2),
 	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,

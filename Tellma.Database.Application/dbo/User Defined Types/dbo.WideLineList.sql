@@ -12,12 +12,11 @@
 	[Id0]						INT				NOT NULL DEFAULT 0,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
-	[ContractId0]				INT,
+	[CustodianId0]				INT,
 	[ResourceId0]				INT,
 	[CenterId0]					INT,
 	[CurrencyId0]				NCHAR (3),
 	[EntryTypeId0]				INT,
-	[DueDate0]					DATE,
 	[MonetaryValue0]			DECIMAL (19,4),
 	[Quantity0]					DECIMAL (19,4),
 	[UnitId0]					INT,
@@ -26,7 +25,7 @@
 	[Time20]					DATETIME2 (2),	-- to time
 	[ExternalReference0]		NVARCHAR (50),
 	[AdditionalReference0]		NVARCHAR (50),
-	[NotedContractId0]			INT,
+	[NotedRelationId0]			INT,
 	[NotedAgentName0]			NVARCHAR (50),
 	[NotedAmount0]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate0]				DATE,
@@ -34,12 +33,11 @@
 	[Id1]						INT				NOT NULL DEFAULT 0,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
-	[ContractId1]				INT,
+	[CustodianId1]				INT,
 	[ResourceId1]				INT,
 	[CenterId1]					INT,
 	[CurrencyId1]				NCHAR (3),
 	[EntryTypeId1]				INT,
-	[DueDate1]					DATE,
 	[MonetaryValue1]			DECIMAL (19,4),
 	[Quantity1]					DECIMAL (19,4),
 	[UnitId1]					INT,
@@ -48,7 +46,7 @@
 	[Time21]					DATETIME2 (2),	-- to time
 	[ExternalReference1]		NVARCHAR (51),
 	[AdditionalReference1]		NVARCHAR (51),
-	[NotedContractId1]			INT,
+	[NotedRelationId1]			INT,
 	[NotedAgentName1]			NVARCHAR (51),
 	[NotedAmount1]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate1]				DATE,
@@ -56,12 +54,11 @@
 	[Id2]						INT				NULL DEFAULT 0, -- since a wide line may be two entries only
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
-	[ContractId2]				INT,
+	[CustodianId2]				INT,
 	[ResourceId2]				INT,
 	[CenterId2]					INT,
 	[CurrencyId2]				NCHAR (3),
 	[EntryTypeId2]				INT,
-	[DueDate2]					DATE,
 	[MonetaryValue2]			DECIMAL (19,4),
 	[Quantity2]					DECIMAL (19,4),
 	[UnitId2]					INT,
@@ -71,7 +68,7 @@
 	[Time22]					DATETIME2 (2),	-- to time
 	[ExternalReference2]		NVARCHAR (52),
 	[AdditionalReference2]		NVARCHAR (52),
-	[NotedContractId2]			INT,
+	[NotedRelationId2]			INT,
 	[NotedAgentName2]			NVARCHAR (52),
 	[NotedAmount2]				DECIMAL (29,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate2]				DATE

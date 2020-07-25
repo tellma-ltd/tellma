@@ -120,7 +120,7 @@ SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVAR
 SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@RevenueServiceRD AS NVARCHAR(100)) UNION
 SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
-SELECT 9971,99,	N'Read',	NULL,				N'contracts/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
+SELECT 9971,99,	N'Read',	NULL,				N'relations/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
 
 SELECT 9981,99,	N'Update',	N'CreatedById = Me',@PaymentIssueToNonTradingAgentsDDPath
 --(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries

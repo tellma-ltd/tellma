@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[ResourceProviders]
 (
 	[ResourceId]	INT, -- FK Resources
-	[ProviderId]	INT, -- FK Contracts or Agents?
+	[ProviderId]	INT, -- FK Relations
 );

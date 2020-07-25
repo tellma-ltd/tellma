@@ -22,7 +22,7 @@ WITH Docs AS (
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value],
-			C.[Name] AS [Contract],
+			C.[Name] AS [Custodian],
 			EC.[Name] AS [EntryType]
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
@@ -32,7 +32,7 @@ WITH Docs AS (
 		LEFT JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 		LEFT JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 		LEFT JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
-		LEFT JOIN dbo.[Contracts] C ON E.[ContractId] = C.[Id]
+		LEFT JOIN dbo.[Relations] C ON E.[CustodianId] = C.[Id]
 		LEFT JOIN dbo.[EntryTypes] EC ON E.[EntryTypeId] = EC.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)
 	)-- select * from Docs
@@ -61,7 +61,7 @@ WITH Docs AS (
 		EntryType,-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,
 		FORMAT(-[Direction] * [Value], '##,#.00;-;-', 'en-us') AS Credit,
-		[LineState], Docs.[Contract]
+		[LineState], Docs.[Custodian]
 	FROM Docs
 	LEFT JOIN DocsFirst ON Docs.Id = DocsFirst.DocumentId
 

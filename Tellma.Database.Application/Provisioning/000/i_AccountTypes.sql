@@ -324,24 +324,6 @@ WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex
 UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 
-UPDATE @AccountTypes SET
-		[DueDateLabel] = N'Due Date'
-WHERE [Concept] IN (
-	N'NoncurrentTradeReceivables',
-	N'NoncurrentReceivablesDueFromRelatedParties',
-	N'NoncurrentReceivablesFromSaleOfProperties',
-	N'NoncurrentReceivablesFromRentalOfProperties',
-	N'NonCurrentLoansExtension',
-	N'CurrentFoodAndBeverage',
-	N'CurrentTradeReceivables',
-	N'TradeAndOtherCurrentReceivablesDueFromRelatedParties',
-	N'CurrentReceivablesFromRentalOfProperties',
-	N'NoncurrentPayables',
-	N'DeferredTaxLiabilities',
-	N'TradeAndOtherCurrentPayablesToTradeSuppliers',
-	N'TradeAndOtherCurrentPayablesToRelatedParties'
-);
-
 	--[Time1Label], [Time1Label2], [Time1Label3],
 	--[Time2Label], [Time2Label2], [Time2Label3],
 	--[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
@@ -353,8 +335,8 @@ WHERE [Concept] IN (
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeContractDefinitions = @AccountTypeContractDefinitions,
-	@AccountTypeNotedContractDefinitions = @AccountTypeNotedContractDefinitions,
+	@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
@@ -687,7 +669,6 @@ INSERT INTO @AccountTypes(
 	[IsAssignable],
 	[AllowsPureUnit],
 	[EntryTypeParentId],
-	[DueDateLabel], [DueDateLabel2], [DueDateLabel3],
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
 	[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
@@ -706,7 +687,6 @@ SELECT
 	[IsAssignable],
 	[AllowsPureUnit],
 	[EntryTypeParentId],
-	[DueDateLabel], [DueDateLabel2], [DueDateLabel3],
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
 	[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
@@ -858,8 +838,8 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (143,@CollectionGuaranteeExtension,						@CheckReceivedRD),
 (144,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
 
-INSERT INTO @AccountTypeContractDefinitions([Index],
-[HeaderIndex],										[ContractDefinitionId]) VALUES
+INSERT INTO @AccountTypeCustodianDefinitions([Index],
+[HeaderIndex],										[CustodyDefinitionId]) VALUES
 (0,@NonCurrentLoansExtension,						@EmployeeCD),
 (1,@NoncurrentTradeReceivables,						@CustomerCD),
 (2,@NoncurrentReceivablesDueFromRelatedParties,		@CustomerCD),
@@ -915,8 +895,8 @@ INSERT INTO @AccountTypeContractDefinitions([Index],
 (44,@CollectionGuaranteeExtension,					@CustomerCD),
 (45,@DishonouredGuaranteeExtension,					@CustomerCD);
 
-INSERT INTO @AccountTypeNotedContractDefinitions([Index],
-[HeaderIndex],										[NotedContractDefinitionId]) VALUES
+INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
+[HeaderIndex],										[NotedRelationDefinitionId]) VALUES
 (0,@NoncurrentValueAddedTaxReceivables,				@SupplierCD),
 (1,@CurrentValueAddedTaxReceivables,				@SupplierCD),
 (2,@WithholdingTaxReceivablesExtension,				@CustomerCD),
@@ -956,8 +936,8 @@ INSERT INTO @AccountTypeNotedContractDefinitions([Index],
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeContractDefinitions = @AccountTypeContractDefinitions,
-	@AccountTypeNotedContractDefinitions = @AccountTypeNotedContractDefinitions,
+	@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 

@@ -8,7 +8,7 @@ SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the agent definitions
-SELECT * FROM [map].[ContractDefinitions]() WHERE [State] <> N'Hidden';
+SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the resource definitions
 SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
@@ -43,24 +43,24 @@ SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 	
 -- Get the contract definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [ContractDefinitionId] FROM [dbo].[LineDefinitionEntryContractDefinitions]
+SELECT [LineDefinitionEntryId], [CustodianDefinitionId] FROM [dbo].[LineDefinitionEntryCustodianDefinitions]
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [ContractDefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [CustodianDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.AccountTypeContractDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryContractDefinitions])
+JOIN dbo.[AccountTypeCustodianDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodianDefinitions])
 	
 -- Get the noted contract definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [NotedContractDefinitionId] FROM [dbo].[LineDefinitionEntryNotedContractDefinitions]
+SELECT [LineDefinitionEntryId], [NotedRelationDefinitionId] FROM [dbo].[LineDefinitionEntryNotedRelationDefinitions]
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [NotedContractDefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [NotedRelationDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.AccountTypeNotedContractDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryNotedContractDefinitions])
+JOIN dbo.[AccountTypeNotedRelationDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryNotedRelationDefinitions])
 	
 -- Get the resource definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions]

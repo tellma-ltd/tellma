@@ -13,6 +13,6 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(RD.[TitlePlural], RD.[TitlePlural2], RD.[TitlePlural3]) AS [Resource]
 	FROM @Ids FE
 	JOIN dbo.ResourceDefinitions RD ON RD.[Id] = FE.[Id]
-	JOIN dbo.Resources R ON R.[DefinitionId] = FE.[Id]
+	JOIN dbo.[Resources] R ON R.[DefinitionId] = FE.[Id]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

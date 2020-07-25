@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [bll].[LineDefinitions_Validate__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList READONLY,
+	@LineDefinitionEntryCustodianDefinitions [LineDefinitionEntryCustodianDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions [LineDefinitionEntryNotedRelationDefinitionList] READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,

@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [rpt].[FinancialRatios] -- [rpt].[FinancialRatios] @fromDate = N'2019.01.01', @ToDate =  N'2019.01.31'
 	@FromDate DATE,
-	@toDate DATE,
+	@ToDate DATE,
 	@PresentationCurrencyId NCHAR (3) = NULL
 AS
 BEGIN

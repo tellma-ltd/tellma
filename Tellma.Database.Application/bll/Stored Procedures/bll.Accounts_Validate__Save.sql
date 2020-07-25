@@ -68,14 +68,14 @@ SET NOCOUNT ON;
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ContractId',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodianId',
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_Contract'
 	FROM @Entities FE
-	JOIN dbo.[Contracts] R ON FE.[ContractId] = R.[Id]
-	LEFT JOIN dbo.[AccountTypeContractDefinitions] AD
-		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
-	WHERE (AD.[ContractDefinitionId] IS NULL);
+	JOIN dbo.[Relations] R ON FE.[CustodianId] = R.[Id]
+	LEFT JOIN dbo.[AccountTypeCustodianDefinitions] AD
+		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[CustodianDefinitionId]
+	WHERE (AD.[CustodianDefinitionId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -102,8 +102,8 @@ SET NOCOUNT ON;
 	JOIN [dbo].[AccountClassifications] BE ON FE.[ClassificationId] = BE.Id
 	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[AccountClassifications]);
 
-	-- bll.Preprocess copies the ContractDefinition from Contract
-	---- If Contract Id is not null, then account and Contract must have same Contract definition
+	-- bll.Preprocess copies the RelationDefinition from Contract
+	---- If Custodian Id is not null, then account and Custodian must have same Custodian definition
 	---- It is already added as FK constraint, but this will give a friendly error message
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	--SELECT TOP (@Top)
@@ -112,11 +112,11 @@ SET NOCOUNT ON;
 	--	dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
 	--	dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
 	--FROM @Entities FE 
-	--JOIN [dbo].[Contracts] AG ON AG.[Id] = FE.[AgentId]
-	--LEFT JOIN dbo.[ContractDefinitions] AD ON AD.[Id] = FE.[ContractDefinitionId]
+	--JOIN [dbo].[[Relations]] AG ON AG.[Id] = FE.[AgentId]
+	--LEFT JOIN dbo.[RelationDefinitions] AD ON AD.[Id] = FE.[CRelationDefinitionId]
 	--WHERE (FE.[AgentDefinition] IS NOT NULL)
 	----AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
-	--AND (FE.ContractDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
+	--AND (FE.RelationDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
 
 	-- If Resource Id is not null, and currency is not null, then Account and resource must have same currency
 	-- It is already added as FK constraint, but this will give a friendly error message
@@ -187,17 +187,17 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Contract]
+		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Custodian]
 	FROM @Entities FE
 	JOIN [dbo].[Accounts] A ON FE.[Id] = A.[Id]
 	JOIN [dbo].[Entries] E ON E.[AccountId] = FE.[Id]
 	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
 	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
-	JOIN [dbo].[Contracts] AG ON AG.Id = E.[ContractId]
+	JOIN [dbo].[Relations] AG ON AG.Id = E.[CustodianId]
 	WHERE L.[State] >= 0
-	AND FE.[ContractId] IS NOT NULL
-	AND FE.[ContractId] <> E.[ContractId]
+	AND FE.[CustodianId] IS NOT NULL
+	AND FE.[CustodianId] <> E.[CustodianId]
 
 	-- Setting the resource value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different resource

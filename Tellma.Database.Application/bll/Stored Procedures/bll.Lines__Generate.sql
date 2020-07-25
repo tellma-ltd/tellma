@@ -34,14 +34,13 @@ AS
 	[E].[AccountId],
 	[E].[CurrencyId],
 	[E].[ResourceId],
-	[E].[ContractId],
+	[E].[CustodianId],
 	[E].[EntryTypeId],
-	[E].[NotedContractId],
+	[E].[NotedRelationId],
 	[E].[CenterId],
 	[E].[UnitId],
 	[E].[IsSystem],
 	[E].[Direction],
-	[E].[DueDate],
 	[E].[MonetaryValue],
 	[E].[Quantity],
 	[E].[Value],
@@ -86,15 +85,15 @@ AS
 	FROM [map].[Resources]() [R] 
 	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
 
-	-- Contract
+	-- Relation
 	SELECT 
 	[C].[Id], 
 	[C].[Name],
 	[C].[Name2],
 	[C].[Name3],
 	[C].[DefinitionId]
-	FROM [map].[Contracts]() [C] 
-	WHERE [Id] IN (SELECT [ContractId] FROM @Entries UNION SELECT [NotedContractId] FROM @Entries)
+	FROM [map].[Relations]() [C] 
+	WHERE [Id] IN (SELECT [CustodianId] FROM @Entries UNION SELECT [NotedRelationId] FROM @Entries)
 
 	-- EntryType
 	SELECT 
