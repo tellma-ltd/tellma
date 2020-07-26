@@ -2050,6 +2050,9 @@
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
   </data>
+  <data name="Resource_Participant" xml:space="preserve">
+    <value>参加者</value>
+  </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>订货点水平</value>
   </data>

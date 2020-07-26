@@ -451,6 +451,8 @@ namespace Tellma.Controllers.Dto
         public string UnitMassVisibility { get; set; }
         public int? DefaultUnitMassUnitId { get; set; }
         public string MonetaryValueVisibility { get; set; }
+        public string ParticipantVisibility { get; set; }
+        public int? ParticipantDefinitionId { get; set; }
     }
 
     public class RelationDefinitionForClient : MasterDetailDefinitionForClient

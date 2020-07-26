@@ -2050,6 +2050,9 @@
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>المبلغ</value>
   </data>
+  <data name="Resource_Participant" xml:space="preserve">
+    <value>االفريق الثاني</value>
+  </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>حد إعادة الطلب</value>
   </data>

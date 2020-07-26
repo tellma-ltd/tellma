@@ -634,6 +634,7 @@
   "Resource_EconomicOrderQuantity": "ኢኮኖሚ ትዕዛዝ ብዛት",
   "Resource_Identifier": "መለያ",
   "Resource_MonetaryValue": "መጠን",
+  "Resource_Participant": "ተካፉይ",
   "Resource_ReorderLevel": "አስይዝ ደረጃ",
   "Resource_Unit": "መለኪያ",
   "Resource_UnitMass": "የጅምላ በእያንዳንዱ ዩኒት",

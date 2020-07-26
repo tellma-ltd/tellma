@@ -634,6 +634,7 @@
   "Resource_EconomicOrderQuantity": "Economic Order Quantity",
   "Resource_Identifier": "Identifier",
   "Resource_MonetaryValue": "Amount",
+  "Resource_Participant": "Participant",
   "Resource_ReorderLevel": "Reorder Level",
   "Resource_Unit": "Unit",
   "Resource_UnitMass": "Mass Per Unit",

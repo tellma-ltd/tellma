@@ -34,6 +34,7 @@
 	[UnitMassUnitId]			INT,
 --	[ParentId]					INT,
 	[MonetaryValue]				DECIMAL (19,4),
+	[ParticipantId]				INT
 
 	INDEX IX_ResourceList__Code ([Code])
 );

@@ -119,7 +119,7 @@
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.Lines.sql" />
     <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
-    <Build Include="dbo\Tables\dbo.[Resources].sql" />
+    <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
     <Build Include="dbo\Tables\dbo.DocumentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.Units.sql" />
@@ -630,7 +630,6 @@
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeCustodianDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedRelationDefinitionList.sql" />
-    <Build Include="dbo\Tables\dbo.Resources.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

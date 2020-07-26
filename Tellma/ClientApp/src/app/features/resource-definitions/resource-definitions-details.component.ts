@@ -348,6 +348,26 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._lookupDefinitionChoices;
   }
 
+  private _relationDefinitionChoicesDef: DefinitionsForClient;
+  private _relationDefinitionChoices: SelectorChoice[];
+  public get relationDefinitionChoices(): SelectorChoice[] {
+    if (this._relationDefinitionChoicesDef !== this.ws.definitions) {
+      this._relationDefinitionChoicesDef = this.ws.definitions;
+      this._relationDefinitionChoices = [];
+      const relations = this.ws.definitions.Relations;
+      for (const key of Object.keys(relations)) {
+        const id = +key;
+        const relationDef = relations[id];
+        this._relationDefinitionChoices.push({
+          value: id,
+          name: () => this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')
+        });
+      }
+    }
+
+    return this._relationDefinitionChoices;
+  }
+
   public isVisible(visibility: DefinitionVisibility) {
     return visibility === 'Optional' || visibility === 'Required';
   }

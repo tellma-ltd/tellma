@@ -44,6 +44,7 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     UnitId?: number;
     UnitMass?: number;
     UnitMassUnitId?: number;
+    ParticipantId?: number;
     Units?: TResourceUnit[];
 }
 
@@ -80,8 +81,6 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
         if (!_definitionIds) {
             _definitionIds = Object.keys(ws.definitions.Resources).map(e => +e);
         }
-
-        const functionalE = ws.settings.FunctionalCurrencyDecimals;
 
         const entityDesc: EntityDescriptor = {
             collection: 'Resource',
@@ -142,6 +141,9 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 UnitMass: { control: 'number', label: () => trx.instant('Resource_UnitMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 UnitMassUnitId: { control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 UnitMassUnit: { control: 'navigation', label: () => trx.instant('Resource_UnitMassUnit'), type: 'Unit', foreignKeyName: 'UnitMassUnit' },
+
+                ParticipantId: { control: 'number', label: () => `${trx.instant('Entity_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { control: 'navigation', label: () => trx.instant('Entity_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
 
                 // Standard
 
@@ -237,7 +239,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 }
             }
 
-            // Navigation properties with definition Id
+            // Navigation properties with label and definition Id
             for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
@@ -250,6 +252,23 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
 
                     const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
                     idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
+                }
+            }
+
+            // Participant: special case:
+            if (!definition.ParticipantVisibility) {
+                delete entityDesc.properties.ParticipantId;
+                delete entityDesc.properties.Participant;
+            } else {
+                const propDesc = entityDesc.properties.Participant as NavigationPropDescriptor;
+                propDesc.definition = definition.ParticipantDefinitionId;
+                if (!!propDesc.definition) {
+                    const participantDef = ws.definitions.Relations[propDesc.definition];
+                    if (!!participantDef) {
+                        propDesc.label = () => ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
+                    } else {
+                        console.error(`Missing Relation definitionId ${propDesc.definition} for participant`);
+                    }
                 }
             }
         }

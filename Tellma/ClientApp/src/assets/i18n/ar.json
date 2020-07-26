@@ -634,6 +634,7 @@
   "Resource_EconomicOrderQuantity": "الكمية الاقتصادية",
   "Resource_Identifier": "رقم التعريف",
   "Resource_MonetaryValue": "المبلغ",
+  "Resource_Participant": "االفريق الثاني",
   "Resource_ReorderLevel": "حد إعادة الطلب",
   "Resource_Unit": "وحدة القياس",
   "Resource_UnitMass": "وزن الوحدة",

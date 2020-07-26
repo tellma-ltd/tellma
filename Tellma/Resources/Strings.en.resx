@@ -2050,6 +2050,9 @@
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>Amount</value>
   </data>
+  <data name="Resource_Participant" xml:space="preserve">
+    <value>Participant</value>
+  </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>Reorder Level</value>
   </data>

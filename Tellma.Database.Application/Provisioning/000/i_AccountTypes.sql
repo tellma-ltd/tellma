@@ -839,7 +839,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (144,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
 
 INSERT INTO @AccountTypeCustodianDefinitions([Index],
-[HeaderIndex],										[CustodyDefinitionId]) VALUES
+[HeaderIndex],										[CustodianDefinitionId]) VALUES
 (0,@NonCurrentLoansExtension,						@EmployeeCD),
 (1,@NoncurrentTradeReceivables,						@CustomerCD),
 (2,@NoncurrentReceivablesDueFromRelatedParties,		@CustomerCD),

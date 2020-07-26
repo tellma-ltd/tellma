@@ -289,6 +289,8 @@ namespace Tellma.Controllers
                 DefaultUnitMassUnitId = def.DefaultUnitMassUnitId,
 
                 MonetaryValueVisibility = MapVisibility(def.MonetaryValueVisibility),
+                ParticipantVisibility = MapVisibility(def.ParticipantVisibility),
+                ParticipantDefinitionId = def.ParticipantDefinitionId
             };
         }
 
@@ -648,9 +650,9 @@ namespace Tellma.Controllers
                                 result.CreditCustodianLabel = colDef.Label;
                                 result.CreditCustodianLabel2 = colDef.Label2;
                                 result.CreditCustodianLabel3 = colDef.Label3;
-                             
+
                                 result.CreditCustodianDefinitionIds = entryDef.CustodianDefinitionIds;
-                            }                            
+                            }
 
                             if (colDef.RequiredState < (result.CreditCustodianRequiredState ?? 5))
                             {

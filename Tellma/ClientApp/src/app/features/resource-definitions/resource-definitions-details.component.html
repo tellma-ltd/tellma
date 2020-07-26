@@ -272,6 +272,26 @@
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'MonetaryValue', propLower: 'monetaryvalue', fieldName: 'Resource_MonetaryValue' }">
                     </ng-container>
 
+                    <!-- Participant -->
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Participant', propLower: 'participant', fieldName: 'Resource_Participant' }">
+                    </ng-container>
+                    <div class="form-group" *ngIf="isVisible(model.ParticipantVisibility)"
+                        [class.is-invalid]="invalid(defId, model?.serverErrors?.ParticipantDefinitionId)">
+                        <label class="small"
+                            for="participantdefinition">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
+
+                        <select class="form-control t-studio-input" id="participantdefinitionId"
+                            [(ngModel)]="model.ParticipantDefinitionId" (ngModelChange)="onDefinitionChange(model)"
+                            #defId="ngModel">
+                            <option *ngFor="let c of relationDefinitionChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.ParticipantDefinitionId }">
+                        </ng-container>
+                    </div>
+
                     <!-- Visibility Field Template -->
                     <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 

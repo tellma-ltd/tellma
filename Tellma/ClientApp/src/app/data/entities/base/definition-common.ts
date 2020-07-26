@@ -60,7 +60,7 @@ export function lookupDefinitionIdPropDescriptor(name: string, ws: TenantWorkspa
         control: 'choice',
         label: () => trx.instant('Field0Definition', { 0: trx.instant(name) }),
         choices: Object.keys(ws.definitions.Lookups).map(stringDefId => +stringDefId),
-        format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Lookups[defId], 'TitlePlural')
+        format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Lookups[defId], 'TitlePlural')
     };
 }
 

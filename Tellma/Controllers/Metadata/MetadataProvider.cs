@@ -245,8 +245,8 @@ namespace Tellma.Controllers
                     {
                         defOverride = entityType.Name switch
                         {
-                            nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, settings, propInfo, display),
-                            nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, settings, propInfo, display),
+                            nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
+                            nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
 
                             nameof(Relation) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
                             nameof(RelationForSave) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
@@ -797,6 +797,7 @@ namespace Tellma.Controllers
         /// </summary>
         private static DefinitionPropOverrides ResourcePropertyOverrides(
             ResourceDefinitionForClient def,
+            DefinitionsForClient defs,
             SettingsForClient settings,
             PropertyInfo propInfo,
             Func<string> display)
@@ -887,7 +888,6 @@ namespace Tellma.Controllers
                 //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
                 //    isRequired = def.Lookup5Visibility == Visibility.Required;
                 //    break;
-
                 case nameof(Resource.Identifier):
                     display = PropertyDisplay(settings, def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
                     isRequired = def.IdentifierVisibility == Visibility.Required;
@@ -911,7 +911,7 @@ namespace Tellma.Controllers
                     if (def.UnitCardinality == null)
                     {
                         display = null;
-                    } 
+                    }
                     else if (def.DefaultUnitId == null)
                     {
                         isRequired = true;
@@ -930,6 +930,19 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.MonetaryValueVisibility, display);
                     isRequired = def.MonetaryValueVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.Participant):
+                case nameof(Resource.ParticipantId):
+                    if (def.ParticipantDefinitionId != null && defs.Relations.TryGetValue(def.ParticipantDefinitionId.Value, out RelationDefinitionForClient relationDef))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(settings, def.ParticipantVisibility, relationDef.TitleSingular, relationDef.TitleSingular2, relationDef.TitleSingular3, display);
+                    }
+                    else
+                    {
+                        display = PropertyDisplay(def.ParticipantVisibility, display);
+                    }
+                    isRequired = def.ParticipantVisibility == Visibility.Required;
+                    break;
             }
 
             int? targetDefId = propInfo.Name switch
@@ -939,6 +952,7 @@ namespace Tellma.Controllers
                 nameof(Resource.Lookup3) => def.Lookup3DefinitionId,
                 nameof(Resource.Lookup4) => def.Lookup4DefinitionId,
                 //nameof(Resource.Lookup5) =>  def.Lookup5DefinitionId,
+                nameof(Resource.Participant) => def.ParticipantDefinitionId,
                 _ => null,
             };
 

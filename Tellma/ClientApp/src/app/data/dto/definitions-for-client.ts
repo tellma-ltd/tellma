@@ -397,6 +397,8 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     UnitMassVisibility?: Visibility;
     DefaultUnitMassUnitId?: number;
     MonetaryValueVisibility: Visibility;
+    ParticipantVisibility?: Visibility;
+    ParticipantDefinitionId?: number;
 }
 
 // tslint:disable-next-line:no-empty-interface

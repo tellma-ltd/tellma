@@ -634,6 +634,7 @@
   "Resource_EconomicOrderQuantity": "经济订货量",
   "Resource_Identifier": "识别码",
   "Resource_MonetaryValue": "货币价值",
+  "Resource_Participant": "参加者",
   "Resource_ReorderLevel": "订货点水平",
   "Resource_Unit": "单元",
   "Resource_UnitMass": "每单位体积",

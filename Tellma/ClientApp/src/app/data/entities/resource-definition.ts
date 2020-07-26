@@ -101,6 +101,9 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     DefaultUnitMassUnitId?: number;
     MonetaryValueVisibility?: Visibility;
 
+    ParticipantVisibility?: Visibility;
+    ParticipantDefinitionId?: number;
+
     // Main Menu
 
     MainMenuIcon?: string;
@@ -228,6 +231,14 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 DefaultUnitMassUnitId: { control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
                 DefaultUnitMassUnit: { control: 'navigation', label: () => trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') }), type: 'Unit', foreignKeyName: 'DefaultUnitMassUnitId' },
                 MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
+
+                ParticipantVisibility: visibilityPropDescriptor('Resource_Participant', trx),
+                ParticipantDefinitionId: {
+                    control: 'choice',
+                    label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Participant') }),
+                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
+                    format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Lookups[defId], 'TitlePlural')
+                },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
