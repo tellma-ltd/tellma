@@ -1,6 +1,6 @@
 ﻿-- Rules for signing
 INSERT INTO dbo.RuleTypes([RuleType]) VALUES
-(N'ByContract'),
+(N'ByCustodian'),
 (N'ByRole'),
 (N'ByUser'),
 (N'Public'); 

@@ -16,7 +16,7 @@ With EB AS ( -- TODO: Test with Resources having both pure and non pure units
 		) As [BaseQuantity],-- Quantity in Base unit of that resource
 		IIF(RBU.[UnitType] = N'Mass', 1, R.[UnitMass]) AS [Density]
 	FROM dbo.Entries E
-	LEFT JOIN dbo.Resources R ON E.ResourceId = R.[Id]
+	LEFT JOIN dbo.[Resources] R ON E.ResourceId = R.[Id]
 	LEFT JOIN dbo.Units EU ON E.UnitId = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 )

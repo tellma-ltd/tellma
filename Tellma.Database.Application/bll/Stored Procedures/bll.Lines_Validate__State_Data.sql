@@ -18,9 +18,9 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
-		(N'CurrencyId'),(N'ContractId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'DueDate'),(N'MonetaryValue'),
+		(N'CurrencyId'),(N'CustodianId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue'),
 		(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
-		(N'NotedContractId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
+		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
@@ -28,11 +28,10 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
-		FL.Id = N'ContractId'			AND E.[ContractId] IS NULL OR
+		FL.Id = N'CustodianId'			AND E.[CustodianId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
-		FL.Id = N'DueDate'				AND E.[DueDate] IS NULL OR
 		FL.Id = N'MonetaryValue'		AND E.[MonetaryValue] IS NULL OR
 		FL.Id = N'Quantity'				AND E.[Quantity] IS NULL OR
 		FL.Id = N'UnitId'				AND E.[UnitId] IS NULL OR
@@ -40,7 +39,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR
 		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
 		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
-		FL.Id = N'NotedContractId'		AND E.[NotedContractId] IS NULL OR
+		FL.Id = N'NotedRelationId'		AND E.[NotedRelationId] IS NULL OR
 		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
 		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
@@ -121,13 +120,13 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index] AS NVARCHAR (255)) + '].ContractId',
+			CAST(E.[Index] AS NVARCHAR (255)) + '].CustodianId',
 		N'Error_Field0IsRequired',
 		N'localize:Entry_Contract'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	WHERE (A.[ContractDefinitionId] IS NOT NULL) AND (E.[ContractId] IS NULL);
+	WHERE (A.[CustodianDefinitionId] IS NOT NULL) AND (E.[CustodianId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -249,7 +248,7 @@ IF @State > 0
 		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[CustodianId] IS NULL OR E.[CustodianId] = AB.[CustodianId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined
@@ -267,7 +266,7 @@ IF @State > 0
 		JOIN dbo.Entries E ON L.[Id] = E.[LineId]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[CustodianId] IS NULL OR E.[CustodianId] = AB.[CustodianId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined

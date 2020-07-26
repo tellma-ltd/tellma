@@ -1,5 +1,5 @@
 ﻿
-DECLARE @Partners dbo.[ContractList];
+DECLARE @Partners dbo.[RelationList];
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Partners
 	([Index], [Name]) VALUES
@@ -19,7 +19,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	([Index], [Name]) VALUES
 	(0,		N'Sisay Tesfaye');
 
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @PartnerCD,
 	@Entities = @Partners,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -30,7 +30,7 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-DECLARE @PartnerMA INT = (SELECT [Id] FROM dbo.[Contracts] WHERE DefinitionId = @PartnerCD AND [Name] = N'Mohamad Akra');
+DECLARE @PartnerMA INT = (SELECT [Id] FROM dbo.[Relations] WHERE DefinitionId = @PartnerCD AND [Name] = N'Mohamad Akra');
 /*
 BEGIN -- Users
 	IF NOT EXISTS(SELECT * FROM [dbo].[Users])

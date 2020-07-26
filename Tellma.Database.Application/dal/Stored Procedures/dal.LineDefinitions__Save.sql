@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [dal].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList READONLY,
+	@LineDefinitionEntryCustodianDefinitions [LineDefinitionEntryCustodianDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions [LineDefinitionEntryNotedRelationDefinitionList] READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
@@ -202,48 +202,48 @@ SET NOCOUNT ON;
 		DELETE;
 
 	WITH BLDECD AS (
-		SELECT * FROM dbo.[LineDefinitionEntryContractDefinitions]
+		SELECT * FROM dbo.[LineDefinitionEntryCustodianDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
 	)
 	MERGE INTO BLDECD AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[ContractDefinitionId]
-		FROM @LineDefinitionEntryContractDefinitions E
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodianDefinitionId]
+		FROM @LineDefinitionEntryCustodianDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[ContractDefinitionId]	= s.[ContractDefinitionId]) THEN
+	WHEN MATCHED AND (t.[CustodianDefinitionId]	= s.[CustodianDefinitionId]) THEN
 		UPDATE SET
-			t.[ContractDefinitionId]	= s.[ContractDefinitionId],
+			t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [ContractDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[ContractDefinitionId])
+		INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
+		VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
 	WITH BLDENCD AS (
-		SELECT * FROM dbo.[LineDefinitionEntryNotedContractDefinitions]
+		SELECT * FROM dbo.[LineDefinitionEntryNotedRelationDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
 	)
 	MERGE INTO BLDENCD AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedContractDefinitionId]
-		FROM @LineDefinitionEntryNotedContractDefinitions E
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedRelationDefinitionId]
+		FROM @LineDefinitionEntryNotedRelationDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[NotedContractDefinitionId]	= s.[NotedContractDefinitionId]) THEN
+	WHEN MATCHED AND (t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId]) THEN
 		UPDATE SET
-			t.[NotedContractDefinitionId]= s.[NotedContractDefinitionId],
+			t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [NotedContractDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[NotedContractDefinitionId])
+		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
+		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

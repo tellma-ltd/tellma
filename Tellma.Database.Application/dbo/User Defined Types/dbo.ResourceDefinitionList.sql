@@ -88,11 +88,12 @@
 	[UnitCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'Single' CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
 	[DefaultUnitId]						INT,
 	[UnitMassVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None'  CHECK ([UnitMassVisibility] IN (N'None', N'Optional', N'Required')),
-	[DefaultUnitMassUnitId]			INT,
+	[DefaultUnitMassUnitId]				INT,
 
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
-
+	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
+	[ParticipantDefinitionId]			INT,
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4)

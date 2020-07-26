@@ -1,5 +1,5 @@
-﻿	DECLARE @Suppliers dbo.[ContractList];
-	DELETE FROM @ContractUsers;
+﻿	DECLARE @Suppliers dbo.[RelationList];
+	DELETE FROM @RelationUsers;
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Suppliers
 	([Index], [Name],								[FromDate],	[TaxIdentificationNumber]) VALUES
@@ -39,10 +39,10 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	;
 
 
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @SupplierCD,
 	@Entities = @Suppliers,
-	@ContractUsers = @ContractUsers,
+	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
@@ -53,14 +53,14 @@ END;
 
 DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT, @Stora INT, @Phoenix INT;
 SELECT
-	@BananIT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Banan Information technologies, plc'),
-	@Regus = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Regus'),
-	@NocJimma = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Noc Jimma Ber Service Station'),
-	@Toyota =  (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Toyota, Ethiopia'),
-	@Amazon =  (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Amazon, Ethiopia'),
-	@Stora =  (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Stora Enso'),
-	@Phoenix =  (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Phoenix Pulp')
+	@BananIT = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Banan Information technologies, plc'),
+	@Regus = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Regus'),
+	@NocJimma = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Noc Jimma Ber Service Station'),
+	@Toyota =  (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Toyota, Ethiopia'),
+	@Amazon =  (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Amazon, Ethiopia'),
+	@Stora =  (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Stora Enso'),
+	@Phoenix =  (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Phoenix Pulp')
 	;
 
-DECLARE @FamilyShawarma INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'The Family Shawerma');
-DECLARE @GenericSupplier INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Generic Supplier');
+DECLARE @FamilyShawarma INT = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'The Family Shawerma');
+DECLARE @GenericSupplier INT = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Generic Supplier');

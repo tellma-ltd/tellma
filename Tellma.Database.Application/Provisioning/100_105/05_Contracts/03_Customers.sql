@@ -1,4 +1,4 @@
-﻿	DECLARE @Customers dbo.[ContractList];
+﻿	DECLARE @Customers dbo.[RelationList];
 	DECLARE @Paint int, @Plastic int, @WaliaSteel int, @Lifan int;
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh		
@@ -46,9 +46,9 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 	SELECT
-		@WaliaSteel = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'Walia Steel Industry, plc'),
-		@Paint = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'Best Paint Industry'),
-		@Plastic = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
-		@Lifan = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
+		@WaliaSteel = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Walia Steel Industry, plc'),
+		@Paint = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Best Paint Industry'),
+		@Plastic = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
+		@Lifan = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
 
 

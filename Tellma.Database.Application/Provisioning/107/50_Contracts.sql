@@ -1,6 +1,6 @@
 ﻿
 
-DELETE FROM @Agents; DELETE FROM @Contracts; DELETE FROM @ContractUsers;
+DELETE FROM @Agents; DELETE FROM @Relations; DELETE FROM @RelationUsers;
 -- Adding sample agents
 INSERT INTO @Agents([Index], [Name], [IsRelated]) VALUES
 (0,N'Agent 1', 0),
@@ -22,8 +22,8 @@ SELECT @Agent2 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 2'; -- employee 2 a
 SELECT @Agent3 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 3'; -- customer 3 and supplier 3
 
 -- Adding sample cash accounts
-DELETE FROM @Contracts
-INSERT INTO @Contracts(
+DELETE FROM @Relations
+INSERT INTO @Relations(
 	[Index],	[Code],		[Name],					[CurrencyId],		[CenterId],			[LocationJson],	[FromDate],		[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Name2],				[Lookup1Id],		[Lookup2Id],		[Lookup3Id],	[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -43,10 +43,10 @@ INSERT INTO @Contracts(
 	
 	;
 
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @CashOnHandAccountCD,
-	@ContractUsers = @ContractUsers,
-	@Entities = @Contracts,
+	@RelationUsers = @RelationUsers,
+	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 
@@ -55,14 +55,14 @@ BEGIN
 	Print 'Cash Accounts: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-SELECT @CashOnHandAccount1 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA1';
-SELECT @CashOnHandAccount2 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA2';
-SELECT @CashOnHandAccount3 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA3';
-SELECT @CashOnHandAccount4 = [Id] FROM dbo.Contracts WHERE [Code] = N'CA4';
+SELECT @CashOnHandAccount1 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA1';
+SELECT @CashOnHandAccount2 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA2';
+SELECT @CashOnHandAccount3 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA3';
+SELECT @CashOnHandAccount4 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA4';
 
 -- Adding sample bank accounts
-DELETE FROM @Contracts -- Text1: Branch, Lookup1: Bank Account type
-INSERT INTO @Contracts(
+DELETE FROM @Relations -- Text1: Branch, Lookup1: Bank Account type
+INSERT INTO @Relations(
 	[Index],	[Code],		[Name],					[CurrencyId],	[CenterId],			[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Name2],				[Lookup1Id],	[Lookup2Id],		[Lookup3Id],	[Lookup4Id],[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -76,10 +76,10 @@ INSERT INTO @Contracts(
 	NULL,		NULL,		N'السلام - مهيرة - حنيه',NULL,			NULL,				NULL,			NULL,		NULL,		NULL,		NULL,		NULL,
 	NULL,		N'3333');
 
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @BankAccountCD,
-	@ContractUsers = @ContractUsers,
-	@Entities = @Contracts,
+	@RelationUsers = @RelationUsers,
+	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 
@@ -89,12 +89,12 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-SELECT @BankAccount1 = [Id] FROM dbo.Contracts WHERE [Code] = N'B01';
-SELECT @BankAccount2 = [Id] FROM dbo.Contracts WHERE [Code] = N'B02';
-SELECT @BankAccount3 = [Id] FROM dbo.Contracts WHERE [Code] = N'B03';
+SELECT @BankAccount1 = [Id] FROM dbo.[Relations] WHERE [Code] = N'B01';
+SELECT @BankAccount2 = [Id] FROM dbo.[Relations] WHERE [Code] = N'B02';
+SELECT @BankAccount3 = [Id] FROM dbo.[Relations] WHERE [Code] = N'B03';
 -- Adding sample Supplier accounts
-DELETE FROM @Contracts -- 
-INSERT INTO @Contracts( -- text1: email, text2: phone
+DELETE FROM @Relations -- 
+INSERT INTO @Relations( -- text1: email, text2: phone
 	[Index],	[Code],		[Name],				[CurrencyId],			[CenterId],	[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Lookup1Id],		[Lookup2Id],			[Lookup3Id],[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -107,10 +107,10 @@ INSERT INTO @Contracts( -- text1: email, text2: phone
 (	2,			N'S03',		N'Supplier 3',		NUll,					NULL,		NULL,			NULL,		NULL,		NULL,		NULL,
 	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		@Agent3,	N'TX-30-300',
 	NULL,		NULL);
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @SupplierCD,
-	@ContractUsers = @ContractUsers,
-	@Entities = @Contracts,
+	@RelationUsers = @RelationUsers,
+	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
@@ -119,8 +119,8 @@ BEGIN
 END;
 
 -- Adding sample Customer accounts
-DELETE FROM @Contracts -- 
-INSERT INTO @Contracts( -- text1: email, text2: phone, lookup1: MarketSegment
+DELETE FROM @Relations -- 
+INSERT INTO @Relations( -- text1: email, text2: phone, lookup1: MarketSegment
 	[Index],	[Code],		[Name],				[CurrencyId],			[CenterId],			[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Lookup1Id],		[Lookup2Id],			[Lookup3Id],		[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -133,10 +133,10 @@ INSERT INTO @Contracts( -- text1: email, text2: phone, lookup1: MarketSegment
 (	2,			N'C0003',	N'Customer 3',		N'SDG',					@107C_MehiraScheme,	NULL,			NULL,		NULL,		NULL,		NULL,
 	NULL,		NULL,		NULL,				NULL,					NULL,				NULL,			NULL,		NULL,		@Agent3,	NULL,
 	NULL,		NULL);
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @CustomerCD,
-	@ContractUsers = @ContractUsers,
-	@Entities = @Contracts,
+	@RelationUsers = @RelationUsers,
+	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
@@ -145,8 +145,8 @@ BEGIN
 END;
 
 -- Adding sample Employee accounts
-DELETE FROM @Contracts -- 
-INSERT INTO @Contracts( -- text1: email, text2: phone, Gender:, Color, Marital Status, Date Of Birth, 
+DELETE FROM @Relations -- 
+INSERT INTO @Relations( -- text1: email, text2: phone, Gender:, Color, Marital Status, Date Of Birth, 
 	[Index],	[Code],		[Name],				[CurrencyId],			[CenterId],				[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Name2],			[Lookup1Id],			[Lookup2Id],			[Lookup3Id],	[Lookup4Id],[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -159,10 +159,10 @@ INSERT INTO @Contracts( -- text1: email, text2: phone, Gender:, Color, Marital S
 (	2,			N'E003',	N'Employee 3',		NUll,					@107C_Headquarters,		NULL,			NULL,		NULL,		NULL,		NULL,
 	NULL,		NULL,		N'موظف 3',			NULL,					NULL,					NULL,			NULL,		NULL,		NULL,		@Agent3,	NULL,
 	NULL,		NULL);
-EXEC [api].[Contracts__Save]
+EXEC [api].[Relations__Save]
 	@DefinitionId = @EmployeeCD,
-	@ContractUsers = @ContractUsers,
-	@Entities = @Contracts,
+	@RelationUsers = @RelationUsers,
+	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

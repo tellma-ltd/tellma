@@ -10,11 +10,11 @@
 
 	[ClassificationId]			INT,
 -- Major properties: NULL means it is not defined.
-	[ContractDefinitionId]		INT,
-	[ContractId]				INT,
+	[CustodianDefinitionId]		INT,
+	[CustodianId]				INT,
 	[ResourceDefinitionId]		INT,
 	[ResourceId]				INT,
 	[CurrencyId]				NCHAR (3),
 	[EntryTypeId]				INT,
-	[NotedContractDefinitionId]	INT	
+	[NotedRelationDefinitionId]	INT	
 );

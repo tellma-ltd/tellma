@@ -55,7 +55,7 @@ AS
 				IIF(@Quantity <  PB.RemainingCapacity, @Quantity,  PB.RemainingCapacity) AS [UsedCapacity],
 				PB.[ResourceId]
 		FROM PPEBalancesPre PB
-		JOIN dbo.Resources R ON PB.ResourceId = R.Id
+		JOIN dbo.[Resources] R ON PB.ResourceId = R.Id
 		WHERE RemainingCapacity > 0
 	)
 	-- Linear Depreciation Model, and units of production model
@@ -73,14 +73,14 @@ AS
 			PB.[DepreciableRemainingValue] * PB.[UsedCapacity] / PB.[RemainingCapacity],
 			@UnitId, @Time1,	@Time2, 
 			[CurrencyId],	[CenterId]
-	FROM dbo.Resources R
+	FROM dbo.[Resources] R
 	JOIN PPEBalances PB ON R.[Id] = PB.[ResourceId];
 
 	SELECT [Index], [DocumentIndex], ResourceId1 AS [Asset], Quantity1 AS [UsedCapacity],
 			(SELECT [Name] FROM dbo.[Units] WHERE [Id] = WL.UnitId1) AS Unit,
 			MonetaryValue1 As UsedMonetaryValue,
 			Value1 As UsedValue, 
-			ContractId0 AS [System],
+			CustodianId0 AS [System],
 			--(SELECT [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,
 			CurrencyId1 AS Currency, CenterId0 AS ExpCenter

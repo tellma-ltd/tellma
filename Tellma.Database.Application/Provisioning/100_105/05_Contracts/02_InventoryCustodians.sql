@@ -1,4 +1,4 @@
-﻿	DECLARE @Warehouses dbo.[ContractList];
+﻿	DECLARE @Warehouses dbo.[RelationList];
 
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
@@ -29,7 +29,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	(1,		N'Riyadh Sales',	N'الرياض - مبيعات'),
 	(2,		N'Dammam Sales',	N'الدمام - مبيعات');
 
-	EXEC [api].[Contracts__Save]
+	EXEC [api].[Relations__Save]
 		@DefinitionId = @WarehouseCD,
 		@Entities = @Warehouses,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -40,8 +40,8 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 	
-	DECLARE	@4WH_RM INT = (SELECT [Id] FROM [dbo].fi_Contracts(@WarehouseCD, NULL) WHERE [Name] = N'RM Warehouse');
-	DECLARE	@4WH_FG INT = (SELECT [Id] FROM [dbo].fi_Contracts(@WarehouseCD, NULL) WHERE [Name] = N'FG Warehouse');
-	DECLARE	@5WH_JED INT = (SELECT [Id] FROM [dbo].fi_Contracts(@WarehouseCD, NULL) WHERE [Name] = N'Jeddah Sales');
-	DECLARE	@5WH_RUH INT = (SELECT [Id] FROM [dbo].fi_Contracts(@WarehouseCD, NULL) WHERE [Name] = N'Riyadh Sales');
-	DECLARE	@6WH_DAM INT = (SELECT [Id] FROM [dbo].fi_Contracts(@WarehouseCD, NULL) WHERE [Name] = N'Dammam Sales');
+	DECLARE	@4WH_RM INT = (SELECT [Id] FROM [dbo].[fi_Relations](@WarehouseCD, NULL) WHERE [Name] = N'RM Warehouse');
+	DECLARE	@4WH_FG INT = (SELECT [Id] FROM [dbo].[fi_Relations](@WarehouseCD, NULL) WHERE [Name] = N'FG Warehouse');
+	DECLARE	@5WH_JED INT = (SELECT [Id] FROM [dbo].[fi_Relations](@WarehouseCD, NULL) WHERE [Name] = N'Jeddah Sales');
+	DECLARE	@5WH_RUH INT = (SELECT [Id] FROM [dbo].[fi_Relations](@WarehouseCD, NULL) WHERE [Name] = N'Riyadh Sales');
+	DECLARE	@6WH_DAM INT = (SELECT [Id] FROM [dbo].[fi_Relations](@WarehouseCD, NULL) WHERE [Name] = N'Dammam Sales');

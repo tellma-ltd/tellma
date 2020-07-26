@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[ResourcePacks]
 (
 	[Id]					INT				CONSTRAINT [PK_ResourcePacks] PRIMARY KEY NONCLUSTERED
-											CONSTRAINT [FK_ResourcePacks__Id] REFERENCES dbo.Resources([Id]),
-	[ParentId]				INT				NOT NULL CONSTRAINT [FK_ResourcePacks__ParentId] REFERENCES dbo.Resources([Id]),
+											CONSTRAINT [FK_ResourcePacks__Id] REFERENCES dbo.[Resources]([Id]),
+	[ParentId]				INT				NOT NULL CONSTRAINT [FK_ResourcePacks__ParentId] REFERENCES dbo.[Resources]([Id]),
 	[ChildCount]			DECIMAL			DEFAULT 0,
 	[ChildMass]				DECIMAL			DEFAULT 0,
 	[ChildVolume]			DECIMAL			DEFAULT 0,

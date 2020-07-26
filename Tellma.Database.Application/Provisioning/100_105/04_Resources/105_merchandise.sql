@@ -69,12 +69,12 @@ BEGIN
 	END;
 
 	DECLARE @R0 INT, @R1 INT, @R2 INT, @R3 INT, @R4 INT, @R5 INT, @R6 INT, @R7 INT;
-	SELECT @R0 = [Id] FROM dbo.Resources WHERE [Code] = N'2504-66011';
-	SELECT @R1 = [Id] FROM dbo.Resources WHERE [Code] = N'0200-01231';
-	SELECT @R2 = [Id] FROM dbo.Resources WHERE [Code] = N'3300-01201';
-	SELECT @R3 = [Id] FROM dbo.Resources WHERE [Code] = N'3300-01202';
-	SELECT @R4 = [Id] FROM dbo.Resources WHERE [Code] = N'3300-01203';
-	SELECT @R5 = [Id] FROM dbo.Resources WHERE [Code] = N'3300-01204';
-	SELECT @R6 = [Id] FROM dbo.Resources WHERE [Code] = N'3300-01205';
+	SELECT @R0 = [Id] FROM dbo.[Resources] WHERE [Code] = N'2504-66011';
+	SELECT @R1 = [Id] FROM dbo.[Resources] WHERE [Code] = N'0200-01231';
+	SELECT @R2 = [Id] FROM dbo.[Resources] WHERE [Code] = N'3300-01201';
+	SELECT @R3 = [Id] FROM dbo.[Resources] WHERE [Code] = N'3300-01202';
+	SELECT @R4 = [Id] FROM dbo.[Resources] WHERE [Code] = N'3300-01203';
+	SELECT @R5 = [Id] FROM dbo.[Resources] WHERE [Code] = N'3300-01204';
+	SELECT @R6 = [Id] FROM dbo.[Resources] WHERE [Code] = N'3300-01205';
 
 END

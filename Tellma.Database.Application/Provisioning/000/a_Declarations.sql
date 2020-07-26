@@ -28,8 +28,8 @@
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
-	DECLARE @AccountTypeContractDefinitions AccountTypeContractDefinitionList;
-	DECLARE @AccountTypeNotedContractDefinitions AccountTypeNotedContractDefinitionList;
+	DECLARE @AccountTypeCustodianDefinitions AccountTypeCustodianDefinitionList;
+	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDimensionDefinitionList;
@@ -39,7 +39,7 @@
 	DECLARE @Select ReportSelectDefinitionList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
-	DECLARE @ContractDefinitions dbo.ContractDefinitionList;
+	DECLARE @RelationDefinitions dbo.[RelationDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
@@ -47,15 +47,15 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
-	DECLARE @LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList;
+	DECLARE @LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
-	DECLARE @LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList;
+	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 
-	DECLARE @Agents dbo.AgentList, @Contracts ContractList, @ContractUsers dbo.ContractUserList;
+	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -66,7 +66,7 @@
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @CashOnHandContracts dbo.ContractList, @BankContracts dbo.ContractList;
+	DECLARE @CashOnHandContracts dbo.[RelationList], @BankContracts dbo.[RelationList];
 
 	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];
@@ -75,7 +75,7 @@
 	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT, @DI5 INT, @DI6 INT, @DI7 INT, @DI8 INT;
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
-	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @ContractDefinitionIds [IdList];
+	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 

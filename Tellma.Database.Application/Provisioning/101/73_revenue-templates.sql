@@ -20,7 +20,7 @@ BEGIN -- Inserting
 	UPDATE @WL
 	SET
 		[Memo] = N'Washm',
-		[ContractId0] = @Washm,
+		[CustodianId0] = @Washm,
 		[CenterId1] = @C101_B10,
 		[ResourceId1] = @MonthlySubscription,
 		[Quantity1]	= 1,
@@ -35,7 +35,7 @@ BEGIN -- Inserting
 	UPDATE @WL
 	SET
 		[Memo]		= N'Taji',
-		[ContractId0] = @Taji,
+		[CustodianId0] = @Taji,
 		[CenterId1] = @C101_B10,
 		[ResourceId1] = @MonthlySubscription,
 		[Quantity1]	= 1,

@@ -12,7 +12,7 @@ RETURN
 			E.[CurrencyId],
 			E.[ResourceId],
 			E.[UnitId],
-			E.[ContractId],
+			E.[CustodianId],
 			E.[EntryTypeId],
 			SUM(E.[AlgebraicMonetaryValue]) AS [MonetaryValue],
 			SUM(E.[AlgebraicQuantity]) AS [Quantity],
@@ -23,7 +23,7 @@ RETURN
 		WHERE 
 			(@fromDate IS NOT NULL AND L.[PostingDate] < @fromDate)
 			AND L.[State] = 4 -- TODO, return state as well
-		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[ContractId], E.[EntryTypeId]
+		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[CustodianId], E.[EntryTypeId]
 	),
 	Movements AS (
 		SELECT
@@ -32,7 +32,7 @@ RETURN
 			E.[CurrencyId],
 			E.[ResourceId],
 			E.[UnitId],
-			E.[ContractId],
+			E.[CustodianId],
 			E.[EntryTypeId],
 			SUM(CASE WHEN [Direction] > 0 THEN E.[MonetaryValue] ELSE 0 END) AS MonetaryValueIn,
 			SUM(CASE WHEN [Direction] < 0 THEN E.[MonetaryValue] ELSE 0 END) AS MonetaryValueOut,
@@ -50,7 +50,7 @@ RETURN
 			(@fromDate IS NULL OR L.[PostingDate] >= @fromDate)
 		AND (@toDate IS NULL OR L.[PostingDate] <= @toDate)
 		AND L.[State] = 4 -- TODO, return state as well
-		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[ContractId], E.[EntryTypeId]
+		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[CustodianId], E.[EntryTypeId]
 	),
 	Register AS (
 		SELECT
@@ -59,7 +59,7 @@ RETURN
 			COALESCE(OpeningBalances.[CurrencyId], Movements.[CurrencyId]) AS [CurrencyId],
 			COALESCE(OpeningBalances.[ResourceId], Movements.[ResourceId]) AS [ResourceId],
 			COALESCE(OpeningBalances.[UnitId], Movements.[UnitId]) AS [UnitId],
-			COALESCE(OpeningBalances.[ContractId], Movements.[ContractId]) AS [ContractId],			
+			COALESCE(OpeningBalances.[CustodianId], Movements.[CustodianId]) AS [CustodianId],			
 			COALESCE(OpeningBalances.[EntryTypeId], Movements.[EntryTypeId]) AS [EntryTypeId],
 
 			ISNULL(OpeningBalances.[MonetaryValue],0) AS [OpeningMonetaryValue],
@@ -85,7 +85,7 @@ RETURN
 		[CurrencyId],
 		[ResourceId],
 		[UnitId],
-		[ContractId],
+		[CustodianId],
 		[EntryTypeId],
 		[OpeningMonetaryValue],	[MonetaryValueIn],	[MonetaryValueOut],	[ClosingMonetaryValue],
 		[OpeningQuantity],		[QuantityIn],		[QuantityOut],		[ClosingQuantity],

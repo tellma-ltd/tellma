@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeContractDefinitions AccountTypeContractDefinitionList READONLY,
-	@AccountTypeNotedContractDefinitions AccountTypeNotedContractDefinitionList READONLY,
+	@AccountTypeCustodianDefinitions [AccountTypeCustodianDefinitionList] READONLY,
+	@AccountTypeNotedRelationDefinitions [AccountTypeNotedRelationDefinitionList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -24,9 +24,6 @@ SET NOCOUNT ON;
 				E.[IsAssignable],
 				E.[AllowsPureUnit],
 				E.[EntryTypeParentId],
-				E.[DueDateLabel],
-				E.[DueDateLabel2],
-				E.[DueDateLabel3],
 				E.[Time1Label],
 				E.[Time1Label2],
 				E.[Time1Label3],
@@ -66,9 +63,6 @@ SET NOCOUNT ON;
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[AllowsPureUnit]			= IIF(t.[IsSystem]=0,s.[AllowsPureUnit],t.[AllowsPureUnit]),
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
-				t.[DueDateLabel]			= s.[DueDateLabel],
-				t.[DueDateLabel2]			= s.[DueDateLabel2],
-				t.[DueDateLabel3]			= s.[DueDateLabel3],
 				t.[Time1Label]				= s.[Time1Label],
 				t.[Time1Label2]				= s.[Time1Label2],
 				t.[Time1Label3]				= s.[Time1Label3],
@@ -100,9 +94,6 @@ SET NOCOUNT ON;
 					[IsAssignable],
 					[AllowsPureUnit],
 					[EntryTypeParentId],
-					[DueDateLabel],
-					[DueDateLabel2],
-					[DueDateLabel3],
 					[Time1Label],
 					[Time1Label2],
 					[Time1Label3],
@@ -133,9 +124,6 @@ SET NOCOUNT ON;
 					s.[IsAssignable],
 					s.[AllowsPureUnit],
 					s.[EntryTypeParentId],
-					s.[DueDateLabel],
-					s.[DueDateLabel2],
-					s.[DueDateLabel3],
 					s.[Time1Label],
 					s.[Time1Label2],
 					s.[Time1Label3],
@@ -184,43 +172,43 @@ SET NOCOUNT ON;
 
 	-- AccountTypeContractDefinitions
 	WITH BEATCD AS (
-		SELECT * FROM dbo.[AccountTypeContractDefinitions]
+		SELECT * FROM dbo.[AccountTypeCustodianDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATCD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[ContractDefinitionId]
-		FROM @AccountTypeContractDefinitions L
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[CustodianDefinitionId]
+		FROM @AccountTypeCustodianDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[ContractDefinitionId]		= s.[ContractDefinitionId], 
+			t.[CustodianDefinitionId]		= s.[CustodianDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[ContractDefinitionId])
-		VALUES (s.[AccountTypeId], s.[ContractDefinitionId])
+		INSERT ([AccountTypeId],	[CustodianDefinitionId])
+		VALUES (s.[AccountTypeId], s.[CustodianDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	-- AccountTypeNotedContractDefinitions
+	-- AccountTypeNotedRelationDefinitions
 	WITH BEATNCD AS (
-		SELECT * FROM dbo.[AccountTypeNotedContractDefinitions]
+		SELECT * FROM dbo.[AccountTypeNotedRelationDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATNCD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedContractDefinitionId]
-		FROM @AccountTypeNotedContractDefinitions L
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedRelationDefinitionId]
+		FROM @AccountTypeNotedRelationDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[NotedContractDefinitionId]		= s.[NotedContractDefinitionId], 
+			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[NotedContractDefinitionId])
-		VALUES (s.[AccountTypeId], s.[NotedContractDefinitionId])
+		INSERT ([AccountTypeId],	[NotedRelationDefinitionId])
+		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

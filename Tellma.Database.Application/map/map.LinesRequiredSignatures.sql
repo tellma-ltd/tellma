@@ -10,16 +10,16 @@ RETURN (
 			WS.RoleId,
 			COALESCE(
 				WS.UserId,
-				(SELECT MIN(UserId) FROM dbo.[ContractUsers] WHERE [ContractId] IN (
-					SELECT [ContractId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+				(SELECT MIN(UserId) FROM dbo.[RelationUsers] WHERE [RelationId] IN (
+					SELECT [CustodianId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 					)
 				)
 			) AS UserId,
 			(
-				SELECT [ContractId] FROM dbo.Entries
+				SELECT [CustodianId] FROM dbo.Entries
 				WHERE LineId = L.Id
 				AND [Index] = WS.[RuleTypeEntryIndex]
-			) AS ContractId,
+			) AS [CustodianId],
 			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value],
 			W.ToState, WS.ProxyRoleId
 		FROM dbo.Lines L
@@ -43,7 +43,7 @@ RETURN (
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId, RS.ContractId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -64,7 +64,7 @@ RETURN (
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId, RS.ContractId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(IIF(RS.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')), 1, 0) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -76,12 +76,12 @@ RETURN (
 			SELECT RoleId FROM dbo.RoleMemberships
 			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
 		) RM ON RS.ProxyRoleId = RM.RoleId
-		WHERE RS.RuleType IN(N'ByUser', N'ByContract')
+		WHERE RS.RuleType IN(N'ByUser', N'ByCustodian')
 		UNION
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId, RS.ContractId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(1 AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -92,7 +92,7 @@ RETURN (
 		WHERE RS.RuleType = N'Public'
 	)
 	SELECT
-		LineId, LineSignatureId, ToState, RuleType, RoleId, UserId, ContractId,
+		LineId, LineSignatureId, ToState, RuleType, RoleId, UserId, [CustodianId],
 		SignedById, SignedAt, OnBehalfOfUserId,
 		(SELECT MIN(ToState) FROM AvailableSignatures
 		WHERE LineId = S.LineId AND ToState < S.ToState AND ToState > 0

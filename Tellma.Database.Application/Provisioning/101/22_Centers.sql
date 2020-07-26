@@ -10,37 +10,13 @@
 	(19,1,	N'Services Unit',	N'وحدة الخدمات',			N'19',	N'SharedExpenseControl'), -- Rent, Power, and IT support
 
 	(2,0, N'IT Solutions',		N'حلول تقنية',				N'2',	N'Abstract'),
-	-- Babylon projects cross year boundaries
 	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'BusinessUnit'),
-	(2100,21,N'B10/HCM BU',		N'بابل: وحدة الأعمال',		N'2100',N'CostOfSales'), -- only expense by nature
-	(211,21,N'B10/HCM  Projects',N'مشاريع بابل',			N'211',	N'Abstract'), 
-	(2111,2,N'B10/HCM - IUA',	N'بابل - IUA',				N'2111',N'ProductionExpenseControl'),
-	
-	-- For bsmart, we don't have phases. Every job is actually a separate client. Job expenditures are expensed immediately
-	(2200,2,N'BSmart',			N'بيسمارت',					N'2200',	N'BusinessUnit'),
-	
-	-- For campus, some jobs may cross year boundaries. 
+	(22,2,N'BSmart',			N'بيسمارت',					N'22',	N'BusinessUnit'),
 	(23,2,N'Campus',			N'كامبوس',					N'23',	N'BusinessUnit'),
-	(230,23,N'Campus BU',		N'كامبوس: وحدة الأعمال',	N'2300',N'CostOfSales'), -- only expense by nature
-	(231,23,N'Campus Projects',	N'مشاريع كامبوس',			N'231',	N'Abstract'), 
-	(2311,231,N'Hayat University',N'جامعة الحياة',			N'2311',N'ProductionExpenseControl'), -- only expense by nature
-
-	-- For Tellma, we have jobs that may cross years boundaries.
 	(24,2,N'Tellma',			N'تلما',					N'24',	N'BusinessUnit'),
-	(2400,24,N'Tellma BU',		N'تلما: وحدة الأعمال',		N'2400',N'CostOfSales'), -- everything
-	(241,24,N'Tellma WIP',		N'مشاريع تلما قيد التنفيذ',N'241',	N'Abstract'),
-	(2411,241,N'SSIA ',			N'جهاز الاستثمار',			N'2411',N'ProductionExpenseControl'),-- only expense by nature
-	(2412,241,N'Cement Company',N'شركة الإسمنت',				N'2412',N'ProductionExpenseControl'),-- only expense by nature
-
-	(25,2,N'Joint',				N'مشترك',					N'25',	N'BusinessUnit'),
-	(2500,25,N'Joint ventures',	N'وحدة أعمال مشتركة',		N'2500',N'CostOfSales'), -- everything
-	(251,3,	N'JV WIP',			N'مشاريع مشتركة قيد التنفيذ',N'251',N'Abstract'),
-	(2510,3,N'IUA Project',		N'مشروع جامعة أفريقيا',	N'2510',N'CostOfSales'), -- everything
-
-	(2900,2,N'Misc. IT',		N'حلول تقنية أخرى',		N'2900',N'BusinessUnit'),
-
-	(299,2,	N'Project - TBA',	N'المشاريع - للتخصيص',		N'299',	N'SharedExpenseControl'), -- like comp. dep. of Abu Bakr to be absorbed by DL
-	(3,0,	N'Subletting',		N'تأجير',					N'3',	N'BusinessUnit')
+	(29,2,N'Misc. IT',			N'حلول تقنية أخرى',		N'29',	N'BusinessUnit'),
+	(3,0,N'Other Business',		N'أعمال أخرى',				N'3',	N'BusinessUnit'),
+	(31,3,N'Subletting',		N'تأجير',					N'31',	N'BusinessUnit');
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
@@ -51,10 +27,10 @@ BEGIN
 	Print 'Centers: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DECLARE @101CHQ INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Headquarters');
-DECLARE @101CEO INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Exec. Office');
-DECLARE @101CSales INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Sales Unit');
-DECLARE @101CServices INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Services Unit');
+DECLARE @101C1 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Headquarters');
+DECLARE @101C11 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Exec. Office');
+DECLARE @101C12 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Sales Unit');
+DECLARE @101C19 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Services Unit');
 DECLARE @101CB10 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'B10/HCM');
 DECLARE @101CBSmart INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'BSmart');
 DECLARE @101CCampus INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Campus');

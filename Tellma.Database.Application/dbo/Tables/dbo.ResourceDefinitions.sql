@@ -93,6 +93,8 @@
 
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
+	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
+	[ParticipantDefinitionId]			INT				CONSTRAINT [FK_ResourceDefinitions__ParticipantDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),
 
 	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),

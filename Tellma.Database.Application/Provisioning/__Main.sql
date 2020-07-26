@@ -7,7 +7,7 @@ IF @OverwriteDb = 0 RETURN
 
 :r .\000\f_LookupDefinitions.sql
 :r .\000\g_ResourceDefinitions.sql
-:r .\000\h_ContractDefinitions.sql
+:r .\000\h_RelationDefinitions.sql
 :r .\000\i_AccountTypes.sql
 --:r .\000\j_IfrsConcepts.sql
 --:r .\000\k_IfrsDisclosures.sql

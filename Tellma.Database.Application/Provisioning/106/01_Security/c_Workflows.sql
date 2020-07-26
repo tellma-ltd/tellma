@@ -1,7 +1,7 @@
 ﻿DELETE FROM @LineDefinitions; DELETE FROM @LineDefinitionEntries; DELETE FROM @LineDefinitionColumns;
 DELETE FROM @LineDefinitionGenerateParameters;
-DELETE FROM @LineDefinitionEntryContractDefinitions; DELETE FROM @LineDefinitionEntryResourceDefinitions;
-DELETE FROM @LineDefinitionEntryNotedContractDefinitions; DELETE FROM @LineDefinitionStateReasons;
+DELETE FROM @LineDefinitionEntryCustodianDefinitions; DELETE FROM @LineDefinitionEntryResourceDefinitions;
+DELETE FROM @LineDefinitionEntryNotedRelationDefinitions; DELETE FROM @LineDefinitionStateReasons;
 -- refresh the collections with back end data
 INSERT INTO @LineDefinitions
 (	[Index], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [Script])
@@ -11,20 +11,20 @@ INSERT INTO @LineDefinitionEntries
 (	[Index], [HeaderIndex],		[Id], [Direction], [AccountTypeId], [EntryTypeId])
 SELECT [Id], [LineDefinitionId],[Id], [Direction], [AccountTypeId], [EntryTypeId]
 FROM dbo.LineDefinitionEntries;
-INSERT INTO @LineDefinitionEntryContractDefinitions
-(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[ContractDefinitionId])
-SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[ContractDefinitionId]
-FROM dbo.LineDefinitionEntryContractDefinitions LDECD
+INSERT INTO @LineDefinitionEntryCustodianDefinitions
+(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[CustodianDefinitionId])
+SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[CustodianDefinitionId]
+FROM dbo.[LineDefinitionEntryCustodianDefinitions] LDECD
 JOIN dbo.LineDefinitionEntries LDE ON LDECD.LineDefinitionEntryId = LDE.Id
 INSERT INTO @LineDefinitionEntryResourceDefinitions
 (		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[ResourceDefinitionId])
 SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[ResourceDefinitionId]
 FROM dbo.LineDefinitionEntryResourceDefinitions LDECD
 JOIN dbo.LineDefinitionEntries LDE ON LDECD.LineDefinitionEntryId = LDE.Id
-INSERT INTO @LineDefinitionEntryNotedContractDefinitions
-(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[NotedContractDefinitionId])
-SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[NotedContractDefinitionId]
-FROM dbo.LineDefinitionEntryNotedContractDefinitions LDECD
+INSERT INTO @LineDefinitionEntryNotedRelationDefinitions
+(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[NotedRelationDefinitionId])
+SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[NotedRelationDefinitionId]
+FROM dbo.[LineDefinitionEntryNotedRelationDefinitions] LDECD
 JOIN dbo.LineDefinitionEntries LDE ON LDECD.LineDefinitionEntryId = LDE.Id
 INSERT INTO @LineDefinitionColumns
 ([Index], [HeaderIndex],		[Id], [ColumnName], [EntryIndex], [Label], [InheritsFromHeader],
@@ -53,7 +53,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,@CashPaymentToOtherLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,@CashPaymentToOtherLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,@CashPaymentToOtherLD,N'ByContract',	NULL,			1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,@CashPaymentToOtherLD,N'ByCustodian',	NULL,			1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,@CashPaymentToOtherLD,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
@@ -66,8 +66,8 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,@CashTransferExchangeLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,@CashTransferExchangeLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,@CashTransferExchangeLD,N'ByContract',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(1,2,@CashTransferExchangeLD,N'ByContract',	NULL,				1,				@ComptrollerRL); -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,@CashTransferExchangeLD,N'ByCustodian',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(1,2,@CashTransferExchangeLD,N'ByCustodian',	NULL,				1,				@ComptrollerRL); -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 
 --INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 --[ToState]) Values
@@ -79,7 +79,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 --[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 --(0,0,@PaymentToEmployeeLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 --(0,1,@PaymentToEmployeeLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
---(0,2,@PaymentToEmployeeLD,N'ByContract',NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+--(0,2,@PaymentToEmployeeLD,N'ByCustodian',NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 --(0,3,@PaymentToEmployeeLD,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 
 
@@ -87,9 +87,9 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
 	@LineDefinitionEntries = @LineDefinitionEntries,
-	@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
+	@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-	@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
+	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,

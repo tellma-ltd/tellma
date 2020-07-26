@@ -23,7 +23,7 @@
 --	)
 --	SELECT JS.*, R.[Code], R.[Name], R.[Name2], R.[Name3]
 --	FROM JournalSummary JS
---	JOIN dbo.Resources R ON JS.ResourceId = R.Id
+--	JOIN dbo.[Resources] R ON JS.ResourceId = R.Id
 --	ORDER BY JS.[CountOut]
 --END;
 --GO;

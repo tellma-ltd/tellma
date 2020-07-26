@@ -1,11 +1,11 @@
 ﻿--DELETE FROM @CashOnHandContracts;
---DELETE FROM @ContractUsers;
+--DELETE FROM @RelationUsers;
 --INSERT INTO @CashOnHandContracts([Index], [Name], [Name2], [CenterId]) VALUES
 --(0,			N'Cash 1',	NULL, @106C_HeadOffice);
---INSERT INTO @ContractUsers([Index], [HeaderIndex], [UserId]) VALUES
+--INSERT INTO @RelationUsers([Index], [HeaderIndex], [UserId]) VALUES
 --(0,0,@AdminUserId)
 
---EXEC [api].[Contracts__Save]
+--EXEC [api].[Relations__Save]
 --	@DefinitionId = @CashOnHandAccountCD,
 --	@Entities = @CashOnHandContracts,
 --	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -17,15 +17,15 @@
 --END;
 
 --DELETE FROM @CashOnHandContracts;
---DELETE FROM @ContractUsers;
+--DELETE FROM @RelationUsers;
 --INSERT INTO @CashOnHandContracts([Index], [Name], [Name2], [CenterId], [CurrencyId]) VALUES
 --(0,			N'Bank 1',	NULL, @106C_HeadOffice, @ETB),
 --(1,			N'Bank 2',	NULL, @106C_HeadOffice, @USD);
---INSERT INTO @ContractUsers([Index], [HeaderIndex], [UserId]) VALUES
+--INSERT INTO @RelationUsers([Index], [HeaderIndex], [UserId]) VALUES
 --(0,0,@AdminUserId),
 --(0,1,@AdminUserId)
 
---EXEC [api].[Contracts__Save]
+--EXEC [api].[Relations__Save]
 --	@DefinitionId = @BankAccountCD,
 --	@Entities = @CashOnHandContracts,
 --	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
