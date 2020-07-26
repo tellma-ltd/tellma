@@ -174,15 +174,15 @@
         [serverErrors]="model?.serverErrors?.DebitResourceId" *ngIf="showDocumentDebitResource(model)">
         <ng-container *ngIf="model?.DebitResourceIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitResourceId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.DebitResourceId)?.DefinitionId"
+                <t-view-link [link]="'../../../resources/' + ws.get('Resource', model?.DebitResourceId)?.DefinitionId"
                     [itemId]="model?.DebitResourceId">
-                    {{ ws.getMultilingualValue('Relation', model?.DebitResourceId, 'Name') }}
+                    {{ ws.getMultilingualValue('Resource', model?.DebitResourceId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.DebitResourceId"
+            <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.DebitResourceId"
                 [definitionIds]="documentDebitResourceDefinitionIds(model)"
                 [required]="requireDocumentDebitResource(model)" [disabled]="readonlyDocumentDebitResource(model)">
-            </t-relations-picker>
+            </t-resources-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitResourceIsCommon' }"></ng-container>
     </t-form-group>
@@ -192,15 +192,15 @@
         [serverErrors]="model?.serverErrors?.CreditResourceId" *ngIf="showDocumentCreditResource(model)">
         <ng-container *ngIf="model?.CreditResourceIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CreditResourceId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.CreditResourceId)?.DefinitionId"
+                <t-view-link [link]="'../../../resources/' + ws.get('Resource', model?.CreditResourceId)?.DefinitionId"
                     [itemId]="model?.CreditResourceId">
-                    {{ ws.getMultilingualValue('Relation', model?.CreditResourceId, 'Name') }}
+                    {{ ws.getMultilingualValue('Resource', model?.CreditResourceId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CreditResourceId"
+            <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.CreditResourceId"
                 [definitionIds]="documentCreditResourceDefinitionIds(model)"
                 [required]="requireDocumentCreditResource(model)" [disabled]="readonlyDocumentCreditResource(model)">
-            </t-relations-picker>
+            </t-resources-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditResourceIsCommon' }"></ng-container>
     </t-form-group>

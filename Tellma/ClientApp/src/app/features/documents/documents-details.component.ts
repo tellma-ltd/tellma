@@ -703,12 +703,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return label;
     }
 
-    // Second try the relation definition
+    // Second try the resource definition
     if (this.definition.DebitResourceDefinitionIds.length === 1) {
-      const relationDefId = this.definition.DebitResourceDefinitionIds[0];
-      const relationDef = this.ws.definitions.Relations[relationDefId];
-      if (!!relationDef) {
-        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
+      const resourceDefId = this.definition.DebitResourceDefinitionIds[0];
+      const resourceDef = this.ws.definitions.Resources[resourceDefId];
+      if (!!resourceDef) {
+        label = this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular');
       }
     }
 
@@ -747,12 +747,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return label;
     }
 
-    // Second try the relation definition
+    // Second try the resource definition
     if (this.definition.CreditResourceDefinitionIds.length === 1) {
-      const relationDefId = this.definition.CreditResourceDefinitionIds[0];
-      const relationDef = this.ws.definitions.Relations[relationDefId];
-      if (!!relationDef) {
-        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
+      const resourceDefId = this.definition.CreditResourceDefinitionIds[0];
+      const resourceDef = this.ws.definitions.Resources[resourceDefId];
+      if (!!resourceDef) {
+        label = this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular');
       }
     }
 
