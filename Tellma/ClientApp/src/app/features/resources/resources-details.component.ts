@@ -37,7 +37,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: ResourceDefinitionForClient; // Used in preview mode
 
-  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Unit,UnitMassUnit,Units/Unit`;
+  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Participant,Unit,UnitMassUnit,Units/Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
@@ -503,6 +503,29 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public MonetaryValue_decimals(model: Resource): number {
     const currency = this.ws.get('Currency', model.CurrencyId) as Currency;
     return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public get Participant_isVisible(): boolean {
+    return !!this.definition.ParticipantVisibility;
+  }
+
+  public get Participant_isRequired(): boolean {
+    return this.definition.ParticipantVisibility === 'Required';
+  }
+
+  public get Participant_label(): string {
+    const def = this.definition;
+    const participantDefId = def.ParticipantDefinitionId;
+    const participantDef = this.ws.definitions.Relations[participantDefId];
+    if (!!participantDef) {
+      return this.ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
+    } else {
+      return this.translate.instant('Resource_Participant');
+    }
+  }
+
+  public Participant_definitionIds(model: Resource): number[] {
+    return [this.definition.ParticipantDefinitionId];
   }
 
   // Location + Map stuff

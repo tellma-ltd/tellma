@@ -311,6 +311,12 @@ namespace Tellma.Entities
         [VisibilityDisplay(Name = "Resource_MonetaryValue"), VisibilityChoiceList]
         public string MonetaryValueVisibility { get; set; }
 
+        [VisibilityDisplay(Name = "Resource_Participant"), VisibilityChoiceList]
+        public string ParticipantVisibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
+        public int? ParticipantDefinitionId { get; set; }
+
         #endregion
 
         #region Main Menu

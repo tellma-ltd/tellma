@@ -511,11 +511,17 @@
   <data name="Document_CreditCustodian" xml:space="preserve">
     <value>Credit Custodian</value>
   </data>
+  <data name="Document_CreditResource" xml:space="preserve">
+    <value>Credit Resource</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
   <data name="Document_DebitCustodian" xml:space="preserve">
     <value>Debit Custodian</value>
+  </data>
+  <data name="Document_DebitResource" xml:space="preserve">
+    <value>Debit Resource</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -2043,6 +2049,9 @@
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>Amount</value>
+  </data>
+  <data name="Resource_Participant" xml:space="preserve">
+    <value>Participant</value>
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>Reorder Level</value>

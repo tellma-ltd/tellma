@@ -57,6 +57,18 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
+        [Display(Name = "Document_DebitResource")]
+        public int? DebitResourceId { get; set; }
+
+        [IsCommonDisplay(Name = "Document_DebitResource")]
+        public bool? DebitResourceIsCommon { get; set; }
+
+        [Display(Name = "Document_CreditResource")]
+        public int? CreditResourceId { get; set; }
+
+        [IsCommonDisplay(Name = "Document_CreditResource")]
+        public bool? CreditResourceIsCommon { get; set; }
+
         [Display(Name = "Document_DebitCustodian")]
         public int? DebitCustodianId { get; set; }
 
@@ -176,6 +188,14 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
+        [Display(Name = "Document_DebitResource")]
+        [ForeignKey(nameof(DebitResourceId))]
+        public Relation DebitResource { get; set; }
+
+        [Display(Name = "Document_CreditResource")]
+        [ForeignKey(nameof(CreditResourceId))]
+        public Relation CreditResource { get; set; }
+
         [Display(Name = "Document_DebitCustodian")]
         [ForeignKey(nameof(DebitCustodianId))]
         public Relation DebitCustodian { get; set; }
@@ -265,7 +285,6 @@ namespace Tellma.Entities
     {
         // ------------------------------------------------
         // Paths to return on the level of each entity type
-        // IMPORTANT: Keep in sync with ApplicationRepository.GetDocumentsByIds
         // ------------------------------------------------
 
         public static IEnumerable<string> DocumentPaths() => DocumentProps
@@ -273,6 +292,8 @@ namespace Tellma.Entities
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
+            .Concat(DocumentResourcePaths(nameof(Document.DebitResource)))
+            .Concat(DocumentResourcePaths(nameof(Document.CreditResource)))
             .Concat(RelationPaths(nameof(Document.DebitCustodian)))
             .Concat(RelationPaths(nameof(Document.CreditCustodian)))
             .Concat(RelationPaths(nameof(Document.NotedRelation)))
@@ -323,6 +344,9 @@ namespace Tellma.Entities
             ).Concat(
                 CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}")
             );
+        public static IEnumerable<string> DocumentResourcePaths(string path) => ResourceProps
+            // Used in Document Header, no need for bells and whistles
+            .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             // This is used in account, it does not need currency or center, since they already come with the account
             .Concat(UnitPaths(nameof(Resource.Unit)))

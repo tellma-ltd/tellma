@@ -509,13 +509,19 @@
     <value>አስተያየት</value>
   </data>
   <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>የታወቁ ወኪል የተለመደ ነው</value>
+    <value>የሥዕል የምዝግቦች</value>
+  </data>
+  <data name="Document_CreditResource" xml:space="preserve">
+    <value>የሥዕል ሃብት</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
   <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>የታወቁ ወኪል የተለመደ ነው</value>
+    <value>ዴቢት የምዝግቦች</value>
+  </data>
+  <data name="Document_DebitResource" xml:space="preserve">
+    <value>ዴቢት ሃብት</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>ባህርይ 1</value>
@@ -533,7 +539,7 @@
     <value>የጽሑፍ መገለጫ ባህሪ 2</value>
   </data>
   <data name="Document_NotedRelation" xml:space="preserve">
-    <value>የታወቁ ወኪል የተለመደ ነው</value>
+    <value>እንደተጠቀሰው ግንኙነት</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>ላይ የተከፈተው</value>
@@ -2043,6 +2049,9 @@
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>መጠን</value>
+  </data>
+  <data name="Resource_Participant" xml:space="preserve">
+    <value>ተካፉይ</value>
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>አስይዝ ደረጃ</value>

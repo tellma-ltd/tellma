@@ -245,8 +245,8 @@ namespace Tellma.Controllers
                     {
                         defOverride = entityType.Name switch
                         {
-                            nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, settings, propInfo, display),
-                            nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, settings, propInfo, display),
+                            nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
+                            nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
 
                             nameof(Relation) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
                             nameof(RelationForSave) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
@@ -797,6 +797,7 @@ namespace Tellma.Controllers
         /// </summary>
         private static DefinitionPropOverrides ResourcePropertyOverrides(
             ResourceDefinitionForClient def,
+            DefinitionsForClient defs,
             SettingsForClient settings,
             PropertyInfo propInfo,
             Func<string> display)
@@ -887,7 +888,6 @@ namespace Tellma.Controllers
                 //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
                 //    isRequired = def.Lookup5Visibility == Visibility.Required;
                 //    break;
-
                 case nameof(Resource.Identifier):
                     display = PropertyDisplay(settings, def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
                     isRequired = def.IdentifierVisibility == Visibility.Required;
@@ -911,7 +911,7 @@ namespace Tellma.Controllers
                     if (def.UnitCardinality == null)
                     {
                         display = null;
-                    } 
+                    }
                     else if (def.DefaultUnitId == null)
                     {
                         isRequired = true;
@@ -930,6 +930,19 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.MonetaryValueVisibility, display);
                     isRequired = def.MonetaryValueVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.Participant):
+                case nameof(Resource.ParticipantId):
+                    if (def.ParticipantDefinitionId != null && defs.Relations.TryGetValue(def.ParticipantDefinitionId.Value, out RelationDefinitionForClient relationDef))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(settings, def.ParticipantVisibility, relationDef.TitleSingular, relationDef.TitleSingular2, relationDef.TitleSingular3, display);
+                    }
+                    else
+                    {
+                        display = PropertyDisplay(def.ParticipantVisibility, display);
+                    }
+                    isRequired = def.ParticipantVisibility == Visibility.Required;
+                    break;
             }
 
             int? targetDefId = propInfo.Name switch
@@ -939,6 +952,7 @@ namespace Tellma.Controllers
                 nameof(Resource.Lookup3) => def.Lookup3DefinitionId,
                 nameof(Resource.Lookup4) => def.Lookup4DefinitionId,
                 //nameof(Resource.Lookup5) =>  def.Lookup5DefinitionId,
+                nameof(Resource.Participant) => def.ParticipantDefinitionId,
                 _ => null,
             };
 
@@ -1142,6 +1156,22 @@ namespace Tellma.Controllers
                 case nameof(Document.PostingDateIsCommon):
                     display = PropertyDisplay(def.PostingDateVisibility, display);
                     break;
+                case nameof(Document.DebitResourceId):
+                case nameof(Document.DebitResource):
+                    display = PropertyDisplay(settings, def.DebitResourceVisibility, def.DebitResourceLabel, def.DebitResourceLabel2, def.DebitResourceLabel3, display);
+                    isRequired = def.DebitResourceRequiredState == 0;
+                    break;
+                case nameof(Document.DebitResourceIsCommon):
+                    display = PropertyDisplay(def.DebitResourceVisibility, display);
+                    break;
+                case nameof(Document.CreditResourceId):
+                case nameof(Document.CreditResource):
+                    display = PropertyDisplay(settings, def.CreditResourceVisibility, def.CreditResourceLabel, def.CreditResourceLabel2, def.CreditResourceLabel3, display);
+                    isRequired = def.CreditResourceRequiredState == 0;
+                    break;
+                case nameof(Document.CreditResourceIsCommon):
+                    display = PropertyDisplay(def.CreditResourceVisibility, display);
+                    break;
                 case nameof(Document.DebitCustodianId):
                 case nameof(Document.DebitCustodian):
                     display = PropertyDisplay(settings, def.DebitCustodianVisibility, def.DebitCustodianLabel, def.DebitCustodianLabel2, def.DebitCustodianLabel3, display);
@@ -1224,6 +1254,8 @@ namespace Tellma.Controllers
 
             int? targetDefId = propInfo.Name switch
             {
+                nameof(Document.DebitResource) => def.DebitResourceDefinitionIds.Count == 1 ? (int?)def.DebitResourceDefinitionIds[0] : null,
+                nameof(Document.CreditResource) => def.CreditResourceDefinitionIds.Count == 1 ? (int?)def.CreditResourceDefinitionIds[0] : null,
                 nameof(Document.DebitCustodian) => def.DebitCustodianDefinitionIds.Count == 1 ? (int?)def.DebitCustodianDefinitionIds[0] : null,
                 nameof(Document.CreditCustodian) => def.CreditCustodianDefinitionIds.Count == 1 ? (int?)def.CreditCustodianDefinitionIds[0] : null,
                 nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,

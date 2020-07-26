@@ -289,6 +289,8 @@ namespace Tellma.Controllers
                 DefaultUnitMassUnitId = def.DefaultUnitMassUnitId,
 
                 MonetaryValueVisibility = MapVisibility(def.MonetaryValueVisibility),
+                ParticipantVisibility = MapVisibility(def.ParticipantVisibility),
+                ParticipantDefinitionId = def.ParticipantDefinitionId
             };
         }
 
@@ -503,6 +505,8 @@ namespace Tellma.Controllers
                 MainMenuSection = def.MainMenuSection,
 
                 // These should not be null
+                CreditResourceDefinitionIds = new List<int>(),
+                DebitResourceDefinitionIds = new List<int>(),
                 CreditCustodianDefinitionIds = new List<int>(),
                 DebitCustodianDefinitionIds = new List<int>(),
                 NotedRelationDefinitionIds = new List<int>(),
@@ -565,6 +569,54 @@ namespace Tellma.Controllers
                     {
                         var entryDef = lineDef.Entries[colDef.EntryIndex];
 
+                        // DebitResource
+                        if (colDef.ColumnName == nameof(Entry.ResourceId) && entryDef.Direction == 1)
+                        {
+                            result.DebitResourceVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.DebitResourceLabel))
+                            {
+                                result.DebitResourceLabel ??= colDef.Label;
+                                result.DebitResourceLabel2 ??= colDef.Label2;
+                                result.DebitResourceLabel3 ??= colDef.Label3;
+
+                                result.DebitResourceDefinitionIds = entryDef.ResourceDefinitionIds;
+                            }
+
+                            if (colDef.RequiredState < (result.DebitResourceRequiredState ?? 5))
+                            {
+                                result.DebitResourceRequiredState = colDef.RequiredState;
+                            }
+
+                            if (colDef.ReadOnlyState < (result.DebitResourceReadOnlyState ?? 5))
+                            {
+                                result.DebitResourceReadOnlyState = colDef.ReadOnlyState;
+                            }
+                        }
+
+                        // CreditResource
+                        if (colDef.ColumnName == nameof(Entry.ResourceId) && entryDef.Direction == -1)
+                        {
+                            result.CreditResourceVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.CreditResourceLabel))
+                            {
+                                result.CreditResourceLabel = colDef.Label;
+                                result.CreditResourceLabel2 = colDef.Label2;
+                                result.CreditResourceLabel3 = colDef.Label3;
+
+                                result.CreditResourceDefinitionIds = entryDef.ResourceDefinitionIds;
+                            }
+
+                            if (colDef.RequiredState < (result.CreditResourceRequiredState ?? 5))
+                            {
+                                result.CreditResourceRequiredState = colDef.RequiredState;
+                            }
+
+                            if (colDef.ReadOnlyState < (result.CreditResourceReadOnlyState ?? 5))
+                            {
+                                result.CreditResourceReadOnlyState = colDef.ReadOnlyState;
+                            }
+                        }
+
                         // DebitCustodian
                         if (colDef.ColumnName == nameof(Entry.CustodianId) && entryDef.Direction == 1)
                         {
@@ -598,9 +650,9 @@ namespace Tellma.Controllers
                                 result.CreditCustodianLabel = colDef.Label;
                                 result.CreditCustodianLabel2 = colDef.Label2;
                                 result.CreditCustodianLabel3 = colDef.Label3;
-                             
+
                                 result.CreditCustodianDefinitionIds = entryDef.CustodianDefinitionIds;
-                            }                            
+                            }
 
                             if (colDef.RequiredState < (result.CreditCustodianRequiredState ?? 5))
                             {

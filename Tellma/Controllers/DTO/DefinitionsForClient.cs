@@ -163,6 +163,24 @@ namespace Tellma.Controllers.Dto
         public string PostingDateLabel2 { get; set; }
         public string PostingDateLabel3 { get; set; }
 
+        // Debit Resource
+        public bool DebitResourceVisibility { get; set; }
+        public short? DebitResourceRequiredState { get; set; }
+        public short? DebitResourceReadOnlyState { get; set; }
+        public List<int> DebitResourceDefinitionIds { get; set; }
+        public string DebitResourceLabel { get; set; }
+        public string DebitResourceLabel2 { get; set; }
+        public string DebitResourceLabel3 { get; set; }
+
+        // Credit Resource
+        public bool CreditResourceVisibility { get; set; }
+        public short? CreditResourceRequiredState { get; set; }
+        public short? CreditResourceReadOnlyState { get; set; }
+        public List<int> CreditResourceDefinitionIds { get; set; }
+        public string CreditResourceLabel { get; set; }
+        public string CreditResourceLabel2 { get; set; }
+        public string CreditResourceLabel3 { get; set; }
+
         // Debit Custodian
         public bool DebitCustodianVisibility { get; set; }
         public short? DebitCustodianRequiredState { get; set; }
@@ -433,6 +451,8 @@ namespace Tellma.Controllers.Dto
         public string UnitMassVisibility { get; set; }
         public int? DefaultUnitMassUnitId { get; set; }
         public string MonetaryValueVisibility { get; set; }
+        public string ParticipantVisibility { get; set; }
+        public int? ParticipantDefinitionId { get; set; }
     }
 
     public class RelationDefinitionForClient : MasterDetailDefinitionForClient

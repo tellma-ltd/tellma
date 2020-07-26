@@ -140,7 +140,7 @@
     <value>注意代理名称标签</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
-    <value>注意金额标签</value>
+    <value>注意标签金额</value>
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
@@ -511,11 +511,17 @@
   <data name="Document_CreditCustodian" xml:space="preserve">
     <value>信用护法</value>
   </data>
+  <data name="Document_CreditResource" xml:space="preserve">
+    <value>信贷资源</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
   <data name="Document_DebitCustodian" xml:space="preserve">
     <value>借记护法</value>
+  </data>
+  <data name="Document_DebitResource" xml:space="preserve">
+    <value>借记资源</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>属性1</value>
@@ -1247,7 +1253,7 @@
     <value>{0}标签</value>
   </data>
   <data name="Field0Visibility" xml:space="preserve">
-    <value>{0}能见度</value>
+    <value>为{0}能见度</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>文件</value>
@@ -1472,7 +1478,7 @@
     <value>行定义说明原因</value>
   </data>
   <data name="LineDefinitionStateReasons" xml:space="preserve">
-    <value>行定义说明理由</value>
+    <value>行定义状态的原因</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>行</value>
@@ -2043,6 +2049,9 @@
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
+  </data>
+  <data name="Resource_Participant" xml:space="preserve">
+    <value>参加者</value>
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>订货点水平</value>

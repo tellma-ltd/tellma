@@ -865,6 +865,8 @@ namespace Tellma.Controllers
                     doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
                 }
 
+                doc.DebitResourceIsCommon = docDef.DebitResourceVisibility && (doc.DebitResourceIsCommon ?? false);
+                doc.CreditResourceIsCommon = docDef.CreditResourceVisibility && (doc.CreditResourceIsCommon ?? false);
                 doc.DebitCustodianIsCommon = docDef.DebitCustodianVisibility && (doc.DebitCustodianIsCommon ?? false);
                 doc.CreditCustodianIsCommon = docDef.CreditCustodianVisibility && (doc.CreditCustodianIsCommon ?? false);
                 doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
@@ -893,6 +895,8 @@ namespace Tellma.Controllers
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
                 doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
+                doc.DebitResourceId = doc.DebitResourceIsCommon.Value ? doc.DebitResourceId : null;
+                doc.CreditResourceId = doc.CreditResourceIsCommon.Value ? doc.CreditResourceId : null;
                 doc.DebitCustodianId = doc.DebitCustodianIsCommon.Value ? doc.DebitCustodianId : null;
                 doc.CreditCustodianId = doc.CreditCustodianIsCommon.Value ? doc.CreditCustodianId : null;
                 doc.NotedRelationId = doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
@@ -981,19 +985,34 @@ namespace Tellma.Controllers
                                 var entry = line.Entries[columnDef.EntryIndex];
                                 switch (columnDef.ColumnName)
                                 {
+                                    case nameof(Entry.ResourceId):
+                                        {
+                                            var entryDef = lineDef.Entries[columnDef.EntryIndex];
+                                            if (entryDef.Direction == 1 && doc.DebitResourceIsCommon.Value)
+                                            {
+                                                entry.ResourceId = doc.DebitResourceId;
+                                            }
+                                            else if (entryDef.Direction == -1 && doc.CreditResourceIsCommon.Value)
+                                            {
+                                                entry.ResourceId = doc.CreditResourceId;
+                                            }
+
+                                            break;
+                                        }
                                     case nameof(Entry.CustodianId):
-                                        var entryDef = lineDef.Entries[columnDef.EntryIndex];
-                                        if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
                                         {
-                                            entry.CustodianId = doc.DebitCustodianId;
-                                        }
-                                        else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
-                                        {
-                                            entry.CustodianId = doc.CreditCustodianId;
-                                        }
+                                            var entryDef = lineDef.Entries[columnDef.EntryIndex];
+                                            if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
+                                            {
+                                                entry.CustodianId = doc.DebitCustodianId;
+                                            }
+                                            else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
+                                            {
+                                                entry.CustodianId = doc.CreditCustodianId;
+                                            }
 
-                                        break;
-
+                                            break;
+                                        }
                                     case nameof(Entry.NotedRelationId):
                                         if (doc.NotedRelationIsCommon.Value)
                                         {
@@ -1346,26 +1365,51 @@ namespace Tellma.Controllers
                             var entry = line.Entries[entryIndex];
                             switch (columnDef.ColumnName)
                             {
-                                case nameof(Entry.CustodianId):
-                                    var entryDef = lineDef.Entries[entryIndex];
-                                    if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
+                                case nameof(Entry.ResourceId):
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.DebitCustodianId)}");
-                                        if (entry.CustodianId != doc.DebitCustodianId)
+                                        var entryDef = lineDef.Entries[entryIndex];
+                                        if (entryDef.Direction == 1 && doc.DebitResourceIsCommon.Value)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.DebitCustodianId));
+                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.ResourceId)), $"[{docIndex}].{nameof(Document.DebitResourceId)}");
+                                            if (entry.ResourceId != doc.DebitResourceId)
+                                            {
+                                                AddReadOnlyError(docIndex, nameof(Document.DebitResourceId));
+                                            }
                                         }
-                                    }
-                                    else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
-                                    {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.CreditCustodianId)}");
-                                        if (entry.CustodianId != doc.CreditCustodianId)
+                                        else if (entryDef.Direction == -1 && doc.CreditResourceIsCommon.Value)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.CreditCustodianId));
+                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.ResourceId)), $"[{docIndex}].{nameof(Document.CreditResourceId)}");
+                                            if (entry.ResourceId != doc.CreditResourceId)
+                                            {
+                                                AddReadOnlyError(docIndex, nameof(Document.CreditResourceId));
+                                            }
                                         }
+
+                                        break;
                                     }
 
-                                    break;
+                                case nameof(Entry.CustodianId):
+                                    {
+                                        var entryDef = lineDef.Entries[entryIndex];
+                                        if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
+                                        {
+                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.DebitCustodianId)}");
+                                            if (entry.CustodianId != doc.DebitCustodianId)
+                                            {
+                                                AddReadOnlyError(docIndex, nameof(Document.DebitCustodianId));
+                                            }
+                                        }
+                                        else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
+                                        {
+                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.CreditCustodianId)}");
+                                            if (entry.CustodianId != doc.CreditCustodianId)
+                                            {
+                                                AddReadOnlyError(docIndex, nameof(Document.CreditCustodianId));
+                                            }
+                                        }
+
+                                        break;
+                                    }
 
                                 case nameof(Entry.NotedRelationId):
                                     if (doc.NotedRelationIsCommon.Value)
