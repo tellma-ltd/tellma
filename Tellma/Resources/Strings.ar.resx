@@ -511,11 +511,17 @@
   <data name="Document_CreditCustodian" xml:space="preserve">
     <value>صاحب العهدة الدائن</value>
   </data>
+  <data name="Document_CreditResource" xml:space="preserve">
+    <value>المورد الدائن</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
   <data name="Document_DebitCustodian" xml:space="preserve">
     <value>صاحب العهدة المدين</value>
+  </data>
+  <data name="Document_DebitResource" xml:space="preserve">
+    <value>المورد المدين</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>الصفة 1</value>

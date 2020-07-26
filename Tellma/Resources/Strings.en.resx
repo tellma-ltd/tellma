@@ -511,11 +511,17 @@
   <data name="Document_CreditCustodian" xml:space="preserve">
     <value>Credit Custodian</value>
   </data>
+  <data name="Document_CreditResource" xml:space="preserve">
+    <value>Credit Resource</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
   <data name="Document_DebitCustodian" xml:space="preserve">
     <value>Debit Custodian</value>
+  </data>
+  <data name="Document_DebitResource" xml:space="preserve">
+    <value>Debit Resource</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>

@@ -1142,6 +1142,22 @@ namespace Tellma.Controllers
                 case nameof(Document.PostingDateIsCommon):
                     display = PropertyDisplay(def.PostingDateVisibility, display);
                     break;
+                case nameof(Document.DebitResourceId):
+                case nameof(Document.DebitResource):
+                    display = PropertyDisplay(settings, def.DebitResourceVisibility, def.DebitResourceLabel, def.DebitResourceLabel2, def.DebitResourceLabel3, display);
+                    isRequired = def.DebitResourceRequiredState == 0;
+                    break;
+                case nameof(Document.DebitResourceIsCommon):
+                    display = PropertyDisplay(def.DebitResourceVisibility, display);
+                    break;
+                case nameof(Document.CreditResourceId):
+                case nameof(Document.CreditResource):
+                    display = PropertyDisplay(settings, def.CreditResourceVisibility, def.CreditResourceLabel, def.CreditResourceLabel2, def.CreditResourceLabel3, display);
+                    isRequired = def.CreditResourceRequiredState == 0;
+                    break;
+                case nameof(Document.CreditResourceIsCommon):
+                    display = PropertyDisplay(def.CreditResourceVisibility, display);
+                    break;
                 case nameof(Document.DebitCustodianId):
                 case nameof(Document.DebitCustodian):
                     display = PropertyDisplay(settings, def.DebitCustodianVisibility, def.DebitCustodianLabel, def.DebitCustodianLabel2, def.DebitCustodianLabel3, display);
@@ -1224,6 +1240,8 @@ namespace Tellma.Controllers
 
             int? targetDefId = propInfo.Name switch
             {
+                nameof(Document.DebitResource) => def.DebitResourceDefinitionIds.Count == 1 ? (int?)def.DebitResourceDefinitionIds[0] : null,
+                nameof(Document.CreditResource) => def.CreditResourceDefinitionIds.Count == 1 ? (int?)def.CreditResourceDefinitionIds[0] : null,
                 nameof(Document.DebitCustodian) => def.DebitCustodianDefinitionIds.Count == 1 ? (int?)def.DebitCustodianDefinitionIds[0] : null,
                 nameof(Document.CreditCustodian) => def.CreditCustodianDefinitionIds.Count == 1 ? (int?)def.CreditCustodianDefinitionIds[0] : null,
                 nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,

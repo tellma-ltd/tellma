@@ -21,6 +21,10 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
+    DebitResourceId?: number;
+    DebitResourceIsCommon?: boolean;
+    CreditResourceId?: number;
+    CreditResourceIsCommon?: boolean;
     DebitCustodianId?: number;
     DebitCustodianIsCommon?: boolean;
     CreditCustodianId?: number;
@@ -112,6 +116,12 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
+                DebitResourceId: { control: 'number', label: () => `${trx.instant('Document_DebitResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DebitResource: { control: 'navigation', label: () => trx.instant('Document_DebitResource'), type: 'Relation', foreignKeyName: 'DebitResourceId' },
+                DebitResourceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitResource') }) },
+                CreditResourceId: { control: 'number', label: () => `${trx.instant('Document_CreditResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CreditResource: { control: 'navigation', label: () => trx.instant('Document_CreditResource'), type: 'Relation', foreignKeyName: 'CreditResourceId' },
+                CreditResourceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_CreditResource') }) },
                 DebitCustodianId: { control: 'number', label: () => `${trx.instant('Document_DebitCustodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DebitCustodian: { control: 'navigation', label: () => trx.instant('Document_DebitCustodian'), type: 'Relation', foreignKeyName: 'DebitCustodianId' },
                 DebitCustodianIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitCustodian') }) },
@@ -218,7 +228,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['DebitCustodian', 'CreditCustodian', 'NotedRelation', 'Unit', 'Currency']) {
+            for (const propName of ['DebitCustodian', 'CreditCustodian', 'DebitResource', 'CreditResource', 'NotedRelation', 'Unit', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

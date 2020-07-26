@@ -168,6 +168,42 @@
         <t-selector *ngIf="isEdit" [(ngModel)]="model.Clearance" [choices]="clearanceChoices">
         </t-selector>
     </t-form-group>
+    
+    <!-- Debit Resource -->
+    <t-form-group class="t-form-group" [label]="labelDocumentDebitResource(model)"
+        [serverErrors]="model?.serverErrors?.DebitResourceId" *ngIf="showDocumentDebitResource(model)">
+        <ng-container *ngIf="model?.DebitResourceIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitResourceId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.DebitResourceId)?.DefinitionId"
+                    [itemId]="model?.DebitResourceId">
+                    {{ ws.getMultilingualValue('Relation', model?.DebitResourceId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.DebitResourceId"
+                [definitionIds]="documentDebitResourceDefinitionIds(model)"
+                [required]="requireDocumentDebitResource(model)" [disabled]="readonlyDocumentDebitResource(model)">
+            </t-relations-picker>
+        </ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitResourceIsCommon' }"></ng-container>
+    </t-form-group>
+
+    <!-- Credit Resource -->
+    <t-form-group class="t-form-group" [label]="labelDocumentCreditResource(model)"
+        [serverErrors]="model?.serverErrors?.CreditResourceId" *ngIf="showDocumentCreditResource(model)">
+        <ng-container *ngIf="model?.CreditResourceIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CreditResourceId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.CreditResourceId)?.DefinitionId"
+                    [itemId]="model?.CreditResourceId">
+                    {{ ws.getMultilingualValue('Relation', model?.CreditResourceId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CreditResourceId"
+                [definitionIds]="documentCreditResourceDefinitionIds(model)"
+                [required]="requireDocumentCreditResource(model)" [disabled]="readonlyDocumentCreditResource(model)">
+            </t-relations-picker>
+        </ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditResourceIsCommon' }"></ng-container>
+    </t-form-group>
 
     <!-- Debit Custodian -->
     <t-form-group class="t-form-group" [label]="labelDocumentDebitCustodian(model)"
@@ -186,26 +222,6 @@
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitCustodianIsCommon' }"></ng-container>
     </t-form-group>
-
-    <ng-template #perLine>
-        <div class="flex-grow-1" [class.t-disabled-background]="isEdit" [class.border-bottom]="isEdit">
-            <span class="font-italic text-muted">{{ '(' + ('SpecifiedPerLine' | translate) + ')' }}</span>
-        </div>
-    </ng-template>
-
-    <ng-template #lock let-prop="prop">
-        <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
-            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-2 h-100 t-no-arrow align-baseline"
-                style="width:22.6px;" ngbDropdownToggle tabindex="-1">
-                <fa-icon icon="ellipsis-v"></fa-icon>
-            </button>
-            <div ngbDropdownMenu>
-                <button ngbDropdownItem class="t-transparent-background" (click)="model[prop] = !model[prop]">
-                    {{ (model[prop] ? 'SpecifyPerLine' : 'SpecifyForAllLines') | translate }}
-                </button>
-            </div>
-        </div>
-    </ng-template>
 
     <!-- Credit Custodian -->
     <t-form-group class="t-form-group" [label]="labelDocumentCreditCustodian(model)"
@@ -343,7 +359,27 @@
         <ng-container *ngIf="showDocumentMemoIsCommon(model)">
             <ng-container *ngTemplateOutlet="lock; context:{ prop: 'MemoIsCommon' }"></ng-container>
         </ng-container>
-    </t-form-group>
+    </t-form-group>    
+
+    <ng-template #perLine>
+        <div class="flex-grow-1" [class.t-disabled-background]="isEdit" [class.border-bottom]="isEdit">
+            <span class="font-italic text-muted">{{ '(' + ('SpecifiedPerLine' | translate) + ')' }}</span>
+        </div>
+    </ng-template>
+
+    <ng-template #lock let-prop="prop">
+        <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
+            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-2 h-100 t-no-arrow align-baseline"
+                style="width:22.6px;" ngbDropdownToggle tabindex="-1">
+                <fa-icon icon="ellipsis-v"></fa-icon>
+            </button>
+            <div ngbDropdownMenu>
+                <button ngbDropdownItem class="t-transparent-background" (click)="model[prop] = !model[prop]">
+                    {{ (model[prop] ? 'SpecifyPerLine' : 'SpecifyForAllLines') | translate }}
+                </button>
+            </div>
+        </div>
+    </ng-template>
 
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true"
         [activeId]="getActiveTab(model)" (activeIdChange)="setActiveTab($event)">

@@ -292,6 +292,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
+      result.DebitResourceIsCommon = false;
+      result.CreditResourceIsCommon = false;
       result.DebitCustodianIsCommon = false;
       result.CreditCustodianIsCommon = false;
       result.NotedRelationIsCommon = false;
@@ -312,6 +314,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       result.PostingDateIsCommon = !!def.PostingDateVisibility;
       result.MemoIsCommon = !!def.MemoIsCommonVisibility;
+      result.DebitResourceIsCommon = !!def.DebitResourceVisibility;
+      result.CreditResourceIsCommon = !!def.CreditResourceVisibility;
       result.DebitCustodianIsCommon = !!def.DebitCustodianVisibility;
       result.CreditCustodianIsCommon = !!def.CreditCustodianVisibility;
       result.NotedRelationIsCommon = !!def.NotedRelationVisibility;
@@ -676,6 +680,94 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_PostingDate');
   }
 
+  // DebitResource
+
+  public showDocumentDebitResource(_: DocumentForSave): boolean {
+    return this.definition.DebitResourceVisibility;
+  }
+
+  public requireDocumentDebitResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDebitResource;
+  }
+
+  public readonlyDocumentDebitResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDebitResource;
+  }
+
+  public labelDocumentDebitResource(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitResourceLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the relation definition
+    if (this.definition.DebitResourceDefinitionIds.length === 1) {
+      const relationDefId = this.definition.DebitResourceDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Document_DebitResource');
+    }
+
+    return label;
+  }
+
+  public documentDebitResourceDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.DebitResourceDefinitionIds;
+  }
+
+  // CreditResource
+
+  public showDocumentCreditResource(_: DocumentForSave): boolean {
+    return this.definition.CreditResourceVisibility;
+  }
+
+  public requireDocumentCreditResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireCreditResource;
+  }
+
+  public readonlyDocumentCreditResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyCreditResource;
+  }
+
+  public labelDocumentCreditResource(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditResourceLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the relation definition
+    if (this.definition.CreditResourceDefinitionIds.length === 1) {
+      const relationDefId = this.definition.CreditResourceDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Document_CreditResource');
+    }
+
+    return label;
+  }
+
+  public documentCreditResourceDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.CreditResourceDefinitionIds;
+  }
+
   // DebitCustodian
 
   public showDocumentDebitCustodian(_: DocumentForSave): boolean {
@@ -936,6 +1028,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _readonlyDocumentMemo: boolean;
   private _requireDocumentPostingDate: boolean;
   private _readonlyDocumentPostingDate: boolean;
+  private _requireDebitResource: boolean;
+  private _readonlyDebitResource: boolean;
+  private _requireCreditResource: boolean;
+  private _readonlyCreditResource: boolean;
   private _requireDebitCustodian: boolean;
   private _readonlyDebitCustodian: boolean;
   private _requireCreditCustodian: boolean;
@@ -958,6 +1054,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentMemo = false;
       this._requireDocumentPostingDate = false;
       this._readonlyDocumentPostingDate = false;
+      this._requireDebitResource = false;
+      this._readonlyDebitResource = false;
+      this._requireCreditResource = false;
+      this._readonlyCreditResource = false;
       this._requireDebitCustodian = false;
       this._readonlyDebitCustodian = false;
       this._requireCreditCustodian = false;
@@ -988,6 +1088,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
       this._requireDocumentPostingDate = def.PostingDateRequiredState === 0;
       this._readonlyDocumentPostingDate = def.PostingDateReadOnlyState === 0;
+      this._requireDebitResource = def.DebitResourceRequiredState === 0;
+      this._readonlyDebitResource = def.DebitResourceReadOnlyState === 0;
+      this._requireCreditResource = def.CreditResourceRequiredState === 0;
+      this._readonlyCreditResource = def.CreditResourceReadOnlyState === 0;
       this._requireDebitCustodian = def.DebitCustodianRequiredState === 0;
       this._readonlyDebitCustodian = def.DebitCustodianReadOnlyState === 0;
       this._requireCreditCustodian = def.CreditCustodianRequiredState === 0;
@@ -1028,6 +1132,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentPostingDate &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentPostingDate = true;
+              }
+              break;
+            case 'ResourceId':
+              if (!this._requireDebitResource && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDebitResource = true;
+              }
+              if (!this._requireCreditResource && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireCreditResource = true;
+              }
+
+              if (!this._readonlyDebitResource && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDebitResource = true;
+              }
+              if (!this._readonlyCreditResource && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyCreditResource = true;
               }
               break;
             case 'CustodianId':
@@ -2551,6 +2674,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           !(
             (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
             (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (doc.DebitResourceIsCommon && col.ColumnName === 'ResourceId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
+            (doc.CreditResourceIsCommon && col.ColumnName === 'ResourceId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
             (doc.DebitCustodianIsCommon && col.ColumnName === 'CustodianId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
             (doc.CreditCustodianIsCommon && col.ColumnName === 'CustodianId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
             (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||

@@ -116,6 +116,24 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     PostingDateLabel2: string;
     PostingDateLabel3: string;
 
+    // Debit Resource
+    DebitResourceVisibility: boolean;
+    DebitResourceRequiredState: LineState;
+    DebitResourceReadOnlyState: LineState;
+    DebitResourceDefinitionIds: number[];
+    DebitResourceLabel: string;
+    DebitResourceLabel2: string;
+    DebitResourceLabel3: string;
+
+    // Credit Resource
+    CreditResourceVisibility: boolean;
+    CreditResourceRequiredState: LineState;
+    CreditResourceReadOnlyState: LineState;
+    CreditResourceDefinitionIds: number[];
+    CreditResourceLabel: string;
+    CreditResourceLabel2: string;
+    CreditResourceLabel3: string;
+
     // Debit Custodian
     DebitCustodianVisibility: boolean;
     DebitCustodianRequiredState: LineState;
