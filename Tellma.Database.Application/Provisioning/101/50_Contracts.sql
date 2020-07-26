@@ -1,8 +1,8 @@
 ﻿-- Cash on hand
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @CashOnHandAccountCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @EmployeeCD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @CashOnHandAccountCD,
+	@DefinitionId = @EmployeeCD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -21,7 +21,7 @@ INSERT INTO @RelationUsers([Index], [HeaderIndex],
 (0,0,@amtaam),
 (0,1,@Omer);
 EXEC [api].[Relations__Save]
-	@DefinitionId = @CashOnHandAccountCD,
+	@DefinitionId = @EmployeeCD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -32,9 +32,9 @@ BEGIN
 END;
 -- Bank Account
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @BankAccountCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @BankCD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @BankAccountCD,
+	@DefinitionId = @BankCD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -50,7 +50,7 @@ INSERT INTO @RelationUsers([Index], [HeaderIndex],
 	[UserId]) VALUES
 (0,0,@amtaam)
 EXEC [api].[Relations__Save]
-	@DefinitionId = @BankAccountCD,
+	@DefinitionId = @BankCD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -59,10 +59,10 @@ BEGIN
 	Print 'Bank Accounts: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'GM Safe' AND [DefinitionId] = @CashOnHandAccountCD);
-DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @CashOnHandAccountCD);
-DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @CashOnHandAccountCD);
-DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @BankAccountCD);
+DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'GM Safe' AND [DefinitionId] = @EmployeeCD);
+DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @EmployeeCD);
+DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @EmployeeCD);
+DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @BankCD);
 -- Customer
 DELETE FROM @IndexedIds
 INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @CustomerCD;

@@ -6,7 +6,7 @@
 --(0,0,@AdminUserId)
 
 --EXEC [api].[Relations__Save]
---	@DefinitionId = @CashOnHandAccountCD,
+--	@DefinitionId = @EmployeeCD,
 --	@Entities = @CashOnHandContracts,
 --	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -26,7 +26,7 @@
 --(0,1,@AdminUserId)
 
 --EXEC [api].[Relations__Save]
---	@DefinitionId = @BankAccountCD,
+--	@DefinitionId = @BankCD,
 --	@Entities = @CashOnHandContracts,
 --	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

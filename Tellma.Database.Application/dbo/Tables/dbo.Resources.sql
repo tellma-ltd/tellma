@@ -15,7 +15,7 @@
 	[Description2]				NVARCHAR (2048),
 	[Description3]				NVARCHAR (2048),
 	[Location]					GEOGRAPHY,
-	[LocationJson]				NVARCHAR(MAX),
+	[LocationJson]				NVARCHAR (MAX),
 	[FromDate]					DATE,
 	[ToDate]					DATE,
 	[Decimal1]					DECIMAL (19,4),

@@ -57,6 +57,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --(0,1,0,N'ByRole',	@FinanceManagerRL);
 PRINT N'';
 --72:ProjectCompletionToInventory
+/*
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -524,8 +525,8 @@ SET [GenerateScript] = N'
 WHERE [Index] = 111;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],				[Visibility],	[DataType],		[Filter]) VALUES
-(0,111,N'CustodianId0',	N'Bank Account',		N'Required',	N'Relation/' + CAST (@BankAccountCD AS NVARCHAR(50)),	NULL),
-(1,111,N'CustodianId1',	N'Cashier',				N'Required',	N'Relation/' + CAST (@CashOnHandAccountCD AS NVARCHAR(50)),	NULL),
+(0,111,N'CustodianId0',	N'Bank Account',		N'Required',	N'Relation/' + CAST (@BankCD AS NVARCHAR(50)),	NULL),
+(1,111,N'CustodianId1',	N'Cashier',				N'Required',	N'Relation/' + CAST (@EmployeeCD AS NVARCHAR(50)),	NULL),
 (2,111,N'PostingDate',	N'As Of Date',			N'Required',	N'Date',	NULL);
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -752,6 +753,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,11,	N'CustodianId',			0,	N'Warehouse',		N'المخزن',			3,3,1),
 (9,11,	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
 (10,11,	N'NotedRelationId',		0,	N'Supplier',		N'المورد',			3,3,1);
+*/
 /*
 --12:StockReceiptPurchase (inv-cash-gs),  (inv-cash,gs), (gs,inv-cash)
 UPDATE @LineDefinitions

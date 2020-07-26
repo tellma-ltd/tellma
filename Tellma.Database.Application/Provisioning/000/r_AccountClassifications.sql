@@ -213,6 +213,7 @@
 (7102,71, N'7102',N'Customer control accounts', N'مراقبة حسابات الزبائن',@CustomersControlAccountsExtension),
 (710200,7102, N'710200',N'Customer control accounts.', N'مراقبة حسابات الزبائن.',@CustomersControlAccountsExtension),
 (7103,71, N'7103',N'Payroll control', N'مراقبة الرواتب',@PayrollControlExtension),
+(710300,7103, N'710300',N'Payroll control.', N'مراقبة الرواتب.',@PayrollControlExtension),
 (7109,71, N'7109',N'Others control accounts', N'مراقبة حسابات الآخرين',@OthersAccountsControlExtension),
 (710900,7109, N'710900',N'Others control accounts.', N'مراقبة حسابات الآخرين.',@OthersAccountsControlExtension),
 (72,7, N'72',N'Guarantees', N'حسابات مراقبة الضمانات',@GuaranteesExtension),
@@ -460,6 +461,7 @@ DECLARE @AC710100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC7102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7102');
 DECLARE @AC710200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710200');
 DECLARE @AC7103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7103');
+DECLARE @AC710300 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710300');
 DECLARE @AC7109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7109');
 DECLARE @AC710900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710900');
 DECLARE @AC72 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'72');
