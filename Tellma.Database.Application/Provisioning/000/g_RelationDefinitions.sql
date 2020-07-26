@@ -6,8 +6,7 @@
 (4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120),
 (5, N'Customer', N'Customer', N'Customers', N'user-shield', N'Sales',125),
 (6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130),
-(7, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135),
-(8, N'CashOnHandAccount', N'Cash On Hand Account', N'Cash On Hand Accounts', N'funnel-dollar', N'Cash',140),
+(7, N'Bank', N'Bank', N'Banks', N'book', N'Cash',135),
 (9, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145),
 (10, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160);
 
@@ -78,7 +77,20 @@ DECLARE @PartnerCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code
 DECLARE @SupplierCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Supplier');
 DECLARE @CustomerCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Customer');
 DECLARE @EmployeeCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Employee');
-DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankAccount');
-DECLARE @CashOnHandAccountCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CashOnHandAccount');
+DECLARE @BankCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Bank');
 DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Warehouse');
 DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Shipper');
+
+/*
+Variables
+(@CreditorCD),
+(@DebtorCD),
+(@OwnerCD),
+(@PartnerCD),
+(@SupplierCD),
+(@CustomerCD),
+(@EmployeeCD),
+(@BankCD),
+(@WarehouseCD),
+(@ShipperCD);
+*/

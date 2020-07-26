@@ -104,9 +104,9 @@ INSERT INTO @RelationDefinitionIds([Id]) VALUES
 (@PartnerCD),
 (@SupplierCD),
 (@CustomerCD),
-(@EmployeeCD),
-(@BankAccountCD),
-(@CashOnHandAccountCD)
+(@EmployeeCD);
+--(@BankCD),
+--(@EmployeeCD)
 --(@WarehouseCD);
 --(@ShipperCD);
 
