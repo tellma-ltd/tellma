@@ -137,18 +137,8 @@ namespace Tellma.Controllers
             return OrderByExpression.Parse(nameof(DetailsEntry.AccountId));
         }
 
-        public async Task<(
-            List<DetailsEntry> Data,
-            decimal opening,
-            decimal openingQuantity,
-            decimal openingMonetaryValue,
-            decimal closing,
-            decimal closingQuantity,
-            decimal closingMonetaryValue,
-            int Count
-            )> GetStatement(StatementArguments args, CancellationToken cancellation)
+        private string UndatedFilter(StatementArguments args)
         {
-            // Step 1: Prepare the filters
             // State == Finalized
             string stateFilter = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Finalized}";
             if (!(args.IncludeCompleted ?? false))
@@ -194,7 +184,22 @@ namespace Tellma.Controllers
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.CurrencyId)} {Ops.eq} '{args.CurrencyId.Replace("'", "''")}'");
             }
 
-            string undatedFilter = undatedFilterBldr.ToString();
+            return undatedFilterBldr.ToString();
+        }
+
+        public async Task<(
+            List<DetailsEntry> Data,
+            decimal opening,
+            decimal openingQuantity,
+            decimal openingMonetaryValue,
+            decimal closing,
+            decimal closingQuantity,
+            decimal closingMonetaryValue,
+            int Count
+            )> GetStatement(StatementArguments args, CancellationToken cancellation)
+        {
+            // Step 1: Prepare the filters
+            string undatedFilter = UndatedFilter(args);
 
             var beforeOpeningFilterBldr = new StringBuilder(undatedFilter);
             var betweenFilterBldr = new StringBuilder(undatedFilter);

@@ -372,7 +372,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   /**
    * If the api is definitioned, and definitionIds was not supplied, this method returns the
-   * full list of definitionIds form the definitions, otherwise returns the supplied list
+   * full list of definitionIds from the definitions, otherwise returns the supplied list
    */
   private get allDefinitionIds(): number[] {
     // If the api is definitioned, and definitionIds was not supplied, this method
@@ -782,7 +782,14 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public openSearchModal = () => {
-    if (this.searchOptions.length > 1) {
+    // The idea here is that if multiple definitions are supported:
+    // (1) If the user can read all, the user is presented with a modal to choose
+    // (2) If the user has permission to view just one of them, the user is taken to that single choice without asking
+    // (3) If the user has no permission to view any of them, the user is presented with the choice like #1, but
+    //      no matter what they choose, the server will send back a 403 Forbidden, this is to avoid showing the generic
+    //      choice when definitionIds are specified but the user permissions is the problem
+    const optionCount = this.searchOptions.length || this.allDefinitionIds.length;
+    if (optionCount > 1) {
       // Without the setTimeout it misbehaves when createFromFocus,
       // applying the Enter press on the modal itself
       setTimeout(() => {
@@ -800,7 +807,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       }, 0);
     } else {
       // This isn't definitioned, or there is exactly one definition
-      this.openSearchModalInner(this.searchOptions[0]);
+      this.openSearchModalInner(this.searchOptions[0] || this.allDefinitionIds[0]);
     }
   }
 
