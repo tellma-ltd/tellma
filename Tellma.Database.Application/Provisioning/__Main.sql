@@ -10,7 +10,7 @@ IF @OverwriteDb = 0 RETURN
 :r .\000\h_EntryTypes.sql
 :r .\000\i_LookupDefinitions.sql
 :r .\000\j_RelationDefinitions.sql
---:r .\000\k_CustodyDefinitions.sql
+:r .\000\k_CustodyDefinitions.sql
 :r .\000\l_ResourceDefinitions.sql
 :r .\000\m_AccountTypes.sql
 
@@ -79,30 +79,19 @@ BEGIN
 END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
-	:r .\106\00_Setup\106_1Currencies.sql
-	:r .\106\00_Setup\106_2EntryTypes.sql
-	:r .\106\00_Setup\106_3LookupDefinitions.sql
-	:r .\106\00_Setup\106_4ResourceDefinitions.sql
-	:r .\106\00_Setup\106_5CustodyDefinitions.sql
-	:r .\106\00_Setup\106_6RelationDefinitions.sql
-	:r .\106\01_Security\a_Users.sql
-	:r .\106\01_Security\b_Permissions.sql
-
-	:r .\106\02_Basic\a_Lookups.sql
-	:r .\106\02_Basic\b_Centers.sql
-	
-	:r .\106\05_Contracts\00_Agents.sql
-	:r .\106\05_Contracts\01_CashCustodians.sql
-	:r .\106\05_Contracts\02_InventoryCustodians.sql
-	:r .\106\05_Contracts\03_Customers.sql
-	:r .\106\05_Contracts\04_Debtors.sql
-	:r .\106\05_Contracts\05_Partners.sql
-	:r .\106\05_Contracts\06_Suppliers.sql
-	:r .\106\05_Contracts\07_Creditors.sql
-	:r .\106\05_Contracts\08_Employees.sql
-
-	--:r .\106\06_Accounts\a_AccountClassifications.sql
-	:r .\106\06_Accounts\b_Accounts.sql
+	:r .\106\106_01Currencies.sql
+	:r .\106\106_02EntryTypes.sql
+	:r .\106\106_03LookupDefinitions.sql
+	:r .\106\106_04ResourceDefinitions.sql
+	:r .\106\106_05CustodyDefinitions.sql
+	:r .\106\106_06RelationDefinitions.sql
+	:r .\106\106_07DocumentDefinitions.sql
+	:r .\106\106_11Users.sql
+	:r .\106\106_12Permissions.sql
+	:r .\106\106_13Workflows.sql
+	:r .\106\106_21Lookups.sql
+	:r .\106\106_22Centers.sql
+	:r .\106\106_31Accounts.sql
 END
 IF @DB = N'107' -- SSIA, SDG, en/ar
 BEGIN
