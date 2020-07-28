@@ -102,7 +102,7 @@ SET NOCOUNT ON;
 	-- Verify that workflow-less lines in Events can be in state posted
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],		[Memo])
-	SELECT	L.[Index],	L.[DocumentId],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
+	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM dbo.Lines L
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN map.Documents() D ON FE.[Id] = D.[Id]

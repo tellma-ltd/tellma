@@ -68,7 +68,7 @@ BEGIN
 				t.[DebitResourceId]			= s.[DebitResourceId],
 				t.[DebitResourceIsCommon]	= s.[DebitResourceIsCommon],
 				t.[CreditResourceId]		= s.[CreditResourceId],
-				t.[CreditResourceIsCommon]	= s.[CreditResourceId],
+				t.[CreditResourceIsCommon]	= s.[CreditResourceIsCommon],
 				t.[DebitCustodianId]		= s.[DebitCustodianId],
 				t.[DebitCustodianIsCommon]	= s.[DebitCustodianIsCommon],
 				t.[CreditCustodianId]		= s.[CreditCustodianId],

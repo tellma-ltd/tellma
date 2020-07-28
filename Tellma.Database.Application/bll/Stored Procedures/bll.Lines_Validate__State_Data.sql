@@ -122,7 +122,7 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].CustodianId',
 		N'Error_Field0IsRequired',
-		N'localize:Entry_Contract'
+		N'localize:Entry_Custodian'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]

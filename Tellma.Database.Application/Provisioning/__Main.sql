@@ -2,17 +2,18 @@
 :r .\000\b_AdminUser.sql
 IF @OverwriteDb = 0 RETURN
 
-:r .\000\d_RuleTypes.sql
-:r .\000\e_EntryTypes.sql
+:r .\000\c_Currencies.sql
+:r .\000\d_Units.sql
+:r .\000\e_RuleTypes.sql
+--:r .\000\f_IfrsConcepts.sql
+--:r .\000\g_IfrsDisclosures.sql
+:r .\000\h_EntryTypes.sql
+:r .\000\i_LookupDefinitions.sql
+:r .\000\j_RelationDefinitions.sql
+--:r .\000\k_CustodyDefinitions.sql
+:r .\000\l_ResourceDefinitions.sql
+:r .\000\m_AccountTypes.sql
 
-:r .\000\f_LookupDefinitions.sql
-:r .\000\g_RelationDefinitions.sql
-:r .\000\h_ResourceDefinitions.sql
-:r .\000\i_AccountTypes.sql
---:r .\000\j_IfrsConcepts.sql
---:r .\000\k_IfrsDisclosures.sql
-:r .\000\l_Currencies.sql
-:r .\000\m_Units.sql
 :r .\000\n_Settings.sql
 :r .\000\o_LineDefinitions.sql
 
@@ -40,7 +41,6 @@ BEGIN
 	:r .\100_105\04_Resources\a1_PPE_motor-vehicles.sql
 
 	:r .\100_105\04_Resources\d1_FG_vehicles.sql
-	--:r .\100_105\04_Resources\e1_CCE_received-checks.sql
 
 
 	:r .\100_105\05_Contracts\00_Agents.sql
@@ -67,7 +67,7 @@ BEGIN
 	:r .\101\30_Resources.sql
 	
 	:r .\101\40_Agents.sql
-	:r .\101\50_Contracts.sql
+	:r .\101\50_Relations.sql
 
 	:r .\101\60_AccountClassifications.sql
 	:r .\101\61_Accounts.sql
@@ -79,7 +79,12 @@ BEGIN
 END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
-	:r .\106\00_Setup\Script.sql
+	:r .\106\00_Setup\106_1Currencies.sql
+	:r .\106\00_Setup\106_2EntryTypes.sql
+	:r .\106\00_Setup\106_3LookupDefinitions.sql
+	:r .\106\00_Setup\106_4ResourceDefinitions.sql
+	:r .\106\00_Setup\106_5CustodyDefinitions.sql
+	:r .\106\00_Setup\106_6RelationDefinitions.sql
 	:r .\106\01_Security\a_Users.sql
 	:r .\106\01_Security\b_Permissions.sql
 

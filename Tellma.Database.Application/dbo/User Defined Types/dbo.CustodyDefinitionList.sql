@@ -1,11 +1,11 @@
-﻿CREATE TABLE [dbo].[RelationDefinitions]
-(
-	[Id]								INT				CONSTRAINT [PK_RelationDefinitions] PRIMARY KEY IDENTITY,
-	[Code]								NVARCHAR(50)	NOT NULL CONSTRAINT [IX_RelationDefinitions__Code] UNIQUE,
+﻿CREATE TYPE [dbo].[CustodyDefinitionList] AS TABLE (
+	[Index]								INT				PRIMARY KEY,
+	[Id]								INT				NOT NULL DEFAULT 0,
+	[Code]								NVARCHAR(50)	NOT NULL UNIQUE,
 	[TitleSingular]						NVARCHAR (50),
 	[TitleSingular2]					NVARCHAR (50),
 	[TitleSingular3]					NVARCHAR (50),
-	[TitlePlural]						NVARCHAR (50)	NOT NULL,
+	[TitlePlural]						NVARCHAR (50),
 	[TitlePlural2]						NVARCHAR (50),
 	[TitlePlural3]						NVARCHAR (50),
 	-----Contract properties common with resources
@@ -48,22 +48,22 @@
 	[Lookup1Label2]						NVARCHAR (50),
 	[Lookup1Label3]						NVARCHAR (50),
 	[Lookup1Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Lookup1Visibility] IN (N'None', N'Required', N'Optional')),
-	[Lookup1DefinitionId]				INT				CONSTRAINT [FK_RelationDefinitions__Lookup1DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup1DefinitionId]				INT,
 	[Lookup2Label]						NVARCHAR (50),
 	[Lookup2Label2]						NVARCHAR (50),
 	[Lookup2Label3]						NVARCHAR (50),
 	[Lookup2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Lookup2Visibility] IN (N'None', N'Optional', N'Required')),
-	[Lookup2DefinitionId]				INT				CONSTRAINT [FK_RelationDefinitions__Lookup2DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup2DefinitionId]				INT,
 	[Lookup3Label]						NVARCHAR (50),
 	[Lookup3Label2]						NVARCHAR (50),
 	[Lookup3Label3]						NVARCHAR (50),
 	[Lookup3Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Lookup3Visibility] IN (N'None', N'Optional', N'Required')),
-	[Lookup3DefinitionId]				INT				CONSTRAINT [FK_RelationDefinitions__Lookup3DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup3DefinitionId]				INT,
 	[Lookup4Label]						NVARCHAR (50),
 	[Lookup4Label2]						NVARCHAR (50),
 	[Lookup4Label3]						NVARCHAR (50),
 	[Lookup4Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Lookup4Visibility] IN (N'None', N'Optional', N'Required')),
-	[Lookup4DefinitionId]				INT				CONSTRAINT [FK_RelationDefinitions__Lookup4DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup4DefinitionId]				INT,
 
 	[Text1Label]						NVARCHAR (50),
 	[Text1Label2]						NVARCHAR (50),
@@ -76,7 +76,10 @@
 	[Text2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Text2Visibility] IN (N'None', N'Optional', N'Required')),
 
 	[Script]							NVARCHAR (MAX),
-	-----Properties applicable to contracts only
+
+	[RelationVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([RelationVisibility] IN (N'None', N'Optional', N'Required')),
+	[RelationDefinitionId]				INT,
+
 	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
@@ -85,15 +88,7 @@
 
 	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),
 
-	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),
-	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
-	[MainMenuSortKey]					DECIMAL (9,4),
-
-	[SavedById]			INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_RelationDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
-	[ValidFrom]			DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
-	[ValidTo]			DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
-	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])
-)
-WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[RelationDefinitionsHistory]));
-GO;
+	[MainMenuSection]					NVARCHAR (50),
+	[MainMenuSortKey]					DECIMAL (9,4)
+);

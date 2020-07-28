@@ -525,7 +525,7 @@ SET [GenerateScript] = N'
 WHERE [Index] = 111;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],				[Visibility],	[DataType],		[Filter]) VALUES
-(0,111,N'CustodianId0',	N'Bank Account',		N'Required',	N'Relation/' + CAST (@BankCD AS NVARCHAR(50)),	NULL),
+(0,111,N'CustodianId0',	N'Bank Account',		N'Required',	N'Relation/' + CAST (@BankAccountCD AS NVARCHAR(50)),	NULL),
 (1,111,N'CustodianId1',	N'Cashier',				N'Required',	N'Relation/' + CAST (@EmployeeCD AS NVARCHAR(50)),	NULL),
 (2,111,N'PostingDate',	N'As Of Date',			N'Required',	N'Date',	NULL);
 UPDATE @LineDefinitions
@@ -609,6 +609,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,121,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
 (7,121,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (8,121,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
+*/
+
 --300:CashPaymentToTradePayable: Supplier (=> Cash Purchase Voucher),-- CashPaymentToEmployee (=> Employee Payment Voucher),-- CashPaymentToCustomer (=> Customer refund Voucher)
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -628,13 +630,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,300,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,300,	N'ResourceId',			0,	N'Supplier Payable',3,4,1),
+(1,300,	N'NoteRelationId',		0,	N'Supplier',		3,4,1),
 (2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
 (3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
-(4,300,	N'CustodianId',			1,	N'Cashier',			3,4,0),
+(4,300,	N'CustodianId',			1,	N'Safe/Bank Account',3,4,0),
 (5,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
 (6,300,	N'NotedDate',			1,	N'Check Date',		4,4,0),
 (7,300,	N'PostingDate',			1,	N'Paid On',			1,4,1);
+
+/*
 --400:CashReceiptFromTradeReceivable
 UPDATE @LineDefinitions
 SET [Script] = N'
