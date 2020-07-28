@@ -138,11 +138,11 @@
     <t-form-group class="t-form-group" [label]="Participant_label" *ngIf="Participant_isVisible"
         [serverErrors]="model?.serverErrors?.ParticipantId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Participant">
-            <t-view-link [link]="'../../../relations/' + Participant_definitionIds()[0]" [itemId]="model?.ParticipantId">
+            <t-view-link [link]="'../../../relations/' + Participant_definitionIds[0]" [itemId]="model?.ParticipantId">
                 {{ ws.getMultilingualValue('Relation', model.ParticipantId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantId" [definitionIds]="Participant_definitionIds()"
+        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantId" [definitionIds]="Participant_definitionIds"
             [required]="Participant_isRequired">
         </t-relations-picker>
     </t-form-group>

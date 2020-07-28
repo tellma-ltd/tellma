@@ -524,7 +524,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public Participant_definitionIds(model: Resource): number[] {
+  public get Participant_definitionIds(): number[] {
     return [this.definition.ParticipantDefinitionId];
   }
 

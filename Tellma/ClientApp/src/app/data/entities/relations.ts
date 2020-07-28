@@ -201,7 +201,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Navigation properties
-      for (const propName of ['Currency', 'Center', 'Agent', 'Job']) {
+      for (const propName of ['Currency', 'Center', 'Agent'/*, 'Job'*/]) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
               delete entityDesc.properties[propName + 'Id'];
