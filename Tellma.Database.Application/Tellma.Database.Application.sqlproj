@@ -652,6 +652,7 @@
     <Build Include="api\Stored Procedures\api.Custodies__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Custodies__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__UpdateState.sql" />
+    <None Include="Provisioning\000\k_CustodyDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
