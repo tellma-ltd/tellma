@@ -73,7 +73,7 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[Centers] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
-	
+
 	-- Whether there are multiple active segments is an important cached value of the settings
 	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
 

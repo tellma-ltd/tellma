@@ -1,7 +1,7 @@
 ﻿INSERT INTO @CustodyDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility],[BankAccountNumberVisibility], [RelationVisibility],[RelationDefinitionId]) VALUES
 (0, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135,N'Required', N'None', N'None', N'None', N'Optional',NULL),
 (1, N'Safe', N'Safe', N'Safes', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeCD),
-(2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Required', N'Optional', N'Optional', N'None', N'Optional',@EmployeeCD),
+(2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'None', N'Optional',@EmployeeCD),
 (3, N'PPECustody', N'Fixed Asset Custody', N'Fixed Assets Custodies', N'user-shield', N'FixedAssets',150,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeCD),
 (4, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None', N'None',NULL);
 

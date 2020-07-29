@@ -197,7 +197,7 @@ SET [GenerateScript] = N'
 WHERE [Index] = 91;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
-(0,91,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''ProductionExpenseControl'''),
+(0,91,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''WorkInProgressExpendituresControl'''),
 (1,91,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
@@ -275,7 +275,7 @@ SET [GenerateScript] = N'
 WHERE [Index] = 92;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
-(0,92,N'CenterId',		N'Scheme',		N'Required',	N'Center',	N'CenterType = ''ConstructionExpenseControl'''),
+(0,92,N'CenterId',		N'Scheme',		N'Required',	N'Center',	N'CenterType = ''ConstructionInProgressExpendituresControl'''),
 (1,92,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
@@ -353,7 +353,7 @@ SET [GenerateScript] = N'
 WHERE [Index] = 93;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],		[Visibility],	[DataType],	[Filter]) VALUES
-(0,93,N'CenterId',		N'Shipment',		N'Required',	N'Center',	N'CenterType = ''TransitExpenseControl'''),
+(0,93,N'CenterId',		N'Shipment',		N'Required',	N'Center',	N'CenterType = ''CurrentInventoriesInTransitExpendituresControl'''),
 (1,93,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId]) VALUES
@@ -617,8 +617,8 @@ SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId0],
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [CustodianId0]),
-		[CenterId0]			= [CenterId1]
+		[MonetaryValue1]	= [MonetaryValue0],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
 '
 WHERE [Index] = 300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -630,13 +630,44 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,300,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,300,	N'NoteRelationId',		0,	N'Supplier',		3,4,1),
+(1,300,	N'NotedRelationId',		0,	N'Supplier',		3,4,1),
 (2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
 (3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
 (4,300,	N'CustodianId',			1,	N'Safe/Bank Account',3,4,0),
 (5,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
-(6,300,	N'NotedDate',			1,	N'Check Date',		4,4,0),
-(7,300,	N'PostingDate',			1,	N'Paid On',			1,4,1);
+(6,300,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
+(7,300,	N'PostingDate',			1,	N'Paid On',			1,4,1),
+(8,300,	N'CenterId',			0,	N'Business Unit',	1,4,1);
+
+
+--302:StockReceiptFromTradePayable:
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE @ProcessedWideLines
+	SET
+		[CurrencyId1]		= [CurrencyId0],
+		[MonetaryValue1]	= [MonetaryValue0],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
+'
+WHERE [Index] = 302;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+(0,302,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
+(1,302,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,302,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,302,	N'NotedRelationId',		0,	N'Supplier',		3,4,1),
+(2,302,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
+(3,302,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
+(4,302,	N'CustodianId',			1,	N'Safe/Bank Account',3,4,0),
+(5,302,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
+(6,302,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
+(7,302,	N'PostingDate',			1,	N'Paid On',			1,4,1),
+(8,302,	N'CenterId',			0,	N'Business Unit',	1,4,1);
+
 
 /*
 --400:CashReceiptFromTradeReceivable

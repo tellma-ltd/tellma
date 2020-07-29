@@ -97,7 +97,29 @@ SET NOCOUNT ON;
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
-	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
+	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId];
+
+	-- To do: cannot close a document with a control account having non zero balance
+	WITH ControlAccountTypes AS (
+		SELECT [Id]
+		FROM dbo.AccountTypes
+		WHERE [Node].IsDescendantOf(
+			(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountsExtension')
+		) = 1
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT
+		'[' + CAST(D.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentHasControlAccount0WithNetBalance1' AS [ErrorName],
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) As AccountName,
+		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetBalance
+	FROM @Ids D
+	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
+	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
+	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3])
+	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 
 	-- Verify that workflow-less lines in Events can be in state posted
 	INSERT INTO @Lines(
@@ -153,8 +175,6 @@ SET NOCOUNT ON;
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
-
-	-- To do: cannot close a document with a control account having non zero balance
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]

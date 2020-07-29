@@ -45,10 +45,10 @@ BEGIN
 	(2,0,	N'Steel',					N'2',	N'BusinessUnit'),
 	(200,2,	N'Steel - Sales',			N'200',	N'CostOfSales'),
 	(21,2,	N'Production',				N'21',	N'Abstract'),
-	(210,21,N'Production Management',	N'210',	N'ProductionExpenseControl'),
-	(211,21,N'Slitting Dept',			N'211',	N'ProductionExpenseControl'),
-	(212,21,N'HSP Dept',				N'212',	N'ProductionExpenseControl'),
-	(213,21,N'Cut to Size Dept',		N'213',	N'ProductionExpenseControl'),	
+	(210,21,N'Production Management',	N'210',	N'WorkInProgressExpendituresControl'),
+	(211,21,N'Slitting Dept',			N'211',	N'WorkInProgressExpendituresControl'),
+	(212,21,N'HSP Dept',				N'212',	N'WorkInProgressExpendituresControl'),
+	(213,21,N'Cut to Size Dept',		N'213',	N'WorkInProgressExpendituresControl'),	
 
 	(3,0,	N'Other Income',			N'3',	N'Abstract'), -- 
 	(301,3,	N'T/H Bldg',				N'301',	N'BusinessUnit'), -- Bldg Manager

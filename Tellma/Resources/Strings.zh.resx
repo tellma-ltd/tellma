@@ -268,13 +268,13 @@
   <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
     <value>业务部</value>
   </data>
-  <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
+  <data name="Center_CenterType_ConstructionInProgressExpendituresControl" xml:space="preserve">
     <value>工程费用</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>销售成本</value>
   </data>
-  <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
+  <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>生产费用</value>
   </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
@@ -283,7 +283,7 @@
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>共享费用</value>
   </data>
-  <data name="Center_CenterType_TransitExpenseControl" xml:space="preserve">
+  <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>运输费用</value>
   </data>
   <data name="Center_IsSegment" xml:space="preserve">

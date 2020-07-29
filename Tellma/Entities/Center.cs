@@ -24,9 +24,9 @@ namespace Tellma.Entities
             "CostOfSales",
             "SellingGeneralAndAdministration", 
             "SharedExpenseControl",
-            "TransitExpenseControl", 
-            "ConstructionExpenseControl", 
-            "ProductionExpenseControl"
+            "CurrentInventoriesInTransitExpendituresControl", 
+            "ConstructionInProgressExpendituresControl", 
+            "WorkInProgressExpendituresControl"
         },
             new string[] {
                 "Center_CenterType_Abstract",
@@ -34,9 +34,9 @@ namespace Tellma.Entities
                 "Center_CenterType_CostOfSales",
                 "Center_CenterType_SellingGeneralAndAdministration",
                 "Center_CenterType_SharedExpenseControl",
-                "Center_CenterType_TransitExpenseControl",
-                "Center_CenterType_ConstructionExpenseControl",
-                "Center_CenterType_ProductionExpenseControl",
+                "Center_CenterType_CurrentInventoriesInTransitExpendituresControl",
+                "Center_CenterType_ConstructionInProgressExpendituresControl",
+                "Center_CenterType_WorkInProgressExpendituresControl",
             })]
         public string CenterType { get; set; }
 

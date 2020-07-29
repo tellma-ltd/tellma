@@ -14,9 +14,9 @@
                 { template: cos, expression: 'CenterType eq \'CostOfSales\''},
                 { template: selling, expression: 'CenterType eq \'SellingGeneralAndAdministration\''},
                 { template: shared, expression: 'CenterType eq \'SharedExpenseControl\''},
-                { template: transit, expression: 'CenterType eq \'TransitExpenseControl\''},
-                { template: construction, expression: 'CenterType eq \'ConstructionExpenseControl\''},
-                { template: production, expression: 'CenterType eq \'ProductionExpenseControl\''}
+                { template: transit, expression: 'CenterType eq \'CurrentInventoriesInTransitExpendituresControl\''},
+                { template: construction, expression: 'CenterType eq \'ConstructionInProgressExpendituresControl\''},
+                { template: production, expression: 'CenterType eq \'WorkInProgressExpendituresControl\''}
             ]
           }">
 </t-master>
@@ -53,6 +53,6 @@
 <ng-template #cos> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>
 <ng-template #selling> {{ 'Center_CenterType_SellingGeneralAndAdministration' | translate }} </ng-template>
 <ng-template #shared> {{ 'Center_CenterType_SharedExpenseControl' | translate }} </ng-template>
-<ng-template #transit> {{ 'Center_CenterType_TransitExpenseControl' | translate }} </ng-template>
-<ng-template #construction> {{ 'Center_CenterType_ConstructionExpenseControl' | translate }} </ng-template>
-<ng-template #production> {{ 'Center_CenterType_ProductionExpenseControl' | translate }} </ng-template>
+<ng-template #transit> {{ 'Center_CenterType_CurrentInventoriesInTransitExpendituresControl' | translate }} </ng-template>
+<ng-template #construction> {{ 'Center_CenterType_ConstructionInProgressExpendituresControl' | translate }} </ng-template>
+<ng-template #production> {{ 'Center_CenterType_WorkInProgressExpendituresControl' | translate }} </ng-template>

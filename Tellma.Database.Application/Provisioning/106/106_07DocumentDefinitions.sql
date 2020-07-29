@@ -13,8 +13,9 @@ WHERE [Id] IN
 DELETE FROM @DocumentDefinitionLineDefinitions
 INSERT @DocumentDefinitionLineDefinitions([Index],
 [HeaderIndex],						[LineDefinitionId],				[IsVisibleByDefault]) VALUES
-(1,@CashPurchaseVoucherDD,	@CashPaymentToTradePayableLD,	1),
-(2,@CashPaymentVoucherDD,	@CashPaymentToTradePayableLD,	1)
+(1,@CashPurchaseVoucherDD,			@CashPaymentToTradePayableLD,	1),
+(2,@CashPurchaseVoucherDD,			@ManualLineLD,					0),
+(3,@CashPaymentVoucherDD,			@CashPaymentToTradePayableLD,	1)
 
 ;
 

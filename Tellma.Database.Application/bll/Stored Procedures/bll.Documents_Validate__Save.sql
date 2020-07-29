@@ -63,6 +63,149 @@ SET NOCOUNT ON;
 	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
 
+	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
+	WITH ExpendituresParentAccountTypes AS (
+		SELECT [Node]
+		FROM dbo.[AccountTypes]
+		WHERE [Concept] IN (
+			N'ConstructionInProgress',
+			N'InvestmentPropertyUnderConstructionOrDevelopment',
+			N'WorkInProgress',
+			N'ExpenseByNature'
+		)
+	),
+	ExpendituresAccountTypes AS (
+		SELECT ATC.[Id]
+		FROM dbo.[AccountTypes] ATC
+		JOIN ExpendituresParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+	),
+	ExpendituresAccounts AS (
+		SELECT [Id] FROM dbo.Accounts
+		WHERE AccountTypeId IN (SELECT [Id] FROM ExpendituresAccountTypes)
+	),
+	DirectParentAccountTypes AS (
+		SELECT [Node]
+		FROM dbo.[AccountTypes]
+		WHERE [Concept] IN (
+			N'Revenue', N'CostOfMerchandiseSold'
+		)
+	),
+	DirectAccountTypes AS (
+		SELECT ATC.[Id]
+		FROM dbo.[AccountTypes] ATC
+		JOIN DirectParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+	),
+	DirectAccounts AS (
+		SELECT [Id] FROM dbo.Accounts
+		WHERE AccountTypeId IN (SELECT [Id] FROM DirectAccountTypes)
+	),
+	BusinessUnitAccounts AS (
+		SELECT [Id] FROM dbo.Accounts
+		EXCEPT
+		SELECT [Id] FROM ExpendituresAccounts
+		EXCEPT
+		SELECT [Id] FROM DirectAccountTypes
+	),
+	ConstructionInProgressAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
+		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		WHERE ATP.[Concept] = N'ConstructionInProgress'
+	), -- 
+	InvestmentPropertyUnderConstructionOrDevelopmentAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
+		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		WHERE ATP.[Concept] = N'InvestmentPropertyUnderConstructionOrDevelopment'
+	), 
+	WorkInProgressAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
+		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		WHERE ATP.[Concept] = N'WorkInProgress'
+	),
+	CurrentInventoriesInTransitAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
+		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsAbstract'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE C.[CenterType] = N'Abstract'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotBusinessUnit'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM BusinessUnitAccounts) AND C.CenterType <> N'BusinessUnit'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotCostOfSaleCenter'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM DirectAccounts) AND C.[CenterType] <> N'CostOfSales'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotLeaf'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM ExpendituresAccounts) AND C.[IsLeaf] = 0
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotConstructionInProgressExpendituresCenter'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM ConstructionInProgressAccounts)  AND C.[CenterType] <> N'ConstructionInProgressExpendituresControl'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotInvestmentPropertyUnderConstructionOrDevelopmentExpendituresCenter'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM InvestmentPropertyUnderConstructionOrDevelopmentAccounts)  AND C.[CenterType] <> N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotWorkInProgressExpendituresCenter'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM WorkInProgressAccounts)  AND C.[CenterType] <> N'WorkInProgressExpendituresControl'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Center0IsNotCurrentInventoriesInTransitExpendituresCenter'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'CurrentInventoriesInTransitExpendituresControl'
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--             Smart Screen Validation
