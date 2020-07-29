@@ -587,7 +587,7 @@
                             <t-centers-picker *ngSwitchCase="'CenterId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)" filter="IsLeaf eq true"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-centers-picker>
                             <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
@@ -1434,7 +1434,7 @@
         <ng-container *ngIf="isEdit && !bookkeeping">
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
                 <t-centers-picker *ngIf="!readonlyCenter_Manual(entry)" [(ngModel)]="entry.CenterId"
-                    (ngModelChange)="update.call(null, pair);" filter="IsLeaf eq true">
+                    (ngModelChange)="update.call(null, pair);">
                 </t-centers-picker>
                 <t-restricted *ngIf="readonlyCenter_Manual(entry)" [metadata]="entry.EntityMetadata?.CenterId">
                     {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual(entry), 'Name') }}

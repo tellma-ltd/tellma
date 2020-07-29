@@ -82,7 +82,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<Role> Search(Query<Role> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Role> Search(Query<Role> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -205,24 +205,27 @@ namespace Tellma.Controllers
         private async Task<(List<Role>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.Roles__Activate(ids, isActive);
 
+            List<Role> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return (data, extras);
-            }
-            else
-            {
-                trx.Complete();
-                return (null, null);
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
         }
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)

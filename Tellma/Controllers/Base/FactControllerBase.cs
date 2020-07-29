@@ -372,41 +372,29 @@ namespace Tellma.Controllers
             var select = ParseSelect(args.Select);
 
             block.Dispose();
-            block = _instrumentation.Block("Prepare the Query");
+            block = _instrumentation.Block("Create Query");
 
             // Prepare the query
             var query = GetRepository().Query<TEntity>();
 
             block.Dispose();
-            block = _instrumentation.Block("Retrieve Permissions");
-
-            // Retrieve the user permissions for the current view
-            var permissions = await UserPermissions(Constants.Read, cancellation);
-
-            block.Dispose();
-            block = _instrumentation.Block("Process and Apply permissions");
-
-            // Filter out permissions with masks that would be violated by the filter or order by arguments
-            var defaultMask = GetDefaultMask() ?? new MaskTree();
-            var permissionsCount = permissions.Count();
-            permissions = FilterViolatedPermissionsForFlatQuery(permissions, defaultMask, filter, orderby);
-            var filteredPermissionsCount = permissions.Count();
-            bool isPartial = permissionsCount != filteredPermissionsCount;
+            block = _instrumentation.Block("Retrieve and Apply Permissions");
 
             // Apply read permissions
-            var permissionsFilter = GetReadPermissionsCriteria(permissions);
+            var permissionsFilter = await UserPermissionsFilter(Constants.Read, cancellation);
             query = query.Filter(permissionsFilter);
+            bool isPartial = false;
 
             block.Dispose();
             block = _instrumentation.Block("Apply Arguments");
 
-            // Search
-            query = Search(query, args, permissions);
-
-            // Filter
+            // Apply search
+            query = Search(query, args);
+            
+            // Apply filter
             query = query.Filter(filter);
-
-            // OrderBy
+            
+            // Apply orderby
             query = OrderBy(query, orderby);
 
             // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
@@ -416,10 +404,10 @@ namespace Tellma.Controllers
             query = query.Skip(skip).Top(top);
 
             // Apply the expand, which has the general format 'Expand=A,B/C,D'
-            var expandedQuery = query.Expand(expand);
+            query = query.Expand(expand);
 
             // Apply the select, which has the general format 'Select=A,B/C,D'
-            expandedQuery = expandedQuery.Select(select);
+            query = query.Select(select);
 
             block.Dispose();
             block = _instrumentation.Block("Load data & count");
@@ -429,20 +417,14 @@ namespace Tellma.Controllers
             int? count = 0;
             if (args.CountEntities)
             {
-                (data, count) = await expandedQuery.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
+                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
             } 
             else
             {
-                data = await expandedQuery.ToListAsync(cancellation);
+                data = await query.ToListAsync(cancellation);
             }
 
             var extras = await GetExtras(data, cancellation);
-
-            block.Dispose();
-            block = _instrumentation.Block("Apply read permissions mask");
-
-            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            await ApplyReadPermissionsMask(data, query, permissions, defaultMask, cancellation);
 
             block.Dispose();
 
@@ -462,21 +444,10 @@ namespace Tellma.Controllers
             // Prepare the query
             var query = GetRepository().AggregateQuery<TEntity>();
 
-            // Retrieve the user permissions for the current view
-            var permissions = await UserPermissions(Constants.Read, cancellation);
-            var permissionsCount = permissions.Count();
-
-            // Filter out permissions with masks that would be violated by the filter argument
-            // orderby on the other hand is always mandated to be a subset of the selected parameters
-            // and those in turn must be universally visible to the user, so no need to check orderby
-            var defaultMask = GetDefaultMask() ?? new MaskTree();
-            permissions = FilterViolatedPermissionsForAggregateQuery(permissions, defaultMask, filter, select);
-            var filteredPermissionCount = permissions.Count();
-            var isPartial = permissionsCount != filteredPermissionCount;
-
-            // Apply read permissions
-            FilterExpression permissionsCriteria = GetReadPermissionsCriteria(permissions);
-            query = query.Filter(permissionsCriteria);
+            // Retrieve and Apply read permissions
+            var permissionsFilterExp = await UserPermissionsFilter(Constants.Read, cancellation);
+            query = query.Filter(permissionsFilterExp); // Important
+            var isPartial = false;
 
             // Filter
             query = query.Filter(filter);
@@ -526,122 +497,13 @@ namespace Tellma.Controllers
         protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
 
         /// <summary>
-        /// If the user has no permission masks defined (can see all), this mask is used.
-        /// This makes it easier to setup permissions such that a user cannot see employee
-        /// salaries for example, since without this, the user can "expand" the Entity tree 
-        /// all the way to the salaries if s/he has access to any Entity from which the employee entity is reachable
-        /// </summary>
-        /// <returns></returns>
-        protected virtual MaskTree GetDefaultMask()
-        {
-            // TODO implement
-            return new MaskTree();
-        }
-
-        /// <summary>
-        /// Removes from the permissions all permissions that would be violated by the filter or order by, the behavior
-        /// of the system here is that when a user orders by a field that she has no full access too, she only sees the
-        /// rows where she can see that field, sometimes resulting in a shorter list, this is to prevent the user gaining
-        /// any insight over fields she has no access to by filter or order the data
-        /// </summary>
-        protected IEnumerable<AbstractPermission> FilterViolatedPermissionsForFlatQuery(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, FilterExpression filter, OrderByExpression orderby)
-        {
-            // Step 1 - Build the "User Mask", i.e the mask containing the fields mentioned in the relevant components of the user query
-            var userMask = MaskTree.BasicFieldsMaskTree();
-            userMask = UpdateUserMaskAsPerFilter(filter, userMask);
-            userMask = UpdateUserMaskAsPerOrderBy(orderby, userMask);
-
-            // Filter out those permissions whose mask does not cover the entire user mask
-            return FilterViolatedPermissionsInner(permissions, defaultMask, userMask);
-        }
-
-        /// <summary>
-        /// Removes from the permissions all permissions that would be violated by the filter or aggregate select, the behavior
-        /// of the system here is that when a user orders by a field that she has no full access too, she only sees the
-        /// rows where she can see that field, sometimes resulting in a shorter list, this is to prevent the user gaining
-        /// any insight over fields she has no access to by filter or order the data
-        /// </summary>
-        protected IEnumerable<AbstractPermission> FilterViolatedPermissionsForAggregateQuery(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, FilterExpression filter, AggregateSelectExpression select)
-        {
-            // Step 1 - Build the "User Mask", i.e the mask containing the fields mentioned in the relevant components of the user query
-            var userMask = MaskTree.BasicFieldsMaskTree();
-            userMask = UpdateUserMaskAsPerFilter(filter, userMask);
-            userMask = UpdateUserMaskAsPerAggregateSelect(select, userMask);
-
-            // Filter out those permissions whose mask does not cover the entire user mask
-            return FilterViolatedPermissionsInner(permissions, defaultMask, userMask);
-        }
-
-        private MaskTree UpdateUserMaskAsPerFilter(FilterExpression filter, MaskTree userMask)
-        {
-            if (filter != null)
-            {
-                var filterPaths = filter.Select(e => (e.Path, e.Property));
-                var filterMask = MaskTree.GetMaskTree(filterPaths);
-                var filterAccess = Normalize(filterMask);
-
-                userMask = userMask.UnionWith(filterAccess);
-            }
-
-            return userMask;
-        }
-
-        private MaskTree UpdateUserMaskAsPerOrderBy(OrderByExpression orderby, MaskTree userMask)
-        {
-            if (orderby != null)
-            {
-                var orderbyPaths = orderby.Select(e => string.Join("/", e.Path.Union(new string[] { e.Property })));
-                var orderbyMask = MaskTree.GetMaskTree(orderbyPaths);
-                var orderbyAccess = Normalize(orderbyMask);
-
-                userMask = userMask.UnionWith(orderbyAccess);
-            }
-
-            return userMask;
-        }
-
-        private MaskTree UpdateUserMaskAsPerAggregateSelect(AggregateSelectExpression select, MaskTree userMask)
-        {
-            if (select != null)
-            {
-                var aggSelectPaths = select.Select(e => (e.Path, e.Property));
-                var aggSelectMask = MaskTree.GetMaskTree(aggSelectPaths);
-                var aggSelectAccess = Normalize(aggSelectMask);
-
-                userMask = userMask.UnionWith(aggSelectAccess);
-            }
-
-            return userMask;
-        }
-
-        private MaskTree Normalize(MaskTree tree)
-        {
-            tree.Validate(typeof(TEntity), _localizer);
-            tree.Normalize(typeof(TEntity));
-
-            return tree;
-        }
-
-        private IEnumerable<AbstractPermission> FilterViolatedPermissionsInner(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, MaskTree userMask)
-        {
-            defaultMask = Normalize(defaultMask);
-            return permissions.Where(e =>
-            {
-                var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.Parse(e.Mask));
-                return permissionMask.Covers(userMask);
-            });
-        }
-
-        /// <summary>
-        /// If the user has no permissions, throw a forbidden Exception.
-        /// Else if the user is subject to row-level access, apply it as a filter to the query
-        /// Else if the user has full access let execution pass unhindred
-        /// </summary>
-        protected virtual FilterExpression GetReadPermissionsCriteria(IEnumerable<AbstractPermission> permissions)
+        /// Retrieves the user permissions for the given action and parses them in the form of an <see cref="FilterExpression"/>
+        /// </summary>        
+        protected async Task<FilterExpression> UserPermissionsFilter(string action, CancellationToken cancellation)
         {
             // Check if the user has any permissions on View at all, else throw forbidden exception
-            // If the user has some permissions on View, OR all their criteria together and apply the where clause
-
+            // If the user has some permissions on View, OR all their criteria together and return as a FilterExpression
+            var permissions = await UserPermissions(action, cancellation);
             if (!permissions.Any())
             {
                 // Not even authorized to call this API
@@ -654,18 +516,134 @@ namespace Tellma.Controllers
             }
             else
             {
-                // The user has access to part of the data set based on a list of filters that will 
-                // be ORed together in a dynamic query
-                IEnumerable<string> criteriaList = permissions.Select(e => e.Criteria);
-                var oredCrtieria = criteriaList.Aggregate((l1, l2) => $"({l1}) or ({l2})");
-                return FilterExpression.Parse(oredCrtieria);
+                // The user has access to part of the data set based on a list
+                // of filters that will  be ORed together in a dynamic query
+                return permissions.Select(e => FilterExpression.Parse(e.Criteria))
+                        .Aggregate((e1, e2) => FilterDisjunction.Make(e1, e2));
             }
         }
+
+        ///// <summary>
+        ///// If the user has no permission masks defined (can see all), this mask is used.
+        ///// This makes it easier to setup permissions such that a user cannot see employee
+        ///// salaries for example, since without this, the user can "expand" the Entity tree 
+        ///// all the way to the salaries if s/he has access to any Entity from which the employee entity is reachable
+        ///// </summary>
+        ///// <returns></returns>
+        //protected virtual MaskTree GetDefaultMask()
+        //{
+        //    // TODO implement
+        //    return new MaskTree();
+        //}
+
+        ///// <summary>
+        ///// Removes from the permissions all permissions that would be violated by the filter or order by, the behavior
+        ///// of the system here is that when a user orders by a field that she has no full access too, she only sees the
+        ///// rows where she can see that field, sometimes resulting in a shorter list, this is to prevent the user gaining
+        ///// any insight over fields she has no access to by filter or order the data
+        ///// </summary>
+        //protected IEnumerable<AbstractPermission> FilterViolatedPermissionsForFlatQuery(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, FilterExpression filter, OrderByExpression orderby)
+        //{
+        //    // Step 1 - Build the "User Mask", i.e the mask containing the fields mentioned in the relevant components of the user query
+        //    var userMask = MaskTree.BasicFieldsMaskTree();
+        //    userMask = UpdateUserMaskAsPerFilter(filter, userMask);
+        //    userMask = UpdateUserMaskAsPerOrderBy(orderby, userMask);
+
+        //    // Filter out those permissions whose mask does not cover the entire user mask
+        //    return FilterViolatedPermissionsInner(permissions, defaultMask, userMask);
+        //}
+
+        ///// <summary>
+        ///// Removes from the permissions all permissions that would be violated by the filter or aggregate select, the behavior
+        ///// of the system here is that when a user orders by a field that she has no full access too, she only sees the
+        ///// rows where she can see that field, sometimes resulting in a shorter list, this is to prevent the user gaining
+        ///// any insight over fields she has no access to by filter or order the data
+        ///// </summary>
+        //protected IEnumerable<AbstractPermission> FilterViolatedPermissionsForAggregateQuery(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, FilterExpression filter, AggregateSelectExpression select)
+        //{
+        //    // Step 1 - Build the "User Mask", i.e the mask containing the fields mentioned in the relevant components of the user query
+        //    var userMask = MaskTree.BasicFieldsMaskTree();
+        //    userMask = UpdateUserMaskAsPerFilter(filter, userMask);
+        //    userMask = UpdateUserMaskAsPerAggregateSelect(select, userMask);
+
+        //    // Filter out those permissions whose mask does not cover the entire user mask
+        //    return FilterViolatedPermissionsInner(permissions, defaultMask, userMask);
+        //}
+
+        //private MaskTree UpdateUserMaskAsPerFilter(FilterExpression filter, MaskTree userMask)
+        //{
+        //    if (filter != null)
+        //    {
+        //        var filterPaths = filter.Select(e => (e.Path, e.Property));
+        //        var filterMask = MaskTree.GetMaskTree(filterPaths);
+        //        var filterAccess = Normalize(filterMask);
+
+        //        userMask = userMask.UnionWith(filterAccess);
+        //    }
+
+        //    return userMask;
+        //}
+
+        //private MaskTree UpdateUserMaskAsPerOrderBy(OrderByExpression orderby, MaskTree userMask)
+        //{
+        //    if (orderby != null)
+        //    {
+        //        var orderbyPaths = orderby.Select(e => string.Join("/", e.Path.Union(new string[] { e.Property })));
+        //        var orderbyMask = MaskTree.GetMaskTree(orderbyPaths);
+        //        var orderbyAccess = Normalize(orderbyMask);
+
+        //        userMask = userMask.UnionWith(orderbyAccess);
+        //    }
+
+        //    return userMask;
+        //}
+
+        //private MaskTree UpdateUserMaskAsPerAggregateSelect(AggregateSelectExpression select, MaskTree userMask)
+        //{
+        //    if (select != null)
+        //    {
+        //        var aggSelectPaths = select.Select(e => (e.Path, e.Property));
+        //        var aggSelectMask = MaskTree.GetMaskTree(aggSelectPaths);
+        //        var aggSelectAccess = Normalize(aggSelectMask);
+
+        //        userMask = userMask.UnionWith(aggSelectAccess);
+        //    }
+
+        //    return userMask;
+        //}
+
+        //private MaskTree Normalize(MaskTree tree)
+        //{
+        //    tree.Validate(typeof(TEntity), _localizer);
+        //    tree.Normalize(typeof(TEntity));
+
+        //    return tree;
+        //}
+
+        //private IEnumerable<AbstractPermission> FilterViolatedPermissionsInner(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, MaskTree userMask)
+        //{
+        //    defaultMask = Normalize(defaultMask);
+        //    return permissions.Where(e =>
+        //    {
+        //        var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.Parse(e.Mask));
+        //        return permissionMask.Covers(userMask);
+        //    });
+        //}
+
+        ///// <summary>
+        ///// If the user has no permissions, throw a <see cref="ForbiddenException"/>.
+        ///// Else if the user is subject to row-level access, return the query filter to apply
+        ///// Else if the user has full => return a null filter
+        ///// </summary>
+        //protected virtual FilterExpression GetPermissionsFilter(IEnumerable<AbstractPermission> permissions)
+        //{
+
+        //}
 
         /// <summary>
         /// Applies the search argument, which is handled differently in every controller
         /// </summary>
-        protected abstract Query<TEntity> Search(Query<TEntity> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions);
+        protected abstract Query<TEntity> Search(Query<TEntity> query, GetArguments args);
 
         /// <summary>
         /// Orders the query as per the orderby and desc arguments
@@ -695,20 +673,20 @@ namespace Tellma.Controllers
             return DEFAULT_MAX_PAGE_SIZE;
         }
 
-        /// <summary>
-        /// If the user is subject to field-level access control, this method hides all the fields
-        /// that the user has no access to and modifies the metadata of the Entities accordingly
-        /// </summary>
-        protected virtual Task ApplyReadPermissionsMask(
-            List<TEntity> resultEntities,
-            Query<TEntity> query,
-            IEnumerable<AbstractPermission> permissions,
-            MaskTree defaultMask,
-            CancellationToken cancellation)
-        {
-            // TODO: is there a solution to this?
-            return Task.CompletedTask;
-        }
+        ///// <summary>
+        ///// If the user is subject to field-level access control, this method hides all the fields
+        ///// that the user has no access to and modifies the metadata of the Entities accordingly
+        ///// </summary>
+        //protected virtual Task ApplyReadPermissionsMask(
+        //    List<TEntity> resultEntities,
+        //    Query<TEntity> query,
+        //    IEnumerable<AbstractPermission> permissions,
+        //    MaskTree defaultMask,
+        //    CancellationToken cancellation)
+        //{
+        //    // TODO: is there a solution to this?
+        //    return Task.CompletedTask;
+        //}
 
         /// <summary>
         /// Gives controllers the chance to include custom data with all GET responses

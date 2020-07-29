@@ -59,7 +59,7 @@ namespace Tellma.Controllers
             return Task.FromResult(TempUtil.UserPermissions(VIEW));
         }
 
-        protected override Query<VoucherBooklet> Search(Query<VoucherBooklet> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<VoucherBooklet> Search(Query<VoucherBooklet> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

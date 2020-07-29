@@ -83,7 +83,7 @@ namespace Tellma.Controllers
             var select = ParseSelect(args?.Select);
 
             // Load the data
-            var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, cancellation);
+            var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, null,  cancellation);
 
             // Check that the entity exists, else return NotFound
             var entity = data.SingleOrDefault();

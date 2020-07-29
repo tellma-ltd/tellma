@@ -1631,21 +1631,23 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.actionValidationErrors = {};
 
     this.crud.delete(ids).pipe(tap(
-      () => {
-        // Update the UI to reflect deletion of items
-        this.state.delete(ids, this.workspace.current[this.state.collectionName]);
-        this.checked = {};
-        if (this.displayedIds.length === 0 && this.total > 0) {
-          // auto refresh if the user deleted the entire page
-          this.fetch();
-        }
-      },
+      () => this.onSuccessfulDelete(ids),
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
     ),
       finalize(() => this.cdr.markForCheck())
     ).subscribe();
+  }
+
+  public onSuccessfulDelete = (ids: (string | number)[]) => {
+    // Update the UI to reflect deletion of items
+    this.state.delete(ids, this.workspace.current[this.state.collectionName]);
+    this.checked = {};
+    if (this.displayedIds.length === 0 && this.total > 0) {
+      // auto refresh if the user deleted the entire page
+      this.fetch();
+    }
   }
 
   public onDeleteFromContextMenu(id: string | number, deleteModal: TemplateRef<any>) {

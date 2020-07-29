@@ -76,11 +76,6 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override Query<ExchangeRate> GetAsQuery(List<ExchangeRateForSave> entities)
-        {
-            throw new System.NotImplementedException();
-        }
-
         protected override async Task SaveValidateAsync(List<ExchangeRateForSave> entities)
         {
             int index = 0;
@@ -198,7 +193,7 @@ namespace Tellma.Controllers
             return _repo.PermissionsFromCache(View, action, cancellation);
         }
 
-        protected override Query<ExchangeRate> Search(Query<ExchangeRate> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<ExchangeRate> Search(Query<ExchangeRate> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

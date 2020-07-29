@@ -161,8 +161,9 @@ namespace Tellma.Controllers
         private readonly GlobalOptions _options;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
 
-        // This is created and disposed across multiple methods
+        // This is created and used across multiple methods
         private TransactionScope _identityTrxScope;
+        private List<(EmbeddedIdentityServerUser IdUser, AdminUserForSave User)> _usersToInvite;
 
         private IUrlHelper _urlHelper = null;
         private string _scheme = null;
@@ -342,24 +343,43 @@ namespace Tellma.Controllers
         private async Task<(List<AdminUser>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
+
+            // User cannot deactivate themselves
+            var userInfo = await _repo.GetAdminUserInfoAsync(cancellation: default);
+            var userId = userInfo.UserId.Value;
+            foreach (var (id, index) in ids.Select((id, index) => (id, index)))
+            {
+                if (id == userId)
+                {
+                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
+
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        break;
+                    }
+                }
+            }
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.AdminUsers__Activate(ids, isActive);
 
+            List<AdminUser> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var response = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return response;
-            }
-            else
-            {
-                trx.Complete();
-                return default;
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
         }
 
         protected override IRepository GetRepository()
@@ -367,7 +387,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<AdminUser> Search(Query<AdminUser> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<AdminUser> Search(Query<AdminUser> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -446,7 +466,7 @@ namespace Tellma.Controllers
             _repo.EnlistTransaction(Transaction.Current); // So that it is not affected by identity trx scope later
 
             // Step (2): If Embedded Identity Server is enabled, create any emails that don't already exist there
-            var usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, AdminUserForSave User)>();
+            _usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, AdminUserForSave User)>();
             if (_options.EmbeddedIdentityServerEnabled)
             {
                 _identityTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
@@ -485,7 +505,7 @@ namespace Tellma.Controllers
                     // Mark for invitation later 
                     if (!identityUser.EmailConfirmed)
                     {
-                        usersToInvite.Add((identityUser, entity));
+                        _usersToInvite.Add((identityUser, entity));
                     }
                 }
             }
@@ -493,14 +513,20 @@ namespace Tellma.Controllers
             // Step (3): Save the users in the database
             var ids = await _repo.AdminUsers__Save(entities, returnIds); // Synchronizes with DirectoryUsers automatically
 
+            // Return the new Ids
+            return ids;
+        }
+
+        protected override async Task NonTransactionalSideEffectsForSave(List<AdminUserForSave> entities, List<AdminUser> data)
+        {
             // Step (4): Send the invitation emails
-            if (usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
+            if (_usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
             {
-                var userIds = usersToInvite.Select(e => e.User.Id).ToArray();
+                var userIds = _usersToInvite.Select(e => e.User.Id).ToArray();
                 var tos = new List<string>();
                 var subjects = new List<string>();
                 var substitutions = new List<Dictionary<string, string>>();
-                foreach (var (idUser, user) in usersToInvite)
+                foreach (var (idUser, user) in _usersToInvite)
                 {
                     // Add the email sender parameters
                     var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name);
@@ -516,9 +542,6 @@ namespace Tellma.Controllers
                     substitutions: substitutions.ToList()
                     );
             }
-
-            // Return the new Ids
-            return ids;
         }
 
         protected override Task OnSaveCompleted()

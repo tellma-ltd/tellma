@@ -347,8 +347,11 @@ namespace Tellma.Controllers.Utilities
             var typeDesc = TypeDescriptor.Get<TEntity>();
             foreach (var entity in resultEntities)
             {
-                FlattenAndTrimInner(entity, typeDesc);
-                cancellation.ThrowIfCancellationRequested();
+                if (entity != null)
+                {
+                    FlattenAndTrimInner(entity, typeDesc);
+                    cancellation.ThrowIfCancellationRequested();
+                }
             }
 
             // Return the result

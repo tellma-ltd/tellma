@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +11,7 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.EmbeddedIdentityServer;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -72,19 +71,27 @@ namespace Tellma.Controllers
         {
             // Check permissions
             var idSingleton = new List<string> { args.UserId }; // A single Id
-            await CheckActionPermissions("ResetPassword", idSingleton);
+            var actionFilter = await UserPermissionsFilter("ResetPassword", cancellation: default);
+            idSingleton = await CheckActionPermissionsBefore(actionFilter, idSingleton);
+
+            // Invisible or missing user
+            if (!idSingleton.Any())
+            {
+                // The user cannot view that user, we pretend it doesn't exist
+                throw new NotFoundException<string>(args.UserId);
+            }
 
             // Some basic validation
             if (string.IsNullOrWhiteSpace(args.Password))
             {
-                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, _localizer["Password"]]);
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, _localizer["Password"]]);
             }
 
             // Some basic validation
             if (string.IsNullOrWhiteSpace(args.UserId))
             {
                 // Developer mistake
-                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, nameof(args.UserId)]);
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, nameof(args.UserId)]);
             }
 
             if (_userManager == null)
@@ -110,7 +117,7 @@ namespace Tellma.Controllers
                 throw new BadRequestException(errorMessage);
             }
 
-            return await GetByIds(idSingleton, null, cancellation: default);
+            return await GetByIds(idSingleton, null, Constants.Read, cancellation: default);
         }
 
         protected override IRepository GetRepository()
@@ -123,7 +130,7 @@ namespace Tellma.Controllers
             return _adminRepo.UserPermissions(action, View, cancellation);
         }
 
-        protected override Query<IdentityServerUser> Search(Query<IdentityServerUser> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<IdentityServerUser> Search(Query<IdentityServerUser> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

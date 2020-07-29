@@ -18,7 +18,7 @@ import { LineForQuery } from '~/app/data/entities/line';
 import { Document, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
-import { FriendlyError, mergeEntitiesInWorkspace, isSpecified, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
+import { FriendlyError, mergeEntitiesInWorkspace, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
 import { StatementArguments } from '~/app/data/dto/statement-arguments';
 import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
@@ -1406,11 +1406,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
               return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', unitId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {
-              if (isSpecified(entry.QuantityAccumulation)) {
-                return formatAccounting(entry.QuantityAccumulation, '1.0-4');
-              } else {
-                return '';
-              }
+              return formatAccounting(entry.QuantityAccumulation, '1.0-4');
             },
             isRightAligned: true,
             weight: 1
@@ -1457,11 +1453,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
               return `${this.translate.instant('DetailsEntry_MonetaryValueAccumulation')} (${this.ws.getMultilingualValue('Currency', definedCurrencyId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {
-              if (isSpecified(entry.MonetaryValueAccumulation)) {
-                return formatAccounting(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
-              } else {
-                return '';
-              }
+              return formatAccounting(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
             },
             isRightAligned: true,
             weight: 1
@@ -1483,7 +1475,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         select: ['Value', 'Direction'],
         label: () => `${this.translate.instant('Debit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
-          if (entry.Direction > 0 && isSpecified(entry.Value)) {
+          if (entry.Direction > 0) {
             return formatAccounting(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
@@ -1498,7 +1490,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         select: ['Value', 'Direction'],
         label: () => `${this.translate.instant('Credit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
-          if (entry.Direction < 0 && isSpecified(entry.Value)) {
+          if (entry.Direction < 0) {
             return formatAccounting(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
@@ -1514,11 +1506,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         select: ['Value', 'Direction'],
         label: () => `${this.translate.instant('DetailsEntry_Accumulation')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
-          if (isSpecified(entry.Accumulation)) {
-            return formatAccounting(entry.Accumulation, this.functionalDigitsInfo);
-          } else {
-            return '';
-          }
+          return formatAccounting(entry.Accumulation, this.functionalDigitsInfo);
         },
         isRightAligned: true,
         weight: 1

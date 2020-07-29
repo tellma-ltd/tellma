@@ -10,7 +10,7 @@ namespace Tellma.Data.Queries
     /// </summary>
     public class SelectExpression : IEnumerable<SelectAtom>
     {
-        private List<SelectAtom> _atoms;
+        private readonly List<SelectAtom> _atoms;
 
         /// <summary>
         /// Create an instance of <see cref="SelectExpression"/>

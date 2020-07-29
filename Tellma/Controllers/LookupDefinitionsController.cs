@@ -82,7 +82,9 @@ namespace Tellma.Controllers
         public async Task<(List<LookupDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
         {
             // Check user permissions
-            await CheckActionPermissions("State", ids);
+            var action = "State";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
             if (string.IsNullOrWhiteSpace(args.State))
@@ -108,18 +110,21 @@ namespace Tellma.Controllers
             // Execute
             await _repo.LookupDefinitions__UpdateState(ids, args.State);
 
+            // Prepare response
+            List<LookupDefinition> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var response = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return response;
-            }
-            else
-            {
-                trx.Complete();
-                return default;
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            // Commit and return
+            trx.Complete();
+            return (data, extras);
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -132,7 +137,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<LookupDefinition> Search(Query<LookupDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<LookupDefinition> Search(Query<LookupDefinition> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

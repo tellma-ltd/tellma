@@ -60,11 +60,6 @@ namespace Tellma.Controllers
             _repo = repo;
         }
 
-        protected override Query<ReportDefinition> GetAsQuery(List<ReportDefinitionForSave> entities)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             return _repo.PermissionsFromCache(View, action, cancellation);
@@ -75,7 +70,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<ReportDefinition> Search(Query<ReportDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<ReportDefinition> Search(Query<ReportDefinition> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -194,8 +189,7 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, bool returnIds)
         {
-            var ids = await _repo.ReportDefinitions__Save(entities, returnIds);
-            return ids;
+            return await _repo.ReportDefinitions__Save(entities, returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)

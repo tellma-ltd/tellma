@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
@@ -207,6 +208,8 @@ namespace Tellma.Controllers
             _sp = sp;
         }
 
+        protected virtual int? DefinitionId => null;
+
         #region Save
 
         /// <summary>
@@ -217,14 +220,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                // Parse arguments
-                var returnEntities = args?.ReturnEntities ?? false;
-
                 // Trim all strings as a preprocessing step
                 entities.ForEach(e => TrimStringProperties(e));
 
-                // This implements field level security
-                entities = await ApplyUpdatePermissionsMask(entities);
+                // Check that any updated Ids are 
+                FilterExpression updateFilter = await CheckUpdatePermissionBefore(entities);
 
                 // Validate
                 // Check that non-null non-0 Ids are unique
@@ -241,24 +241,31 @@ namespace Tellma.Controllers
                 // Optional preprocessing
                 await SavePreprocessAsync(entities);
 
-                // Custom Validation
+                // Custom validation
                 await SaveValidateAsync(entities);
                 ModelState.ThrowIfInvalid();
 
                 // Save and retrieve Ids
-                var ids = await SaveExecuteAsync(entities, returnEntities);
+                var returnEntities = args?.ReturnEntities ?? false;
+                var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
 
+                // Load the entities (using the update permissions to check for RLS)
                 List<TEntity> data = null;
                 Extras extras = null;
                 if (returnEntities)
                 {
-                    (data, extras) = await GetByIds(ids, args, cancellation: default);
+                    (data, extras) = await GetByIds(ids, args, Constants.Update, cancellation: default);
                 }
+
+                // Check that the saved entities satisfy the user's row level security filter
+                await CheckActionPermissionsAfter(updateFilter, ids, data);
+
+                // Perform side effects of save that are not transactional, just before committing the transaction
+                await NonTransactionalSideEffectsForSave(entities, data);
 
                 // Commit and return
                 await OnSaveCompleted();
                 trx.Complete();
-
 
                 return (data, extras);
             }
@@ -289,6 +296,15 @@ namespace Tellma.Controllers
         /// Persists the entities in the database, either creating them or updating, the call to this method is already wrapped inside a transaction
         /// </summary>
         protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entities, bool returnIds);
+
+        /// <summary>
+        /// Any save side effects to Save that are not transactional (such as saving to Blob storage or sending emails) should be implemented in this method,
+        /// this method is the last step before committing the save transaction, so an error here is the last opportunity to roll back the transaction
+        /// </summary>
+        protected virtual Task NonTransactionalSideEffectsForSave(List<TEntityForSave> entities, List<TEntity> data)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Retrieves the <see cref="TransactionOptions"/> that are used in <see cref="Save(List{TEntityForSave}, SaveArguments)"/>,
@@ -327,213 +343,311 @@ namespace Tellma.Controllers
             entity.TrimStringProperties();
         }
 
-        private async Task<List<TEntityForSave>> ApplyUpdatePermissionsMask(List<TEntityForSave> entities)
-        {
-            //  var entityMasks = GetMasksForSavedEntities(entities);
-            // var permissions = await UserPermissions(Constants.Update);
-
-            // TODO
-
-            /* 
-             * Step 1: Get complete mask for TEntityForSave
-             * 
-             * 
-If there are no permissions: throw forbidden exception
-else if ((1) at least one permission is criteria free and mask free, AND (2) all update entities (including nav entities) have a full mask in EntityMetadata) return safely
-else {
-  Do the magic to determine the mask that each entity is based on 
-
-we need to do 2 things:
-
-for each updated entity (including nav entities), construct the flat Mask in Entity Metadata (only relevant if (2) is false)
-for each entity (including nav entity), determine the flat permission Mask applicable, (only relevant if (1) is false) <- throw forbidden exception if any permission has no mask
-
-For every entity intersect the two masks into a MegaMask
-
-Load entities by Ids from the DB,  <- need to know the EntityForSave for every entity ---> or do I??
-  For every Update entity, any property that is missing from its MegaMask, copy that property value from the corresponding DB entity
-  For every Insert entity, any property that is missing from its MegaMask, set that property to NULL
-}
-
-return the entities
-             * 
-             */
-
-            return await Task.FromResult(entities);
-        }
-
         /// <summary>
-        /// For each saved entity, determines the applicable mask.
-        /// Verifies that the user has sufficient permissions to update the list of entities provided.
+        /// Verifies that the user has the necessary permissions to save the givenentities, if all user permissions
+        /// have RLS criteria, the method returns true indicating that an AfterSave check is also required.
         /// </summary>
-        protected virtual async Task<Dictionary<TEntityForSave, MaskTree>> GetMasksForSavedEntities(List<TEntityForSave> entities)
+        /// <param name="entities">The entities being saved</param>
+        /// <returns>True if post save check is required</returns>
+        private async Task<FilterExpression> CheckUpdatePermissionBefore(List<TEntityForSave> entities)
         {
             if (entities == null || !entities.Any())
             {
-                return new Dictionary<TEntityForSave, MaskTree>();
+                // No point verifying anything
+                return null; 
             }
 
-            var unrestrictedMask = new MaskTree();
-            var permissions = await UserPermissions(Constants.Update, cancellation: default); // non-cancellable
-            if (!permissions.Any())
+            var updateFilter = await UserPermissionsFilter(Constants.Update, cancellation: default);
+            if (updateFilter == null)
             {
-                // User has no permissions on this table whatsoever; forbid
-                throw new ForbiddenException();
-            }
-            else if (permissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria) && string.IsNullOrWhiteSpace(e.Mask)))
-            {
-                // User has unfiltered update permission on the table => proceed
-                return entities.ToDictionary(e => e, e => unrestrictedMask);
-            }
+                // User has unfiltered update permission on the table => Cleared to proceed, no post check required
+                return null;
+            } 
             else
-            {
-                var resultDic = new Dictionary<TEntityForSave, MaskTree>();
-
-                // An array of every criteria and every mask
-                var maskAndCriteriaArray = permissions
-                    .Where(e => !string.IsNullOrWhiteSpace(e.Criteria)) // Optimization: a null criteria is satisfied by the entire list of entities
-                    .GroupBy(e => e.Criteria)
-                    .Select(g => new
-                    {
-                        Criteria = g.Key,
-                        Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? unrestrictedMask : MaskTree.Parse(e.Mask))
-                        .Aggregate((t1, t2) => t1.UnionWith(t2)) // Takes the union of all the mask trees
-                    }).ToArray();
-
-                var universalPermissions = permissions
-                    .Where(e => string.IsNullOrWhiteSpace(e.Criteria));
-
-                bool hasUniversalPermissions = universalPermissions.Count() > 0;
-
-                // This mask (if exists) applies to every single entity since the criteria is null
-                var universalMask = hasUniversalPermissions ? universalPermissions
-                    .Distinct()
-                    .Select(e => MaskTree.Parse(e.Mask))
-                    .Aggregate((t1, t2) => t1.UnionWith(t2)) : null;
-
-                // Every criteria to every index of maskAndCriteriaArray
-                var criteriaWithIndexes = maskAndCriteriaArray
-                    .Select((e, index) => new IndexAndCriteria { Criteria = e.Criteria, Index = index });
-
-                /////// Part (1) Permissions must allow manipulating the original data before the update
-
-                var existingEntities = entities.Where(e => !0.Equals(e.Id));
-                if (existingEntities.Any())
+            {                
+                // First determine the entities that are being UPDATED
+                IEnumerable<object> updatedIds;
+                if (typeof(TKey) == typeof(int))
                 {
-                    // Get the Ids
-                    TKey[] existingIds = existingEntities
-                        .Select(e => e.Id).ToArray();
+                    // For integer Ids, zero means INSERT, non-zero means UPDATE, can be determined in memory
+                    object zero = 0;
+                    updatedIds = entities
+                        .Where(e => e.GetId() != null && !e.GetId().Equals(zero))
+                        .Select(e => e.GetId());
+                }
+                else
+                {
+                    // For string Ids, we can only distinguish INSERT from UPDATE by consulting the database, luckily string Ids are rare
+                    var allIds = entities.Select(e => e.GetId());
+                    var dbEntities = await GetRepository()
+                                    .Query<TEntity>()
+                                    .Select("Id")
+                                    .FilterByIds(allIds)
+                                    .ToListAsync(cancellation: default);
 
-                    // Prepare the query
-                    var query = GetRepository()
-                        .Query<TEntity>()
-                        .FilterByIds(existingIds);
-
-                    // id => index in maskAndCriteriaArray
-                    var criteriaMapList = await query
-                        .GetIndexToIdMap<TKey>(criteriaWithIndexes, cancellation: default);
-
-                    // id => indices in maskAndCriteriaArray
-                    var criteriaMapDictionary = criteriaMapList
-                        .GroupBy(e => e.Id)
-                        .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
-
-                    foreach (var entity in existingEntities)
-                    {
-                        var id = entity.Id;
-                        MaskTree mask;
-
-                        if (criteriaMapDictionary.ContainsKey(id))
-                        {
-                            // Those are entities that satisfy one or more non-null Criteria
-                            mask = criteriaMapDictionary[id]
-                                .Select(i => maskAndCriteriaArray[i].Mask)
-                                .Aggregate((t1, t2) => t1.UnionWith(t2))
-                                .UnionWith(universalMask);
-                        }
-                        else
-                        {
-                            if (hasUniversalPermissions)
-                            {
-                                // Those are entities that belong to the universal mask of null criteria
-                                mask = universalMask;
-                            }
-                            else
-                            {
-                                // Cannot update or delete this record, it doesn't satisfy any criteria
-                                throw new ForbiddenException();
-                            }
-                        }
-
-                        resultDic.Add(entity, mask);
-                    }
+                    updatedIds = dbEntities
+                        .Select(e => e.GetId());
                 }
 
-
-                /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
+                var updatedIdsCount = updatedIds.Count();
+                if (updatedIdsCount == 0)
                 {
-                    // index in newItems => index in maskAndCriteriaArray
-                    var criteriaMapList = await GetAsQuery(entities)
-                        .GetIndexToIndexMap(criteriaWithIndexes, cancellation: default);
-
-                    var criteriaMapDictionary = criteriaMapList
-                        .GroupBy(e => e.Id)
-                        .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
-
-                    foreach (var (entity, index) in entities.Select((entity, i) => (entity, i)))
-                    {
-                        MaskTree mask;
-
-                        if (criteriaMapDictionary.ContainsKey(index))
-                        {
-                            // Those are entities that satisfy one or more non-null Criteria
-                            mask = criteriaMapDictionary[index]
-                                .Select(i => maskAndCriteriaArray[i].Mask)
-                                .Aggregate((t1, t2) => t1.UnionWith(t2))
-                                .UnionWith(universalMask);
-                        }
-                        else
-                        {
-                            if (hasUniversalPermissions)
-                            {
-                                // Those are entities that belong to the universal mask of null criteria
-                                mask = universalMask;
-                            }
-                            else
-                            {
-                                // Cannot insert or update this record, it doesn't satisfy any criteria
-                                throw new ForbiddenException();
-                            }
-                        }
-
-                        if (resultDic.ContainsKey(entity))
-                        {
-                            var entityMask = resultDic[entity];
-                            resultDic[entity] = resultDic[entity].IntersectionWith(mask);
-
-                        }
-                        else
-                        {
-                            resultDic.Add(entity, mask);
-                        }
-                    }
+                    // Only INSERT, those are only verified later after saving is completed and before the transaction is committed
+                    return updateFilter;
                 }
 
-                return resultDic; // preserve the original order
+                // Now a single database query should tell us if the updated entities in the DB satisfy the user's permission filters
+                var baseQuery = GetRepository()
+                                .Query<TEntity>()
+                                .FilterByIds(updatedIds);
+
+                var updatableIdsCount = await baseQuery
+                                .Filter(updateFilter)
+                                .CountAsync(cancellation: default);
+
+                if (updatableIdsCount == updatedIdsCount)
+                {
+                    // All updated DB entities satisfy the filter => good to go, but a post check is required
+                    return updateFilter;
+                }
+                else
+                {
+                    // Check that all Ids are readable
+                    var readFilter = await UserPermissionsFilter(Constants.Read, cancellation: default);
+
+                    var readableIds = await baseQuery
+                                .Select("Id")
+                                .Filter(readFilter)
+                                .ToListAsync(cancellation: default);
+
+                    if (readableIds.Count == updatedIdsCount)
+                    {
+                        // All Ids exist and the user can see them, throw a 403 Forbidden
+                        throw new ForbiddenException();
+                    }
+                    else
+                    {
+                        var readableIdsHash = readableIds.Select(e => e.GetId()).ToHashSet();
+                        var missingUpdatedIds = updatedIds.Cast<TKey>().Where(id => !readableIdsHash.Contains(id));
+
+                        // At least one Id does not exist, or the user cannot see it, throw a 404 Not Found
+                        throw new NotFoundException<TKey>(missingUpdatedIds);
+                    }
+                }
             }
         }
 
-        /// <summary>
-        /// Implementation should prepare a select statement that returns the provided entities 
-        /// as an SQL result from a user-defined table type variable or a temporary table, using
-        /// the index of the entities as the Id (even if the Id of the entity is not integer).
-        /// This SQL result will be used to determine which of these entities earn which permission
-        /// masks.
-        /// </summary>
-        protected virtual Query<TEntity> GetAsQuery(List<TEntityForSave> entities)
-        {
-            throw new NotImplementedException();
-        }
+        #region Mask Stuff
+
+        //        private async Task<List<TEntityForSave>> ApplyUpdatePermissionsMask(List<TEntityForSave> entities)
+        //        {
+        //            //  var entityMasks = GetMasksForSavedEntities(entities);
+        //            // var permissions = await UserPermissions(Constants.Update);
+
+        //            // TODO
+
+        //            /* 
+        //             * Step 1: Get complete mask for TEntityForSave
+        //             * 
+        //             * 
+        //If there are no permissions: throw forbidden exception
+        //else if ((1) at least one permission is criteria free and mask free, AND (2) all update entities (including nav entities) have a full mask in EntityMetadata) return safely
+        //else {
+        //  Do the magic to determine the mask that each entity is based on 
+
+        //we need to do 2 things:
+
+        //for each updated entity (including nav entities), construct the flat Mask in Entity Metadata (only relevant if (2) is false)
+        //for each entity (including nav entity), determine the flat permission Mask applicable, (only relevant if (1) is false) <- throw forbidden exception if any permission has no mask
+
+        //For every entity intersect the two masks into a MegaMask
+
+        //Load entities by Ids from the DB,  <- need to know the EntityForSave for every entity ---> or do I??
+        //  For every Update entity, any property that is missing from its MegaMask, copy that property value from the corresponding DB entity
+        //  For every Insert entity, any property that is missing from its MegaMask, set that property to NULL
+        //}
+
+        //return the entities
+        //             * 
+        //             */
+
+        //            return await Task.FromResult(entities);
+        //        }
+
+        ///// <summary>
+        ///// For each saved entity, determines the applicable mask.
+        ///// Verifies that the user has sufficient permissions to update the list of entities provided.
+        ///// </summary>
+        //protected virtual async Task<Dictionary<TEntityForSave, MaskTree>> GetMasksForSavedEntities(List<TEntityForSave> entities)
+        //{
+        //    if (entities == null || !entities.Any())
+        //    {
+        //        return new Dictionary<TEntityForSave, MaskTree>();
+        //    }
+
+        //    var unrestrictedMask = new MaskTree();
+        //    var permissions = await UserPermissions(Constants.Update, cancellation: default); // non-cancellable
+        //    if (!permissions.Any())
+        //    {
+        //        // User has no permissions on this table whatsoever; forbid
+        //        throw new ForbiddenException();
+        //    }
+        //    else if (permissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria) && string.IsNullOrWhiteSpace(e.Mask)))
+        //    {
+        //        // User has unfiltered update permission on the table => proceed
+        //        return entities.ToDictionary(e => e, e => unrestrictedMask);
+        //    }
+        //    else
+        //    {
+        //        var resultDic = new Dictionary<TEntityForSave, MaskTree>();
+
+        //        // An array of every criteria and every mask
+        //        var maskAndCriteriaArray = permissions
+        //            .Where(e => !string.IsNullOrWhiteSpace(e.Criteria)) // Optimization: a null criteria is satisfied by the entire list of entities
+        //            .GroupBy(e => e.Criteria)
+        //            .Select(g => new
+        //            {
+        //                Criteria = g.Key,
+        //                Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? unrestrictedMask : MaskTree.Parse(e.Mask))
+        //                .Aggregate((t1, t2) => t1.UnionWith(t2)) // Takes the union of all the mask trees
+        //            }).ToArray();
+
+        //        var universalPermissions = permissions
+        //            .Where(e => string.IsNullOrWhiteSpace(e.Criteria));
+
+        //        bool hasUniversalPermissions = universalPermissions.Count() > 0;
+
+        //        // This mask (if exists) applies to every single entity since the criteria is null
+        //        var universalMask = hasUniversalPermissions ? universalPermissions
+        //            .Distinct()
+        //            .Select(e => MaskTree.Parse(e.Mask))
+        //            .Aggregate((t1, t2) => t1.UnionWith(t2)) : null;
+
+        //        // Every criteria to every index of maskAndCriteriaArray
+        //        var criteriaWithIndexes = maskAndCriteriaArray
+        //            .Select((e, index) => new IndexAndCriteria { Criteria = e.Criteria, Index = index });
+
+        //        /////// Part (1) Permissions must allow manipulating the original data before the update
+
+        //        var existingEntities = entities.Where(e => !0.Equals(e.Id));
+        //        if (existingEntities.Any())
+        //        {
+        //            // Get the Ids
+        //            TKey[] existingIds = existingEntities
+        //                .Select(e => e.Id).ToArray();
+
+        //            // Prepare the query
+        //            var query = GetRepository()
+        //                .Query<TEntity>()
+        //                .FilterByIds(existingIds);
+
+        //            // id => index in maskAndCriteriaArray
+        //            var criteriaMapList = await query
+        //                .GetIndexToIdMap<TKey>(criteriaWithIndexes, cancellation: default);
+
+        //            // id => indices in maskAndCriteriaArray
+        //            var criteriaMapDictionary = criteriaMapList
+        //                .GroupBy(e => e.Id)
+        //                .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
+
+        //            foreach (var entity in existingEntities)
+        //            {
+        //                var id = entity.Id;
+        //                MaskTree mask;
+
+        //                if (criteriaMapDictionary.ContainsKey(id))
+        //                {
+        //                    // Those are entities that satisfy one or more non-null Criteria
+        //                    mask = criteriaMapDictionary[id]
+        //                        .Select(i => maskAndCriteriaArray[i].Mask)
+        //                        .Aggregate((t1, t2) => t1.UnionWith(t2))
+        //                        .UnionWith(universalMask);
+        //                }
+        //                else
+        //                {
+        //                    if (hasUniversalPermissions)
+        //                    {
+        //                        // Those are entities that belong to the universal mask of null criteria
+        //                        mask = universalMask;
+        //                    }
+        //                    else
+        //                    {
+        //                        // Cannot update or delete this record, it doesn't satisfy any criteria
+        //                        throw new ForbiddenException();
+        //                    }
+        //                }
+
+        //                resultDic.Add(entity, mask);
+        //            }
+        //        }
+
+
+        //        /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
+        //        {
+        //            // index in newItems => index in maskAndCriteriaArray
+        //            var criteriaMapList = await GetAsQuery(entities)
+        //                .GetIndexToIndexMap(criteriaWithIndexes, cancellation: default);
+
+        //            var criteriaMapDictionary = criteriaMapList
+        //                .GroupBy(e => e.Id)
+        //                .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
+
+        //            foreach (var (entity, index) in entities.Select((entity, i) => (entity, i)))
+        //            {
+        //                MaskTree mask;
+
+        //                if (criteriaMapDictionary.ContainsKey(index))
+        //                {
+        //                    // Those are entities that satisfy one or more non-null Criteria
+        //                    mask = criteriaMapDictionary[index]
+        //                        .Select(i => maskAndCriteriaArray[i].Mask)
+        //                        .Aggregate((t1, t2) => t1.UnionWith(t2))
+        //                        .UnionWith(universalMask);
+        //                }
+        //                else
+        //                {
+        //                    if (hasUniversalPermissions)
+        //                    {
+        //                        // Those are entities that belong to the universal mask of null criteria
+        //                        mask = universalMask;
+        //                    }
+        //                    else
+        //                    {
+        //                        // Cannot insert or update this record, it doesn't satisfy any criteria
+        //                        throw new ForbiddenException();
+        //                    }
+        //                }
+
+        //                if (resultDic.ContainsKey(entity))
+        //                {
+        //                    var entityMask = resultDic[entity];
+        //                    resultDic[entity] = resultDic[entity].IntersectionWith(mask);
+
+        //                }
+        //                else
+        //                {
+        //                    resultDic.Add(entity, mask);
+        //                }
+        //            }
+        //        }
+
+        //        return resultDic; // preserve the original order
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Implementation should prepare a select statement that returns the provided entities 
+        ///// as an SQL result from a user-defined table type variable or a temporary table, using
+        ///// the index of the entities as the Id (even if the Id of the entity is not integer).
+        ///// This SQL result will be used to determine which of these entities earn which permission
+        ///// masks.
+        ///// </summary>
+        //protected virtual Query<TEntity> GetAsQuery(List<TEntityForSave> entities)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        #endregion
 
         #endregion
 
@@ -551,7 +665,8 @@ return the entities
             }
 
             // Permissions
-            await CheckActionPermissions("Delete", ids);
+            var deleteFilter = await UserPermissionsFilter(Constants.Delete, cancellation: default);
+            ids = await CheckActionPermissionsBefore(deleteFilter, ids);
 
             // Validate
             await DeleteValidateAsync(ids);
@@ -576,6 +691,8 @@ return the entities
 
         #endregion
 
+        #region Import & Export
+
         public async Task<Stream> ExportByIds(ExportByIdsArguments<TKey> args, CancellationToken cancellation)
         {
             var metaForSave = GetMetadataForSave();
@@ -592,7 +709,8 @@ return the entities
             var (entities, _) = await GetByIds(args.I, new SelectExpandArguments
             {
                 Select = select
-            },
+            }, 
+            Constants.Read,
             cancellation);
 
             // Create content
@@ -1423,8 +1541,6 @@ return the entities
             }
         }
 
-        protected virtual int? DefinitionId => null;
-
         /// <summary>
         /// Splits header label into a collection of steps
         /// </summary>
@@ -1651,5 +1767,7 @@ return the entities
                 }
             }
         }
+
+        #endregion
     }
 }
