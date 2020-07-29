@@ -68,6 +68,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                         'CostOfSales',
                         'SellingGeneralAndAdministration',
                         'SharedExpenseControl',
+                        'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
                         'CurrentInventoriesInTransitExpendituresControl',
                         'ConstructionInProgressExpendituresControl',
                         'WorkInProgressExpendituresControl'

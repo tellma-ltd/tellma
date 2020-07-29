@@ -274,8 +274,11 @@
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>የሽያጭ ወጪ</value>
   </data>
-  <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
-    <value>የምርት የወጪ</value>
+  <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
+    <value>የትራንዚት የወጪ</value>
+  </data>
+  <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
+    <value>ኪራዮች ስር ኮንስትራክሽን የወጪ</value>
   </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>ሽያጭ አጠቃላይ እና አስተዳደር</value>
@@ -283,8 +286,8 @@
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>የተጋራ የወጪ</value>
   </data>
-  <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
-    <value>የትራንዚት የወጪ</value>
+  <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
+    <value>የምርት የወጪ</value>
   </data>
   <data name="Center_IsSegment" xml:space="preserve">
     <value>ክፍሉ ነው</value>

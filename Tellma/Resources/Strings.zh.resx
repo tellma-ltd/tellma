@@ -140,7 +140,7 @@
     <value>注意代理名称标签</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
-    <value>注意标签金额</value>
+    <value>注意金额标签</value>
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
@@ -274,8 +274,11 @@
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>销售成本</value>
   </data>
-  <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
-    <value>生产费用</value>
+  <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
+    <value>运输费用</value>
+  </data>
+  <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
+    <value>在建出租费用</value>
   </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>销售一般及行政</value>
@@ -283,8 +286,8 @@
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>共享费用</value>
   </data>
-  <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
-    <value>运输费用</value>
+  <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
+    <value>生产费用</value>
   </data>
   <data name="Center_IsSegment" xml:space="preserve">
     <value>IS分段</value>
@@ -1253,7 +1256,7 @@
     <value>{0}标签</value>
   </data>
   <data name="Field0Visibility" xml:space="preserve">
-    <value>为{0}能见度</value>
+    <value>{0}能见度</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>文件</value>
@@ -1478,7 +1481,7 @@
     <value>行定义说明原因</value>
   </data>
   <data name="LineDefinitionStateReasons" xml:space="preserve">
-    <value>行定义状态的原因</value>
+    <value>行定义说明理由</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>行</value>

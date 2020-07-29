@@ -1005,7 +1005,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   }
 
   get canDeletePermissions(): boolean {
-    return this.canEditPermissions;
+    const createdById = this.activeModel ? this.activeModel['CreatedById'] : null;
+    return this.workspace.current.canDelete(this.view, createdById);
   }
 
   get canDelete(): boolean {

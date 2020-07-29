@@ -1272,7 +1272,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public get canDeletePermissions(): boolean {
-    return this.workspace.current.canDo(this.view, 'Delete', null);
+    return this.workspace.current.canDelete(this.view, null);
   }
 
   public get canDelete(): boolean {

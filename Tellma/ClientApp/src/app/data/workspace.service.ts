@@ -226,6 +226,10 @@ export abstract class SpecificWorkspace {
     return this.canDo(view, 'Update', createdById);
   }
 
+  public canDelete(view: string, createdById: string | number) {
+    return this.canDo(view, 'Delete', createdById);
+  }
+
   public canDo(view: string, action: Action, createdById: string | number) {
 
     if (!view) {
