@@ -1,40 +1,39 @@
-﻿-- Cash on hand
+﻿-- Safe
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @EmployeeCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @SafeCD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @SafeCD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Default Cash on hand accounts: Deleting: ' + @ValidationErrorsJson
+	Print 'Default Safes: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DELETE FROM @Relations; DELETE FROM @RelationUsers;
-INSERT INTO @Relations([Index],	
-	[Code], [Name],				[Name2],						[CenterId], [CurrencyId]) VALUES
-(0,	N'CS1',	N'GM Safe - USD',	N'خزنة المدير العام - دولار',	@101C1,	N'USD'),
-(1,	N'CS2',	N'GM Safe - SDF',	N'خزنة المدير العام - جنيه',	@101C1,	N'SDG'),
-(2,	N'CS3',	N'Admin Petty Cash',N'النثرية الإدارية',			@101C1,	N'SDG')
+DELETE FROM @SafeCustodies; DELETE FROM @RelationUsers;
+INSERT INTO @SafeCustodies([Index],	
+	[Code], [Name],		[Name2],				[CenterId], [CurrencyId]) VALUES
+(0,	N'B0',	N'GM Safe',	N'خزنة المدير العام',	@101C1,		NULL);
 INSERT INTO @RelationUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
-(0,0,@amtaam),
-(0,1,@Omer);
+(0,0,@amtaam)
 EXEC [api].[Relations__Save]
-	@DefinitionId = @EmployeeCD,
-	@Entities = @Relations,
+	@DefinitionId = @SafeCD,
+	@Entities = @SafeCustodies,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Cashiers: Inserting: ' + @ValidationErrorsJson
+	Print 'Safe Custodies: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'GMSafe' AND [DefinitionId] =  @SafeCD);
+
 -- Bank Account
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @BankCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @BankAccountCD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @BankCD,
+	@DefinitionId = @BankAccountCD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -42,27 +41,25 @@ BEGIN
 	Print 'Default Bank accounts: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DELETE FROM @Relations; DELETE FROM @RelationUsers;
-INSERT INTO @Relations([Index],	
+DELETE FROM @BankAccountCustodies; DELETE FROM @RelationUsers;
+INSERT INTO @BankAccountCustodies([Index],	
 	[Code], [Name],					[Name2],		[CenterId], [CurrencyId]) VALUES
 (0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101C1,		N'SDG');
 INSERT INTO @RelationUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
 (0,0,@amtaam)
 EXEC [api].[Relations__Save]
-	@DefinitionId = @BankCD,
-	@Entities = @Relations,
+	@DefinitionId = @BankAccountCD,
+	@Entities = @BankAccountCustodies,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Bank Accounts: Inserting: ' + @ValidationErrorsJson
+	Print 'Bank Accounts Custodies: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'GM Safe' AND [DefinitionId] = @EmployeeCD);
-DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @EmployeeCD);
-DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @EmployeeCD);
-DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @BankCD);
+DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.[Relations] WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @BankAccountCD);
+
 -- Customer
 DELETE FROM @IndexedIds
 INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @CustomerCD;
@@ -174,13 +171,13 @@ BEGIN
 END;
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
-	[Code],	[Name],				[Name2]) VALUES
-(0,	N'E001',N'Ahmad Habashi',	N'أحمد حبشي'),
-(1,	N'E002',N'Ahmad Abdussalam',N'أحمد عبدالسلام'),
-(2,	N'E003',N'Abu Ammar',		N'أبو عمار'),
-(3,	N'E004',N'Mohamad Ali',		N'محمد علي'),
-(4,	N'E005',N'elAmin elTayeb',	N'الأمين الطيب'),
-(5,	N'E099',N'M. Kamil',		N'محمد كامل')
+	[Code],	[Name],				[Name2], [CenterId]) VALUES
+(0,	N'E001',N'Ahmad Habashi',	N'أحمد حبشي', @101C1),
+(1,	N'E002',N'Ahmad Abdussalam',N'أحمد عبدالسلام', @101CB10),
+(2,	N'E003',N'Abu Ammar',		N'أبو عمار', @101C1),
+(3,	N'E004',N'Mohamad Ali',		N'محمد علي', @101C1),
+(4,	N'E005',N'elAmin elTayeb',	N'الأمين الطيب', @101C1),
+(5,	N'E099',N'M. Kamil',		N'محمد كامل', @101CB10)
 EXEC [api].[Relations__Save]
 	@DefinitionId = @EmployeeCD,
 	@Entities = @Relations,

@@ -44,7 +44,7 @@ INSERT INTO @Relations(
 	;
 
 EXEC [api].[Relations__Save]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @SafeCD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -77,7 +77,7 @@ INSERT INTO @Relations(
 	NULL,		N'3333');
 
 EXEC [api].[Relations__Save]
-	@DefinitionId = @BankCD,
+	@DefinitionId = @BankAccountCD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

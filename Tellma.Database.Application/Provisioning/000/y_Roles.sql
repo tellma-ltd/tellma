@@ -1,44 +1,10 @@
-﻿
+﻿--OdataPath
 DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
-DECLARE @ProjectCompletionVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ProjectCompletionVoucherDD AS NVARCHAR(50));
-DECLARE @ClosingPeriodVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ClosingPeriodVoucherDD AS NVARCHAR(50));
-DECLARE @ClosingYearVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ClosingYearVoucherDD AS NVARCHAR(50));
-DECLARE @CashTransferExchangeDDPath NVARCHAR(50) = N'documents/' + CAST(@CashTransferExchangeDD AS NVARCHAR(50));
-DECLARE @DepositToBankDDPath NVARCHAR(50) = N'documents/' + CAST(@DepositToBankDD AS NVARCHAR(50));
-DECLARE @PaymentReceiptFromNonTradingAgentsDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentReceiptFromNonTradingAgentsDD AS NVARCHAR(50));
-DECLARE @PaymentIssueToNonTradingAgentsDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentIssueToNonTradingAgentsDD AS NVARCHAR(50));
-DECLARE @StockIssueToNonTradingAgentDDPath NVARCHAR(50) = N'documents/' + CAST(@StockIssueToNonTradingAgentDD AS NVARCHAR(50));
-DECLARE @StockTransferDDPath NVARCHAR(50) = N'documents/' + CAST(@StockTransferDD AS NVARCHAR(50));
-DECLARE @StockReceiptFromNonTradingAgentDDPath NVARCHAR(50) = N'documents/' + CAST(@StockReceiptFromNonTradingAgentDD AS NVARCHAR(50));
-DECLARE @InventoryAdjustmentDDPath NVARCHAR(50) = N'documents/' + CAST(@InventoryAdjustmentDD AS NVARCHAR(50));
-DECLARE @PaymentIssueToTradePayableDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentIssueToTradePayableDD AS NVARCHAR(50));
-DECLARE @RefundFromTradePayableDDPath NVARCHAR(50) = N'documents/' + CAST(@RefundFromTradePayableDD AS NVARCHAR(50));
-DECLARE @WithholdingTaxFromTradePayableDDPath NVARCHAR(50) = N'documents/' + CAST(@WithholdingTaxFromTradePayableDD AS NVARCHAR(50));
-DECLARE @ImportFromTradePayableDDPath NVARCHAR(50) = N'documents/' + CAST(@ImportFromTradePayableDD AS NVARCHAR(50));
-DECLARE @GoodReceiptFromImportDDPath NVARCHAR(50) = N'documents/' + CAST(@GoodReceiptFromImportDD AS NVARCHAR(50));
-DECLARE @GoodServiceReceiptFromTradePayableDDPath NVARCHAR(50) = N'documents/' + CAST(@GoodServiceReceiptFromTradePayableDD AS NVARCHAR(50));
-DECLARE @PaymentReceiptFromTradeReceivableDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentReceiptFromTradeReceivableDD AS NVARCHAR(50));
-DECLARE @RefundToTradeReceivableDDPath NVARCHAR(50) = N'documents/' + CAST(@RefundToTradeReceivableDD AS NVARCHAR(50));
-DECLARE @WithholdingTaxByTradeReceivableDDPath NVARCHAR(50) = N'documents/' + CAST(@WithholdingTaxByTradeReceivableDD AS NVARCHAR(50));
-DECLARE @GoodIssueToExportDDPath NVARCHAR(50) = N'documents/' + CAST(@GoodIssueToExportDD AS NVARCHAR(50));
-DECLARE @ExportToTradeReceivableDDPath NVARCHAR(50) = N'documents/' + CAST(@ExportToTradeReceivableDD AS NVARCHAR(50));
-DECLARE @GoodServiceIssueToTradeReceivableDDPath NVARCHAR(50) = N'documents/' + CAST(@GoodServiceIssueToTradeReceivableDD AS NVARCHAR(50));
-DECLARE @SteelProductionDDPath NVARCHAR(50) = N'documents/' + CAST(@SteelProductionDD AS NVARCHAR(50));
-DECLARE @PlasticProductionDDPath NVARCHAR(50) = N'documents/' + CAST(@PlasticProductionDD AS NVARCHAR(50));
-DECLARE @PaintProductionDDPath NVARCHAR(50) = N'documents/' + CAST(@PaintProductionDD AS NVARCHAR(50));
-DECLARE @VehicleAssemblyDDPath NVARCHAR(50) = N'documents/' + CAST(@VehicleAssemblyDD AS NVARCHAR(50));
-DECLARE @GrainProcessingDDPath NVARCHAR(50) = N'documents/' + CAST(@GrainProcessingDD AS NVARCHAR(50));
-DECLARE @OilMillingDDPath NVARCHAR(50) = N'documents/' + CAST(@OilMillingDD AS NVARCHAR(50));
-DECLARE @MaintenanceDDPath NVARCHAR(50) = N'documents/' + CAST(@MaintenanceDD AS NVARCHAR(50));
-DECLARE @PaymentIssueToEmployeeDDPath NVARCHAR(50) = N'documents/' + CAST(@PaymentIssueToEmployeeDD AS NVARCHAR(50));
-DECLARE @EmployeeLoanDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeLoanDD AS NVARCHAR(50));
-DECLARE @AttendanceRegisterDDPath NVARCHAR(50) = N'documents/' + CAST(@AttendanceRegisterDD AS NVARCHAR(50));
-DECLARE @EmployeeOvertimeDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeOvertimeDD AS NVARCHAR(50));
-DECLARE @EmployeePenaltyDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeePenaltyDD AS NVARCHAR(50));
-DECLARE @EmployeeRewardDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeRewardDD AS NVARCHAR(50));
-DECLARE @EmployeeLeaveDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeLeaveDD AS NVARCHAR(50));
-DECLARE @EmployeeLeaveAllowanceDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeLeaveAllowanceDD AS NVARCHAR(50));
-DECLARE @EmployeeTravelDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeTravelDD AS NVARCHAR(50));
+DECLARE @CashPurchaseVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPurchaseVoucherDD AS NVARCHAR(50));
+DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
+DECLARE @CashSalesVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashSalesVoucherDD AS NVARCHAR(50));
+DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
+
 INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
 (0, N'Administrator', N'Administrator', 0),
 (1, N'GeneralManager', N'General Manager', 0),
@@ -71,22 +37,22 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (20,2,	N'Read',	NULL,				N'all'),
 -- 11:Comptroller
 (30,3,	N'All',		NULL,				@ManualJournalVoucherDDPath),
-(31,3,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
-(32,3,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
+--(31,3,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
+--(32,3,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
 (33,3,	N'All',		NULL,				N'accounts'),
 (34,3,	N'All',		NULL,				N'centers'),
 (35,3,	N'All',		NULL,				N'currencies'),
 -- 12:Accountant
 (40,4,	N'All',		NULL,				@ManualJournalVoucherDDPath),
-(41,4,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
-(42,4,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
+--(41,4,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
+--(42,4,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
 (43,4,	N'Read',	NULL,				N'accounts'),
 (44,4,	N'Read',	NULL,				N'centers'),
 -- 13:Cashier
-(50,5,	N'Update',	N'Agent/UserId = Me or AssigneeId = Me',
-											@PaymentReceiptFromNonTradingAgentsDDPath),
-(51,5,	N'Update',	N'AssignedById = Me or AssigneeId = Me',
-											@PaymentIssueToNonTradingAgentsDDPath),
+--(50,5,	N'Update',	N'Agent/UserId = Me or AssigneeId = Me',
+--											@PaymentReceiptFromNonTradingAgentsDDPath),
+--(51,5,	N'Update',	N'AssignedById = Me or AssigneeId = Me',
+--											@PaymentIssueToNonTradingAgentsDDPath),
 -- 20:InternalAuditor
 (60,6,	N'Read',	NULL,				N'all'), -- GM
 -- 3:ExtenralAuditor
@@ -120,9 +86,9 @@ SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVAR
 SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@RevenueServiceRD AS NVARCHAR(100)) UNION
 SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
-SELECT 9971,99,	N'Read',	NULL,				N'relations/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
+SELECT 9971,99,	N'Read',	NULL,				N'relations/' + CAST(@WarehouseCD AS NVARCHAR(100)) --UNION
 
-SELECT 9981,99,	N'Update',	N'CreatedById = Me',@PaymentIssueToNonTradingAgentsDDPath
+--SELECT 9981,99,	N'Update',	N'CreatedById = Me',@PaymentIssueToNonTradingAgentsDDPath
 --(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
 ;
 

@@ -271,8 +271,8 @@ INSERT INTO @RelationDefinitionIds([Id]) VALUES
 (@SupplierCD),
 (@CustomerCD),
 (@EmployeeCD),
-(@BankCD),
---(@EmployeeCD),
+(@BankAccountCD),
+(@SafeCD),
 (@WarehouseCD);
 --(@ShipperCD);
 

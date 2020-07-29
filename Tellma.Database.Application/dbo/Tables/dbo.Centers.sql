@@ -3,13 +3,15 @@
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
 	-- Common, Service, Production, SellingAndDistribution
-	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK (
-													[CenterType] IN (
-														N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
-														N'SharedExpenseControl', N'TransitExpenseControl', N'ConstructionExpenseControl',
-														N'ProductionExpenseControl'
-													)
-												),
+	[CenterType]			NVARCHAR (255)		NOT NULL,
+												--CONSTRAINT [CK_Centers__CenterType] CHECK (
+												--	[CenterType] IN (
+												--		N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
+												--		N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
+												--		N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
+												--		N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl'
+												--	)
+												--),
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
@@ -28,7 +30,7 @@
 --	[ParentNode]			AS					[Node].GetAncestor(1),
 	[Level]					AS					[Node].GetLevel(),
 --	[SegmentNode]			AS [Node].GetAncestor([Level] - 1),
-	[IsLeaf]				AS					CAST(IIF([CenterType] = N'Abstract', 0, 1) AS BIT) PERSISTED,
+	[IsLeaf]				BIT					NOT NULL DEFAULT 1,
 	[IsSegment]				AS					CAST(IIF([Node].GetAncestor(1) = hierarchyid::GetRoot(), 1, 0) AS BIT) PERSISTED
 );
 GO
@@ -41,3 +43,32 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name3]
   ON [dbo].[Centers]([CenterType], [Name3]) WHERE [Name3] IS NOT NULL;
 GO
+CREATE TRIGGER [dbo].[trIU_Centers] ON [dbo].[Centers] AFTER INSERT, UPDATE
+AS
+IF UPDATE([Id]) OR UPDATE([ParentId])
+BEGIN
+	UPDATE dbo.Centers
+	SET [IsLeaf] = 1
+	WHERE [IsLeaf] = 0
+	AND [Id] NOT IN (SELECT DISTINCT [ParentId] FROM dbo.Centers WHERE [ParentId] IS NOT NULL)
+
+	UPDATE dbo.Centers
+	SET [IsLeaf] = 0
+	WHERE [IsLeaf] = 1
+	AND [Id] IN (SELECT DISTINCT [ParentId] FROM dbo.Centers WHERE [ParentId] IS NOT NULL)
+END
+GO
+CREATE TRIGGER [dbo].[trD_Centers] ON [dbo].[Centers] AFTER DELETE
+AS
+BEGIN
+	UPDATE dbo.Centers
+	SET [IsLeaf] = 1
+	WHERE [IsLeaf] = 0
+	AND [Id] NOT IN (SELECT DISTINCT [ParentId] FROM dbo.Centers WHERE [ParentId] IS NOT NULL)
+
+	UPDATE dbo.Centers
+	SET [IsLeaf] = 0
+	WHERE [IsLeaf] = 1
+	AND [Id] IN (SELECT DISTINCT [ParentId] FROM dbo.Centers WHERE [ParentId] IS NOT NULL)
+END
+

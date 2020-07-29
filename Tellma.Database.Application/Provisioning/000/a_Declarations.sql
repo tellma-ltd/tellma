@@ -39,7 +39,7 @@
 	DECLARE @Select ReportSelectDefinitionList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
-	DECLARE @RelationDefinitions dbo.[RelationDefinitionList];
+	DECLARE @RelationDefinitions dbo.[RelationDefinitionList], @CustodyDefinitions dbo.[CustodyDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
@@ -55,7 +55,7 @@
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 
-	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList];
+	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList], @Custodies CustodyList;
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -66,7 +66,7 @@
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @CashOnHandContracts dbo.[RelationList], @BankContracts dbo.[RelationList];
+	DECLARE @SafeCustodies dbo.[RelationList], @BankAccountCustodies dbo.[RelationList];
 
 	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];
@@ -75,7 +75,7 @@
 	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT, @DI5 INT, @DI6 INT, @DI7 INT, @DI8 INT;
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
-	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList];
+	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList], @CustodyDefinitionIds [IdList], @DocumentDefinitionIds [IdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 

@@ -41,8 +41,12 @@
 (1110,11, N'1110',N'Deferred tax assets', N'أصول الضريبة المؤجلة',@DeferredTaxAssets),
 (1111,11, N'1111',N'Current tax assets, non-current', N'الأصول الضريبية المتداولة، غير جارية',@CurrentTaxAssetsNoncurrent),
 (1112,11, N'1112',N'Other non-current financial assets', N'أصول مالية غير متداولة أخرى',@OtherNoncurrentFinancialAssets),
-(111210,1112, N'111210',N'Non-current staff loans', N'قروض طويلة الأجل لموظفين',@NonCurrentLoansExtension),
-(111220,1112, N'111220',N'Non-current sundry debtors', N'قروض طويلة الأجل لآخرين',@NonCurrentLoansExtension),
+(111201,1112, N'111201',N'Non-current financial assets at fair value through profit or loss', N'الأصول المالية غير المتداولة بالقيمة العادلة من خلال الربح أو الخسارة',@NoncurrentFinancialAssetsAtFairValueThroughProfitOrLoss),
+(111202,1112, N'111202',N'Non-current financial assets available-for-sale', N'الأصول المالية غير المتداولة المتوفرة برسم البيع',@NoncurrentFinancialAssetsAvailableforsale),
+(111203,1112, N'111203',N'Non-current held-to-maturity investments', N'الاستثمارات غير المتداولة المحتفظ بها حتى تاريخ الاستحقاق',@NoncurrentHeldtomaturityInvestments),
+(111204,1112, N'111204',N'Non-current loans and receivables', N'القروض والذمم المدينة غير المتداولة',@NoncurrentLoansAndReceivables),
+(111205,1112, N'111205',N'Non-current financial assets at fair value through other comprehensive income', N'الأصول المالية غير المتداولة بالقيمة العادلة من خلال دخل شامل آخر',@NoncurrentFinancialAssetsAtFairValueThroughOtherComprehensiveIncome),
+(111206,1112, N'111206',N'Non-current financial assets at amortised cost', N'الأصول المالية غير المتداولة بالتكلفة المطفأة',@NoncurrentFinancialAssetsAtAmortisedCost),
 (1113,11, N'1113',N'Other non-current non-financial assets', N'أصول غير مالية غير متداولة أخرى',@OtherNoncurrentNonfinancialAssets),
 (1114,11, N'1114',N'Non-current non-cash assets pledged as collateral for which transferee has right by contract or cust', N'الأصول غير النقدية وغير المتداولة المرهونة كضمان والتي يكون للمنشأة المنقول إليها الحق بموجب عقد ما ',@NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral),
 (12,1, N'12',N'Current assets', N'الأصول المتداولة',@CurrentAssets),
@@ -65,7 +69,7 @@
 (1203,12, N'1203',N'Current tax assets, current', N'الأصول الضريبية المتداولة، جارية',@CurrentTaxAssetsCurrent),
 (1204,12, N'1204',N'Current biological assets', N'الأصول البيولوجية المتداولة',@CurrentBiologicalAssets),
 (1205,12, N'1205',N'Other current financial assets', N'أصول مالية متداولة أخرى',@OtherCurrentFinancialAssets),
-(120501,1205, N'120501',N'Staff loans', N'سلفيات متداولة لموظفين',@CurrentLoansExtension),
+(120501,1205, N'120501',N'Staff loans', N'سلفيات متداولة لموظفين',@OtherCurrentFinancialAssets),
 (1206,12, N'1206',N'Other current non-financial assets', N'أصول غير مالية متداولة أخرى',@OtherCurrentNonfinancialAssets),
 (1207,12, N'1207',N'Cash and cash equivalents', N'النقد والنقد المعادل',@CashAndCashEquivalents),
 (120701,1207, N'120701',N'Cash', N'نقد',@Cash),
@@ -73,6 +77,8 @@
 (120703,1207, N'120703',N'Other cash and cash equivalents', N'النقد والنقد المعادل الآخرين',@OtherCashAndCashEquivalents),
 (1208,12, N'1208',N'Current non-cash assets pledged as collateral for which transferee has right by contract or custom t', N'الأصول غير النقدية المتداولة كضمان التي المنقول له الحق العقد أو العرف لبيع أو إعادة رهن الضمان',@CurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral),
 (1209,12, N'1209',N'Non-current assets or disposal groups classified as held for sale or as held for distribution to own', N'الموجودات غير المتداولة أو مجموعات التصرف المصنفة كاستثمارات محتفظ بها للبيع أو عقد لتوزيعها على أصح',@NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners),
+(120901,1209, N'120901',N'Non-current assets or disposal groups classified as held for sale', N'الأصول غير المتداولة أو مجموعات التصرف المصنفة على أنه محتفظ بها برسم البيع',@NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSale),
+(120902,1209, N'120902',N'Non-current assets or disposal groups classified as held for distribution to owners', N'الأصول غير المتداولة أو مجموعات التصرف المصنفة على أنه محتفظ بها لتوزيعها على المالكين',@NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForDistributionToOwners),
 (2,NULL, N'2',N'Equity', N'حقوق الملكية',@Equity),
 (20,2, N'20',N'Equity.', N'حقوق الملكية.',@Equity),
 (2000,20, N'2000',N'Equity..', N'حقوق الملكية..',@Equity),
@@ -88,6 +94,12 @@
 (310101,3101, N'310101',N'Non-current provisions for employee benefits', N'المخصصات غير المتداولة لمنافع الموظفين',@NoncurrentProvisionsForEmployeeBenefits),
 (310102,3101, N'310102',N'Other non-current provisions', N'مخصصات أخرى غير متداولة',@OtherLongtermProvisions),
 (3102,31, N'3102',N'Trade and other non-current payables', N'الذمم الدائنة التجارية والأخرى غير المتداولة',@NoncurrentPayables),
+(310201,3102, N'310201',N'Non-current trade payables', N'الذمم الدائنة التجارية غير المتداولة',@NoncurrentPayablesToTradeSuppliers),
+(310202,3102, N'310202',N'Non-current payables to related parties', N'الذمم الدائنة غير المتداولة إلى أطراف ذات علاقة',@NoncurrentPayablesToRelatedParties),
+(310203,3102, N'310203',N'Accruals and deferred income classified as non-current', N'الاستحقاقات والدخل المؤجل المصنّف على أنه غير متداول',@AccrualsAndDeferredIncomeClassifiedAsNoncurrent),
+(310204,3102, N'310204',N'Non-current payables on social security and taxes other than income tax', N'الذمم الدائنة غير المتداولة على الضمان الاجتماعي والضرائب عدا عن ضريبة الدخل',@NoncurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax),
+(310205,3102, N'310205',N'Non-current retention payables', N'الذمم الدائنة غير المتداولة للاستبقاء',@NoncurrentRetentionPayables),
+(310206,3102, N'310206',N'Other non-current payables', N'ذمم دائنة أخرى غير متداولة',@OtherNoncurrentPayables),
 (3103,31, N'3103',N'Deferred tax liabilities', N'التزامات الضريبة المؤجلة',@DeferredTaxLiabilities),
 (3104,31, N'3104',N'Current tax liabilities, non-current', N'الالتزامات الضريبية المتداولة، غير جارية',@CurrentTaxLiabilitiesNoncurrent),
 (3105,31, N'3105',N'Other non-current financial liabilities', N'التزامات مالية غير متداولة أخرى',@OtherNoncurrentFinancialLiabilities),
@@ -289,8 +301,12 @@ DECLARE @AC1109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC1110 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1110');
 DECLARE @AC1111 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1111');
 DECLARE @AC1112 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1112');
-DECLARE @AC111210 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111210');
-DECLARE @AC111220 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111220');
+DECLARE @AC111201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111201');
+DECLARE @AC111202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111202');
+DECLARE @AC111203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111203');
+DECLARE @AC111204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111204');
+DECLARE @AC111205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111205');
+DECLARE @AC111206 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111206');
 DECLARE @AC1113 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1113');
 DECLARE @AC1114 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1114');
 DECLARE @AC12 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'12');
@@ -321,6 +337,8 @@ DECLARE @AC120702 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC120703 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120703');
 DECLARE @AC1208 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1208');
 DECLARE @AC1209 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1209');
+DECLARE @AC120901 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120901');
+DECLARE @AC120902 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120902');
 DECLARE @AC2 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'2');
 DECLARE @AC20 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'20');
 DECLARE @AC2000 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'2000');
@@ -336,6 +354,12 @@ DECLARE @AC3101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC310101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310101');
 DECLARE @AC310102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310102');
 DECLARE @AC3102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3102');
+DECLARE @AC310201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310201');
+DECLARE @AC310202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310202');
+DECLARE @AC310203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310203');
+DECLARE @AC310204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310204');
+DECLARE @AC310205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310205');
+DECLARE @AC310206 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'310206');
 DECLARE @AC3103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3103');
 DECLARE @AC3104 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3104');
 DECLARE @AC3105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3105');

@@ -18,7 +18,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 EXEC [api].[Relations__Save]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @SafeCD,
 	@Entities = @cashiers,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -47,7 +47,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 EXEC [api].[Relations__Save]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @SafeCD,
 	@Entities = @petty_cash_funds,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -69,7 +69,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 EXEC [api].[Relations__Save]
-	@DefinitionId = @BankCD,
+	@DefinitionId = @BankAccountCD,
 	@Entities = @bank_accounts,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
