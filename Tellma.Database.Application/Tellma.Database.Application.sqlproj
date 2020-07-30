@@ -651,6 +651,7 @@
     <None Include="Provisioning\106\106_21Lookups.sql" />
     <None Include="Provisioning\106\106_31Accounts.sql" />
     <None Include="Provisioning\106\106_07DocumentDefinitions.sql" />
+    <None Include="Provisioning\106\106_22CentersBackup.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
