@@ -908,10 +908,10 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 INSERT INTO @AccountTypeCustodyDefinitions([Index],
 [HeaderIndex],										[CustodyDefinitionId]) VALUES
---(0,@MotorVehicles,										@CustomerCD),--=> CustomerRentalCustody
-(1,@MotorVehicles,									@PPECustodyCD),--=> EmployeePPEUsageCustody
+(0,@MotorVehicles,									@RentalCD),
+(1,@MotorVehicles,									@PPECustodyCD),
 (2,@OfficeEquipment,								@PPECustodyCD),
---(3,@InvestmentPropertyCompleted,						@CustomerCD),--=> CustomerRentalCustody
+(3,@InvestmentPropertyCompleted,					@RentalCD),
 (7,@Merchandise,									@WarehouseCD),
 (8,@CurrentFoodAndBeverage,							@WarehouseCD),
 (9,@CurrentAgriculturalProduce,						@WarehouseCD),
@@ -924,7 +924,7 @@ INSERT INTO @AccountTypeCustodyDefinitions([Index],
 (16,@CurrentFuel,									@WarehouseCD),
 (116,@CurrentInventoriesInTransit,					@ShipperCD),
 (17,@OtherInventories,								@WarehouseCD),
---(25,@CurrentReceivablesFromRentalOfProperties,			@CustomerCD),
+(25,@CurrentReceivablesFromRentalOfProperties,		@RentalCD),
 (27,@CashOnHand,									@SafeCD),
 (28,@BalancesWithBanks,								@BankAccountCD),
 (29,@RevenueFromSaleOfGoods,						@WarehouseCD),

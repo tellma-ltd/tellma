@@ -10,11 +10,6 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(3,			N'Customer4');
 
 
-ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-	INSERT INTO @Customers
-	([Index],	[Name],						[FromDate]) VALUES
-	(0,			N'Wendy Semaneh',			'2017.09.15');
-
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	INSERT INTO @Customers
 	([Index],	[Name],								[FromDate], [TaxIdentificationNumber]) VALUES
@@ -31,8 +26,6 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	(2,			N'Zeej printing services',	N'خدمات زيج للطباعة'),
 	(3,			N'Afan Printing & Packaging',N'آفان للطباعة والتغليف')	;
 
-
-
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Customers: Inserting: ' + @ValidationErrorsJson
@@ -43,5 +36,3 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		@Paint = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Best Paint Industry'),
 		@Plastic = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
 		@Lifan = (SELECT [Id] FROM [dbo].[fi_Relations](N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
-
-

@@ -35,11 +35,6 @@ BEGIN
 	:r .\100_105\04_Resources\104_finished_goods.sql
 	:r .\100_105\04_Resources\104_raw-materials.sql
 	:r .\100_105\04_Resources\105_merchandise.sql
-
-	:r .\100_105\04_Resources\a1_PPE_motor-vehicles.sql
-
-	:r .\100_105\04_Resources\d1_FG_vehicles.sql
-
 	:r .\100_105\05_Contracts\01_CashCustodies.sql
 	:r .\100_105\05_Contracts\02_InventoryCustodies.sql
 	:r .\100_105\05_Contracts\03_Customers.sql

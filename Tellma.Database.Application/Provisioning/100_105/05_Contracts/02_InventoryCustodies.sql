@@ -1,13 +1,10 @@
-﻿DECLARE @Warehouses dbo.[RelationList];
-
+﻿DECLARE @Warehouses dbo.[CustodyList];
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Warehouses
 	([Index], [Name]) VALUES
 	(0,		N'RM Warehouse'),
 	(1,		N'FG Warehouse');
-ELSE IF @DB = N'101' -- Banan SD, USD, en
-	Print N''
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Warehouses
 	([Index], [Name]) VALUES

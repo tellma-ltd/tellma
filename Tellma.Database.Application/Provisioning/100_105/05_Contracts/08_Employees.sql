@@ -1,19 +1,18 @@
-﻿	DECLARE @employees dbo.[RelationList];
-
+﻿DECLARE @Employees dbo.[RelationList];
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
-	INSERT INTO @employees
+	INSERT INTO @Employees
 	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1'),
 	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2');
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-INSERT INTO @employees
+INSERT INTO @Employees
 	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(0,			N'Salman',			'2017.10.01',	N'E1');
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
-	INSERT INTO @employees
+	INSERT INTO @Employees
 	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(1,			N'Badege Kebede',	'2019.09.01',	N'E1'),
 	(2,			N'Tizita Nigussie',	'2019.09.01',	N'E2'),
@@ -26,7 +25,7 @@ BEGIN
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
-	INSERT INTO @employees
+	INSERT INTO @Employees
 	([Index],	[Name],		[Name2],	[FromDate],	[Code]) VALUES
 	(0,			N'Salman',	N'سلمان',	'2017.10.01',	N'E1'),
 	(1,			N'Tareq',	N'طارق',	'2017.10.01',	N'E2'),
@@ -38,7 +37,7 @@ BEGIN
 
 	EXEC [api].[Relations__Save]
 		@DefinitionId = @EmployeeCD,
-		@Entities = @employees,
+		@Entities = @Employees,
 		@RelationUsers = @RelationUsers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -47,8 +46,6 @@ BEGIN
 		Print 'Employees: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-
-
 	
 	DECLARE @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
 		@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
@@ -66,16 +63,3 @@ BEGIN
 		@AyelechHora = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Ayelech Hora'), 
 		@YigezuLegesse = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Yigezu Legesse'), 
 		@MesfinWolde = (SELECT [Id] FROM [dbo].[fi_Relations](N'employees', NULL) WHERE [Name] = N'Mesfin Wolde');
-
-	--UPDATE dbo.Centers
-	--SET ManagerId = CASE 
-	--	WHEN [Id] = @OS_Steel			THEN @BadegeKebede
-	--	WHEN [Id] = @RC_ExecutiveOffice	THEN @BadegeKebede
-	--	WHEN [Id] = @RC_Finance			THEN @TizitaNigussie
-	--	WHEN [Id] = @RC_Finance			THEN @TizitaNigussie
-	--	WHEN [Id] = @RC_Production		THEN @MesfinWolde
-	--	WHEN [Id] = @RC_Materials		THEN @AyelechHora
-	--	WHEN [Id] = @RC_SalesAG			THEN @Ashenafi
-	--	WHEN [Id] = @RC_SalesBole		THEN @Ashenafi
-	--	ELSE  NULL
-	--END;

@@ -95,7 +95,6 @@
     <Folder Include="Provisioning\000" />
     <Folder Include="Provisioning\100_105\01_Security" />
     <Folder Include="Provisioning\100_105\05_Contracts" />
-    <Folder Include="Provisioning\100_105\06_Accounts" />
     <Folder Include="Provisioning\100_105\02_Basic" />
     <Folder Include="Provisioning\100_105\04_Resources" />
     <Folder Include="Provisioning\107" />
@@ -552,12 +551,9 @@
     <None Include="Provisioning\100_105\05_Contracts\05_Partners.sql" />
     <None Include="Provisioning\100_105\05_Contracts\06_Suppliers.sql" />
     <None Include="Provisioning\100_105\05_Contracts\08_Employees.sql" />
-    <None Include="Provisioning\100_105\06_Accounts\c105_Accounts.sql" />
     <None Include="Provisioning\100_105\04_Resources\104_finished_goods.sql" />
     <None Include="Provisioning\100_105\04_Resources\104_raw-materials.sql" />
     <None Include="Provisioning\100_105\04_Resources\105_merchandise.sql" />
-    <None Include="Provisioning\100_105\04_Resources\a1_PPE_motor-vehicles.sql" />
-    <None Include="Provisioning\100_105\04_Resources\d1_FG_vehicles.sql" />
     <Build Include="map\map.RelationDefinitions.sql" />
     <Build Include="map\map.ResourceDefinitions.sql" />
     <None Include="Provisioning\108\00_Setup\Script.sql" />
@@ -591,7 +587,6 @@
     <None Include="Provisioning\101\101_23Resources.sql" />
     <None Include="Provisioning\101\101_25Relations.sql" />
     <None Include="Provisioning\101\70_Entries.sql" />
-    <None Include="Provisioning\100_105\105_manual-journal-vouchers.sql" />
     <None Include="Provisioning\101\71_manual-journal-vouchers.sql" />
     <None Include="Provisioning\101\72_cash-payment-vouchers.sql" />
     <None Include="Provisioning\101\73_revenue-templates.sql" />
@@ -701,6 +696,7 @@
     <None Include="106.Soreti.publish.xml" />
     <None Include="Provisioning\107\30_Resources.sql" />
     <None Include="Provisioning\000\u_Lookups.sql" />
+    <None Include="_Azure\Azure.102.BananET.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

@@ -25,9 +25,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	(1,		N'Georgia-Pacific Corp',	N'جورجيا باسيفيك'),
 	(2,		N'Weyerhaeuser Corporation',N'شركة ويرهاوزر'),
 	(3,		N'Stora Enso',				N'ستورا إنسو'),
-	(4,		N'Phoenix Pulp',			N'فونكس')
-	;
-
+	(4,		N'Phoenix Pulp',			N'فونكس');
 
 EXEC [api].[Relations__Save]
 	@DefinitionId = @SupplierCD,
@@ -51,6 +49,3 @@ SELECT
 	@Stora =  (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Stora Enso'),
 	@Phoenix =  (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Phoenix Pulp')
 	;
-
-DECLARE @FamilyShawarma INT = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'The Family Shawerma');
-DECLARE @GenericSupplier INT = (SELECT [Id] FROM [dbo].[fi_Relations](N'suppliers', NULL) WHERE [Name] = N'Generic Supplier');
