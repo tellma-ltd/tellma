@@ -17,8 +17,8 @@ EXEC [dal].[RelationDefinitions__UpdateState]
 	@Ids = @RelationDefinitionIds,
 	@State = N'Visible'
 
-DELETE FROM [LineDefinitionEntryCustodianDefinitions]
-WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible');
+DELETE FROM [LineDefinitionEntryCustodyDefinitions]
+WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible');
 
 DELETE FROM [LineDefinitionEntryNotedRelationDefinitions]
 WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible');

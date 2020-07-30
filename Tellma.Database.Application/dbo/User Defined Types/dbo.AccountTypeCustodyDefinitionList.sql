@@ -1,7 +1,7 @@
-﻿CREATE TYPE [dbo].[AccountTypeCustodianDefinitionList] AS TABLE (
+﻿CREATE TYPE [dbo].[AccountTypeCustodyDefinitionList] AS TABLE (
 	[Index]						INT,
 	[HeaderIndex]				INT			DEFAULT 0,
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]						INT			DEFAULT 0,
-	[CustodianDefinitionId]		INT NOT NULL
+	[CustodyDefinitionId]		INT NOT NULL
 );

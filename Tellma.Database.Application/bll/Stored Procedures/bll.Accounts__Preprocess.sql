@@ -11,25 +11,19 @@ SET NOCOUNT ON;
 DECLARE @ProcessedEntities [dbo].[AccountList];
 INSERT INTO @ProcessedEntities SELECT * FROM @Entities;
 
--- If Custodian has a CurrencyId, copy it to Account
+-- If Custody has a Currency or Center copy it to Account
 UPDATE A
-SET A.[CurrencyId] = COALESCE(C.[CurrencyId], A.[CurrencyId])
-FROM @ProcessedEntities A JOIN dbo.[Relations] C ON A.[CustodianId] = C.Id;
+SET A.[CurrencyId] = COALESCE(C.[CurrencyId], A.[CurrencyId]),
+	A.[CenterId] = COALESCE(C.[CenterId], A.[CenterId])
+FROM @ProcessedEntities A JOIN dbo.[Custodies] C ON A.[CustodyId] = C.Id;
 
--- If Resource has a CurrencyId, copy it to Account
+-- If Resource has a CurrencyId Or Center, copy it to Account
 UPDATE A
-SET A.[CurrencyId] = COALESCE(R.[CurrencyId], A.[CurrencyId])
+SET
+	A.[CurrencyId] = COALESCE(R.[CurrencyId], A.[CurrencyId]),
+	A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
 FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id;
 
--- If Contract has a CenterId, copy it to Account
-UPDATE A
-SET A.[CenterId] = COALESCE(C.[CenterId], A.[CenterId])
-FROM @ProcessedEntities A JOIN dbo.[Relations] C ON A.[CustodianId] = C.Id;
-
--- If Resource has a CenterId, copy it to Account
-UPDATE A
-SET A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
-FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id;
 
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 -- Below we set things to the only value that matches the Definition

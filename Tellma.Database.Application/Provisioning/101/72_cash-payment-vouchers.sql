@@ -26,11 +26,11 @@ BEGIN -- Inserting
 		[Memo] = N'Meals, the family shawerma',
 		[NotedDate1] = N'2019.01.01',
 		[ExternalReference1] = N'49',
-		[CustodianId0] = @FamilyShawarma, 
+		[CustodyId0] = @FamilyShawarma, 
 		[CurrencyId2] = @SDG,
 		[NotedAmount1] = 665,
 		[MonetaryValue1] = 0,
-		[CustodianId2] = @GMSafe,
+		[CustodyId2] = @GMSafe,
 		[ExternalReference2] = N'RCT 3001',
 		[CenterId2] = @C101_INV
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
@@ -53,7 +53,7 @@ BEGIN -- Inserting
 		[MonetaryValue1] = 136.8,
 		[NotedAgentName1] = N'AA Salam',
 		[EntryTypeId1] = @PaymentsToAndOnBehalfOfEmployees,
-		[CustodianId1] = @KSASafe,
+		[CustodyId1] = @KSASafe,
 		[ExternalReference1] = N'50',
 		[CenterId1] = @C101_INV
 	WHERE [DocumentIndex] = 1 AND [Index] = 0;
@@ -66,11 +66,11 @@ BEGIN -- Inserting
 		[Memo] = N'Garden Maintenance - هيثم عوض محمد',
 		[NotedDate1] = N'2019.01.01',
 		[ExternalReference1] = N'53',
-		[CustodianId0] = @GenericSupplier, -- used others
+		[CustodyId0] = @GenericSupplier, -- used others
 		[CurrencyId2] = @SDG,
 		[NotedAmount1] = 500,
 		[MonetaryValue1] = 0,
-		[CustodianId2] = @GMSafe,
+		[CustodyId2] = @GMSafe,
 		[ExternalReference2] = N'RCT 3011',
 		[CenterId2] = @C101_INV
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
@@ -82,11 +82,11 @@ BEGIN -- Inserting
 		[Memo] =  N'720مطاعم صابرين 660- شاورما العائلة',
 		[NotedDate1] = N'2019.01.01',
 		[ExternalReference1] = N'00540',
-		[CustodianId0] = @GenericSupplier, -- used others
+		[CustodyId0] = @GenericSupplier, -- used others
 		[CurrencyId2] = @SDG,
 		[NotedAmount1] = 1380,
 		[MonetaryValue1] = 0,
-		[CustodianId2] = @GMSafe,
+		[CustodyId2] = @GMSafe,
 		[ExternalReference2] = N'RCT 3021',
 		[CenterId2] = @C101_INV	
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
@@ -96,10 +96,10 @@ BEGIN -- Inserting
 	UPDATE @WL
 	SET
 		[Memo] = N'Sold USD',
-		[CustodianId1] = @GMSafe,
+		[CustodyId1] = @GMSafe,
 		[CurrencyId1] = @USD,
 		[MonetaryValue1] = 2000,
-		[CustodianId0] = @GMSafe,
+		[CustodyId0] = @GMSafe,
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 111000,
 		[CenterId0] = @C101_INV	
@@ -113,7 +113,7 @@ BEGIN -- Inserting
 		[MonetaryValue1] = 1282.8,
 		[NotedAgentName1] = N'Mohammed Kamil',
 		[EntryTypeId1] = @PaymentsToAndOnBehalfOfEmployees,
-		[CustodianId1] = @GMSafe,
+		[CustodyId1] = @GMSafe,
 		[ExternalReference1] = N'121109',
 		[CenterId1] = @C101_INV
 	WHERE [DocumentIndex] = 21 AND [Index] = 0;
@@ -126,7 +126,7 @@ BEGIN -- Inserting
 		[MonetaryValue1] = 460,
 		[NotedAgentName1] = N'Ahmad AbdusSalam',
 		[EntryTypeId1] = @PaymentsToAndOnBehalfOfEmployees,
-		[CustodianId1] = @GMSafe,
+		[CustodyId1] = @GMSafe,
 		[ExternalReference1] = N'121110',
 		[CenterId1] = @C101_INV
 	WHERE [DocumentIndex] = 22 AND [Index] = 0;
@@ -139,7 +139,7 @@ BEGIN -- Inserting
 		[MonetaryValue1] = 55000,
 		[NotedAgentName1] = N'Former guards',
 		[EntryTypeId1] = @PaymentsToAndOnBehalfOfEmployees,
-		[CustodianId1] = @GMSafe,
+		[CustodyId1] = @GMSafe,
 		[ExternalReference1] = N'121111',
 		[CenterId1] = @C101_INV
 	WHERE [DocumentIndex] = 23 AND [Index] = 0;
@@ -152,7 +152,7 @@ BEGIN -- Inserting
 		[MonetaryValue1] = 1011,
 		[NotedAgentName1] = N'Court',
 		[EntryTypeId1] = @PaymentsToAndOnBehalfOfEmployees,
-		[CustodianId1] = @GMSafe,
+		[CustodyId1] = @GMSafe,
 		[ExternalReference1] = N'GV-123',
 		[CenterId1] = @C101_INV
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
@@ -162,10 +162,10 @@ BEGIN -- Inserting
 	UPDATE @WL
 	SET
 		[Memo] = N'Sold USD',
-		[CustodianId1] = @GMSafe,
+		[CustodyId1] = @GMSafe,
 		[CurrencyId1] = @USD,
 		[MonetaryValue1] = 300,
-		[CustodianId0] = @KRTBank,
+		[CustodyId0] = @KRTBank,
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 19500,
 		[CenterId0] = @C101_INV	
@@ -258,7 +258,7 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 3, -- N'Completed',
 		@OnBehalfOfuserId = @amtaam,
-		@RuleType = N'ByCustodian',
+		@RuleType = N'ByCustody',
 		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -320,7 +320,7 @@ BEGIN -- Inserting
 		[Direction],
 		[AccountId],
 		[CurrencyId],
-		[CustodianId],
+		[CustodyId],
 		[ResourceId],
 		[CenterId],
 		[EntryTypeId],
@@ -345,7 +345,7 @@ BEGIN -- Inserting
 		[Direction],
 		[AccountId],
 		[CurrencyId],
-		[CustodianId],
+		[CustodyId],
 		[ResourceId],
 		[CenterId],
 		[EntryTypeId],
@@ -384,7 +384,7 @@ BEGIN -- Inserting
 	(106,@DI4,@ManualLineLD);
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-					[AccountId],		[CurrencyId],	[MonetaryValue],[Value], [CenterId], [CustodianId], [EntryTypeId]) VALUES
+					[AccountId],		[CurrencyId],	[MonetaryValue],[Value], [CenterId], [CustodyId], [EntryTypeId]) VALUES
 	(0, 100, @DI1,+1,@1Meals,			@SDG,			665,			6.65,		NULL,		NULL,		NULL),
 	(1, 100, @DI1,-1,@1DocumentControl,	@SDG,			665,			6.65,		NULL,		NULL,		NULL),
 	(0, 101, @DI2,+1,@1Maintenance,		@SDG,			500,			5,			NULL,		NULL,		NULL),

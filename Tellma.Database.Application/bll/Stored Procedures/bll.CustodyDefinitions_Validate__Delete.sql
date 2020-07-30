@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(AD.[Name], AD.[Name2], AD.[Name3]) AS [AccountType]
 	FROM @Ids FE
 	JOIN dbo.[CustodyDefinitions] D ON D.[Id] = FE.[Id]
-	JOIN dbo.[AccountTypeCustodianDefinitions] ADRD ON ADRD.[CustodianDefinitionId] = FE.[Id]
+	JOIN dbo.[AccountTypeCustodyDefinitions] ADRD ON ADRD.[CustodyDefinitionId] = FE.[Id]
 	JOIN dbo.[AccountTypes] AD ON AD.[Id] = ADRD.[AccountTypeId]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

@@ -42,7 +42,3 @@ DECLARE @PartnerCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code
 DECLARE @SupplierCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Supplier');
 DECLARE @CustomerCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Customer');
 DECLARE @EmployeeCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Employee');
-DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankAccount');
-DECLARE @SafeCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Safe');
-DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Warehouse');
-DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Shipper');

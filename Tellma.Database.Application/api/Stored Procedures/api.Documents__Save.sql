@@ -27,7 +27,7 @@ BEGIN
 	[Direction]					SMALLINT '$.Direction',
 	[AccountId]					INT '$.AccountId',
 	[CurrencyId]				NCHAR (3) '$.CurrencyId',
-	[CustodianId]				INT '$.CustodianId',
+	[CustodyId]					INT '$.CustodyId',
 	[ResourceId]				INT '$.ResourceId',
 	[CenterId]					INT '$.CenterId',
 	[EntryTypeId]				INT '$.EntryTypeId',

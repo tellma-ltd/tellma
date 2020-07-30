@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeCustodianDefinitions [AccountTypeCustodianDefinitionList] READONLY,
+	@AccountTypeCustodyDefinitions [AccountTypeCustodyDefinitionList] READONLY,
 	@AccountTypeNotedRelationDefinitions [AccountTypeNotedRelationDefinitionList] READONLY,
 	@ReturnIds BIT = 0
 AS
@@ -172,22 +172,22 @@ SET NOCOUNT ON;
 
 	-- AccountTypeContractDefinitions
 	WITH BEATCD AS (
-		SELECT * FROM dbo.[AccountTypeCustodianDefinitions]
+		SELECT * FROM dbo.[AccountTypeCustodyDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATCD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[CustodianDefinitionId]
-		FROM @AccountTypeCustodianDefinitions L
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[CustodyDefinitionId]
+		FROM @AccountTypeCustodyDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[CustodianDefinitionId]		= s.[CustodianDefinitionId], 
+			t.[CustodyDefinitionId]		= s.[CustodyDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[CustodianDefinitionId])
-		VALUES (s.[AccountTypeId], s.[CustodianDefinitionId])
+		INSERT ([AccountTypeId],	[CustodyDefinitionId])
+		VALUES (s.[AccountTypeId], s.[CustodyDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

@@ -8,7 +8,7 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
 	[CurrencyId]				NCHAR (3)		,
-	[CustodianId]				INT,
+	[CustodyId]					INT,
 	[ResourceId]				INT,
 	[CenterId]					INT,
 	[EntryTypeId]				INT,

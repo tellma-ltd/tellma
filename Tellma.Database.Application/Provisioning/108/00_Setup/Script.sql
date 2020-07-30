@@ -3,10 +3,10 @@ UPDATE dbo.EntryTypes SET IsActive = 0;
 delete from DocumentDefinitionLineDefinitions where DocumentDefinitionId > 1
 delete from DocumentDefinitions where Id > 1
 delete from AccountTypeResourceDefinitions
-delete from [AccountTypeCustodianDefinitions]
+delete from [AccountTypeCustodyDefinitions]
 delete from [AccountTypeNotedRelationDefinitions]
 delete from LineDefinitionEntryResourceDefinitions
-delete from [LineDefinitionEntryCustodianDefinitions]
+delete from [LineDefinitionEntryCustodyDefinitions]
 delete from [LineDefinitionEntryNotedRelationDefinitions]
 delete from ResourceDefinitions
 delete from [RelationDefinitions]

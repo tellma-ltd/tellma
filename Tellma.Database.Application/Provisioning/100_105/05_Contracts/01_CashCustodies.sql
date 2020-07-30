@@ -17,7 +17,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(0,		N'Cashier - Tigist');
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
-EXEC [api].[Relations__Save]
+EXEC [api].[Custodies__Save]
 	@DefinitionId = @SafeCD,
 	@Entities = @cashiers,
 	@RelationUsers = @RelationUsers,
@@ -46,7 +46,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(0,		N'Cashier');
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
-EXEC [api].[Relations__Save]
+EXEC [api].[Custodies__Save]
 	@DefinitionId = @SafeCD,
 	@Entities = @petty_cash_funds,
 	@RelationUsers = @RelationUsers,
@@ -68,7 +68,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	Print N''
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
-EXEC [api].[Relations__Save]
+EXEC [api].[Custodies__Save]
 	@DefinitionId = @BankAccountCD,
 	@Entities = @bank_accounts,
 	@RelationUsers = @RelationUsers,

@@ -22,8 +22,8 @@ SELECT @Agent2 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 2'; -- employee 2 a
 SELECT @Agent3 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 3'; -- customer 3 and supplier 3
 
 -- Adding sample cash accounts
-DELETE FROM @Relations
-INSERT INTO @Relations(
+DELETE FROM @Custodies
+INSERT INTO @Custodies(
 	[Index],	[Code],		[Name],					[CurrencyId],		[CenterId],			[LocationJson],	[FromDate],		[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Name2],				[Lookup1Id],		[Lookup2Id],		[Lookup3Id],	[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -43,10 +43,9 @@ INSERT INTO @Relations(
 	
 	;
 
-EXEC [api].[Relations__Save]
+EXEC [api].[Custodies__Save]
 	@DefinitionId = @SafeCD,
-	@RelationUsers = @RelationUsers,
-	@Entities = @Relations,
+	@Entities = @Custodies,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 
@@ -55,14 +54,14 @@ BEGIN
 	Print 'Cash Accounts: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-SELECT @CashOnHandAccount1 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA1';
-SELECT @CashOnHandAccount2 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA2';
-SELECT @CashOnHandAccount3 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA3';
-SELECT @CashOnHandAccount4 = [Id] FROM dbo.[Relations] WHERE [Code] = N'CA4';
+SELECT @CashOnHandAccount1 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'CA1';
+SELECT @CashOnHandAccount2 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'CA2';
+SELECT @CashOnHandAccount3 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'CA3';
+SELECT @CashOnHandAccount4 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'CA4';
 
 -- Adding sample bank accounts
-DELETE FROM @Relations -- Text1: Branch, Lookup1: Bank Account type
-INSERT INTO @Relations(
+DELETE FROM @Custodies -- Text1: Branch, Lookup1: Bank Account type
+INSERT INTO @Custodies(
 	[Index],	[Code],		[Name],					[CurrencyId],	[CenterId],			[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
 	[Int1],		[Int2],		[Name2],				[Lookup1Id],	[Lookup2Id],		[Lookup3Id],	[Lookup4Id],[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
 	[JobId],	[BankAccountNumber]) VALUES
@@ -78,8 +77,7 @@ INSERT INTO @Relations(
 
 EXEC [api].[Relations__Save]
 	@DefinitionId = @BankAccountCD,
-	@RelationUsers = @RelationUsers,
-	@Entities = @Relations,
+	@Entities = @Custodies,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 
@@ -89,9 +87,9 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-SELECT @BankAccount1 = [Id] FROM dbo.[Relations] WHERE [Code] = N'B01';
-SELECT @BankAccount2 = [Id] FROM dbo.[Relations] WHERE [Code] = N'B02';
-SELECT @BankAccount3 = [Id] FROM dbo.[Relations] WHERE [Code] = N'B03';
+SELECT @BankAccount1 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'B01';
+SELECT @BankAccount2 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'B02';
+SELECT @BankAccount3 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'B03';
 -- Adding sample Supplier accounts
 DELETE FROM @Relations -- 
 INSERT INTO @Relations( -- text1: email, text2: phone

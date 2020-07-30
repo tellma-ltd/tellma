@@ -3,7 +3,8 @@
 (1, N'Safe', N'Safe', N'Safes', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeCD),
 (2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'None', N'Optional',@EmployeeCD),
 (3, N'PPECustody', N'Fixed Asset Custody', N'Fixed Assets Custodies', N'user-shield', N'FixedAssets',150,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeCD),
-(4, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None', N'None',NULL);
+(4, N'Rental', N'Rental', N'Rentals', N'', N'Sales',155,N'Required', N'None', N'None', N'None', N'Optional',@CustomerCD),
+(5, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None', N'None',NULL);
 
 UPDATE @CustodyDefinitions
 SET 
@@ -25,8 +26,9 @@ BEGIN
 END;
 
 --Declarations
---DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'BankAccount');
---DECLARE @SafeCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Safe');
---DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Warehouse');
---DECLARE @PPECustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'PPECustody');
---DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Shipper');
+DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'BankAccount');
+DECLARE @SafeCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Safe');
+DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Warehouse');
+DECLARE @PPECustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'PPECustody');
+DECLARE @RentalCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Rental');
+DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Shipper');

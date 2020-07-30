@@ -2,13 +2,15 @@
 DELETE FROM @CustodyDefinitionIds;
 INSERT INTO @CustodyDefinitionIds([Id]) VALUES
 (@BankAccountCD),
-(@SafeCD);
+(@SafeCD),
 --(@WarehouseCD),
+(@PPECustodyCD);
+--(@RentalCD),
 --(@ShipperCD);
 
 EXEC [dal].[CustodyDefinitions__UpdateState]
 	@Ids = @CustodyDefinitionIds,
 	@State = N'Visible'
 
-DELETE FROM [LineDefinitionEntryCustodianDefinitions]
-WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [State] <> N'Visible')
+DELETE FROM [LineDefinitionEntryCustodyDefinitions]
+WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [State] <> N'Visible')

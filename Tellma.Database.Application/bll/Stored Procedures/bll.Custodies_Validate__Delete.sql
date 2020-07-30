@@ -17,7 +17,7 @@ SET NOCOUNT ON;
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N]
     FROM [dbo].[Custodies] C
 	JOIN [dbo].[CustodyDefinitions] CD ON C.[DefinitionId] = CD.[Id]
-	JOIN [dbo].[Entries] E ON E.[CustodianId] = C.[Id]
+	JOIN [dbo].[Entries] E ON E.[CustodyId] = C.[Id]
 	JOIN [dbo].[Lines] L ON L.[Id] =  E.[LineId]
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
 	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
@@ -33,7 +33,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS [Account]
     FROM [dbo].[Custodies] C
 	JOIN [dbo].[CustodyDefinitions] CD ON C.[DefinitionId] = CD.[Id]
-	JOIN [dbo].[Accounts] A ON A.[CustodianId] = C.[Id]
+	JOIN [dbo].[Accounts] A ON A.[CustodyId] = C.[Id]
 	JOIN @Ids FE ON FE.[Id] = C.[Id]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

@@ -19,12 +19,12 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP(@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheContractDefinition0IsUsedInAccountType1',
+		N'Error_TheCustodyDefinition0IsUsedInAccountType1',
 		dbo.fn_Localize(D.[TitleSingular], D.[TitleSingular2], D.[TitleSingular3]) AS [Definition],
 		dbo.fn_Localize(AD.[Name], AD.[Name2], AD.[Name3]) AS [AccountType]
 	FROM @Ids FE
-	JOIN dbo.[RelationDefinitions] D ON D.[Id] = FE.[Id]
-	JOIN dbo.[AccountTypeCustodianDefinitions] ADRD ON ADRD.[CustodianDefinitionId] = FE.[Id]
+	JOIN dbo.[CustodyDefinitions] D ON D.[Id] = FE.[Id]
+	JOIN dbo.[AccountTypeCustodyDefinitions] ADRD ON ADRD.[CustodyDefinitionId] = FE.[Id]
 	JOIN dbo.[AccountTypes] AD ON AD.[Id] = ADRD.[AccountTypeId]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

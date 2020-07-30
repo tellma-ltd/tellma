@@ -362,7 +362,7 @@ WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+	@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions,
 	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -906,12 +906,12 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (113,@CollectionGuaranteeExtension,						@CheckReceivedRD),
 (114,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
 
-INSERT INTO @AccountTypeCustodianDefinitions([Index],
-[HeaderIndex],										[CustodianDefinitionId]) VALUES
-(0,@MotorVehicles,@CustomerCD),
-(1,@MotorVehicles,@EmployeeCD),
-(2,@OfficeEquipment,@EmployeeCD),
-(3,@InvestmentPropertyCompleted,@CustomerCD),
+INSERT INTO @AccountTypeCustodyDefinitions([Index],
+[HeaderIndex],										[CustodyDefinitionId]) VALUES
+--(0,@MotorVehicles,										@CustomerCD),--=> CustomerRentalCustody
+(1,@MotorVehicles,									@PPECustodyCD),--=> EmployeePPEUsageCustody
+(2,@OfficeEquipment,								@PPECustodyCD),
+--(3,@InvestmentPropertyCompleted,						@CustomerCD),--=> CustomerRentalCustody
 (7,@Merchandise,									@WarehouseCD),
 (8,@CurrentFoodAndBeverage,							@WarehouseCD),
 (9,@CurrentAgriculturalProduce,						@WarehouseCD),
@@ -924,13 +924,13 @@ INSERT INTO @AccountTypeCustodianDefinitions([Index],
 (16,@CurrentFuel,									@WarehouseCD),
 (116,@CurrentInventoriesInTransit,					@ShipperCD),
 (17,@OtherInventories,								@WarehouseCD),
-(25,@CurrentReceivablesFromRentalOfProperties,		@CustomerCD),
+--(25,@CurrentReceivablesFromRentalOfProperties,			@CustomerCD),
 (27,@CashOnHand,									@SafeCD),
 (28,@BalancesWithBanks,								@BankAccountCD),
-(29,@RevenueFromSaleOfGoods,@WarehouseCD),
-(30,@RevenueFromSaleOfFoodAndBeverage,@WarehouseCD),
-(31,@RevenueFromSaleOfAgriculturalProduce,@WarehouseCD),
-(32,@CostOfMerchandiseSold,@WarehouseCD),
+(29,@RevenueFromSaleOfGoods,						@WarehouseCD),
+(30,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
+(31,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
+(32,@CostOfMerchandiseSold,							@WarehouseCD),
 (44,@CollectionGuaranteeExtension,					@SafeCD),
 (45,@DishonouredGuaranteeExtension,					@SafeCD);
 
@@ -983,12 +983,10 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 (38,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerCD),
 (39,@CashPaymentsToEmployeesControlExtension,@EmployeeCD);
 
-
-
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+	@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions,
 	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

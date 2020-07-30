@@ -80,7 +80,7 @@ AS
 			(SELECT [Name] FROM dbo.[Units] WHERE [Id] = WL.UnitId1) AS Unit,
 			MonetaryValue1 As UsedMonetaryValue,
 			Value1 As UsedValue, 
-			CustodianId0 AS [System],
+			CustodyId0 AS [System],
 			--(SELECT [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,
 			CurrencyId1 AS Currency, CenterId0 AS ExpCenter

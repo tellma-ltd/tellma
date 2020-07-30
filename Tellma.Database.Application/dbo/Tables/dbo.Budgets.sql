@@ -5,7 +5,7 @@
 	[AccountId]				INT				NOT NULL CONSTRAINT [FK_Budgets__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[CenterId]				INT				NOT NULL CONSTRAINT [FK_Budgets__CenterId] REFERENCES [dbo].[Centers] ([Id]),
 	[ResourceId]			INT				CONSTRAINT [FK_Budgets__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
-	[CustodianId]			INT				CONSTRAINT [FK_Budgets__CustodianId] REFERENCES [dbo].[Relations] ([Id]),
+	[CustodyId]				INT				CONSTRAINT [FK_Budgets__CustodyId] REFERENCES [dbo].[Custodies] ([Id]),
 	[CurrencyId]			NCHAR (3)		CONSTRAINT [FK_Budgets__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]			INT				NOT NULL CONSTRAINT [FK_Budgets__EntryTypeId] REFERENCES [dbo].[EntryTypes]
 );

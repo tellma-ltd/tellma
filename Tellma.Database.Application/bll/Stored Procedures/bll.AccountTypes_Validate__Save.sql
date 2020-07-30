@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[AccountTypes_Validate__Save]
 	@Entities [dbo].[AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeCustodianDefinitions [AccountTypeCustodianDefinitionList] READONLY,
+	@AccountTypeCustodyDefinitions [AccountTypeCustodyDefinitionList] READONLY,
 	@AccountTypeNotedRelationDefinitions [AccountTypeNotedRelationDefinitionList] READONLY,
 	@Top INT = 10
 AS

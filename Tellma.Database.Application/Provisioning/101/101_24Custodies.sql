@@ -10,17 +10,13 @@ BEGIN
 	Print 'Default Safes: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DELETE FROM @SafeCustodies; DELETE FROM @CustodyUsers;
+DELETE FROM @SafeCustodies;
 INSERT INTO @SafeCustodies([Index],	
 	[Code], [Name],		[Name2],				[CenterId], [CurrencyId]) VALUES
-(0,	N'B0',	N'GM Safe',	N'خزنة المدير العام',	@101C1,		NULL);
-INSERT INTO @CustodyUsers([Index], [HeaderIndex], 
-	[UserId]) VALUES
-(0,0,@amtaam)
+(0,	N'CA0',	N'GM Safe',	N'خزنة المدير العام',	@101C1,		NULL);
 EXEC [api].[Custodies__Save]
 	@DefinitionId = @SafeCD,
 	@Entities = @SafeCustodies,
-	@CustodyUsers = @CustodyUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
@@ -41,17 +37,14 @@ BEGIN
 	Print 'Default Bank accounts: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DELETE FROM @BankAccountCustodies; DELETE FROM @CustodyUsers;
+DELETE FROM @BankAccountCustodies;
 INSERT INTO @BankAccountCustodies([Index],	
 	[Code], [Name],					[Name2],		[CenterId], [CurrencyId]) VALUES
 (0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101C1,		N'SDG');
-INSERT INTO @CustodyUsers([Index], [HeaderIndex], 
-	[UserId]) VALUES
-(0,0,@amtaam)
+
 EXEC [api].[Custodies__Save]
 	@DefinitionId = @BankAccountCD,
 	@Entities = @BankAccountCustodies,
-	@CustodyUsers = @CustodyUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

@@ -1,6 +1,6 @@
 ﻿DELETE FROM @LineDefinitions; DELETE FROM @LineDefinitionEntries; DELETE FROM @LineDefinitionColumns;
 DELETE FROM @LineDefinitionGenerateParameters;
-DELETE FROM @LineDefinitionEntryCustodianDefinitions; DELETE FROM @LineDefinitionEntryResourceDefinitions;
+DELETE FROM @LineDefinitionEntryCustodyDefinitions; DELETE FROM @LineDefinitionEntryResourceDefinitions;
 DELETE FROM @LineDefinitionEntryNotedRelationDefinitions; DELETE FROM @LineDefinitionStateReasons;
 -- refresh the collections with back end data
 INSERT INTO @LineDefinitions
@@ -11,10 +11,10 @@ INSERT INTO @LineDefinitionEntries
 (	[Index], [HeaderIndex],		[Id], [Direction], [AccountTypeId], [EntryTypeId])
 SELECT [Id], [LineDefinitionId],[Id], [Direction], [AccountTypeId], [EntryTypeId]
 FROM dbo.LineDefinitionEntries;
-INSERT INTO @LineDefinitionEntryCustodianDefinitions
-(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[CustodianDefinitionId])
-SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[CustodianDefinitionId]
-FROM dbo.[LineDefinitionEntryCustodianDefinitions] LDECD
+INSERT INTO @LineDefinitionEntryCustodyDefinitions
+(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[CustodyDefinitionId])
+SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[CustodyDefinitionId]
+FROM dbo.[LineDefinitionEntryCustodyDefinitions] LDECD
 JOIN dbo.LineDefinitionEntries LDE ON LDECD.LineDefinitionEntryId = LDE.Id
 INSERT INTO @LineDefinitionEntryResourceDefinitions
 (		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[ResourceDefinitionId])
@@ -87,7 +87,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
 	@LineDefinitionEntries = @LineDefinitionEntries,
-	@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
+	@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,

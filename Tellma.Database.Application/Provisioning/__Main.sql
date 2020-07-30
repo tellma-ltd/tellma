@@ -44,8 +44,8 @@ BEGIN
 
 
 	:r .\100_105\05_Contracts\00_Agents.sql
-	:r .\100_105\05_Contracts\01_CashCustodians.sql
-	:r .\100_105\05_Contracts\02_InventoryCustodians.sql
+	:r .\100_105\05_Contracts\01_CashCustodies.sql
+	:r .\100_105\05_Contracts\02_InventoryCustodies.sql
 	:r .\100_105\05_Contracts\03_Customers.sql
 	:r .\100_105\05_Contracts\04_Debtors.sql
 	:r .\100_105\05_Contracts\05_Partners.sql
@@ -67,7 +67,7 @@ BEGIN
 	:r .\101\101_21Lookups.sql
 	:r .\101\101_22Centers.sql
 	:r .\101\101_23Resources.sql
-	--:r .\101\101_24Custodies.sql
+	:r .\101\101_24Custodies.sql
 	:r .\101\101_25Relations.sql
 	:r .\101\101_31Accounts.sql
 END
@@ -117,8 +117,8 @@ BEGIN
 	--:r .\108\02_Basic\b_Centers.sql
 	
 	--:r .\108\05_Contracts\00_Agents.sql
-	--:r .\108\05_Contracts\01_CashCustodians.sql
-	--:r .\108\05_Contracts\02_InventoryCustodians.sql
+	--:r .\108\05_Contracts\01_CashCustodies.sql
+	--:r .\108\05_Contracts\02_InventoryCustodies.sql
 	--:r .\108\05_Contracts\03_Customers.sql
 	--:r .\108\05_Contracts\04_Debtors.sql
 	--:r .\108\05_Contracts\05_Partners.sql

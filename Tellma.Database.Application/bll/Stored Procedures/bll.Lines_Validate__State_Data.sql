@@ -18,7 +18,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
-		(N'CurrencyId'),(N'CustodianId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue'),
+		(N'CurrencyId'),(N'CustodyId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue'),
 		(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
 		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
@@ -28,7 +28,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
-		FL.Id = N'CustodianId'			AND E.[CustodianId] IS NULL OR
+		FL.Id = N'CustodyId'			AND E.[CustodyId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
@@ -120,13 +120,13 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index] AS NVARCHAR (255)) + '].CustodianId',
+			CAST(E.[Index] AS NVARCHAR (255)) + '].CustodyId',
 		N'Error_Field0IsRequired',
-		N'localize:Entry_Custodian'
+		N'localize:Entry_Custody'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	WHERE (A.[CustodianDefinitionId] IS NOT NULL) AND (E.[CustodianId] IS NULL);
+	WHERE (A.[CustodyDefinitionId] IS NOT NULL) AND (E.[CustodyId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -248,7 +248,7 @@ IF @State > 0
 		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[CustodianId] IS NULL OR E.[CustodianId] = AB.[CustodianId])
+		AND (AB.[CustodyId] IS NULL OR E.[CustodyId] = AB.[CustodyId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined
@@ -266,7 +266,7 @@ IF @State > 0
 		JOIN dbo.Entries E ON L.[Id] = E.[LineId]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[CustodianId] IS NULL OR E.[CustodianId] = AB.[CustodianId])
+		AND (AB.[CustodyId] IS NULL OR E.[CustodyId] = AB.[CustodyId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined

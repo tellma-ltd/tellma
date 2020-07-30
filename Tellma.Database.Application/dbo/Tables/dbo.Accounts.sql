@@ -8,8 +8,8 @@
 	[Code]						NVARCHAR (50),--	CONSTRAINT [IX_Accounts__Code]  ,
 	[ClassificationId]			INT				CONSTRAINT [FK_Accounts__ClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]),
 	-- Any non null values gets replicated to Entries
-	[CustodianDefinitionId]		INT				CONSTRAINT [FK_Accounts__CustodianDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
-	[CustodianId]				INT				CONSTRAINT [FK_Accounts__CustodianId] REFERENCES [dbo].[Relations] ([Id]),
+	[CustodyDefinitionId]		INT				CONSTRAINT [FK_Accounts__CustodyDefinitionId] REFERENCES [dbo].[CustodyDefinitions] ([Id]),
+	[CustodyId]					INT				CONSTRAINT [FK_Accounts__CustodyId] REFERENCES [dbo].[Custodies] ([Id]),
 	[ResourceDefinitionId]		INT				CONSTRAINT [FK_Accounts__ResourceDefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
