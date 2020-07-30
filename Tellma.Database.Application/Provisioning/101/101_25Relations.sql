@@ -13,7 +13,7 @@ END;
 DELETE FROM @SafeCustodies; DELETE FROM @RelationUsers;
 INSERT INTO @SafeCustodies([Index],	
 	[Code], [Name],		[Name2],				[CenterId], [CurrencyId]) VALUES
-(0,	N'B0',	N'GM Safe',	N'خزنة المدير العام',	@101C1,		NULL);
+(0,	N'CA0',	N'GM Safe',	N'خزنة المدير العام',	@101C1,		NULL);
 INSERT INTO @RelationUsers([Index], [HeaderIndex], 
 	[UserId]) VALUES
 (0,0,@amtaam)
