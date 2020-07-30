@@ -54,28 +54,22 @@ BEGIN
 END
 IF @DB = N'101' -- Banan SD, en/ar
 BEGIN
-
-	:r .\101\00_Script.sql
-
-	:r .\101\10_Users.sql
-	:r .\101\11_Permissions.sql
-
-	:r .\101\20_Lookups.sql
-	:r .\101\21_Units.sql
-	:r .\101\22_Centers.sql
-
-	:r .\101\30_Resources.sql
-	
-	:r .\101\40_Agents.sql
-	:r .\101\50_Relations.sql
-
-	:r .\101\60_AccountClassifications.sql
-	:r .\101\61_Accounts.sql
-
-	--:r .\101\71_ManualJournalVouchers.sql
-	--:r .\101\72_CashPaymentVouchers.sql
-	--:r .\101\73_RevenueTemplates.sql
-	--:r .\101\74_RevenueRecognitionVouchers.sql
+	:r .\101\101_01Currencies.sql
+	:r .\101\101_02EntryTypes.sql
+	:r .\101\101_03LookupDefinitions.sql
+	:r .\101\101_04ResourceDefinitions.sql
+	:r .\101\101_05CustodyDefinitions.sql
+	:r .\101\101_06RelationDefinitions.sql
+	:r .\101\101_07DocumentDefinitions.sql
+	:r .\101\101_11Users.sql
+	:r .\101\101_12Permissions.sql
+	:r .\101\101_13Workflows.sql
+	:r .\101\101_21Lookups.sql
+	:r .\101\101_22Centers.sql
+	:r .\101\101_23Resources.sql
+	--:r .\101\101_24Custodies.sql
+	:r .\101\101_25Relations.sql
+	:r .\101\101_31Accounts.sql
 END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN

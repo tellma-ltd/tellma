@@ -592,17 +592,8 @@
     <None Include="Provisioning\107\61_Accounts.sql" />
     <None Include="Provisioning\107\70_Entries.sql" />
     <None Include="Provisioning\000\t_Accounts.sql" />
-    <None Include="Provisioning\101\00_Script.sql" />
-    <None Include="Provisioning\101\10_Users.sql" />
-    <None Include="Provisioning\101\11_Permissions.sql" />
-    <None Include="Provisioning\101\20_Lookups.sql" />
-    <None Include="Provisioning\101\21_Units.sql" />
-    <None Include="Provisioning\101\22_Centers.sql" />
-    <None Include="Provisioning\101\30_Resources.sql" />
-    <None Include="Provisioning\101\40_Agents.sql" />
-    <None Include="Provisioning\101\50_Relations.sql" />
-    <None Include="Provisioning\101\60_AccountClassifications.sql" />
-    <None Include="Provisioning\101\61_Accounts.sql" />
+    <None Include="Provisioning\101\101_23Resources.sql" />
+    <None Include="Provisioning\101\101_25Relations.sql" />
     <None Include="Provisioning\101\70_Entries.sql" />
     <None Include="Provisioning\100_105\105_manual-journal-vouchers.sql" />
     <None Include="Provisioning\101\71_manual-journal-vouchers.sql" />
@@ -651,6 +642,20 @@
     <None Include="Provisioning\106\106_21Lookups.sql" />
     <None Include="Provisioning\106\106_31Accounts.sql" />
     <None Include="Provisioning\106\106_07DocumentDefinitions.sql" />
+    <None Include="Provisioning\101\101_01Currencies.sql" />
+    <None Include="Provisioning\101\101_02EntryTypes.sql" />
+    <None Include="Provisioning\101\101_03LookupDefinitions.sql" />
+    <None Include="Provisioning\101\101_04ResourceDefinitions.sql" />
+    <None Include="Provisioning\101\101_05CustodyDefinitions.sql" />
+    <None Include="Provisioning\101\101_06RelationDefinitions.sql" />
+    <None Include="Provisioning\101\101_07DocumentDefinitions.sql" />
+    <None Include="Provisioning\101\101_11Users.sql" />
+    <None Include="Provisioning\101\101_12Permissions.sql" />
+    <None Include="Provisioning\101\101_13Workflows.sql" />
+    <None Include="Provisioning\101\101_21Lookups.sql" />
+    <None Include="Provisioning\101\101_22Centers.sql" />
+    <None Include="Provisioning\101\101_31Accounts.sql" />
+    <None Include="Provisioning\101\101_24Custodies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
