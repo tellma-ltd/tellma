@@ -496,6 +496,9 @@
   <data name="Document_Attachments" xml:space="preserve">
     <value>المرفقات</value>
   </data>
+  <data name="Document_Center" xml:space="preserve">
+    <value>المركز</value>
+  </data>
   <data name="Document_Clearance" xml:space="preserve">
     <value>درجة السرية</value>
   </data>

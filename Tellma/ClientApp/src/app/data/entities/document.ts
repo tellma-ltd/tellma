@@ -32,6 +32,8 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     NotedRelationId?: number;
     NotedRelationIsCommon?: boolean;
     SegmentId?: number;
+    CenterId?: number;
+    CenterIsCommon?: boolean;
     Time1?: string;
     Time1IsCommon?: boolean;
     Time2?: string;
@@ -133,6 +135,9 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 NotedRelationIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_NotedRelation') }) },
                 SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
+                CenterId: { control: 'number', label: () => `${trx.instant('Document_Cemter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { control: 'navigation', label: () => trx.instant('Document_Center'), type: 'Center', foreignKeyName: 'CenterId' },
+                CenterIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
                 Time1: { control: 'date', label: () => trx.instant('Document_Time1') },
                 Time1IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Time1') }) },
                 Time2: { control: 'date', label: () => trx.instant('Document_Time2') },
@@ -228,7 +233,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['DebitCustodian', 'CreditCustodian', 'DebitResource', 'CreditResource', 'NotedRelation', 'Unit', 'Currency']) {
+            for (const propName of ['DebitCustodian', 'CreditCustodian', 'DebitResource', 'CreditResource', 'NotedRelation', 'Center', 'Unit', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

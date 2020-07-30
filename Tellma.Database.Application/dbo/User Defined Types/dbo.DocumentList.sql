@@ -26,7 +26,7 @@
 	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[SegmentId]						INT,
 	[CenterId]						INT,
-	[CenterIdIsCommon]				BIT				NOT NULL DEFAULT 0,
+	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[Time1]							DATETIME2 (2),
 	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),

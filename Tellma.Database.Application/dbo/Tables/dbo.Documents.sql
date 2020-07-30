@@ -35,7 +35,7 @@
 	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[SegmentId]						INT	CONSTRAINT [FK_Documents__SegmentId] REFERENCES dbo.[Centers]([Id]), 
 	[CenterId]						INT	CONSTRAINT [FK_Documents__CenterId] REFERENCES dbo.[Centers]([Id]), 
-	[CenterIdIsCommon]					BIT				NOT NULL DEFAULT 0,
+	[CenterIsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Time1]							DATETIME2 (2),
 	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),

@@ -1196,6 +1196,14 @@ namespace Tellma.Controllers
                 case nameof(Document.NotedRelationIsCommon):
                     display = PropertyDisplay(def.NotedRelationVisibility, display);
                     break;
+                case nameof(Document.CenterId):
+                case nameof(Document.Center):
+                    display = PropertyDisplay(settings, def.CenterVisibility, def.CenterLabel, def.CenterLabel2, def.CenterLabel3, display);
+                    isRequired = def.CenterRequiredState == 0;
+                    break;
+                case nameof(Document.CenterIsCommon):
+                    display = PropertyDisplay(def.CenterVisibility, display);
+                    break;
                 case nameof(Document.Time1):
                     display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
                     isRequired = def.Time1RequiredState == 0;

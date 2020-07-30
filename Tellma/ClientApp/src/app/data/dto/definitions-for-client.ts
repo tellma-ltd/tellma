@@ -161,6 +161,15 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     NotedRelationLabel2: string;
     NotedRelationLabel3: string;
 
+    // Center
+    CenterVisibility: boolean;
+    CenterRequiredState: LineState;
+    CenterReadOnlyState: LineState;
+    CenterDefinitionIds: number[];
+    CenterLabel: string;
+    CenterLabel2: string;
+    CenterLabel3: string;
+
     // Clearance
     ClearanceVisibility: Visibility;
 

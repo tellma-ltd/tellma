@@ -208,6 +208,14 @@ namespace Tellma.Controllers.Dto
         public string NotedRelationLabel2 { get; set; }
         public string NotedRelationLabel3 { get; set; }
 
+        // Center
+        public bool CenterVisibility { get; set; }
+        public short? CenterRequiredState { get; set; }
+        public short? CenterReadOnlyState { get; set; }
+        public string CenterLabel { get; set; }
+        public string CenterLabel2 { get; set; }
+        public string CenterLabel3 { get; set; }
+
         // Clearance
         public string ClearanceVisibility { get; set; }
 

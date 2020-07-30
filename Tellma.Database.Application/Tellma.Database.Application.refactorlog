@@ -2277,4 +2277,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fi_Relations]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a584fe67-a76b-4064-a624-30d69161bc64" ChangeDateTime="07/30/2020 04:28:34">
+    <Property Name="ElementName" Value="[dbo].[Documents].[CenterIdIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CenterIsCommon]" />
+  </Operation>
 </Operations>

@@ -90,6 +90,12 @@ namespace Tellma.Entities
         [Display(Name = "Document_Segment")]
         public int? SegmentId { get; set; }
 
+        [Display(Name = "Document_Center")]
+        public int? CenterId { get; set; }
+
+        [IsCommonDisplay(Name = "Document_Center")]
+        public bool? CenterIsCommon { get; set; }
+
         [Display(Name = "Document_Time1")]
         public DateTime? Time1 { get; set; }
 
@@ -211,6 +217,10 @@ namespace Tellma.Entities
         [Display(Name = "Document_Segment")]
         [ForeignKey(nameof(SegmentId))]
         public Center Segment { get; set; }
+
+        [Display(Name = "Document_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
 
         [Display(Name = "Document_Unit")]
         [ForeignKey(nameof(UnitId))]

@@ -496,6 +496,9 @@
   <data name="Document_Attachments" xml:space="preserve">
     <value>附件</value>
   </data>
+  <data name="Document_Center" xml:space="preserve">
+    <value>中央</value>
+  </data>
   <data name="Document_Clearance" xml:space="preserve">
     <value>许可级别</value>
   </data>
