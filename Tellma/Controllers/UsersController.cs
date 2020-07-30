@@ -169,9 +169,12 @@ namespace Tellma.Controllers
         private readonly GlobalOptions _options;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
 
-        // This is created and disposed across multiple methods
+        // These are created and used across multiple methods
         private TransactionScope _adminTrxScope;
         private TransactionScope _identityTrxScope;
+        private List<(EmbeddedIdentityServerUser IdUser, UserForSave User)> _usersToInvite;
+        private List<string> _blobsToDelete;
+        private List<(string, byte[])> _blobsToSave;
 
         private IUrlHelper _urlHelper = null;
         private string _scheme = null;
@@ -286,8 +289,15 @@ namespace Tellma.Controllers
             }
 
             // Check if the user has permission
+            var actionFilter = await UserPermissionsFilter("ResendInvitationEmail", cancellation: default);
             var idSingleton = new List<int> { userId };
-            await CheckActionPermissions("ResendInvitationEmail", idSingleton);
+            await CheckActionPermissionsBefore(actionFilter, idSingleton);
+
+            if (!idSingleton.Any())
+            {
+                // The user cannot see those Ids or they are completely missing
+                throw new NotFoundException<int>(userId);
+            }
 
             // Load the user
             var user = await _appRepo.Users.FilterByIds(idSingleton).FirstOrDefaultAsync(cancellation: default);
@@ -444,7 +454,9 @@ namespace Tellma.Controllers
         private async Task<(List<User>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation
             var userInfo = await _appRepo.GetUserInfoAsync(cancellation: default);
@@ -471,18 +483,19 @@ namespace Tellma.Controllers
             using var trx = ControllerUtilities.CreateTransaction();
             await _appRepo.Users__Activate(ids, isActive);
 
+            List<User> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var response = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return response;
-            }
-            else
-            {
-                trx.Complete();
-                return default;
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
         }
 
         protected override IRepository GetRepository()
@@ -490,7 +503,7 @@ namespace Tellma.Controllers
             return _appRepo;
         }
 
-        protected override Query<User> Search(Query<User> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<User> Search(Query<User> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -580,13 +593,13 @@ namespace Tellma.Controllers
         {
             // NOTE: this method is not optimized for massive bulk (e.g. 1,000+ users), since it relies
             // on querying identity through UserManager one email at a time but it should be acceptable
-            // with the usual workloads, customers with more than 200 users are rare anyways
+            // with the usual workloads, companies with more than 200 users are rare anyways
 
             // Step (1) enlist the app repo
             _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by identity or admin trx scope later
 
             // Step (2): If Embedded Identity Server is enabled, create any emails that don't already exist there
-            var usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, UserForSave User)>();
+            _usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, UserForSave User)>();
             if (_options.EmbeddedIdentityServerEnabled)
             {
                 _identityTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
@@ -625,7 +638,7 @@ namespace Tellma.Controllers
                     // Mark for invitation later 
                     if (!identityUser.EmailConfirmed)
                     {
-                        usersToInvite.Add((identityUser, entity));
+                        _usersToInvite.Add((identityUser, entity));
                     }
                 }
             }
@@ -633,24 +646,33 @@ namespace Tellma.Controllers
             // Step (3): Extract the images
             var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<User, UserForSave>(_appRepo, entities, BlobName);
 
+            _blobsToDelete = blobsToDelete;
+            _blobsToSave = blobsToSave;
+
             // Step (4): Save the users in the app database
             var ids = await _appRepo.Users__Save(entities, imageIds, returnIds);
 
             // TODO: Check if the user lost his/her admin permissions
 
+            // Return the new Ids
+            return ids;
+        }
+
+        protected override async Task NonTransactionalSideEffectsForSave(List<UserForSave> entities, List<User> data)
+        {
             // Step (5): Delete old images from the blob storage
-            if (blobsToDelete.Any())
+            if (_blobsToDelete.Any())
             {
-                await _blobService.DeleteBlobsAsync(blobsToDelete);
+                await _blobService.DeleteBlobsAsync(_blobsToDelete);
             }
 
             // Step (6): Save new images to the blob storage
-            if (blobsToSave.Any())
+            if (_blobsToSave.Any())
             {
-                await _blobService.SaveBlobsAsync(blobsToSave);
+                await _blobService.SaveBlobsAsync(_blobsToSave);
             }
 
-            // Step (7) Same the emails in the admin database
+            // Step (7) Save the emails in the admin database
             var tenantId = _tenantIdAccessor.GetTenantId();
             _adminTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
             _adminRepo.EnlistTransaction(Transaction.Current);
@@ -659,13 +681,13 @@ namespace Tellma.Controllers
             await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, tenantId);
 
             // Step (8): Send the invitation emails
-            if (usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
+            if (_usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
             {
-                var userIds = usersToInvite.Select(e => e.User.Id).ToArray();
+                var userIds = _usersToInvite.Select(e => e.User.Id).ToArray();
                 var tos = new List<string>();
                 var subjects = new List<string>();
                 var substitutions = new List<Dictionary<string, string>>();
-                foreach (var (idUser, user) in usersToInvite)
+                foreach (var (idUser, user) in _usersToInvite)
                 {
                     // Add the email sender parameters
                     var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
@@ -681,9 +703,6 @@ namespace Tellma.Controllers
                     substitutions: substitutions.ToList()
                     );
             }
-
-            // Return the new Ids
-            return ids;
         }
 
         protected override Task OnSaveCompleted()

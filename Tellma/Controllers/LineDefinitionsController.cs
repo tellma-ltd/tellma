@@ -47,7 +47,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<LineDefinition> Search(Query<LineDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<LineDefinition> Search(Query<LineDefinition> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

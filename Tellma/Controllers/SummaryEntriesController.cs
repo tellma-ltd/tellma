@@ -117,7 +117,7 @@ namespace Tellma.Controllers
             return date;
         }
 
-        protected override Query<SummaryEntry> Search(Query<SummaryEntry> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<SummaryEntry> Search(Query<SummaryEntry> query, GetArguments args)
         {
             //string search = args.Search;
             //if (!string.IsNullOrWhiteSpace(search))

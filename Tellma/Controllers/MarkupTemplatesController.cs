@@ -197,7 +197,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<MarkupTemplate> Search(Query<MarkupTemplate> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<MarkupTemplate> Search(Query<MarkupTemplate> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

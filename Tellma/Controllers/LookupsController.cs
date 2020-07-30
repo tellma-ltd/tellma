@@ -147,12 +147,11 @@ namespace Tellma.Controllers
             return new FilteredRepository<Lookup>(_repo, filter);
         }
 
-        protected override Query<Lookup> Search(Query<Lookup> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Lookup> Search(Query<Lookup> query, GetArguments args)
         {
-            return LookupServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return LookupServiceUtil.SearchImpl(query, args);
 
         }
-
 
         protected override Task<List<LookupForSave>> SavePreprocessAsync(List<LookupForSave> entities)
         {
@@ -218,24 +217,27 @@ namespace Tellma.Controllers
         private async Task<(List<Lookup>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.Lookups__Activate(ids, isActive);
 
+            List<Lookup> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return (data, extras);
-            }
-            else
-            {
-                trx.Complete();
-                return (null, null);
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
         }
     }
 
@@ -298,9 +300,9 @@ namespace Tellma.Controllers
             return permissions;
         }
 
-        protected override Query<Lookup> Search(Query<Lookup> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Lookup> Search(Query<Lookup> query, GetArguments args)
         {
-            return LookupServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return LookupServiceUtil.SearchImpl(query, args);
         }
     }
 
@@ -309,7 +311,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Lookup> SearchImpl(Query<Lookup> query, GetArguments args, IEnumerable<AbstractPermission> _)
+        public static Query<Lookup> SearchImpl(Query<Lookup> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

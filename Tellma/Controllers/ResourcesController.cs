@@ -84,6 +84,10 @@ namespace Tellma.Controllers
         private readonly ISettingsCache _settingsCache;
         private readonly IHttpContextAccessor _contextAccessor;
 
+        // Shared across multiple methods
+        private List<string> _blobsToDelete;
+        private List<(string, byte[])> _blobsToSave;
+
         private int? _definitionIdOverride;
 
         protected override int? DefinitionId
@@ -181,9 +185,9 @@ namespace Tellma.Controllers
             return new FilteredRepository<Resource>(_repo, filter);
         }
 
-        protected override Query<Resource> Search(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Resource> Search(Query<Resource> query, GetArguments args)
         {
-            return ResourceServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return ResourceServiceUtil.SearchImpl(query, args);
         }
 
         protected override async Task<List<ResourceForSave>> SavePreprocessAsync(List<ResourceForSave> entities)
@@ -315,6 +319,9 @@ namespace Tellma.Controllers
         {
             var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Resource, ResourceForSave>(_repo, entities, BlobName);
 
+            _blobsToDelete = blobsToDelete;
+            _blobsToSave = blobsToSave;
+
             // Save the Resources
             var ids = await _repo.Resources__Save(
                 DefinitionId.Value,
@@ -322,19 +329,22 @@ namespace Tellma.Controllers
                 imageIds: imageIds,
                 returnIds: returnIds);
 
+            return ids;
+        }
+
+        protected override async Task NonTransactionalSideEffectsForSave(List<ResourceForSave> entities, List<Resource> data)
+        {
             // Delete the blobs retrieved earlier
-            if (blobsToDelete.Any())
+            if (_blobsToDelete.Any())
             {
-                await _blobService.DeleteBlobsAsync(blobsToDelete);
+                await _blobService.DeleteBlobsAsync(_blobsToDelete);
             }
 
             // Save new blobs if any
-            if (blobsToSave.Any())
+            if (_blobsToSave.Any())
             {
-                await _blobService.SaveBlobsAsync(blobsToSave);
+                await _blobService.SaveBlobsAsync(_blobsToSave);
             }
-
-            return ids;
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
@@ -398,24 +408,27 @@ namespace Tellma.Controllers
         private async Task<(List<Resource>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.Resources__Activate(ids, isActive);
 
+            List<Resource> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return (data, extras);
-            }
-            else
-            {
-                trx.Complete();
-                return (null, null);
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
         }
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
@@ -497,9 +510,9 @@ namespace Tellma.Controllers
             return permissions;
         }
 
-        protected override Query<Resource> Search(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Resource> Search(Query<Resource> query, GetArguments args)
         {
-            return ResourceServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return ResourceServiceUtil.SearchImpl(query, args);
         }
 
         protected override SelectExpression ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
@@ -510,7 +523,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Resource> SearchImpl(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> _)
+        public static Query<Resource> SearchImpl(Query<Resource> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

@@ -115,7 +115,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<DetailsEntry> Search(Query<DetailsEntry> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<DetailsEntry> Search(Query<DetailsEntry> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

@@ -24,6 +24,7 @@ namespace Tellma.Entities
             "CostOfSales",
             "SellingGeneralAndAdministration", 
             "SharedExpenseControl",
+            "InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl",
             "CurrentInventoriesInTransitExpendituresControl", 
             "ConstructionInProgressExpendituresControl", 
             "WorkInProgressExpendituresControl"
@@ -34,6 +35,7 @@ namespace Tellma.Entities
                 "Center_CenterType_CostOfSales",
                 "Center_CenterType_SellingGeneralAndAdministration",
                 "Center_CenterType_SharedExpenseControl",
+                "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl",
                 "Center_CenterType_CurrentInventoriesInTransitExpendituresControl",
                 "Center_CenterType_ConstructionInProgressExpendituresControl",
                 "Center_CenterType_WorkInProgressExpendituresControl",

@@ -402,10 +402,14 @@ function processFieldForCsv(field: string) {
 }
 
 export function formatAccounting(amount: number, digitsInfo: string): string {
-  const result = formatNumber(Math.abs(amount), 'en-GB', digitsInfo);
-  if (amount >= 0) {
-    return ` ${result} `;
+  if (!!amount || amount === 0) {
+    const result = formatNumber(Math.abs(amount), 'en-GB', digitsInfo);
+    if (amount >= 0) {
+      return ` ${result} `;
+    } else {
+      return `(${result})`;
+    }
   } else {
-    return `(${result})`;
+    return '';
   }
 }

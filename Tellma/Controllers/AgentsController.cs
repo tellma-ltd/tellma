@@ -79,7 +79,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<Agent> Search(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Agent> Search(Query<Agent> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -134,11 +134,6 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override Query<Agent> GetAsQuery(List<AgentForSave> entities)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public Task<(List<Agent>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
@@ -152,24 +147,27 @@ namespace Tellma.Controllers
         private async Task<(List<Agent>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.Agents__Activate(ids, isActive);
 
+            List<Agent> data = null;
+            Extras extras = null;
+
             if (args.ReturnEntities ?? false)
             {
-                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return (data, extras);
-            }
-            else
-            {
-                trx.Complete();
-                return (null, null);
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
         }
     }
 }

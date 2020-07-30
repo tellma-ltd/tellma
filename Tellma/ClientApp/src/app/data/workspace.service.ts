@@ -226,6 +226,10 @@ export abstract class SpecificWorkspace {
     return this.canDo(view, 'Update', createdById);
   }
 
+  public canDelete(view: string, createdById: string | number) {
+    return this.canDo(view, 'Delete', createdById);
+  }
+
   public canDo(view: string, action: Action, createdById: string | number) {
 
     if (!view) {
@@ -795,7 +799,11 @@ export class MasterDetailsStore {
       // in tree mode the total is never the entire table count, just the number of items displayed
       this.total = this.total + afterCount - beforeCount;
     } else {
-      this.flatIds = this.flatIds.filter(e => ids.indexOf(e) === -1);
+      const deletedIdsHash: {[id: string]: true} =  {};
+      for (const id of ids) {
+        deletedIdsHash[id] = true;
+      }
+      this.flatIds = this.flatIds.filter(id => !deletedIdsHash[id]);
       this.total = Math.max(this.total - ids.length, 0);
     }
   }

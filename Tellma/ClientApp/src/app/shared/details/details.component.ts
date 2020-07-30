@@ -991,19 +991,22 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     // Assuming the entity is not new
     const id = this.viewModel.Id;
     this.crud.deleteId(id).subscribe(
-      () => {
-        // remove from master and total of the global state
-        this.globalState.delete([id], this.workspace.current[this.globalState.collectionName]);
-
-        // after a successful delete navigate back to the master
-        this.router.navigate(['..'], { relativeTo: this.route });
-      },
+      () => this.onDeleteComplete([id]),
       (friendlyError) => this.handleActionError(friendlyError)
     );
   }
 
+  onDeleteComplete = (ids: (string | number)[]) => {
+    // remove from master and total of the global state
+    this.globalState.delete(ids, this.workspace.current[this.globalState.collectionName]);
+
+    // after a successful delete navigate back to the master
+    this.router.navigate(['..'], { relativeTo: this.route });
+  }
+
   get canDeletePermissions(): boolean {
-    return this.canEditPermissions;
+    const createdById = this.activeModel ? this.activeModel['CreatedById'] : null;
+    return this.workspace.current.canDelete(this.view, createdById);
   }
 
   get canDelete(): boolean {

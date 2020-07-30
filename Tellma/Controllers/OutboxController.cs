@@ -50,7 +50,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<OutboxRecord> Search(Query<OutboxRecord> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<OutboxRecord> Search(Query<OutboxRecord> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

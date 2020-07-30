@@ -283,6 +283,11 @@ namespace Tellma.Controllers
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
+        // Used across multiple methods
+        private List<(string, byte[])> _blobsToSave;
+        private List<InboxNotificationInfo> _notificationInfos;
+        private List<string> _fileIdsToDelete;
+
         public DocumentsService(TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
@@ -306,6 +311,7 @@ namespace Tellma.Controllers
 
         private bool? _includeRequiredSignaturesOverride;
         private int? _definitionIdOverride;
+
         private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
 
         protected override int? DefinitionId
@@ -362,8 +368,10 @@ namespace Tellma.Controllers
 
         public async Task<(List<Document>, Extras)> Assign(List<int> ids, AssignArguments args)
         {
-            // User permissions
-            await CheckActionPermissions("Read", ids);
+            // Check user permissions
+            var action = Constants.Read;
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
             if (args.AssigneeId == 0)
@@ -392,22 +400,22 @@ namespace Tellma.Controllers
             // Actual Assignment
             var notificationInfos = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
 
+            List<Document> data = null;
+            Extras extras = null;
+
+            if (args.ReturnEntities ?? false)
+            {
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
+
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
             // Notify relevant parties
             await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
-            // Return result
-            if (args.ReturnEntities ?? false)
-            {
-                var response = await GetByIds(ids, args, cancellation: default);
-
-                trx.Complete();
-                return response;
-            }
-            else
-            {
-                trx.Complete();
-                return default;
-            }
+            trx.Complete();
+            return (data, extras);
         }
 
         public async Task<(List<Document>, Extras)> SignLines(List<int> lineIds, SignArguments args)
@@ -417,7 +425,7 @@ namespace Tellma.Controllers
             // C# Validation 
             if (string.IsNullOrWhiteSpace(args.RuleType))
             {
-                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, nameof(args.RuleType)]);
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, nameof(args.RuleType)]);
             }
 
             // Execute and return
@@ -454,7 +462,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+                var response = await GetByIds(documentIds.ToList(), args, Constants.Read, cancellation: default);
 
                 trx.Complete();
                 return response;
@@ -490,7 +498,7 @@ namespace Tellma.Controllers
             var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnEntities);
             if (returnEntities)
             {
-                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+                var response = await GetByIds(documentIds.ToList(), args, Constants.Read, cancellation: default);
 
                 trx.Complete();
                 return response;
@@ -525,7 +533,9 @@ namespace Tellma.Controllers
         private async Task<(List<Document>, Extras)> UpdateDocumentState(List<int> ids, ActionArguments args, string transition)
         {
             // Check user permissions
-            await CheckActionPermissions("State", ids);
+            var action = "State";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
             // TODO
@@ -559,20 +569,23 @@ namespace Tellma.Controllers
                 _ => throw new BadRequestException($"Unknown transition {transition}"),
             };
 
-            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+            List<Document> data = null;
+            Extras extras = null;
 
             if (args.ReturnEntities ?? false)
             {
-                var response = await GetByIds(ids, args, cancellation: default);
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-                trx.Complete();
-                return response;
-            }
-            else
-            {
-                trx.Complete();
-                return default;
-            }
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            // Non-transactional stuff
+            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+
+            // Commit and return
+            trx.Complete();
+            return (data, extras);
         }
 
         #endregion
@@ -784,7 +797,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override Query<Document> Search(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Document> Search(Query<Document> query, GetArguments args)
         {
             var prefix = CurrentDefinition?.Prefix;
             var map = new List<(string Prefix, int DefinitionId)>
@@ -1610,7 +1623,7 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> entities, bool returnIds)
         {
-            var blobsToSave = new List<(string, byte[])>();
+            _blobsToSave = new List<(string, byte[])>();
 
             // Prepare the list of attachments with extras
             var attachments = new List<AttachmentWithExtras>();
@@ -1639,7 +1652,7 @@ namespace Tellma.Controllers
 
                             // Also add to blobsToCreate
                             string blobName = BlobName(fileId);
-                            blobsToSave.Add((blobName, file));
+                            _blobsToSave.Add((blobName, file));
                         }
 
                         attachments.Add(attWithExtras);
@@ -1654,24 +1667,30 @@ namespace Tellma.Controllers
                 attachments: attachments,
                 returnIds: returnIds);
 
+            _notificationInfos = notificationInfos;
+            _fileIdsToDelete = fileIdsToDelete;
+
+            // Return the new Ids
+            return ids;
+        }
+
+        protected override async Task NonTransactionalSideEffectsForSave(List<DocumentForSave> entities, List<Document> data)
+        {
             // Notify affected users
-            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+            await _hubContext.NotifyInboxAsync(TenantId, _notificationInfos);
 
             // Delete the file Ids retrieved earlier if any
-            if (fileIdsToDelete.Any())
+            if (_fileIdsToDelete.Any())
             {
-                var blobsToDelete = fileIdsToDelete.Select(fileId => BlobName(fileId));
+                var blobsToDelete = _fileIdsToDelete.Select(fileId => BlobName(fileId));
                 await _blobService.DeleteBlobsAsync(blobsToDelete);
             }
 
             // Save new blobs if any
-            if (blobsToSave.Any())
+            if (_blobsToSave.Any())
             {
-                await _blobService.SaveBlobsAsync(blobsToSave);
+                await _blobService.SaveBlobsAsync(_blobsToSave);
             }
-
-            // Return the new Ids
-            return ids;
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
@@ -1846,7 +1865,7 @@ namespace Tellma.Controllers
             return permissions;
         }
 
-        protected override Query<Document> Search(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Document> Search(Query<Document> query, GetArguments args)
         {
             // Get a map from all serial prefixes to definitionIds
             var prefixMap = _definitionsCache.GetCurrentDefinitionsIfCached()?
