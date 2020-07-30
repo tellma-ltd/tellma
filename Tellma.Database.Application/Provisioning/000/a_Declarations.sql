@@ -42,6 +42,7 @@
 	DECLARE @RelationDefinitions dbo.[RelationDefinitionList], @CustodyDefinitions dbo.[CustodyDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
+	DECLARE @DocumentDefinitionMarkupTemplates DocumentDefinitionMarkupTemplateList
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
 	DECLARE @LineDefinitions dbo.LineDefinitionList;
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;

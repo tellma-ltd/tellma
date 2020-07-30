@@ -56,60 +56,70 @@ SET NOCOUNT ON;
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+	
+	WITH CurrentDocumentDefinitionLineDefinitions AS (
+		SELECT *
+		FROM [dbo].[DocumentDefinitionLineDefinitions]
+		WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @Entities)
+	)
+	MERGE CurrentDocumentDefinitionLineDefinitions AS t
+	USING (
+		SELECT
+			DDLD.[Index],
+			DDLD.[Id],
+			II.[Id] AS [DocumentDefinitionId],
+			DDLD.[LineDefinitionId],
+			DDLD.[IsVisibleByDefault]
+		FROM @Entities DD
+		JOIN @IndexedIds II ON DD.[Index] = II.[Index]
+		JOIN @DocumentDefinitionLineDefinitions DDLD ON DD.[Index] = DDLD.[HeaderIndex]
+	) AS s
+	ON s.Id = t.Id
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[Index]				= s.[Index],
+			t.[LineDefinitionId]	= s.[LineDefinitionId],
+			t.[IsVisibleByDefault]	= s.[IsVisibleByDefault],
+			t.[SavedById]			= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[Index], [DocumentDefinitionId],	[LineDefinitionId], [IsVisibleByDefault]
+		) VALUES (
+			[Index], s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault]
+		);
 
-MERGE [dbo].[DocumentDefinitionLineDefinitions] AS t
-USING (
-	SELECT
-		DDLD.[Index],
-		DDLD.[Id],
-		II.[Id] AS [DocumentDefinitionId],
-		DDLD.[LineDefinitionId],
-		DDLD.[IsVisibleByDefault]
-	FROM @Entities DD
-	JOIN @IndexedIds II ON DD.[Index] = II.[Index]
-	JOIN @DocumentDefinitionLineDefinitions DDLD ON DD.[Index] = DDLD.[HeaderIndex]
-) AS s
-ON s.Id = t.Id
-WHEN MATCHED THEN
-	UPDATE SET
-		t.[Index]				= s.[Index],
-		t.[LineDefinitionId]	= s.[LineDefinitionId],
-		t.[IsVisibleByDefault]	= s.[IsVisibleByDefault],
-		t.[SavedById]			= @UserId
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (
-		[Index], [DocumentDefinitionId],	[LineDefinitionId], [IsVisibleByDefault]
-	) VALUES (
-		[Index], s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault]
-	);
-
-MERGE [dbo].[DocumentDefinitionMarkupTemplates] AS t
-USING (
-	SELECT
-		DDMT.[Index],
-		DDMT.[Id],
-		II.[Id] AS [DocumentDefinitionId],
-		DDMT.[MarkupTemplateId]
-	FROM @Entities DD
-	JOIN @IndexedIds II ON DD.[Index] = II.[Index]
-	JOIN @DocumentDefinitionMarkupTemplates DDMT ON DD.[Index] = DDMT.[HeaderIndex]
-) AS s
-ON s.Id = t.Id
-WHEN MATCHED THEN
-	UPDATE SET
-		t.[Index]				= s.[Index],
-		t.[MarkupTemplateId]	= s.[MarkupTemplateId],
-		t.[SavedById]			= @UserId
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (
-		[Index], [DocumentDefinitionId],	[MarkupTemplateId]
-	) VALUES (
-		[Index], s.[DocumentDefinitionId], s.[MarkupTemplateId]
-	);
+	WITH CurrentDocumentDefinitionMarkupTemplates AS (
+		SELECT *
+		FROM [dbo].[DocumentDefinitionMarkupTemplates]
+		WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @Entities)
+	)
+	MERGE CurrentDocumentDefinitionMarkupTemplates AS t
+	USING (
+		SELECT
+			DDMT.[Index],
+			DDMT.[Id],
+			II.[Id] AS [DocumentDefinitionId],
+			DDMT.[MarkupTemplateId]
+		FROM @Entities DD
+		JOIN @IndexedIds II ON DD.[Index] = II.[Index]
+		JOIN @DocumentDefinitionMarkupTemplates DDMT ON DD.[Index] = DDMT.[HeaderIndex]
+	) AS s
+	ON s.Id = t.Id
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[Index]				= s.[Index],
+			t.[MarkupTemplateId]	= s.[MarkupTemplateId],
+			t.[SavedById]			= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[Index], [DocumentDefinitionId],	[MarkupTemplateId]
+		) VALUES (
+			[Index], s.[DocumentDefinitionId], s.[MarkupTemplateId]
+		);
 	
 -- Signal clients to refresh their cache
 IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[DocumentDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')

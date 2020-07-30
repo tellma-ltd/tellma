@@ -617,7 +617,8 @@ SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId0],
-		[MonetaryValue1]	= [MonetaryValue0],
+		[CenterId1]			= [CenterId0],
+		[MonetaryValue1]	= [MonetaryValue0] - ISNULL([NotedAmount0], 0),
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
 '
 WHERE [Index] = 300;
@@ -633,41 +634,64 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,300,	N'NotedRelationId',		0,	N'Supplier',		3,4,1),
 (2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
 (3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
-(4,300,	N'CustodianId',			1,	N'Safe/Bank Account',3,4,0),
-(5,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
-(6,300,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
-(7,300,	N'PostingDate',			1,	N'Paid On',			1,4,1),
-(8,300,	N'CenterId',			0,	N'Business Unit',	1,4,1);
-
+(4,300,	N'NotedAmount',			0,	N'Withholding',		1,4,0),
+(5,300,	N'CustodianId',			1,	N'Safe/Bank Account',3,4,0),
+(6,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
+(7,300,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
+(8,300,	N'PostingDate',			1,	N'Paid On',			1,4,1),
+(9,300,	N'CenterId',			0,	N'Business Unit',	1,4,1);
 
 --302:StockReceiptFromTradePayable:
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId1]		= [CurrencyId0],
-		[MonetaryValue1]	= [MonetaryValue0],
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
+		[CurrencyId0]		= [CurrencyId1],
+		[CenterId0]			= [CenterId1],
+		[MonetaryValue0]	= [MonetaryValue1],
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
 '
 WHERE [Index] = 302;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
-(0,302,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
-(1,302,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
+[Direction],	[AccountTypeId],	[EntryTypeId]) VALUES
+(0,302,+1,		@Inventories,		@ReceiptsReturnsThroughPurchaseExtension),
+(1,302,-1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions, NULL);
+INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[ResourceDefinitionId]) VALUES
+(0,0,302,@MerchandiseRD),
+(1,0,302,@CurrentFoodAndBeverageRD),
+(2,0,302,@CurrentAgriculturalProduceRD),
+(3,0,302,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(4,0,302,@RawMaterialsRD),
+(5,0,302,@ProductionSuppliesRD),
+(6,0,302,@CurrentPackagingAndStorageMaterialsRD),
+(7,0,302,@SparePartsRD),
+(8,0,302,@CurrentFuelRD),
+(9,0,302,@OtherInventoriesRD),
+(10,0,302,@TradeMedicineRD),
+(11,0,302,@TradeConstructionMaterialRD),
+(12,0,302,@TradeSparePartRD),
+(13,0,302,@RawGrainRD),
+(14,0,302,@RawVehicleRD);
+INSERT INTO @LineDefinitionEntryCustodianDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[CustodianDefinitionId]) VALUES
+(0,0,302,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,302,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,302,	N'NotedRelationId',		0,	N'Supplier',		3,4,1),
-(2,302,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
-(3,302,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
-(4,302,	N'CustodianId',			1,	N'Safe/Bank Account',3,4,0),
-(5,302,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
-(6,302,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
-(7,302,	N'PostingDate',			1,	N'Paid On',			1,4,1),
-(8,302,	N'CenterId',			0,	N'Business Unit',	1,4,1);
-
+(1,302,	N'NotedRelationId',		1,	N'Supplier',		3,4,1),
+(2,302,	N'CustodianId',			0,	N'Warehouse',		3,4,1),
+(3,302,	N'ResourceId',			0,	N'Item',			2,4,0),
+(4,302,	N'Quantity',			0,	N'Qty',				2,4,0),
+(5,302,	N'UnitId',				0,	N'Unit',			2,4,0),
+(6,302,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(7,302,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
+(8,302,	N'NotedAmount',			1,	N'VAT',				1,2,0),
+(9,302,	N'MonetaryValue',		1,	N'Line Total',		1,2,0),
+(10,302,N'PostingDate',			1,	N'Received On',		1,4,1),
+(11,302,N'CenterId',			1,	N'Business Unit',	1,4,1);
 
 /*
 --400:CashReceiptFromTradeReceivable

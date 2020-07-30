@@ -4,14 +4,14 @@
 	[ParentId]				INT,
 	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (255)		NOT NULL,
-												--CONSTRAINT [CK_Centers__CenterType] CHECK (
-												--	[CenterType] IN (
-												--		N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
-												--		N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
-												--		N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
-												--		N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl'
-												--	)
-												--),
+												CONSTRAINT [CK_Centers__CenterType] CHECK (
+													[CenterType] IN (
+														N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
+														N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
+														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
+														N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl'
+													)
+												),
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),

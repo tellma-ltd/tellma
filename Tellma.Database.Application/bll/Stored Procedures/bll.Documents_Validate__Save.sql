@@ -104,7 +104,7 @@ SET NOCOUNT ON;
 		EXCEPT
 		SELECT [Id] FROM ExpendituresAccounts
 		EXCEPT
-		SELECT [Id] FROM DirectAccountTypes
+		SELECT [Id] FROM DirectAccounts
 	),
 	ConstructionInProgressAccounts AS (
 		SELECT A.[Id]
