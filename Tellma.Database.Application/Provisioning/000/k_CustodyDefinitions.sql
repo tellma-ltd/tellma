@@ -1,4 +1,4 @@
-﻿INSERT INTO @CustodyDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility],[BankAccountNumberVisibility], [RelationVisibility],[RelationDefinitionId]) VALUES
+﻿INSERT INTO @CustodyDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility],[BankAccountNumberVisibility], [CustodianVisibility],[CustodianDefinitionId]) VALUES
 (0, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135,N'Required', N'None', N'None', N'None', N'Optional',NULL),
 (1, N'Safe', N'Safe', N'Safes', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeCD),
 (2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'None', N'Optional',@EmployeeCD),

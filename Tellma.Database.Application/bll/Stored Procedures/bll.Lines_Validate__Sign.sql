@@ -128,7 +128,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[CustodyDefinitions] CD ON C.[DefinitionId] = CD.[Id]
 	JOIN dbo.[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
 	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
-	LEFT JOIN dbo.[RelationUsers] CU ON C.[RelationId] = CU.[RelationId]
+	LEFT JOIN dbo.[RelationUsers] CU ON C.[CustodianId] = CU.[RelationId]
 	WHERE WS.[RuleType] = N'ByCustodian' AND WS.[RuleTypeEntryIndex]  = E.[Index]
 	AND CU.[UserId] IS NULL
 

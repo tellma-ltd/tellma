@@ -90,8 +90,8 @@ SET NOCOUNT ON;
 
 				[Script],
 				-----Properties applicable to Custody only
-				[RelationVisibility],
-				[RelationDefinitionId],
+				[CustodianVisibility],
+				[CustodianDefinitionId],
 				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
@@ -184,8 +184,8 @@ SET NOCOUNT ON;
 
 				t.[Script]				= s.[Script],
 				-----Properties applicable to Custodys only
-				t.[RelationVisibility]	= s.[RelationVisibility],
-				t.[RelationDefinitionId]= s.[RelationDefinitionId],
+				t.[CustodianVisibility]	= s.[CustodianVisibility],
+				t.[CustodianDefinitionId]= s.[CustodianDefinitionId],
 				t.[AgentVisibility]		= s.[AgentVisibility],
 				t.[TaxIdentificationNumberVisibility]
 										= s.[TaxIdentificationNumberVisibility],
@@ -268,8 +268,8 @@ SET NOCOUNT ON;
 
 				[Script],
 				-----Properties applicable to Custodys only
-				[RelationVisibility],
-				[RelationDefinitionId],
+				[CustodianVisibility],
+				[CustodianDefinitionId],
 				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
@@ -347,8 +347,8 @@ SET NOCOUNT ON;
 
 				s.[Script],
 				-----Properties applicable to Custodys only
-				s.[RelationVisibility],
-				s.[RelationDefinitionId],
+				s.[CustodianVisibility],
+				s.[CustodianDefinitionId],
 				s.[AgentVisibility],
 				s.[TaxIdentificationNumberVisibility],
 

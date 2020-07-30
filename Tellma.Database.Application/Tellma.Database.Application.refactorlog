@@ -2396,4 +2396,25 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountTypeCustodyDefinitions]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="8a7c1475-adc3-4100-9a6f-02d4ad96e99b" ChangeDateTime="07/30/2020 12:08:41">
+    <Property Name="ElementName" Value="[dbo].[Custodies].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Custodies]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="502baa89-8d3d-4437-ba13-81dc417a9cfc" ChangeDateTime="07/30/2020 12:16:23">
+    <Property Name="ElementName" Value="[dbo].[CustodyDefinitions].[CustodianVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7954692f-c3e5-434c-881b-741d9408c806" ChangeDateTime="07/30/2020 12:16:41">
+    <Property Name="ElementName" Value="[dbo].[CustodyDefinitions].[RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianDefinitionId]" />
+  </Operation>
 </Operations>

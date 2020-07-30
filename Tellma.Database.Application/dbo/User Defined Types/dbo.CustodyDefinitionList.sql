@@ -77,8 +77,8 @@
 
 	[Script]							NVARCHAR (MAX),
 
-	[RelationVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([RelationVisibility] IN (N'None', N'Optional', N'Required')),
-	[RelationDefinitionId]				INT,
+	[CustodianVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CustodianVisibility] IN (N'None', N'Optional', N'Required')),
+	[CustodianDefinitionId]				INT,
 
 	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
