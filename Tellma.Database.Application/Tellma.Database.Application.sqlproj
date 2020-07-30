@@ -656,6 +656,7 @@
     <None Include="Provisioning\101\101_22Centers.sql" />
     <None Include="Provisioning\101\101_31Accounts.sql" />
     <None Include="Provisioning\101\101_24Custodies.sql" />
+    <None Include="Provisioning\106\106_22CentersBackup.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
