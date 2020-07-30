@@ -2,29 +2,6 @@
 SELECT [Id], [Id], [Code],[Name],[Name2],[Name3],[IsPublic]
 FROM dbo.Roles;
 
-IF @DB = N'102' -- Banan SD, USD, en
-BEGIN
-	INSERT INTO @Members
-	([Index],	[HeaderIndex],		[UserId]) VALUES
-	(0,			@AdministratorRL,	@AdminUserId);
-	--(5,			@GeneralManagerRL,	@amtaam),
-	--(0,			@FinanceManagerRL,	@Jiad_akra),
-	--(0,			@ComptrollerRL,		@alaeldin),
-	--(0,			@AdminAffairsRL,	@omer)
-
-	--SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@gmail.com'			UNION
-	--SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mohamad.akra@banan-it.com'	UNION
-	--SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'wendylulu99@gmail.com'		UNION
-	--SELECT	3,		0,			[Id] FROM dbo.[Users] WHERE Email = N'ahmad.akra@banan-it.com'		UNION
-	--SELECT	4,		0,			[Id] FROM dbo.[Users] WHERE Email = N'yisakfikadu79@gmail.com'		;
-
-	--IF @102MohamadAkra <> @AdminUserId
-	--	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])
-	--	VALUES(10,@AdministratorRL,@102MohamadAkra);
-	--IF @102AhmadAkra <> @AdminUserId
-	--	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])
-	--	VALUES(11,@AdministratorRL,@102AhmadAkra);
-END
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @Members

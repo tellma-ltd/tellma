@@ -7,8 +7,6 @@ DELETE FROM @RelationUsers;
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	Print N''
 
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-	Print N''
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	Print N''
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
@@ -30,14 +28,7 @@ END;
 	-- Petty Cash Funds
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	Print N''
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-	INSERT INTO @petty_cash_funds
-	([Index], [Name]) VALUES
-	(0,		N'Mohamad Akra'),
-	(1,		N'Wondewsen Semaneh'),
-	(2,		N'Loay Bayazid'),
-	(3,		N'Abu Bakr al-Hadi')
-	;
+
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	Print N''
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am

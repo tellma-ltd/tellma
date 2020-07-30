@@ -5,12 +5,7 @@
 (3, N'Partner', N'Partner', N'Partners', N'user-tie', N'Financials',115,N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'Single'),
 (4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'Single'),
 (5, N'Customer', N'Customer', N'Customers', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'', N'None', N'Optional', N'None', N'None', N'Single'),
-(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'Required', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'Single'),
-(7, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'Optional', N'None'),
-(8, N'Safe', N'Safe', N'Safes', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Single'),
-(9, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Required', N'Optional', N'Optional', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Multiple'),
-(10, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'None');
-
+(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'Required', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'Single');
 UPDATE @RelationDefinitions
 SET [Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Market Segment', [Lookup1DefinitionId] = @MarketSegmentLKD
 WHERE [Code] IN ( N'Customer')

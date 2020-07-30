@@ -25,15 +25,13 @@ IF @OverwriteDb = 0 RETURN
 :r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
 
-IF @DB IN (N'100', N'102', N'103', N'104', N'105')
+IF @DB IN (N'100', N'103', N'104', N'105')
 BEGIN
 	:r .\100_105\01_Security\a_Users.sql
 	:r .\100_105\01_Security\b_Permissions.sql
 
 	:r .\100_105\02_Basic\b_Centers.sql
 
-	:r .\100_105\04_Resources\102_employee-benefits.sql
-	:r .\100_105\04_Resources\102_property-plant-and-equipment.sql
 	:r .\100_105\04_Resources\104_finished_goods.sql
 	:r .\100_105\04_Resources\104_raw-materials.sql
 	:r .\100_105\04_Resources\105_merchandise.sql
@@ -42,12 +40,9 @@ BEGIN
 
 	:r .\100_105\04_Resources\d1_FG_vehicles.sql
 
-
-	:r .\100_105\05_Contracts\00_Agents.sql
 	:r .\100_105\05_Contracts\01_CashCustodies.sql
 	:r .\100_105\05_Contracts\02_InventoryCustodies.sql
 	:r .\100_105\05_Contracts\03_Customers.sql
-	:r .\100_105\05_Contracts\04_Debtors.sql
 	:r .\100_105\05_Contracts\05_Partners.sql
 	:r .\100_105\05_Contracts\06_Suppliers.sql
 	:r .\100_105\05_Contracts\08_Employees.sql
@@ -70,6 +65,25 @@ BEGIN
 	:r .\101\101_24Custodies.sql
 	:r .\101\101_25Relations.sql
 	:r .\101\101_31Accounts.sql
+END
+IF @DB = N'102' -- Banan SD, en/ar
+BEGIN
+	:r .\102\102_01Currencies.sql
+	:r .\102\102_02EntryTypes.sql
+	:r .\102\102_03LookupDefinitions.sql
+	:r .\102\102_04ResourceDefinitions.sql
+	:r .\102\102_05CustodyDefinitions.sql
+	:r .\102\102_06RelationDefinitions.sql
+	:r .\102\102_07DocumentDefinitions.sql
+	:r .\102\102_11Users.sql
+	:r .\102\102_12Permissions.sql
+	:r .\102\102_13Workflows.sql
+	:r .\102\102_21Lookups.sql
+	:r .\102\102_22Centers.sql
+	:r .\102\102_23Resources.sql
+	:r .\102\102_24Custodies.sql
+	:r .\102\102_25Relations.sql
+	:r .\102\102_31Accounts.sql
 END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN

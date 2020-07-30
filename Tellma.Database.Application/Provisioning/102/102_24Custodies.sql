@@ -12,8 +12,12 @@ BEGIN
 END;
 DELETE FROM @Safes;
 INSERT INTO @Safes([Index],	
-	[Code], [Name],		[Name2],				[CenterId], [CurrencyId]) VALUES
-(0,	N'CA0',	N'GM Safe',	N'خزنة المدير العام',	@101C1,		NULL);
+	[Code], [Name],					[CenterId], [CurrencyId]) VALUES
+(0,	N'CA0',	N'GM Safe',				@102C11,		@ETB),
+(1,	N'CA1',	N'Wendy Petty Cash',	@102C11,		@ETB),
+(2,	N'CA2',	N'Abu Bakr Petty Cash',	@102C11,		@ETB);
+
+;
 EXEC [api].[Custodies__Save]
 	@DefinitionId = @SafeCD,
 	@Entities = @Safes,
@@ -38,8 +42,11 @@ BEGIN
 END;
 DELETE FROM @BankAccountCustodies;
 INSERT INTO @BankAccountCustodies([Index],	
-	[Code], [Name],					[Name2],		[CenterId], [CurrencyId]) VALUES
-(0,	N'B0',	N'Bank of Khartoum',	N'بنك الخرطوم',@101C1,		N'SDG');
+	[Code], [Name],				[CenterId], [CurrencyId]) VALUES
+(0,	N'B0',	N'CBE - USD',		@102C11,		@USD),
+(1,	N'B1',	N'CBE - ETB',		@102C11,		@ETB),
+(2,	N'B2',	N'AWB - ETB',		@102C11,		@ETB),
+(3,	N'B3',	N'NIB - ETB',		@102C11,		@ETB);
 
 EXEC [api].[Custodies__Save]
 	@DefinitionId = @BankAccountCD,
@@ -50,4 +57,3 @@ BEGIN
 	Print 'Bank Accounts Custodies: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.[Custodies] WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @BankAccountCD);

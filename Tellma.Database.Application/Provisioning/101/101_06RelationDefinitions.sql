@@ -7,10 +7,7 @@ INSERT INTO @RelationDefinitionIds([Id]) VALUES
 (@PartnerCD),
 (@SupplierCD),
 (@CustomerCD),
-(@EmployeeCD),
-(@BankAccountCD),
-(@SafeCD);
---(@WarehouseCD);
+(@EmployeeCD);
 --(@ShipperCD);
 
 EXEC [dal].[RelationDefinitions__UpdateState]
@@ -23,7 +20,5 @@ WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE
 DELETE FROM [LineDefinitionEntryNotedRelationDefinitions]
 WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible');
 
-
--- Uncomment after introducing Custody Definitions
---DELETE FROM [CustodyDefinitions]
---WHERE [RelationDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')
+DELETE FROM [CustodyDefinitions]
+WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')

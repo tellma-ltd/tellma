@@ -103,6 +103,7 @@
     <Folder Include="Provisioning\108\00_Setup" />
     <Folder Include="_Azure" />
     <Folder Include="Provisioning\101" />
+    <Folder Include="Provisioning\102" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -545,18 +546,13 @@
     <None Include="Provisioning\100_105\01_Security\a_Users.sql" />
     <None Include="Provisioning\100_105\01_Security\b_Permissions.sql" />
     <None Include="Provisioning\100_105\02_Basic\b_Centers.sql" />
-    <None Include="Provisioning\100_105\05_Contracts\00_Agents.sql" />
     <None Include="Provisioning\100_105\05_Contracts\01_CashCustodies.sql" />
     <None Include="Provisioning\100_105\05_Contracts\02_InventoryCustodies.sql" />
     <None Include="Provisioning\100_105\05_Contracts\03_Customers.sql" />
-    <None Include="Provisioning\100_105\05_Contracts\04_Debtors.sql" />
     <None Include="Provisioning\100_105\05_Contracts\05_Partners.sql" />
     <None Include="Provisioning\100_105\05_Contracts\06_Suppliers.sql" />
     <None Include="Provisioning\100_105\05_Contracts\08_Employees.sql" />
-    <None Include="Provisioning\100_105\06_Accounts\b_Accounts.sql" />
     <None Include="Provisioning\100_105\06_Accounts\c105_Accounts.sql" />
-    <None Include="Provisioning\100_105\04_Resources\102_employee-benefits.sql" />
-    <None Include="Provisioning\100_105\04_Resources\102_property-plant-and-equipment.sql" />
     <None Include="Provisioning\100_105\04_Resources\104_finished_goods.sql" />
     <None Include="Provisioning\100_105\04_Resources\104_raw-materials.sql" />
     <None Include="Provisioning\100_105\04_Resources\105_merchandise.sql" />
@@ -656,6 +652,22 @@
     <None Include="Provisioning\101\101_31Accounts.sql" />
     <None Include="Provisioning\101\101_24Custodies.sql" />
     <Build Include="map\map.Custodies.sql" />
+    <None Include="Provisioning\102\102_31Accounts.sql" />
+    <None Include="Provisioning\102\102_01Currencies.sql" />
+    <None Include="Provisioning\102\102_02EntryTypes.sql" />
+    <None Include="Provisioning\102\102_03LookupDefinitions.sql" />
+    <None Include="Provisioning\102\102_04ResourceDefinitions.sql" />
+    <None Include="Provisioning\102\102_05CustodyDefinitions.sql" />
+    <None Include="Provisioning\102\102_06RelationDefinitions.sql" />
+    <None Include="Provisioning\102\102_07DocumentDefinitions.sql" />
+    <None Include="Provisioning\102\102_11Users.sql" />
+    <None Include="Provisioning\102\102_12Permissions.sql" />
+    <None Include="Provisioning\102\102_13Workflows.sql" />
+    <None Include="Provisioning\102\102_21Lookups.sql" />
+    <None Include="Provisioning\102\102_22Centers.sql" />
+    <None Include="Provisioning\102\102_23Resources.sql" />
+    <None Include="Provisioning\102\102_24Custodies.sql" />
+    <None Include="Provisioning\102\102_25Relations.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

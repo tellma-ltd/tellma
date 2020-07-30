@@ -7,30 +7,6 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1'),
 	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2');
 
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-BEGIN
-	INSERT INTO @employees
-	([Index],	[Name],				[FromDate],	[Code]) VALUES
-	(0,			N'Mohamad Akra',	'2017.10.01',	N'E01'),
-	(1,			N'Ahmad Akra',		'2017.10.01',	N'E02'),
-	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E04'),
-	(3,			N'Abrham Tenker',	'2020.09.01',	N'E05');
-
-	--INSERT INTO @AgentRates([Index], [HeaderIndex],
-	--[ResourceId],					[UnitId],	[CurrencyId],	[Rate]) VALUES
-	--(0,0,@BasicSalary,				@WorkMonth, N'ETB',			7000),
-	--(1,0,@TransportationAllowance,	@WorkMonth, N'ETB',			1750),
-	--(0,1,@BasicSalary,				@WorkMonth, N'ETB',			7000),
-	--(0,2,@BasicSalary,				@WorkMonth, N'ETB',			4700),
-	--(1,2,@DataPackage,				@WorkMonth, N'ETB',			300),
-	--(2,2,@DayOvertime,				@Hour,		N'ETB',			28.25),
-	--(3,2,@NightOvertime,			@Hour,		N'ETB',			33.5),
-	--(4,2,@RestOvertime,				@Hour,		N'ETB',			45.19),
-	--(5,2,@HolidayOvertime,			@Hour,		N'ETB',			56.5),
-	--(0,3,@BasicSalary,				@WorkMonth, N'ETB',			10200),
-	--(1,3,@TransportationAllowance,	@WorkMonth, N'ETB',			1000),
-	--(2,3,@MealAllowance,			@WorkMonth, N'ETB',			1000);
-END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 INSERT INTO @employees
 	([Index],	[Name],				[FromDate],	[Code]) VALUES
@@ -47,21 +23,6 @@ BEGIN
 	(6,			N'Tigist Negash',	'2019.09.01',	N'E6'),
 	(7,			N'Mestawet G/Egziyabhare','2019.09.01',N'E7'),
 	(8,			N'Ayelech Hora',	'2019.09.01',	N'E8');
-
-	--INSERT INTO @AgentRates
-	--([Index], [HeaderIndex], [ResourceId], [UnitId], [CurrencyId], [Rate]) VALUES
-	--(0,			1,			@BasicSalary,	@WorkMonth, N'ETB',		30000),
-	--(0,			2,			@BasicSalary,	@WorkMonth, N'ETB',		8000),
-	--(0,			3,			@BasicSalary,	@WorkMonth, N'ETB',		15000),
-	--(0,			4,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
-	--(0,			5,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
-	--(1,			5,			@DayOvertime,	@Hour,		N'ETB',		28.25),
-	--(0,			6,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
-	--(1,			6,			@DayOvertime,	@Hour,		N'ETB',		28.25),
-	--(0,			7,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
-	--(1,			7,			@DayOvertime,	@Hour,		N'ETB',		28.25),	
-	--(0,			8,			@BasicSalary,	@WorkMonth, N'ETB',		4700)
-	--;
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN

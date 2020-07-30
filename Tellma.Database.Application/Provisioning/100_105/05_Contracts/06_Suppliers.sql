@@ -8,16 +8,6 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(2,		N'Jimma Gas Station',					'2018.03.11',	NULL),
 	(3,		N'Toyota',								'2019.03.19',	N'67675440'),
 	(4,		N'Amazon',								'2019.05.09',	N'67075123');
-
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-	INSERT INTO @Suppliers
-	([Index], [Name],								[FromDate],	[TaxIdentificationNumber]) VALUES
-	(0,		N'Tellma',								'2020.01.01',	NULL),
-	(1,		N'Yeshanew Gonfa',						'2018.01.05',	N'0009683441'),
-	(2,		N'Abate GebretSadik Tekle',				'2018.01.05',	N'0003833120'),
-	(3,		N'Ethiopian Airlines',					'2018.01.05',	NULL),
-	(4,		N'Ethio Telecom',						'2018.01.05',	N'0000030603'),
-	(5,		N'Microsoft',							'2020.01.01',	NULL);
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Suppliers
 	([Index], [Name],								[FromDate],	[TaxIdentificationNumber]) VALUES

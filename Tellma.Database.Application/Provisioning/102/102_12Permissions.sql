@@ -5,12 +5,16 @@ SELECT [Id], [Id], [Code],[Name],[Name2],[Name3],[IsPublic]
 FROM dbo.Roles;
 
 INSERT INTO @Members
-	([Index],	[HeaderIndex],		[UserId]) VALUES
-	(0,			@AdministratorRL,	@AdminUserId),
-	(5,			@GeneralManagerRL,	@amtaam),
-	(0,			@FinanceManagerRL,	@Jiad_akra),
-	(0,			@ComptrollerRL,		@alaeldin),
-	(0,			@AdminAffairsRL,	@omer)
+	([Index],	[HeaderIndex],		[UserId])
+SELECT	0,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Jiad Akra'
+UNION
+SELECT	1,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Mohamad Akra'
+UNION
+SELECT	2,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Ahmad Akra'
+UNION
+SELECT	3,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Abu Bakr elHadi'
+UNION
+SELECT	4,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Jiad Akra'
 
 --IF @101MohamadAkra <> @AdminUserId
 --	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])

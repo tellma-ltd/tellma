@@ -9,13 +9,6 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(2,			N'Customer3'),
 	(3,			N'Customer4');
 
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-	INSERT INTO @Customers
-	([Index],	[Name],						[FromDate], [TaxIdentificationNumber]) VALUES
-	(0,			N'Best Paint Industry',		'2017.09.15',	N'0000021411'),
-	(1,			N'Best Plastic Industry',	'2017.10.25',	N'0000021411'),
-	(2,			N'Walia Steel Industry, plc','2018.01.05',	N'0001656462'),
-	(3,			N'Yangfan Motors, PLC',		'2017.10.25',	N'0005308731');
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Customers

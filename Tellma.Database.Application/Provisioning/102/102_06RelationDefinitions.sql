@@ -3,25 +3,21 @@ DELETE FROM @RelationDefinitionIds;
 INSERT INTO @RelationDefinitionIds([Id]) VALUES
 (@CreditorCD),
 (@DebtorCD),
-(@OwnerCD),
+--(@OwnerCD),
 (@PartnerCD),
 (@SupplierCD),
 (@CustomerCD),
 (@EmployeeCD);
---(@ShipperCD);
 
 EXEC [dal].[RelationDefinitions__UpdateState]
 	@Ids = @RelationDefinitionIds,
 	@State = N'Visible'
 
 DELETE FROM [LineDefinitionEntryCustodyDefinitions]
-WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')
+WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible');
 
 DELETE FROM [LineDefinitionEntryNotedRelationDefinitions]
-WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')
-
-DELETE FROM [ResourceDefinitions]
-WHERE [ParticipantDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')
+WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible');
 
 DELETE FROM [CustodyDefinitions]
 WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')

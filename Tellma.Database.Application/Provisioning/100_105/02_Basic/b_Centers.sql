@@ -1,26 +1,4 @@
-﻿
-IF @DB = N'102' -- Banan ET, ETB, en
-BEGIN
-	INSERT INTO @Centers([Index],[ParentIndex],
-			[Name],						[Code],[CenterType]) VALUES
-	(0,NULL,N'Banan',					N'0',	N'Abstract'),
-	(1,0,	N'AA Branch',				N'1',	N'BusinessUnit'), -- all except revenues and expenses by nature (because not a leaf)
-	(10,1,	N'Selling and Gen. Admin',	N'10',	N'SellingGeneralAndAdministration'), -- expenses by naturem and
-	
-	(2,0,	N'Profit Centers',			N'2',	N'Abstract'),
-	(20,2,	N'Overhead',				N'20',	N'SharedExpenseControl'), -- expense by nature
-	(21,2,	N'Lifan Motors',			N'21',	N'BusinessUnit'), -- all accounts
-	(22,2,	N'Sesay',					N'22',	N'BusinessUnit'),
-	(23,2,	N'Soreti',					N'23',	N'BusinessUnit');
-	-- Technically, when a project crosses a year boundary, we need to capitalize the expenses, and only recognize them
-	-- when the client approves the deliverables. However, in ET, this may complicate tax declaration, so we will not do it.
-	--(3,0,	N'ERP Projects',			N'3',	N'Abstract'),
-	--(31,3,	N'Lifan Motors Project',	N'31',	N'ProductionExtension'), -- expense by nature
-	--(32,3,	N'Sesay Project',			N'32',	N'ProductionExtension'),
-	--(33,3,	N'Soreti Project',			N'33',	N'ProductionExtension');
-
-END
-ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
+﻿IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @Centers([Index],[ParentIndex],
 			[Name],						[Code], [CenterType]) VALUES

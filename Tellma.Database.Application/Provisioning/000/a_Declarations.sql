@@ -67,7 +67,7 @@
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @SafeCustodies dbo.[CustodyList], @BankAccountCustodies dbo.[CustodyList];
+	DECLARE @Safes dbo.[CustodyList], @BankAccountCustodies dbo.[CustodyList];
 
 	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];

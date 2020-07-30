@@ -1,4 +1,6 @@
-﻿INSERT INTO @Roles([Index],[Id], [Code],[Name],[Name2],[Name3],[IsPublic])
+﻿DELETE FROM @Roles; DELETE FROM @Members
+
+INSERT INTO @Roles([Index],[Id], [Code],[Name],[Name2],[Name3],[IsPublic])
 SELECT [Id], [Id], [Code],[Name],[Name2],[Name3],[IsPublic]
 FROM dbo.Roles;
 
