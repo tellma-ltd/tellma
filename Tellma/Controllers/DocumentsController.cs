@@ -883,6 +883,7 @@ namespace Tellma.Controllers
                 doc.DebitCustodianIsCommon = docDef.DebitCustodianVisibility && (doc.DebitCustodianIsCommon ?? false);
                 doc.CreditCustodianIsCommon = docDef.CreditCustodianVisibility && (doc.CreditCustodianIsCommon ?? false);
                 doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
+                doc.CenterIsCommon = docDef.CenterVisibility && (doc.CenterIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
@@ -913,6 +914,7 @@ namespace Tellma.Controllers
                 doc.DebitCustodianId = doc.DebitCustodianIsCommon.Value ? doc.DebitCustodianId : null;
                 doc.CreditCustodianId = doc.CreditCustodianIsCommon.Value ? doc.CreditCustodianId : null;
                 doc.NotedRelationId = doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
+                doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
                 doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
@@ -1030,6 +1032,13 @@ namespace Tellma.Controllers
                                         if (doc.NotedRelationIsCommon.Value)
                                         {
                                             entry.NotedRelationId = doc.NotedRelationId;
+                                        }
+
+                                        break;
+                                    case nameof(Entry.CenterId):
+                                        if (doc.CenterIsCommon.Value)
+                                        {
+                                            entry.CenterId = doc.CenterId;
                                         }
 
                                         break;
@@ -1431,6 +1440,18 @@ namespace Tellma.Controllers
                                         if (entry.NotedRelationId != doc.NotedRelationId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.NotedRelationId));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.CenterId):
+                                    if (doc.CenterIsCommon.Value)
+                                    {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)), $"[{docIndex}].{nameof(Document.CenterId)}");
+                                        if (entry.CenterId != doc.CenterId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.CenterId));
                                         }
                                     }
 

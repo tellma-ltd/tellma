@@ -690,6 +690,27 @@ namespace Tellma.Controllers
                         }
                     }
 
+                    // Center
+                    if (colDef.ColumnName == nameof(Entry.CenterId))
+                    {
+                        result.CenterVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.CenterLabel))
+                        {
+                            result.CenterLabel = colDef.Label;
+                            result.CenterLabel2 = colDef.Label2;
+                            result.CenterLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState < (result.CenterRequiredState ?? 5))
+                        {
+                            result.CenterRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.CenterReadOnlyState ?? 5))
+                        {
+                            result.CenterReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
                     // Time1
                     if (colDef.ColumnName == nameof(Entry.Time1))
                     {

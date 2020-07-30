@@ -496,6 +496,9 @@
   <data name="Document_Attachments" xml:space="preserve">
     <value>አባሪዎች</value>
   </data>
+  <data name="Document_Center" xml:space="preserve">
+    <value>መሃል</value>
+  </data>
   <data name="Document_Clearance" xml:space="preserve">
     <value>ከፋይነት ደረጃ</value>
   </data>

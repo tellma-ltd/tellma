@@ -272,6 +272,22 @@
         </t-centers-picker>
     </t-form-group>
 
+    <!-- Center -->
+    <t-form-group class="t-form-group" [label]="labelDocumentCenter(model)"
+        [serverErrors]="model?.serverErrors?.CenterId" *ngIf="showDocumentCenter(model)">
+        <ng-container *ngIf="model?.CenterIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CenterId">
+                <t-view-link link="../../../centers" [itemId]="model?.CenterId">
+                    {{ ws.getMultilingualValue('Center', model?.CenterId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId"
+                [required]="requireDocumentCenter(model)" [disabled]="readonlyDocumentCenter(model)">
+            </t-centers-picker>
+        </ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CenterIsCommon' }"></ng-container>
+    </t-form-group>
+
     <!-- Time1 -->
     <t-form-group class="t-form-group" [label]="labelDocumentTime1(model)" [serverErrors]="model?.serverErrors?.Time1"
         *ngIf="showDocumentTime1(model)">

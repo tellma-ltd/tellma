@@ -1,4 +1,4 @@
-﻿UPDATE dbo.Accounts SET CurrencyId = N'SDG' WHERE CurrencyId = N'XXX'
+﻿UPDATE dbo.Accounts SET CurrencyId = N'ETB' WHERE CurrencyId = N'XXX'
 DELETE FROM @InactiveAccountTypesIndexedIds;
 INSERT INTO @InactiveAccountTypesIndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountTypes WHERE [Concept] NOT IN (
 (N'StatementOfFinancialPositionAbstract'),
@@ -309,7 +309,7 @@ INSERT INTO @InactiveAccountTypesIndexedIds([Index], [Id]) SELECT ROW_NUMBER() O
 --(N'CollectionGuaranteeExtension'),
 --(N'DishonouredGuaranteeExtension'),
 (N'MigrationAccountsExtension')
-)
+);
 EXEC [api].[AccountTypes__Activate]
 	@IndexedIds = @InactiveAccountTypesIndexedIds,
 	@IsActive = 0,
@@ -348,19 +348,3 @@ BEGIN
 	Print 'Accounts: Deactivating: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-IF (1=0)
-SELECT
-N'Partners Withdrawals',		N'Abu Ammar Car Loan',		N'M. Ali Car Loan',	N'El-Amin Car Loan',			
-N'Office Rent',	N'Internet Prepayment',	 N'Car Rent Prepayment', N'House Rent Prepayment', N'Maintenance Prepayment',		
-
-N'GM Fund',	N'Admin Fund - SDG',	 N'Bank Of Khartoum - SDG',
-N'10% Retained Salaries', N'PrimeLedgers A/P',
-
-	N'Dividends Payables',			
-	N'Borrowings from M/A',	
-	N'Rental Income - SAR',	
-	N'Internet & Tel',	
-	N'Electricity',
-	N'Bonuses',	
-	N'Termination Benefits',
-	N'Exchange Loss (Gain)'

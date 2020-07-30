@@ -496,6 +496,9 @@
   <data name="Document_Attachments" xml:space="preserve">
     <value>Attachments</value>
   </data>
+  <data name="Document_Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
   <data name="Document_Clearance" xml:space="preserve">
     <value>Clearance Level</value>
   </data>

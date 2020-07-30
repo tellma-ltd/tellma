@@ -319,6 +319,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DebitCustodianIsCommon = !!def.DebitCustodianVisibility;
       result.CreditCustodianIsCommon = !!def.CreditCustodianVisibility;
       result.NotedRelationIsCommon = !!def.NotedRelationVisibility;
+      result.CenterIsCommon = !!def.CenterVisibility;
       result.Time1IsCommon = !!def.Time1Visibility;
       result.Time2IsCommon = !!def.Time2Visibility;
       result.QuantityIsCommon = !!def.QuantityVisibility;
@@ -916,6 +917,27 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return false; // TODO
   }
 
+  // Center
+
+  public showDocumentCenter(_: DocumentForSave) {
+    return this.definition.CenterVisibility;
+  }
+
+  public requireDocumentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentCenter;
+  }
+
+  public readonlyDocumentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentCenter;
+  }
+
+  public labelDocumentCenter(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'CenterLabel') ||
+      this.translate.instant('Document_Center');
+  }
+
   // Time 1
 
   public showDocumentTime1(_: DocumentForSave) {
@@ -1038,6 +1060,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _readonlyCreditCustodian: boolean;
   private _requireNotedRelation: boolean;
   private _readonlyNotedRelation: boolean;
+  private _requireDocumentCenter: boolean;
+  private _readonlyDocumentCenter: boolean;
   private _requireDocumentTime1: boolean;
   private _readonlyDocumentTime1: boolean;
   private _requireDocumentTime2: boolean;
@@ -1064,6 +1088,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyCreditCustodian = false;
       this._requireNotedRelation = false;
       this._readonlyNotedRelation = false;
+      this._requireDocumentCenter = false;
+      this._readonlyDocumentCenter = false;
       this._requireDocumentTime1 = false;
       this._readonlyDocumentTime1 = false;
       this._requireDocumentTime2 = false;
@@ -1098,6 +1124,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyCreditCustodian = def.CreditCustodianReadOnlyState === 0;
       this._requireNotedRelation = def.NotedRelationRequiredState === 0;
       this._readonlyNotedRelation = def.NotedRelationReadOnlyState === 0;
+      this._requireDocumentCenter = def.CenterRequiredState === 0;
+      this._readonlyDocumentCenter = def.CenterReadOnlyState === 0;
       this._requireDocumentTime1 = def.Time1RequiredState === 0;
       this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0;
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
@@ -1181,6 +1209,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyNotedRelation &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyNotedRelation = true;
+              }
+              break;
+
+            case 'CenterId':
+              if (!this._requireDocumentCenter &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentCenter = true;
+              }
+              if (!this._readonlyDocumentCenter &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentCenter = true;
               }
               break;
 
@@ -1446,7 +1485,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public definitionIdsNotedRelation_Manual(entry: Entry): number[] {
     const account = this.account(entry);
     return [account.NotedRelationDefinitionId];
-    // return !!at && !!at.NotedRelationDefinitions ? at.NotedRelationDefinitions.map(e => e.NotedRelationDefinitionId) : [];
   }
 
   // ResourceId
@@ -2679,6 +2717,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.DebitCustodianIsCommon && col.ColumnName === 'CustodianId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
             (doc.CreditCustodianIsCommon && col.ColumnName === 'CustodianId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
             (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
+            (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
             (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||

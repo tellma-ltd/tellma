@@ -9,14 +9,14 @@
 	(13,1,	N'Project Mgmt',	N'إدارة المشاريع',			N'13',	N'SellingGeneralAndAdministration'), -- like comp. dep. of Abu Bakr to be absorbed by DL
 	(19,1,	N'Services Unit',	N'وحدة الخدمات',			N'19',	N'SharedExpenseControl'), -- Rent, Power, and IT support
 
-	(2,0, N'IT Solutions',		N'حلول تقنية',				N'2',	N'Abstract'),
-	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'BusinessUnit'),
-	(22,2,N'BSmart',			N'بيسمارت',					N'22',	N'BusinessUnit'),
-	(23,2,N'Campus',			N'كامبوس',					N'23',	N'BusinessUnit'),
-	(24,2,N'Tellma',			N'تلما',					N'24',	N'BusinessUnit'),
-	(29,2,N'Misc. IT',			N'حلول تقنية أخرى',		N'29',	N'BusinessUnit'),
+	(2,0, N'IT Solutions',		N'حلول تقنية',				N'2',	N'BusinessUnit'),
+	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'CostOfSales'),
+	(22,2,N'BSmart',			N'بيسمارت',					N'22',	N'CostOfSales'),
+	(23,2,N'Campus',			N'كامبوس',					N'23',	N'CostOfSales'),
+	(24,2,N'Tellma',			N'تلما',					N'24',	N'CostOfSales'),
+	(29,2,N'Misc. IT',			N'حلول تقنية أخرى',		N'29',	N'CostOfSales'),
 	(3,0,N'Other Business',		N'أعمال أخرى',				N'3',	N'BusinessUnit'),
-	(31,3,N'Subletting',		N'تأجير',					N'31',	N'BusinessUnit');
+	(31,3,N'Subletting',		N'تأجير',					N'31',	N'CostOfSales');
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
