@@ -291,7 +291,7 @@ namespace Tellma.Controllers
             // Check if the user has permission
             var actionFilter = await UserPermissionsFilter("ResendInvitationEmail", cancellation: default);
             var idSingleton = new List<int> { userId };
-            await CheckActionPermissionsBefore(actionFilter, idSingleton);
+            idSingleton = await CheckActionPermissionsBefore(actionFilter, idSingleton);
 
             if (!idSingleton.Any())
             {
