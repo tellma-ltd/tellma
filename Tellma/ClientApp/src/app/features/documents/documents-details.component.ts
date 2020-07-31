@@ -24,7 +24,7 @@ import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
-import { metadata_Relation, Relation } from '~/app/data/entities/relations';
+import { metadata_Relation, Relation } from '~/app/data/entities/relation';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';

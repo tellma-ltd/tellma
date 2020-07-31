@@ -2,28 +2,28 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Relation, RelationForSave } from '~/app/data/entities/relation';
+import { Custody, CustodyForSave } from '~/app/data/entities/custody';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { CustodyDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { LatLngLiteral } from '@agm/core';
 
 @Component({
-  selector: 't-relations-details',
-  templateUrl: './relations-details.component.html'
+  selector: 't-custodies-details',
+  templateUrl: './custodies-details.component.html'
 })
-export class RelationsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class CustodiesDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private relationsApi = this.api.relationsApi(null, this.notifyDestruct$); // for intellisense
+  private custodiesApi = this.api.custodiesApi(null, this.notifyDestruct$); // for intellisense
   private _definitionId: number;
 
   @Input()
   public set definitionId(t: number) {
     if (this._definitionId !== t) {
-      this.relationsApi = this.api.relationsApi(t, this.notifyDestruct$);
+      this.custodiesApi = this.api.custodiesApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
@@ -33,13 +33,12 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   @Input()
-  previewDefinition: RelationDefinitionForClient; // Used in preview mode
+  previewDefinition: CustodyDefinitionForClient; // Used in preview mode
 
-  // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
-  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent,Users/User';
+  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent,Custodian';
 
   create = () => {
-    const result: RelationForSave = {};
+    const result: CustodyForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -50,26 +49,14 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
     // TODO Set defaults from definition
 
-    result.Users = [];
     return result;
   }
 
-  clone = (item: Relation): Relation => {
+  clone = (item: Custody): Custody => {
 
     if (!!item) {
-      const clone = JSON.parse(JSON.stringify(item)) as Relation;
+      const clone = JSON.parse(JSON.stringify(item)) as Custody;
       clone.Id = null;
-
-      if (!!clone.Users) {
-        clone.Users.forEach(e => {
-          e.Id = null;
-          delete e.RelationId;
-          delete e.CreatedAt;
-          delete e.CreatedById;
-          delete e.ModifiedAt;
-          delete e.ModifiedById;
-        });
-      }
 
       return clone;
     } else {
@@ -102,11 +89,11 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   get view(): string {
-    return `relations/${this.definitionId}`;
+    return `custodies/${this.definitionId}`;
   }
 
-  private get definition(): RelationDefinitionForClient {
-    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Relations[this.definitionId] : null);
+  private get definition(): CustodyDefinitionForClient {
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Custodies[this.definitionId] : null);
   }
 
   // UI Bindings
@@ -115,26 +102,26 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition;
   }
 
-  public onActivate = (model: Relation): void => {
+  public onActivate = (model: Custody): void => {
     if (!!model && !!model.Id) {
-      this.relationsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.custodiesApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: Relation): void => {
+  public onDeactivate = (model: Custody): void => {
     if (!!model && !!model.Id) {
-      this.relationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.custodiesApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onEditDefinition = (_: Relation) => {
+  public onEditDefinition = (_: Custody) => {
     const ws = this.workspace;
     ws.isEdit = true;
-    this.router.navigate(['../../../relation-definitions', this.definitionId], { relativeTo: this.route })
+    this.router.navigate(['../../../custody-definitions', this.definitionId], { relativeTo: this.route })
       .then(success => {
         if (!success) {
           delete ws.isEdit;
@@ -143,13 +130,13 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
       .catch(() => delete ws.isEdit);
   }
 
-  public showActivate = (model: Relation) => !!model && !model.IsActive;
-  public showDeactivate = (model: Relation) => !!model && model.IsActive;
-  public showEditDefinition = (model: Relation) => this.ws.canDo('relation-definitions', 'Update', null);
+  public showActivate = (model: Custody) => !!model && !model.IsActive;
+  public showDeactivate = (model: Custody) => !!model && model.IsActive;
+  public showEditDefinition = (model: Custody) => this.ws.canDo('custody-definitions', 'Update', null);
 
-  public canActivateDeactivateItem = (model: Relation) => this.ws.canDo(this.view, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Custody) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: Relation) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Custody) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
@@ -184,6 +171,29 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
   public get Center_label(): string {
     return this.translate.instant('Entity_Center');
+  }
+
+  public get Custodian_isVisible(): boolean {
+    return !!this.definition.CustodianVisibility;
+  }
+
+  public get Custodian_isRequired(): boolean {
+    return this.definition.CustodianVisibility === 'Required';
+  }
+
+  public get Custodian_label(): string {
+    const def = this.definition;
+    const custodianDefId = def.CustodianDefinitionId;
+    const custodianDef = this.ws.definitions.Relations[custodianDefId];
+    if (!!custodianDef) {
+      return this.ws.getMultilingualValueImmediate(custodianDef, 'TitleSingular');
+    } else {
+      return this.translate.instant('Custody_Custodian');
+    }
+  }
+
+  public get Custodian_definitionIds(): number[] {
+    return [this.definition.CustodianDefinitionId];
   }
 
   public get Image_isVisible(): boolean {
@@ -386,7 +396,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entity_Text2');
   }
 
-  // Relation Only
+  // Custody Only
 
   public get Agent_isVisible(): boolean {
     return !!this.definition.AgentVisibility;
@@ -420,42 +430,8 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.BankAccountNumberVisibility === 'Required';
   }
 
-  public get User_isVisible(): boolean {
-    return this.definition.UserCardinality === 'Single';
-  }
-
-  public getUserId(model: RelationForSave): number {
-    if (!!model && !!model.Users && !!model.Users[0]) {
-      return model.Users[0].UserId;
-    }
-
-    return undefined;
-  }
-
-  public setUserId(model: RelationForSave, userId: number): void {
-    if (!!model) {
-      if (!!userId) {
-        model.Users = [{ UserId: userId }];
-      } else {
-        model.Users = [];
-      }
-    }
-  }
-
-  public get Users_isVisible(): boolean {
-    return this.definition.UserCardinality === 'Multiple';
-  }
-
-  public Users_count(model: RelationForSave): number {
-    return !!model && !!model.Users ? model.Users.length : 0;
-  }
-
-  public Users_showError(model: RelationForSave): boolean {
-    return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
-  }
-
   public get showTabs(): boolean {
-    return this.Users_isVisible || this.Location_isVisible;
+    return this.Location_isVisible;
   }
 
   // Location + Map stuff
@@ -464,7 +440,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.LocationVisibility;
   }
 
-  public Map_showError(model: RelationForSave): boolean {
+  public Map_showError(model: CustodyForSave): boolean {
     return !!model && !!model.serverErrors && !!model.serverErrors.LocationJson;
   }
 

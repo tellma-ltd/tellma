@@ -36,6 +36,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<AgentsService>()
                 .AddScoped<RelationsService>()
                 .AddScoped<RelationsGenericService>()
+                .AddScoped<RelationDefinitionsService>()
+                .AddScoped<CustodiesService>()
+                .AddScoped<CustodiesGenericService>()
+                .AddScoped<CustodyDefinitionsService>()
                 .AddScoped<CentersService>()
                 .AddScoped<CompaniesService>()
                 .AddScoped<CurrenciesService>()
@@ -62,7 +66,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<SettingsService>()
                 .AddScoped<SummaryEntriesService>()
                 .AddScoped<UnitsService>()
-                .AddScoped<RelationDefinitionsService>()
                 .AddScoped<ResourceDefinitionsService>()
                 .AddScoped<LookupDefinitionsService>()
                 .AddScoped<UsersService>()
@@ -94,6 +97,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Agent) => sp.GetRequiredService<AgentsService>(),
                 nameof(RelationDefinition) => sp.GetRequiredService<RelationDefinitionsService>(),
                 nameof(Relation) => definitionId == null ? sp.GetRequiredService<RelationsGenericService>() : (IFactServiceBase)sp.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
+                nameof(CustodyDefinition) => sp.GetRequiredService<CustodyDefinitionsService>(),
+                nameof(Custody) => definitionId == null ? sp.GetRequiredService<CustodiesGenericService>() : (IFactServiceBase)sp.GetRequiredService<CustodiesService>().SetDefinitionId(definitionId.Value),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
                 nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),
@@ -141,6 +146,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Agent) => sp.GetRequiredService<AgentsService>(),
                 nameof(RelationDefinition) => sp.GetRequiredService<RelationDefinitionsService>(),
                 nameof(Relation) => definitionId == null ? sp.GetRequiredService<RelationsGenericService>() : (IFactWithIdService)sp.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
+                nameof(CustodyDefinition) => sp.GetRequiredService<CustodyDefinitionsService>(),
+                nameof(Custody) => definitionId == null ? sp.GetRequiredService<CustodiesGenericService>() : (IFactWithIdService)sp.GetRequiredService<CustodiesService>().SetDefinitionId(definitionId.Value),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
                 nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),

@@ -1,5 +1,5 @@
-<t-details collection="ResourceDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'ResourceDefinitions' | translate"
+<t-details collection="CustodyDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'CustodyDefinitions' | translate"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[
         { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
@@ -164,7 +164,6 @@
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Fields')">
-
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Currency', propLower: 'currency' }">
                     </ng-container>
@@ -208,87 +207,35 @@
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text2', propLower: 'text2' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="labeledProp; context: { prop: 'Identifier', propLower: 'identifier', fieldName: 'Resource_Identifier' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Agent', propLower: 'agent', fieldName: 'Custody_Agent' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ReorderLevel', propLower: 'reorderlevel', fieldName: 'Resource_ReorderLevel' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'TaxIdentificationNumber', propLower: 'taxidentificationnumber', fieldName: 'Custody_TaxIdentificationNumber' }">
                     </ng-container>
+                    <!-- <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Job', propLower: 'job', fieldName: 'Custody_Job' }">
+                    </ng-container> -->
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'EconomicOrderQuantity', propLower: 'economicorderquantity', fieldName: 'Resource_EconomicOrderQuantity' }">
-                    </ng-container>
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'BankAccountNumber', propLower: 'bankaccountnumber', fieldName: 'Custody_BankAccountNumber' }">
+                    </ng-container>                    
 
-                    <!-- Unit Cardinality -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(unitcardinality, serverErrors(model, 'UnitCardinality'))">
+                    <!-- Custodian -->
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Custodian', propLower: 'custodian', fieldName: 'Custody_Custodian' }">
+                    </ng-container>
+                    <div class="form-group" *ngIf="isVisible(model.CustodianVisibility)"
+                        [class.is-invalid]="invalid(defId, model?.serverErrors?.CustodianDefinitionId)">
                         <label class="small"
-                            for="unitcardinality">{{ 'ResourceDefinition_UnitCardinality' | translate }}</label>
-                        <select class="form-control t-studio-input" id="unitcardinality"
-                            [(ngModel)]="model.UnitCardinality" (ngModelChange)="onDefinitionChange(model)"
-                            #unitcardinality="ngModel">
-                            <option *ngFor="let c of cardinalityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: unitcardinality, serverErrors: serverErrors(model, 'UnitCardinality') }">
-                        </ng-container>
-                    </div>
+                            for="custodiandefinitionId">{{ ('Field0Definition' | translate: { '0': ('Custody_Custodian' | translate) }) }}</label>
 
-                    <!-- DefaultUnit -->
-                    <div class="form-group" *ngIf="isCardinalityVisible(model.UnitCardinality)"
-                        [class.is-invalid]="invalid(defaultunit, serverErrors(model, 'DefaultUnitId'))">
-                        <label class="small"
-                            for="defaultunit">{{ 'Field0Default' | translate: { '0': ('Resource_Unit' | translate) } }}</label>
-                        <div class="form-control t-borderless-input t-studio-input">
-                            <t-units-picker class="" [(ngModel)]="model.DefaultUnitId"
-                                (ngModelChange)="onDefinitionChange(model)" id="defaultunit" #defaultunit="ngModel">
-                            </t-units-picker>
-                        </div>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultunit, serverErrors: serverErrors(model, 'DefaultUnitId') }">
-                        </ng-container>
-                    </div>
-
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'UnitMass', propLower: 'unitmass', fieldName: 'Resource_UnitMass' }">
-                    </ng-container>
-
-                    <!-- DefaultUnitMassUnit -->
-                    <div class="form-group" *ngIf="isVisible(model.UnitMassVisibility)"
-                        [class.is-invalid]="invalid(defaultunitmassunit, serverErrors(model, 'DefaultUnitMassUnitId'))">
-                        <label class="small"
-                            for="defaultunitmassunit">{{ 'Field0Default' | translate: { '0': ('Resource_UnitMassUnit' | translate) } }}</label>
-                        <div class="form-control t-borderless-input t-studio-input">
-                            <t-units-picker class="" [(ngModel)]="model.DefaultUnitMassUnitId"
-                                (ngModelChange)="onDefinitionChange(model)" id="defaultunitmassunit"
-                                #defaultunitmassunit="ngModel">
-                            </t-units-picker>
-                        </div>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultunitmassunit, serverErrors: serverErrors(model, 'DefaultUnitMassUnitId') }">
-                        </ng-container>
-                    </div>
-
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'MonetaryValue', propLower: 'monetaryvalue', fieldName: 'Resource_MonetaryValue' }">
-                    </ng-container>
-
-                    <!-- Participant -->
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Participant', propLower: 'participant', fieldName: 'Resource_Participant' }">
-                    </ng-container>
-                    <div class="form-group" *ngIf="isVisible(model.ParticipantVisibility)"
-                        [class.is-invalid]="invalid(defId, model?.serverErrors?.ParticipantDefinitionId)">
-                        <label class="small"
-                            for="participantdefinitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
-
-                        <select class="form-control t-studio-input" id="participantdefinitionId"
-                            [(ngModel)]="model.ParticipantDefinitionId" (ngModelChange)="onDefinitionChange(model)"
+                        <select class="form-control t-studio-input" id="custodiandefinitionId"
+                            [(ngModel)]="model.CustodianDefinitionId" (ngModelChange)="onDefinitionChange(model)"
                             #defId="ngModel">
                             <option *ngFor="let c of relationDefinitionChoices" value="{{c.value}}">
                                 {{ c.name() }}</option>
                         </select>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.ParticipantDefinitionId }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.CustodianDefinitionId }">
                         </ng-container>
                     </div>
 
@@ -380,7 +327,7 @@
                         <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
                             [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
                             <label class="small"
-                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
+                                for="{{propLower}}definitionId">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
 
                             <select class="form-control t-studio-input" id="{{propLower}}definitionId"
                                 [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"
@@ -500,8 +447,8 @@
 
             <!-- Preview -->
             <div class="flex-grow-1 col">
-                <t-resources-details mode="preview" [previewDefinition]="getForClient(model)" idString="new">
-                </t-resources-details>
+                <t-custodies-details mode="preview" [previewDefinition]="getForClient(model)" idString="new">
+                </t-custodies-details>
             </div>
         </div>
     </div>

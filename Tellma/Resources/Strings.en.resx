@@ -367,6 +367,33 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>Current Password</value>
   </data>
+  <data name="Custodies" xml:space="preserve">
+    <value>Custodies</value>
+  </data>
+  <data name="Custody" xml:space="preserve">
+    <value>Custody</value>
+  </data>
+  <data name="Custody_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Custody_BankAccountNumber" xml:space="preserve">
+    <value>Bank Account Number</value>
+  </data>
+  <data name="Custody_Custodian" xml:space="preserve">
+    <value>Custodian</value>
+  </data>
+  <data name="Custody_Job" xml:space="preserve">
+    <value>Job</value>
+  </data>
+  <data name="Custody_TaxIdentificationNumber" xml:space="preserve">
+    <value>Tax Identification Number</value>
+  </data>
+  <data name="CustodyDefinition" xml:space="preserve">
+    <value>Custody Definition</value>
+  </data>
+  <data name="CustodyDefinitions" xml:space="preserve">
+    <value>Custody Definitions</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
   </data>
@@ -846,6 +873,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
+  </data>
+  <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Custody DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>The date cannot be before the archive date {0}.</value>

@@ -222,6 +222,12 @@ import { LookupDefinitionsPickerComponent } from './lookup-definitions/lookup-de
 import { StatementComponent } from './statement/statement.component';
 import { AccountStatementComponent } from './statement/account-statement.component';
 import { RelationStatementComponent } from './statement/relation-statement.component';
+import { CustodyDefinitionsMasterComponent } from './custody-definitions/custody-definitions-master.component';
+import { CustodyDefinitionsDetailsComponent } from './custody-definitions/custody-definitions-details.component';
+import { CustodyDefinitionsPickerComponent } from './custody-definitions/custody-definitions-picker.component';
+import { CustodiesPickerComponent } from './custodies/custodies-picker.component';
+import { CustodiesMasterComponent } from './custodies/custodies-master.component';
+import { CustodiesDetailsComponent } from './custodies/custodies-details.component';
 
 const routes: Routes = [
   {
@@ -280,6 +286,23 @@ const routes: Routes = [
       {
         path: 'relations/:definitionId/:id',
         component: RelationsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Custodies
+      {
+        path: 'custodies',
+        component: CustodiesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'custodies/:definitionId',
+        component: CustodiesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'custodies/:definitionId/:id',
+        component: CustodiesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -500,6 +523,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Custody Definitions
+      {
+        path: 'custody-definitions',
+        component: CustodyDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'custody-definitions/:id',
+        component: CustodyDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Resource Definitions
       {
         path: 'resource-definitions',
@@ -641,6 +676,12 @@ const routes: Routes = [
     StatementComponent,
     AccountStatementComponent,
     RelationStatementComponent,
+    CustodyDefinitionsMasterComponent,
+    CustodyDefinitionsDetailsComponent,
+    CustodyDefinitionsPickerComponent,
+    CustodiesPickerComponent,
+    CustodiesMasterComponent,
+    CustodiesDetailsComponent,
   ],
   imports: [
     SharedModule,

@@ -186,6 +186,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'relation-definitions', sortKey: 200
         },
         {
+          label: 'CustodyDefinitions', icon: 'tools', link: '../custody-definitions',
+          view: 'custody-definitions', sortKey: 200
+        },
+        {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
           view: 'resource-definitions', sortKey: 300
         },
@@ -262,6 +266,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
       this.addDefinitions(menu, ws.definitions.Relations, 'relations');
+      this.addDefinitions(menu, ws.definitions.Custodies, 'custodies');
       this.addDefinitions(menu, ws.definitions.Resources, 'resources');
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
@@ -311,6 +316,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     const definitions = ws.definitions.Reports;
     if (!!definitions) {
       const canViewRelations = Object.keys(ws.definitions.Relations).some(v => this.canView(`relations/${v}`));
+      const canViewCustodies = Object.keys(ws.definitions.Custodies).some(v => this.canView(`custodies/${v}`));
       const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
       const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
       const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
@@ -330,6 +336,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           switch (definition.Collection) {
             case 'Relation':
               canView = canViewRelations;
+              break;
+            case 'Custody':
+              canView = canViewCustodies;
               break;
             case 'Resource':
               canView = canViewResources;

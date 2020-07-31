@@ -110,6 +110,11 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-units-picker>
 
+                            <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="arguments[p.key]"
+                                [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-custodies-picker>                            
+
                             <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="arguments[p.key]"
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
@@ -131,6 +136,11 @@
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-relation-definitions-picker>
+
+                            <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-custody-definitions-picker>
 
                             <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"

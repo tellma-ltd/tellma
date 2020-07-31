@@ -12,7 +12,7 @@ import { APPLICATION_VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
 import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { metadata_Relation } from '~/app/data/entities/relations';
+import { metadata_Relation } from '~/app/data/entities/relation';
 import { metadata_Document } from '~/app/data/entities/document';
 
 interface ConcreteViewInfo {

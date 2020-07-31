@@ -8,7 +8,7 @@ import { WorkspaceService, ReportStore, ReportStatus } from '~/app/data/workspac
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
-import { metadata_Relation, Relation } from '~/app/data/entities/relations';
+import { metadata_Relation, Relation } from '~/app/data/entities/relation';
 import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
