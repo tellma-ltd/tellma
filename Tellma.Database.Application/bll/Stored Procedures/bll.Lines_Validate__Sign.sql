@@ -118,7 +118,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheContract01HasNoUsers',
+		N'Error_TheCustody01HasNoUsers',
 		dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS [CustodyDefinition],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody]
 	FROM @Ids FE

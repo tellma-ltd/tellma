@@ -5118,7 +5118,7 @@ namespace Tellma.Data
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
-            List<Relation> relations,
+            List<Custody> custodies,
             List<Resource> resources,
             List<EntryType> entryTypes,
             List<Center> centers,
@@ -5280,13 +5280,13 @@ namespace Tellma.Data
                 });
             }
 
-            // Relation
-            var list_Relation = new List<Relation>();
+            // Custody
+            var list_Custody = new List<Custody>();
             await reader.NextResultAsync(cancellation);
             while (await reader.ReadAsync(cancellation))
             {
                 int i = 0;
-                list_Relation.Add(new Relation
+                list_Custody.Add(new Custody
                 {
                     Id = reader.GetInt32(i++),
                     Name = reader.String(i++),
@@ -5296,10 +5296,10 @@ namespace Tellma.Data
 
                     EntityMetadata = new EntityMetadata
                     {
-                        { nameof(Relation.Name), FieldMetadata.Loaded },
-                        { nameof(Relation.Name2), FieldMetadata.Loaded },
-                        { nameof(Relation.Name3), FieldMetadata.Loaded },
-                        { nameof(Relation.DefinitionId), FieldMetadata.Loaded },
+                        { nameof(Custody.Name), FieldMetadata.Loaded },
+                        { nameof(Custody.Name2), FieldMetadata.Loaded },
+                        { nameof(Custody.Name3), FieldMetadata.Loaded },
+                        { nameof(Custody.DefinitionId), FieldMetadata.Loaded },
                     }
                 });
             }
@@ -5371,7 +5371,7 @@ namespace Tellma.Data
                 });
             }
 
-            return (lines, list_Account, list_Relation, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
+            return (lines, list_Account, list_Custody, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         #endregion

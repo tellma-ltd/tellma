@@ -196,11 +196,11 @@ namespace Tellma.Entities
         // For Query
         [Display(Name = "Document_DebitResource")]
         [ForeignKey(nameof(DebitResourceId))]
-        public Relation DebitResource { get; set; }
+        public Resource DebitResource { get; set; }
 
         [Display(Name = "Document_CreditResource")]
         [ForeignKey(nameof(CreditResourceId))]
-        public Relation CreditResource { get; set; }
+        public Resource CreditResource { get; set; }
 
         [Display(Name = "Document_DebitCustody")]
         [ForeignKey(nameof(DebitCustodyId))]

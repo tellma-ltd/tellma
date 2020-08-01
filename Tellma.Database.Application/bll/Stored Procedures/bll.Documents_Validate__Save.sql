@@ -134,10 +134,11 @@ SET NOCOUNT ON;
 		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
 	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsAbstract'
+		N'Error_Center0IsAbstract', 
+		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -146,7 +147,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotBusinessUnit'
+		N'Error_Center0IsNot1',
+		N'localize:Center_CenterType_BusinessUnit'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -155,7 +157,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotCostOfSaleCenter'
+		N'Error_Center0IsNot1',
+		N'localize:Center_CenterType_CostOfSales'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -164,7 +167,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotLeaf'
+		N'Error_Center0IsNotLeaf',
+		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -173,7 +177,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotConstructionInProgressExpendituresCenter'
+		N'Error_Center0IsNot1',
+		N'localize:Center_CenterType_ConstructionInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -182,7 +187,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotInvestmentPropertyUnderConstructionOrDevelopmentExpendituresCenter'
+		N'Error_Center0IsNot1'
+		N'localize:Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -191,7 +197,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotWorkInProgressExpendituresCenter'
+		N'Error_Center0IsNot1'
+		N'localize:Center_CenterType_WorkInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -200,7 +207,8 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotCurrentInventoriesInTransitExpendituresCenter'
+		N'Error_Center0IsNot1'
+		N'localize:Center_CenterType_CurrentInventoriesInTransitExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex

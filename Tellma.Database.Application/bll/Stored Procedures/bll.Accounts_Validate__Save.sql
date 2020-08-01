@@ -108,7 +108,7 @@ SET NOCOUNT ON;
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	--SELECT TOP (@Top)
 	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
-	--	N'Error_TheContractDefinition0IsNotCompatibleWithContract1',
+	--	N'Error_TheCustodyDefinition0IsNotCompatibleWithCustody1',
 	--	dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
 	--	dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
 	--FROM @Entities FE 
@@ -183,7 +183,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedInDocument12WithContract3',
+		N'Error_TheAccount0IsUsedInDocument12WithCustody3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
