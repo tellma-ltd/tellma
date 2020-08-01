@@ -201,6 +201,18 @@
                     },
                     new ViewInfo
                     {
+                        Id = "custody-definitions",
+                        Name = "CustodyDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("State")
+                        }
+                    },
+                    new ViewInfo
+                    {
                         Id = "resource-definitions",
                         Name = "ResourceDefinitions",
                         Read = true,

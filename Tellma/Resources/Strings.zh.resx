@@ -227,7 +227,7 @@
     <value>尺寸</value>
   </data>
   <data name="Attachments" xml:space="preserve">
-    <value>附件</value>
+    <value>的附件</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>身份验证器应用</value>
@@ -366,6 +366,33 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>当前密码</value>
+  </data>
+  <data name="Custodies" xml:space="preserve">
+    <value>Custodies</value>
+  </data>
+  <data name="Custody" xml:space="preserve">
+    <value>保管</value>
+  </data>
+  <data name="Custody_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Custody_BankAccountNumber" xml:space="preserve">
+    <value>银行帐号</value>
+  </data>
+  <data name="Custody_Custodian" xml:space="preserve">
+    <value>保管人</value>
+  </data>
+  <data name="Custody_Job" xml:space="preserve">
+    <value>工作</value>
+  </data>
+  <data name="Custody_TaxIdentificationNumber" xml:space="preserve">
+    <value>税号</value>
+  </data>
+  <data name="CustodyDefinition" xml:space="preserve">
+    <value>托管定义</value>
+  </data>
+  <data name="CustodyDefinitions" xml:space="preserve">
+    <value>托管定义</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>数据</value>
@@ -846,6 +873,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
+  </data>
+  <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>托管DefinitionId“{0}”未能找到。</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>该日期不能存档日期之前{0}</value>

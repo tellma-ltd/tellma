@@ -8,26 +8,26 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { RelationDefinitionForSave, metadata_RelationDefinition, RelationDefinition } from '~/app/data/entities/relation-definition';
+import { CustodyDefinitionForSave, metadata_CustodyDefinition, CustodyDefinition } from '~/app/data/entities/custody-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
-import { RelationDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { CustodyDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
 @Component({
-  selector: 't-relation-definitions-details',
-  templateUrl: './relation-definitions-details.component.html',
+  selector: 't-custody-definitions-details',
+  templateUrl: './custody-definitions-details.component.html',
   styles: []
 })
-export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
+export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
 
-  private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private custodyDefinitionsApi = this.api.custodyDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   create = () => {
-    const result: RelationDefinitionForSave = {};
+    const result: CustodyDefinitionForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.TitleSingular = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -48,7 +48,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   private allVisibilityProps(): string[] {
-    const props = metadata_RelationDefinition(this.workspace, this.translate).properties;
+    const props = metadata_CustodyDefinition(this.workspace, this.translate).properties;
     const result = [];
     for (const propName of Object.keys(props)) {
       if (propName.endsWith('Visibility')) {
@@ -59,9 +59,9 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  clone: (item: RelationDefinition) => RelationDefinition = (item: RelationDefinition) => {
+  clone: (item: CustodyDefinition) => CustodyDefinition = (item: CustodyDefinition) => {
     if (!!item) {
-      const clone = JSON.parse(JSON.stringify(item)) as RelationDefinition;
+      const clone = JSON.parse(JSON.stringify(item)) as CustodyDefinition;
       clone.Id = null;
 
       // if (!!clone.Rows) {
@@ -87,14 +87,14 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$);
+    this.custodyDefinitionsApi = this.api.custodyDefinitionsApi(this.notifyDestruct$);
   }
 
   public get ws() {
     return this.workspace.currentTenant;
   }
 
-  public savePreprocessing = (entity: RelationDefinition) => {
+  public savePreprocessing = (entity: CustodyDefinition) => {
     // Server validation on hidden properties will be confusing to the user
     for (const prop of this.allVisibilityProps()) {
       const value: DefinitionVisibility = entity[prop];
@@ -123,7 +123,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     return true;
   }
 
-  public isInactive: (model: RelationDefinition) => string = (_: RelationDefinition) => null;
+  public isInactive: (model: CustodyDefinition) => string = (_: CustodyDefinition) => null;
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;
@@ -147,7 +147,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._sections[key];
   }
 
-  public sectionErrors(section: string, model: RelationDefinition) {
+  public sectionErrors(section: string, model: CustodyDefinition) {
     if (section === 'Title') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.Code) ||
@@ -218,7 +218,9 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Text2Label3) ||
         areServerErrors(model.serverErrors.Text2Visibility) ||
 
-        // Relation Only
+        // Custody Only
+        areServerErrors(model.serverErrors.CustodianVisibility) ||
+        areServerErrors(model.serverErrors.CustodianDefinitionId) ||
         areServerErrors(model.serverErrors.AgentVisibility) ||
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
         areServerErrors(model.serverErrors.JobVisibility) ||
@@ -252,7 +254,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     return obj.serverErrors[prop];
   }
 
-  public onDefinitionChange(model: RelationDefinition, prop?: string) {
+  public onDefinitionChange(model: CustodyDefinition, prop?: string) {
     if (!!prop) {
       // Non-critical change, no need to refresh
       this.getForClient(model)[prop] = model[prop];
@@ -262,11 +264,11 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  private _currentModel: RelationDefinition;
+  private _currentModel: CustodyDefinition;
   private _currentModelModified = false;
-  private _getForClientResult: RelationDefinitionForClient;
+  private _getForClientResult: CustodyDefinitionForClient;
 
-  public getForClient(model: RelationDefinition): RelationDefinitionForClient {
+  public getForClient(model: CustodyDefinition): CustodyDefinitionForClient {
     if (!model) {
       return null;
     }
@@ -276,7 +278,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
       this._currentModel = model;
 
       // The mapping is trivial since the two data structures are identical
-      this._getForClientResult = { ...model } as RelationDefinitionForClient;
+      this._getForClientResult = { ...model } as CustodyDefinitionForClient;
 
       // In definitions for client, a null visibility becomes undefined
       for (const propName of this.allVisibilityProps()) {
@@ -336,6 +338,26 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._lookupDefinitionChoices;
   }
 
+  private _relationDefinitionChoicesDef: DefinitionsForClient;
+  private _relationDefinitionChoices: SelectorChoice[];
+  public get relationDefinitionChoices(): SelectorChoice[] {
+    if (this._relationDefinitionChoicesDef !== this.ws.definitions) {
+      this._relationDefinitionChoicesDef = this.ws.definitions;
+      this._relationDefinitionChoices = [];
+      const relations = this.ws.definitions.Relations;
+      for (const key of Object.keys(relations)) {
+        const id = +key;
+        const relationDef = relations[id];
+        this._relationDefinitionChoices.push({
+          value: id,
+          name: () => this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')
+        });
+      }
+    }
+
+    return this._relationDefinitionChoices;
+  }
+
   public isVisible(visibility: DefinitionVisibility) {
     return visibility === 'Optional' || visibility === 'Required';
   }
@@ -343,52 +365,52 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
   // Menu stuff
 
   public get allMainMenuSections(): SelectorChoice[] {
-    const desc = metadata_RelationDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
+    const desc = metadata_CustodyDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuIcons(): SelectorChoice[] {
-    const desc = metadata_RelationDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
+    const desc = metadata_CustodyDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
 
-  public onIconClick(model: RelationDefinition, icon: SelectorChoice): void {
+  public onIconClick(model: CustodyDefinition, icon: SelectorChoice): void {
     model.MainMenuIcon = icon.value;
     this.onDefinitionChange(model, 'MainMenuSortKey');
   }
 
   // State Management
-  public onMakeHidden = (model: RelationDefinition): void => {
+  public onMakeHidden = (model: CustodyDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Hidden') {
-      this.relationDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
+      this.custodyDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onMakeVisible = (model: RelationDefinition): void => {
+  public onMakeVisible = (model: CustodyDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Visible') {
-      this.relationDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
+      this.custodyDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onMakeArchived = (model: RelationDefinition): void => {
+  public onMakeArchived = (model: CustodyDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Archived') {
-      this.relationDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
+      this.custodyDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showMakeHidden = (model: RelationDefinition) => !!model && model.State !== 'Hidden';
-  public showMakeVisible = (model: RelationDefinition) => !!model && model.State !== 'Visible';
-  public showMakeArchived = (model: RelationDefinition) => !!model && model.State !== 'Archived';
+  public showMakeHidden = (model: CustodyDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeVisible = (model: CustodyDefinition) => !!model && model.State !== 'Visible';
+  public showMakeArchived = (model: CustodyDefinition) => !!model && model.State !== 'Archived';
 
-  public hasStatePermission = (model: RelationDefinition) => this.ws.canDo('relation-definitions', 'State', model.Id);
+  public hasStatePermission = (model: CustodyDefinition) => this.ws.canDo('custody-definitions', 'State', model.Id);
 
-  public stateTooltip = (model: RelationDefinition) => this.hasStatePermission(model) ? '' :
+  public stateTooltip = (model: CustodyDefinition) => this.hasStatePermission(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

@@ -663,6 +663,7 @@
     <None Include="Provisioning\102\102_24Custodies.sql" />
     <None Include="Provisioning\102\102_25Relations.sql" />
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
+    <Build Include="map\map.CustodyDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

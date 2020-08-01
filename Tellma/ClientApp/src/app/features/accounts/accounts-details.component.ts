@@ -11,7 +11,7 @@ import { PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { Relation } from '~/app/data/entities/relations';
+import { Relation } from '~/app/data/entities/relation';
 import { AccountClassification } from '~/app/data/entities/account-classification';
 
 @Component({

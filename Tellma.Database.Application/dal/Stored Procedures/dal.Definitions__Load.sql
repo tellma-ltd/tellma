@@ -7,8 +7,11 @@ SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 -- Get the lookup definitions
 SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
 
--- Get the agent definitions
+-- Get the relation definitions
 SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
+
+-- Get the custody definitions
+SELECT * FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the resource definitions
 SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
