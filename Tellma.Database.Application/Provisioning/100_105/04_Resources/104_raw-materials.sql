@@ -16,12 +16,10 @@ BEGIN
 	END;		
 	DECLARE @SteelRollRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'SteelRoll');
 	DELETE FROM @Resources;
-	/* TODO: Uncomment after adding quantity to Resources and ResourceList
 	INSERT INTO @Resources ([Index],
-		[Name],				[Code],			[Identifier], [Quantity], 	[Lookup1Id]) VALUES
-	(0, N'HR 1000MMx1.9MM',	N'HR1000x1.9',	N'1001',		23.332,		dbo.fn_Lookup(N'SteelThickness', N'1.9')),
-	(1, N'CR 1000MMx1.4MM',	N'CR1000x1.4',	N'1002',		11.214,		dbo.fn_Lookup(N'SteelThickness', N'1.4'));
-	*/
+		[Name],				[Code],			[Identifier], [UnitMass], [UnitMassUnitId],	[Lookup1Id]) VALUES
+	(0, N'HR 1000MMx1.9MM',	N'HR1000x1.9',	N'1001',		23.332,		@Kg,			dbo.fn_Lookup(N'SteelThickness', N'1.9')),
+	(1, N'CR 1000MMx1.4MM',	N'CR1000x1.4',	N'1002',		11.214,		@Kg,			dbo.fn_Lookup(N'SteelThickness', N'1.4'));
 	EXEC [api].[Resources__Save]
 		@DefinitionId = @SteelRollRD,
 		@Entities = @Resources,

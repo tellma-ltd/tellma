@@ -131,7 +131,6 @@
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.WideLineList.sql" />
-    <Build Include="dbo\Functions\dbo.fe_Center__FirstSibling.sql" />
     <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
     <None Include="Tests\04_IfrsDisclosures.sql" />
@@ -663,6 +662,7 @@
     <None Include="Provisioning\102\102_23Resources.sql" />
     <None Include="Provisioning\102\102_24Custodies.sql" />
     <None Include="Provisioning\102\102_25Relations.sql" />
+    <None Include="Provisioning\000\o1_LineDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

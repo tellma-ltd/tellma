@@ -5,6 +5,14 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- TODO: Make sure the unit is not in table Resource Units
+	-- TODO: Make sure the unit is not in table Entries
+
+	-- TODO: Make sure the unit is not in table Units
+
+	-- TODO: Make sure the unit is not in table Resources
+
+	-- TODO: Make sure the unit is not in table Budget Entries
+
+	-- TODO: Make sure the unit is not in table Account Balances
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

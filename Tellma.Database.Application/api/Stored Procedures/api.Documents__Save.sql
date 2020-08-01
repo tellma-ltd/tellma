@@ -8,6 +8,7 @@ AS
 BEGIN
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @PreprocessedEntriesJson NVARCHAR (MAX), @PreprocessedEntries dbo.EntryList;
+	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 
 	EXEC bll.[Documents__Preprocess]
 		@DefinitionId = @DefinitionId,
@@ -54,7 +55,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	WHERE E.[CurrencyId] = dbo.fn_FunctionalCurrencyId()
-	AND L.DefinitionId <> (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	AND L.DefinitionId <> @ManualLineLD;
 
 	DECLARE @ValidationErrors ValidationErrorList;
 	INSERT INTO @ValidationErrors

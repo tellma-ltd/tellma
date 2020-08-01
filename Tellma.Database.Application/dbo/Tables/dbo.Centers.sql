@@ -17,7 +17,6 @@
 	[Name3]					NVARCHAR (255),
 	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Agents]([Id]),
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
-	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.
 	[Code]					NVARCHAR (50)		NOT NULL UNIQUE NONCLUSTERED,
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
