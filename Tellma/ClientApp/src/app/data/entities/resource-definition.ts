@@ -237,7 +237,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                     control: 'choice',
                     label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Participant') }),
                     choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
-                    format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Lookups[defId], 'TitlePlural')
+                    format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },
 
                 State: statePropDescriptor(trx),

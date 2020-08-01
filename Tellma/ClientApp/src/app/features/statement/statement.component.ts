@@ -8,7 +8,7 @@ import { WorkspaceService, ReportStore, ReportStatus } from '~/app/data/workspac
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
-import { metadata_Relation, Relation } from '~/app/data/entities/relation';
+import { metadata_Relation } from '~/app/data/entities/relation';
 import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
@@ -25,6 +25,7 @@ import { StatementResponse } from '~/app/data/dto/statement-response';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { ResourceDefinitionForClient, RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 
 @Component({
   selector: 't-statement',
@@ -41,7 +42,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'segment_id', 'custodian_id', 'resource_id', 'entry_type_id', 'center_id'];
+        return ['account_id', 'segment_id', 'custody_id', 'resource_id', 'entry_type_id', 'center_id'];
       case 'relation':
         return ['relation_id', 'account_id', 'resource_id'];
       default:
@@ -297,8 +298,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       args.segmentId = this.segmentId;
     }
 
-    if (!!this.custodianId && this.showCustodianParameter) {
-      args.custodianId = this.custodianId;
+    if (!!this.custodyId && this.showCustodyParameter) {
+      args.custodyId = this.custodyId;
     }
 
     if (!!this.resourceId && this.showResourceParameter) {
@@ -404,7 +405,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           return true;
         }
 
-        if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !!this.custodianId && !this.ws.get('Relation', this.custodianId)) {
+        if (this.showCustodyParameter && !this.readonlyCustody_Manual && !!this.custodyId && !this.ws.get('Custody', this.custodyId)) {
           return true;
         }
 
@@ -509,8 +510,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
         }
-        if (!!args.custodianId) {
-          data.push(this.normalize([this.labelCustodian_Manual, this.ws.getMultilingualValue('Relation', args.custodianId, 'Name')], columns.length));
+        if (!!args.custodyId) {
+          data.push(this.normalize([this.labelCustody_Manual, this.ws.getMultilingualValue('Custody', args.custodyId, 'Name')], columns.length));
         }
         if (!!args.resourceId) {
           data.push(this.normalize([this.labelResource_Manual, this.ws.getMultilingualValue('Resource', args.resourceId, 'Name')], columns.length));
@@ -784,16 +785,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Returns the currency Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceCustodianCurrencyId(): string {
+  private getAccountResourceCustodyCurrencyId(): string {
     const account = this.account();
     const resource = this.resource();
-    const custodian = this.custodian();
+    const custody = this.custody();
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
-    const custodianCurrencyId = !!custodian ? custodian.CurrencyId : null;
+    const custodyCurrencyId = !!custody ? custody.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || custodianCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || custodyCurrencyId;
   }
 
   /**
@@ -802,14 +803,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   public get showCurrencyParameter(): boolean {
     // Show the editable currency parameter
     const account = this.account();
-    return !!account && !this.getAccountResourceCustodianCurrencyId();
+    return !!account && !this.getAccountResourceCustodyCurrencyId();
   }
 
   /**
    * Returns the Id of the currency to show as a postfix to the monetary value column header
    */
   public get readonlyValueCurrencyId(): string {
-    const accountResourceCurrencyId = this.getAccountResourceCustodianCurrencyId();
+    const accountResourceCurrencyId = this.getAccountResourceCustodyCurrencyId();
     return accountResourceCurrencyId || this.currencyId;
   }
 
@@ -820,17 +821,18 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.ws.settings.FunctionalCurrencyId;
   }
 
-  // Custodian
+  // Custody
   public relationAdditionalSelect = '$DocumentDetails';
+  public custodyAdditionalSelect = '$DocumentDetails';
 
-  public get custodianId(): number {
-    return this.state.arguments.custodian_id;
+  public get custodyId(): number {
+    return this.state.arguments.custody_id;
   }
 
-  public set custodianId(v: number) {
+  public set custodyId(v: number) {
     const args = this.state.arguments;
-    if (args.custodian_id !== v) {
-      args.custodian_id = v;
+    if (args.custody_id !== v) {
+      args.custody_id = v;
       this.parametersChanged();
     }
   }
@@ -849,46 +851,48 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Returns any uniquely identifiable custodian from the parameters
+   * Returns any uniquely identifiable custody from the parameters
    */
-  private custodian(): Relation {
+  private custody(): Custody {
     const account = this.account();
-    const accountCustodianId = !!account ? account.CustodianId : null;
-    const paramCustodianId = !!account && !!account.CustodianDefinitionId ? this.custodianId : null;
-    const custodianId = accountCustodianId || paramCustodianId;
+    const accountCustodyId = !!account ? account.CustodyId : null;
+    const paramCustodyId = !!account && !!account.CustodyDefinitionId ? this.custodyId : null;
+    const custodyId = accountCustodyId || paramCustodyId;
 
-    return this.ws.get('Relation', custodianId) as Relation;
+    return this.ws.get('Custody', custodyId) as Custody;
   }
 
-  public get showCustodianParameter(): boolean {
+  public get showCustodyParameter(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodianDefinitionId;
+    return !!account && !!account.CustodyDefinitionId;
   }
 
-  public get readonlyCustodian_Manual(): boolean {
+  public get readonlyCustody_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodianId;
+    return !!account && !!account.CustodyId;
   }
 
-  public get readonlyValueCustodianId_Manual(): number {
+  public get readonlyValueCustodyId_Manual(): number {
     const account = this.account();
-    return !!account ? account.CustodianId : null;
+    return !!account ? account.CustodyId : null;
   }
 
-  public get labelCustodian_Manual(): string {
+  public get labelCustody_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.CustodianDefinitionId : null;
+    const defId = !!account ? account.CustodyDefinitionId : null;
 
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Custody(this.workspace, this.translate, defId).titleSingular();
   }
+
+  public get definitionIdsCustody_Manual(): number[] {
+    const account = this.account();
+    return [account.CustodyDefinitionId];
+  }
+
+  // Relation
 
   public get labelRelation_Smart(): string {
     return this.ws.getMultilingualValueImmediate(this.relationDefinition, 'TitleSingular');
-  }
-
-  public get definitionIdsCustodian_Manual(): number[] {
-    const account = this.account();
-    return [account.CustodianDefinitionId];
   }
 
   public get definitionIdsRelation_Smart(): number [] {
@@ -1030,26 +1034,26 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get readonlyCenter_Manual(): boolean {
-    return !!this.getAccountResourceCustodianCenterId();
+    return !!this.getAccountResourceCustodyCenterId();
   }
 
   public get readonlyValueCenterId_Manual(): number {
-    return this.getAccountResourceCustodianCenterId();
+    return this.getAccountResourceCustodyCenterId();
   }
 
   /**
    * Returns the center Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceCustodianCenterId(): number {
+  private getAccountResourceCustodyCenterId(): number {
     const account = this.account();
     const resource = this.resource();
-    const custodian = this.custodian();
+    const custody = this.custody();
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
-    const custodianCenterId = !!custodian ? custodian.CenterId : null;
+    const custodyCenterId = !!custody ? custody.CenterId : null;
 
-    return accountCenterId || resourceCenterId || custodianCenterId;
+    return accountCenterId || resourceCenterId || custodyCenterId;
   }
 
   // Error Message
@@ -1117,7 +1121,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const opening = s.extras.openingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCustodianCurrencyId() || this.currencyId || this.functionalId;
+      const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
       const digitsInfo = this.digitsInfo(currencyId);
       return formatAccounting(opening, digitsInfo);
     }
@@ -1149,7 +1153,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const closing = s.extras.closingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCustodianCurrencyId() || this.currencyId || this.functionalId;
+      const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
       const digitsInfo = this.digitsInfo(currencyId);
       return formatAccounting(closing, digitsInfo);
     }
@@ -1243,14 +1247,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         weight: 1
       });
 
-      // Custodian
-      if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !this.custodianId) {
+      // Custody
+      if (this.showCustodyParameter && !this.readonlyCustody_Manual && !this.custodyId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Custodian/Name,Custodian/Name2,Custodian/Name3'],
-          label: () => this.labelCustodian_Manual,
+          select: ['Custody/Name,Custody/Name2,Custody/Name3'],
+          label: () => this.labelCustody_Manual,
           display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Relation', entry.CustodianId, 'Name');
+            return this.ws.getMultilingualValue('Custody', entry.CustodyId, 'Name');
           },
           weight: 1
         });
@@ -1423,7 +1427,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      const definedCurrencyId = this.getAccountResourceCustodianCurrencyId() || this.currencyId;
+      const definedCurrencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId;
       if (!!this.account() && definedCurrencyId !== this.functionalId) {
 
         // Monetary Value

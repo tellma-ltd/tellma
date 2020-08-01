@@ -111,26 +111,26 @@
         </t-resources-picker>
     </t-form-group>
 
-    <!-- Custodian Definition -->
-    <t-form-group class="t-form-group" *ngIf="showCustodianDefinitionId(model)"
-        [label]="'Account_CustodianDefinition' | translate" [serverErrors]="model?.serverErrors?.CustodianDefinitionId">
-        <div *ngIf="!isEdit">{{ formatRelationDefinitionId(model.CustodianDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.CustodianDefinitionId"
-            [choices]="choicesCustodianDefinitionId(model)" (ngModelChange)="onCustodianDefinitionChange($event, model)">
+    <!-- Custody Definition -->
+    <t-form-group class="t-form-group" *ngIf="showCustodyDefinitionId(model)"
+        [label]="'Account_CustodyDefinition' | translate" [serverErrors]="model?.serverErrors?.CustodyDefinitionId">
+        <div *ngIf="!isEdit">{{ formatCustodyDefinitionId(model.CustodyDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.CustodyDefinitionId"
+            [choices]="choicesCustodyDefinitionId(model)" (ngModelChange)="onCustodyDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
-    <!-- Custodian -->
-    <t-form-group class="t-form-group" *ngIf="showCustodian(model)" [label]="labelCustodian(model)"
-        [serverErrors]="model?.serverErrors?.CustodianId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../relations/' + ws.get('Relation', model?.Custodian)?.DefinitionId"
-            [itemId]="model?.CustodianId">
-            <t-auto-cell collection="Account" path="Custodian" [entity]="model">
+    <!-- Custody -->
+    <t-form-group class="t-form-group" *ngIf="showCustody(model)" [label]="labelCustody(model)"
+        [serverErrors]="model?.serverErrors?.CustodyId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../custodies/' + ws.get('Custody', model?.Custody)?.DefinitionId"
+            [itemId]="model?.CustodyId">
+            <t-auto-cell collection="Account" path="Custody" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId" [definitionIds]="definitionIdsCustodian(model)"
-            [additionalSelect]="relationAdditionalSelect">
-        </t-relations-picker>
+        <t-custodies-picker *ngIf="isEdit" [(ngModel)]="model.CustodyId" [definitionIds]="definitionIdsCustody(model)"
+            [additionalSelect]="custodyAdditionalSelect">
+        </t-custodies-picker>
     </t-form-group>
 
     <!-- Currency -->

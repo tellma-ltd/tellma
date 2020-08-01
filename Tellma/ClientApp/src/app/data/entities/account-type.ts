@@ -7,7 +7,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { AccountTypeCustodianDefinitionForSave, AccountTypeCustodianDefinition } from './account-type-custodian-definition';
+import { AccountTypeCustodyDefinitionForSave, AccountTypeCustodyDefinition } from './account-type-custody-definition';
 import { AccountTypeNotedRelationDefinitionForSave, AccountTypeNotedRelationDefinition } from './account-type-noted-relation-definition';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 
@@ -15,7 +15,7 @@ export type RequiredAssignment = 'A' | 'E';
 export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
-export interface AccountTypeForSave<TCustodianDef = AccountTypeCustodianDefinitionForSave,
+export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionForSave,
   TNotedRelationDef = AccountTypeNotedRelationDefinitionForSave,
   TResourceDef = AccountTypeResourceDefinitionForSave> extends EntityForSave {
   ParentId?: number;
@@ -53,12 +53,12 @@ export interface AccountTypeForSave<TCustodianDef = AccountTypeCustodianDefiniti
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  CustodianDefinitions?: TCustodianDef[];
+  CustodyDefinitions?: TCustodyDef[];
   NotedRelationDefinitions?: TNotedRelationDef[];
   ResourceDefinitions?: TResourceDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeCustodianDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;

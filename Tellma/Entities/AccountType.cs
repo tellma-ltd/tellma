@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave<TCustodianDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountTypeForSave<TCustodyDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -159,9 +159,9 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
 
-        [Display(Name = "AccountType_CustodianDefinitions")]
-        [ForeignKey(nameof(AccountTypeCustodianDefinition.AccountTypeId))]
-        public List<TCustodianDef> CustodianDefinitions { get; set; }
+        [Display(Name = "AccountType_CustodyDefinitions")]
+        [ForeignKey(nameof(AccountTypeCustodyDefinition.AccountTypeId))]
+        public List<TCustodyDef> CustodyDefinitions { get; set; }
 
         [Display(Name = "AccountType_NotedRelationDefinitions")]
         [ForeignKey(nameof(AccountTypeNotedRelationDefinition.AccountTypeId))]
@@ -172,11 +172,11 @@ namespace Tellma.Entities
         public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodianDefinitionForSave, AccountTypeNotedRelationDefinitionForSave, AccountTypeResourceDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodyDefinitionForSave, AccountTypeNotedRelationDefinitionForSave, AccountTypeResourceDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeCustodianDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
+    public class AccountType : AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public string Path { get; set; }

@@ -250,7 +250,7 @@ namespace Tellma.Data
                 nameof(AccountClassification) => "[map].[AccountClassifications]()",
                 nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
-                nameof(AccountTypeCustodianDefinition) => "[map].[AccountTypeCustodianDefinitions]()",
+                nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
                 nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
                 nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
                 nameof(Account) => "[map].[Accounts]()",
@@ -938,7 +938,7 @@ namespace Tellma.Data
                 {
                     var entity = new LineDefinitionEntry
                     {
-                        CustodianDefinitions = new List<LineDefinitionEntryCustodianDefinition>(),
+                        CustodyDefinitions = new List<LineDefinitionEntryCustodyDefinition>(),
                         NotedRelationDefinitions = new List<LineDefinitionEntryNotedRelationDefinition>(),
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
                     };
@@ -1026,19 +1026,19 @@ namespace Tellma.Data
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
-                // Line Definition Entry Custodian Definitions
+                // Line Definition Entry Custody Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new LineDefinitionEntryCustodianDefinition
+                    var entity = new LineDefinitionEntryCustodyDefinition
                     {
                         LineDefinitionEntryId = reader.GetInt32(i++),
-                        CustodianDefinitionId = reader.GetInt32(i++),
+                        CustodyDefinitionId = reader.GetInt32(i++),
                     };
 
                     var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.CustodianDefinitions.Add(entity);
+                    lineDefEntry.CustodyDefinitions.Add(entity);
                 }
 
                 // Line Definition Entry Noted Relation Definitions
@@ -3485,10 +3485,10 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
-            DataTable custodianDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodianDefinitions);
-            var custodianDefinitionsTvp = new SqlParameter("@AccountTypeCustodianDefinitions", custodianDefinitionsTable)
+            DataTable custodyDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodyDefinitions);
+            var custodyDefinitionsTvp = new SqlParameter("@AccountTypeCustodyDefinitions", custodyDefinitionsTable)
             {
-                TypeName = $"[dbo].[{nameof(AccountTypeCustodianDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(AccountTypeCustodyDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -3501,7 +3501,7 @@ namespace Tellma.Data
 
             cmd.Parameters.Add(entitiesTvp);
             cmd.Parameters.Add(resourceDefinitionsTvp);
-            cmd.Parameters.Add(custodianDefinitionsTvp);
+            cmd.Parameters.Add(custodyDefinitionsTvp);
             cmd.Parameters.Add(notedRelationDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
@@ -3536,10 +3536,10 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable custodianDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodianDefinitions);
-                var custodianDefinitionsTvp = new SqlParameter("@AccountTypeCustodianDefinitions", custodianDefinitionsTable)
+                DataTable custodyDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodyDefinitions);
+                var custodyDefinitionsTvp = new SqlParameter("@AccountTypeCustodyDefinitions", custodyDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(AccountTypeCustodianDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountTypeCustodyDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -3552,7 +3552,7 @@ namespace Tellma.Data
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
-                cmd.Parameters.Add(custodianDefinitionsTvp);
+                cmd.Parameters.Add(custodyDefinitionsTvp);
                 cmd.Parameters.Add(notedRelationDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
@@ -5179,7 +5179,7 @@ namespace Tellma.Data
                     AccountId = reader.Int32(i++),
                     CurrencyId = reader.String(i++),
                     ResourceId = reader.Int32(i++),
-                    CustodianId = reader.Int32(i++),
+                    CustodyId = reader.Int32(i++),
                     EntryTypeId = reader.Int32(i++),
                     NotedRelationId = reader.Int32(i++),
                     CenterId = reader.Int32(i++),

@@ -4,17 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    public class LineDefinitionEntryCustodianDefinitionForSave : EntityWithKey<int>
+    public class LineDefinitionEntryCustodyDefinitionForSave : EntityWithKey<int>
     {
-        public int? CustodianDefinitionId { get; set; }
+        public int? CustodyDefinitionId { get; set; }
     }
 
-    public class LineDefinitionEntryCustodianDefinition : LineDefinitionEntryCustodianDefinitionForSave
+    public class LineDefinitionEntryCustodyDefinition : LineDefinitionEntryCustodyDefinitionForSave
     {
         public int? LineDefinitionEntryId { get; set; }
 
-        [ForeignKey(nameof(CustodianDefinitionId))]
-        public RelationDefinition CustodianDefinition { get; set; }
+        [ForeignKey(nameof(CustodyDefinitionId))]
+        public CustodyDefinition CustodyDefinition { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }

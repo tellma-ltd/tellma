@@ -33,7 +33,6 @@
                 </t-form-group>
 
                 <ng-container *ngSwitchCase="'relation'">
-
                     <!-- Relation -->
                     <t-form-group class="t-form-group" [label]="labelRelation_Smart">
                         <t-relations-picker [(ngModel)]="relationId"
@@ -41,13 +40,6 @@
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                         </t-relations-picker>
                     </t-form-group>
-
-                    <!-- <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
-                        <t-selector>
-                            
-                        </t-selector>
-                    </t-form-group> -->
-
                 </ng-container>
 
                 <ng-container *ngSwitchCase="'account'">
@@ -67,16 +59,16 @@
                         </t-currencies-picker>
                     </t-form-group>
 
-                    <!-- Custodian -->
-                    <t-form-group class="t-form-group" [label]="labelCustodian_Manual" *ngIf="showCustodianParameter">
-                        <t-relations-picker *ngIf="!readonlyCustodian_Manual" [(ngModel)]="custodianId"
-                            [definitionIds]="definitionIdsCustodian_Manual" [additionalSelect]="relationAdditionalSelect"
+                    <!-- Custody -->
+                    <t-form-group class="t-form-group" [label]="labelCustody_Manual" *ngIf="showCustodyParameter">
+                        <t-custodies-picker *ngIf="!readonlyCustody_Manual" [(ngModel)]="custodyId"
+                            [definitionIds]="definitionIdsCustody_Manual" [additionalSelect]="custodyAdditionalSelect"
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                        </t-relations-picker>
-                        <t-view-link *ngIf="readonlyCustodian_Manual"
-                            [link]="link('relations/') + ws.get('Relation', readonlyValueCustodianId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueCustodianId_Manual">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueCustodianId_Manual, 'Name') }}
+                        </t-custodies-picker>
+                        <t-view-link *ngIf="readonlyCustody_Manual"
+                            [link]="link('custodies/') + ws.get('Custody', readonlyValueCustodyId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueCustodyId_Manual">
+                            {{ ws.getMultilingualValue('Custody', readonlyValueCustodyId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 

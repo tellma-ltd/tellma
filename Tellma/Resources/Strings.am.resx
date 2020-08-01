@@ -79,11 +79,11 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
+  <data name="Account_Custody" xml:space="preserve">
     <value>ወኪል</value>
   </data>
-  <data name="Account_CustodianDefinition" xml:space="preserve">
-    <value>ጠባቂ ትርጓሜ</value>
+  <data name="Account_CustodyDefinition" xml:space="preserve">
+    <value>የጥበቃ ፍቺ</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>ሐሳብ</value>
   </data>
-  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
-    <value>ጠባቂ ፍቺዎች</value>
+  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
+    <value>የጥበቃ ፍቺዎች</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>ምዝግብ አይነት ወላጅ</value>
@@ -157,11 +157,11 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>ሰዓት 2 መሰየሚያ</value>
   </data>
-  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
-    <value>የመለያ አይነት የምዝግቦች ፍቺ</value>
+  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
+    <value>የመለያ አይነት የጥበቃ ፍቺ</value>
   </data>
-  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
-    <value>የመለያ አይነት የምዝግቦች ፍቺዎች</value>
+  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
+    <value>የመለያ አይነት የጥበቃ ፍቺዎች</value>
   </data>
   <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
     <value>የመለያ አይነት በመቆየቱ ግንኙነት ፍቺ</value>
@@ -541,8 +541,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>አስተያየት</value>
   </data>
-  <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>የሥዕል የምዝግቦች</value>
+  <data name="Document_CreditCustody" xml:space="preserve">
+    <value>የብድር የጥበቃ</value>
   </data>
   <data name="Document_CreditResource" xml:space="preserve">
     <value>የሥዕል ሃብት</value>
@@ -550,8 +550,8 @@
   <data name="Document_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>ዴቢት የምዝግቦች</value>
+  <data name="Document_DebitCustody" xml:space="preserve">
+    <value>ዴቢት የጥበቃ</value>
   </data>
   <data name="Document_DebitResource" xml:space="preserve">
     <value>ዴቢት ሃብት</value>
@@ -745,7 +745,7 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Entry_Custodian" xml:space="preserve">
+  <data name="Entry_Custody" xml:space="preserve">
     <value>ወኪል</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
@@ -1063,8 +1063,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>መለያ »{0}» ምንዛሬ ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
-    <value>መለያ »{0}» ጠባቂ ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
+    <value>መለያ »{0}» በጥበቃ ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>መለያ »{0}» ሀብት ጋር {1} {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>

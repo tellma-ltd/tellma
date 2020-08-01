@@ -135,23 +135,23 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CreditResourceLabel2: string;
     CreditResourceLabel3: string;
 
-    // Debit Custodian
-    DebitCustodianVisibility: boolean;
-    DebitCustodianRequiredState: LineState;
-    DebitCustodianReadOnlyState: LineState;
-    DebitCustodianDefinitionIds: number[];
-    DebitCustodianLabel: string;
-    DebitCustodianLabel2: string;
-    DebitCustodianLabel3: string;
+    // Debit Custody
+    DebitCustodyVisibility: boolean;
+    DebitCustodyRequiredState: LineState;
+    DebitCustodyReadOnlyState: LineState;
+    DebitCustodyDefinitionIds: number[];
+    DebitCustodyLabel: string;
+    DebitCustodyLabel2: string;
+    DebitCustodyLabel3: string;
 
-    // Credit Custodian
-    CreditCustodianVisibility: boolean;
-    CreditCustodianRequiredState: LineState;
-    CreditCustodianReadOnlyState: LineState;
-    CreditCustodianDefinitionIds: number[];
-    CreditCustodianLabel: string;
-    CreditCustodianLabel2: string;
-    CreditCustodianLabel3: string;
+    // Credit Custody
+    CreditCustodyVisibility: boolean;
+    CreditCustodyRequiredState: LineState;
+    CreditCustodyReadOnlyState: LineState;
+    CreditCustodyDefinitionIds: number[];
+    CreditCustodyLabel: string;
+    CreditCustodyLabel2: string;
+    CreditCustodyLabel3: string;
 
     // Noted Relation
     NotedRelationVisibility: boolean;
@@ -263,7 +263,7 @@ export interface LineDefinitionEntryForClient {
     AccountTypeId?: number;
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
-    CustodianDefinitionIds: number[];
+    CustodyDefinitionIds: number[];
     NotedRelationDefinitionIds: number[];
     ResourceDefinitionIds: number[];
 }
@@ -300,7 +300,7 @@ export interface LineDefinitionGenerateParameterForClient {
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
-    'CustodianId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
+    'CustodyId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
     'ExternalReference' | 'AdditionalReference' | 'NotedRelationId' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';

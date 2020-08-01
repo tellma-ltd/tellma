@@ -7,7 +7,7 @@ RETURNS @DocumentSignatures TABLE (
 	[RuleType]			NVARCHAR(50),
 	[RoleId]			INT,
 	[UserId]			INT,
-	[CustodyId]		INT,
+	[CustodianId]		INT,
 	[LineSignatureId]	INT,
 	[SignedById]		INT,
 	[SignedAt]			DATETIMEOFFSET(7),
@@ -27,9 +27,9 @@ AS BEGIN
 	SELECT [Id] FROM [dbo].[Lines] WHERE [DocumentId] IN (SELECT [Id] FROM @DocumentIds);
 
 	INSERT INTO @DocumentSignatures(
-		[LineId], [ToState], [RuleType], [RoleId], [UserId], [CustodyId], [LineSignatureId], [SignedById], [SignedAt], [OnBehalfOfUserId], [LastUnsignedState], [LastNegativeState], [CanSign], [ProxyRoleId], [CanSignOnBehalf], [ReasonId], [ReasonDetails])
+		[LineId], [ToState], [RuleType], [RoleId], [UserId], [CustodianId], [LineSignatureId], [SignedById], [SignedAt], [OnBehalfOfUserId], [LastUnsignedState], [LastNegativeState], [CanSign], [ProxyRoleId], [CanSignOnBehalf], [ReasonId], [ReasonDetails])
 	SELECT
-		[LineId], [ToState], [RuleType], [RoleId], [UserId], [CustodyId], [LineSignatureId], [SignedById], [SignedAt], [OnBehalfOfUserId], [LastUnsignedState], [LastNegativeState], [CanSign], [ProxyRoleId], [CanSignOnBehalf], [ReasonId], [ReasonDetails]
+		[LineId], [ToState], [RuleType], [RoleId], [UserId], [CustodianId], [LineSignatureId], [SignedById], [SignedAt], [OnBehalfOfUserId], [LastUnsignedState], [LastNegativeState], [CanSign], [ProxyRoleId], [CanSignOnBehalf], [ReasonId], [ReasonDetails]
 	FROM [map].[LinesRequiredSignatures](@LineIds);
 	
 	RETURN;

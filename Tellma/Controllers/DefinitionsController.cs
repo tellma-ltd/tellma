@@ -274,7 +274,7 @@ namespace Tellma.Controllers
                 Text2Label3 = def.Text2Label3,
                 Text2Visibility = MapVisibility(def.Text2Visibility),
 
-                // Relation Only
+                // Custody Only
 
                 CustodianVisibility = MapVisibility(def.CustodianVisibility),
                 CustodianDefinitionId = def.CustodianDefinitionId,
@@ -506,7 +506,7 @@ namespace Tellma.Controllers
                     AccountTypeId = e.AccountTypeId,
                     EntryTypeId = e.EntryTypeId,
                     EntryTypeParentId = e.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
-                    CustodianDefinitionIds = e.CustodianDefinitions.Select(e => e.CustodianDefinitionId.Value).ToList(),
+                    CustodyDefinitionIds = e.CustodyDefinitions.Select(e => e.CustodyDefinitionId.Value).ToList(),
                     NotedRelationDefinitionIds = e.NotedRelationDefinitions.Select(e => e.NotedRelationDefinitionId.Value).ToList(),
                     ResourceDefinitionIds = e.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
@@ -605,8 +605,8 @@ namespace Tellma.Controllers
                 // These should not be null
                 CreditResourceDefinitionIds = new List<int>(),
                 DebitResourceDefinitionIds = new List<int>(),
-                CreditCustodianDefinitionIds = new List<int>(),
-                DebitCustodianDefinitionIds = new List<int>(),
+                CreditCustodyDefinitionIds = new List<int>(),
+                DebitCustodyDefinitionIds = new List<int>(),
                 NotedRelationDefinitionIds = new List<int>(),
             };
 
@@ -715,51 +715,51 @@ namespace Tellma.Controllers
                             }
                         }
 
-                        // DebitCustodian
-                        if (colDef.ColumnName == nameof(Entry.CustodianId) && entryDef.Direction == 1)
+                        // DebitCustody
+                        if (colDef.ColumnName == nameof(Entry.CustodyId) && entryDef.Direction == 1)
                         {
-                            result.DebitCustodianVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.DebitCustodianLabel))
+                            result.DebitCustodyVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.DebitCustodyLabel))
                             {
-                                result.DebitCustodianLabel ??= colDef.Label;
-                                result.DebitCustodianLabel2 ??= colDef.Label2;
-                                result.DebitCustodianLabel3 ??= colDef.Label3;
+                                result.DebitCustodyLabel ??= colDef.Label;
+                                result.DebitCustodyLabel2 ??= colDef.Label2;
+                                result.DebitCustodyLabel3 ??= colDef.Label3;
 
-                                result.DebitCustodianDefinitionIds = entryDef.CustodianDefinitionIds;
+                                result.DebitCustodyDefinitionIds = entryDef.CustodyDefinitionIds;
                             }
 
-                            if (colDef.RequiredState < (result.DebitCustodianRequiredState ?? 5))
+                            if (colDef.RequiredState < (result.DebitCustodyRequiredState ?? 5))
                             {
-                                result.DebitCustodianRequiredState = colDef.RequiredState;
+                                result.DebitCustodyRequiredState = colDef.RequiredState;
                             }
 
-                            if (colDef.ReadOnlyState < (result.DebitCustodianReadOnlyState ?? 5))
+                            if (colDef.ReadOnlyState < (result.DebitCustodyReadOnlyState ?? 5))
                             {
-                                result.DebitCustodianReadOnlyState = colDef.ReadOnlyState;
+                                result.DebitCustodyReadOnlyState = colDef.ReadOnlyState;
                             }
                         }
 
-                        // CreditCustodian
-                        if (colDef.ColumnName == nameof(Entry.CustodianId) && entryDef.Direction == -1)
+                        // CreditCustody
+                        if (colDef.ColumnName == nameof(Entry.CustodyId) && entryDef.Direction == -1)
                         {
-                            result.CreditCustodianVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.CreditCustodianLabel))
+                            result.CreditCustodyVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.CreditCustodyLabel))
                             {
-                                result.CreditCustodianLabel = colDef.Label;
-                                result.CreditCustodianLabel2 = colDef.Label2;
-                                result.CreditCustodianLabel3 = colDef.Label3;
+                                result.CreditCustodyLabel = colDef.Label;
+                                result.CreditCustodyLabel2 = colDef.Label2;
+                                result.CreditCustodyLabel3 = colDef.Label3;
 
-                                result.CreditCustodianDefinitionIds = entryDef.CustodianDefinitionIds;
+                                result.CreditCustodyDefinitionIds = entryDef.CustodyDefinitionIds;
                             }
 
-                            if (colDef.RequiredState < (result.CreditCustodianRequiredState ?? 5))
+                            if (colDef.RequiredState < (result.CreditCustodyRequiredState ?? 5))
                             {
-                                result.CreditCustodianRequiredState = colDef.RequiredState;
+                                result.CreditCustodyRequiredState = colDef.RequiredState;
                             }
 
-                            if (colDef.ReadOnlyState < (result.CreditCustodianReadOnlyState ?? 5))
+                            if (colDef.ReadOnlyState < (result.CreditCustodyReadOnlyState ?? 5))
                             {
-                                result.CreditCustodianReadOnlyState = colDef.ReadOnlyState;
+                                result.CreditCustodyReadOnlyState = colDef.ReadOnlyState;
                             }
                         }
 

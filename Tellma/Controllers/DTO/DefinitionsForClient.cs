@@ -186,23 +186,23 @@ namespace Tellma.Controllers.Dto
         public string CreditResourceLabel2 { get; set; }
         public string CreditResourceLabel3 { get; set; }
 
-        // Debit Custodian
-        public bool DebitCustodianVisibility { get; set; }
-        public short? DebitCustodianRequiredState { get; set; }
-        public short? DebitCustodianReadOnlyState { get; set; }
-        public List<int> DebitCustodianDefinitionIds { get; set; }
-        public string DebitCustodianLabel { get; set; }
-        public string DebitCustodianLabel2 { get; set; }
-        public string DebitCustodianLabel3 { get; set; }
+        // Debit Custody
+        public bool DebitCustodyVisibility { get; set; }
+        public short? DebitCustodyRequiredState { get; set; }
+        public short? DebitCustodyReadOnlyState { get; set; }
+        public List<int> DebitCustodyDefinitionIds { get; set; }
+        public string DebitCustodyLabel { get; set; }
+        public string DebitCustodyLabel2 { get; set; }
+        public string DebitCustodyLabel3 { get; set; }
 
-        // Credit Custodian
-        public bool CreditCustodianVisibility { get; set; }
-        public short? CreditCustodianRequiredState { get; set; }
-        public short? CreditCustodianReadOnlyState { get; set; }
-        public List<int> CreditCustodianDefinitionIds { get; set; }
-        public string CreditCustodianLabel { get; set; }
-        public string CreditCustodianLabel2 { get; set; }
-        public string CreditCustodianLabel3 { get; set; }
+        // Credit Custody
+        public bool CreditCustodyVisibility { get; set; }
+        public short? CreditCustodyRequiredState { get; set; }
+        public short? CreditCustodyReadOnlyState { get; set; }
+        public List<int> CreditCustodyDefinitionIds { get; set; }
+        public string CreditCustodyLabel { get; set; }
+        public string CreditCustodyLabel2 { get; set; }
+        public string CreditCustodyLabel3 { get; set; }
 
         // Noted Relation
         public bool NotedRelationVisibility { get; set; }
@@ -321,7 +321,7 @@ namespace Tellma.Controllers.Dto
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
-        public List<int> CustodianDefinitionIds { get; set; }
+        public List<int> CustodyDefinitionIds { get; set; }
         public List<int> NotedRelationDefinitionIds { get; set; }
     }
 

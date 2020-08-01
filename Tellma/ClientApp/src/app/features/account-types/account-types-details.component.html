@@ -417,33 +417,33 @@
       </ng-template>
     </li>
 
-    <!-- CustodianDefinitions -->
-    <li ngbNavItem="custodianDefs">
+    <!-- CustodyDefinitions -->
+    <li ngbNavItem="custodyDefs">
       <a ngbNavLink>
-        <span *ngIf="showCustodianDefinitionsError(model)" class="text-danger">
+        <span *ngIf="showCustodyDefinitionsError(model)" class="text-danger">
           <fa-icon icon="exclamation-triangle">
           </fa-icon>&nbsp;
         </span>
         <span
-          class="small t-slightly-bold">{{ ('AccountType_CustodianDefinitions' | translate) + ' (' + (model?.CustodianDefinitions?.length | number) + ')'  }}</span>
+          class="small t-slightly-bold">{{ ('AccountType_CustodyDefinitions' | translate) + ' (' + (model?.CustodyDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
-        <t-table [dataSource]="model?.CustodianDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+        <t-table [dataSource]="model?.CustodyDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
           'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_CustodianDefinition' | translate}}</ng-template>
+        <ng-template #header>{{ 'Account_CustodyDefinition' | translate}}</ng-template>
         <ng-template #row let-item="item" let-index="index" let-update="update">
-          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.CustodianDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../relation-definitions" [itemId]="item?.CustodianDefinitionId">
-              {{ getMultilingualValue(ws.RelationDefinition[item.CustodianDefinitionId], 'TitleSingular', ws) }}
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.CustodyDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../custody-definitions" [itemId]="item?.CustodyDefinitionId">
+              {{ getMultilingualValue(ws.CustodyDefinition[item.CustodyDefinitionId], 'TitleSingular', ws) }}
             </t-view-link>
-            <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="item.CustodianDefinitionId"
+            <t-custody-definitions-picker *ngIf="isEdit" [(ngModel)]="item.CustodyDefinitionId"
               (ngModelChange)="update.call(null, item)" [required]="!item.PH">
-            </t-relation-definitions-picker>
+            </t-custody-definitions-picker>
           </t-form-group-cell>
         </ng-template>
 

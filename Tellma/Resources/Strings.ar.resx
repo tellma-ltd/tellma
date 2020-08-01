@@ -79,11 +79,11 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>صاحب العهدة</value>
+  <data name="Account_Custody" xml:space="preserve">
+    <value>العهدة</value>
   </data>
-  <data name="Account_CustodianDefinition" xml:space="preserve">
-    <value>تعريف صاحب العهدة</value>
+  <data name="Account_CustodyDefinition" xml:space="preserve">
+    <value>تعريف العهدة</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
   </data>
-  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
-    <value>تعريفات أصحاب العهد</value>
+  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
+    <value>تعريفات العهد</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>جذر الغرض</value>
@@ -157,11 +157,11 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>اسم الزمن 2</value>
   </data>
-  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
-    <value>تعريف صاحب عهدة نوع حساب</value>
+  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
+    <value>تعريف عهدة نوع حساب</value>
   </data>
-  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
-    <value>تعريفات أصحاب عهد أنواع حسابات</value>
+  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
+    <value>تعريفات عهد أنواع حسابات</value>
   </data>
   <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
     <value>تعريف علاقة معنية بنوع حساب</value>
@@ -541,8 +541,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
-  <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>صاحب العهدة الدائن</value>
+  <data name="Document_CreditCustody" xml:space="preserve">
+    <value>العهدة الدائنة</value>
   </data>
   <data name="Document_CreditResource" xml:space="preserve">
     <value>المورد الدائن</value>
@@ -550,8 +550,8 @@
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>صاحب العهدة المدين</value>
+  <data name="Document_DebitCustody" xml:space="preserve">
+    <value>العهدة المدينة</value>
   </data>
   <data name="Document_DebitResource" xml:space="preserve">
     <value>المورد المدين</value>
@@ -745,8 +745,8 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>صاحب العهدة</value>
+  <data name="Entry_Custody" xml:space="preserve">
+    <value>العهدة</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>الاتجاه</value>
@@ -1063,8 +1063,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العملة ({3}).</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
-    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع صاحب العلاقة ({3}).</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العهدة ({3}).</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع المورد ({3}).</value>

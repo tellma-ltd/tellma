@@ -79,11 +79,11 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
+  <data name="Account_Custody" xml:space="preserve">
     <value>代理人</value>
   </data>
-  <data name="Account_CustodianDefinition" xml:space="preserve">
-    <value>护法定义</value>
+  <data name="Account_CustodyDefinition" xml:space="preserve">
+    <value>托管定义</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>概念</value>
   </data>
-  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
-    <value>护法定义</value>
+  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
+    <value>托管定义</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>输入型亲</value>
@@ -157,11 +157,11 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>时间2标签</value>
   </data>
-  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
-    <value>帐户类型定义护法</value>
+  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
+    <value>帐户类型定义保管</value>
   </data>
-  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
-    <value>帐户类型定义护法</value>
+  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
+    <value>帐户类型定义保管</value>
   </data>
   <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
     <value>帐户类型注意到关系定义</value>
@@ -541,8 +541,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
-  <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>信用护法</value>
+  <data name="Document_CreditCustody" xml:space="preserve">
+    <value>信用保管</value>
   </data>
   <data name="Document_CreditResource" xml:space="preserve">
     <value>信贷资源</value>
@@ -550,8 +550,8 @@
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>借记护法</value>
+  <data name="Document_DebitCustody" xml:space="preserve">
+    <value>借记卡保管</value>
   </data>
   <data name="Document_DebitResource" xml:space="preserve">
     <value>借记资源</value>
@@ -745,7 +745,7 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Entry_Custodian" xml:space="preserve">
+  <data name="Entry_Custody" xml:space="preserve">
     <value>代理人</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
@@ -1063,8 +1063,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与货币 '{3}' 中使用。</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
-    <value>帐户 '{0}' 在{1} {2}与托管人 '{3}' 中使用。</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
+    <value>帐户 '{0}' 在{1} {2}与保管 '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与资源 '{3}' 中使用。</value>

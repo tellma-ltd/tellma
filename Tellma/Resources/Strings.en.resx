@@ -79,11 +79,11 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>Custodian</value>
+  <data name="Account_Custody" xml:space="preserve">
+    <value>Custody</value>
   </data>
-  <data name="Account_CustodianDefinition" xml:space="preserve">
-    <value>Custodian Definition</value>
+  <data name="Account_CustodyDefinition" xml:space="preserve">
+    <value>Custody Definition</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
-  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
-    <value>Custodian Definitions</value>
+  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
+    <value>Custody Definitions</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Purpose Parent</value>
@@ -157,11 +157,11 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>Time 2 Label</value>
   </data>
-  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
-    <value>Account Type Custodian Definition</value>
+  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
+    <value>Account Type Custody Definition</value>
   </data>
-  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
-    <value>Account Type Custodian Definitions</value>
+  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
+    <value>Account Type Custody Definitions</value>
   </data>
   <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
     <value>Account Type Noted Relation Definition</value>
@@ -541,8 +541,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
-  <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>Credit Custodian</value>
+  <data name="Document_CreditCustody" xml:space="preserve">
+    <value>Credit Custody</value>
   </data>
   <data name="Document_CreditResource" xml:space="preserve">
     <value>Credit Resource</value>
@@ -550,8 +550,8 @@
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>Debit Custodian</value>
+  <data name="Document_DebitCustody" xml:space="preserve">
+    <value>Debit Custody</value>
   </data>
   <data name="Document_DebitResource" xml:space="preserve">
     <value>Debit Resource</value>
@@ -745,8 +745,8 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>Custodian</value>
+  <data name="Entry_Custody" xml:space="preserve">
+    <value>Custody</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>Direction</value>
@@ -1063,8 +1063,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with currency '{3}'.</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
-    <value>Account '{0}' is used in {1} {2} with custodian '{3}'.</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
+    <value>Account '{0}' is used in {1} {2} with custody '{3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with resource '{3}'.</value>

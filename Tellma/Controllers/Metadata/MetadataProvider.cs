@@ -1341,21 +1341,21 @@ namespace Tellma.Controllers
                 case nameof(Document.CreditResourceIsCommon):
                     display = PropertyDisplay(def.CreditResourceVisibility, display);
                     break;
-                case nameof(Document.DebitCustodianId):
-                case nameof(Document.DebitCustodian):
-                    display = PropertyDisplay(settings, def.DebitCustodianVisibility, def.DebitCustodianLabel, def.DebitCustodianLabel2, def.DebitCustodianLabel3, display);
-                    isRequired = def.DebitCustodianRequiredState == 0;
+                case nameof(Document.DebitCustodyId):
+                case nameof(Document.DebitCustody):
+                    display = PropertyDisplay(settings, def.DebitCustodyVisibility, def.DebitCustodyLabel, def.DebitCustodyLabel2, def.DebitCustodyLabel3, display);
+                    isRequired = def.DebitCustodyRequiredState == 0;
                     break;
-                case nameof(Document.DebitCustodianIsCommon):
-                    display = PropertyDisplay(def.DebitCustodianVisibility, display);
+                case nameof(Document.DebitCustodyIsCommon):
+                    display = PropertyDisplay(def.DebitCustodyVisibility, display);
                     break;
-                case nameof(Document.CreditCustodianId):
-                case nameof(Document.CreditCustodian):
-                    display = PropertyDisplay(settings, def.CreditCustodianVisibility, def.CreditCustodianLabel, def.CreditCustodianLabel2, def.CreditCustodianLabel3, display);
-                    isRequired = def.CreditCustodianRequiredState == 0;
+                case nameof(Document.CreditCustodyId):
+                case nameof(Document.CreditCustody):
+                    display = PropertyDisplay(settings, def.CreditCustodyVisibility, def.CreditCustodyLabel, def.CreditCustodyLabel2, def.CreditCustodyLabel3, display);
+                    isRequired = def.CreditCustodyRequiredState == 0;
                     break;
-                case nameof(Document.CreditCustodianIsCommon):
-                    display = PropertyDisplay(def.CreditCustodianVisibility, display);
+                case nameof(Document.CreditCustodyIsCommon):
+                    display = PropertyDisplay(def.CreditCustodyVisibility, display);
                     break;
                 case nameof(Document.NotedRelationId):
                 case nameof(Document.NotedRelation):
@@ -1433,8 +1433,8 @@ namespace Tellma.Controllers
             {
                 nameof(Document.DebitResource) => def.DebitResourceDefinitionIds.Count == 1 ? (int?)def.DebitResourceDefinitionIds[0] : null,
                 nameof(Document.CreditResource) => def.CreditResourceDefinitionIds.Count == 1 ? (int?)def.CreditResourceDefinitionIds[0] : null,
-                nameof(Document.DebitCustodian) => def.DebitCustodianDefinitionIds.Count == 1 ? (int?)def.DebitCustodianDefinitionIds[0] : null,
-                nameof(Document.CreditCustodian) => def.CreditCustodianDefinitionIds.Count == 1 ? (int?)def.CreditCustodianDefinitionIds[0] : null,
+                nameof(Document.DebitCustody) => def.DebitCustodyDefinitionIds.Count == 1 ? (int?)def.DebitCustodyDefinitionIds[0] : null,
+                nameof(Document.CreditCustody) => def.CreditCustodyDefinitionIds.Count == 1 ? (int?)def.CreditCustodyDefinitionIds[0] : null,
                 nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,
                 _ => null,
             };

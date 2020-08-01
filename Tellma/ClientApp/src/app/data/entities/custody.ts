@@ -126,7 +126,7 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
         // Custody Only
 
         CustodianId: { control: 'number', label: () => `${trx.instant('Custody_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Custodian: { control: 'navigation', label: () => trx.instant('Custody_Custodian'), type: 'Custody', foreignKeyName: 'CustodianId' },
+        Custodian: { control: 'navigation', label: () => trx.instant('Custody_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
 
         AgentId: { control: 'number', label: () => `${trx.instant('Custody_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Agent: { control: 'navigation', label: () => trx.instant('Custody_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },

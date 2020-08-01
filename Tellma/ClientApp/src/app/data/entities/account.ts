@@ -14,8 +14,8 @@ export interface AccountForSave extends EntityWithKey {
     Code?: string;
     AccountTypeId?: string;
     ClassificationId?: number;
-    CustodianDefinitionId?: number;
-    CustodianId?: number;
+    CustodyDefinitionId?: number;
+    CustodyId?: number;
     ResourceDefinitionId?: number;
     ResourceId?: number;
     CurrencyId?: string;
@@ -71,15 +71,15 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
                 ClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Classification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'ClassificationId' },
-                CustodianDefinitionId: {
+                CustodyDefinitionId: {
                     control: 'choice',
-                    label: () => trx.instant('Account_CustodianDefinition'),
-                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
-                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
+                    label: () => trx.instant('Account_CustodyDefinition'),
+                    choices: Object.keys(ws.definitions.Custodies).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Custodies[defId], 'TitlePlural')
                 },
-                CustodianDefinition: { control: 'navigation', label: () => trx.instant('Account_CustodianDefinition'), type: 'RelationDefinition', foreignKeyName: 'CustodianDefinitionId' },
-                CustodianId: { control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { control: 'navigation', label: () => trx.instant('Account_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
+                CustodyDefinition: { control: 'navigation', label: () => trx.instant('Account_CustodyDefinition'), type: 'CustodyDefinition', foreignKeyName: 'CustodyDefinitionId' },
+                CustodyId: { control: 'number', label: () => `${trx.instant('Account_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custody: { control: 'navigation', label: () => trx.instant('Account_Custody'), type: 'Custody', foreignKeyName: 'CustodyId' },
                 ResourceDefinitionId: {
                     control: 'choice',
                     label: () => trx.instant('Account_ResourceDefinition'),
