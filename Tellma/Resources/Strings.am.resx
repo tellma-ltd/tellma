@@ -871,6 +871,15 @@
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>ብቻ ረቂቅ መስመሮች ሊሰረዙ ይችላሉ.</value>
   </data>
+  <data name="Error_Center0IsAbstract" xml:space="preserve">
+    <value>ማዕከል «{0} 'አብስትራክት ነው.</value>
+  </data>
+  <data name="Error_Center0IsNot1" xml:space="preserve">
+    <value>ማዕከል «{0}» አይነት {1} አይደለም.</value>
+  </data>
+  <data name="Error_Center0IsNotLeaf" xml:space="preserve">
+    <value>ማዕከል «{0} 'አንድ ቅጠል አይደለም.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ ላይ ሳለ አንድ ስህተት ተከስቷል.</value>
   </data>
@@ -1108,11 +1117,26 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>ምንዛሬ ወደ ተግባራዊ ምንዛሪ የተለየ መሆን አለበት.</value>
   </data>
+  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
+    <value>ሂሳብ ውስጥ ጥቅም ላይ ነው {0} «{1}» «{2}».</value>
+  </data>
+  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} «{1}« {2} {3} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
+    <value>የጥበቃ ትርጉም «{0} '' {1}» ጋር ተኳሃኝ አይደለም.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>የጥበቃ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>አንዳንድ መስመሮች ለጥፏል አይደሉም.</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>ሰነዱ መስመሮች አጠናቅቋል.</value>
+  </data>
+  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
+    <value>ይቆጣጠሩ መለያ «{0} '' {1} 'አንድ ዜሮ ባልሆኑ የተጣራ ሚዛን አለው.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>አንዳንድ መስመሮች ያስፈልጋል ፊርማ ይጎድላሉ.</value>
@@ -1162,6 +1186,9 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>ስም «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
+  <data name="Error_TheParentCenter0CannotHaveDescendants" xml:space="preserve">
+    <value>ማዕከል «{0} 'ሊኖራቸው አይችልም ዘሮች.</value>
+  </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>የወላጅ ማዕከል «{0} 'ንቁ አይደለም.</value>
   </data>
@@ -1173,15 +1200,6 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
-    <value>ሂሳብ ውስጥ ጥቅም ላይ ነው {0} «{1}» «{2}».</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} «{1}« {2} {3} ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>ግንኙነት ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>መለያ ምንዛሬ ያለው ሳለ መለያ ሃብት «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>

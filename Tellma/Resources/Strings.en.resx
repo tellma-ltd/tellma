@@ -871,6 +871,15 @@
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>Only draft lines can be deleted.</value>
   </data>
+  <data name="Error_Center0IsAbstract" xml:space="preserve">
+    <value>Center '{0}' is abstract.</value>
+  </data>
+  <data name="Error_Center0IsNot1" xml:space="preserve">
+    <value>Center '{0}' is not of type {1}.</value>
+  </data>
+  <data name="Error_Center0IsNotLeaf" xml:space="preserve">
+    <value>Center '{0}' is not a leaf.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
   </data>
@@ -1108,11 +1117,26 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>The currency should be different than the functional currency.</value>
   </data>
+  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
+    <value>{0} '{1}' is used in account '{2}'.</value>
+  </data>
+  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} '{1}' is used in {2} {3}.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
+    <value>Custody definition '{0}' is not compatible with '{1}'.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>Custody definition '{0}' is used in account type '{1}'.</value>
+  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>Some lines are not posted.</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>The document has completed lines.</value>
+  </data>
+  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
+    <value>Control account '{0}' has a non-zero net balance of '{1}'.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>Some lines are missing required signatures.</value>
@@ -1162,6 +1186,9 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>The name '{0}' is already used.</value>
   </data>
+  <data name="Error_TheParentCenter0CannotHaveDescendants" xml:space="preserve">
+    <value>Center '{0}' cannot have descendants.</value>
+  </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>The parent center '{0}' is not active.</value>
   </data>
@@ -1173,15 +1200,6 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
-    <value>{0} '{1}' is used in account '{2}'.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' is used in {2} {3}.</value>
-  </data>
-  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>Relation definition '{0}' is used in account type '{1}'.</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>Account resource '{0}' has currency '{1}' while the account has currency '{2}'.</value>

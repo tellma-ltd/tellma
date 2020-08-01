@@ -103,7 +103,7 @@
                             [showCreate]="false">
                         </t-centers-picker>
                         <t-view-link *ngIf="readonlyCenter_Manual"
-                            [link]="link('centers/') + ws.get('Center', readonlyValueCenterId_Manual)?.DefinitionId"
+                            [link]="link('centers')"
                             [itemId]="readonlyValueCenterId_Manual">
                             {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual, 'Name') }}
                         </t-view-link>

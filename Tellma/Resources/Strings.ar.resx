@@ -871,6 +871,15 @@
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>لا يمكن حذف الأسطر ما لم تكن في حالة جديد.</value>
   </data>
+  <data name="Error_Center0IsAbstract" xml:space="preserve">
+    <value>المركز ({0}) تجميعي.</value>
+  </data>
+  <data name="Error_Center0IsNot1" xml:space="preserve">
+    <value>المركز ({0}) ليس من نوع {1}.</value>
+  </data>
+  <data name="Error_Center0IsNotLeaf" xml:space="preserve">
+    <value>المركز ({0}) تحته فروع.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
   </data>
@@ -1108,11 +1117,26 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية.</value>
   </data>
+  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} مستخدم في الحساب ({2}).</value>
+  </data>
+  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} مستخدم في المستند {3} من نوع {2}.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
+    <value>تعريف العهدة ({0}) لا يتلاءم مع ({1}).</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>تعريف العهدة ({0}) مستخدم في نوع الحساب ({1}).</value>
+  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>بعض الأسطر ليست مرحلة بعد.</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>المستند يحتوي على أسطر في حالة منفذ.</value>
+  </data>
+  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
+    <value>صافي حساب التحكم ({0}) يساوي ({1})، ينبغي أن يكون صفرا.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>بعض الأسطر تتطلب مزيدا من التوقيعات.</value>
@@ -1162,6 +1186,9 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>الاسم ({0}) مستخدم حاليا</value>
   </data>
+  <data name="Error_TheParentCenter0CannotHaveDescendants" xml:space="preserve">
+    <value>المركز ({0}) لا يمكن إنشاء فروع تحته.</value>
+  </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>المركز الأصل ({0}) ليس منشطا.</value>
   </data>
@@ -1173,15 +1200,6 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} مستخدم في الحساب ({2}).</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} مستخدم في المستند {3} من نوع {2}.</value>
-  </data>
-  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>تعريف العلاقة ({0}) مستخدم في نوع الحساب ({1}).</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>مورد الحساب ({0}) عملته ({1}) بينما الحساب عملته ({2}).</value>

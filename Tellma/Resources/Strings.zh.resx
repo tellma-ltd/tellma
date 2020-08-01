@@ -871,6 +871,15 @@
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>只有线路草案可以被删除。</value>
   </data>
+  <data name="Error_Center0IsAbstract" xml:space="preserve">
+    <value>中心 '{0}' 是抽象的。</value>
+  </data>
+  <data name="Error_Center0IsNot1" xml:space="preserve">
+    <value>中心 '{0}' 类型{1}的不。</value>
+  </data>
+  <data name="Error_Center0IsNotLeaf" xml:space="preserve">
+    <value>中心“{0}”不是叶子。</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
   </data>
@@ -1108,11 +1117,26 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>货币应该比本位币不同。</value>
   </data>
+  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
+    <value>在帐户用于{0} '{1}' '{2}'。</value>
+  </data>
+  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} '{1}' 在{2} {3}被使用。</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
+    <value>保管定义 '{0}' 不兼容 '{1}'。</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>保管定义“{0}”中的帐户类型“{1}”中使用。</value>
+  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>有些线路没有公布。</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>该文件已完成线。</value>
+  </data>
+  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
+    <value>控制帐户“{0}”的“{1}”非零净平衡。</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>有些行缺少必需的签名。</value>
@@ -1162,6 +1186,9 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>“{0}”已被使用的名称。</value>
   </data>
+  <data name="Error_TheParentCenter0CannotHaveDescendants" xml:space="preserve">
+    <value>中心“{0}”不能有后代。</value>
+  </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>父中心“{0}”不活跃。</value>
   </data>
@@ -1173,15 +1200,6 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
-    <value>在帐户用于{0} '{1}' '{2}'。</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' 在{2} {3}被使用。</value>
-  </data>
-  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>关联定义“{0}”中的帐户类型“{1}”中使用。</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>帐户资源 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
