@@ -20,20 +20,19 @@
 (121, N'CheckReceiptFromOtherToCashier', N'check receipt by cashier from other than customers, suppliers or employees', N'Check Payment', N'Check Payments', 0, 1),
 (130, N'CashPaymentToOther', N'cash payment to other than suppliers, customers, and employees', N'Payment to Other', N'Payments to Others', 0, 1),
 (300, N'CashPaymentToTradePayable', N'issuing Payment to supplier/lessor/..', N'Payment', N'Payments', 0, 1),
-(301, N'InvoiceFromTradePayable', N'Receiving Invoice from supplier/lessor', N'Invoice', N'Invoices', 0, 1),
+(301, N'CashPaymentToTradePayableWithInvoice', N'issuing Payment to supplier/lessor/.. against invoice', N'Payment (Invoice)', N'Payments (Invoices)', 0, 1),
 (302, N'StockReceiptFromTradePayable', N'Receiving goods to inventory from supplier/contractor', N'Stock', N'Stock', 0, 0),
 (303, N'PPEReceiptFromTradePayable', N'Receiving property, plant and equipment from supplier/contractor', N'Fixed Asset', N'Fixed Assets', 0, 1),
 (304, N'ConsumableServiceReceiptFromTradePayable', N'Receiving services/consumables from supplier/lessor/consultant, ...', N'Consumable - Service', N'Consumables - Services', 0, 1),
 (305, N'RentalReceiptFromTradePayable', N'Receiving rental service from lessor', N'Rental', N'Rentals', 0, 1),
 (306, N'WithholdingTaxFromTradePayable', N'Withholding tax from payment to supplier', N'WT', N'WT', 0, 1),
---  payment w/ WT
--- receipt with VAT
 (310, N'CashPaymentFromTradePayable', N'refund', N'Refund', N'Refunds', 0, 1),
 (400, N'CashReceiptFromTradeReceivable', N'Receiving cash payment from customer/lessee', N'Cash', N'Cash', 0, 1),
 (401, N'CheckReceiptFromTradeReceivable', N'Receiving check payment from customer/lessee', N'check', N'Checks', 0, 1),
 (402, N'InvoiceToTradeReceivable', N'Issuing invoice to customer/lessee', N'Invoice', N'Invoices', 0, 1),
 (403, N'StockIssueToTradeReceivable', N'Issuing stock to customer', N'Stock', N'Stock', 0, 0),
 (404, N'ServiceDeliveryToTradeReceivable', N'Delivering service to customer', N'Service', N'Services', 0, 0);
+
 --0: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -44,7 +43,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,0,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,0,	N'Value',		0,			N'Credit',		4,4,0),
 (3,0,	N'Memo',		0,			N'Memo',		4,4,1);
---300:CashPaymentToTradePayable (two versions: with WT and w/o) WT,
+--300:CashPaymentToTradePayable without Invoice
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -58,8 +57,7 @@ WHERE [Index] = 300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId],[EntryTypeId]) VALUES
 (0,300,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
-(1,300,-1,	@WT, NULL),
-(2,300,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
+(1,300,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -69,12 +67,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
 (3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
 (4,300,	N'NotedAmount',			0,	N'Withholding',		1,4,0),
-(5,300,	N'CustodyId',			2,	N'Safe/Bank Account',3,4,0),
-(6,300,	N'ExternalReference',	2,	N'Check/Receipt #',	3,4,0),
-(7,300,	N'NotedDate',			2,	N'Check/Receipt Date',4,4,0),
-(8,300,	N'PostingDate',			2,	N'Paid On',			1,4,1),
+(5,300,	N'CustodyId',			1,	N'Safe/Bank Account',3,4,0),
+(6,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
+(7,300,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
+(8,300,	N'PostingDate',			1,	N'Paid On',			1,4,1),
 (9,300,	N'CenterId',			0,	N'Business Unit',	1,4,1);
---301:InvoiceFromTradePayable: (basically, it is the VAT)
+--301:CashPaymentToTradePayableWithInvoice: (basically, it is the VAT)
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -86,11 +84,10 @@ SET [Script] = N'
 '
 WHERE [Index] = 301;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],	[AccountTypeId],	[EntryTypeId]) VALUES
-(0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL),
-(1,301,+1,		@VATReceivable,		NULL),
-(2,301,-1,		@CashPaymentsToSuppliersControlExtension, NULL); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
-
+[Direction],	[AccountTypeId]) VALUES
+(0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions),
+(1,301,+1,		@CurrentValueAddedTaxReceivables),
+(2,301,-1,		@CashAndCashEquivalents); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -105,7 +102,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,301,	N'MonetaryValue',		2,	N'Invoice Amount',	1,2,0),
 (10,301,N'PostingDate',			0,	N'Invoice Date',	1,4,1),
 (11,301,N'CenterId',			2,	N'Business Unit',	1,4,1);
---302:StockReceiptFromTradePayable: (We need two versions with VAT/invoice and w/o VAT/invoice)
+--302:StockReceiptFromTradePayable: (We need two versions: Cash, and credit versions)
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -191,11 +188,12 @@ DECLARE @CashReceiptFromOtherToCashierLD INT = (SELECT [Id] FROM dbo.LineDefinit
 DECLARE @CheckReceiptFromOtherToCashierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CheckReceiptFromOtherToCashier');
 DECLARE @CashPaymentToOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToOther');
 DECLARE @CashPaymentToTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToTradePayable');
-DECLARE @InvoiceFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InvoiceFromTradePayable');
+DECLARE @CashPaymentToTradePayableWithInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentToTradePayableWithInvoice');
 DECLARE @StockReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'StockReceiptFromTradePayable');
 DECLARE @PPEReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEReceiptFromTradePayable');
 DECLARE @ConsumableServiceReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptFromTradePayable');
 DECLARE @RentalReceiptFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RentalReceiptFromTradePayable');
+DECLARE @WithholdingTaxFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WithholdingTaxFromTradePayable');
 DECLARE @CashPaymentFromTradePayableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashPaymentFromTradePayable');
 DECLARE @CashReceiptFromTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashReceiptFromTradeReceivable');
 DECLARE @CheckReceiptFromTradeReceivableLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CheckReceiptFromTradeReceivable');

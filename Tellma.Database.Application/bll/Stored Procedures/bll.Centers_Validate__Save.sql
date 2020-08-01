@@ -134,7 +134,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
-		N'Error_TheParentCenter0IsNotALeaf',
+		N'Error_TheParentCenter0CannotHaveDescendants',
 		dbo.fn_Localize(FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
 	FROM @Entities FE 
 	JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
@@ -144,7 +144,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
-		N'Error_TheParentCenter0IsNotALeaf',
+		N'Error_TheParentCenter0CannotHaveDescendants',
 		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
 	FROM @Entities FE 
 	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id

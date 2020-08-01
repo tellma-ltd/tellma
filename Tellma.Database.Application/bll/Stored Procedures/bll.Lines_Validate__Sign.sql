@@ -118,19 +118,20 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCustody01HasNoUsers',
-		dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS [CustodyDefinition],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody]
+		N'Error_TheRelation01HasNoUsers',
+		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [RelationDefinition],
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 	JOIN dbo.[Custodies] C ON C.[Id] = E.[CustodyId]
-	JOIN dbo.[CustodyDefinitions] CD ON C.[DefinitionId] = CD.[Id]
+	JOIN dbo.[Relations] RL ON C.[CustodianId] = RL.[Id]
+	JOIN dbo.[RelationDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
 	JOIN dbo.[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
 	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
-	LEFT JOIN dbo.[RelationUsers] CU ON C.[CustodianId] = CU.[RelationId]
+	LEFT JOIN dbo.[RelationUsers] RLU ON RL.[Id] = RLU.[RelationId]
 	WHERE WS.[RuleType] = N'ByCustodian' AND WS.[RuleTypeEntryIndex]  = E.[Index]
-	AND CU.[UserId] IS NULL
+	AND RLU.[UserId] IS NULL
 
 	-- Cannot sign a line with no Entries
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

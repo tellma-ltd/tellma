@@ -187,7 +187,7 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNot1'
+		N'Error_Center0IsNot1',
 		N'localize:Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -197,7 +197,7 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNot1'
+		N'Error_Center0IsNot1',
 		N'localize:Center_CenterType_WorkInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -207,7 +207,7 @@ SET NOCOUNT ON;
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNot1'
+		N'Error_Center0IsNot1',
 		N'localize:Center_CenterType_CurrentInventoriesInTransitExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]

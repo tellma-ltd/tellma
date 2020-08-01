@@ -120,22 +120,22 @@ BEGIN
 	)
 	UPDATE E
 	SET
-		E.[CurrencyId]			= IIF(LDC.[ColumnName] = N'CurrencyId', BE.[CurrencyId], E.[CurrencyId]),
-		E.[CenterId]			= IIF(LDC.[ColumnName] = N'CenterId', BE.[CenterId], E.[CenterId]),
-		E.[CustodyId]			= IIF(LDC.[ColumnName] = N'CustodyId', BE.[CustodyId], E.[CustodyId]),
-		E.[ResourceId]			= IIF(LDC.[ColumnName] = N'ResourceId', BE.[ResourceId], E.[ResourceId]),
-		E.[Quantity]			= IIF(LDC.[ColumnName] = N'Quantity', BE.[Quantity], E.[Quantity]),
-		E.[UnitId]				= IIF(LDC.[ColumnName] = N'UnitId', BE.[UnitId], E.[UnitId]),
-		E.[MonetaryValue]		= IIF(LDC.[ColumnName] = N'MonetaryValue', BE.[MonetaryValue], E.[MonetaryValue]),
-		E.[Time1]				= IIF(LDC.[ColumnName] = N'Time1', BE.[Time1], E.[Time1]),
-		E.[Time2]				= IIF(LDC.[ColumnName] = N'Time2', BE.[Time2], E.[Time2]),
-		E.[ExternalReference]	= IIF(LDC.[ColumnName] = N'ExternalReference', BE.[ExternalReference], E.[ExternalReference]),
-		E.[AdditionalReference]	= IIF(LDC.[ColumnName] = N'AdditionalReference', BE.[AdditionalReference], E.[AdditionalReference]),
-		E.[NotedRelationId]		= IIF(LDC.[ColumnName] = N'NotedRelationId', BE.[NotedRelationId], E.[NotedRelationId]),
-		E.[NotedAgentName]		= IIF(LDC.[ColumnName] = N'NotedAgentName', BE.[NotedAgentName], E.[NotedAgentName]),
-		E.[NotedAmount]			= IIF(LDC.[ColumnName] = N'NotedAmount', BE.[NotedAmount], E.[NotedAmount]),
-		E.[NotedDate]			= IIF(LDC.[ColumnName] = N'NotedDate', BE.[NotedDate], E.[NotedDate]),
-		E.[EntryTypeId]			= IIF(LDC.ColumnName = N'EntryTypeId', BE.[EntryTypeId], E.[EntryTypeId])
+		E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
+		E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
+		E.[CustodyId]			= IIF(CTE.[ColumnName] = N'CustodyId', CTE.[CustodyId], E.[CustodyId]),
+		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
+		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
+		E.[UnitId]				= IIF(CTE.[ColumnName] = N'UnitId', CTE.[UnitId], E.[UnitId]),
+		E.[MonetaryValue]		= IIF(CTE.[ColumnName] = N'MonetaryValue', CTE.[MonetaryValue], E.[MonetaryValue]),
+		E.[Time1]				= IIF(CTE.[ColumnName] = N'Time1', CTE.[Time1], E.[Time1]),
+		E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
+		E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
+		E.[AdditionalReference]	= IIF(CTE.[ColumnName] = N'AdditionalReference', CTE.[AdditionalReference], E.[AdditionalReference]),
+		E.[NotedRelationId]		= IIF(CTE.[ColumnName] = N'NotedRelationId', CTE.[NotedRelationId], E.[NotedRelationId]),
+		E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
+		E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
+		E.[NotedDate]			= IIF(CTE.[ColumnName] = N'NotedDate', CTE.[NotedDate], E.[NotedDate]),
+		E.[EntryTypeId]			= IIF(CTE.ColumnName = N'EntryTypeId', CTE.[EntryTypeId], E.[EntryTypeId])
 	FROM @E E
 	JOIN CTE ON  E.[Index] = CTE.[Index] AND E.[LineIndex] = CTE.[LineIndex] AND E.[DocumentIndex] = CTE.[DocumentIndex]
 	IF (1=0) -- commenting it to see if the previous code works instead

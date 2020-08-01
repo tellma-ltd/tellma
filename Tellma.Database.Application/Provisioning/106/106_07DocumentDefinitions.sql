@@ -12,13 +12,12 @@ WHERE [Id] IN
 );
 DELETE FROM @DocumentDefinitionLineDefinitions
 INSERT @DocumentDefinitionLineDefinitions([Index],
-[HeaderIndex],						[LineDefinitionId],				[IsVisibleByDefault]) VALUES
-(11,@CashPurchaseVoucherDD,			@CashPaymentToTradePayableLD,	1),
-(12,@CashPurchaseVoucherDD,			@StockReceiptFromTradePayableLD,1),
-(19,@CashPurchaseVoucherDD,			@ManualLineLD,					0),
-(21,@CashPaymentVoucherDD,			@CashPaymentToTradePayableLD,	1)
-
-;
+[HeaderIndex],						[LineDefinitionId],							[IsVisibleByDefault]) VALUES
+(11,@CashPurchaseVoucherDD,			@CashPaymentToTradePayableWithInvoiceLD,	1),
+(12,@CashPurchaseVoucherDD,			@WithholdingTaxFromTradePayableLD,			1),
+(13,@CashPurchaseVoucherDD,			@StockReceiptFromTradePayableLD,			1),-- 
+(19,@CashPurchaseVoucherDD,			@ManualLineLD,								0),
+(21,@CashPaymentVoucherDD,			@CashPaymentToTradePayableLD,				1);
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
