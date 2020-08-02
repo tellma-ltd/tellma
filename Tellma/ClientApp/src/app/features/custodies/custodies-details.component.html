@@ -100,7 +100,7 @@
                 {{ ws.getMultilingualValue('Center', model.CenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired">
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired" filter="CenterType eq 'BusinessUnit'">
         </t-centers-picker>
     </t-form-group>
 

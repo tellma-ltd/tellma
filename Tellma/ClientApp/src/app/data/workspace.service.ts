@@ -44,6 +44,7 @@ import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
 import { CustodyDefinition } from './entities/custody-definition';
 import { Custody } from './entities/custody';
+import { EntitiesResponse } from './dto/entities-response';
 
 enum WhichWorkspace {
   /**
@@ -659,6 +660,7 @@ export class ReportStore {
   information: () => string;
   arguments: ReportArguments = {};
   result: Entity[] = [];
+  response: EntitiesResponse;
   extras: { [key: string]: any };
   filter: string; // the one used to retrieve the result
   disableFetch = false; // set it to true upon a catastrophic failure from a bad definition
