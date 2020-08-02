@@ -50,4 +50,3 @@ BEGIN
 	Print 'Bank Accounts Custodies: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.[Custodies] WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @BankAccountCD);

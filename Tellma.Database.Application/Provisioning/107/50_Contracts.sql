@@ -106,7 +106,7 @@ INSERT INTO @Relations( -- text1: email, text2: phone
 	NULL,		NULL,		NULL,				NULL,					NULL,		NULL,			NULL,		NULL,		@Agent3,	N'TX-30-300',
 	NULL,		NULL);
 EXEC [api].[Relations__Save]
-	@DefinitionId = @SupplierCD,
+	@DefinitionId = @SupplierRLD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -132,7 +132,7 @@ INSERT INTO @Relations( -- text1: email, text2: phone, lookup1: MarketSegment
 	NULL,		NULL,		NULL,				NULL,					NULL,				NULL,			NULL,		NULL,		@Agent3,	NULL,
 	NULL,		NULL);
 EXEC [api].[Relations__Save]
-	@DefinitionId = @CustomerCD,
+	@DefinitionId = @CustomerRLD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -158,7 +158,7 @@ INSERT INTO @Relations( -- text1: email, text2: phone, Gender:, Color, Marital S
 	NULL,		NULL,		N'موظف 3',			NULL,					NULL,					NULL,			NULL,		NULL,		NULL,		@Agent3,	NULL,
 	NULL,		NULL);
 EXEC [api].[Relations__Save]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @EmployeeRLD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

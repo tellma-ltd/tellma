@@ -80,21 +80,24 @@ SET [Script] = N'
 
 		[CurrencyId1]		= [CurrencyId0],
 		[CurrencyId2]		= [CurrencyId0],
-		[CenterId0]			= [CenterId1],
-		[CenterId2]			= COALESCE([CenterId2], [CenterId1]),
-		[MonetaryValue0]	= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
-		[NotedAmount1]		= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
+		[CurrencyId3]		= [CurrencyId0],
+		[CenterId1]			= [CenterId0],
+		[CenterId2]			= [CenterId0],
+		[CenterId3]			= COALESCE([CenterId3], [CenterId0]),
+		[MonetaryValue3]	= ISNULL([MonetaryValue0], 0) + ISNULL([MonetaryValue1], 0) - ISNULL([MonetaryValue2], 0),
 		[NotedRelationId1]	= [NotedRelationId0],
-		[EntryTypeId2]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
+		[NotedRelationId2]	= [NotedRelationId0],
+		-- Entry Type may change depending on nature of items
+		[EntryTypeId3]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
+		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
 '
 WHERE [Index] = 301;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
 (0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions), -- Item price
 (1,301,+1,		@CurrentValueAddedTaxReceivables), -- VAT, Taxamble Amount
---(2,301,-1,		@CashAndCashEquivalents), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
-(2,301,-1,		@CashAndCashEquivalents); 
+(2,301,-1,		@WithholdingTaxPayableExtension), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
+(3,301,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -102,15 +105,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,301,	N'Memo',				1,	N'Memo',			1,4,1),
 (1,301,	N'NotedRelationId',		0,	N'Supplier',		1,4,1),
 (2,301,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(3,301,	N'MonetaryValue',		2,	N'Invoice Amount',	1,2,0),
+(3,301,	N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0), -- 
 (4,301,	N'MonetaryValue',		1,	N'VAT',				1,4,0),
 (5,301,	N'ExternalReference',	1,	N'Invoice #',		1,4,0),
-(6,301,	N'ExternalReference',	2,	N'Check #',			4,4,0),
-(7,301,	N'CustodyId',			2,	N'Cash/Bank Acct',	4,4,0),
---(8,301,	N'MonetaryAmount',		3,	N'Amount Withheld',	4,4,0),
---(9,301,	N'ExternalReference',	3,	N'WT Voucher #',	4,4,0),
-(10,301,N'PostingDate',			1,	N'Payment Date',	1,2,1),
-(11,301, N'CenterId',			1,	N'Business Unit',	1,4,1);
+(6,301,	N'MonetaryValue',		2,	N'Amount Withheld',	4,4,0),
+(7,301,	N'ExternalReference',	2,	N'WT Voucher #',	4,4,0),
+(8,301,	N'ExternalReference',	3,	N'Check #',			4,4,0),
+(9,301,	N'CustodyId',			3,	N'Cash/Bank Acct',	4,4,0),
+(10,301,N'PostingDate',			0,	N'Payment Date',	1,2,1),
+(11,301, N'CenterId',			0,	N'Business Unit',	1,4,1);
 --302:StockReceiptFromTradePayable: (This is the Cash purchase version, we still need credit purchase versions)
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -173,8 +176,8 @@ SET [Script] = N'
 WHERE [Index] = 306;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],										[EntryTypeId]) VALUES
-(0,306,+1,	@WithholdingTaxReceivablesExtension,NULL),
-(1,306,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL);
+(0,306,+1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL),
+(1,306,-1,	@WithholdingTaxPayableExtension,NULL);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
 (0,0,306,@WarehouseCD);
@@ -184,13 +187,11 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,306,	N'Memo',				1,	N'Memo',			1,4,1),
 (1,306,	N'NotedRelationId',		1,	N'Supplier',		3,4,1),
-(2,306,	N'CustodyId',			0,	N'Warehouse',		3,4,1),
-(3,306,	N'ResourceId',			0,	N'Item',			2,4,0),
-(4,306,	N'Quantity',			0,	N'Qty',				2,4,0),
-(5,306,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,306,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(7,306,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
-(10,306,N'PostingDate',			1,	N'Received On',		1,4,1),
+(2,306,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(3,306,	N'NotedAmount',			1,	N'Amount (VAT Excl.)',3,3,0),
+(4,306,	N'MonetaryValue',		1,	N'Amount Withheld',	1,2,0),
+(9,306,N'ExternalReference',	1,	N'Voucher #',		1,4,1),
+(10,306,N'PostingDate',			1,	N'Voucher Date',	1,4,1),
 (11,306,N'CenterId',			1,	N'Business Unit',	1,4,1);
 
 EXEC [api].[LineDefinitions__Save]

@@ -584,10 +584,9 @@
     <None Include="Provisioning\107\70_Entries.sql" />
     <None Include="Provisioning\000\t_Accounts.sql" />
     <None Include="Provisioning\101\101_23Resources.sql" />
-    <None Include="Provisioning\101\101_25Relations.sql" />
+    <None Include="Provisioning\101\101_24Relations.sql" />
     <None Include="Provisioning\101\70_Entries.sql" />
     <None Include="Provisioning\101\71_manual-journal-vouchers.sql" />
-    <None Include="Provisioning\101\72_cash-payment-vouchers.sql" />
     <None Include="Provisioning\101\73_revenue-templates.sql" />
     <None Include="Provisioning\101\74_revenue-recognition-vouchers.sql" />
     <Build Include="api\Stored Procedures\api.Relations__Delete.sql" />
@@ -644,7 +643,7 @@
     <None Include="Provisioning\101\101_21Lookups.sql" />
     <None Include="Provisioning\101\101_22Centers.sql" />
     <None Include="Provisioning\101\101_31Accounts.sql" />
-    <None Include="Provisioning\101\101_24Custodies.sql" />
+    <None Include="Provisioning\101\101_25Custodies.sql" />
     <Build Include="map\map.Custodies.sql" />
     <None Include="Provisioning\102\102_31Accounts.sql" />
     <None Include="Provisioning\102\102_01Currencies.sql" />
@@ -660,11 +659,13 @@
     <None Include="Provisioning\102\102_21Lookups.sql" />
     <None Include="Provisioning\102\102_22Centers.sql" />
     <None Include="Provisioning\102\102_23Resources.sql" />
-    <None Include="Provisioning\102\102_24Custodies.sql" />
-    <None Include="Provisioning\102\102_25Relations.sql" />
+    <None Include="Provisioning\102\102_25Custodies.sql" />
+    <None Include="Provisioning\102\102_24Relations.sql" />
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
     <Build Include="map\map.CustodyDefinitions.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Lookups__Export.sql" />
+    <None Include="Provisioning\106\106_24Relations.sql" />
+    <None Include="Provisioning\106\106_25Custodies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
