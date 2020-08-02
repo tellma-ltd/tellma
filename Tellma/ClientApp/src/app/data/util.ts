@@ -1,12 +1,13 @@
 import { EntitiesResponse } from './dto/entities-response';
-import { WorkspaceService } from './workspace.service';
+import { WorkspaceService, EntityWorkspace } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
-import { EntityDescriptor } from './entities/base/metadata';
-import { formatNumber } from '@angular/common';
+import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
+import { formatNumber, formatDate } from '@angular/common';
+import { Entity } from './entities/base/entity';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -322,7 +323,7 @@ function closePrint() {
 
 function setPrintFactory(url: string): () => void {
   // As soon as the iframe is loaded and ready
-  return function() {
+  return function setPrint() {
     this.contentWindow.__container__ = this;
     this.contentWindow.__url__ = url;
     this.contentWindow.onbeforeunload = closePrint;
@@ -413,3 +414,218 @@ export function formatAccounting(amount: number, digitsInfo: string): string {
     return '';
   }
 }
+
+function metadataFactory(collection: string) {
+  const factory = metadata[collection]; // metadata factory for User
+  if (!factory) {
+    throw new Error(`The collection ${collection} does not exist`);
+  }
+
+  return factory;
+}
+
+export interface ColumnDescriptor {
+  path: string;
+  display?: string;
+}
+
+export function composeEntities(
+  entities: Entity[],
+  columns: ColumnDescriptor[],
+  collection: string,
+  defId: number,
+  ws: WorkspaceService,
+  trx: TranslateService
+) {
+  const relatedEntities = ws.current;
+
+  // This array will contain the final result
+  const result: string[][] = [];
+
+  // This is the base descriptor
+  const baseDesc: EntityDescriptor = metadataFactory(collection)(ws, trx, defId);
+
+  // Step 1: Prepare the headers and extractors
+  const headers: string[] = []; // Simple array of header displays
+  const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
+
+  for (const col of columns) {
+    const pathArray = (col.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+
+    // This will contain the display steps of a single header. E.g. Item / Created By / Name
+    const headerArray: string[] = [];
+    const navProps: NavigationPropDescriptor[] = [];
+    let finalPropDesc: PropDescriptor = null;
+
+    // Loop over all steps except last one
+    let isError = false;
+    let currentDesc = baseDesc;
+
+    for (let i = 0; i < pathArray.length; i++) {
+      const step = pathArray[i];
+      const prop = currentDesc.properties[step];
+      if (!prop) {
+        isError = true;
+        break;
+      } else {
+        headerArray.push(prop.label());
+        if (prop.control === 'navigation') {
+          currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
+          navProps.push(prop);
+        } else if (i !== pathArray.length - 1) {
+          // Only navigation properties are allowed unless this is the last one
+          isError = true;
+        } else {
+          finalPropDesc = prop;
+        }
+      }
+    }
+
+    if (isError) {
+      headers.push(`(${trx.instant('Error')})`);
+      extracts.push(_ => `(${trx.instant('Error')})`);
+    } else {
+      headers.push(col.display || headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
+      extracts.push(entity => {
+        let i = 0;
+        for (; i < navProps.length; i++) {
+          const navProp = navProps[i];
+          const propName = pathArray[i];
+
+          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+
+            const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
+
+            // Get the foreign key
+            const fkValue = entity[navProp.foreignKeyName];
+            if (!fkValue) {
+              return ''; // The nav entity is null
+            }
+
+            // Get the nav entity
+            entity = entitiesOfType[fkValue];
+            if (!entity) {
+              // Anomaly from Server
+              console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
+              return `(${trx.instant('Error')})`;
+            }
+          } else if (entity.EntityMetadata[propName] === 1) {
+            // Masked because of user permissions
+            return `*******`;
+          } else {
+            // Bug
+            return `(${trx.instant('NotLoaded')})`;
+          }
+        }
+
+        // Final step
+        if (!!finalPropDesc) {
+          const propName = pathArray[i];
+          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+            const val = entity[propName];
+            return displayValue(val, finalPropDesc, trx);
+          } else if (entity.EntityMetadata[propName] === 1) {
+            // Masked because of user permissions
+            return `*******`;
+          } else {
+            // Bug
+            return `(${trx.instant('NotLoaded')})`;
+          }
+        } else {
+          // It terminates with a nav prop
+          return displayEntity(entity, currentDesc);
+        }
+      });
+    }
+  }
+
+  // Step 2 Push headers in the result
+  result.push(headers);
+
+  // Step 3 Use extractors to convert the entities to strings and push them in the result
+  for (const entity of entities) {
+    const row: string[] = [];
+    let index = 0;
+    for (const extract of extracts) {
+      row[index++] = extract(entity);
+    }
+
+    result.push(row);
+  }
+
+  // Finally: Return the result
+  return result;
+}
+
+export function composeEntitiesFromResponse(
+  response: EntitiesResponse,
+  columns: ColumnDescriptor[],
+  collection: string,
+  defId: number,
+  ws: WorkspaceService,
+  trx: TranslateService): string[][] {
+
+  addToWorkspace(response, ws);
+  return composeEntities(response.Result, columns, collection, defId, ws, trx);
+}
+
+/**
+ * Returns a string representation of the value based on the property descriptor.
+ * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
+ * @param value The value to represent as a string
+ * @param prop The property descriptor used to format the value as a string
+ */
+export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
+  switch (prop.control) {
+    case 'text': {
+      return value;
+    }
+    case 'number': {
+      if (value === undefined) {
+        return null;
+      }
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      return formatAccounting(value, digitsInfo);
+    }
+    case 'date': {
+      if (value === undefined) {
+        return null;
+      }
+      const format = 'yyyy-MM-dd';
+      const locale = 'en-GB';
+      return formatDate(value, format, locale);
+    }
+    case 'datetime': {
+      if (value === undefined) {
+        return null;
+      }
+      const format = 'yyyy-MM-dd HH:mm';
+      const locale = 'en-GB';
+      return formatDate(value, format, locale);
+    }
+    case 'boolean': {
+      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
+    }
+    case 'choice':
+    case 'state': {
+      return !!prop && !!prop.format ? prop.format(value) : null;
+    }
+    case 'serial': {
+      return !!prop && !!prop.format ? prop.format(value) : (value + '');
+    }
+    case 'navigation':
+    default:
+      // Programmer error
+      throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
+  }
+}
+
+/**
+ * Returns a string representation of the entity based on the entity descriptor.
+ * @param entity The entity to represent as a string
+ * @param entityDesc The entity descriptor used to format the entity as a string
+ */
+export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
+  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
+}
+

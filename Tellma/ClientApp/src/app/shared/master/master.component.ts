@@ -10,7 +10,7 @@ import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finaliz
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { addToWorkspace, downloadBlob, isSpecified, csvPackage } from '~/app/data/util';
+import { addToWorkspace, downloadBlob, isSpecified, csvPackage, composeEntitiesFromResponse, ColumnDescriptor } from '~/app/data/util';
 import {
   MasterDetailsStore,
   MasterStatus,
@@ -25,9 +25,7 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   metadata,
   EntityDescriptor,
-  entityDescriptorImpl,
-  NavigationPropDescriptor,
-  PropDescriptor
+  entityDescriptorImpl
 } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StorageService } from '~/app/data/storage.service';
@@ -36,8 +34,6 @@ import { formatNumber } from '@angular/common';
 import { ImportResult } from '~/app/data/dto/import-result';
 import { ImportMode, ImportArguments_Mode } from '~/app/data/dto/import-arguments';
 import { Entity } from '~/app/data/entities/base/entity';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
-import { displayValue, displayEntity } from '../auto-cell/auto-cell.component';
 import { SelectorChoice } from '../selector/selector.component';
 
 enum SearchView {
@@ -1440,9 +1436,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         countEntities: false
       }).pipe(
         map(response => {
-          const paths = colPaths.slice();
-          paths.unshift(''); // For the description
-          const data = composeEntities(response, paths, this.collection, this.definitionId, this.workspace, this.translate);
+          const columns: ColumnDescriptor[] = colPaths.slice().map(path => ({ path }));
+          columns.unshift({ path: '' }); // For the description
+          const data = composeEntitiesFromResponse(response, columns, this.collection, this.definitionId, this.workspace, this.translate);
           return csvPackage(data);
         })
       );
@@ -1494,9 +1490,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         i: ids
       }).pipe(
         map(response => {
-          const paths = colPaths.slice();
-          paths.unshift(''); // For the description
-          const data = composeEntities(response, paths, this.collection, this.definitionId, this.workspace, this.translate);
+          const columns: ColumnDescriptor[] = colPaths.slice().map(path => ({ path }));
+          columns.unshift({ path: '' }); // For the description
+          const data = composeEntitiesFromResponse(response, columns, this.collection, this.definitionId, this.workspace, this.translate);
           return csvPackage(data);
         })
       );
@@ -2030,155 +2026,155 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 }
 
-function metadataFactory(collection: string) {
-  const factory = metadata[collection]; // metadata factory for User
-  if (!factory) {
-    throw new Error(`The collection ${collection} does not exist`);
-  }
+// function metadataFactory(collection: string) {
+//   const factory = metadata[collection]; // metadata factory for User
+//   if (!factory) {
+//     throw new Error(`The collection ${collection} does not exist`);
+//   }
 
-  return factory;
-}
+//   return factory;
+// }
 
-function composeEntities(
-  response: EntitiesResponse,
-  colPaths: string[],
-  collection: string,
-  defId: number,
-  ws: WorkspaceService,
-  trx: TranslateService): string[][] {
+// function composeEntities(
+//   response: EntitiesResponse,
+//   colPaths: string[],
+//   collection: string,
+//   defId: number,
+//   ws: WorkspaceService,
+//   trx: TranslateService): string[][] {
 
-  // This array will contain the final result
-  const result: string[][] = [];
+//   // This array will contain the final result
+//   const result: string[][] = [];
 
-  // This is the base descriptor
-  const baseDesc: EntityDescriptor = metadataFactory(collection)(ws, trx, defId);
+//   // This is the base descriptor
+//   const baseDesc: EntityDescriptor = metadataFactory(collection)(ws, trx, defId);
 
-  // Step 1: Prepare the headers and extractors
-  const headers: string[] = []; // Simple array of header displays
-  const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
+//   // Step 1: Prepare the headers and extractors
+//   const headers: string[] = []; // Simple array of header displays
+//   const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
 
-  for (const path of colPaths) {
-    const pathArray = (path || '').split('/').map(e => e.trim()).filter(e => !!e);
+//   for (const path of colPaths) {
+//     const pathArray = (path || '').split('/').map(e => e.trim()).filter(e => !!e);
 
-    // This will contain the display steps of a single header. E.g. Item / Created By / Name
-    const headerArray: string[] = [];
-    const navProps: NavigationPropDescriptor[] = [];
-    let finalPropDesc: PropDescriptor = null;
+//     // This will contain the display steps of a single header. E.g. Item / Created By / Name
+//     const headerArray: string[] = [];
+//     const navProps: NavigationPropDescriptor[] = [];
+//     let finalPropDesc: PropDescriptor = null;
 
-    // Loop over all steps except last one
-    let isError = false;
-    let currentDesc = baseDesc;
+//     // Loop over all steps except last one
+//     let isError = false;
+//     let currentDesc = baseDesc;
 
-    for (let i = 0; i < pathArray.length; i++) {
-      const step = pathArray[i];
-      const prop = currentDesc.properties[step];
-      if (!prop) {
-        isError = true;
-        break;
-      } else {
-        headerArray.push(prop.label());
-        if (prop.control === 'navigation') {
-          currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
-          navProps.push(prop);
-        } else if (i !== pathArray.length - 1) {
-          // Only navigation properties are allowed unless this is the last one
-          isError = true;
-        } else {
-          finalPropDesc = prop;
-        }
-      }
-    }
+//     for (let i = 0; i < pathArray.length; i++) {
+//       const step = pathArray[i];
+//       const prop = currentDesc.properties[step];
+//       if (!prop) {
+//         isError = true;
+//         break;
+//       } else {
+//         headerArray.push(prop.label());
+//         if (prop.control === 'navigation') {
+//           currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
+//           navProps.push(prop);
+//         } else if (i !== pathArray.length - 1) {
+//           // Only navigation properties are allowed unless this is the last one
+//           isError = true;
+//         } else {
+//           finalPropDesc = prop;
+//         }
+//       }
+//     }
 
-    // Prepare the entities in a dictionary for fast lookup by Id
-    const relatedEntities: { [key: string]: { [id: string]: EntityWithKey } } = {};
-    for (const coll of Object.keys(response.RelatedEntities)) {
-      const entitiesOfTypeArray = response.RelatedEntities[coll];
-      const entitiesOfType = (relatedEntities[coll] = {});
-      for (const entity of entitiesOfTypeArray) {
-        entitiesOfType[entity.Id] = entity;
-      }
-    }
-    {
-      // Don't forget the main collection (important for self referencing trees)
-      const coll = response.CollectionName;
-      const entitiesOfType = (relatedEntities[coll] = {});
-      for (const entity of response.Result) {
-        entitiesOfType[entity.Id] = entity;
-      }
-    }
+//     // Prepare the entities in a dictionary for fast lookup by Id
+//     const relatedEntities: { [key: string]: { [id: string]: EntityWithKey } } = {};
+//     for (const coll of Object.keys(response.RelatedEntities)) {
+//       const entitiesOfTypeArray = response.RelatedEntities[coll];
+//       const entitiesOfType = (relatedEntities[coll] = {});
+//       for (const entity of entitiesOfTypeArray) {
+//         entitiesOfType[entity.Id] = entity;
+//       }
+//     }
+//     {
+//       // Don't forget the main collection (important for self referencing trees)
+//       const coll = response.CollectionName;
+//       const entitiesOfType = (relatedEntities[coll] = {});
+//       for (const entity of response.Result) {
+//         entitiesOfType[entity.Id] = entity;
+//       }
+//     }
 
-    if (isError) {
-      headers.push(`(${trx.instant('Error')})`);
-      extracts.push(_ => `(${trx.instant('Error')})`);
-    } else {
-      headers.push(headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
-      extracts.push(entity => {
-        let i = 0;
-        for (; i < navProps.length; i++) {
-          const navProp = navProps[i];
-          const propName = pathArray[i];
+//     if (isError) {
+//       headers.push(`(${trx.instant('Error')})`);
+//       extracts.push(_ => `(${trx.instant('Error')})`);
+//     } else {
+//       headers.push(headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
+//       extracts.push(entity => {
+//         let i = 0;
+//         for (; i < navProps.length; i++) {
+//           const navProp = navProps[i];
+//           const propName = pathArray[i];
 
-          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+//           if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
 
-            const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
+//             const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
 
-            // Get the foreign key
-            const fkValue = entity[navProp.foreignKeyName];
-            if (!fkValue) {
-              return ''; // The nav entity is null
-            }
+//             // Get the foreign key
+//             const fkValue = entity[navProp.foreignKeyName];
+//             if (!fkValue) {
+//               return ''; // The nav entity is null
+//             }
 
-            // Get the nav entity
-            entity = entitiesOfType[fkValue];
-            if (!entity) {
-              // Anomaly from Server
-              console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
-              return `(${trx.instant('Error')})`;
-            }
-          } else if (entity.EntityMetadata[propName] === 1) {
-            // Masked because of user permissions
-            return `*******`;
-          } else {
-            // Bug
-            return `(${trx.instant('NotLoaded')})`;
-          }
-        }
+//             // Get the nav entity
+//             entity = entitiesOfType[fkValue];
+//             if (!entity) {
+//               // Anomaly from Server
+//               console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
+//               return `(${trx.instant('Error')})`;
+//             }
+//           } else if (entity.EntityMetadata[propName] === 1) {
+//             // Masked because of user permissions
+//             return `*******`;
+//           } else {
+//             // Bug
+//             return `(${trx.instant('NotLoaded')})`;
+//           }
+//         }
 
-        // Final step
-        if (!!finalPropDesc) {
-          const propName = pathArray[i];
-          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
-            const val = entity[propName];
-            return displayValue(val, finalPropDesc, trx);
-          } else if (entity.EntityMetadata[propName] === 1) {
-            // Masked because of user permissions
-            return `*******`;
-          } else {
-            // Bug
-            return `(${trx.instant('NotLoaded')})`;
-          }
-        } else {
-          // It terminates with a nav prop
-          return displayEntity(entity, currentDesc);
-        }
-      });
-    }
-  }
+//         // Final step
+//         if (!!finalPropDesc) {
+//           const propName = pathArray[i];
+//           if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+//             const val = entity[propName];
+//             return displayValue(val, finalPropDesc, trx);
+//           } else if (entity.EntityMetadata[propName] === 1) {
+//             // Masked because of user permissions
+//             return `*******`;
+//           } else {
+//             // Bug
+//             return `(${trx.instant('NotLoaded')})`;
+//           }
+//         } else {
+//           // It terminates with a nav prop
+//           return displayEntity(entity, currentDesc);
+//         }
+//       });
+//     }
+//   }
 
-  // Step 2 Push headers in the result
-  result.push(headers);
+//   // Step 2 Push headers in the result
+//   result.push(headers);
 
-  // Step 3 Use extractors to convert the entities to strings and push them in the result
-  for (const entity of response.Result) {
-    const row: string[] = [];
-    let index = 0;
-    for (const extract of extracts) {
-      row[index++] = extract(entity);
-    }
+//   // Step 3 Use extractors to convert the entities to strings and push them in the result
+//   for (const entity of response.Result) {
+//     const row: string[] = [];
+//     let index = 0;
+//     for (const extract of extracts) {
+//       row[index++] = extract(entity);
+//     }
 
-    result.push(row);
-  }
+//     result.push(row);
+//   }
 
-  // Finally: Return the result
-  return result;
-}
+//   // Finally: Return the result
+//   return result;
+// }

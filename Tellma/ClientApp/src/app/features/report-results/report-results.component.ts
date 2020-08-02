@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnChanges, SimpleChanges
+  Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
@@ -11,13 +11,16 @@ import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
-import { isSpecified, mergeEntitiesInWorkspace, csvPackage, downloadBlob } from '~/app/data/util';
+import {
+  isSpecified, mergeEntitiesInWorkspace, csvPackage,
+  downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse
+} from '~/app/data/util';
 import {
   ReportDefinitionForClient, ReportDimensionDefinitionForClient,
   ReportMeasureDefinitionForClient, ReportSelectDefinitionForClient
 } from '~/app/data/dto/definitions-for-client';
 import { Router, Params } from '@angular/router';
-import { displayEntity, displayValue } from '~/app/shared/auto-cell/auto-cell.component';
+import { displayEntity, displayValue } from '~/app/data/util';
 import { Entity } from '~/app/data/entities/base/entity';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
@@ -67,8 +70,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   mode: 'screen' | 'preview' | 'dashboard' = 'screen';
 
-  // @Output()
-  // skipChange: EventEmitter<number> = new EventEmitter<number>(); // In screen mode this informs the parent component to update the URL
+  @Output()
+  public exportStarting = new EventEmitter<void>();
+
+  @Output()
+  public exportSuccess = new EventEmitter<void>();
+
+  @Output()
+  public exportError = new EventEmitter<FriendlyError>();
 
   private _subscriptions: Subscription;
   private notifyFetch$ = new Subject();
@@ -336,6 +345,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         s = this.state; // get the source
         s.reportStatus = ReportStatus.loaded;
         s.filter = filter;
+        s.response = response;
         s.result = response.Result;
         if (!!response.RelatedEntities && Object.keys(response.RelatedEntities).length > 0) {
           // Merge the entities and Notify everyone
@@ -789,180 +799,266 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // This function exports the pivot table to a CSV file, the way it would look fully expanded
     try {
       if (this.state.reportStatus === ReportStatus.loaded) {
-        const pivot = this.state.pivot;
-        const headers = pivot.columnHeaders;
-        const rows = pivot.rows;
-        const realMeasures = this.state.measures;
-        const rowDimensionsColumnCount = !rows || !rows[0] ? 0 : rows[0].filter(c => c.type === 'dimension').length;
-        const data: string[][] = [];
 
-        // Helper function
-        const getDisplay = (cell: DimensionCell) => {
-          let display: string;
-          if (cell.propDesc.control === 'navigation') {
-            display = displayEntity(cell.value, cell.entityDesc);
-          } else {
-            display = displayValue(cell.value, cell.propDesc, this.translate);
-          }
+        if (this.isDetails) {
 
-          return display;
-        };
+          // Collection and DefinitionId
+          const collection = this.collection;
+          const definitionId = this.definitionId;
 
-        // Top Headers section
-        let maxCols = 0;
-        for (const row of headers) {
-          const dataRow: string[] = [];
+          // Columns
+          const columns: ColumnDescriptor[] = this.select.map(e =>
+            ({
+              display: this.workspace.currentTenant.getMultilingualValueImmediate(e, 'Label'),
+              path: e.Path
+            })
+          );
 
-          // Blank cell in upper left corner
-          for (let i = 0; i < rowDimensionsColumnCount; i++) {
-            dataRow.push(null);
-          }
+          if (!this.definition.Top) {
+            // Flat report with paging => query the server to get all the data
 
-          let shouldBeLastOne = false;
-          for (const cell of row) {
-            if (shouldBeLastOne) {
-              console.error('Label showed up in the middle of the headers, the export algorithm will produce incorrect result');
+            // FILTER
+            let filter: string;
+            try {
+              filter = this.computeFilter();
+            } catch (ex) {
+              this.exportError.emit(ex);
               return;
             }
-            switch (cell.type) {
-              case 'dimension':
-                {
-                  let display: string;
-                  if (this.isDefined(cell)) {
-                    display = getDisplay(cell);
-                  } else {
-                    display = this.translate.instant('Undefined');
-                  }
 
-                  dataRow.push(display);
-                }
-                break;
-              case 'label':
-                {
-                  const display = cell.label();
-                  dataRow.push(display);
-                  // Right now we only support one label at the very end
-                  // Labels are the only kind that have a rowspan
-                  // And if they appear in the middle, the algorithm will
-                  // produce a wrong CSV => disaster, so just to be safe
-                  shouldBeLastOne = true;
-                }
-                break;
-              default:
+            // SELECT and ORDERBY
+            const select = this.computeSelect();
+            const orderby = this.definition.OrderBy;
 
-                break;
+            if (!select) {
+              const msg = this.translate.instant('DragSelect');
+              this.exportError.emit(msg);
+              return;
             }
 
-            for (let i = 1; i < cell.expandedColSpan; i++) {
-              dataRow.push(null); // Add padding according to colspan
+            // EXTRAS
+            const extras = this.computeAdditionalParameters();
+
+            this.exportStarting.emit();
+            this.crud.getFact({
+              orderby,
+              select,
+              filter,
+              countEntities: true
+            }, extras).pipe(
+              tap((response: GetResponse) => {
+                const data = composeEntitiesFromResponse(response, columns, collection, definitionId, this.workspace, this.translate);
+                this.downloadData(data, fileName);
+                this.exportSuccess.emit();
+              }),
+              catchError((err: FriendlyError) => {
+                this.exportError.emit(err.error);
+                return of();
+              })
+            ).subscribe();
+          } else {
+            // Flat report with all data loaded (no paging) => no need to query the server
+            const entities = this.state.result;
+            const data = composeEntities(entities, columns, collection, definitionId, this.workspace, this.translate);
+            this.downloadData(data, fileName);
+            this.exportSuccess.emit();
+          }
+
+        } else if (this.isSummary) {
+          // Summary report => no need to query the server
+          const pivot = this.state.pivot;
+          const headers = pivot.columnHeaders;
+          const rows = pivot.rows;
+          const realMeasures = this.state.measures;
+          const rowDimensionsColumnCount = !rows || !rows[0] ? 0 : rows[0].filter(c => c.type === 'dimension').length;
+
+          // Helper function
+          const getDisplay = (cell: DimensionCell) => {
+            let display: string;
+            if (cell.propDesc.control === 'navigation') {
+              display = displayEntity(cell.value, cell.entityDesc);
+            } else {
+              display = displayValue(cell.value, cell.propDesc, this.translate);
             }
-          }
 
-          if (maxCols < dataRow.length) {
-            maxCols = dataRow.length;
-          }
+            return display;
+          };
 
-          data.push(dataRow);
-        }
+          const data: string[][] = [];
 
-        // Measure labels
-        if (this.showMeasureLabels) {
-          const dataRow: string[] = [];
+          // Top Headers section
+          for (const row of headers) {
+            const dataRow: string[] = [];
 
-          // Blank cell in upper left corner
-          for (let i = 0; i < rowDimensionsColumnCount; i++) {
-            dataRow.push(null);
-          }
+            // Blank cell in upper left corner
+            for (let i = 0; i < rowDimensionsColumnCount; i++) {
+              dataRow.push(null);
+            }
 
-          for (const cell of rows[0].filter(e => e.type === 'measure')) {
-            if (!cell.parent || !cell.parent.hasChildren) {
-              for (const measure of realMeasures) {
-                dataRow.push(measure.label());
+            let shouldBeLastOne = false;
+            for (const cell of row) {
+              if (shouldBeLastOne) {
+                console.error('Label showed up in the middle of the headers, the export algorithm will produce incorrect result');
+                return;
               }
-            }
-          }
-
-          data.push(dataRow);
-        }
-
-        // Lower section
-        for (const row of rows) {
-          const dataRow: string[] = [];
-          for (const cell of row) {
-            switch (cell.type) {
-              case 'dimension':
-                {
-                  let display = '';
-                  for (let i = 0; i < cell.level; i++) {
-                    display += '            ';
-                  }
-                  if (this.isDefined(cell)) {
-                    display += getDisplay(cell);
-                  } else {
-                    display += this.translate.instant('Undefined');
-                  }
-
-                  dataRow.push(display);
-                }
-                break;
-              case 'measure':
-                if (!cell.parent || !cell.parent.hasChildren) {
-                  for (let i = 0; i < realMeasures.length; i++) {
-                    const display = displayValue(cell.values[i], realMeasures[i].desc, this.translate);
+              switch (cell.type) {
+                case 'dimension':
+                  {
+                    let display: string;
+                    if (this.isDefined(cell)) {
+                      display = getDisplay(cell);
+                    } else {
+                      display = this.translate.instant('Undefined');
+                    }
 
                     dataRow.push(display);
                   }
-                }
-                break;
-              case 'label':
-                {
-                  const display = cell.label();
-                  dataRow.push(display);
-                }
-                break;
-              default:
+                  break;
+                case 'label':
+                  {
+                    const display = cell.label();
+                    dataRow.push(display);
+                    // Right now we only support one label at the very end
+                    // Labels are the only kind that have a rowspan
+                    // And if they appear in the middle, the algorithm will
+                    // produce a wrong CSV => disaster, so just to be safe
+                    shouldBeLastOne = true;
+                  }
+                  break;
+                default:
 
-                break;
+                  break;
+              }
+
+              for (let i = 1; i < cell.expandedColSpan; i++) {
+                dataRow.push(null); // Add padding according to colspan
+              }
             }
+
+            data.push(dataRow);
           }
 
-          data.push(dataRow);
-        }
+          // Measure labels
+          if (this.showMeasureLabels) {
+            const dataRow: string[] = [];
 
-        // If there are labels at the end, this pads all the rows underneath it
-        for (const dataRow of data) {
-          while (dataRow.length < maxCols) {
-            dataRow.push(null);
+            // Blank cell in upper left corner
+            for (let i = 0; i < rowDimensionsColumnCount; i++) {
+              dataRow.push(null);
+            }
+
+            for (const cell of rows[0].filter(e => e.type === 'measure')) {
+              if (!cell.parent || !cell.parent.hasChildren) {
+                for (const measure of realMeasures) {
+                  dataRow.push(measure.label());
+                }
+              }
+            }
+
+            data.push(dataRow);
           }
-        }
 
-        const csvBlob = csvPackage(data);
-        downloadBlob(csvBlob, fileName || this.translate.instant('Report') + '.csv');
+          // Lower section
+          for (const row of rows) {
+            const dataRow: string[] = [];
+            for (const cell of row) {
+              switch (cell.type) {
+                case 'dimension':
+                  {
+                    let display = '';
+                    for (let i = 0; i < cell.level; i++) {
+                      display += '            ';
+                    }
+                    if (this.isDefined(cell)) {
+                      display += getDisplay(cell);
+                    } else {
+                      display += this.translate.instant('Undefined');
+                    }
+
+                    dataRow.push(display);
+                  }
+                  break;
+                case 'measure':
+                  if (!cell.parent || !cell.parent.hasChildren) {
+                    for (let i = 0; i < realMeasures.length; i++) {
+                      const display = displayValue(cell.values[i], realMeasures[i].desc, this.translate);
+
+                      dataRow.push(display);
+                    }
+                  }
+                  break;
+                case 'label':
+                  {
+                    const display = cell.label();
+                    dataRow.push(display);
+                  }
+                  break;
+                default:
+
+                  break;
+              }
+            }
+
+            data.push(dataRow);
+          }
+
+          this.downloadData(data, fileName);
+          this.exportSuccess.emit();
+        } else {
+          // Nothing to download
+        }
       }
     } catch (err) {
-      console.error(err);
+      this.exportError.emit(err);
     }
+  }
+
+  private downloadData(data: string[][], fileName: string) {
+
+    // Calculate maxCols;
+    let maxCols = 0;
+    for (const row of data) {
+      if (row.length > maxCols) {
+        maxCols = row.length;
+      }
+    }
+
+    // If there are labels at the end, this pads all the rows underneath it
+    for (const dataRow of data) {
+      while (dataRow.length < maxCols) {
+        dataRow.push(null);
+      }
+    }
+
+    // Download
+    const csvBlob = csvPackage(data);
+    downloadBlob(csvBlob, fileName || this.translate.instant('Report') + '.csv');
   }
 
   // UI Bindings
 
-  public get showDetails(): boolean {
+  private get isDetails(): boolean {
     return !!this.definition && this.definition.Type === 'Details';
   }
 
+  private get isSummary(): boolean {
+    return !!this.definition && this.definition.Type === 'Summary';
+  }
+
+  public get showDetails(): boolean {
+    return this.isDetails;
+  }
+
   public get showSummary(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary'
-      && this.view === ReportView.pivot;
+    return this.isSummary && this.view === ReportView.pivot;
   }
 
   public get showChart(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary'
-      && this.view === ReportView.chart && !!this.state.singleNumericMeasure;
+    return this.isSummary && this.view === ReportView.chart && !!this.state.singleNumericMeasure;
   }
 
   public get showSpecifyNumericMeasure(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary'
-      && this.view === ReportView.chart && !this.state.singleNumericMeasure;
+    return this.isSummary && this.view === ReportView.chart && !this.state.singleNumericMeasure;
   }
 
   public get showResults(): boolean {
