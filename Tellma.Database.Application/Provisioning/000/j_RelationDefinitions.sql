@@ -5,20 +5,18 @@
 (3, N'Partner', N'Partner', N'Partners', N'user-tie', N'Financials',115,N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'Single'),
 (4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'Single'),
 (5, N'Customer', N'Customer', N'Customers', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'', N'None', N'Optional', N'None', N'None', N'Single'),
-(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'Required', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'Single');
+(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'Required', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'Single'),
+(7, N'BankBranch', N'Bank Branch', N'Bank Branches', N'university', N'Cash',135,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Single');
+
 UPDATE @RelationDefinitions
-SET [Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Market Segment', [Lookup1DefinitionId] = @MarketSegmentLKD
+SET
+	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Market Segment', [Lookup1DefinitionId] = @MarketSegmentLKD
 WHERE [Code] IN ( N'Customer')
 
 UPDATE @RelationDefinitions
 SET 
-	[CurrencyVisibility] = N'Required', 
-	[CenterVisibility] = N'Required',
-	[Text1Visibility] = N'Optional', [Text1Label] =  N'Branch',
-	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD,
-	[Lookup2Visibility] = N'Optional', [Lookup2Label] = N'Bank', [Lookup2DefinitionId] = @BankLKD
-WHERE [Code] IN ( N'BankAccount')
-
+	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank', [Lookup1DefinitionId] = @BankLKD
+WHERE [Code] IN ( N'BankBranch')
 
 EXEC [api].[RelationDefinitions__Save]
 	@Entities = @RelationDefinitions,
@@ -37,3 +35,4 @@ DECLARE @PartnerCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code
 DECLARE @SupplierCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Supplier');
 DECLARE @CustomerCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Customer');
 DECLARE @EmployeeCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Employee');
+DECLARE @BankBranchCD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankBranch');

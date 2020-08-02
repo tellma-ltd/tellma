@@ -7,8 +7,8 @@ INSERT INTO @RelationDefinitionIds([Id]) VALUES
 (@PartnerCD),
 (@SupplierCD),
 (@CustomerCD),
-(@EmployeeCD);
---(@ShipperCD);
+(@EmployeeCD),
+(@BankBranchCD);
 
 EXEC [dal].[RelationDefinitions__UpdateState]
 	@Ids = @RelationDefinitionIds,

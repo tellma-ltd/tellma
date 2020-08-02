@@ -574,9 +574,9 @@
     <None Include="Provisioning\107\00_Script.sql" />
     <None Include="Provisioning\107\10_Users.sql" />
     <None Include="Provisioning\107\11_Permissions.sql" />
-    <None Include="Provisioning\107\20_Lookups.sql" />
+    <None Include="Provisioning\107\107_21Lookups.sql" />
     <None Include="Provisioning\107\21_Units.sql" />
-    <None Include="Provisioning\107\22_Centers.sql" />
+    <None Include="Provisioning\107\107_22Centers.sql" />
     <None Include="Provisioning\107\40_Agents.sql" />
     <None Include="Provisioning\107\50_Contracts.sql" />
     <None Include="Provisioning\107\60_AccountClassifications.sql" />
@@ -664,6 +664,7 @@
     <None Include="Provisioning\102\102_25Relations.sql" />
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
     <Build Include="map\map.CustodyDefinitions.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.adm_Lookups__Export.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

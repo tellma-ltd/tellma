@@ -44,7 +44,7 @@ INSERT INTO @Rows([Index], [HeaderIndex], [Path], [OrderDirection], [AutoExpand]
 
 INSERT INTO @Columns([Index], [HeaderIndex], [Path], [OrderDirection], [AutoExpand]) VALUES
 (1, 1, N'Direction', N'desc', 1),
-(1, 5, N'LineState', NULL, 1),
+(1, 5, N'Line/State', NULL, 1),
 (2, 5, N'Direction', N'desc', 1),
 (1, 6, N'Direction', N'desc', 1),
 (2, 6, N'Currency', NULL, 1);
