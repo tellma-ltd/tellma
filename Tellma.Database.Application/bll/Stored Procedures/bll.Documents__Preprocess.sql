@@ -106,168 +106,170 @@ BEGIN
 	WHERE E.[Index] = ES.[Index];
   --  Overwrite input with DB data that is read only
 	-- TODO : Overwrite readonly Memo
-	WITH CTE AS (
-		SELECT
-			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodyId],
-			E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],  E.[ExternalReference], 
-			E.[AdditionalReference], E.[NotedRelationId],  E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
-			E.[EntryTypeId], LDC.[ColumnName]
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-	)
-	UPDATE E
-	SET
-		E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
-		E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
-		E.[CustodyId]			= IIF(CTE.[ColumnName] = N'CustodyId', CTE.[CustodyId], E.[CustodyId]),
-		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
-		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
-		E.[UnitId]				= IIF(CTE.[ColumnName] = N'UnitId', CTE.[UnitId], E.[UnitId]),
-		E.[MonetaryValue]		= IIF(CTE.[ColumnName] = N'MonetaryValue', CTE.[MonetaryValue], E.[MonetaryValue]),
-		E.[Time1]				= IIF(CTE.[ColumnName] = N'Time1', CTE.[Time1], E.[Time1]),
-		E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
-		E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
-		E.[AdditionalReference]	= IIF(CTE.[ColumnName] = N'AdditionalReference', CTE.[AdditionalReference], E.[AdditionalReference]),
-		E.[NotedRelationId]		= IIF(CTE.[ColumnName] = N'NotedRelationId', CTE.[NotedRelationId], E.[NotedRelationId]),
-		E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
-		E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
-		E.[NotedDate]			= IIF(CTE.[ColumnName] = N'NotedDate', CTE.[NotedDate], E.[NotedDate]),
-		E.[EntryTypeId]			= IIF(CTE.ColumnName = N'EntryTypeId', CTE.[EntryTypeId], E.[EntryTypeId])
-	FROM @E E
-	JOIN CTE ON  E.[Index] = CTE.[Index] AND E.[LineIndex] = CTE.[LineIndex] AND E.[DocumentIndex] = CTE.[DocumentIndex]
-	IF (1=0) -- commenting it to see if the previous code works instead
-	BEGIN
+	DECLARE @Option INT = 1;
+	IF @Option = 1
+		WITH CTE AS (
+			SELECT
+				E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodyId],
+				E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],  E.[ExternalReference], 
+				E.[AdditionalReference], E.[NotedRelationId],  E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
+				E.[EntryTypeId], LDC.[ColumnName]
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+		)
 		UPDATE E
-		SET E.CurrencyId = BE.CurrencyId
+		SET
+			E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
+			E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
+			E.[CustodyId]			= IIF(CTE.[ColumnName] = N'CustodyId', CTE.[CustodyId], E.[CustodyId]),
+			E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
+			E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
+			E.[UnitId]				= IIF(CTE.[ColumnName] = N'UnitId', CTE.[UnitId], E.[UnitId]),
+			E.[MonetaryValue]		= IIF(CTE.[ColumnName] = N'MonetaryValue', CTE.[MonetaryValue], E.[MonetaryValue]),
+			E.[Time1]				= IIF(CTE.[ColumnName] = N'Time1', CTE.[Time1], E.[Time1]),
+			E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
+			E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
+			E.[AdditionalReference]	= IIF(CTE.[ColumnName] = N'AdditionalReference', CTE.[AdditionalReference], E.[AdditionalReference]),
+			E.[NotedRelationId]		= IIF(CTE.[ColumnName] = N'NotedRelationId', CTE.[NotedRelationId], E.[NotedRelationId]),
+			E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
+			E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
+			E.[NotedDate]			= IIF(CTE.[ColumnName] = N'NotedDate', CTE.[NotedDate], E.[NotedDate]),
+			E.[EntryTypeId]			= IIF(CTE.[ColumnName] = N'EntryTypeId', CTE.[EntryTypeId], E.[EntryTypeId])
 		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'CurrencyId';
-		UPDATE E
-		SET E.[CustodyId] = BE.[CustodyId]
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'CustodyId';
-		UPDATE E
-		SET E.ResourceId = BE.ResourceId
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'ResourceId';
-		UPDATE E
-		SET E.CenterId = BE.CenterId
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'CenterId';
-		UPDATE E
-		SET E.EntryTypeId = BE.EntryTypeId
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'EntryTypeId';
-		UPDATE E
-		SET E.MonetaryValue = BE.MonetaryValue
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'MonetaryValue';
-		UPDATE E
-		SET E.Quantity = BE.Quantity
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'Quantity';
-		UPDATE E
-		SET E.UnitId = BE.UnitId
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'UnitId';
-		UPDATE E
-		SET E.Time1 = BE.Time1
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'Time1';
-		UPDATE E
-		SET E.Time2 = BE.Time2
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'Time2';
-		UPDATE E
-		SET E.ExternalReference = BE.ExternalReference
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'ExternalReference';
-		UPDATE E
-		SET E.AdditionalReference = BE.AdditionalReference
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'AdditionalReference';
-		UPDATE E
-		SET E.[NotedRelationId] = BE.[NotedRelationId]
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'NotedRelationId';
-		UPDATE E
-		SET E.NotedAgentName = BE.NotedAgentName
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'NotedAgentName';
-		UPDATE E
-		SET E.NotedAmount = BE.NotedAmount
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'NotedAmount';
-		UPDATE E
-		SET E.NotedDate = BE.NotedDate
-		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-		AND LDC.ColumnName = N'NotedDate';
+		JOIN CTE ON  E.[Index] = CTE.[Index] AND E.[LineIndex] = CTE.[LineIndex] AND E.[DocumentIndex] = CTE.[DocumentIndex]
+	ELSE -- commenting it to see if the previous code works instead
+		BEGIN
+			UPDATE E
+			SET E.CurrencyId = BE.CurrencyId
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'CurrencyId';
+			UPDATE E
+			SET E.[CustodyId] = BE.[CustodyId]
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'CustodyId';
+			UPDATE E
+			SET E.ResourceId = BE.ResourceId
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'ResourceId';
+			UPDATE E
+			SET E.CenterId = BE.CenterId
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'CenterId';
+			UPDATE E
+			SET E.EntryTypeId = BE.EntryTypeId
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'EntryTypeId';
+			UPDATE E
+			SET E.MonetaryValue = BE.MonetaryValue
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'MonetaryValue';
+			UPDATE E
+			SET E.Quantity = BE.Quantity
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'Quantity';
+			UPDATE E
+			SET E.UnitId = BE.UnitId
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'UnitId';
+			UPDATE E
+			SET E.Time1 = BE.Time1
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'Time1';
+			UPDATE E
+			SET E.Time2 = BE.Time2
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'Time2';
+			UPDATE E
+			SET E.ExternalReference = BE.ExternalReference
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'ExternalReference';
+			UPDATE E
+			SET E.AdditionalReference = BE.AdditionalReference
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'AdditionalReference';
+			UPDATE E
+			SET E.[NotedRelationId] = BE.[NotedRelationId]
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'NotedRelationId';
+			UPDATE E
+			SET E.NotedAgentName = BE.NotedAgentName
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'NotedAgentName';
+			UPDATE E
+			SET E.NotedAmount = BE.NotedAmount
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'NotedAmount';
+			UPDATE E
+			SET E.NotedDate = BE.NotedDate
+			FROM @E E
+			JOIN dbo.Entries BE ON E.Id = BE.Id
+			JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+			JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+			WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+			AND LDC.ColumnName = N'NotedDate';
 	END
 
 	-- for all lines, Get currency and center from Resources if available.
@@ -279,7 +281,7 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
-	-- for all lines, Get currency and center from Contracts if available.
+	-- for all lines, Get currency and center from Custodies if available.
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),

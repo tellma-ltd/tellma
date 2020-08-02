@@ -104,9 +104,9 @@ BEGIN
 	:r .\107\10_Users.sql
 	:r .\107\11_Permissions.sql
 
-	:r .\107\20_Lookups.sql
+	:r .\107\107_21Lookups.sql
 	:r .\107\21_Units.sql
-	:r .\107\22_Centers.sql
+	:r .\107\107_22Centers.sql
 
 	:r .\107\30_Resources.sql
 	

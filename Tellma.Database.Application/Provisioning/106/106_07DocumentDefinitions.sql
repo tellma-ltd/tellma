@@ -15,7 +15,8 @@ INSERT @DocumentDefinitionLineDefinitions([Index],
 [HeaderIndex],						[LineDefinitionId],							[IsVisibleByDefault]) VALUES
 (11,@CashPurchaseVoucherDD,			@CashPaymentToTradePayableWithInvoiceLD,	1),
 (12,@CashPurchaseVoucherDD,			@WithholdingTaxFromTradePayableLD,			1),
-(13,@CashPurchaseVoucherDD,			@StockReceiptFromTradePayableLD,			1),-- 
+(13,@CashPurchaseVoucherDD,			@StockReceiptFromTradePayableLD,			0),
+(14,@CashPurchaseVoucherDD,			@PPEReceiptFromTradePayableLD,				0),
 (19,@CashPurchaseVoucherDD,			@ManualLineLD,								0),
 (21,@CashPaymentVoucherDD,			@CashPaymentToTradePayableLD,				1);
 

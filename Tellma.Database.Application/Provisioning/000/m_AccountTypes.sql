@@ -351,6 +351,71 @@ WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex
 UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 
+UPDATE  @AccountTypes
+	SET [Time1Label] = N'From Date', Time2Label = N'To Date'
+WHERE [Concept] IN (
+	N'InsuranceExpense',
+	N'UtilitiesExpense',
+	N'WagesAndSalaries',
+	N'SocialSecurityContributions',
+	N'OtherShorttermEmployeeBenefits',
+	N'DepreciationExpense',
+	N'AmortisationExpense',
+	N'TaxExpenseOtherThanIncomeTaxExpense'
+);
+
+UPDATE  @AccountTypes
+	SET [ExternalReferenceLabel] = N'Invoice #'
+WHERE [Concept] IN (
+	N'NoncurrentValueAddedTaxReceivables',
+	N'CurrentValueAddedTaxReceivables',
+	N'WithholdingTaxReceivablesExtension',
+	N'NoncurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables',
+	N'WithholdingTaxPayableExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedAgentNameLabel] = N'Issuer/Recipient'
+WHERE [Concept] IN (
+	N'Merchandise',
+	N'CurrentFoodAndBeverage',
+	N'CurrentAgriculturalProduce',
+	N'FinishedGoods',
+	N'PropertyIntendedForSaleInOrdinaryCourseOfBusiness',
+	N'WorkInProgress',
+	N'RawMaterials',
+	N'ProductionSupplies',
+	N'CurrentPackagingAndStorageMaterials',
+	N'SpareParts',
+	N'CurrentFuel',
+	N'OtherInventories',
+	N'CashOnHand',
+	N'BalancesWithBanks'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedAmountLabel] = N'Taxable Amount'
+WHERE [Concept] IN (
+	N'NoncurrentValueAddedTaxReceivables',
+	N'CurrentValueAddedTaxReceivables',
+	N'WithholdingTaxReceivablesExtension',
+	N'NoncurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables',
+	N'CurrentExciseTaxPayables',
+	N'CurrentSocialSecurityPayablesExtension',
+	N'CurrentEmployeeIncomeTaxPayablesExtension',
+	N'CurrentEmployeeStampTaxPayablesExtension',
+	N'ProvidentFundPayableExtension',
+	N'WithholdingTaxPayableExtension',
+	N'DividendTaxPayableExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedAmountLabel] = N'Amount Subject to Zakat'
+WHERE [Concept] IN (
+	N'CurrentZakatPayablesExtension'
+);
 	--[Time1Label], [Time1Label2], [Time1Label3],
 	--[Time2Label], [Time2Label2], [Time2Label3],
 	--[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 

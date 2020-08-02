@@ -72,43 +72,52 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,300,	N'NotedDate',			1,	N'Check/Receipt Date',4,4,0),
 (8,300,	N'PostingDate',			1,	N'Paid On',			1,4,1),
 (9,300,	N'CenterId',			0,	N'Business Unit',	1,4,1);
---301:CashPaymentToTradePayableWithInvoice: (basically, it is the VAT)
+--301:CashPaymentToTradePayableWithInvoice: (basically, it is the VAT) -- assume all in same currency
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId0]		= [CurrencyId1],
+
+		[CurrencyId1]		= [CurrencyId0],
+		[CurrencyId2]		= [CurrencyId0],
 		[CenterId0]			= [CenterId1],
-		[MonetaryValue0]	= [MonetaryValue1],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
+		[CenterId2]			= COALESCE([CenterId2], [CenterId1]),
+		[MonetaryValue0]	= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
+		[NotedAmount1]		= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
+		[NotedRelationId1]	= [NotedRelationId0],
+		[EntryTypeId2]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
+		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])
 '
 WHERE [Index] = 301;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
-(0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions),
-(1,301,+1,		@CurrentValueAddedTaxReceivables),
-(2,301,-1,		@CashAndCashEquivalents); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
+(0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions), -- Item price
+(1,301,+1,		@CurrentValueAddedTaxReceivables), -- VAT, Taxamble Amount
+--(2,301,-1,		@CashAndCashEquivalents), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
+(2,301,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,301,	N'Memo',				1,	N'Memo',			1,4,1),
-(6,301,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(7,301,	N'MonetaryValue',		0,	N'Cost (VAT Excl.)',1,2,0),
-(8,301,	N'NotedAmount',			0,	N'VAT',				1,2,0),
-(9,301,	N'MonetaryValue',		0,	N'Line Total',		1,2,0),
-(1,301,	N'NotedRelationId',		2,	N'Supplier',		3,4,1),
-(2,301,	N'CurrencyId',			2,	N'Invoice Currency',1,2,1),
+(1,301,	N'NotedRelationId',		0,	N'Supplier',		1,4,1),
+(2,301,	N'CurrencyId',			0,	N'Currency',		1,2,1),
 (3,301,	N'MonetaryValue',		2,	N'Invoice Amount',	1,2,0),
-(10,301,N'PostingDate',			0,	N'Invoice Date',	1,4,1),
-(11,301,N'CenterId',			2,	N'Business Unit',	1,4,1);
---302:StockReceiptFromTradePayable: (We need two versions: Cash, and credit versions)
+(4,301,	N'MonetaryValue',		1,	N'VAT',				1,4,0),
+(5,301,	N'ExternalReference',	1,	N'Invoice #',		1,4,0),
+(6,301,	N'ExternalReference',	2,	N'Check #',			4,4,0),
+(7,301,	N'CustodyId',			2,	N'Cash/Bank Acct',	4,4,0),
+--(8,301,	N'MonetaryAmount',		3,	N'Amount Withheld',	4,4,0),
+--(9,301,	N'ExternalReference',	3,	N'WT Voucher #',	4,4,0),
+(10,301,N'PostingDate',			1,	N'Payment Date',	1,2,1),
+(11,301, N'CenterId',			1,	N'Business Unit',	1,4,1);
+--302:StockReceiptFromTradePayable: (This is the Cash purchase version, we still need credit purchase versions)
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0]		= [CurrencyId1],
-		[CenterId0]			= [CenterId1],
+		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue0]	= [MonetaryValue1],
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
 '
@@ -116,7 +125,7 @@ WHERE [Index] = 302;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],										[EntryTypeId]) VALUES
 (0,302,+1,	@Inventories,											@ReceiptsReturnsThroughPurchaseExtension),
-(2,302,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL);
+(1,302,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
 (0,0,302,@MerchandiseRD),
@@ -149,10 +158,40 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,302,	N'UnitId',				0,	N'Unit',			2,4,0),
 (6,302,	N'CurrencyId',			1,	N'Currency',		1,2,1),
 (7,302,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
-(8,302,	N'NotedAmount',			1,	N'VAT',				1,2,0),
-(9,302,	N'MonetaryValue',		1,	N'Line Total',		1,2,0),
 (10,302,N'PostingDate',			1,	N'Received On',		1,4,1),
 (11,302,N'CenterId',			1,	N'Business Unit',	1,4,1);
+--306:WithholdingTaxReceivablesExtension: Do we have it separate or part of Payment line???
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE @ProcessedWideLines
+	SET
+		[CurrencyId0]		= [CurrencyId1],
+		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
+		[MonetaryValue0]	= [MonetaryValue1],
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
+'
+WHERE [Index] = 306;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeId],										[EntryTypeId]) VALUES
+(0,306,+1,	@WithholdingTaxReceivablesExtension,NULL),
+(1,306,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL);
+INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[CustodyDefinitionId]) VALUES
+(0,0,306,@WarehouseCD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,306,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,306,	N'NotedRelationId',		1,	N'Supplier',		3,4,1),
+(2,306,	N'CustodyId',			0,	N'Warehouse',		3,4,1),
+(3,306,	N'ResourceId',			0,	N'Item',			2,4,0),
+(4,306,	N'Quantity',			0,	N'Qty',				2,4,0),
+(5,306,	N'UnitId',				0,	N'Unit',			2,4,0),
+(6,306,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(7,306,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
+(10,306,N'PostingDate',			1,	N'Received On',		1,4,1),
+(11,306,N'CenterId',			1,	N'Business Unit',	1,4,1);
 
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
