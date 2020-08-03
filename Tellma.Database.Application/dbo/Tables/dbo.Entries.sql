@@ -13,7 +13,6 @@
 	[CenterId]					INT				NOT NULL CONSTRAINT [FK_Entries__CentertId] REFERENCES dbo.[Centers]([Id]),
 	-- Entry Type Id is Required in Entries only if we have Parent Entry type in AccountTypes
 	[EntryTypeId]				INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
-	-- Due Date is required only for certain resources
 	[BudgetId]					INT				CONSTRAINT [FK_Entries__BudgetId] REFERENCES dbo.[Budgets]([Id]),
 	[MonetaryValue]				DECIMAL (19,4), --			NOT NULL DEFAULT 0,
 -- Tracking additive measures

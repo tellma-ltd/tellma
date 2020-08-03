@@ -57,8 +57,8 @@ BEGIN
 	:r .\101\101_21Lookups.sql
 	:r .\101\101_22Centers.sql
 	:r .\101\101_23Resources.sql
-	:r .\101\101_24Custodies.sql
-	:r .\101\101_25Relations.sql
+	:r .\101\101_24Relations.sql
+	:r .\101\101_25Custodies.sql
 	:r .\101\101_31Accounts.sql
 END
 IF @DB = N'102' -- Banan SD, en/ar
@@ -76,8 +76,8 @@ BEGIN
 	:r .\102\102_21Lookups.sql
 	:r .\102\102_22Centers.sql
 	:r .\102\102_23Resources.sql
-	:r .\102\102_24Custodies.sql
-	:r .\102\102_25Relations.sql
+	:r .\102\102_24Relations.sql
+	:r .\102\102_25Custodies.sql
 	:r .\102\102_31Accounts.sql
 END
 IF @DB = N'106' -- Soreti, ETB, en/am
@@ -94,6 +94,8 @@ BEGIN
 	:r .\106\106_13Workflows.sql
 	:r .\106\106_21Lookups.sql
 	:r .\106\106_22Centers.sql
+	:r .\106\106_24Relations.sql
+	:r .\106\106_25Custodies.sql
 	:r .\106\106_31Accounts.sql
 END
 IF @DB = N'107' -- SSIA, SDG, en/ar

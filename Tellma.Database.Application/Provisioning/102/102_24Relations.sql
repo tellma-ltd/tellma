@@ -1,8 +1,8 @@
 ﻿-- Customer
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @CustomerCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @CustomerRLD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @CustomerCD,
+	@DefinitionId = @CustomerRLD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -16,7 +16,7 @@ INSERT INTO @Relations([Index],
 (0,	N'C01',N'Yangfan Motors, PLC',	@102C31,	@ETB,			N'0005308731'),
 (1,	N'C02',N'Soreti Trading',		@102C21,	@ETB,			NULL);
 EXEC [api].[Relations__Save]
-	@DefinitionId = @CustomerCD,
+	@DefinitionId = @CustomerRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -28,9 +28,9 @@ END;
 
 -- Partners
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @PartnerCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @PartnerRLD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @PartnerCD,
+	@DefinitionId = @PartnerRLD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -45,7 +45,7 @@ INSERT INTO @Relations([Index],
 (1,	N'P2',	N'Ahmad Akra');
 
 EXEC [api].[Relations__Save]
-	@DefinitionId = @PartnerCD,
+	@DefinitionId = @PartnerRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -56,9 +56,9 @@ BEGIN
 END;
 -- Suppliers
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @SupplierCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @SupplierRLD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @SupplierCD,
+	@DefinitionId = @SupplierRLD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -78,7 +78,7 @@ INSERT INTO @Relations([Index],
 (6,	N'S07',	N'Abate GebretSadik Tekle',	N'0003833120');
 
 EXEC [api].[Relations__Save]
-	@DefinitionId = @SupplierCD,
+	@DefinitionId = @SupplierRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -89,9 +89,9 @@ BEGIN
 END;
 -- Employees
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @EmployeeCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @EmployeeRLD;
 EXEC [api].[Relations__Delete]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @EmployeeRLD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -108,7 +108,7 @@ INSERT INTO @Relations([Index],
 (3,	N'E004',N'Yisak Fikadu',	@102C20,	N'0068469933'),
 (4,	N'E005',N'Abrham Tenker',	@102C20,	N'0067651309');
 EXEC [api].[Relations__Save]
-	@DefinitionId = @EmployeeCD,
+	@DefinitionId = @EmployeeRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

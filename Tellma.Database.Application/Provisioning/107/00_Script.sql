@@ -264,13 +264,13 @@ WHERE ResourceDefinitionId IN (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [S
 -- Activate needed resource definitions
 DELETE FROM @RelationDefinitionIds;
 INSERT INTO @RelationDefinitionIds([Id]) VALUES
-(@CreditorCD),
-(@DebtorCD),
-(@OwnerCD),
-(@PartnerCD),
-(@SupplierCD),
-(@CustomerCD),
-(@EmployeeCD),
+(@CreditorRLD),
+(@DebtorRLD),
+(@OwnerRLD),
+(@PartnerRLD),
+(@SupplierRLD),
+(@CustomerRLD),
+(@EmployeeRLD),
 (@BankAccountCD),
 (@SafeCD),
 (@WarehouseCD);

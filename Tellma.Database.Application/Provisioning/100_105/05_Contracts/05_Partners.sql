@@ -13,7 +13,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(0,		N'Sisay Tesfaye');
 
 EXEC [api].[Relations__Save]
-	@DefinitionId = @PartnerCD,
+	@DefinitionId = @PartnerRLD,
 	@Entities = @Partners,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

@@ -2,5 +2,78 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[Entries]
+	SELECT * FROM dbo.Entries
+	--WITH MissingEntries AS (
+	--	SELECT L.[Id] AS LineId, LDE.[Index], LDE.[Direction]
+	--	FROM dbo.LineDefinitions LD
+	--	JOIN dbo.LineDefinitionEntries LDE ON LD.[Id] = LDE.[LineDefinitionId]
+	--	JOIN dbo.Lines L ON L.DefinitionId = LD.[Id]
+	--	LEFT JOIN dbo.Entries E ON L.[Id] = E.[LineId] AND LDE.[Index] = E.[Index]
+	--	WHERE E.[Index] IS NULL
+	--)
+	--SELECT
+	--	[Id],
+	--	[LineId],
+	--	[Index],
+	--	[IsSystem],
+	--	[Direction],
+	--	[AccountId],
+	--	[CurrencyId],
+	--	[CustodyId],
+	--	[ResourceId],
+	--	[CenterId],
+	--	[EntryTypeId],
+	--	[BudgetId],
+	--	[MonetaryValue],
+	--	[Quantity],
+	--	[UnitId],
+	--	[Value],
+	--	[RValue],
+	--	[PValue],
+	--	[Time1]	,
+	--	[Time2],
+	--	[ExternalReference],
+	--	[AdditionalReference],
+	--	[NotedRelationId],
+	--	[NotedAgentName],
+	--	[NotedAmount],
+	--	[NotedDate],
+	--	[CreatedAt],
+	--	[CreatedById],
+	--	[ModifiedAt],
+	--	[ModifiedById]
+	--FROM [dbo].[Entries]
+	--UNION
+	--SELECT 
+	--	0 AS [Id],
+	--	[LineId],
+	--	[Index],
+	--	0 AS [IsSystem],
+	--	[Direction],
+	--	NULL AS [AccountId],
+	--	NULL AS [CurrencyId],
+	--	NULL AS [CustodyId],
+	--	NULL AS [ResourceId],
+	--	NULL AS [CenterId],
+	--	NULL AS [EntryTypeId],
+	--	NULL AS [BudgetId],
+	--	NULL AS [MonetaryValue],
+	--	NULL AS [Quantity],
+	--	NULL AS [UnitId],
+	--	NULL AS [Value],
+	--	NULL AS [RValue],
+	--	NULL AS [PValue],
+	--	NULL AS [Time1]	,
+	--	NULL AS [Time2],
+	--	NULL AS [ExternalReference],
+	--	NULL AS [AdditionalReference],
+	--	NULL AS [NotedRelationId],
+	--	NULL AS [NotedAgentName],
+	--	NULL AS [NotedAmount],
+	--	NULL AS [NotedDate],
+	--	NULL AS [CreatedAt],
+	--	NULL AS [CreatedById],
+	--	NULL AS [ModifiedAt],
+	--	NULL AS [ModifiedById]
+	--FROM MissingEntries
 );

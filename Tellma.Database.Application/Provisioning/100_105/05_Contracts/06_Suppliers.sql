@@ -28,7 +28,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	(4,		N'Phoenix Pulp',			N'فونكس');
 
 EXEC [api].[Relations__Save]
-	@DefinitionId = @SupplierCD,
+	@DefinitionId = @SupplierRLD,
 	@Entities = @Suppliers,
 	@RelationUsers = @RelationUsers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

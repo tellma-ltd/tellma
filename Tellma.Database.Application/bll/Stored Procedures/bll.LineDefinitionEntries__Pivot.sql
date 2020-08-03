@@ -28,4 +28,22 @@ AS
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
 	WHERE LDE.[Index] = 2
 
+	UPDATE WL
+	SET
+		WL.[Direction3]					= LDE.[Direction]
+	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
+	WHERE LDE.[Index] = 3
+
+		UPDATE WL
+	SET
+		WL.[Direction4]					= LDE.[Direction]
+	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
+	WHERE LDE.[Index] = 4
+
+	UPDATE WL
+	SET
+		WL.[Direction5]					= LDE.[Direction]
+	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
+	WHERE LDE.[Index] = 5
+
 	SELECT * FROM @WideLines;

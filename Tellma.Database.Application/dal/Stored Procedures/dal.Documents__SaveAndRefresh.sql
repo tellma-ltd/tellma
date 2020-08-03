@@ -201,6 +201,13 @@ BEGIN
 	) AS x
 	WHERE [Index] IS NOT NULL;
 
+	--DECLARE @RelevantEntries dbo.EntryList
+	--INSERT INTO @RelevantEntries
+	--SELECT * FROM @Entries
+	--WHERE
+	--	([Quantity] IS NOT NULL AND [Quantity] <> 0) OR
+	--	([Value] IS NOT NULL AND [Value] <> 0);
+
 	WITH BE AS (
 		SELECT * FROM dbo.[Entries]
 		WHERE [LineId] IN (SELECT [Id] FROM @LinesIndexedIds)
@@ -240,12 +247,12 @@ BEGIN
 			t.[Value]					= s.[Value],
 			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
-			t.[ExternalReference]	= s.[ExternalReference],
-			t.[AdditionalReference]	= s.[AdditionalReference],
-			t.[NotedRelationId]		= s.[NotedRelationId],
-			t.[NotedAgentName]		= s.[NotedAgentName],
-			t.[NotedAmount]			= s.[NotedAmount],
-			t.[NotedDate]			= s.[NotedDate],
+			t.[ExternalReference]		= s.[ExternalReference],
+			t.[AdditionalReference]		= s.[AdditionalReference],
+			t.[NotedRelationId]			= s.[NotedRelationId],
+			t.[NotedAgentName]			= s.[NotedAgentName],
+			t.[NotedAmount]				= s.[NotedAmount],
+			t.[NotedDate]				= s.[NotedDate],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN

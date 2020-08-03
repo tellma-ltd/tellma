@@ -24,6 +24,21 @@ AS
 	SELECT	2,		WL.[Index],	[DocumentIndex],[Id2],[Direction2],[AccountId2],[CurrencyId2],[CustodyId2],[ResourceId2],[CenterId2],
 			[EntryTypeId2],[MonetaryValue2],[Quantity2],[UnitId2],[Value2],[Time12],[Time22],[ExternalReference2],[AdditionalReference2],[NotedRelationId2],[NotedAgentName2],[NotedAmount2],[NotedDate2]
 	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
-	WHERE LD.EntryCount >= 3;
+	WHERE LD.EntryCount >= 3
+	UNION
+	SELECT	3,		WL.[Index],	[DocumentIndex],[Id3],[Direction3],[AccountId3],[CurrencyId3],[CustodyId3],[ResourceId3],[CenterId3],
+			[EntryTypeId3],[MonetaryValue3],[Quantity3],[UnitId3],[Value3],[Time13],[Time23],[ExternalReference3],[AdditionalReference3],[NotedRelationId3],[NotedAgentName3],[NotedAmount3],[NotedDate3]
+	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
+	WHERE LD.EntryCount >= 4
+	UNION
+	SELECT	4,		WL.[Index],	[DocumentIndex],[Id4],[Direction4],[AccountId4],[CurrencyId4],[CustodyId4],[ResourceId4],[CenterId4],
+			[EntryTypeId4],[MonetaryValue4],[Quantity4],[UnitId4],[Value4],[Time14],[Time24],[ExternalReference4],[AdditionalReference4],[NotedRelationId4],[NotedAgentName4],[NotedAmount4],[NotedDate4]
+	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
+	WHERE LD.EntryCount >= 5
+	UNION
+	SELECT	5,		WL.[Index],	[DocumentIndex],[Id5],[Direction5],[AccountId5],[CurrencyId5],[CustodyId5],[ResourceId5],[CenterId5],
+			[EntryTypeId5],[MonetaryValue5],[Quantity5],[UnitId5],[Value5],[Time15],[Time25],[ExternalReference5],[AdditionalReference5],[NotedRelationId5],[NotedAgentName5],[NotedAmount5],[NotedDate5]
+	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
+	WHERE LD.EntryCount >= 6;
 
 	SELECT * FROM @AllEntries;

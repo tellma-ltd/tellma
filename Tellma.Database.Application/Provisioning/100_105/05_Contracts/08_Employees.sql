@@ -36,7 +36,7 @@ BEGIN
 	VALUES(0,0,@AdminUserId)
 
 	EXEC [api].[Relations__Save]
-		@DefinitionId = @EmployeeCD,
+		@DefinitionId = @EmployeeRLD,
 		@Entities = @Employees,
 		@RelationUsers = @RelationUsers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
