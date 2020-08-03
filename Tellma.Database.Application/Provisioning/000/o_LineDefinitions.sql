@@ -50,24 +50,24 @@ SET [Script] = N'
 
 		[CurrencyId1]		= [CurrencyId0],
 		[CenterId1]			= COALESCE([CenterId1], [CenterId0]),
-		[MonetaryValue1]	= ISNULL([MonetaryValue0], 0)
+		[MonetaryValue1]	= ISNULL([MonetaryValue0], 0),
 		[NotedAgentName1]	= [NotedAgentName0]
 '
 WHERE [Index] = 130;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
 (0,130,+1,		@CashPaymentsToOthersControlExtension), -- Item price
-(3,130,-1,		@CashAndCashEquivalents); 
+(1,130,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,130,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,130,	N'NotedAgentName',		0,	N'Supplier',		1,4,1),
+(1,130,	N'NotedAgentName',		0,	N'Beneficiary',		1,4,1),
 (2,130,	N'CurrencyId',			0,	N'Currency',		1,2,1),
 (3,130,	N'MonetaryValue',		0,	N'Amount',			1,2,0), -- 
-(8,130,	N'ExternalReference',	3,	N'Check #',			4,4,0),
-(9,130,	N'CustodyId',			3,	N'Cash/Bank Acct',	4,4,0), -- Entryztype
+(8,130,	N'ExternalReference',	1,	N'Check #',			4,4,0),
+(9,130,	N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0), -- Entryztype
 (10,130,N'PostingDate',			0,	N'Payment Date',	1,2,1),
 (11,130, N'CenterId',			0,	N'Business Unit',	1,4,1);
 --300:CashPaymentToTradePayable without Invoice
@@ -112,9 +112,10 @@ SET [Script] = N'
 		[CenterId3]			= COALESCE([CenterId3], [CenterId0]),
 		[MonetaryValue0]	= ISNULL([MonetaryValue0], 0),
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
-		[MonetaryValue2]	= IIF(ISNUMERIC([MonetaryValue0]) = 1, 0.02 * [MonetaryValue0], 0),
-		[MonetaryValue3]	= ISNULL([MonetaryValue0], 0) + ISNULL([MonetaryValue1], 0) - IIF(ISNUMERIC([MonetaryValue0]) = 1, 0.02 * [MonetaryValue0], 0),
-		[ExternalReference2]= ISNULL([ExternalReference2] = N''-''),
+		[MonetaryValue2]	= IIF(ISNUMERIC([ExternalReference2]) = 1, 0.02 * [MonetaryValue0], 0),
+		[MonetaryValue3]	= ISNULL([MonetaryValue0], 0) + ISNULL([MonetaryValue1], 0) - 
+								IIF(ISNUMERIC([ExternalReference2]) = 1, 0.02 * [MonetaryValue0], 0),
+		[ExternalReference2]= ISNULL([ExternalReference2], N''--''),
 		[NotedAmount1]		= ISNULL([MonetaryValue0], 0),
 		[NotedAmount2]		= ISNULL([MonetaryValue0], 0),
 		[NotedRelationId1]	= [NotedRelationId0],

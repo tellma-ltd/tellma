@@ -8,7 +8,7 @@
 
 UPDATE @CustodyDefinitions
 SET 
-	[CurrencyVisibility] = N'Required',
+	[CurrencyVisibility] = N'Required', [BankAccountNumberVisibility] = N'Optional',
 	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD
 WHERE [Code] IN ( N'BankAccount')
 
