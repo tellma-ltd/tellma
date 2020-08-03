@@ -365,6 +365,13 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
+	SET [ExternalReferenceLabel] = N'Check/Rcpt #'
+WHERE [Concept] IN (
+	N'CashOnHand',
+	N'BalancesWithBanks'
+);
+
+UPDATE  @AccountTypes
 	SET [ExternalReferenceLabel] = N'Invoice #'
 WHERE [Concept] IN (
 	N'NoncurrentValueAddedTaxReceivables',
@@ -984,31 +991,53 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 INSERT INTO @AccountTypeCustodyDefinitions([Index],
 [HeaderIndex],										[CustodyDefinitionId]) VALUES
-(0,@MotorVehicles,									@RentalCD),
-(1,@MotorVehicles,									@PPECustodyCD),
-(2,@OfficeEquipment,								@PPECustodyCD),
-(3,@InvestmentPropertyCompleted,					@RentalCD),
-(7,@Merchandise,									@WarehouseCD),
-(8,@CurrentFoodAndBeverage,							@WarehouseCD),
-(9,@CurrentAgriculturalProduce,						@WarehouseCD),
-(10,@FinishedGoods,									@WarehouseCD),
-(11,@WorkInProgress,								@WarehouseCD),
-(12,@RawMaterials,									@WarehouseCD),
-(13,@ProductionSupplies,							@WarehouseCD),
-(14,@CurrentPackagingAndStorageMaterials,			@WarehouseCD),
-(15,@SpareParts,									@WarehouseCD),
-(16,@CurrentFuel,									@WarehouseCD),
-(116,@CurrentInventoriesInTransit,					@ShipperCD),
-(17,@OtherInventories,								@WarehouseCD),
-(25,@CurrentReceivablesFromRentalOfProperties,		@RentalCD),
-(27,@CashOnHand,									@SafeCD),
-(28,@BalancesWithBanks,								@BankAccountCD),
-(29,@RevenueFromSaleOfGoods,						@WarehouseCD),
-(30,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
-(31,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
-(32,@CostOfMerchandiseSold,							@WarehouseCD),
-(44,@CollectionGuaranteeExtension,					@SafeCD),
-(45,@DishonouredGuaranteeExtension,					@SafeCD);
+(0,@LandMemberRD,									@PPECustodyCD),
+(1,@BuildingsMemberRD,								@PPECustodyCD),
+(2,@MachineryMemberRD,								@PPECustodyCD),
+(3,@MachineryMemberRD,								@RentalCD),
+(4,@MotorVehiclesMemberRD,							@PPECustodyCD),
+(5,@MotorVehiclesMemberRD,							@RentalCD),
+(6,@FixturesAndFittingsMemberRD,					@PPECustodyCD),
+(7,@OfficeEquipmentMemberRD,						@PPECustodyCD),
+(8,@OfficeEquipmentMemberRD,						@RentalCD),
+(9,@ComputerEquipmentMemberRD,						@PPECustodyCD),
+(10,@ComputerEquipmentMemberRD,						@RentalCD),
+(7,@CommunicationAndNetworkEquipmentMemberRD,		@PPECustodyCD),
+(8,@NetworkInfrastructureMemberRD,					@PPECustodyCD),
+(9,@BearerPlantsMemberRD,							@PPECustodyCD),
+(10,@TangibleExplorationAndEvaluationAssetsMemberRD,@PPECustodyCD),
+(11,@TangibleExplorationAndEvaluationAssetsMemberRD,@RentalCD),
+(12,@MiningAssetsMemberRD,							@PPECustodyCD),
+(13,@OilAndGasAssetsMemberRD,						@PPECustodyCD),
+(14,@PowerGeneratingAssetsMemberRD,					@PPECustodyCD),
+(15,@LeaseholdImprovementsMemberRD,					@PPECustodyCD),
+(16,@ConstructionInProgressMemberRD,				@PPECustodyCD),
+(17,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD,
+													@PPECustodyCD),
+(18,@OtherPropertyPlantAndEquipmentMemberRD,		@PPECustodyCD),
+
+(23,@InvestmentPropertyCompleted,					@RentalCD),
+(37,@Merchandise,									@WarehouseCD),
+(38,@CurrentFoodAndBeverage,						@WarehouseCD),
+(39,@CurrentAgriculturalProduce,					@WarehouseCD),
+(310,@FinishedGoods,								@WarehouseCD),
+(311,@WorkInProgress,								@WarehouseCD),
+(312,@RawMaterials,									@WarehouseCD),
+(313,@ProductionSupplies,							@WarehouseCD),
+(314,@CurrentPackagingAndStorageMaterials,			@WarehouseCD),
+(315,@SpareParts,									@WarehouseCD),
+(316,@CurrentFuel,									@WarehouseCD),
+(317,@CurrentInventoriesInTransit,					@ShipperCD),
+(319,@OtherInventories,								@WarehouseCD),
+(325,@CurrentReceivablesFromRentalOfProperties,		@RentalCD),
+(327,@CashOnHand,									@SafeCD),
+(328,@BalancesWithBanks,							@BankAccountCD),
+(329,@RevenueFromSaleOfGoods,						@WarehouseCD),
+(330,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
+(331,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
+(332,@CostOfMerchandiseSold,						@WarehouseCD),
+(344,@CollectionGuaranteeExtension,					@SafeCD),
+(345,@DishonouredGuaranteeExtension,				@SafeCD);
 
 INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 [HeaderIndex],										[NotedRelationDefinitionId]) VALUES

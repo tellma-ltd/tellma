@@ -85,12 +85,13 @@ BEGIN
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 
 	-- account/currency/center/ must not be null
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
-		N'Error_Field0IsRequired'
+		N'Error_Field0IsRequired',
+		N'localize:Entry_' + LEFT(FL.[Id], LEN(FL.[Id]) - 2)
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	CROSS JOIN (VALUES

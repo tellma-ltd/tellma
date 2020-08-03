@@ -20,7 +20,7 @@ INSERT INTO @ResourceDefinitionIds([Id]) VALUES
 (@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
 (@OtherPropertyPlantAndEquipmentMemberRD),
 (@InvestmentPropertyCompletedMemberRD),
-(@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
+--(@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 --(@MerchandiseRD),
 --(@CurrentFoodAndBeverageRD),
 --(@CurrentAgriculturalProduceRD),

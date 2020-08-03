@@ -1,8 +1,6 @@
 ﻿--OdataPath
 DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
-DECLARE @CashPurchaseVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPurchaseVoucherDD AS NVARCHAR(50));
 DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
-DECLARE @CashSalesVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashSalesVoucherDD AS NVARCHAR(50));
 DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
 
 INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
