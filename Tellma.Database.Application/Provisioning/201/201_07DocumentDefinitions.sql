@@ -5,10 +5,10 @@ FROM dbo.DocumentDefinitions
 WHERE [Id] IN
 (
 --@ManualJournalVoucherDD,
-@CashPurchaseVoucherDD,
-@CashPaymentVoucherDD,
-@CashSalesVoucherDD,
-@CashReceiptVoucherDD
+@CashPurchaseVoucherDD
+--@CashPaymentVoucherDD,
+--@CashSalesVoucherDD,
+--@CashReceiptVoucherDD
 );
 DELETE FROM @DocumentDefinitionLineDefinitions
 INSERT @DocumentDefinitionLineDefinitions([Index],
@@ -35,14 +35,28 @@ EXEC [dal].[DocumentDefinitions__UpdateState]
 DELETE FROM LineDefinitionEntryResourceDefinitions
 WHERE [LineDefinitionEntryId] = (SELECT [Id] FROM dbo.LineDefinitionEntries WHERE LineDefinitionId = @StockReceiptFromTradePayableLD AND [Index] = 0)
 AND [ResourceDefinitionId] IN (
+	@TangibleExplorationAndEvaluationAssetsMemberRD,
+	@MiningAssetsMemberRD,
+	@OilAndGasAssetsMemberRD,
+	@LeaseholdImprovementsMemberRD,
+	@ConstructionInProgressMemberRD,
+	@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD,
+	@OtherPropertyPlantAndEquipmentMemberRD,
+	@InvestmentPropertyCompletedMemberRD,
+	@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD,
 	@MerchandiseRD,
 	@CurrentFoodAndBeverageRD,
 	@CurrentAgriculturalProduceRD,
+	@FinishedGoodsRD,
 	@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD,
+	@WorkInProgressRD,
 	@RawMaterialsRD,
 	@CurrentFuelRD,
 	@TradeMedicineRD,
 	@TradeConstructionMaterialRD,
 	@TradeSparePartRD,
-	@RawVehicleRD
+	@RawVehicleRD,
+	@RevenueServiceRD,
+	@EmployeeBenefitRD,
+	@CheckReceivedRD
 )
