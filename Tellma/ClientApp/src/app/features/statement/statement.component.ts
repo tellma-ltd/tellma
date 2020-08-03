@@ -1360,6 +1360,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             weight: 1
           });
         }
+
+        // NotedAmount
+        if (!!accountType.NotedAmountLabel) {
+          this._columns.push({
+            select: ['NotedAmount'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedAmountLabel'),
+            display: (entry: DetailsEntry) => !!entry.NotedAmount ? formatAccounting(entry.NotedAmount, this.functionalDigitsInfo) : '',
+            weight: 1
+          });
+        }
       }
 
       // Resource
