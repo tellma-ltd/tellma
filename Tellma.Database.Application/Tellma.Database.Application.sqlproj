@@ -667,10 +667,6 @@
     <None Include="bll\Stored Procedures\bll.Documents__Preprocess2.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
-    <None Include="Provisioning\106\106_24Relations.sql" />
-    <None Include="Provisioning\106\106_25Custodies.sql" />
-    <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
-    <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -684,10 +680,9 @@
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="dbo\User Defined Types\Readme.txt" />
     <None Include="100.BananSD.publish.xml" />
-    <None Include="103.LifanCars.publish.xml" />
-    <None Include="104.WaliaSteel.publish.xml" />
+    <None Include="299.BananETDemos.publish.xml" />
     <None Include="200.BananET.publish.xml" />
-    <None Include="105.Simpex.publish.xml" />
+    <None Include="399.BananSADemos.publish.xml" />
     <None Include="Tellma.Database.Application.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\000\n_Settings.sql" />
