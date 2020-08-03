@@ -26,10 +26,10 @@
 	[CreditResourceId]				INT	CONSTRAINT [FK_Documents__CreditResourceId] REFERENCES dbo.[Resources]([Id]), 
 	[CreditResourceIsCommon]		BIT				NOT NULL DEFAULT 0,	
 
-	[DebitCustodianId]				INT	CONSTRAINT [FK_Documents__DebitCustodianId] REFERENCES dbo.[Relations]([Id]), 
-	[DebitCustodianIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[CreditCustodianId]				INT	CONSTRAINT [FK_Documents__CreditCustodianId] REFERENCES dbo.[Relations]([Id]), 
-	[CreditCustodianIsCommon]		BIT				NOT NULL DEFAULT 0,
+	[DebitCustodyId]				INT	CONSTRAINT [FK_Documents__DebitCustodyId] REFERENCES dbo.[Custodies]([Id]), 
+	[DebitCustodyIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[CreditCustodyId]				INT	CONSTRAINT [FK_Documents__CreditCustodyId] REFERENCES dbo.[Custodies]([Id]), 
+	[CreditCustodyIsCommon]			BIT				NOT NULL DEFAULT 0,
 
 	[NotedRelationId]				INT	CONSTRAINT [FK_Documents__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
 	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,

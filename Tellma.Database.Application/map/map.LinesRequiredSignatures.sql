@@ -11,12 +11,13 @@ RETURN (
 			COALESCE(
 				WS.UserId,
 				(SELECT MIN(UserId) FROM dbo.[RelationUsers] WHERE [RelationId] IN (
-					SELECT [CustodianId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+					SELECT [CustodyId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 					)
 				)
 			) AS UserId,
 			(
-				SELECT [CustodianId] FROM dbo.Entries
+				SELECT C.[CustodianId] FROM dbo.Entries E
+				JOIN dbo.Custodies C ON E.[CustodyId] = C.[Id]
 				WHERE LineId = L.Id
 				AND [Index] = WS.[RuleTypeEntryIndex]
 			) AS [CustodianId],

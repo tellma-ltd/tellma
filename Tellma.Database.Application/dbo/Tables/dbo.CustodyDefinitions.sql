@@ -77,8 +77,8 @@
 
 	[Script]							NVARCHAR (MAX),
 	-----Properties applicable to custodies only
-	[RelationVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([RelationVisibility] IN (N'None', N'Optional', N'Required')),
-	[RelationDefinitionId]				INT				CONSTRAINT [FK_CustodyDefinitions__RelationDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),
+	[CustodianVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CustodianVisibility] IN (N'None', N'Optional', N'Required')),
+	[CustodianDefinitionId]				INT				CONSTRAINT [FK_CustodyDefinitions__CustodianDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),
 
 	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),

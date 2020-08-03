@@ -9,7 +9,7 @@ import { PermissionsForClient } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
-import { Relation } from './entities/relations';
+import { Relation } from './entities/relation';
 import { User } from './entities/user';
 import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
@@ -39,9 +39,12 @@ import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
 import { MarkupTemplate } from './entities/markup-template';
 import { Agent } from './entities/agent';
-import { RelationDefinition } from './entities/relations-definition';
+import { RelationDefinition } from './entities/relation-definition';
 import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
+import { CustodyDefinition } from './entities/custody-definition';
+import { Custody } from './entities/custody';
+import { EntitiesResponse } from './dto/entities-response';
 
 enum WhichWorkspace {
   /**
@@ -347,6 +350,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   User: EntityWorkspace<User>;
   Agent: EntityWorkspace<Agent>;
   Relation: EntityWorkspace<Relation>;
+  Custody: EntityWorkspace<Custody>;
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
@@ -365,6 +369,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   OutboxRecord: EntityWorkspace<OutboxRecord>;
   MarkupTemplate: EntityWorkspace<MarkupTemplate>;
   RelationDefinition: EntityWorkspace<RelationDefinition>;
+  CustodyDefinition: EntityWorkspace<CustodyDefinition>;
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
   LookupDefinition: EntityWorkspace<LookupDefinition>;
 
@@ -383,6 +388,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.User = {};
     this.Agent = {};
     this.Relation = {};
+    this.Custody = {};
     this.Lookup = {};
     this.Currency = {};
     this.Resource = {};
@@ -401,6 +407,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.InboxRecord = {};
     this.OutboxRecord = {};
     this.RelationDefinition = {};
+    this.CustodyDefinition = {};
     this.ResourceDefinition = {};
     this.LookupDefinition = {};
 
@@ -653,6 +660,7 @@ export class ReportStore {
   information: () => string;
   arguments: ReportArguments = {};
   result: Entity[] = [];
+  response: EntitiesResponse;
   extras: { [key: string]: any };
   filter: string; // the one used to retrieve the result
   disableFetch = false; // set it to true upon a catastrophic failure from a bad definition

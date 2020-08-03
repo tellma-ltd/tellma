@@ -31,10 +31,10 @@ BEGIN
 				[DebitResourceIsCommon],
 				[CreditResourceId],
 				[CreditResourceIsCommon],
-				[DebitCustodianId],
-				[DebitCustodianIsCommon],
-				[CreditCustodianId],
-				[CreditCustodianIsCommon],
+				[DebitCustodyId],
+				[DebitCustodyIsCommon],
+				[CreditCustodyId],
+				[CreditCustodyIsCommon],
 				[NotedRelationId],
 				[NotedRelationIsCommon],
 				[SegmentId],
@@ -71,15 +71,15 @@ BEGIN
 				t.[DebitResourceIsCommon]	= s.[DebitResourceIsCommon],
 				t.[CreditResourceId]		= s.[CreditResourceId],
 				t.[CreditResourceIsCommon]	= s.[CreditResourceIsCommon],
-				t.[DebitCustodianId]		= s.[DebitCustodianId],
-				t.[DebitCustodianIsCommon]	= s.[DebitCustodianIsCommon],
-				t.[CreditCustodianId]		= s.[CreditCustodianId],
-				t.[CreditCustodianIsCommon]	= s.[CreditCustodianIsCommon],
+				t.[DebitCustodyId]			= s.[DebitCustodyId],
+				t.[DebitCustodyIsCommon]	= s.[DebitCustodyIsCommon],
+				t.[CreditCustodyId]			= s.[CreditCustodyId],
+				t.[CreditCustodyIsCommon]	= s.[CreditCustodyIsCommon],
 				t.[NotedRelationId]			= s.[NotedRelationId],
 				t.[NotedRelationIsCommon]	= s.[NotedRelationIsCommon],
 				t.[SegmentId]				= s.[SegmentId],
 				t.[CenterId]				= s.[CenterId],
-				t.[CenterIsCommon]		= s.[CenterIsCommon],
+				t.[CenterIsCommon]			= s.[CenterIsCommon],
 				t.[Time1]					= s.[Time1],
 				t.[Time1IsCommon]			= s.[Time1IsCommon],
 				t.[Time2]					= s.[Time2],
@@ -105,10 +105,10 @@ BEGIN
 				[DebitResourceIsCommon],
 				[CreditResourceId],
 				[CreditResourceIsCommon],
-				[DebitCustodianId],
-				[DebitCustodianIsCommon],
-				[CreditCustodianId],
-				[CreditCustodianIsCommon],
+				[DebitCustodyId],
+				[DebitCustodyIsCommon],
+				[CreditCustodyId],
+				[CreditCustodyIsCommon],
 				[NotedRelationId],
 				[NotedRelationIsCommon],
 				[SegmentId],
@@ -137,10 +137,10 @@ BEGIN
 				s.[DebitResourceIsCommon],
 				s.[CreditResourceId],
 				s.[CreditResourceIsCommon],
-				s.[DebitCustodianId],
-				s.[DebitCustodianIsCommon],
-				s.[CreditCustodianId],
-				s.[CreditCustodianIsCommon],
+				s.[DebitCustodyId],
+				s.[DebitCustodyIsCommon],
+				s.[CreditCustodyId],
+				s.[CreditCustodyIsCommon],
 				s.[NotedRelationId],
 				s.[NotedRelationIsCommon],
 				s.[SegmentId],
@@ -193,13 +193,20 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index], [PostingDate],	[TemplateLineId],	[Multiplier], [Memo])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo])
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
 	) AS x
 	WHERE [Index] IS NOT NULL;
+
+	--DECLARE @RelevantEntries dbo.EntryList
+	--INSERT INTO @RelevantEntries
+	--SELECT * FROM @Entries
+	--WHERE
+	--	([Quantity] IS NOT NULL AND [Quantity] <> 0) OR
+	--	([Value] IS NOT NULL AND [Value] <> 0);
 
 	WITH BE AS (
 		SELECT * FROM dbo.[Entries]
@@ -209,7 +216,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineId], E.[Index], E.[IsSystem], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[CustodianId], E.[ResourceId], E.[CenterId],
+			E.[CustodyId], E.[ResourceId], E.[CenterId],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
 			E.[Time1], E.[Time2],
@@ -230,7 +237,7 @@ BEGIN
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
-			t.[CustodianId]				= s.[CustodianId],
+			t.[CustodyId]				= s.[CustodyId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[CenterId]				= s.[CenterId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -240,17 +247,17 @@ BEGIN
 			t.[Value]					= s.[Value],
 			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
-			t.[ExternalReference]	= s.[ExternalReference],
-			t.[AdditionalReference]	= s.[AdditionalReference],
-			t.[NotedRelationId]		= s.[NotedRelationId],
-			t.[NotedAgentName]		= s.[NotedAgentName],
-			t.[NotedAmount]			= s.[NotedAmount],
-			t.[NotedDate]			= s.[NotedDate],
+			t.[ExternalReference]		= s.[ExternalReference],
+			t.[AdditionalReference]		= s.[AdditionalReference],
+			t.[NotedRelationId]			= s.[NotedRelationId],
+			t.[NotedAgentName]			= s.[NotedAgentName],
+			t.[NotedAmount]				= s.[NotedAmount],
+			t.[NotedDate]				= s.[NotedDate],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [IsSystem], [Direction], [AccountId], [CurrencyId],
-			[CustodianId], [ResourceId], [CenterId],
+			[CustodyId], [ResourceId], [CenterId],
 			[EntryTypeId], --[BatchCode], 
 			[MonetaryValue], [Quantity], [UnitId], [Value],
 			[Time1], [Time2],
@@ -262,7 +269,7 @@ BEGIN
 			[NotedDate]
 		)
 		VALUES (s.[LineId], s.[Index], s.[IsSystem], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[CustodianId], s.[ResourceId], s.[CenterId],
+			s.[CustodyId], s.[ResourceId], s.[CenterId],
 			s.[EntryTypeId], --[BatchCode], 
 			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
 			s.[Time1], s.[Time2],

@@ -130,4 +130,28 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
 	WHERE (BE.IsActive = 0);
 
+	-- The parent center in the uploaded list cannot have children
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
+		N'Error_TheParentCenter0CannotHaveDescendants',
+		dbo.fn_Localize(FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
+	FROM @Entities FE 
+	JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
+	WHERE (FE2.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
+
+	-- The parent center in the db cannot have children
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
+		N'Error_TheParentCenter0CannotHaveDescendants',
+		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
+	FROM @Entities FE 
+	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
+	WHERE (BE.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
+
+	-- for each one uploaded, calculate the level
+	-- union the ones in db, calculate the level
+	-- if we end up having same type at two different levels, raise error showing center, type, level from the uploaded ones
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

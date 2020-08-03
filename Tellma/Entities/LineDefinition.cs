@@ -58,20 +58,29 @@ namespace Tellma.Entities
         [StringLength(100)]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
+
+        [Display(Name = "LineDefinition_AllowSelectiveSigning")]
         public bool? AllowSelectiveSigning { get; set; }
+
+        [Display(Name = "LineDefinition_ViewDefaultsToForm")]
         public bool? ViewDefaultsToForm { get; set; }
 
+        [Display(Name = "LineDefinition_GenerateScript")]
         public string GenerateScript { get; set; }
 
+        [MultilingualDisplay(Name = "LineDefinition_GenerateLabel", Language = Language.Primary)]
         [StringLength(50)]
         public string GenerateLabel { get; set; }
 
+        [MultilingualDisplay(Name = "LineDefinition_GenerateLabel", Language = Language.Secondary)]
         [StringLength(50)]
         public string GenerateLabel2 { get; set; }
 
+        [MultilingualDisplay(Name = "LineDefinition_GenerateLabel", Language = Language.Ternary)]
         [StringLength(50)]
         public string GenerateLabel3 { get; set; }
 
+        [Display(Name = "LineDefinition_Script")]
         public string Script { get; set; }
 
         [ForeignKey(nameof(LineDefinitionEntry.LineDefinitionId))]

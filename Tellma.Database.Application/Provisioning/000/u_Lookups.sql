@@ -1,12 +1,13 @@
 ﻿ -- ITEquipmentManufacturer
 SET @DefinitionId = @ITEquipmentManufacturerLKD; DELETE FROM @Lookups;
 INSERT INTO @Lookups([Index],[Code],[Name]) VALUES
-(101, N'Microsoft', N'Microsoft'),
-(102, N'Apple', N'Apple'),
-(103, N'HP', N'HP'),
-(104, N'IBM', N'IBM'),
-(105, N'Lenovo', N'Lenovo'),
-(106, N'Dell', N'Dell');
+(0, N'Microsoft', N'Microsoft'),
+(1, N'Apple', N'Apple'),
+(2, N'HP', N'HP'),
+(3, N'IBM', N'IBM'),
+(4, N'Lenovo', N'Lenovo'),
+(5, N'Dell', N'Dell'),
+(6, N'Toshiba', N'Toshiba');
 EXEC [api].Lookups__Save
 @DefinitionId = @DefinitionId,
 @Entities = @Lookups,
@@ -162,6 +163,7 @@ DECLARE @HPLKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'HP');
 DECLARE @IBMLKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'IBM');
 DECLARE @LenovoLKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Lenovo');
 DECLARE @DellLKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Dell');
+DECLARE @ToshibaLKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Toshiba');
 
 DECLARE @Windows10LKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Windows10');
 DECLARE @Windows8LKP INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Windows8');

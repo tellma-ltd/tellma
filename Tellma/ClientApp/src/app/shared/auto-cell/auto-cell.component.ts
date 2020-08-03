@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { Entity } from '~/app/data/entities/base/entity';
 import { formatNumber, formatDate } from '@angular/common';
-import { formatAccounting } from '~/app/data/util';
+import { formatAccounting, displayValue, displayEntity } from '~/app/data/util';
 
 @Component({
   selector: 't-auto-cell',
@@ -206,64 +206,4 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
     // "this._value" should return the entity itself
     return displayEntity(this._value, this._entityDescriptor);
   }
-}
-
-/**
- * Returns a string representation of the value based on the property descriptor.
- * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
- * @param value The value to represent as a string
- * @param prop The property descriptor used to format the value as a string
- */
-export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
-  switch (prop.control) {
-    case 'text': {
-      return value;
-    }
-    case 'number': {
-      if (value === undefined) {
-        return null;
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return formatAccounting(value, digitsInfo);
-    }
-    case 'date': {
-      if (value === undefined) {
-        return null;
-      }
-      const format = 'yyyy-MM-dd';
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'datetime': {
-      if (value === undefined) {
-        return null;
-      }
-      const format = 'yyyy-MM-dd HH:mm';
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'boolean': {
-      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
-    }
-    case 'choice':
-    case 'state': {
-      return !!prop && !!prop.format ? prop.format(value) : null;
-    }
-    case 'serial': {
-      return !!prop && !!prop.format ? prop.format(value) : (value + '');
-    }
-    case 'navigation':
-    default:
-      // Programmer error
-      throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
-  }
-}
-
-/**
- * Returns a string representation of the entity based on the entity descriptor.
- * @param entity The entity to represent as a string
- * @param entityDesc The entity descriptor used to format the entity as a string
- */
-export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
-  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }

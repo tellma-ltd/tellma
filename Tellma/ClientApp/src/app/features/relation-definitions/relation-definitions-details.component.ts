@@ -8,7 +8,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { RelationDefinitionForSave, metadata_RelationDefinition, RelationDefinition } from '~/app/data/entities/relations-definition';
+import { RelationDefinitionForSave, metadata_RelationDefinition, RelationDefinition } from '~/app/data/entities/relation-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
 import { RelationDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';

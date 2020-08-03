@@ -98,6 +98,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'boxes',
           'building',
           'calendar',
+          'calendar-alt',
           'camera-retro',
           'camera',
           'campground',

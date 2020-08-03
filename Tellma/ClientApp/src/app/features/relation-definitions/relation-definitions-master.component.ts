@@ -6,7 +6,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { RelationDefinition } from '~/app/data/entities/relations-definition';
+import { RelationDefinition } from '~/app/data/entities/relation-definition';
 
 @Component({
   selector: 't-relation-definitions-master',

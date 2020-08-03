@@ -79,11 +79,11 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>Custodian</value>
+  <data name="Account_Custody" xml:space="preserve">
+    <value>Custody</value>
   </data>
-  <data name="Account_CustodianDefinition" xml:space="preserve">
-    <value>Custodian Definition</value>
+  <data name="Account_CustodyDefinition" xml:space="preserve">
+    <value>Custody Definition</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
-  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
-    <value>Custodian Definitions</value>
+  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
+    <value>Custody Definitions</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Purpose Parent</value>
@@ -157,11 +157,11 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>Time 2 Label</value>
   </data>
-  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
-    <value>Account Type Custodian Definition</value>
+  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
+    <value>Account Type Custody Definition</value>
   </data>
-  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
-    <value>Account Type Custodian Definitions</value>
+  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
+    <value>Account Type Custody Definitions</value>
   </data>
   <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
     <value>Account Type Noted Relation Definition</value>
@@ -367,6 +367,33 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>Current Password</value>
   </data>
+  <data name="Custodies" xml:space="preserve">
+    <value>Custodies</value>
+  </data>
+  <data name="Custody" xml:space="preserve">
+    <value>Custody</value>
+  </data>
+  <data name="Custody_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Custody_BankAccountNumber" xml:space="preserve">
+    <value>Bank Account Number</value>
+  </data>
+  <data name="Custody_Custodian" xml:space="preserve">
+    <value>Custodian</value>
+  </data>
+  <data name="Custody_Job" xml:space="preserve">
+    <value>Job</value>
+  </data>
+  <data name="Custody_TaxIdentificationNumber" xml:space="preserve">
+    <value>Tax Identification Number</value>
+  </data>
+  <data name="CustodyDefinition" xml:space="preserve">
+    <value>Custody Definition</value>
+  </data>
+  <data name="CustodyDefinitions" xml:space="preserve">
+    <value>Custody Definitions</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
   </data>
@@ -514,8 +541,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
-  <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>Credit Custodian</value>
+  <data name="Document_CreditCustody" xml:space="preserve">
+    <value>Credit Custody</value>
   </data>
   <data name="Document_CreditResource" xml:space="preserve">
     <value>Credit Resource</value>
@@ -523,8 +550,8 @@
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>Debit Custodian</value>
+  <data name="Document_DebitCustody" xml:space="preserve">
+    <value>Debit Custody</value>
   </data>
   <data name="Document_DebitResource" xml:space="preserve">
     <value>Debit Resource</value>
@@ -718,8 +745,8 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>Custodian</value>
+  <data name="Entry_Custody" xml:space="preserve">
+    <value>Custody</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>Direction</value>
@@ -844,8 +871,20 @@
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>Only draft lines can be deleted.</value>
   </data>
+  <data name="Error_Center0IsAbstract" xml:space="preserve">
+    <value>Center '{0}' is abstract.</value>
+  </data>
+  <data name="Error_Center0IsNot1" xml:space="preserve">
+    <value>Center '{0}' is not of type {1}.</value>
+  </data>
+  <data name="Error_Center0IsNotLeaf" xml:space="preserve">
+    <value>Center '{0}' is not a leaf.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
+  </data>
+  <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Custody DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>The date cannot be before the archive date {0}.</value>
@@ -1033,8 +1072,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with currency '{3}'.</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
-    <value>Account '{0}' is used in {1} {2} with custodian '{3}'.</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
+    <value>Account '{0}' is used in {1} {2} with custody '{3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with resource '{3}'.</value>
@@ -1078,11 +1117,26 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>The currency should be different than the functional currency.</value>
   </data>
+  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
+    <value>{0} '{1}' is used in account '{2}'.</value>
+  </data>
+  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
+    <value>{0} '{1}' is used in {2} {3}.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
+    <value>Custody definition '{0}' is not compatible with '{1}'.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>Custody definition '{0}' is used in account type '{1}'.</value>
+  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>Some lines are not posted.</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>The document has completed lines.</value>
+  </data>
+  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
+    <value>Control account '{0}' has a non-zero net balance of '{1}'.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>Some lines are missing required signatures.</value>
@@ -1132,6 +1186,9 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>The name '{0}' is already used.</value>
   </data>
+  <data name="Error_TheParentCenter0CannotHaveDescendants" xml:space="preserve">
+    <value>Center '{0}' cannot have descendants.</value>
+  </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>The parent center '{0}' is not active.</value>
   </data>
@@ -1143,15 +1200,6 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
-    <value>{0} '{1}' is used in account '{2}'.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' is used in {2} {3}.</value>
-  </data>
-  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>Relation definition '{0}' is used in account type '{1}'.</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>Account resource '{0}' has currency '{1}' while the account has currency '{2}'.</value>

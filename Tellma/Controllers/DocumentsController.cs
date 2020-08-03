@@ -210,13 +210,13 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (lines, accounts, relations, resources, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
+                var (lines, accounts, custodies, resources, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
 
                 // Related entitiess
                 var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
                 {
                     { GetCollectionName(typeof(Account)), accounts },
-                    { GetCollectionName(typeof(Relation)), relations },
+                    { GetCollectionName(typeof(Custody)), custodies },
                     { GetCollectionName(typeof(Resource)), resources },
                     { GetCollectionName(typeof(EntryType)), entryTypes },
                     { GetCollectionName(typeof(Center)), centers },
@@ -732,7 +732,7 @@ namespace Tellma.Controllers
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
-            List<Relation> relations,
+            List<Custody> custodies,
             List<Resource> resources,
             List<EntryType> entryTypes,
             List<Center> centers,
@@ -880,8 +880,8 @@ namespace Tellma.Controllers
 
                 doc.DebitResourceIsCommon = docDef.DebitResourceVisibility && (doc.DebitResourceIsCommon ?? false);
                 doc.CreditResourceIsCommon = docDef.CreditResourceVisibility && (doc.CreditResourceIsCommon ?? false);
-                doc.DebitCustodianIsCommon = docDef.DebitCustodianVisibility && (doc.DebitCustodianIsCommon ?? false);
-                doc.CreditCustodianIsCommon = docDef.CreditCustodianVisibility && (doc.CreditCustodianIsCommon ?? false);
+                doc.DebitCustodyIsCommon = docDef.DebitCustodyVisibility && (doc.DebitCustodyIsCommon ?? false);
+                doc.CreditCustodyIsCommon = docDef.CreditCustodyVisibility && (doc.CreditCustodyIsCommon ?? false);
                 doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
                 doc.CenterIsCommon = docDef.CenterVisibility && (doc.CenterIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
@@ -911,8 +911,8 @@ namespace Tellma.Controllers
                 doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
                 doc.DebitResourceId = doc.DebitResourceIsCommon.Value ? doc.DebitResourceId : null;
                 doc.CreditResourceId = doc.CreditResourceIsCommon.Value ? doc.CreditResourceId : null;
-                doc.DebitCustodianId = doc.DebitCustodianIsCommon.Value ? doc.DebitCustodianId : null;
-                doc.CreditCustodianId = doc.CreditCustodianIsCommon.Value ? doc.CreditCustodianId : null;
+                doc.DebitCustodyId = doc.DebitCustodyIsCommon.Value ? doc.DebitCustodyId : null;
+                doc.CreditCustodyId = doc.CreditCustodyIsCommon.Value ? doc.CreditCustodyId : null;
                 doc.NotedRelationId = doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
                 doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
@@ -1014,16 +1014,16 @@ namespace Tellma.Controllers
 
                                             break;
                                         }
-                                    case nameof(Entry.CustodianId):
+                                    case nameof(Entry.CustodyId):
                                         {
                                             var entryDef = lineDef.Entries[columnDef.EntryIndex];
-                                            if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
+                                            if (entryDef.Direction == 1 && doc.DebitCustodyIsCommon.Value)
                                             {
-                                                entry.CustodianId = doc.DebitCustodianId;
+                                                entry.CustodyId = doc.DebitCustodyId;
                                             }
-                                            else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
+                                            else if (entryDef.Direction == -1 && doc.CreditCustodyIsCommon.Value)
                                             {
-                                                entry.CustodianId = doc.CreditCustodianId;
+                                                entry.CustodyId = doc.CreditCustodyId;
                                             }
 
                                             break;
@@ -1410,23 +1410,23 @@ namespace Tellma.Controllers
                                         break;
                                     }
 
-                                case nameof(Entry.CustodianId):
+                                case nameof(Entry.CustodyId):
                                     {
                                         var entryDef = lineDef.Entries[entryIndex];
-                                        if (entryDef.Direction == 1 && doc.DebitCustodianIsCommon.Value)
+                                        if (entryDef.Direction == 1 && doc.DebitCustodyIsCommon.Value)
                                         {
-                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.DebitCustodianId)}");
-                                            if (entry.CustodianId != doc.DebitCustodianId)
+                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodyId)), $"[{docIndex}].{nameof(Document.DebitCustodyId)}");
+                                            if (entry.CustodyId != doc.DebitCustodyId)
                                             {
-                                                AddReadOnlyError(docIndex, nameof(Document.DebitCustodianId));
+                                                AddReadOnlyError(docIndex, nameof(Document.DebitCustodyId));
                                             }
                                         }
-                                        else if (entryDef.Direction == -1 && doc.CreditCustodianIsCommon.Value)
+                                        else if (entryDef.Direction == -1 && doc.CreditCustodyIsCommon.Value)
                                         {
-                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodianId)), $"[{docIndex}].{nameof(Document.CreditCustodianId)}");
-                                            if (entry.CustodianId != doc.CreditCustodianId)
+                                            errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CustodyId)), $"[{docIndex}].{nameof(Document.CreditCustodyId)}");
+                                            if (entry.CustodyId != doc.CreditCustodyId)
                                             {
-                                                AddReadOnlyError(docIndex, nameof(Document.CreditCustodianId));
+                                                AddReadOnlyError(docIndex, nameof(Document.CreditCustodyId));
                                             }
                                         }
 

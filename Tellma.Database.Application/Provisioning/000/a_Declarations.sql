@@ -28,7 +28,7 @@
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
-	DECLARE @AccountTypeCustodianDefinitions AccountTypeCustodianDefinitionList;
+	DECLARE @AccountTypeCustodyDefinitions AccountTypeCustodyDefinitionList;
 	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
@@ -48,7 +48,7 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
-	DECLARE @LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList;
+	DECLARE @LineDefinitionEntryCustodyDefinitions LineDefinitionEntryCustodyDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
 	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
@@ -56,7 +56,7 @@
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 
-	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList], @Custodies CustodyList;
+	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList], @Custodies dbo.[CustodyList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -67,7 +67,7 @@
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @SafeCustodies dbo.[RelationList], @BankAccountCustodies dbo.[RelationList];
+	DECLARE @Safes dbo.[CustodyList], @BankAccountCustodies dbo.[CustodyList];
 
 	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];

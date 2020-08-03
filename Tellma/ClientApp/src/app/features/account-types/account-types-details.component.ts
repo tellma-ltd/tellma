@@ -17,7 +17,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = `Parent,EntryTypeParent,
-CustodianDefinitions/CustodianDefinition,NotedRelationDefinitions/NotedRelationDefinition,ResourceDefinitions/ResourceDefinition`;
+CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefinition,ResourceDefinitions/ResourceDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -100,8 +100,8 @@ CustodianDefinitions/CustodianDefinition,NotedRelationDefinitions/NotedRelationD
       Object.keys(model.serverErrors).some(e => e.endsWith('Label') || e.endsWith('Label2') || e.endsWith('Label3'));
   }
 
-  public showCustodianDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.CustodianDefinitions && model.CustodianDefinitions.some(e => !!e.serverErrors);
+  public showCustodyDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.CustodyDefinitions && model.CustodyDefinitions.some(e => !!e.serverErrors);
   }
 
   public showNotedRelationDefinitionsError(model: AccountType): boolean {

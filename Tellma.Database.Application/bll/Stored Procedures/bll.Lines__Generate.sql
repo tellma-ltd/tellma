@@ -34,7 +34,7 @@ AS
 	[E].[AccountId],
 	[E].[CurrencyId],
 	[E].[ResourceId],
-	[E].[CustodianId],
+	[E].[CustodyId],
 	[E].[EntryTypeId],
 	[E].[NotedRelationId],
 	[E].[CenterId],
@@ -85,6 +85,16 @@ AS
 	FROM [map].[Resources]() [R] 
 	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
 
+	-- Custody
+	SELECT 
+	[C].[Id], 
+	[C].[Name],
+	[C].[Name2],
+	[C].[Name3],
+	[C].[DefinitionId]
+	FROM [map].[Custodies]() [C] 
+	WHERE [Id] IN (SELECT [CustodyId] FROM @Entries)
+
 	-- Relation
 	SELECT 
 	[C].[Id], 
@@ -93,7 +103,7 @@ AS
 	[C].[Name3],
 	[C].[DefinitionId]
 	FROM [map].[Relations]() [C] 
-	WHERE [Id] IN (SELECT [CustodianId] FROM @Entries UNION SELECT [NotedRelationId] FROM @Entries)
+	WHERE [Id] IN (SELECT [NotedRelationId] FROM @Entries)
 
 	-- EntryType
 	SELECT 

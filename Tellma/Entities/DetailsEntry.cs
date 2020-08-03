@@ -21,8 +21,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }
 
-        [Display(Name = "Entry_Custodian")]
-        public int? CustodianId { get; set; }
+        [Display(Name = "Entry_Custody")]
+        public int? CustodyId { get; set; }
 
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; }
@@ -141,9 +141,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(EntryTypeId))]
         public EntryType EntryType { get; set; }
 
-        [Display(Name = "Entry_Custodian")]
-        [ForeignKey(nameof(CustodianId))]
-        public Relation Custodian { get; set; }
+        [Display(Name = "Entry_Custody")]
+        [ForeignKey(nameof(CustodyId))]
+        public Custody Custody { get; set; }
 
         [Display(Name = "Entry_Center")]
         [ForeignKey(nameof(CenterId))]

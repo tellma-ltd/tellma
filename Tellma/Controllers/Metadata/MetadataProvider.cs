@@ -107,6 +107,16 @@ namespace Tellma.Controllers
                             def = relationDef;
                             break;
 
+                        case nameof(Custody):
+                        case nameof(CustodyForSave):
+                            if (!defs.Custodies.TryGetValue(definitionId.Value, out CustodyDefinitionForClient custodyDef))
+                            {
+                                var msg = _localizer[$"Error_CustodyDefinition0CouldNotBeFound"];
+                                throw new BadRequestException(msg);
+                            }
+                            def = custodyDef;
+                            break;
+
                         case nameof(Lookup):
                         case nameof(LookupForSave):
                             if (!defs.Lookups.TryGetValue(definitionId.Value, out LookupDefinitionForClient lookupDef))
@@ -250,6 +260,9 @@ namespace Tellma.Controllers
 
                             nameof(Relation) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
                             nameof(RelationForSave) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
+
+                            nameof(Custody) => CustodyPropertyOverrides(def as CustodyDefinitionForClient, defs, settings, propInfo, display),
+                            nameof(CustodyForSave) => CustodyPropertyOverrides(def as CustodyDefinitionForClient, defs, settings, propInfo, display),
 
                             nameof(Lookup) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
                             nameof(LookupForSave) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
@@ -1110,6 +1123,162 @@ namespace Tellma.Controllers
             };
         }
 
+
+
+        /// <summary>
+        /// Specifies any overriding changes to a Custody property metadata that stem from the definition. 
+        /// In particular: the property display, whether it's visible or not, whether it's required or not, 
+        /// and - if it's a navigation property - the target definitionId
+        /// </summary>
+        private static DefinitionPropOverrides CustodyPropertyOverrides(
+            CustodyDefinitionForClient def,
+            DefinitionsForClient defs,
+            SettingsForClient settings,
+            PropertyInfo propInfo,
+            Func<string> display)
+        {
+            bool isRequired = false;
+
+            switch (propInfo.Name)
+            {
+                // Common with Resources
+
+                case nameof(Custody.Description):
+                case nameof(Custody.Description2):
+                case nameof(Custody.Description3):
+                    display = PropertyDisplay(def.DescriptionVisibility, display);
+                    isRequired = def.DescriptionVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Location):
+                case nameof(Custody.LocationJson):
+                case nameof(Custody.LocationWkb):
+                    display = PropertyDisplay(def.LocationVisibility, display);
+                    isRequired = def.LocationVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.FromDate):
+                    display = PropertyDisplay(settings, def.FromDateVisibility, def.FromDateLabel, def.FromDateLabel2, def.FromDateLabel3, display);
+                    isRequired = def.FromDateVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.ToDate):
+                    display = PropertyDisplay(settings, def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
+                    isRequired = def.ToDateVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Decimal1):
+                    display = PropertyDisplay(settings, def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
+                    isRequired = def.Decimal1Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Decimal2):
+                    display = PropertyDisplay(settings, def.Decimal2Visibility, def.Decimal2Label, def.Decimal2Label2, def.Decimal2Label3, display);
+                    isRequired = def.Decimal2Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Int1):
+                    display = PropertyDisplay(settings, def.Int1Visibility, def.Int1Label, def.Int1Label2, def.Int1Label3, display);
+                    isRequired = def.Int1Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Int2):
+                    display = PropertyDisplay(settings, def.Int2Visibility, def.Int2Label, def.Int2Label2, def.Int2Label3, display);
+                    isRequired = def.Int2Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Text1):
+                    display = PropertyDisplay(settings, def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
+                    isRequired = def.Text1Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Text2):
+                    display = PropertyDisplay(settings, def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
+                    isRequired = def.Text2Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Currency):
+                case nameof(Custody.CurrencyId):
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
+                    isRequired = def.CurrencyVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Center):
+                case nameof(Custody.CenterId):
+                    display = PropertyDisplay(def.CenterVisibility, display);
+                    isRequired = def.CenterVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Lookup1):
+                case nameof(Custody.Lookup1Id):
+                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
+                    isRequired = def.Lookup1Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Lookup2):
+                case nameof(Custody.Lookup2Id):
+                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
+                    isRequired = def.Lookup2Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Lookup3):
+                case nameof(Custody.Lookup3Id):
+                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
+                    isRequired = def.Lookup3Visibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Lookup4):
+                case nameof(Custody.Lookup4Id):
+                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
+                    isRequired = def.Lookup4Visibility == Visibility.Required;
+                    break;
+
+                //case nameof(Custody.Lookup5):
+                //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
+                //    isRequired = def.Lookup5Visibility == Visibility.Required;
+                //    break;
+                //case nameof(Custody.Lookup5Id):
+                //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
+                //    isRequired = def.Lookup5Visibility == Visibility.Required;
+                //    break;
+
+                // Custodies Only
+
+                case nameof(Custody.AgentId):
+                case nameof(Custody.Agent):
+                    display = PropertyDisplay(def.AgentVisibility, display);
+                    isRequired = def.AgentVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.TaxIdentificationNumber):
+                    display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
+                    isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.JobId):
+                    display = PropertyDisplay(def.JobVisibility, display);
+                    isRequired = def.JobVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.BankAccountNumber):
+                    display = PropertyDisplay(def.BankAccountNumberVisibility, display);
+                    isRequired = def.BankAccountNumberVisibility == Visibility.Required;
+                    break;
+                case nameof(Custody.Custodian):
+                case nameof(Custody.CustodianId):
+                    if (def.CustodianDefinitionId != null && defs.Relations.TryGetValue(def.CustodianDefinitionId.Value, out RelationDefinitionForClient relationDef))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(settings, def.CustodianVisibility, relationDef.TitleSingular, relationDef.TitleSingular2, relationDef.TitleSingular3, display);
+                    }
+                    else
+                    {
+                        display = PropertyDisplay(def.CustodianVisibility, display);
+                    }
+                    isRequired = def.CustodianVisibility == Visibility.Required;
+                    break;
+            }
+
+            int? targetDefId = propInfo.Name switch
+            {
+                nameof(Custody.Lookup1) => def.Lookup1DefinitionId,
+                nameof(Custody.Lookup2) => def.Lookup2DefinitionId,
+                nameof(Custody.Lookup3) => def.Lookup3DefinitionId,
+                nameof(Custody.Lookup4) => def.Lookup4DefinitionId,
+                //nameof(Custody.Lookup5) =>  def.Lookup5DefinitionId,
+                _ => null,
+            };
+
+            return new DefinitionPropOverrides
+            {
+                Display = display,
+                IsRequired = isRequired,
+                DefinitionId = targetDefId,
+            };
+        }
+
         /// <summary>
         /// Specifies any overriding changes to a lookup property metadata that stem from the definition. 
         /// In particular: the property display, whether it's visible or not, whether it's required or not, 
@@ -1172,21 +1341,21 @@ namespace Tellma.Controllers
                 case nameof(Document.CreditResourceIsCommon):
                     display = PropertyDisplay(def.CreditResourceVisibility, display);
                     break;
-                case nameof(Document.DebitCustodianId):
-                case nameof(Document.DebitCustodian):
-                    display = PropertyDisplay(settings, def.DebitCustodianVisibility, def.DebitCustodianLabel, def.DebitCustodianLabel2, def.DebitCustodianLabel3, display);
-                    isRequired = def.DebitCustodianRequiredState == 0;
+                case nameof(Document.DebitCustodyId):
+                case nameof(Document.DebitCustody):
+                    display = PropertyDisplay(settings, def.DebitCustodyVisibility, def.DebitCustodyLabel, def.DebitCustodyLabel2, def.DebitCustodyLabel3, display);
+                    isRequired = def.DebitCustodyRequiredState == 0;
                     break;
-                case nameof(Document.DebitCustodianIsCommon):
-                    display = PropertyDisplay(def.DebitCustodianVisibility, display);
+                case nameof(Document.DebitCustodyIsCommon):
+                    display = PropertyDisplay(def.DebitCustodyVisibility, display);
                     break;
-                case nameof(Document.CreditCustodianId):
-                case nameof(Document.CreditCustodian):
-                    display = PropertyDisplay(settings, def.CreditCustodianVisibility, def.CreditCustodianLabel, def.CreditCustodianLabel2, def.CreditCustodianLabel3, display);
-                    isRequired = def.CreditCustodianRequiredState == 0;
+                case nameof(Document.CreditCustodyId):
+                case nameof(Document.CreditCustody):
+                    display = PropertyDisplay(settings, def.CreditCustodyVisibility, def.CreditCustodyLabel, def.CreditCustodyLabel2, def.CreditCustodyLabel3, display);
+                    isRequired = def.CreditCustodyRequiredState == 0;
                     break;
-                case nameof(Document.CreditCustodianIsCommon):
-                    display = PropertyDisplay(def.CreditCustodianVisibility, display);
+                case nameof(Document.CreditCustodyIsCommon):
+                    display = PropertyDisplay(def.CreditCustodyVisibility, display);
                     break;
                 case nameof(Document.NotedRelationId):
                 case nameof(Document.NotedRelation):
@@ -1264,8 +1433,8 @@ namespace Tellma.Controllers
             {
                 nameof(Document.DebitResource) => def.DebitResourceDefinitionIds.Count == 1 ? (int?)def.DebitResourceDefinitionIds[0] : null,
                 nameof(Document.CreditResource) => def.CreditResourceDefinitionIds.Count == 1 ? (int?)def.CreditResourceDefinitionIds[0] : null,
-                nameof(Document.DebitCustodian) => def.DebitCustodianDefinitionIds.Count == 1 ? (int?)def.DebitCustodianDefinitionIds[0] : null,
-                nameof(Document.CreditCustodian) => def.CreditCustodianDefinitionIds.Count == 1 ? (int?)def.CreditCustodianDefinitionIds[0] : null,
+                nameof(Document.DebitCustody) => def.DebitCustodyDefinitionIds.Count == 1 ? (int?)def.DebitCustodyDefinitionIds[0] : null,
+                nameof(Document.CreditCustody) => def.CreditCustodyDefinitionIds.Count == 1 ? (int?)def.CreditCustodyDefinitionIds[0] : null,
                 nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,
                 _ => null,
             };

@@ -110,6 +110,11 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-units-picker>
 
+                            <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="arguments[p.key]"
+                                [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-custodies-picker>
+
                             <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="arguments[p.key]"
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
@@ -131,6 +136,11 @@
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-relation-definitions-picker>
+
+                            <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-custody-definitions-picker>
 
                             <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
@@ -162,14 +172,7 @@
         <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
 
             <!-- Left Buttons -->
-            <div class="d-flex">
-
-                <!-- Refresh -->
-                <!-- <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()"
-                    [disabled]="disableRefresh">
-                    <fa-icon icon="sync-alt"></fa-icon>
-                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
-                </button> -->
+            <div>
 
                 <!-- Export -->
                 <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
@@ -178,17 +181,14 @@
                 </button>
 
                 <!-- Data dropdown -->
-                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement" *ngIf="showDataDropdown">
+                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
+                    *ngIf="showDataDropdown">
                     <button type="button"
                         class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
                         ngbDropdownToggle>
                         {{ 'Data' | translate }}
                     </button>
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                        <!-- <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
-                            [disabled]="!canExport">
-                            {{ 'Export' | translate }}
-                        </button> -->
                         <button type="button" *ngIf="description" class="dropdown-item btn-light" ngbDropdownItem
                             (click)="modalService.open(descModal)">
                             {{ 'Description' | translate }}
@@ -199,6 +199,9 @@
                         </button>
                     </div>
                 </div>
+
+                <t-spinner class="t-vertical-align-middle mx-1" *ngIf="showExportSpinner">
+                </t-spinner>
             </div>
 
             <!-- Right Buttons -->
@@ -242,7 +245,8 @@
     <div class="row t-rest-of-screen" [style.overflow]="overflow">
         <t-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified" [definition]="definition"
             [arguments]="immutableArguments" [view]="view" [refresh]="refresh" [export]="export" [state]="state"
-            [mode]="mode">
+            [mode]="mode" (exportStarting)="onExportStarting()" (exportSuccess)="onExportSuccess()"
+            (exportError)="onExportError($event)">
         </t-report-results>
         <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
             <fa-icon icon="info-circle"></fa-icon>
@@ -276,3 +280,30 @@
         </button>
     </div>
 </ng-template>
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+      </h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!-- body -->
+    <div class="modal-body">
+      {{ errorMessage }}
+    </div>
+  
+    <!-- footer -->
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+        <fa-icon icon="times"></fa-icon>
+        &nbsp;{{ 'Dismiss' | translate }}
+      </button>
+    </div>
+  </ng-template>

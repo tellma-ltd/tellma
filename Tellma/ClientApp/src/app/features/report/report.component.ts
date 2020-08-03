@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+// tslint:disable:member-ordering
+import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { ReportView, modifiedPropDesc } from '../report-results/report-results.component';
-import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE } from '~/app/data/workspace.service';
+import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, MasterStatus } from '~/app/data/workspace.service';
 import {
   ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl,
   EntityDescriptor, metadata, getChoices, NavigationPropDescriptor
@@ -8,7 +9,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified } from '~/app/data/util';
+import { isSpecified, FriendlyError } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -22,6 +23,9 @@ interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor
   styles: []
 })
 export class ReportComponent implements OnInit, OnDestroy {
+
+  @ViewChild('errorModal', { static: true })
+  public errorModal: TemplateRef<any>;
 
   @Input()
   mode: 'screen' | 'preview' = 'screen';
@@ -370,6 +374,9 @@ export class ReportComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  public exportStatus = MasterStatus.loaded;
+  public errorMessage: string;
+
   public onExport() {
     let title = this.title;
     if (!!title) {
@@ -377,6 +384,25 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
 
     this.export$.next(title);
+  }
+
+  public get showExportSpinner() {
+    return this.exportStatus === MasterStatus.loading;
+  }
+
+  public onExportStarting() {
+    this.exportStatus = MasterStatus.loading;
+  }
+
+  public onExportSuccess() {
+    this.exportStatus = MasterStatus.loaded;
+  }
+
+  public onExportError(err: string) {
+    this.exportStatus = MasterStatus.error;
+
+    this.errorMessage = err;
+    this.modalService.open(this.errorModal);
   }
 
   public onRefresh() {

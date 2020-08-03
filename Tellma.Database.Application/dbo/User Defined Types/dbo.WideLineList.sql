@@ -12,7 +12,7 @@
 	[Id0]						INT				NOT NULL DEFAULT 0,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
-	[CustodianId0]				INT,
+	[CustodyId0]				INT,
 	[ResourceId0]				INT,
 	[CenterId0]					INT,
 	[CurrencyId0]				NCHAR (3),
@@ -33,7 +33,7 @@
 	[Id1]						INT				NOT NULL DEFAULT 0,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
-	[CustodianId1]				INT,
+	[CustodyId1]				INT,
 	[ResourceId1]				INT,
 	[CenterId1]					INT,
 	[CurrencyId1]				NCHAR (3),
@@ -54,7 +54,7 @@
 	[Id2]						INT				NULL DEFAULT 0, -- since a wide line may be two entries only
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
-	[CustodianId2]				INT,
+	[CustodyId2]				INT,
 	[ResourceId2]				INT,
 	[CenterId2]					INT,
 	[CurrencyId2]				NCHAR (3),
@@ -71,5 +71,68 @@
 	[NotedRelationId2]			INT,
 	[NotedAgentName2]			NVARCHAR (52),
 	[NotedAmount2]				DECIMAL (29,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[NotedDate2]				DATE
+	[NotedDate2]				DATE,
+
+	[Id3]						INT				NULL DEFAULT 0,
+	[Direction3]				SMALLINT,
+	[AccountId3]				INT,
+	[CustodyId3]				INT,
+	[ResourceId3]				INT,
+	[CenterId3]					INT,
+	[CurrencyId3]				NCHAR (3),
+	[EntryTypeId3]				INT,
+	[MonetaryValue3]			DECIMAL (19,4),
+	[Quantity3]					DECIMAL (19,4),
+	[UnitId3]					INT,
+	[Value3]					DECIMAL (19,4),-- equivalent in functional currency		
+	[Time13]					DATETIME2 (2),	-- from time
+	[Time23]					DATETIME2 (2),	-- to time
+	[ExternalReference3]		NVARCHAR (51),
+	[AdditionalReference3]		NVARCHAR (51),
+	[NotedRelationId3]			INT,
+	[NotedAgentName3]			NVARCHAR (51),
+	[NotedAmount3]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate3]				DATE,
+
+	[Id4]						INT				NULL DEFAULT 0,
+	[Direction4]				SMALLINT,
+	[AccountId4]				INT,
+	[CustodyId4]				INT,
+	[ResourceId4]				INT,
+	[CenterId4]					INT,
+	[CurrencyId4]				NCHAR (3),
+	[EntryTypeId4]				INT,
+	[MonetaryValue4]			DECIMAL (19,4),
+	[Quantity4]					DECIMAL (19,4),
+	[UnitId4]					INT,
+	[Value4]					DECIMAL (19,4),-- equivalent in functional currency		
+	[Time14]					DATETIME2 (2),	-- from time
+	[Time24]					DATETIME2 (2),	-- to time
+	[ExternalReference4]		NVARCHAR (51),
+	[AdditionalReference4]		NVARCHAR (51),
+	[NotedRelationId4]			INT,
+	[NotedAgentName4]			NVARCHAR (51),
+	[NotedAmount4]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate4]				DATE,
+
+	[Id5]						INT				NULL DEFAULT 0,
+	[Direction5]				SMALLINT,
+	[AccountId5]				INT,
+	[CustodyId5]				INT,
+	[ResourceId5]				INT,
+	[CenterId5]					INT,
+	[CurrencyId5]				NCHAR (3),
+	[EntryTypeId5]				INT,
+	[MonetaryValue5]			DECIMAL (19,4),
+	[Quantity5]					DECIMAL (19,4),
+	[UnitId5]					INT,
+	[Value5]					DECIMAL (19,4),-- equivalent in functional currency		
+	[Time15]					DATETIME2 (2),	-- from time
+	[Time25]					DATETIME2 (2),	-- to time
+	[ExternalReference5]		NVARCHAR (51),
+	[AdditionalReference5]		NVARCHAR (51),
+	[NotedRelationId5]			INT,
+	[NotedAgentName5]			NVARCHAR (51),
+	[NotedAmount5]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate5]				DATE
 );

@@ -279,7 +279,7 @@
                     <div class="form-group" *ngIf="isVisible(model.ParticipantVisibility)"
                         [class.is-invalid]="invalid(defId, model?.serverErrors?.ParticipantDefinitionId)">
                         <label class="small"
-                            for="participantdefinition">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
+                            for="participantdefinitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
 
                         <select class="form-control t-studio-input" id="participantdefinitionId"
                             [(ngModel)]="model.ParticipantDefinitionId" (ngModelChange)="onDefinitionChange(model)"

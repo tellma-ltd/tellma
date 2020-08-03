@@ -77,8 +77,8 @@
 
 	[Script]							NVARCHAR (MAX),
 
-	[RelationVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([RelationVisibility] IN (N'None', N'Optional', N'Required')),
-	[RelationDefinitionId]				INT,
+	[CustodianVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CustodianVisibility] IN (N'None', N'Optional', N'Required')),
+	[CustodianDefinitionId]				INT,
 
 	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
@@ -86,6 +86,7 @@
 	[JobVisibility]						NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([JobVisibility] IN (N'None', N'Optional', N'Required')),
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
+	-- TODO: Remove
 	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),
 
 	[MainMenuIcon]						NVARCHAR (50),

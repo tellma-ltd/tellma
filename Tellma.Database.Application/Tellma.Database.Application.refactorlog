@@ -2284,4 +2284,137 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CenterIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="359ac8de-5622-41e2-988e-f418743f7ec0" ChangeDateTime="07/30/2020 05:33:23">
+    <Property Name="ElementName" Value="[dbo].[AccountBalances].[CustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountBalances]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d526cdfd-028d-47d1-8a88-6b44ec442326" ChangeDateTime="07/30/2020 05:34:19">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[CustodianDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0df90fbd-3c8c-4ccd-8c6a-1009021e50c4" ChangeDateTime="07/30/2020 05:34:54">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[CustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="84c05eeb-522f-4cae-be2e-0b0c7da9f481" ChangeDateTime="07/30/2020 05:39:05">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeCustodianDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeCustodyDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2c940442-4df0-41ca-8ed5-9c20a408457b" ChangeDateTime="07/30/2020 05:41:58">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeCustodyDefinitions].[CustodianDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeCustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f6a83a5c-6036-41d7-99fd-bbc95bb2ace9" ChangeDateTime="07/30/2020 05:50:31">
+    <Property Name="ElementName" Value="[dbo].[Budgets].[CustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Budgets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d87c87d3-0d85-483f-970d-4989ee7212e7" ChangeDateTime="07/30/2020 05:52:37">
+    <Property Name="ElementName" Value="[dbo].[Documents].[DebitCustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitCustodyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="64931863-dc8e-49f7-abc8-a8b0f0934045" ChangeDateTime="07/30/2020 05:53:01">
+    <Property Name="ElementName" Value="[dbo].[Documents].[DebitCustodianIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitCustodyIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6b107ebd-8cba-4c02-a1b6-e5863f5ef640" ChangeDateTime="07/30/2020 05:53:15">
+    <Property Name="ElementName" Value="[dbo].[Documents].[CreditCustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreditCustodyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ee4556eb-1931-40f0-9569-fec7cbc0435a" ChangeDateTime="07/30/2020 05:53:54">
+    <Property Name="ElementName" Value="[dbo].[Documents].[CreditCustodianIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreditCustodyIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="38a8a154-2cde-4e89-aa60-f235de6be95b" ChangeDateTime="07/30/2020 05:55:18">
+    <Property Name="ElementName" Value="[dbo].[Entries].[CustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ed057c39-8209-42a4-aead-abc9daf03ff0" ChangeDateTime="07/30/2020 05:56:05">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryCustodianDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryCustodyDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6b30fb90-3c03-4af1-b132-17bd89ac4e73" ChangeDateTime="07/30/2020 05:56:29">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryCustodyDefinitions].[CustodianDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryCustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodyDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0a4c5344-dcf1-486c-84b0-947c85f488a4" ChangeDateTime="07/30/2020 05:59:04">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeCustodianDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeCustodyDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b9798566-9bb0-42a1-a28c-70c0316ee14e" ChangeDateTime="07/30/2020 06:01:58">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryCustodianDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryCustodyDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ffb8c5ac-e8eb-4eb9-80db-1cb0ff052460" ChangeDateTime="07/30/2020 06:19:15">
+    <Property Name="ElementName" Value="[map].[AccountTypeCustodianDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeCustodyDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8a7c1475-adc3-4100-9a6f-02d4ad96e99b" ChangeDateTime="07/30/2020 12:08:41">
+    <Property Name="ElementName" Value="[dbo].[Custodies].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Custodies]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="502baa89-8d3d-4437-ba13-81dc417a9cfc" ChangeDateTime="07/30/2020 12:16:23">
+    <Property Name="ElementName" Value="[dbo].[CustodyDefinitions].[CustodianVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7954692f-c3e5-434c-881b-741d9408c806" ChangeDateTime="07/30/2020 12:16:41">
+    <Property Name="ElementName" Value="[dbo].[CustodyDefinitions].[RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianDefinitionId]" />
+  </Operation>
 </Operations>

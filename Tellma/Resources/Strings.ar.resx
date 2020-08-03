@@ -79,11 +79,11 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>صاحب العهدة</value>
+  <data name="Account_Custody" xml:space="preserve">
+    <value>العهدة</value>
   </data>
-  <data name="Account_CustodianDefinition" xml:space="preserve">
-    <value>تعريف صاحب العهدة</value>
+  <data name="Account_CustodyDefinition" xml:space="preserve">
+    <value>تعريف العهدة</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
@@ -124,8 +124,8 @@
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
   </data>
-  <data name="AccountType_CustodianDefinitions" xml:space="preserve">
-    <value>تعريفات أصحاب العهد</value>
+  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
+    <value>تعريفات العهد</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>جذر الغرض</value>
@@ -157,11 +157,11 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>اسم الزمن 2</value>
   </data>
-  <data name="AccountTypeCustodianDefinition" xml:space="preserve">
-    <value>تعريف صاحب عهدة نوع حساب</value>
+  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
+    <value>تعريف عهدة نوع حساب</value>
   </data>
-  <data name="AccountTypeCustodianDefinitions" xml:space="preserve">
-    <value>تعريفات أصحاب عهد أنواع حسابات</value>
+  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
+    <value>تعريفات عهد أنواع حسابات</value>
   </data>
   <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
     <value>تعريف علاقة معنية بنوع حساب</value>
@@ -367,6 +367,33 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>كلمة المرور الحالية</value>
   </data>
+  <data name="Custodies" xml:space="preserve">
+    <value>عهد</value>
+  </data>
+  <data name="Custody" xml:space="preserve">
+    <value>عهدة</value>
+  </data>
+  <data name="Custody_Agent" xml:space="preserve">
+    <value>الذمة</value>
+  </data>
+  <data name="Custody_BankAccountNumber" xml:space="preserve">
+    <value>رقم حساب البنك</value>
+  </data>
+  <data name="Custody_Custodian" xml:space="preserve">
+    <value>المتعهد</value>
+  </data>
+  <data name="Custody_Job" xml:space="preserve">
+    <value>الوظيفة</value>
+  </data>
+  <data name="Custody_TaxIdentificationNumber" xml:space="preserve">
+    <value>رقم التعريف الضريبي</value>
+  </data>
+  <data name="CustodyDefinition" xml:space="preserve">
+    <value>تعريف عهدة</value>
+  </data>
+  <data name="CustodyDefinitions" xml:space="preserve">
+    <value>تعريفات عهد</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
   </data>
@@ -514,8 +541,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
-  <data name="Document_CreditCustodian" xml:space="preserve">
-    <value>صاحب العهدة الدائن</value>
+  <data name="Document_CreditCustody" xml:space="preserve">
+    <value>العهدة الدائنة</value>
   </data>
   <data name="Document_CreditResource" xml:space="preserve">
     <value>المورد الدائن</value>
@@ -523,8 +550,8 @@
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Document_DebitCustodian" xml:space="preserve">
-    <value>صاحب العهدة المدين</value>
+  <data name="Document_DebitCustody" xml:space="preserve">
+    <value>العهدة المدينة</value>
   </data>
   <data name="Document_DebitResource" xml:space="preserve">
     <value>المورد المدين</value>
@@ -718,8 +745,8 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>صاحب العهدة</value>
+  <data name="Entry_Custody" xml:space="preserve">
+    <value>العهدة</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>الاتجاه</value>
@@ -844,8 +871,20 @@
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
     <value>لا يمكن حذف الأسطر ما لم تكن في حالة جديد.</value>
   </data>
+  <data name="Error_Center0IsAbstract" xml:space="preserve">
+    <value>المركز ({0}) تجميعي.</value>
+  </data>
+  <data name="Error_Center0IsNot1" xml:space="preserve">
+    <value>المركز ({0}) ليس من نوع {1}.</value>
+  </data>
+  <data name="Error_Center0IsNotLeaf" xml:space="preserve">
+    <value>المركز ({0}) تحته فروع.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف العهدة ({0}).</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة.</value>
@@ -1033,8 +1072,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العملة ({3}).</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustodian3" xml:space="preserve">
-    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع صاحب العلاقة ({3}).</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العهدة ({3}).</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع المورد ({3}).</value>
@@ -1078,11 +1117,26 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية.</value>
   </data>
+  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} مستخدم في الحساب ({2}).</value>
+  </data>
+  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} مستخدم في المستند {3} من نوع {2}.</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
+    <value>تعريف العهدة ({0}) لا يتلاءم مع ({1}).</value>
+  </data>
+  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
+    <value>تعريف العهدة ({0}) مستخدم في نوع الحساب ({1}).</value>
+  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>بعض الأسطر ليست مرحلة بعد.</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>المستند يحتوي على أسطر في حالة منفذ.</value>
+  </data>
+  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
+    <value>صافي حساب التحكم ({0}) يساوي ({1})، ينبغي أن يكون صفرا.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>بعض الأسطر تتطلب مزيدا من التوقيعات.</value>
@@ -1132,6 +1186,9 @@
   <data name="Error_TheName0IsUsed" xml:space="preserve">
     <value>الاسم ({0}) مستخدم حاليا</value>
   </data>
+  <data name="Error_TheParentCenter0CannotHaveDescendants" xml:space="preserve">
+    <value>المركز ({0}) لا يمكن إنشاء فروع تحته.</value>
+  </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>المركز الأصل ({0}) ليس منشطا.</value>
   </data>
@@ -1143,15 +1200,6 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInAccount2" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} مستخدم في الحساب ({2}).</value>
-  </data>
-  <data name="Error_TheRelation01IsUsedInDocument23" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} مستخدم في المستند {3} من نوع {2}.</value>
-  </data>
-  <data name="Error_TheRelationDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>تعريف العلاقة ({0}) مستخدم في نوع الحساب ({1}).</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>مورد الحساب ({0}) عملته ({1}) بينما الحساب عملته ({2}).</value>

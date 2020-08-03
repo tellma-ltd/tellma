@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinitionEntry", Plural = "LineDefinitionEntries")]
-    public class LineDefinitionEntryForSave<TCustodianDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>
+    public class LineDefinitionEntryForSave<TCustodyDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>
     {
         public short? Direction { get; set; }
 
@@ -15,8 +15,8 @@ namespace Tellma.Entities
         [Display(Name = "LineDefinitionEntry_EntryType")]
         public int? EntryTypeId { get; set; }
 
-        [ForeignKey(nameof(LineDefinitionEntryCustodianDefinition.LineDefinitionEntryId))]
-        public List<TCustodianDef> CustodianDefinitions { get; set; }
+        [ForeignKey(nameof(LineDefinitionEntryCustodyDefinition.LineDefinitionEntryId))]
+        public List<TCustodyDef> CustodyDefinitions { get; set; }
 
         [ForeignKey(nameof(LineDefinitionEntryNotedRelationDefinition.LineDefinitionEntryId))]
         public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
@@ -25,11 +25,11 @@ namespace Tellma.Entities
         public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryCustodianDefinitionForSave, LineDefinitionEntryNotedRelationDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave>
+    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryCustodyDefinitionForSave, LineDefinitionEntryNotedRelationDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave>
     {
     }
 
-    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryCustodianDefinition, LineDefinitionEntryNotedRelationDefinition, LineDefinitionEntryResourceDefinition>
+    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryCustodyDefinition, LineDefinitionEntryNotedRelationDefinition, LineDefinitionEntryResourceDefinition>
     {
         [AlwaysAccessible]
         public int? Index { get; set; }

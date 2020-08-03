@@ -69,17 +69,17 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Document_CreditResource")]
         public bool? CreditResourceIsCommon { get; set; }
 
-        [Display(Name = "Document_DebitCustodian")]
-        public int? DebitCustodianId { get; set; }
+        [Display(Name = "Document_DebitCustody")]
+        public int? DebitCustodyId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_DebitCustodian")]
-        public bool? DebitCustodianIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_DebitCustody")]
+        public bool? DebitCustodyIsCommon { get; set; }
 
-        [Display(Name = "Document_CreditCustodian")]
-        public int? CreditCustodianId { get; set; }
+        [Display(Name = "Document_CreditCustody")]
+        public int? CreditCustodyId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_CreditCustodian")]
-        public bool? CreditCustodianIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_CreditCustody")]
+        public bool? CreditCustodyIsCommon { get; set; }
 
         [Display(Name = "Document_NotedRelation")]
         public int? NotedRelationId { get; set; }
@@ -196,19 +196,19 @@ namespace Tellma.Entities
         // For Query
         [Display(Name = "Document_DebitResource")]
         [ForeignKey(nameof(DebitResourceId))]
-        public Relation DebitResource { get; set; }
+        public Resource DebitResource { get; set; }
 
         [Display(Name = "Document_CreditResource")]
         [ForeignKey(nameof(CreditResourceId))]
-        public Relation CreditResource { get; set; }
+        public Resource CreditResource { get; set; }
 
-        [Display(Name = "Document_DebitCustodian")]
-        [ForeignKey(nameof(DebitCustodianId))]
-        public Relation DebitCustodian { get; set; }
+        [Display(Name = "Document_DebitCustody")]
+        [ForeignKey(nameof(DebitCustodyId))]
+        public Custody DebitCustody { get; set; }
 
-        [Display(Name = "Document_CreditCustodian")]
-        [ForeignKey(nameof(CreditCustodianId))]
-        public Relation CreditCustodian { get; set; }
+        [Display(Name = "Document_CreditCustody")]
+        [ForeignKey(nameof(CreditCustodyId))]
+        public Custody CreditCustody { get; set; }
 
         [Display(Name = "Document_NotedRelation")]
         [ForeignKey(nameof(NotedRelationId))]
@@ -304,8 +304,8 @@ namespace Tellma.Entities
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
             .Concat(DocumentResourcePaths(nameof(Document.DebitResource)))
             .Concat(DocumentResourcePaths(nameof(Document.CreditResource)))
-            .Concat(RelationPaths(nameof(Document.DebitCustodian)))
-            .Concat(RelationPaths(nameof(Document.CreditCustodian)))
+            .Concat(CustodyPaths(nameof(Document.DebitCustody)))
+            .Concat(CustodyPaths(nameof(Document.CreditCustody)))
             .Concat(RelationPaths(nameof(Document.NotedRelation)))
             .Concat(CenterPaths(nameof(Document.Segment)))
             .Concat(UnitPaths(nameof(Document.Unit)))
@@ -323,7 +323,7 @@ namespace Tellma.Entities
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
-            .Concat(EntryCustodianPaths(nameof(Entry.Custodian)))
+            .Concat(EntryCustodyPaths(nameof(Entry.Custody)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(RelationPaths(nameof(Entry.NotedRelation)))
             .Concat(CenterPaths(nameof(Entry.Center)))
@@ -340,12 +340,14 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> EntryCustodianPaths(string path = null) => RelationPaths(path)
-            .Concat( // Entry Custodian also adds the Currency and Center
-                CurrencyPaths(nameof(Relation.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+        public static IEnumerable<string> EntryCustodyPaths(string path = null) => CustodyPaths(path)
+            .Concat( // Entry Custody also adds the Currency and Center
+                CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}")
             ).Concat(
-                CenterPaths(nameof(Relation.Center)).Select(p => path == null ? p : $"{path}/{p}")
+                CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}")
             );
+        public static IEnumerable<string> CustodyPaths(string path = null) => CustodyProps
+            .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
@@ -384,7 +386,7 @@ namespace Tellma.Entities
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
-            .Concat(RelationPaths(nameof(Account.Custodian)))
+            .Concat(CustodyPaths(nameof(Account.Custody)))
             .Concat(ResourcePaths(nameof(Account.Resource)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
@@ -407,6 +409,7 @@ namespace Tellma.Entities
         public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         public static IEnumerable<string> ResourceUnitsProps => Enum();
         public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
+        public static IEnumerable<string> CustodyProps => Enum(nameof(Custody.Name), nameof(Custody.Name2), nameof(Custody.Name3), nameof(Custody.DefinitionId));
         public static IEnumerable<string> RelationProps => Enum(nameof(Relation.Name), nameof(Relation.Name2), nameof(Relation.Name3), nameof(Relation.DefinitionId));
         public static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
         public static IEnumerable<string> AccountProps => Enum(
@@ -417,7 +420,7 @@ namespace Tellma.Entities
             nameof(Account.Code),
 
             // Definitions
-            nameof(Account.CustodianDefinitionId),
+            nameof(Account.CustodyDefinitionId),
             nameof(Account.NotedRelationDefinitionId),
             nameof(Account.ResourceDefinitionId)
         );

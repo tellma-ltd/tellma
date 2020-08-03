@@ -351,6 +351,82 @@ WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex
 UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 
+UPDATE  @AccountTypes
+	SET [Time1Label] = N'From Date', Time2Label = N'To Date'
+WHERE [Concept] IN (
+	N'InsuranceExpense',
+	N'UtilitiesExpense',
+	N'WagesAndSalaries',
+	N'SocialSecurityContributions',
+	N'OtherShorttermEmployeeBenefits',
+	N'DepreciationExpense',
+	N'AmortisationExpense',
+	N'TaxExpenseOtherThanIncomeTaxExpense'
+);
+
+UPDATE  @AccountTypes
+	SET [ExternalReferenceLabel] = N'Invoice #'
+WHERE [Concept] IN (
+	N'NoncurrentValueAddedTaxReceivables',
+	N'CurrentValueAddedTaxReceivables',
+	--N'WithholdingTaxReceivablesExtension',
+	N'NoncurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables'
+	--N'WithholdingTaxPayableExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [ExternalReferenceLabel] = N'WT Voucher #'
+WHERE [Concept] IN (
+	--N'NoncurrentValueAddedTaxReceivables',
+	--N'CurrentValueAddedTaxReceivables',
+	N'WithholdingTaxReceivablesExtension',
+	--N'NoncurrentValueAddedTaxPayables',
+	--N'CurrentValueAddedTaxPayables',
+	N'WithholdingTaxPayableExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedAgentNameLabel] = N'Issuer/Recipient'
+WHERE [Concept] IN (
+	N'Merchandise',
+	N'CurrentFoodAndBeverage',
+	N'CurrentAgriculturalProduce',
+	N'FinishedGoods',
+	N'PropertyIntendedForSaleInOrdinaryCourseOfBusiness',
+	N'WorkInProgress',
+	N'RawMaterials',
+	N'ProductionSupplies',
+	N'CurrentPackagingAndStorageMaterials',
+	N'SpareParts',
+	N'CurrentFuel',
+	N'OtherInventories',
+	N'CashOnHand',
+	N'BalancesWithBanks'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedAmountLabel] = N'Taxable Amount'
+WHERE [Concept] IN (
+	N'NoncurrentValueAddedTaxReceivables',
+	N'CurrentValueAddedTaxReceivables',
+	N'WithholdingTaxReceivablesExtension',
+	N'NoncurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables',
+	N'CurrentExciseTaxPayables',
+	N'CurrentSocialSecurityPayablesExtension',
+	N'CurrentEmployeeIncomeTaxPayablesExtension',
+	N'CurrentEmployeeStampTaxPayablesExtension',
+	N'ProvidentFundPayableExtension',
+	N'WithholdingTaxPayableExtension',
+	N'DividendTaxPayableExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedAmountLabel] = N'Amount Subject to Zakat'
+WHERE [Concept] IN (
+	N'CurrentZakatPayablesExtension'
+);
 	--[Time1Label], [Time1Label2], [Time1Label3],
 	--[Time2Label], [Time2Label2], [Time2Label3],
 	--[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
@@ -362,7 +438,7 @@ WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+	@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions,
 	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -906,12 +982,12 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (113,@CollectionGuaranteeExtension,						@CheckReceivedRD),
 (114,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
 
-INSERT INTO @AccountTypeCustodianDefinitions([Index],
-[HeaderIndex],										[CustodianDefinitionId]) VALUES
-(0,@MotorVehicles,@CustomerCD),
-(1,@MotorVehicles,@EmployeeCD),
-(2,@OfficeEquipment,@EmployeeCD),
-(3,@InvestmentPropertyCompleted,@CustomerCD),
+INSERT INTO @AccountTypeCustodyDefinitions([Index],
+[HeaderIndex],										[CustodyDefinitionId]) VALUES
+(0,@MotorVehicles,									@RentalCD),
+(1,@MotorVehicles,									@PPECustodyCD),
+(2,@OfficeEquipment,								@PPECustodyCD),
+(3,@InvestmentPropertyCompleted,					@RentalCD),
 (7,@Merchandise,									@WarehouseCD),
 (8,@CurrentFoodAndBeverage,							@WarehouseCD),
 (9,@CurrentAgriculturalProduce,						@WarehouseCD),
@@ -924,71 +1000,69 @@ INSERT INTO @AccountTypeCustodianDefinitions([Index],
 (16,@CurrentFuel,									@WarehouseCD),
 (116,@CurrentInventoriesInTransit,					@ShipperCD),
 (17,@OtherInventories,								@WarehouseCD),
-(25,@CurrentReceivablesFromRentalOfProperties,		@CustomerCD),
+(25,@CurrentReceivablesFromRentalOfProperties,		@RentalCD),
 (27,@CashOnHand,									@SafeCD),
 (28,@BalancesWithBanks,								@BankAccountCD),
-(29,@RevenueFromSaleOfGoods,@WarehouseCD),
-(30,@RevenueFromSaleOfFoodAndBeverage,@WarehouseCD),
-(31,@RevenueFromSaleOfAgriculturalProduce,@WarehouseCD),
-(32,@CostOfMerchandiseSold,@WarehouseCD),
+(29,@RevenueFromSaleOfGoods,						@WarehouseCD),
+(30,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
+(31,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
+(32,@CostOfMerchandiseSold,							@WarehouseCD),
 (44,@CollectionGuaranteeExtension,					@SafeCD),
 (45,@DishonouredGuaranteeExtension,					@SafeCD);
 
 INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 [HeaderIndex],										[NotedRelationDefinitionId]) VALUES
-(0,@NoncurrentValueAddedTaxReceivables,				@SupplierCD),
-(1,@CurrentValueAddedTaxReceivables,				@SupplierCD),
-(2,@WithholdingTaxReceivablesExtension,				@CustomerCD),
-(3,@CurrentReceivablesFromRentalOfProperties,		@CustomerCD),
-(4,@CurrentValueAddedTaxPayables,					@CustomerCD),
-(5,@CurrentSocialSecurityPayablesExtension,			@EmployeeCD),
-(6,@CurrentEmployeeIncomeTaxPayablesExtension,		@EmployeeCD),
-(7,@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeCD),
-(8,@ProvidentFundPayableExtension,					@EmployeeCD),
-(9,@WithholdingTaxPayableExtension,					@SupplierCD),
-(10,@CostSharingPayableExtension,					@EmployeeCD),
-(11,@DividendTaxPayableExtension,					@PartnerCD),
+(0,@NoncurrentValueAddedTaxReceivables,				@SupplierRLD),
+(1,@CurrentValueAddedTaxReceivables,				@SupplierRLD),
+(2,@WithholdingTaxReceivablesExtension,				@CustomerRLD),
+(3,@CurrentReceivablesFromRentalOfProperties,		@CustomerRLD),
+(4,@CurrentValueAddedTaxPayables,					@CustomerRLD),
+(5,@CurrentSocialSecurityPayablesExtension,			@EmployeeRLD),
+(6,@CurrentEmployeeIncomeTaxPayablesExtension,		@EmployeeRLD),
+(7,@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeRLD),
+(8,@ProvidentFundPayableExtension,					@EmployeeRLD),
+(9,@WithholdingTaxPayableExtension,					@SupplierRLD),
+(10,@CostSharingPayableExtension,					@EmployeeRLD),
+(11,@DividendTaxPayableExtension,					@PartnerRLD),
 
-(103,@NoncurrentValueAddedTaxPayables,@CustomerCD),
-(106,@CurrentZakatPayablesExtension,@EmployeeCD),
+(103,@NoncurrentValueAddedTaxPayables,@CustomerRLD),
+(106,@CurrentZakatPayablesExtension,@EmployeeRLD),
 
-(12,@RevenueFromSaleOfGoods,						@CustomerCD),
-(13,@RevenueFromSaleOfFoodAndBeverage,				@CustomerCD),
-(14,@RevenueFromSaleOfAgriculturalProduce,			@CustomerCD),
-(15,@RevenueFromRenderingOfServices,				@CustomerCD),
-(16,@OtherRevenue,									@CustomerCD),
-(17,@CostOfMerchandiseSold,							@CustomerCD),
-(18,@InsuranceExpense,								@SupplierCD),
-(19,@ProfessionalFeesExpense,						@SupplierCD),
-(20,@TransportationExpense,							@SupplierCD),
-(21,@BankAndSimilarCharges,							@SupplierCD),
-(22,@TravelExpense,									@SupplierCD),
-(23,@CommunicationExpense,							@SupplierCD),
-(24,@UtilitiesExpense,								@SupplierCD),
-(25,@AdvertisingExpense,							@SupplierCD),
-(26,@WagesAndSalaries,								@EmployeeCD),
-(27,@SocialSecurityContributions,					@EmployeeCD),
-(28,@OtherShorttermEmployeeBenefits,				@EmployeeCD),
+(12,@RevenueFromSaleOfGoods,						@CustomerRLD),
+(13,@RevenueFromSaleOfFoodAndBeverage,				@CustomerRLD),
+(14,@RevenueFromSaleOfAgriculturalProduce,			@CustomerRLD),
+(15,@RevenueFromRenderingOfServices,				@CustomerRLD),
+(16,@OtherRevenue,									@CustomerRLD),
+(17,@CostOfMerchandiseSold,							@CustomerRLD),
+(18,@InsuranceExpense,								@SupplierRLD),
+(19,@ProfessionalFeesExpense,						@SupplierRLD),
+(20,@TransportationExpense,							@SupplierRLD),
+(21,@BankAndSimilarCharges,							@SupplierRLD),
+(22,@TravelExpense,									@SupplierRLD),
+(23,@CommunicationExpense,							@SupplierRLD),
+(24,@UtilitiesExpense,								@SupplierRLD),
+(25,@AdvertisingExpense,							@SupplierRLD),
+(26,@WagesAndSalaries,								@EmployeeRLD),
+(27,@SocialSecurityContributions,					@EmployeeRLD),
+(28,@OtherShorttermEmployeeBenefits,				@EmployeeRLD),
 (29,@PostemploymentBenefitExpenseDefinedContributionPlans,
-													@EmployeeCD),
-(30,@PostemploymentBenefitExpenseDefinedBenefitPlans,@EmployeeCD),
-(31,@TerminationBenefitsExpense,					@EmployeeCD),
-(32,@OtherLongtermBenefits,							@EmployeeCD),
-(33,@OtherEmployeeExpense,							@EmployeeCD),
+													@EmployeeRLD),
+(30,@PostemploymentBenefitExpenseDefinedBenefitPlans,@EmployeeRLD),
+(31,@TerminationBenefitsExpense,					@EmployeeRLD),
+(32,@OtherLongtermBenefits,							@EmployeeRLD),
+(33,@OtherEmployeeExpense,							@EmployeeRLD),
 
 
-(35,@CashPaymentsToSuppliersControlExtension,@SupplierCD),
-(36,@GoodsAndServicesReceivedFromSuppliersControlExtensions,@SupplierCD),
-(37,@CashReceiptsFromCustomersControlExtension,@CustomerCD),
-(38,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerCD),
-(39,@CashPaymentsToEmployeesControlExtension,@EmployeeCD);
-
-
+(35,@CashPaymentsToSuppliersControlExtension,@SupplierRLD),
+(36,@GoodsAndServicesReceivedFromSuppliersControlExtensions,@SupplierRLD),
+(37,@CashReceiptsFromCustomersControlExtension,@CustomerRLD),
+(38,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerRLD),
+(39,@CashPaymentsToEmployeesControlExtension,@EmployeeRLD);
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
+	@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions,
 	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

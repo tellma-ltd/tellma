@@ -1,8 +1,8 @@
 ﻿INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',NULL, N'Financials', 1040),
-(10, N'CashPurchaseVoucher',2, N'',N'Cash Purchase Voucher', N'Cash Purchase Vouchers', N'CPRV',NULL, N'Purchasing', 1050),
-(11, N'CashPaymentVoucher',2, N'',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPMV',NULL, N'Cash', 1050),
-(12, N'CashSalesVoucher',2, N'',N'Cash Sales Voucher', N'Cash Sales Vouchers', N'CSLV',NULL, N'Sales', 1060),
+(0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1040),
+(10, N'CashPurchaseVoucher',2, N'Payment including VAT, and receipt of stock or fixed asset',N'Cash Purchase Voucher', N'Cash Purchase Vouchers', N'CPRV',N'money-check-alt', N'Purchasing', 1050),
+(11, N'CashPaymentVoucher',2, N'',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPMV',N'money-check-alt', N'Cash', 1050),
+(12, N'CashSalesVoucher',2, N'',N'Cash Sales Voucher', N'Cash Sales Vouchers', N'CSLV',N'grin-hearts', N'Sales', 1060),
 (13, N'CashReceiptVoucher',2, N'',N'Cash Receipt Voucher', N'Cash Receipt Vouchers', N'CRCV',NULL, N'Cash', 1070);
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES

@@ -41,7 +41,7 @@ SET NOCOUNT ON;
 				[Lookup4Id],
 				[Text1],					
 				[Text2],
-				[RelationId],
+				[CustodianId],
 				[AgentId],
 				[TaxIdentificationNumber],
 				[JobId],
@@ -77,7 +77,7 @@ SET NOCOUNT ON;
 				t.[Text1]					= s.[Text1],	
 				t.[Text2]					= s.[Text2],
 
-				t.[RelationId]				= s.[RelationId],
+				t.[CustodianId]				= s.[CustodianId],
 				t.[AgentId]					= s.[AgentId],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 				t.[JobId]					= s.[JobId],
@@ -112,7 +112,7 @@ SET NOCOUNT ON;
 				[Text1],					
 				[Text2],
 
-				[RelationId],
+				[CustodianId],
 				[AgentId],
 				[TaxIdentificationNumber],
 				[JobId],
@@ -144,7 +144,7 @@ SET NOCOUNT ON;
 				s.[Text1],					
 				s.[Text2],
 
-				s.[RelationId],
+				s.[CustodianId],
 				s.[AgentId],
 				s.[TaxIdentificationNumber],
 				s.[JobId],

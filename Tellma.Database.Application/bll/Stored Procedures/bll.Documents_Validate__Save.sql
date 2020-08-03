@@ -134,10 +134,12 @@ SET NOCOUNT ON;
 		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
 	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsAbstract'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsAbstract',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -145,8 +147,10 @@ SET NOCOUNT ON;
 	WHERE C.[CenterType] = N'Abstract'
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotBusinessUnit'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_BusinessUnit'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -154,8 +158,10 @@ SET NOCOUNT ON;
 	WHERE E.AccountId IN (SELECT [Id] FROM BusinessUnitAccounts) AND C.CenterType <> N'BusinessUnit'
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotCostOfSaleCenter'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_CostOfSales'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -163,8 +169,10 @@ SET NOCOUNT ON;
 	WHERE E.AccountId IN (SELECT [Id] FROM DirectAccounts) AND C.[CenterType] <> N'CostOfSales'
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotLeaf'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNotLeaf',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -172,8 +180,10 @@ SET NOCOUNT ON;
 	WHERE E.AccountId IN (SELECT [Id] FROM ExpendituresAccounts) AND C.[IsLeaf] = 0
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotConstructionInProgressExpendituresCenter'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_ConstructionInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -181,8 +191,10 @@ SET NOCOUNT ON;
 	WHERE E.AccountId IN (SELECT [Id] FROM ConstructionInProgressAccounts)  AND C.[CenterType] <> N'ConstructionInProgressExpendituresControl'
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotInvestmentPropertyUnderConstructionOrDevelopmentExpendituresCenter'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -190,8 +202,10 @@ SET NOCOUNT ON;
 	WHERE E.AccountId IN (SELECT [Id] FROM InvestmentPropertyUnderConstructionOrDevelopmentAccounts)  AND C.[CenterType] <> N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotWorkInProgressExpendituresCenter'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_WorkInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -199,8 +213,10 @@ SET NOCOUNT ON;
 	WHERE E.AccountId IN (SELECT [Id] FROM WorkInProgressAccounts)  AND C.[CenterType] <> N'WorkInProgressExpendituresControl'
 	UNION
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Center0IsNotCurrentInventoriesInTransitExpendituresCenter'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_CurrentInventoriesInTransitExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex

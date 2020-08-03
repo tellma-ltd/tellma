@@ -26,7 +26,7 @@
 	[Text1]						NVARCHAR (50),
 	[Text2]						NVARCHAR (50), 
 	
-	[RelationId]				INT,
+	[CustodianId]				INT,
 	[AgentId]					INT,	
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
 	[JobId]						INT,

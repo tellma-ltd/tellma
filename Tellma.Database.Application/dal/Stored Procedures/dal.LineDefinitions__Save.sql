@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryCustodianDefinitions [LineDefinitionEntryCustodianDefinitionList] READONLY,
+	@LineDefinitionEntryCustodyDefinitions [LineDefinitionEntryCustodyDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedRelationDefinitions [LineDefinitionEntryNotedRelationDefinitionList] READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
@@ -202,25 +202,25 @@ SET NOCOUNT ON;
 		DELETE;
 
 	WITH BLDECD AS (
-		SELECT * FROM dbo.[LineDefinitionEntryCustodianDefinitions]
+		SELECT * FROM dbo.[LineDefinitionEntryCustodyDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
 	)
 	MERGE INTO BLDECD AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodianDefinitionId]
-		FROM @LineDefinitionEntryCustodianDefinitions E
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodyDefinitionId]
+		FROM @LineDefinitionEntryCustodyDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[CustodianDefinitionId]	= s.[CustodianDefinitionId]) THEN
+	WHEN MATCHED AND (t.[CustodyDefinitionId]	= s.[CustodyDefinitionId]) THEN
 		UPDATE SET
-			t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
+			t.[CustodyDefinitionId]	= s.[CustodyDefinitionId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
+		INSERT ([LineDefinitionEntryId], [CustodyDefinitionId])
+		VALUES (s.[LineDefinitionEntryId], s.[CustodyDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

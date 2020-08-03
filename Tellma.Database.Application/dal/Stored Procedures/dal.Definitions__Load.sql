@@ -7,8 +7,11 @@ SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 -- Get the lookup definitions
 SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
 
--- Get the agent definitions
+-- Get the relation definitions
 SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
+
+-- Get the custody definitions
+SELECT * FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the resource definitions
 SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
@@ -43,14 +46,14 @@ SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 	
 -- Get the contract definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [CustodianDefinitionId] FROM [dbo].[LineDefinitionEntryCustodianDefinitions]
+SELECT [LineDefinitionEntryId], [CustodyDefinitionId] FROM [dbo].[LineDefinitionEntryCustodyDefinitions]
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [CustodianDefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [CustodyDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.[AccountTypeCustodianDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodianDefinitions])
+JOIN dbo.[AccountTypeCustodyDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodyDefinitions])
 	
 -- Get the noted contract definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [NotedRelationDefinitionId] FROM [dbo].[LineDefinitionEntryNotedRelationDefinitions]

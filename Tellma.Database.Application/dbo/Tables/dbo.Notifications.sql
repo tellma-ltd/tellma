@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Notifications] ( -- TODO: Is it needed?
+﻿CREATE TABLE [dbo].[Notifications] (
 	[Id]				INT					CONSTRAINT [PK_Notifications] PRIMARY KEY,
 	 -- An agent ... Even those without AVATAR can be notified.
 	[RecipientId]		INT					NOT NULL CONSTRAINT [FK_Notifications_RecipientId] REFERENCES [dbo].[Users] ([Id]),

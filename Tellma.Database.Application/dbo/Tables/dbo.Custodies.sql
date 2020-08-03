@@ -29,7 +29,7 @@
 	[Text1]						NVARCHAR (50),
 	[Text2]						NVARCHAR (50),
 
-	[RelationId]				INT					CONSTRAINT [FK_Custodies__RelationId] REFERENCES [dbo].[Relations] ([Id]),
+	[CustodianId]				INT					CONSTRAINT [FK_Custodies__CustodianId] REFERENCES [dbo].[Relations] ([Id]),
 	[AgentId]					INT					CONSTRAINT [FK_Custodies__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs

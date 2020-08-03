@@ -2,7 +2,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Relation, RelationForSave } from '~/app/data/entities/relations';
+import { Relation, RelationForSave } from '~/app/data/entities/relation';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -455,7 +455,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get showTabs(): boolean {
-    return this.Users_isVisible; // TODO: Add the location
+    return this.Users_isVisible || this.Location_isVisible;
   }
 
   // Location + Map stuff

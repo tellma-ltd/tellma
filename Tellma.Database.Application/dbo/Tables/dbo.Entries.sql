@@ -8,14 +8,11 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	-- Contract Id is required in Entries only if we have Contract definition in AccountTypesContractDefinitions
-	[CustodianId]				INT				CONSTRAINT [FK_Entries__CustodianId] REFERENCES dbo.[Relations]([Id]),
-	-- Resource Id is Required in Entries only if we have resource definition in AccountTypesResourceDefinitions
+	[CustodyId]					INT				CONSTRAINT [FK_Entries__CustodyId] REFERENCES dbo.[Custodies]([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.[Resources]([Id]),
 	[CenterId]					INT				NOT NULL CONSTRAINT [FK_Entries__CentertId] REFERENCES dbo.[Centers]([Id]),
 	-- Entry Type Id is Required in Entries only if we have Parent Entry type in AccountTypes
 	[EntryTypeId]				INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
-	-- Due Date is required only for certain resources
 	[BudgetId]					INT				CONSTRAINT [FK_Entries__BudgetId] REFERENCES dbo.[Budgets]([Id]),
 	[MonetaryValue]				DECIMAL (19,4), --			NOT NULL DEFAULT 0,
 -- Tracking additive measures
@@ -54,7 +51,7 @@ CREATE INDEX [IX_Entries__ResourceId] ON [dbo].[Entries]([ResourceId]);
 GO
 CREATE INDEX [IX_Entries__UnitId] ON [dbo].[Entries]([UnitId]);
 GO
-CREATE INDEX [IX_Entries__CustodianId] ON [dbo].[Entries]([CustodianId]);
+CREATE INDEX [IX_Entries__CustodyId] ON [dbo].[Entries]([CustodyId]);
 GO
 CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO
