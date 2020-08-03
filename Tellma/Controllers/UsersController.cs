@@ -11,8 +11,6 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -21,7 +19,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Tellma.Controllers.ImportExport;
 
@@ -403,7 +400,12 @@ namespace Tellma.Controllers
 
             // Save and retrieve response
             await SaveExecuteAsync(entities, returnIds: false);
+
+            // Load response
             var response = await GetMyUser(cancellation: default);
+
+            // Perform side effects of save that are not transactional, just before committing the transaction
+            await NonTransactionalSideEffectsForSave(entities, new List<User> { response });
 
             // Commit and return
             trx.Complete();
