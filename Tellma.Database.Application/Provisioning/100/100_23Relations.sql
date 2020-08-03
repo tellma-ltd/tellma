@@ -12,15 +12,15 @@ BEGIN
 END;
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
-	[Code], [Name],								[Name2],					[CenterId], [CurrencyId]) VALUES
-(0,	N'C01',N'International African University', N'جامعة أفريقيا العالمية',	NULL,		N'USD'),
-(1,	N'C02',N'Mico poultry',						N'ميكو',					@101CB10,	N'USD'),
-(2,	N'C03',N'Sabco',							N'سابكو',					@101CB10,	N'USD'),
-(3,	N'C04',N'al-Washm',							N'شركة الوشم',				@101CB10,	N'SAR'),
-(4,	N'C05',N'TAGI restaurants',					N'مطاعم تاجي',				@101CB10,	N'SAR'),
-(5,	N'C06',N'It3aam',							N'شركة إطعام',				@101MiscIT,	N'USD'),
-(6,	N'C07',N'Rafeef',							N'شركة رفيف',				@101CBSmart,N'SDG'),
-(7,	N'C08',N'Golden Earth',						N'غولدن إيرث',				@101CBSmart,N'USD');
+	[Code], [Name],								[Name2]) VALUES
+(0,	N'C01',N'International African University', N'جامعة أفريقيا العالمية'),
+(1,	N'C02',N'Mico poultry',						N'ميكو'),
+(2,	N'C03',N'Sabco',							N'سابكو'),
+(3,	N'C04',N'al-Washm',							N'شركة الوشم'),
+(4,	N'C05',N'TAGI restaurants',					N'مطاعم تاجي'),
+(5,	N'C06',N'It3aam',							N'شركة إطعام'),
+(6,	N'C07',N'Rafeef',							N'شركة رفيف'),
+(7,	N'C08',N'Golden Earth',						N'غولدن إيرث');
 EXEC [api].[Relations__Save]
 	@DefinitionId = @CustomerRLD,
 	@Entities = @Relations,
@@ -109,13 +109,13 @@ BEGIN
 END;
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
-	[Code],	[Name],				[Name2], [CenterId]) VALUES
-(0,	N'E001',N'Ahmad Habashi',	N'أحمد حبشي', @101C1),
-(1,	N'E002',N'Ahmad Abdussalam',N'أحمد عبدالسلام', @101CB10),
-(2,	N'E003',N'Abu Ammar',		N'أبو عمار', @101C1),
-(3,	N'E004',N'Mohamad Ali',		N'محمد علي', @101C1),
-(4,	N'E005',N'elAmin elTayeb',	N'الأمين الطيب', @101C1),
-(5,	N'E099',N'M. Kamil',		N'محمد كامل', @101CB10)
+	[Code],	[Name],				[Name2]) VALUES
+(0,	N'E001',N'Ahmad Habashi',	N'أحمد حبشي'),
+(1,	N'E002',N'Ahmad Abdussalam',N'أحمد عبدالسلام'),
+(2,	N'E003',N'Abu Ammar',		N'أبو عمار'),
+(3,	N'E004',N'Mohamad Ali',		N'محمد علي'),
+(4,	N'E005',N'elAmin elTayeb',	N'الأمين الطيب'),
+(5,	N'E099',N'M. Kamil',		N'محمد كامل')
 EXEC [api].[Relations__Save]
 	@DefinitionId = @EmployeeRLD,
 	@Entities = @Relations,

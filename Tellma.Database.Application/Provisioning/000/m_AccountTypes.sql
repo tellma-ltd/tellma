@@ -369,9 +369,20 @@ UPDATE  @AccountTypes
 WHERE [Concept] IN (
 	N'NoncurrentValueAddedTaxReceivables',
 	N'CurrentValueAddedTaxReceivables',
-	N'WithholdingTaxReceivablesExtension',
+	--N'WithholdingTaxReceivablesExtension',
 	N'NoncurrentValueAddedTaxPayables',
-	N'CurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables'
+	--N'WithholdingTaxPayableExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [ExternalReferenceLabel] = N'WT Voucher #'
+WHERE [Concept] IN (
+	--N'NoncurrentValueAddedTaxReceivables',
+	--N'CurrentValueAddedTaxReceivables',
+	N'WithholdingTaxReceivablesExtension',
+	--N'NoncurrentValueAddedTaxPayables',
+	--N'CurrentValueAddedTaxPayables',
 	N'WithholdingTaxPayableExtension'
 );
 
