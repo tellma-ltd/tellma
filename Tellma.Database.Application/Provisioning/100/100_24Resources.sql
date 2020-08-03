@@ -1,7 +1,7 @@
 ﻿DELETE FROM @Resources;
 	INSERT INTO @Resources ([Index],
 		[CurrencyId],[CenterId],	[Name],								[Identifier],	[Lookup1Id],	[Lookup2Id],	[UnitId]) VALUES
-	(0,	@USD,		@101C1,		N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	@MicrosoftLKP,	@Windows10LKP,	@yr),
+	(0,	@USD,		@101C1,			N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	@MicrosoftLKP,	@Windows10LKP,	@yr),
 	(1,	@USD,		@101C12,		N'Lenovo Laptop',					N'SS9898224',	@LenovoLKP,		@Windows10LKP,	@yr),
 	(2,	@USD,		@101CCampus,	N'Lenovo Ideapad S145',				N'100022311',	@LenovoLKP,		@Windows10LKP,	@yr),
 	(3,	@USD,		@101CB10,		N'Abdulrahman Used Laptop',			N'100022312',	NULL,			@Windows10LKP,	@yr);
@@ -19,21 +19,21 @@
 -- Defining other fixed assets
 	DELETE FROM @Resources;	
 	INSERT INTO @Resources ([Index],
-		[Name],				[Identifier],[CurrencyId],	[CenterId]) VALUES
-	(0, N'Camera',					N'-', @USD,			@101C12),
-	(1, N'Generator',				N'-', @USD,			@101C19),
-	(2, N'Battery for Generator',	N'-', @USD,			@101C19),
-	(3, N'Mouse (65.49 GBP)',		N'-', @USD,			@101C11),
-	(4, N'Laptop Case (17.99 GBP)',	N'-', @USD,			@101C11),
-	(5, N'Dock (140.80 GBP)',		N'-', @USD,			@101C11),
-	(6, N'FingerPrint System',		N'-', @USD,			@101C19),
-	(7, N'SSD for PC',				N'1', @USD, 		@101CB10),
-	(8, N'SSD for PC',				N'2', @USD, 		@101CCampus),
-	(9, N'SSD 240 GB',				N'-', @USD, 		@101C19),
-	(10,N'Meeting Luxurious Table',	N'-', @USD, 		@101C11),
-	(11,N'Generator Auto Switch',	N'-', @USD, 		@101C19),
-	(12,N'Hikvision 240GB SSD Disk',N'-', @USD, 		@101CB10),
-	(13,N'Huawei Prime 7 Golden',	N'-', @USD, 		@101C12);
+		[Name],				[Identifier]) VALUES
+	(0, N'Camera',					N'-'),
+	(1, N'Generator',				N'-'),
+	(2, N'Battery for Generator',	N'-'),
+	(3, N'Mouse (65.49 GBP)',		N'-'),
+	(4, N'Laptop Case (17.99 GBP)',	N'-'),
+	(5, N'Dock (140.80 GBP)',		N'-'),
+	(6, N'FingerPrint System',		N'-'),
+	(7, N'SSD for PC',				N'1'),
+	(8, N'SSD for PC',				N'2'),
+	(9, N'SSD 240 GB',				N'-'),
+	(10,N'Meeting Luxurious Table',	N'-'),
+	(11,N'Generator Auto Switch',	N'-'),
+	(12,N'Hikvision 240GB SSD Disk',N'-'),
+	(13,N'Huawei Prime 7 Golden',	N'-');
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = @OtherPropertyPlantAndEquipmentMemberRD,

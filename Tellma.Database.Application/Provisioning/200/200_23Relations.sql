@@ -12,9 +12,9 @@ BEGIN
 END;
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
-	[Code], [Name],					[CenterId], [CurrencyId], TaxIdentificationNumber) VALUES
-(0,	N'C01',N'Yangfan Motors, PLC',	@102C31,	@ETB,			N'0005308731'),
-(1,	N'C02',N'Soreti Trading',		@102C21,	@ETB,			NULL);
+	[Code], [Name],					TaxIdentificationNumber) VALUES
+(0,	N'C01',N'Yangfan Motors, PLC',	N'0005308731'),
+(1,	N'C02',N'Soreti Trading',		NULL);
 EXEC [api].[Relations__Save]
 	@DefinitionId = @CustomerRLD,
 	@Entities = @Relations,
@@ -101,12 +101,12 @@ BEGIN
 END;
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
-	[Code],	[Name],				[CenterId], [TaxIdentificationNUmber]) VALUES
-(0,	N'E001',N'Mohamad Akra',	@102C11,	N'0059603732'),
-(1,	N'E002',N'Ahmad Akra',		@102C11,	NULL),
-(2,	N'E003',N'Abdullah Ulber',	@102C11,	NULL),
-(3,	N'E004',N'Yisak Fikadu',	@102C20,	N'0068469933'),
-(4,	N'E005',N'Abrham Tenker',	@102C20,	N'0067651309');
+	[Code],	[Name],				[TaxIdentificationNUmber]) VALUES
+(0,	N'E001',N'Mohamad Akra',	N'0059603732'),
+(1,	N'E002',N'Ahmad Akra',		NULL),
+(2,	N'E003',N'Abdullah Ulber',	NULL),
+(3,	N'E004',N'Yisak Fikadu',	N'0068469933'),
+(4,	N'E005',N'Abrham Tenker',	N'0067651309');
 EXEC [api].[Relations__Save]
 	@DefinitionId = @EmployeeRLD,
 	@Entities = @Relations,

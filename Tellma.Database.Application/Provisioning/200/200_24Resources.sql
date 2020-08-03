@@ -1,4 +1,4 @@
-﻿	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+﻿	SET @DefinitionID = @EmployeeBenefitRD; DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
 		[Name],						[UnitId]) VALUES
 	(0,	N'Basic',					@wmo),
@@ -14,7 +14,7 @@
 	(10,N'Meal Allowance',			@wmo);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
-		@DefinitionId = @EmployeeBenefitRD,
+		@DefinitionId = @DefinitionID,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -25,7 +25,7 @@
 		GOTO Err_Label;
 	END;
 	
-	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	SET @DefinitionID = @RevenueServiceRD; DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 		INSERT INTO @Resources ([Index],
 		[Name],						[UnitId]) VALUES
 	(0,	N'Monthly Subscription',	@mo),
@@ -35,7 +35,7 @@
 	;
 
 EXEC [api].[Resources__Save] -- N'services-expenses'
-	@DefinitionId = @RevenueServiceRD,
+	@DefinitionId = @DefinitionID,
 	@Entities = @Resources,
 	@ResourceUnits = @ResourceUnits,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

@@ -11,7 +11,7 @@
 
 	(2,0, N'IT Solutions',		N'حلول تقنية',				N'2',	N'BusinessUnit'),
 	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'CostOfSales'),
-	(22,2,N'BSmart',			N'بيسمارت',					N'22',	N'CostOfSales'),
+	(22,2,N'BSmart',			N'بيسمارت',				N'22',	N'CostOfSales'),
 	(23,2,N'Campus',			N'كامبوس',					N'23',	N'CostOfSales'),
 	(24,2,N'Tellma',			N'تلما',					N'24',	N'CostOfSales'),
 	(29,2,N'Misc. IT',			N'حلول تقنية أخرى',		N'29',	N'CostOfSales'),

@@ -12,13 +12,12 @@ WHERE [Id] IN
 );
 DELETE FROM @DocumentDefinitionLineDefinitions
 INSERT @DocumentDefinitionLineDefinitions([Index],
-[HeaderIndex],						[LineDefinitionId],				[IsVisibleByDefault]) VALUES
-(11,@CashPurchaseVoucherDD,			@CashPaymentToTradePayableLD,	1),
---(12,@CashPurchaseVoucherDD,			@StockReceiptFromTradePayableLD,1),
-(19,@CashPurchaseVoucherDD,			@ManualLineLD,					0),
-(21,@CashPaymentVoucherDD,			@CashPaymentToTradePayableLD,	1)
-
-;
+[HeaderIndex],						[LineDefinitionId],							[IsVisibleByDefault]) VALUES
+(11,@CashPurchaseVoucherDD,			@CashPaymentToTradePayableWithInvoiceLD,	1),
+(12,@CashPurchaseVoucherDD,			@PPEReceiptFromTradePayableLD,				1),
+(13,@CashPurchaseVoucherDD,			@StockReceiptFromTradePayableLD,			1),
+(19,@CashPurchaseVoucherDD,			@ManualLineLD,								0),
+(21,@CashPaymentVoucherDD,			@CashPaymentToTradePayableWithInvoiceLD,	1);
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
@@ -33,3 +32,17 @@ EXEC [dal].[DocumentDefinitions__UpdateState]
 	@State =  N'Visible'
 
 -- Delete what is not in the scope of CPV, mainly because it is acquired from abroad
+DELETE FROM LineDefinitionEntryResourceDefinitions
+WHERE [LineDefinitionEntryId] = (SELECT [Id] FROM dbo.LineDefinitionEntries WHERE LineDefinitionId = @StockReceiptFromTradePayableLD AND [Index] = 0)
+AND [ResourceDefinitionId] IN (
+	@MerchandiseRD,
+	@CurrentFoodAndBeverageRD,
+	@CurrentAgriculturalProduceRD,
+	@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD,
+	@RawMaterialsRD,
+	@CurrentFuelRD,
+	@TradeMedicineRD,
+	@TradeConstructionMaterialRD,
+	@TradeSparePartRD,
+	@RawVehicleRD
+)

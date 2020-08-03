@@ -5,8 +5,8 @@
 (3, N'Partner', N'Partner', N'Partners', N'user-tie', N'Financials',115,N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'Single'),
 (4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'Single'),
 (5, N'Customer', N'Customer', N'Customers', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'', N'None', N'Optional', N'None', N'None', N'Single'),
-(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'Required', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'Single'),
-(7, N'BankBranch', N'Bank Branch', N'Bank Branches', N'university', N'Cash',135,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Single');
+(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'Single'),
+(7, N'BankBranch', N'Bank Branch', N'Bank Branches', N'university', N'Cash',135,N'None', N'None', N'Optional', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'None');
 
 UPDATE @RelationDefinitions
 SET

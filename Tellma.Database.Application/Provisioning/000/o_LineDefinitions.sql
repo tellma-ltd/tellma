@@ -32,7 +32,6 @@
 (402, N'InvoiceToTradeReceivable', N'Issuing invoice to customer/lessee', N'Invoice', N'Invoices', 0, 1),
 (403, N'StockIssueToTradeReceivable', N'Issuing stock to customer', N'Stock', N'Stock', 0, 0),
 (404, N'ServiceDeliveryToTradeReceivable', N'Delivering service to customer', N'Service', N'Services', 0, 0);
-
 --0: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -85,6 +84,8 @@ SET [Script] = N'
 		[CenterId2]			= [CenterId0],
 		[CenterId3]			= COALESCE([CenterId3], [CenterId0]),
 		[MonetaryValue3]	= ISNULL([MonetaryValue0], 0) + ISNULL([MonetaryValue1], 0) - ISNULL([MonetaryValue2], 0),
+		[NotedAmount1]		= ISNULL([MonetaryValue0], 0),
+		[NotedAmount2]		= ISNULL([MonetaryValue0], 0),
 		[NotedRelationId1]	= [NotedRelationId0],
 		[NotedRelationId2]	= [NotedRelationId0],
 		-- Entry Type may change depending on nature of items
@@ -163,6 +164,47 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,302,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
 (10,302,N'PostingDate',			1,	N'Received On',		1,4,1),
 (11,302,N'CenterId',			1,	N'Business Unit',	1,4,1);
+--303:PPEReceiptFromTradePayable: (This is the Cash purchase version, we still need credit purchase versions)
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE @ProcessedWideLines
+	SET
+		[CurrencyId0]		= [CurrencyId2],
+		[CurrencyId1]		= [CurrencyId2],
+		[CenterId0]			= COALESCE([CenterId0], [CenterId2]),
+		[CenterId1]			= COALESCE([CenterId1], [CenterId2]),
+		[CustodyId1]		= [CustodyId0],
+		[MonetaryValue1]	= ISNULL([MonetaryValue2],0) - ISNULL([MonetaryValue0],0),
+		[ResourceId1]		= [ResourceId0],
+		[Quantity0]			= 1,
+		[UnitId0]			= (SELECT [Id] FROM dbo.Units WHERE Code = N''pure''),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
+'
+WHERE [Index] = 303;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeId],			[EntryTypeId]) VALUES
+(0,303,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
+(1,303,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
+(2,303,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL);
+INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[CustodyDefinitionId]) VALUES
+(0,0,303,@PPECustodyCD),
+(0,1,303,@PPECustodyCD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,303,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,303,	N'NotedRelationId',		2,	N'Supplier',		3,4,1),
+(2,303,	N'CustodyId',			0,	N'Custody',			5,5,0),
+(3,303,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0),
+(4,303,	N'Quantity',			1,	N'Life/Usage',		2,4,0),
+(5,303,	N'UnitId',				1,	N'Unit',			2,4,0),
+(6,303,	N'CurrencyId',			2,	N'Currency',		1,2,1),
+(7,303,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0),
+(8,303,	N'MonetaryValue',		0,	N'Residual Value',	1,2,0),
+(10,303,N'PostingDate',			1,	N'Acquired On',		1,4,1),
+(11,303,N'CenterId',			2,	N'Business Unit',	1,4,1);
 --306:WithholdingTaxReceivablesExtension: Do we have it separate or part of Payment line???
 UPDATE @LineDefinitions
 SET [Script] = N'
