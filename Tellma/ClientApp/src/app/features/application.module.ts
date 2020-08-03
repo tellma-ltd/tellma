@@ -160,7 +160,8 @@ import {
   faUserTie,
   faUtensils,
   faWarehouse,
-  faStar
+  faStar,
+  faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
@@ -713,6 +714,7 @@ export class ApplicationModule {
       faBook,
       faBox,
       faBoxes,
+      faCalendarAlt,
       faCampground,
       faCar,
       faCarrot,
