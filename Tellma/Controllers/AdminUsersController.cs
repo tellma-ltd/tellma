@@ -325,6 +325,9 @@ namespace Tellma.Controllers
             await SaveExecuteAsync(entities, false);
             var response = await GetMyUser(cancellation: default);
 
+            // Perform side effects of save that are not transactional, just before committing the transaction
+            await NonTransactionalSideEffectsForSave(entities, new List<AdminUser> { response });
+
             // Commit and return
             trx.Complete();
             return response;
