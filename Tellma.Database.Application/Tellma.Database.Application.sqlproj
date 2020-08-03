@@ -664,10 +664,10 @@
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
     <Build Include="map\map.CustodyDefinitions.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Lookups__Export.sql" />
-    <None Include="Provisioning\106\106_24Relations.sql" />
-    <None Include="Provisioning\106\106_25Custodies.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
+    <None Include="Provisioning\106\106_24Relations.sql" />
+    <None Include="Provisioning\106\106_25Custodies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
