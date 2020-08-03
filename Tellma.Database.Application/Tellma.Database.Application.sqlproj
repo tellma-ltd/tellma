@@ -664,10 +664,10 @@
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
     <Build Include="map\map.CustodyDefinitions.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Lookups__Export.sql" />
-    <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
-    <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
     <None Include="Provisioning\106\106_24Relations.sql" />
     <None Include="Provisioning\106\106_25Custodies.sql" />
+    <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -680,11 +680,10 @@
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="dbo\User Defined Types\Readme.txt" />
-    <None Include="101.BananSD.publish.xml" />
-    <None Include="103.LifanCars.publish.xml" />
-    <None Include="104.WaliaSteel.publish.xml" />
-    <None Include="102.BananET.publish.xml" />
-    <None Include="105.Simpex.publish.xml" />
+    <None Include="100.BananSD.publish.xml" />
+    <None Include="299.BananETDemos.publish.xml" />
+    <None Include="200.BananET.publish.xml" />
+    <None Include="399.BananSADemos.publish.xml" />
     <None Include="Tellma.Database.Application.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\000\n_Settings.sql" />
@@ -693,12 +692,11 @@
     <None Include="Provisioning\000\y_Roles.sql" />
     <None Include="Provisioning\000\c_Currencies.sql" />
     <None Include="Provisioning\000\d_Units.sql" />
-    <None Include="107.SSIA.publish.xml" />
-    <None Include="108.SSIAHolding.publish.xml" />
+    <None Include="199.BananSDDemos.publish.xml" />
     <None Include="_Azure\Azure.101.BananSD.publish.xml" />
     <None Include="_Azure\Azure.106.Soreti.publish.xml" />
     <None Include="_Azure\Azure.107.SSIA.publish.xml" />
-    <None Include="106.Soreti.publish.xml" />
+    <None Include="201.Soreti.publish.xml" />
     <None Include="Provisioning\107\30_Resources.sql" />
     <None Include="Provisioning\000\u_Lookups.sql" />
     <None Include="_Azure\Azure.102.BananET.publish.xml" />
