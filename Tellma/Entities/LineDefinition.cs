@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinition", Plural = "LineDefinitions")]
-    public class LineDefinitionForSave<TEntry, TColumn, TStateReason,TGenerateParameter> : EntityWithKey<int>
+    public class LineDefinitionForSave<TEntry, TColumn, TStateReason, TGenerateParameter, TWorkflow> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [Required]
@@ -94,14 +94,16 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(LineDefinitionGenerateParameter.LineDefinitionId))]
         public List<TGenerateParameter> GenerateParameters { get; set; }
+
+        [ForeignKey(nameof(Workflow.LineDefinitionId))]
+        public List<TWorkflow> Workflows { get; set; }
     }
 
-    public class LineDefinitionForSave : LineDefinitionForSave<LineDefinitionEntryForSave, LineDefinitionColumnForSave, LineDefinitionStateReasonForSave, LineDefinitionGenerateParameterForSave>
+    public class LineDefinitionForSave : LineDefinitionForSave<LineDefinitionEntryForSave, LineDefinitionColumnForSave, LineDefinitionStateReasonForSave, LineDefinitionGenerateParameterForSave, WorkflowForSave>
     {
-
     }
 
-    public class LineDefinition : LineDefinitionForSave<LineDefinitionEntry, LineDefinitionColumn, LineDefinitionStateReason, LineDefinitionGenerateParameter>
+    public class LineDefinition : LineDefinitionForSave<LineDefinitionEntry, LineDefinitionColumn, LineDefinitionStateReason, LineDefinitionGenerateParameter, Workflow>
     {
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }

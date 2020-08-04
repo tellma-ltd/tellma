@@ -611,9 +611,11 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
         }
       }
       const errors = Object.keys(tracker);
-      errorMessage = errors.slice(0, top || 10).join(', ');
+      const newline = `
+`;
+      errorMessage = errors.slice(0, top || 10).map(e => ` - ${e}`).join(newline);
       if (errors.length > top) {
-        errorMessage += ', ...'; // To show that's not all
+        errorMessage += '...'; // To show that's not all
       }
     } else {
       errorMessage = friendlyError.error as string;
