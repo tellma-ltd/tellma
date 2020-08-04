@@ -16,6 +16,10 @@ DECLARE @ManualJournalVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions 
 DECLARE @CashPaymentVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'CashPaymentVoucher');
 DECLARE @CashReceiptVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'CashReceiptVoucher');
 
+DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
+DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
+DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
+
 -- Define the Markup template for Manual JV
 /*
 <!DOCTYPE html>

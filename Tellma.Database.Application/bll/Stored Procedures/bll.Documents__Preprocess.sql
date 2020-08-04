@@ -229,8 +229,8 @@ BEGIN
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
-	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE L.DefinitionId = @ManualLineLD;
 	-- to here: Ends

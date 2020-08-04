@@ -1,9 +1,4 @@
-﻿--OdataPath
-DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
-DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
-DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
-
-INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
+﻿INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
 (0, N'Administrator', N'Administrator', 0),
 (1, N'GeneralManager', N'General Manager', 0),
 (2, N'FinanceManager', N'Finance Manager', 0),
@@ -63,7 +58,8 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (9905,99,	N'Read',	NULL,				N'exchange-rates'),
 (9907,99,	N'Read',	NULL,				N'roles'),
 (9909,99,	N'Read',	NULL,				N'units'),
-(9911,99,	N'Read',	NULL,				N'users');
+(9911,99,	N'Read',	NULL,				N'users'),
+(9912,99,	N'Read',	NULL,				N'account-classifications');
 
 INSERT INTO @Permissions([Index], [HeaderIndex],
 --Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
@@ -80,13 +76,15 @@ SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(1
 SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
 SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
 SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
+SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
+SELECT 9933,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankLKD AS NVARCHAR(100)) UNION
 
 SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@RevenueServiceRD AS NVARCHAR(100)) UNION
 SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
-SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) --UNION
-
---SELECT 9981,99,	N'Update',	N'CreatedById = Me',@PaymentIssueToNonTradingAgentsDDPath
+SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
+SELECT 9972,99,	N'Read',	NULL,				N'relations/' + CAST(@BankBranchRLD AS NVARCHAR(100)) UNION
+SELECT 9981,99,	N'Update',	N'CreatedById = Me',@CashPaymentVoucherDDPath
 --(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
 ;
 
