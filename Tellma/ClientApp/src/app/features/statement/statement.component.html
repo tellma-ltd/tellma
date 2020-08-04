@@ -99,7 +99,7 @@
 
                     <!-- Center -->
                     <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenterParameter">
-                        <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true"
+                        <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId"
                             [showCreate]="false">
                         </t-centers-picker>
                         <t-view-link *ngIf="readonlyCenter_Manual"
