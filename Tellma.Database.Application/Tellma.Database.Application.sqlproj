@@ -667,6 +667,14 @@
     <None Include="bll\Stored Procedures\bll.Documents__Preprocess2.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
+    <Build Include="map\map.LineDefinitionEntryCustodyDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionEntryResourceDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionEntryNotedRelationDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionColumns.sql" />
+    <Build Include="map\map.LineDefinitionGenerateParameters.sql" />
+    <Build Include="map\map.LineDefinitionStateReasons.sql" />
+    <Build Include="map\map.Workflows.sql" />
+    <Build Include="map\map.WorkflowSignatures.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
