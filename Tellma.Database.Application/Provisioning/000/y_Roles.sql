@@ -76,7 +76,7 @@ SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(1
 SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
 SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
 SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
-SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
+--SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
 SELECT 9933,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankLKD AS NVARCHAR(100)) UNION
 
 SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@RevenueServiceRD AS NVARCHAR(100)) UNION
