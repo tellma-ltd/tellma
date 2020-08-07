@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[LineDefinitionColumns]
 (
 	[Id]					INT CONSTRAINT [PK_LineDefinitionColumns] PRIMARY KEY IDENTITY,
-	[LineDefinitionId]		INT				NOT NULL,
+	[LineDefinitionId]		INT				NOT NULL CONSTRAINT [FK_LineDefinitionColumns_LineDefinitionId] REFERENCES dbo.[LineDefinitions]([Id]) ON DELETE CASCADE,
 	[Index]					INT				NOT NULL,
 	CONSTRAINT [IX_LineDefinitionColumns] UNIQUE ([LineDefinitionId], [Index]),
 	[ColumnName]			NVARCHAR (50)	NOT NULL,

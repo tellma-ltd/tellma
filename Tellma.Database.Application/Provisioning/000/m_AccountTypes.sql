@@ -365,7 +365,7 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'Check/Rcpt #'
+	SET [ExternalReferenceLabel] = N'Check/Rcpt #', [AdditionalReferenceLabel] = N'Voucher #'
 WHERE [Concept] IN (
 	N'CashOnHand',
 	N'BalancesWithBanks'
@@ -780,7 +780,7 @@ DECLARE @ControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE
 DECLARE @TradersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TradersControlAccountsExtension');
 DECLARE @SuppliersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SuppliersControlAccountsExtension');
 DECLARE @CashPaymentsToSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashPaymentsToSuppliersControlExtension');
-DECLARE @GoodsAndServicesReceivedFromSuppliersControlExtensions INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GoodsAndServicesReceivedFromSuppliersControlExtensions');
+DECLARE @GoodsAndServicesReceivedFromSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GoodsAndServicesReceivedFromSuppliersControlExtensions');
 DECLARE @CustomersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomersControlAccountsExtension');
 DECLARE @CashReceiptsFromCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashReceiptsFromCustomersControlExtension');
 DECLARE @GoodsAndServicesIssuedToCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GoodsAndServicesIssuedToCustomersControlExtension');
@@ -889,16 +889,18 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (40,@CurrentFuel,										@CurrentFuelRD),
 (41,@OtherInventories,									@OtherInventoriesRD),
 
-(146,@CurrentTradeReceivables,@TradeReceivableRD),
-(147,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@TradeReceivableRD),
-(148,@CurrentPrepayments,@PrepaymentsRD),
+(144,@CurrentTradeReceivables,@TradeReceivableRD),
+(145,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@TradeReceivableRD),-- 
+(146,@CurrentPrepayments,								@SalaryAdvanceRD),
+(147,@CurrentAdvancesToSuppliers,						@PrepaymentsRD),
+(148,@CurrentPrepaidExpenses,							@PrepaymentsRD), 
 (149,@CurrentAccruedIncome,@AccruedIncomeRD),
 (150,@CurrentReceivablesFromRentalOfProperties,@ReceivablesFromRentalOfPropertiesRD),
 (151,@OtherCurrentFinancialAssets,@EmployeeLoanRD),
 
 (42,@CashOnHand,										@CheckReceivedRD), -- for checks to be deposited
 
-(153,@LongtermWarrantyProvision,@WarrantyProvisionRD),
+(153,@LongtermWarrantyProvision,						@WarrantyProvisionRD),
 (154,@LongtermRestructuringProvision,@RestructuringProvisionRD),
 (155,@NoncurrentRefundsProvision,@RefundsProvisionRD),
 (156,@NoncurrentPayablesToTradeSuppliers,@TradePayableRD),
@@ -916,7 +918,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (168,@AccrualsClassifiedAsCurrent,@AccrualsRD),
 (169,@ShorttermEmployeeBenefitsAccruals,@AccrualsRD),
 (170,@CurrentBilledButNotIssuedExtension,@CurrentBilledButNotIssuedRD),
-(171,@CurrentRetentionPayables,@RetentionPayableRD),
+(171,@CurrentRetentionPayables,							@RetentionPayableRD),
 
 (46,@RevaluationSurplus,								@LandMemberRD),
 (47,@RevaluationSurplus,								@BuildingsMemberRD),
@@ -995,30 +997,25 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 INSERT INTO @AccountTypeCustodyDefinitions([Index],
 [HeaderIndex],										[CustodyDefinitionId]) VALUES
-(0,@LandMemberRD,									@PPECustodyCD),
-(1,@BuildingsMemberRD,								@PPECustodyCD),
-(2,@MachineryMemberRD,								@PPECustodyCD),
-(3,@MachineryMemberRD,								@RentalCD),
-(4,@MotorVehiclesMemberRD,							@PPECustodyCD),
-(5,@MotorVehiclesMemberRD,							@RentalCD),
-(6,@FixturesAndFittingsMemberRD,					@PPECustodyCD),
-(7,@OfficeEquipmentMemberRD,						@PPECustodyCD),
-(8,@OfficeEquipmentMemberRD,						@RentalCD),
-(9,@ComputerEquipmentMemberRD,						@PPECustodyCD),
-(10,@ComputerEquipmentMemberRD,						@RentalCD),
-(11,@CommunicationAndNetworkEquipmentMemberRD,		@PPECustodyCD),
-(12,@NetworkInfrastructureMemberRD,					@PPECustodyCD),
-(13,@BearerPlantsMemberRD,							@PPECustodyCD),
-(14,@TangibleExplorationAndEvaluationAssetsMemberRD,@PPECustodyCD),
-(15,@TangibleExplorationAndEvaluationAssetsMemberRD,@RentalCD),
-(16,@MiningAssetsMemberRD,							@PPECustodyCD),
-(17,@OilAndGasAssetsMemberRD,						@PPECustodyCD),
-(18,@PowerGeneratingAssetsMemberRD,					@PPECustodyCD),
-(19,@LeaseholdImprovementsMemberRD,					@PPECustodyCD),
-(20,@ConstructionInProgressMemberRD,				@PPECustodyCD),
-(21,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD,
+(0,@Land,											@PPECustodyCD),
+(1,@Buildings,										@PPECustodyCD),
+(2,@Machinery,										@PPECustodyCD),
+(3,@Machinery,										@RentalCD),
+(4,@MotorVehicles,									@PPECustodyCD),
+(5,@MotorVehicles,									@RentalCD),
+(6,@FixturesAndFittings,							@PPECustodyCD),
+(7,@OfficeEquipment,								@PPECustodyCD),
+(8,@OfficeEquipment,								@RentalCD),
+(13,@BearerPlants,									@PPECustodyCD),
+(14,@TangibleExplorationAndEvaluationAssets,		@PPECustodyCD),
+(15,@TangibleExplorationAndEvaluationAssets,		@RentalCD),
+(16,@MiningAssets,									@PPECustodyCD),
+(17,@OilAndGasAssets,								@PPECustodyCD),
+(18,@MiningAssets,									@PPECustodyCD),
+(20,@ConstructionInProgress,						@PPECustodyCD),
+(21,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,
 													@PPECustodyCD),
-(22,@OtherPropertyPlantAndEquipmentMemberRD,		@PPECustodyCD),
+(22,@OtherPropertyPlantAndEquipment,				@PPECustodyCD),
 
 (23,@InvestmentPropertyCompleted,					@RentalCD),
 (24,@InvestmentPropertyCompleted,					@PPECustodyCD),
@@ -1040,6 +1037,7 @@ INSERT INTO @AccountTypeCustodyDefinitions([Index],
 (329,@RevenueFromSaleOfGoods,						@WarehouseCD),
 (330,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
 (331,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
+(331,@OtherRevenue,									@WarehouseCD),
 (332,@CostOfMerchandiseSold,						@WarehouseCD),
 (344,@CollectionGuaranteeExtension,					@SafeCD),
 (345,@DishonouredGuaranteeExtension,				@SafeCD);
@@ -1059,8 +1057,8 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 (10,@CostSharingPayableExtension,					@EmployeeRLD),
 (11,@DividendTaxPayableExtension,					@PartnerRLD),
 
-(103,@NoncurrentValueAddedTaxPayables,@CustomerRLD),
-(106,@CurrentZakatPayablesExtension,@EmployeeRLD),
+(103,@NoncurrentValueAddedTaxPayables,				@CustomerRLD),
+(106,@CurrentZakatPayablesExtension,				@EmployeeRLD),
 
 (12,@RevenueFromSaleOfGoods,						@CustomerRLD),
 (13,@RevenueFromSaleOfFoodAndBeverage,				@CustomerRLD),
@@ -1087,11 +1085,11 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 (33,@OtherEmployeeExpense,							@EmployeeRLD),
 
 
-(35,@CashPaymentsToSuppliersControlExtension,@SupplierRLD),
-(36,@GoodsAndServicesReceivedFromSuppliersControlExtensions,@SupplierRLD),
-(37,@CashReceiptsFromCustomersControlExtension,@CustomerRLD),
+(35,@CashPaymentsToSuppliersControlExtension,		@SupplierRLD),
+(36,@GoodsAndServicesReceivedFromSuppliersControlExtension,@SupplierRLD),
+(37,@CashReceiptsFromCustomersControlExtension,		@CustomerRLD),
 (38,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerRLD),
-(39,@CashPaymentsToEmployeesControlExtension,@EmployeeRLD);
+(39,@CashPaymentsToEmployeesControlExtension,		@EmployeeRLD);
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,

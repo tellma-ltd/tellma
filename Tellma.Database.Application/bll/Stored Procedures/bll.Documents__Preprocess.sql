@@ -57,16 +57,16 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE L.DefinitionId = @ManualLineLD
-	AND A.ResourceDefinitionId IS NULL;
+	WHERE  A.ResourceDefinitionId IS NULL
+	--AND L.DefinitionId = @ManualLineLD;
 
 	UPDATE E
 	SET E.[CustodyId] = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE L.DefinitionId = @ManualLineLD
-	AND A.[CustodyDefinitionId] IS NULL;
+	WHERE A.[CustodyDefinitionId] IS NULL
+	--AND L.DefinitionId = @ManualLineLD;
 
 	UPDATE E
 	SET E.EntryTypeId = NULL
@@ -74,9 +74,18 @@ BEGIN
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE L.DefinitionId = @ManualLineLD
-	AND AC.EntryTypeParentId IS NULL
-	-- TODO:  Remove residual noted relation and labels, etc.
+	WHERE AC.EntryTypeParentId IS NULL
+	--AND L.DefinitionId = @ManualLineLD;
+
+	UPDATE E
+	SET E.[NotedRelationId] = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	WHERE A.NotedRelationDefinitionId IS NULL
+	--AND L.DefinitionId = @ManualLineLD;
+
+	-- TODO:  Remove labels, etc.
 
 --	Overwrite input with data specified in the template (or clause)
 	UPDATE E
@@ -140,11 +149,6 @@ BEGIN
 	FROM @E E
 	JOIN CTE ON  E.[Index] = CTE.[Index] AND E.[LineIndex] = CTE.[LineIndex] AND E.[DocumentIndex] = CTE.[DocumentIndex];
 
-	/*
-	from here
-
-	*/
-
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
 	SELECT DISTINCT DefinitionId FROM @L
@@ -192,8 +196,7 @@ BEGIN
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
 	END
-	-- To here: Begin
-	-- for all lines, Get currency and center from Resources if available.
+	-- for all lines, Get currency and center from (financial) Resources
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId]),
@@ -269,6 +272,7 @@ BEGIN
 		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
 		WHERE L.DefinitionId <> @ManualLineLD
+		AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1
 		--WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
 		--	SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
 		--	WHERE [LineDefinitionEntryId] = LDE.[Id]
@@ -309,6 +313,7 @@ BEGIN
 		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
 		WHERE L.DefinitionId <> @ManualLineLD
+		AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1
 	),
 	ConformantAccounts2 AS (
 		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId

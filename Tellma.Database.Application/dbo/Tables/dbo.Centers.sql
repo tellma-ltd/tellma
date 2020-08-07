@@ -70,4 +70,3 @@ BEGIN
 	WHERE [IsLeaf] = 1
 	AND [Id] IN (SELECT DISTINCT [ParentId] FROM dbo.Centers WHERE [ParentId] IS NOT NULL)
 END
-

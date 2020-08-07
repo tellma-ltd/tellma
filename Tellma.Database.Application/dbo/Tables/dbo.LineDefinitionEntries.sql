@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[LineDefinitionEntries] (
 	[Id]						INT					CONSTRAINT [PK_LineDefinitionEntries] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[LineDefinitionId]			INT					NOT NULL CONSTRAINT [FK_LineDefinitionEntries_LineDefinitionId] REFERENCES dbo.[LineDefinitions]([Id]),
+	[LineDefinitionId]			INT					NOT NULL CONSTRAINT [FK_LineDefinitionEntries_LineDefinitionId] REFERENCES dbo.[LineDefinitions]([Id]) ON DELETE CASCADE,
 	[Index]						INT					NOT NULL CONSTRAINT [CK_LineDefinitionEntries_Index]	CHECK([Index] >= 0),
 	CONSTRAINT [IX_LineDefinitionEntries] UNIQUE CLUSTERED ([LineDefinitionId], [Index]),
 	[Direction]					SMALLINT			NOT NULL CHECK([Direction] IN (-1, +1)),

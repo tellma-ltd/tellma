@@ -169,14 +169,14 @@
 (41010132,@RevenueFromSaleOfGoods,@AC410101, '41010132', N'Revenue from sales of Construction Material', N'الإيرادات من بيع مواد بناء',NULL,NULL, @TradeConstructionMaterialRD,@WarehouseCD,@CustomerRLD),
 (41010133,@RevenueFromSaleOfGoods,@AC410101, '41010133', N'Revenue from sales of Spare Part (sale)', N'الإيرادات من بيع قطع غيار (للبيع)',NULL,NULL, @TradeSparePartRD,@WarehouseCD,@CustomerRLD),
 (41010191,@RevenueFromSaleOfGoods,@AC410101, '41010191', N'Revenue from sales of Property intended for sale in ordinary course of business', N'الإيرادات من بيع العقارات المقصود بيعها في السياق العادي للأعمال',NULL,NULL, @PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD,NULL,@CustomerRLD),
-(41010200,@RevenueFromSaleOfGoods,@AC410102, '41010200', N'Revenue from sales of finished goods', N'الإيرادات من بيع السلع الجاهزة',NULL,NULL, @FinishedGoodsRD,NULL,@CustomerRLD),
-(41010231,@RevenueFromSaleOfGoods,@AC410102, '41010231', N'Revenue from sales of Cleaned Grains', N'الإيرادات من بيع حبوب نظيفة',NULL,NULL, @FinishedGrainRD,NULL,@CustomerRLD),
-(41010232,@RevenueFromSaleOfGoods,@AC410102, '41010232', N'Revenue from sales of Assembled Vehicles', N'الإيرادات من بيع مركبات مجمعة',NULL,NULL, @FinishedVehicleRD,NULL,@CustomerRLD),
-(41010233,@RevenueFromSaleOfGoods,@AC410102, '41010233', N'Revenue from sales of Processed Oils (milling)', N'الإيرادات من بيع زيت معصور',NULL,NULL, @FinishedOilRD,NULL,@CustomerRLD),
+(41010200,@RevenueFromSaleOfGoods,@AC410102, '41010200', N'Revenue from sales of finished goods', N'الإيرادات من بيع السلع الجاهزة',NULL,NULL, @FinishedGoodsRD,@WarehouseCD,@CustomerRLD),
+(41010231,@RevenueFromSaleOfGoods,@AC410102, '41010231', N'Revenue from sales of Cleaned Grains', N'الإيرادات من بيع حبوب نظيفة',NULL,NULL, @FinishedGrainRD,@WarehouseCD,@CustomerRLD),
+(41010232,@RevenueFromSaleOfGoods,@AC410102, '41010232', N'Revenue from sales of Assembled Vehicles', N'الإيرادات من بيع مركبات مجمعة',NULL,NULL, @FinishedVehicleRD,@WarehouseCD,@CustomerRLD),
+(41010233,@RevenueFromSaleOfGoods,@AC410102, '41010233', N'Revenue from sales of Processed Oils (milling)', N'الإيرادات من بيع زيت معصور',NULL,NULL, @FinishedOilRD,@WarehouseCD,@CustomerRLD),
 (41020101,@RevenueFromRenderingOfServices,@AC410201, '41020101', N'Revenue from rendering of services (by service type and business unit)', N'الإيرادات من تقديم الخدمات (بنوع الخدمة ووحدة الأعمال)',NULL,NULL, @RevenueServiceRD,NULL,@CustomerRLD),
 (41080101,@RevenueFromDividends,@AC410801, '41080101', N'Dividend income (by investment)', N'دخل أرباح الأسهم (باسم المساهمة)',NULL,NULL, NULL,NULL,NULL),
-(41990001,@OtherRevenue,@AC419900, '41990001', N'Revenue from sale of oil byproducts', N'إيراد بيع مخلفات الزيت',NULL,NULL, @ByproductOilRD,NULL,@CustomerRLD),
-(41990002,@OtherRevenue,@AC419900, '41990002', N'Revenue from sale of grain byproducts', N'إيراد بيع مخلفات الحبوب',NULL,NULL, @ByproductGrainRD,NULL,NULL),
+(41990001,@OtherRevenue,@AC419900, '41990001', N'Revenue from sale of oil byproducts', N'إيراد بيع مخلفات الزيت',NULL,NULL, @ByproductOilRD,@WarehouseCD,@CustomerRLD),
+(41990002,@OtherRevenue,@AC419900, '41990002', N'Revenue from sale of grain byproducts', N'إيراد بيع مخلفات الحبوب',NULL,NULL, @ByproductGrainRD,@WarehouseCD,@CustomerRLD),
 (42000001,@OtherIncome,@AC420000, '42000001', N'Other income 1', N'دخل آخر 1',NULL,NULL, NULL,NULL,NULL),
 (42000002,@OtherIncome,@AC420000, '42000002', N'Other income 2', N'دخل آخر 2',NULL,NULL, NULL,NULL,NULL),
 (43010000,@RawMaterialsAndConsumablesUsed,@AC430100, '43010000', N'Raw Materials Used', N'المواد الخام المستخدمة',NULL,NULL, @RawMaterialsRD,NULL,NULL),
@@ -248,7 +248,7 @@
 (62010100,@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax,@AC620101, '62010100', N'Gains (losses) on exchange differences on translation, before tax -', N'الأرباح (الخسائر) من فروق الصرف عند التحويل، قبل الضريبة',NULL,NULL, NULL,NULL,NULL),
 (62010200,@ReclassificationAdjustmentsOnExchangeDifferencesOnTranslationBeforeTax,@AC620102, '62010200', N'Reclassification adjustments on exchange differences on translation, before tax -', N'تعديلات إعادة التصنيف على فروق الصرف عند التحويل، قبل الضريبة',NULL,NULL, NULL,NULL,NULL),
 (71010001,@CashPaymentsToSuppliersControlExtension,@AC710100, '71010001', N'Cash payments to suppliers control', N'مراقبة دفعيات الموردين',NULL,NULL, NULL,NULL,@SupplierRLD),
-(71010002,@GoodsAndServicesReceivedFromSuppliersControlExtensions,@AC710100, '71010002', N'Goods/services received from suppliers control', N'مراقبة استلام السلع/الخدمات من الموردين',NULL,NULL, NULL,NULL,@SupplierRLD),
+(71010002,@GoodsAndServicesReceivedFromSuppliersControlExtension,@AC710100, '71010002', N'Goods/services received from suppliers control', N'مراقبة استلام السلع/الخدمات من الموردين',NULL,NULL, NULL,NULL,@SupplierRLD),
 (71020001,@CashReceiptsFromCustomersControlExtension,@AC710200, '71020001', N'Cash receipts from customers control', N'مراقبة دفعيات الزبائن',NULL,NULL, NULL,NULL,@CustomerRLD),
 (71020002,@GoodsAndServicesIssuedToCustomersControlExtension,@AC710200, '71020002', N'Goods/Services delivered to customers control', N'مراقبة تسليم السلع/الخدمات إلى الزبائن',NULL,NULL, NULL,NULL,@CustomerRLD),
 (71030001,@CashPaymentsToEmployeesControlExtension,@AC710300, '71030001', N'Cash payments to employees control', N'مراقبة دفعيات الموظفين',NULL,NULL, NULL,NULL,@EmployeeRLD),
@@ -256,6 +256,7 @@
 (71090002,@CashReceiptsFromOthersControlExtension,@AC710900, '71090002', N'Cash receipts from others control', N'مراقبة الدفعيات من الآخرين',NULL,NULL, NULL,NULL,NULL),
 (72000100,@CollectionGuaranteeExtension,@AC720001, '72000100', N'Checks Guarantee -', N'شيكات ضمان',NULL,NULL, @CheckReceivedRD,@SafeCD,NULL),
 (72000200,@DishonouredGuaranteeExtension,@AC720002, '72000200', N'Checks Dishonored -', N'شيكات مرتجعة',NULL,NULL, @CheckReceivedRD,@SafeCD,NULL);
+UPDATE dbo.AccountTypes SET IsAssignable = 1 WHERE [Id] IN (SELECT [AccountTypeId] FROM @Accounts);
 EXEC [api].[Accounts__Save]
 	@Entities = @Accounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

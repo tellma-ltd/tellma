@@ -46,21 +46,21 @@ SET NOCOUNT ON;
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
-			AND (
-			t.[Code]						<> s.[Code] OR
-			t.[TitleSingular]				<> s.[TitleSingular] OR	
-			t.[TitlePlural]					<> s.[TitlePlural] OR
-			t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
-			ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
-			ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
-			ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
-			ISNULL(t.[TitleSingular2], N'')	<> ISNULL(s.[TitleSingular2], N'') OR	
-			ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
-			ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
-			ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
-			ISNULL(t.[GenerateScript], N'')	<> ISNULL(s.[GenerateScript], N'') OR
-			ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
-			)
+			--AND (
+			--t.[Code]						<> s.[Code] OR
+			--t.[TitleSingular]				<> s.[TitleSingular] OR	
+			--t.[TitlePlural]					<> s.[TitlePlural] OR
+			--t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
+			--ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
+			--ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
+			--ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
+			--ISNULL(t.[TitleSingular2], N'')	<> ISNULL(s.[TitleSingular2], N'') OR	
+			--ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
+			--ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
+			--ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
+			--ISNULL(t.[GenerateScript], N'')	<> ISNULL(s.[GenerateScript], N'') OR
+			--ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
+			--)
 		THEN
 			UPDATE SET
 				t.[Code]						= s.[Code],
@@ -130,7 +130,7 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[LineDefinitionId], x.[Id]
 	FROM
 	(
-		MERGE [dbo].[LineDefinitionEntries] AS t
+		MERGE INTO BLDE AS t
 		USING (
 			SELECT
 				LDE.[Id],
@@ -140,8 +140,7 @@ SET NOCOUNT ON;
 				LDE.[AccountTypeId],
 				LDE.[EntryTypeId]
 			FROM @LineDefinitionEntries LDE
-			JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
-			JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+			JOIN @LineDefinitionsIndexedIds II ON LDE.[HeaderIndex] = II.[Index]
 		) AS s
 		ON s.[Id] = t.[Id]
 		WHEN MATCHED 

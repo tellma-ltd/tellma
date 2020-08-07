@@ -47,36 +47,29 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	)
 	
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	-- Below we make sure the selected values conform to their definitions
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	-- TODO: Entry Type appears in: Account Types, Account Definitions, Accounts, Entries, ...
-	-- The flow is not clear.
-	-- Currency appears in Account, Resource, Contract,
-	-- The flow also is not clear
+	-- Account Resource Definition must be compatible with Account Type Resource Definitions
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_ResourceDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.AccountTypeResourceDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[ResourceDefinitionId] = ATRD.[ResourceDefinitionId]
+	WHERE FE.[ResourceDefinitionId] IS NOT NULL 
+	AND ATRD.[ResourceDefinitionId] IS NULL;
+	
+	-- Account Custody Definition must be compatible with Account Type Custody Definitions
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodyDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_CustodyDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.AccountTypeCustodyDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[CustodyDefinitionId] = ATRD.[CustodyDefinitionId]
+	WHERE FE.[CustodyDefinitionId] IS NOT NULL
+	AND ATRD.[CustodyDefinitionId] IS NULL;
 
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_Resource'
-	FROM @Entities FE
-	JOIN dbo.[Resources] R ON FE.[ResourceId] = R.[Id]
-	LEFT JOIN dbo.[AccountTypeResourceDefinitions] AD
-		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
-	WHERE (AD.[ResourceDefinitionId] IS NULL);
-	
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodyId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_Contract'
-	FROM @Entities FE
-	JOIN dbo.[Custodies] R ON FE.[CustodyId] = R.[Id]
-	LEFT JOIN dbo.[AccountTypeCustodyDefinitions] AD
-		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[CustodyDefinitionId]
-	WHERE (AD.[CustodyDefinitionId] IS NULL);
-	
+	-- Account/EntryTypeId must be compatible with AccountType/EntryTypeParentId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].EntryTypeId',
@@ -88,11 +81,48 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETC ON FE.[EntryTypeId] = ETC.[Id]
 	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
 
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	-- Other Validation
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	-- Account NotedRelation Definition must be compatible with Account Type NotedRelation Definitions
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].NotedRelationDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_NotedRelationDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.AccountTypeNotedRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedRelationDefinitionId] = ATRD.[NotedRelationDefinitionId]
+	WHERE FE.[NotedRelationDefinitionId] IS NOT NULL
+	AND ATRD.[NotedRelationDefinitionId] IS NULL;
 
-	-- Custom Classification must be a leaf
+	-- Account Resource must be compatible with Account Resource definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_Resource'
+	FROM @Entities FE
+	JOIN dbo.[Resources] R ON FE.[ResourceId] = R.[Id]
+	WHERE (FE.[ResourceDefinitionId] IS NULL OR FE.[ResourceDefinitionId] <> R.DefinitionId);
+
+	-- Account Custody must be compatible with Account Custody Definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodyId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_Custody'
+	FROM @Entities FE
+	JOIN dbo.[Custodies] R ON FE.[CustodyId] = R.[Id]
+	WHERE (FE.[CustodyDefinitionId] IS NULL OR FE.[ResourceDefinitionId] <> R.DefinitionId);
+
+	-- Account Type must be Assignable
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountTypeId',
+		N'Error_TheAccountType0IsNotAssignable',
+		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]) AS AccountType
+	FROM @Entities FE 
+	JOIN [dbo].[AccountTypes] BE ON FE.[AccountTypeId] = BE.Id
+	WHERE BE.[IsAssignable] = 0;
+
+	-- Account Classification must be a leaf
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountClassificationId',
@@ -100,26 +130,9 @@ SET NOCOUNT ON;
 		FE.[ClassificationId]
 	FROM @Entities FE 
 	JOIN [dbo].[AccountClassifications] BE ON FE.[ClassificationId] = BE.Id
-	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[AccountClassifications]);
+	WHERE BE.[IsLeaf] = 0;
 
-	-- bll.Preprocess copies the CustodyDefinition from Contract
-	---- If Custody Id is not null, then account and Custody must have same Custody definition
-	---- It is already added as FK constraint, but this will give a friendly error message
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
-	--	N'Error_TheCustodyDefinition0IsNotCompatibleWithCustody1',
-	--	dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
-	--	dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
-	--FROM @Entities FE 
-	--JOIN [dbo].[Custodies] AG ON AG.[Id] = FE.[AgentId]
-	--LEFT JOIN dbo.[CustodyDefinitions] AD ON AD.[Id] = FE.[CustodyDefinitionId]
-	--WHERE (FE.[AgentDefinition] IS NOT NULL)
-	----AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
-	--AND (FE.CustodyDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
-
-	-- If Resource Id is not null, and currency is not null, then Account and resource must have same currency
-	-- It is already added as FK constraint, but this will give a friendly error message
+	-- If Resource Id is not null, and Currency Id is not null, then Account and resource must have same currency (also added as FK constraint)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
@@ -133,12 +146,47 @@ SET NOCOUNT ON;
 	JOIN dbo.[Currencies] RC ON RC.[Id]= R.[CurrencyId]
 	WHERE (FE.[CurrencyId] <> R.[CurrencyId])
 
-	-- TODO repeat the above for account and resource CenterId
-	-- TODO repeat the above for account and contract CurrencyId
-	-- TODO repeat the above for account and contract CenterId
+	-- If Resource Id is not null, and Center Id is not null, then Account and resource must have same Center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
+		N'Error_TheResource0hasCenter1whileAccountHasCenter2',
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
+	FROM @Entities FE
+	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
+	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
+	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
+	WHERE (FE.[CenterId] <> R.[CenterId])
 
-	-- TODO if both contract and resource are specified, make sure they have consistent CurrencyId
-	-- TODO if both contract and resource are specified, make sure they have consistent CenterId
+	-- If Custody Id is not null, and Currency Id is not null, then Account and Custody must have same currency (also added as FK constraint)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodyId',
+		N'Error_TheCustody0hasCurrency1whileAccountHasCurrency2',
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Custody],
+		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [CustodyCurrency],
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
+	FROM @Entities FE
+	JOIN [dbo].[Custodies] R ON R.[Id] = FE.CustodyId
+	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
+	JOIN dbo.[Currencies] RC ON RC.[Id]= R.[CurrencyId]
+	WHERE (FE.[CurrencyId] <> R.[CurrencyId])
+
+	-- If Custody Id is not null, and Center Id is not null, then Account and Custody must have same Center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodyId',
+		N'Error_TheCustody0hasCenter1whileAccountHasCenter2',
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Custody],
+		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [CustodyCenter],
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
+	FROM @Entities FE
+	JOIN [dbo].[Custodies] R ON R.[Id] = FE.CustodyId
+	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
+	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
+	WHERE (FE.[CenterId] <> R.[CenterId])
 
 	-- Trying to change the account type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
@@ -157,8 +205,7 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND FE.[AccountTypeId] <> A.[AccountTypeId]
 
-	-- Setting the center value (whether it was null or not)
-	-- is not allowed if the account has been used already in an line but with different center
+	-- Setting the center is not allowed if the account has been used already in an entry but with different center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -178,8 +225,7 @@ SET NOCOUNT ON;
 	AND FE.[CenterId] IS NOT NULL
 	AND FE.[CenterId] <> E.[CenterId]
 
-	-- Setting the Contract value (whether it was null or not)
-	-- is not allowed if the account has been used already in an line but with different agent
+	--  Setting the custody is not allowed if the account has been used already in an entry but with different custody
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -199,8 +245,7 @@ SET NOCOUNT ON;
 	AND FE.[CustodyId] IS NOT NULL
 	AND FE.[CustodyId] <> E.[CustodyId]
 
-	-- Setting the resource value (whether it was null or not)
-	-- is not allowed if the account has been used already in an line but with different resource
+	-- Setting the resource is not allowed if the account has been used already in an entry but with different resource
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -220,8 +265,7 @@ SET NOCOUNT ON;
 	AND FE.[ResourceId] IS NOT NULL
 	AND FE.[ResourceId] <> E.[ResourceId]
 
-	-- Setting the currency value (whether it was null or not)
-	-- is not allowed if the account has been used already in an line but with different currency
+	-- Setting the currency is not allowed if the account has been used already in an entry but with different currency 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -241,8 +285,7 @@ SET NOCOUNT ON;
 	AND FE.[CurrencyId] IS NOT NULL
 	AND FE.[CurrencyId] <> E.[CurrencyId]
 
-	-- Changing the Account entry type is allowed provided that the entry type used in the entries are
-	-- compatible with the new classification
+	-- Changing the entry type is not allowed if the account has been used already in an entry but with entry type that is not descendant of new onw
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',

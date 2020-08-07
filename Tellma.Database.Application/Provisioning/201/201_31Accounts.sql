@@ -208,7 +208,7 @@ INSERT INTO @InactiveAccountTypesIndexedIds([Index], [Id]) SELECT ROW_NUMBER() O
 (N'RevenueFromSaleOfGoods'),
 --(N'RevenueFromSaleOfFoodAndBeverage'),
 --(N'RevenueFromSaleOfAgriculturalProduce'),
---(N'RevenueFromRenderingOfServices'),
+(N'RevenueFromRenderingOfServices'),
 --(N'RevenueFromConstructionContracts'),
 --(N'RevenueFromRoyalties'),
 --(N'LicenceFeeIncome'),

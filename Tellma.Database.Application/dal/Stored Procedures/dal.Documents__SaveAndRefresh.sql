@@ -51,7 +51,7 @@ BEGIN
 				[CurrencyId],
 				[CurrencyIsCommon],
 				[SerialNumber] As ManualSerialNumber,
-				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
+				ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
 				) As [AutoSerialNumber]

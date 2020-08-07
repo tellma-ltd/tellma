@@ -20,9 +20,9 @@ INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType])
 (132,13, N'Site 2 - Local and Export Grain Cleaning', N'ጣቢያ 2 - አካባቢያዊ እና ላክ የቅንጣት ጽዳት', N'132', N'SharedExpenseControl'),
 (2,0, N'Export', N'ወደ ውጪ ላክ', N'2', N'BusinessUnit'),
 (20,2, N'Export - Cost of sales', N'ላክ - የሽያጭ ዋጋ', N'20', N'Abstract'),
-(200,20, N'Export - Cost of sales -', N'ወደ ውጪ ላክ - የሽያጭ ዋጋ -', N'200', N'CostOfSales'),
+(200,20, N'Export - Cost of sales.', N'ወደ ውጪ ላክ - የሽያጭ ዋጋ.', N'200', N'CostOfSales'),
 (21,2, N'Export - SGA', N'ወደ ውጭ መላክ - SGA', N'21', N'Abstract'),
-(210,21, N'Export - SGA -', N'ወደ ውጭ መላክ - SGA -', N'210', N'SellingGeneralAndAdministration'),
+(210,21, N'Export - SGA.', N'ወደ ውጭ መላክ - SGA.', N'210', N'SellingGeneralAndAdministration'),
 (23,2, N'Export - Production Centers', N'ላክ - ፕሮዳክሽን ማዕከል', N'23', N'Abstract'),
 (230,23, N'Export Grain Cleaning - Shared Expenses', N'የውጭ ንግድ እህል ማጽዳት - የተጋሩ ወጪዎች', N'230', N'SharedExpenseControl'),
 (231,23, N'Site 1 - Export Grain Cleaning', N'ጣቢያ 1 - ላክ የቅንጣት ጽዳት', N'231', N'WorkInProgressExpendituresControl'),
@@ -32,24 +32,24 @@ INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType])
 (252,25, N'Export Permit 2', N'የውጭ ንግድ ፈቃድ 2', N'252', N'CurrentInventoriesInTransitExpendituresControl'),
 (3,0, N'Import', N'አስገባ', N'3', N'BusinessUnit'),
 (30,3, N'Import - Cost of sales', N'አስመጣ - የሽያጭ ዋጋ', N'30', N'Abstract'),
-(300,30, N'Import - Cost of sales -', N'አስመጣ - የሽያጭ ዋጋ -', N'300', N'CostOfSales'),
+(300,30, N'Import - Cost of sales.', N'አስመጣ - የሽያጭ ዋጋ.', N'300', N'CostOfSales'),
 (31,3, N'Import - SGA', N'አስመጣ - SGA', N'31', N'Abstract'),
-(310,31, N'Import - SGA -', N'አስመጣ - SGA -', N'310', N'SellingGeneralAndAdministration'),
+(310,31, N'Import - SGA.', N'አስመጣ - SGA.', N'310', N'SellingGeneralAndAdministration'),
 (32,3, N'Import Shipments', N'አስመጣ - በሽግግር ላይ ', N'32', N'Abstract'),
 (321,32, N'Import LC 1', N'አስመጣ LC 1', N'321', N'CurrentInventoriesInTransitExpendituresControl'),
 (322,32, N'Import LC 2', N'አስመጣ LC 2', N'322', N'CurrentInventoriesInTransitExpendituresControl'),
 (4,0, N'Agro Processing', N'አግሮ በመስራት ላይ', N'4', N'BusinessUnit'),
 (40,4, N'Agro Processing - Cost of Sales', N'አግሮ ማቀነባበር - የሽያጭ ዋጋ', N'40', N'Abstract'),
-(400,40, N'Agro Processing - Cost of Sales -', N'አግሮ ማቀነባበር - የሽያጭ ዋጋ -', N'400', N'CostOfSales'),
+(400,40, N'Agro Processing - Cost of Sales.', N'አግሮ ማቀነባበር - የሽያጭ ዋጋ.', N'400', N'CostOfSales'),
 (41,4, N'Agro Processing - SGA', N'አግሮ ማቀነባበር - SGA', N'41', N'Abstract'),
-(410,41, N'Agro Processing - SGA -', N'አግሮ ማቀነባበር - SGA -', N'410', N'SellingGeneralAndAdministration'),
+(410,41, N'Agro Processing - SGA.', N'አግሮ ማቀነባበር - SGA.', N'410', N'SellingGeneralAndAdministration'),
 (43,4, N'Agro - Production Centers', N'አግሮ - ፕሮዳክሽን ማዕከል', N'43', N'Abstract'),
 (431,43, N'Oil Milling Line', N'ዘይት ሚሊ', N'431', N'WorkInProgressExpendituresControl'),
 (5,0, N'Manufacturing', N'ማኑፋክቸሪንግ', N'5', N'BusinessUnit'),
 (50,5, N'Manufacturing - Cost of sales', N'ማኑፋክቸሪንግ - የሽያጭ ዋጋ', N'50', N'Abstract'),
-(500,50, N'Manufacturing - Cost of sales -', N'ማኑፋክቸሪንግ - የሽያጭ ዋጋ -', N'500', N'CostOfSales'),
+(500,50, N'Manufacturing - Cost of sales.', N'ማኑፋክቸሪንግ - የሽያጭ ዋጋ.', N'500', N'CostOfSales'),
 (51,5, N'Manufacturing - SGA', N'ማኑፋክቸሪንግ - SGA', N'51', N'Abstract'),
-(510,51, N'Manufacturing - SGA -', N'ማኑፋክቸሪንግ - SGA -', N'510', N'SellingGeneralAndAdministration'),
+(510,51, N'Manufacturing - SGA.', N'ማኑፋክቸሪንግ - SGA.', N'510', N'SellingGeneralAndAdministration'),
 (52,5, N'Minidor Import Shipments', N'Minidor አስመጣ አላላኮችን', N'52', N'Abstract'),
 (521,52, N'Minidor Import LC 1', N'Minidor አስመጣ LC 1', N'521', N'CurrentInventoriesInTransitExpendituresControl'),
 (522,52, N'Minidor Import LC 2', N'Minidor አስመጣ LC 2', N'522', N'CurrentInventoriesInTransitExpendituresControl'),
@@ -57,15 +57,15 @@ INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType])
 (531,53, N'Minidor Line', N'አነስተኛ መስመር', N'531', N'WorkInProgressExpendituresControl'),
 (6,0, N'Local Trade', N'የአገር ውስጥ ንግድ', N'6', N'BusinessUnit'),
 (60,6, N'Local Trade - Cost of Sales', N'የአገር ውስጥ ንግድ - የሽያጭ ዋጋ', N'60', N'Abstract'),
-(600,60, N'Local Trade - Cost of Sales -', N'የአገር ውስጥ ንግድ - የሽያጭ ዋጋ -', N'600', N'CostOfSales'),
+(600,60, N'Local Trade - Cost of Sales.', N'የአገር ውስጥ ንግድ - የሽያጭ ዋጋ.', N'600', N'CostOfSales'),
 (61,6, N'Local Trade - SGA', N'የአገር ውስጥ ንግድ - SGA', N'61', N'Abstract'),
-(610,61, N'Local Trade - SGA -', N'የአገር ውስጥ ንግድ - SGA -', N'610', N'SellingGeneralAndAdministration'),
+(610,61, N'Local Trade - SGA.', N'የአገር ውስጥ ንግድ - SGA.', N'610', N'SellingGeneralAndAdministration'),
 (63,6, N'Local Trade - Production Centers', N'አካባቢያዊ ንግድ - ፕሮዳክሽን ማዕከል', N'63', N'Abstract'),
 (631,63, N'Site 1 - Local Grain Cleaning', N'ጣቢያ 1 - አካባቢያዊ የቅንጣት ጽዳት', N'631', N'WorkInProgressExpendituresControl'),
 (632,63, N'Site 2 - Local Grain Cleaning', N'ጣቢያ 2 - አካባቢያዊ የቅንጣት ጽዳት', N'632', N'WorkInProgressExpendituresControl'),
 (7,0, N'Real Estate', N'መጠነሰፊ የቤት ግንባታ', N'7', N'BusinessUnit'),
 (70,7, N'Real Estate - Direct Expenses', N'የማይንቀሳቀስ ንብረት - ቀጥተኛ ወጪዎች', N'70', N'Abstract'),
-(700,70, N'Real Estate - Direct Expenses -', N'የማይንቀሳቀስ ንብረት - ቀጥተኛ ወጪዎች -', N'700', N'CostOfSales'),
+(700,70, N'Real Estate - Direct Expenses.', N'የማይንቀሳቀስ ንብረት - ቀጥተኛ ወጪዎች.', N'700', N'CostOfSales'),
 (71,7, N'Real Estate - SGA', N'የማይንቀሳቀስ ንብረት - SGA', N'71', N'Abstract'),
 (711,71, N'Soreti Mall - SGA', N'ሶሬቲ የገቢያ አዳራሽ - SGA', N'711', N'SellingGeneralAndAdministration'),
 (712,71, N'AA Building - SGA', N'AA ህንፃ - ስርጭት', N'712', N'SellingGeneralAndAdministration'),
@@ -99,28 +99,28 @@ DECLARE @106C_Vehicle3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] 
 DECLARE @106C_Site1CleaningandMilling INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Site 1 - Cleaning and Milling');
 DECLARE @106C_Site2LocalandExportGrainCleaning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Site 2 - Local and Export Grain Cleaning');
 DECLARE @106C_Export INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Export');
-DECLARE @106C_ExportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Export - SGA -');
+DECLARE @106C_ExportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Export - SGA.');
 DECLARE @106C_ExportGrainCleaningSharedExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Export Grain Cleaning - Shared Expenses');
 DECLARE @106C_Site1ExportGrainCleaning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Site 1 - Export Grain Cleaning');
 DECLARE @106C_Site2ExportGrainCleaning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Site 2 - Export Grain Cleaning');
 DECLARE @106C_Import INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Import');
-DECLARE @106C_ImportCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Import - Cost of sales -');
-DECLARE @106C_ImportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Import - SGA -');
+DECLARE @106C_ImportCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Import - Cost of sales.');
+DECLARE @106C_ImportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Import - SGA.');
 DECLARE @106C_AgroProcessing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Agro Processing');
-DECLARE @106C_AgroProcessingCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Agro Processing - Cost of Sales -');
-DECLARE @106C_AgroProcessingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Agro Processing - SGA -');
+DECLARE @106C_AgroProcessingCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Agro Processing - Cost of Sales.');
+DECLARE @106C_AgroProcessingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Agro Processing - SGA.');
 DECLARE @106C_OilMillingLine INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Oil Milling Line');
 DECLARE @106C_Manufacturing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Manufacturing');
-DECLARE @106C_ManufacturingCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Manufacturing - Cost of sales -');
-DECLARE @106C_ManufacturingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Manufacturing - SGA -');
+DECLARE @106C_ManufacturingCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Manufacturing - Cost of sales.');
+DECLARE @106C_ManufacturingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Manufacturing - SGA.');
 DECLARE @106C_MinidorLine INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Minidor Line');
 DECLARE @106C_LocalTrade INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Local Trade');
-DECLARE @106C_LocalTradeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Local Trade - Cost of Sales -');
-DECLARE @106C_LocalTradeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Local Trade - SGA -');
+DECLARE @106C_LocalTradeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Local Trade - Cost of Sales.');
+DECLARE @106C_LocalTradeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Local Trade - SGA.');
 DECLARE @106C_Site1LocalGrainCleaning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Site 1 - Local Grain Cleaning');
 DECLARE @106C_Site2LocalGrainCleaning INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Site 2 - Local Grain Cleaning');
 DECLARE @106C_RealEstate INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Real Estate');
-DECLARE @106C_RealEstateDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Real Estate - Direct Expenses -');
+DECLARE @106C_RealEstateDirectExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Real Estate - Direct Expenses.');
 DECLARE @106C_SoretiMallSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Soreti Mall - SGA');
 DECLARE @106C_AABuildingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'AA Building - SGA');
 DECLARE @106C_SoretiMallConstructionProject INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Soreti Mall Construction Project');

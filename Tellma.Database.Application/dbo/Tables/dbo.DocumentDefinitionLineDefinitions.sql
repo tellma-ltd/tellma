@@ -2,7 +2,7 @@
 (
 	[Id]					INT				CONSTRAINT [PK_DocumentDefinitionLineDefinitions] PRIMARY KEY IDENTITY,
 	[DocumentDefinitionId]	INT				NOT NULL CONSTRAINT [FK_DocumentDefinitionLineDefinitions_DocumentDefinitionId] REFERENCES dbo.DocumentDefinitions([Id]),
-	[LineDefinitionId]		INT				NOT NULL CONSTRAINT [FK_DocumentDefinitionLineDefinitions_LineDefinitionId] REFERENCES dbo.LineDefinitions([Id]),
+	[LineDefinitionId]		INT				NOT NULL CONSTRAINT [FK_DocumentDefinitionLineDefinitions_LineDefinitionId] REFERENCES dbo.LineDefinitions([Id]) ON DELETE CASCADE,
 	UNIQUE ([DocumentDefinitionId], [LineDefinitionId]),
 	[Index]					INT				NOT NULL,
 	[IsVisibleByDefault]	BIT,

@@ -675,6 +675,8 @@
     <Build Include="map\map.LineDefinitionStateReasons.sql" />
     <Build Include="map\map.Workflows.sql" />
     <Build Include="map\map.WorkflowSignatures.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.LineDefinitions__Insert.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Code__Legacy.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

@@ -654,7 +654,7 @@ SET [Script] = N'
 WHERE [Index] = 301;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId],	[EntryTypeId]) VALUES
-(0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL),
+(0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL),
 (1,301,+1,		@VATReceivable,		NULL),
 (2,301,-1,		@CashPaymentsToSuppliersControlExtension, NULL); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
 
@@ -686,7 +686,7 @@ WHERE [Index] = 302;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],										[EntryTypeId]) VALUES
 (0,302,+1,	@Inventories,											@ReceiptsReturnsThroughPurchaseExtension),
-(2,302,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,NULL);
+(2,302,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
 (0,0,302,@MerchandiseRD),
@@ -827,7 +827,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [AccountTypeId],				[EntryTypeId]) VALUES
 (0,11,+1,	@Inventories,					@ReceiptsReturnsThroughPurchaseExtension), -- 
 (1,11,-1,	@CurrentValueAddedTaxReceivables,NULL), 
-(2,11,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtensions,		NULL);
+(2,11,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtension,		NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
 																			[ReadOnlyState],
