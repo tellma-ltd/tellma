@@ -38,7 +38,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 													[ReadOnlyState],
 													[InheritsFromHeader]) VALUES
-(0,0,	N'Account',		0,			N'Account',		4,4,0), -- together with properties
+(0,0,	N'AccountId',	0,			N'Account',		4,4,0), -- together with properties
 (1,0,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,0,	N'Value',		0,			N'Credit',		4,4,0),
 (3,0,	N'Memo',		0,			N'Memo',		4,4,1);

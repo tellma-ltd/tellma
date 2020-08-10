@@ -1,8 +1,8 @@
 ﻿INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 (0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1040),
 (10, N'CashPaymentVoucher',2, N'Payment w/Invoice, Payment without Invoice, and receipt of stock or fixed asset',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPV',N'money-check-alt', N'Cash', 1050),
-(11, N'CashReceiptVoucher',2, N'Receipt w/invoice, receipt non trade',N'Cash Receipt Voucher', N'Cash Receipt Vouchers', N'CRV',N'grin-hearts', N'Cash', 1070);
-
+--(11, N'CashSalesVoucher',2, N'Cash Receipt w/invoice, Stock isse',N'Cash Receipt Voucher', N'Cash Receipt Vouchers', N'CRV',N'grin-hearts', N'Cash', 1070),
+(12, N'CashSaleVoucher',2, N'Receipt w/invoice, stock issue',N'Cash Sale Voucher', N'Cash Sale Vouchers', N'CSV',N'cart-arrow-down', N'Sales', 1080);
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 (0,0, @ManualLineLD, 1);
 
@@ -14,11 +14,11 @@ EXEC dal.DocumentDefinitions__Save
 --Declarations
 DECLARE @ManualJournalVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 DECLARE @CashPaymentVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'CashPaymentVoucher');
-DECLARE @CashReceiptVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'CashReceiptVoucher');
+DECLARE @CashSaleVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'CashSaleVoucher');
 
 DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
 DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
-DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
+DECLARE @CashSaleVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashSaleVoucherDD AS NVARCHAR(50));
 
 -- Define the Markup template for Manual JV
 /*

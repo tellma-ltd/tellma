@@ -48,7 +48,7 @@ SET NOCOUNT ON;
 	WHERE
 			LD.[HasWorkflow] = 1 AND L.[State] BETWEEN 0 AND D.[LastLineState] - 1;
 
-	-- For contracts lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
+	-- For custody lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
 	WITH FE_AB (EntryId, AccountBalanceId) AS (
 		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
 		FROM dbo.Entries E
