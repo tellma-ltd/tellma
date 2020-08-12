@@ -246,6 +246,18 @@
                         {
                         }
                     },
+                    new ViewInfo
+                    {
+                        Id = "document-definitions",
+                        Name = "DocumentDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("State")
+                        }
+                    },
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
