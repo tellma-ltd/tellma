@@ -1,23 +1,20 @@
 // tslint:disable:member-ordering
 import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
+import { getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { LineDefinitionForSave, metadata_LineDefinition, LineDefinition } from '~/app/data/entities/line-definition';
+import { LineDefinitionForSave, LineDefinition } from '~/app/data/entities/line-definition';
 import { DefinitionVisibility, visibilityPropDescriptor } from '~/app/data/entities/base/definition-common';
-import { LineDefinitionForClient, entryColumnNames, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { entryColumnNames, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { LineDefinitionColumn } from '~/app/data/entities/line-definition-column';
 import { LineDefinitionEntry, LineDefinitionEntryForSave } from '~/app/data/entities/line-definition-entry';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { WorkflowForSave } from '~/app/data/entities/workflow';
 import { RuleType, ruleTypes, WorkflowSignature, PredicateType, predicateTypes } from '~/app/data/entities/workflow-signature';
 import { PositiveLineState } from '~/app/data/entities/line';
 import { LineDefinitionStateReason } from '~/app/data/entities/line-definition-state-reason';

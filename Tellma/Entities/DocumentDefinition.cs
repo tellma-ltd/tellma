@@ -7,7 +7,7 @@ using Tellma.Services.Utilities;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "DocumentDefinition", Plural = "DocumentDefinitions")]
-    public class DocumentDefinitionForSave<TDocumentDefinitionLineDefinition, TDocumentDefinitionMarkupTemplate> : EntityWithKey<int>
+    public class DocumentDefinitionForSave<TLineDefinition, TMarkupTemplate> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [Required]
@@ -102,11 +102,13 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public decimal? MainMenuSortKey { get; set; }
 
+        [Display(Name = "DocumentDefinition_LineDefinitions")]
         [ForeignKey(nameof(DocumentDefinitionLineDefinition.DocumentDefinitionId))]
-        public List<TDocumentDefinitionLineDefinition> LineDefinitions { get; set; }
+        public List<TLineDefinition> LineDefinitions { get; set; }
 
+        [Display(Name = "DocumentDefinition_MarkupTemplates")]
         [ForeignKey(nameof(DocumentDefinitionMarkupTemplate.DocumentDefinitionId))]
-        public List<TDocumentDefinitionMarkupTemplate> MarkupTemplates { get; set; }
+        public List<TMarkupTemplate> MarkupTemplates { get; set; }
     }
 
     public class DocumentDefinitionForSave : DocumentDefinitionForSave<DocumentDefinitionLineDefinitionForSave, DocumentDefinitionMarkupTemplateForSave>

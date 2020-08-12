@@ -186,6 +186,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'line-definitions', sortKey: 200
         },
         {
+          label: 'DocumentDefinitions', icon: 'tools', link: '../document-definitions',
+          view: 'document-definitions', sortKey: 200
+        },
+        {
           label: 'RelationDefinitions', icon: 'tools', link: '../relation-definitions',
           view: 'relation-definitions', sortKey: 200
         },

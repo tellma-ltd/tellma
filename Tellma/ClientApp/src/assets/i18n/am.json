@@ -230,6 +230,8 @@
   "DocumentDefinition_DocumentType_1": "አንቀጽ",
   "DocumentDefinition_DocumentType_2": "ድርጊት",
   "DocumentDefinition_IsOriginalDocument": "ኦርጅናል ሰነድ ነው",
+  "DocumentDefinition_LineDefinitions": "የመስመር ፍቺዎች",
+  "DocumentDefinition_MarkupTemplates": "ማተሚያ አብነቶች",
   "DocumentDefinition_Prefix": "ተከታታይ ቅጥያ",
   "DocumentDefinitionLineDefinition": "የሰነድ ፍቺ መስመር ፍቺ",
   "DocumentDefinitionLineDefinition_IsVisibleByDefault": "በነባሪ የሚታይ ነው",

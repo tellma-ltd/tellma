@@ -35,6 +35,7 @@ import { Router } from '@angular/router';
 import { metadata_Custody } from '../custody';
 import { metadata_CustodyDefinition } from '../custody-definition';
 import { metadata_LineDefinition } from '../line-definition';
+import { metadata_DocumentDefinition } from '../document-definition';
 
 export const metadata: {
     [collection: string]: (
@@ -72,6 +73,7 @@ export const metadata: {
     ResourceDefinition: metadata_ResourceDefinition,
     LookupDefinition: metadata_LookupDefinition,
     LineDefinition: metadata_LineDefinition,
+    DocumentDefinition: metadata_DocumentDefinition,
 
     // Admin
     AdminUser: metadata_AdminUser,

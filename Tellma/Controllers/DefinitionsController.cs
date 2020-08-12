@@ -556,6 +556,7 @@ namespace Tellma.Controllers
 
         private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
         {
+            // IMPORTANT: Keep in sync with document-definitions-details.component.ts
             var result = new DocumentDefinitionForClient
             {
                 State = def.State,
@@ -571,7 +572,7 @@ namespace Tellma.Controllers
                 Prefix = def.Prefix,
                 CodeWidth = def.CodeWidth ?? 4,
 
-                MemoVisibility = def.MemoVisibility,
+                MemoVisibility = MapVisibility(def.MemoVisibility),
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
 
                 CanReachState1 = def.CanReachState1 ?? false,

@@ -230,6 +230,8 @@
   "DocumentDefinition_DocumentType_1": "بند",
   "DocumentDefinition_DocumentType_2": "حدث مالي",
   "DocumentDefinition_IsOriginalDocument": "مستند أصلي؟",
+  "DocumentDefinition_LineDefinitions": "تعريفات الأسطر",
+  "DocumentDefinition_MarkupTemplates": "قوالب الطباعة",
   "DocumentDefinition_Prefix": "بادئة الرقم المتسلسل",
   "DocumentDefinitionLineDefinition": "تعريف سطر مستند",
   "DocumentDefinitionLineDefinition_IsVisibleByDefault": "ظاهر افتراضيا",

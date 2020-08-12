@@ -234,6 +234,9 @@ import { CustodiesDetailsComponent } from './custodies/custodies-details.compone
 import { LineDefinitionsDetailsComponent } from './line-definitions/line-definitions-details.component';
 import { LineDefinitionsMasterComponent } from './line-definitions/line-definitions-master.component';
 import { LineDefinitionsPickerComponent } from './line-definitions/line-definitions-picker.component';
+import { DocumentDefinitionsMasterComponent } from './document-definitions/document-definitions-master.component';
+import { DocumentDefinitionsDetailsComponent } from './document-definitions/document-definitions-details.component';
+import { DocumentDefinitionsPickerComponent } from './document-definitions/document-definitions-picker.component';
 
 const routes: Routes = [
   {
@@ -577,6 +580,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Document Definitions
+      {
+        path: 'document-definitions',
+        component: DocumentDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'document-definitions/:id',
+        component: DocumentDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -703,6 +718,9 @@ const routes: Routes = [
     LineDefinitionsDetailsComponent,
     LineDefinitionsMasterComponent,
     LineDefinitionsPickerComponent,
+    DocumentDefinitionsMasterComponent,
+    DocumentDefinitionsDetailsComponent,
+    DocumentDefinitionsPickerComponent,
   ],
   imports: [
     SharedModule,

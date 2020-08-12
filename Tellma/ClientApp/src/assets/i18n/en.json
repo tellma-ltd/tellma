@@ -230,6 +230,8 @@
   "DocumentDefinition_DocumentType_1": "Clause",
   "DocumentDefinition_DocumentType_2": "Event",
   "DocumentDefinition_IsOriginalDocument": "Is Original Document",
+  "DocumentDefinition_LineDefinitions": "Line Definitions",
+  "DocumentDefinition_MarkupTemplates": "Printing Templates",
   "DocumentDefinition_Prefix": "Serial Prefix",
   "DocumentDefinitionLineDefinition": "Document Definition Line Definition",
   "DocumentDefinitionLineDefinition_IsVisibleByDefault": "Is Visible By Default",

@@ -634,6 +634,12 @@
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>ኦርጅናል ሰነድ ነው</value>
   </data>
+  <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
+    <value>የመስመር ፍቺዎች</value>
+  </data>
+  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
+    <value>ማተሚያ አብነቶች</value>
+  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>ተከታታይ ቅጥያ</value>
   </data>

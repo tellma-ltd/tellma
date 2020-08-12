@@ -634,6 +634,12 @@
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>مستند أصلي؟</value>
   </data>
+  <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
+    <value>تعريفات الأسطر</value>
+  </data>
+  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
+    <value>قوالب الطباعة</value>
+  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>بادئة الرقم المتسلسل</value>
   </data>

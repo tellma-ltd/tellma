@@ -18,7 +18,6 @@ export interface RelationDefinitionForSave extends EntityForSave {
     TitlePlural2?: string;
     TitlePlural3?: string;
 
-    // Common with Relation
     CurrencyVisibility?: Visibility;
     CenterVisibility?: Visibility;
     ImageVisibility?: Visibility;

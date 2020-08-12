@@ -1,5 +1,5 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
-import { LineState } from '../entities/line';
+import { LineState, PositiveLineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 
@@ -18,20 +18,20 @@ export interface DefinitionsForClient {
 }
 
 export interface DefinitionForClient {
-    MainMenuSection: string;
-    MainMenuIcon: string;
-    MainMenuSortKey: number;
+    MainMenuSection?: string;
+    MainMenuIcon?: string;
+    MainMenuSortKey?: number;
 }
 
 export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
     Code?: string;
-    TitleSingular: string;
-    TitleSingular2: string;
-    TitleSingular3: string;
-    TitlePlural: string;
-    TitlePlural2: string;
-    TitlePlural3: string;
-    State: DefinitionState;
+    TitleSingular?: string;
+    TitleSingular2?: string;
+    TitleSingular3?: string;
+    TitlePlural?: string;
+    TitlePlural2?: string;
+    TitlePlural3?: string;
+    State?: DefinitionState;
 }
 
 export interface ReportDefinitionForClient extends DefinitionForClient {
@@ -95,147 +95,147 @@ export interface ReportDimensionDefinitionForClient {
 }
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
-    IsOriginalDocument: boolean;
-    DocumentType: number;
-    Prefix: string;
-    CodeWidth: number;
+    IsOriginalDocument?: boolean;
+    DocumentType?: number;
+    Prefix?: string;
+    CodeWidth?: number;
 
     // Memo
-    MemoVisibility: Visibility;
-    MemoIsCommonVisibility: boolean;
-    MemoLabel: string;
-    MemoLabel2: string;
-    MemoLabel3: string;
-    MemoRequiredState: LineState;
-    MemoReadOnlyState: LineState;
+    MemoVisibility?: Visibility;
+    MemoIsCommonVisibility?: boolean;
+    MemoLabel?: string;
+    MemoLabel2?: string;
+    MemoLabel3?: string;
+    MemoRequiredState?: PositiveLineState | 5;
+    MemoReadOnlyState?: PositiveLineState | 5;
 
     // Posting Date
-    PostingDateVisibility: boolean;
-    PostingDateRequiredState: LineState;
-    PostingDateReadOnlyState: LineState;
-    PostingDateLabel: string;
-    PostingDateLabel2: string;
-    PostingDateLabel3: string;
+    PostingDateVisibility?: boolean;
+    PostingDateRequiredState?: PositiveLineState | 5;
+    PostingDateReadOnlyState?: PositiveLineState | 5;
+    PostingDateLabel?: string;
+    PostingDateLabel2?: string;
+    PostingDateLabel3?: string;
 
     // Debit Resource
-    DebitResourceVisibility: boolean;
-    DebitResourceRequiredState: LineState;
-    DebitResourceReadOnlyState: LineState;
-    DebitResourceDefinitionIds: number[];
-    DebitResourceLabel: string;
-    DebitResourceLabel2: string;
-    DebitResourceLabel3: string;
+    DebitResourceVisibility?: boolean;
+    DebitResourceRequiredState?: PositiveLineState | 5;
+    DebitResourceReadOnlyState?: PositiveLineState | 5;
+    DebitResourceDefinitionIds?: number[];
+    DebitResourceLabel?: string;
+    DebitResourceLabel2?: string;
+    DebitResourceLabel3?: string;
 
     // Credit Resource
-    CreditResourceVisibility: boolean;
-    CreditResourceRequiredState: LineState;
-    CreditResourceReadOnlyState: LineState;
-    CreditResourceDefinitionIds: number[];
-    CreditResourceLabel: string;
-    CreditResourceLabel2: string;
-    CreditResourceLabel3: string;
+    CreditResourceVisibility?: boolean;
+    CreditResourceRequiredState?: PositiveLineState | 5;
+    CreditResourceReadOnlyState?: PositiveLineState | 5;
+    CreditResourceDefinitionIds?: number[];
+    CreditResourceLabel?: string;
+    CreditResourceLabel2?: string;
+    CreditResourceLabel3?: string;
 
     // Debit Custody
-    DebitCustodyVisibility: boolean;
-    DebitCustodyRequiredState: LineState;
-    DebitCustodyReadOnlyState: LineState;
-    DebitCustodyDefinitionIds: number[];
-    DebitCustodyLabel: string;
-    DebitCustodyLabel2: string;
-    DebitCustodyLabel3: string;
+    DebitCustodyVisibility?: boolean;
+    DebitCustodyRequiredState?: PositiveLineState | 5;
+    DebitCustodyReadOnlyState?: PositiveLineState | 5;
+    DebitCustodyDefinitionIds?: number[];
+    DebitCustodyLabel?: string;
+    DebitCustodyLabel2?: string;
+    DebitCustodyLabel3?: string;
 
     // Credit Custody
-    CreditCustodyVisibility: boolean;
-    CreditCustodyRequiredState: LineState;
-    CreditCustodyReadOnlyState: LineState;
-    CreditCustodyDefinitionIds: number[];
-    CreditCustodyLabel: string;
-    CreditCustodyLabel2: string;
-    CreditCustodyLabel3: string;
+    CreditCustodyVisibility?: boolean;
+    CreditCustodyRequiredState?: PositiveLineState | 5;
+    CreditCustodyReadOnlyState?: PositiveLineState | 5;
+    CreditCustodyDefinitionIds?: number[];
+    CreditCustodyLabel?: string;
+    CreditCustodyLabel2?: string;
+    CreditCustodyLabel3?: string;
 
     // Noted Relation
-    NotedRelationVisibility: boolean;
-    NotedRelationRequiredState: LineState;
-    NotedRelationReadOnlyState: LineState;
-    NotedRelationDefinitionIds: number[];
-    NotedRelationLabel: string;
-    NotedRelationLabel2: string;
-    NotedRelationLabel3: string;
+    NotedRelationVisibility?: boolean;
+    NotedRelationRequiredState?: PositiveLineState | 5;
+    NotedRelationReadOnlyState?: PositiveLineState | 5;
+    NotedRelationDefinitionIds?: number[];
+    NotedRelationLabel?: string;
+    NotedRelationLabel2?: string;
+    NotedRelationLabel3?: string;
 
     // Center
-    CenterVisibility: boolean;
-    CenterRequiredState: LineState;
-    CenterReadOnlyState: LineState;
-    CenterDefinitionIds: number[];
-    CenterLabel: string;
-    CenterLabel2: string;
-    CenterLabel3: string;
+    CenterVisibility?: boolean;
+    CenterRequiredState?: PositiveLineState | 5;
+    CenterReadOnlyState?: PositiveLineState | 5;
+    CenterDefinitionIds?: number[];
+    CenterLabel?: string;
+    CenterLabel2?: string;
+    CenterLabel3?: string;
 
     // Clearance
-    ClearanceVisibility: Visibility;
+    ClearanceVisibility?: Visibility;
 
     // Time1
-    Time1Visibility: boolean;
-    Time1RequiredState: LineState;
-    Time1ReadOnlyState: LineState;
-    Time1Label: string;
-    Time1Label2: string;
-    Time1Label3: string;
+    Time1Visibility?: boolean;
+    Time1RequiredState?: PositiveLineState | 5;
+    Time1ReadOnlyState?: PositiveLineState | 5;
+    Time1Label?: string;
+    Time1Label2?: string;
+    Time1Label3?: string;
 
     // Time2
-    Time2Visibility: boolean;
-    Time2RequiredState: LineState;
-    Time2ReadOnlyState: LineState;
-    Time2Label: string;
-    Time2Label2: string;
-    Time2Label3: string;
+    Time2Visibility?: boolean;
+    Time2RequiredState?: PositiveLineState | 5;
+    Time2ReadOnlyState?: PositiveLineState | 5;
+    Time2Label?: string;
+    Time2Label2?: string;
+    Time2Label3?: string;
 
     // Quantity
-    QuantityVisibility: boolean;
-    QuantityRequiredState: LineState;
-    QuantityReadOnlyState: LineState;
-    QuantityLabel: string;
-    QuantityLabel2: string;
-    QuantityLabel3: string;
+    QuantityVisibility?: boolean;
+    QuantityRequiredState?: PositiveLineState | 5;
+    QuantityReadOnlyState?: PositiveLineState | 5;
+    QuantityLabel?: string;
+    QuantityLabel2?: string;
+    QuantityLabel3?: string;
 
     // Unit
-    UnitVisibility: boolean;
-    UnitRequiredState: LineState;
-    UnitReadOnlyState: LineState;
-    UnitLabel: string;
-    UnitLabel2: string;
-    UnitLabel3: string;
+    UnitVisibility?: boolean;
+    UnitRequiredState?: PositiveLineState | 5;
+    UnitReadOnlyState?: PositiveLineState | 5;
+    UnitLabel?: string;
+    UnitLabel2?: string;
+    UnitLabel3?: string;
 
     // Currency
-    CurrencyVisibility: boolean;
-    CurrencyRequiredState: LineState;
-    CurrencyReadOnlyState: LineState;
-    CurrencyLabel: string;
-    CurrencyLabel2: string;
-    CurrencyLabel3: string;
+    CurrencyVisibility?: boolean;
+    CurrencyRequiredState?: PositiveLineState | 5;
+    CurrencyReadOnlyState?: PositiveLineState | 5;
+    CurrencyLabel?: string;
+    CurrencyLabel2?: string;
+    CurrencyLabel3?: string;
 
-    CanReachState1: boolean;
-    CanReachState2: boolean;
-    CanReachState3: boolean;
-    HasWorkflow: boolean;
-    LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
-    MarkupTemplates: DocumentDefinitionMarkupTemplateForClient[];
+    CanReachState1?: boolean;
+    CanReachState2?: boolean;
+    CanReachState3?: boolean;
+    HasWorkflow?: boolean;
+    LineDefinitions?: DocumentDefinitionLineDefinitionForClient[];
+    MarkupTemplates?: DocumentDefinitionMarkupTemplateForClient[];
 }
 
 export interface DocumentDefinitionMarkupTemplateForClient {
-    MarkupTemplateId: number;
-    Name: string;
-    Name2: string;
-    Name3: string;
-    SupportsPrimaryLanguage: boolean;
-    SupportsSecondaryLanguage: boolean;
-    SupportsTernaryLanguage: boolean;
-    Usage: MarkupTemplateUsage;
+    MarkupTemplateId?: number;
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    SupportsPrimaryLanguage?: boolean;
+    SupportsSecondaryLanguage?: boolean;
+    SupportsTernaryLanguage?: boolean;
+    Usage?: MarkupTemplateUsage;
 }
 
 export interface DocumentDefinitionLineDefinitionForClient {
-    LineDefinitionId: number;
-    IsVisibleByDefault: boolean;
+    LineDefinitionId?: number;
+    IsVisibleByDefault?: boolean;
 }
 
 export interface LineDefinitionForClient {
@@ -274,8 +274,8 @@ export interface LineDefinitionColumnForClient {
     Label: string;
     Label2: string;
     Label3: string;
-    RequiredState?: number;
-    ReadOnlyState?: LineState;
+    RequiredState?: PositiveLineState | 5;
+    ReadOnlyState?: PositiveLineState | 5;
     InheritsFromHeader?: boolean;
 }
 

@@ -225,6 +225,15 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: [ ]
     },
+    'document-definitions': {
+        name: 'DocumentDefinitions',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('State')
+        ]
+    },
     'settings': {
         name: 'Settings',
         actions: [

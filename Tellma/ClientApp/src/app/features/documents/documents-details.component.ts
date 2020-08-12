@@ -126,6 +126,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
+  @Input()
+  previewDefinition: DocumentDefinitionForClient; // Used in preview mode
+
   @ViewChild('confirmModal', { static: true })
   confirmModal: TemplateRef<any>;
 
@@ -227,7 +230,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
    * Built-in hardcoded definition
    */
   public get isJV(): boolean {
-    return this.definitionId === this.ws.definitions.ManualJournalVouchersDefinitionId;
+    return this.definition.Code === 'ManualJournalVoucher';
   }
 
   /**
@@ -271,7 +274,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // UI Binding
 
   public get definition(): DocumentDefinitionForClient {
-    return !!this.definitionId ? this.ws.definitions.Documents[this.definitionId] : null;
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Documents[this.definitionId] : null);
   }
 
   public get found(): boolean {
@@ -625,12 +628,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return '';
     }
 
-    const desc = metadata_Document(this.workspace, this.translate, this.definitionId).properties.Clearance as ChoicePropDescriptor;
+    const desc = metadata_Document(this.workspace, this.translate, null).properties.Clearance as ChoicePropDescriptor;
     return desc.format(clearance);
   }
 
   public get clearanceChoices(): SelectorChoice[] {
-    const desc = metadata_Document(this.workspace, this.translate, this.definitionId).properties.Clearance as ChoicePropDescriptor;
+    const desc = metadata_Document(this.workspace, this.translate, null).properties.Clearance as ChoicePropDescriptor;
     return getChoices(desc);
   }
 

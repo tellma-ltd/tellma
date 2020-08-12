@@ -634,6 +634,12 @@
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>是原始文档</value>
   </data>
+  <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
+    <value>行定义</value>
+  </data>
+  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
+    <value>印刷模板</value>
+  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>串行前缀</value>
   </data>
