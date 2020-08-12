@@ -625,6 +625,9 @@
   <data name="DocumentDefinition" xml:space="preserve">
     <value>የሰነድ ፍቺ</value>
   </data>
+  <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
+    <value>ተከታታይ ስፋት</value>
+  </data>
   <data name="DocumentDefinition_DocumentType" xml:space="preserve">
     <value>የሰነድ አይነት</value>
   </data>
@@ -637,14 +640,29 @@
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>ድርጊት</value>
   </data>
+  <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
+    <value>ኦርጅናል ሰነድ ነው</value>
+  </data>
+  <data name="DocumentDefinition_Prefix" xml:space="preserve">
+    <value>ተከታታይ ቅጥያ</value>
+  </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>የሰነድ ፍቺ መስመር ፍቺ</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinition_IsVisibleByDefault" xml:space="preserve">
+    <value>በነባሪ የሚታይ ነው</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinition_LineDefinition" xml:space="preserve">
+    <value>የመስመር ፍቺ</value>
   </data>
   <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
     <value>የሰነድ ፍቺ መስመር ትርጓሜ</value>
   </data>
   <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
     <value>የሰነድ ፍቺ ምልክት አድርግ አብነት</value>
+  </data>
+  <data name="DocumentDefinitionMarkupTemplate_MarkupTemplate" xml:space="preserve">
+    <value>የአብነት</value>
   </data>
   <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
     <value>የሰነድ ፍቺ ምልክት አድርግ አብነቶች</value>

@@ -677,6 +677,12 @@
     <Build Include="map\map.WorkflowSignatures.sql" />
     <Build Include="dbo\Stored Procedures\dbo.LineDefinitions__Insert.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Code__Legacy.sql" />
+    <Build Include="map\map.DocumentDefinitionLineDefinitions.sql" />
+    <Build Include="map\map.DocumentDefinitionMarkupTemplates.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

@@ -625,6 +625,9 @@
   <data name="DocumentDefinition" xml:space="preserve">
     <value>Document Definition</value>
   </data>
+  <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
+    <value>Serial Width</value>
+  </data>
   <data name="DocumentDefinition_DocumentType" xml:space="preserve">
     <value>Document Type</value>
   </data>
@@ -637,14 +640,29 @@
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>Event</value>
   </data>
+  <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
+    <value>Is Original Document</value>
+  </data>
+  <data name="DocumentDefinition_Prefix" xml:space="preserve">
+    <value>Serial Prefix</value>
+  </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>Document Definition Line Definition</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinition_IsVisibleByDefault" xml:space="preserve">
+    <value>Is Visible By Default</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinition_LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
   </data>
   <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
     <value>Document Definition Line Definitions</value>
   </data>
   <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
     <value>Document Definition Markup Template</value>
+  </data>
+  <data name="DocumentDefinitionMarkupTemplate_MarkupTemplate" xml:space="preserve">
+    <value>Template</value>
   </data>
   <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
     <value>Document Definition Markup Templates</value>

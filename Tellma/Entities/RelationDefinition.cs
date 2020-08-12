@@ -265,20 +265,16 @@ namespace Tellma.Entities
 
         #region Relation Only
 
-        [VisibilityDisplay(Name = "Relation_Agent")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Relation_Agent"), VisibilityChoiceList]
         public string AgentVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Relation_TaxIdentificationNumber")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Relation_TaxIdentificationNumber"), VisibilityChoiceList]
         public string TaxIdentificationNumberVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Relation_Job")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Relation_Job"), VisibilityChoiceList]
         public string JobVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Relation_BankAccountNumber")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Relation_BankAccountNumber"), VisibilityChoiceList]
         public string BankAccountNumberVisibility { get; set; }
 
         [Display(Name = "RelationDefinition_UserCardinality")]

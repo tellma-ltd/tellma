@@ -257,6 +257,8 @@ namespace Tellma.Data
                 nameof(Center) => "[map].[Centers]()",
                 nameof(EntryType) => "[map].[EntryTypes]()",
                 nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
+                nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
+                nameof(DocumentDefinitionMarkupTemplate) => "[map].[DocumentDefinitionMarkupTemplates]()",
                 nameof(Document) => "[map].[Documents]()",
                 nameof(Line) => "[map].[Lines]()",
                 nameof(LineForQuery) => "[map].[Lines]()",
@@ -6598,6 +6600,229 @@ namespace Tellma.Data
             {
                 throw new ForeignKeyViolationException();
             }
+        }
+
+        #endregion
+
+        #region DocumentDefinitions
+
+        public async Task<IEnumerable<ValidationError>> DocumentDefinitions_Validate__Save(List<DocumentDefinitionForSave> entities, int top)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable linesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.LineDefinitions);
+            var linesTvp = new SqlParameter("@DocumentDefinitionLineDefinitions", linesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentDefinitionLineDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable markupsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.MarkupTemplates);
+            var markupsTvp = new SqlParameter("@DocumentDefinitionMarkupTemplates", markupsTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentDefinitionMarkupTemplate)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(linesTvp);
+            cmd.Parameters.Add(markupsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DocumentDefinitions_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions__Save));
+
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable linesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.LineDefinitions);
+                var linesTvp = new SqlParameter("@DocumentDefinitionLineDefinitions", linesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentDefinitionLineDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable markupsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.MarkupTemplates);
+                var markupsTvp = new SqlParameter("@DocumentDefinitionMarkupTemplates", markupsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentDefinitionMarkupTemplate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(markupsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(DocumentDefinitions__Save)}]";
+
+                if (returnIds)
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task<IEnumerable<ValidationError>> DocumentDefinitions_Validate__Delete(List<int> ids, int top)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DocumentDefinitions_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task DocumentDefinitions__Delete(IEnumerable<int> ids)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DocumentDefinitions__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> DocumentDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__UpdateState));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DocumentDefinitions_Validate__UpdateState)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task DocumentDefinitions__UpdateState(List<int> ids, string state)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions__UpdateState));
+
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DocumentDefinitions__UpdateState)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion

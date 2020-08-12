@@ -15,15 +15,33 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
+        [Display(Name = "DocumentDefinition_IsOriginalDocument")]
         public bool? IsOriginalDocument { get; set; }
 
         [Display(Name = "DocumentDefinition_DocumentType")]
         [Required]
-        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 }, 
+        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "DocumentDefinition_DocumentType_0", "DocumentDefinition_DocumentType_1", "DocumentDefinition_DocumentType_2" })]
         public byte? DocumentType { get; set; }
 
+        [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
+        [Required]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Description { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Description2 { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Description3 { get; set; }
+
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
+        [Required]
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
@@ -53,14 +71,22 @@ namespace Tellma.Entities
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
+
+        [Display(Name = "DocumentDefinition_Prefix")]
+        [Required]
+        [StringLength(5)]
         public string Prefix { get; set; }
+
+        [Display(Name = "DocumentDefinition_CodeWidth")]
         public byte? CodeWidth { get; set; }
 
-        // New Stuff
+        [VisibilityDisplay(Name = "Memo"), VisibilityChoiceList]
+        [Required]
         public string MemoVisibility { get; set; }
-        public string ClearanceVisibility { get; set; }
 
-        // End: New stuff
+        [VisibilityDisplay(Name = "Document_Clearance"), VisibilityChoiceList]
+        [Required]
+        public string ClearanceVisibility { get; set; }
 
         [Display(Name = "MainMenuIcon")]
         [StringLength(255)]
@@ -90,7 +116,6 @@ namespace Tellma.Entities
 
     public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition, DocumentDefinitionMarkupTemplate>
     {
-
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },
             new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]

@@ -6,16 +6,20 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "DocumentDefinitionMarkupTemplate", Plural = "DocumentDefinitionMarkupTemplates")]
     public class DocumentDefinitionMarkupTemplateForSave : EntityWithKey<int>
     {
+        [Display(Name = "DocumentDefinitionMarkupTemplate_MarkupTemplate")]
+        [Required]
         public int? MarkupTemplateId { get; set; }
     }
 
     public class DocumentDefinitionMarkupTemplate : DocumentDefinitionMarkupTemplateForSave
     {
+        [Display(Name = "DocumentDefinition")]
         public int? DocumentDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 
+        [Display(Name = "DocumentDefinitionMarkupTemplate_MarkupTemplate")]
         [ForeignKey(nameof(MarkupTemplateId))]
         public MarkupTemplate MarkupTemplate { get; set; }
 

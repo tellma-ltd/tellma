@@ -271,20 +271,16 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Custody_Custodian")]
         public int? CustodianDefinitionId { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_Agent")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Custody_Agent"), VisibilityChoiceList]
         public string AgentVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_TaxIdentificationNumber")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Custody_TaxIdentificationNumber"), VisibilityChoiceList]
         public string TaxIdentificationNumberVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_Job")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Custody_Job"), VisibilityChoiceList]
         public string JobVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_BankAccountNumber")]
-        [VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Custody_BankAccountNumber"), VisibilityChoiceList]
         public string BankAccountNumberVisibility { get; set; }
 
         [Display(Name = "CustodyDefinition_UserCardinality")]
