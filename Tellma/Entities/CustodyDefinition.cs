@@ -271,22 +271,20 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Custody_Custodian")]
         public int? CustodianDefinitionId { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_Agent"), VisibilityChoiceList]
-        public string AgentVisibility { get; set; }
+        [VisibilityDisplay(Name = "Custody_ExternalReference"), VisibilityChoiceList]
+        public string ExternalReferenceVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_TaxIdentificationNumber"), VisibilityChoiceList]
-        public string TaxIdentificationNumberVisibility { get; set; }
+        [DefinitionLabelDisplay(Name = "Custody_ExternalReference", Language = Language.Primary)]
+        [StringLength(50)]
+        public string ExternalReferenceLabel { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_Job"), VisibilityChoiceList]
-        public string JobVisibility { get; set; }
+        [DefinitionLabelDisplay(Name = "Custody_ExternalReference", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string ExternalReferenceLabel2 { get; set; }
 
-        [VisibilityDisplay(Name = "Custody_BankAccountNumber"), VisibilityChoiceList]
-        public string BankAccountNumberVisibility { get; set; }
-
-        [Display(Name = "CustodyDefinition_UserCardinality")]
-        [ChoiceList(new object[] { "None", "Single", "Multiple" },
-            new string[] { "Cardinality_None", "Cardinality_Single", "Cardinality_Multiple" })]
-        public string UserCardinality { get; set; }
+        [DefinitionLabelDisplay(Name = "Custody_ExternalReference", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string ExternalReferenceLabel3 { get; set; }
 
         #endregion
 

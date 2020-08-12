@@ -613,9 +613,9 @@ export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForCl
 
     CustodianVisibility?: Visibility;
     CustodianDefinitionId?: number;
-    AgentVisibility?: Visibility;
-    TaxIdentificationNumberVisibility?: Visibility;
-    JobVisibility?: Visibility;
-    BankAccountNumberVisibility?: Visibility;
-    UserCardinality?: DefinitionCardinality;
+
+    ExternalReferenceLabel: string;
+    ExternalReferenceLabel2: string;
+    ExternalReferenceLabel3: string;
+    ExternalReferenceVisibility?: Visibility;
 }

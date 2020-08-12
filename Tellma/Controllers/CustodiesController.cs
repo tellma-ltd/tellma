@@ -211,7 +211,6 @@ namespace Tellma.Controllers
         protected override async Task SaveValidateAsync(List<CustodyForSave> entities)
         {
             var def = Definition();
-            var userIsRequired = def.UserCardinality != null; // "None" is mapped to null
 
             foreach (var (e, i) in entities.Select((e, i) => (e, i)))
             {

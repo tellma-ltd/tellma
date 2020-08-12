@@ -35,7 +35,7 @@ export class CustodiesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: CustodyDefinitionForClient; // Used in preview mode
 
-  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent,Custodian';
+  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Custodian';
 
   create = () => {
     const result: CustodyForSave = {};
@@ -398,36 +398,18 @@ export class CustodiesDetailsComponent extends DetailsBaseComponent implements O
 
   // Custody Only
 
-  public get Agent_isVisible(): boolean {
-    return !!this.definition.AgentVisibility;
+  public get ExternalReference_isVisible(): boolean {
+    return !!this.definition.ExternalReferenceVisibility;
   }
 
-  public get Agent_isRequired(): boolean {
-    return this.definition.AgentVisibility === 'Required';
+  public get ExternalReference_isRequired(): boolean {
+    return this.definition.ExternalReferenceVisibility === 'Required';
   }
 
-  public get TaxIdentificationNumber_isVisible(): boolean {
-    return !!this.definition.TaxIdentificationNumberVisibility;
-  }
-
-  public get TaxIdentificationNumber_isRequired(): boolean {
-    return this.definition.TaxIdentificationNumberVisibility === 'Required';
-  }
-
-  public get Job_isVisible(): boolean {
-    return !!this.definition.JobVisibility;
-  }
-
-  public get Job_isRequired(): boolean {
-    return this.definition.JobVisibility === 'Required';
-  }
-
-  public get BankAccountNumber_isVisible(): boolean {
-    return !!this.definition.BankAccountNumberVisibility;
-  }
-
-  public get BankAccountNumber_isRequired(): boolean {
-    return this.definition.BankAccountNumberVisibility === 'Required';
+  public get ExternalReference_label(): string {
+    return !!this.definition.ExternalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'ExternalReferenceLabel') :
+      this.translate.instant('Custody_ExternalReference');
   }
 
   public get showTabs(): boolean {

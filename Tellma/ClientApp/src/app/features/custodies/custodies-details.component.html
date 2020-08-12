@@ -309,37 +309,14 @@
         </t-text-editor>
     </t-form-group>
 
-    <!-- Agent -->
-    <t-form-group class="t-form-group" *ngIf="Agent_isVisible" [label]="'Custody_Agent' | translate"
-        [serverErrors]="model?.serverErrors?.AgentId">
-        <t-view-link *ngIf="!isEdit" link="../../../agents/" [itemId]="model?.AgentId">
-            <t-auto-cell collection="Custody" path="Agent" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [required]="Agent_isRequired">
-        </t-agents-picker>
-    </t-form-group>
-
-    <!-- Tax Identification Number -->
-    <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
-        [label]="'Custody_TaxIdentificationNumber' | translate"
-        [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
-            <div>{{ model?.TaxIdentificationNumber }}</div>
+    <!-- External Reference -->
+    <t-form-group class="t-form-group" *ngIf="ExternalReference_isVisible"
+        [label]="ExternalReference_label" [serverErrors]="model?.serverErrors?.ExternalReference">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExternalReference">
+            <div>{{ model?.ExternalReference }}</div>
         </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber"
-            [ngModelOptions]="{ updateOn: 'blur' }" [required]="TaxIdentificationNumber_isRequired">
-        </t-text-editor>
-    </t-form-group>
-
-    <!-- Bank Account Number -->
-    <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible"
-        [label]="'Custody_BankAccountNumber' | translate" [serverErrors]="model?.serverErrors?.BankAccountNumber">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
-            <div>{{ model?.BankAccountNumber }}</div>
-        </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="BankAccountNumber_isRequired">
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReference" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ExternalReference_isRequired">
         </t-text-editor>
     </t-form-group>
 

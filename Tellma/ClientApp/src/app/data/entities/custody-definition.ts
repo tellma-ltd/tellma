@@ -90,11 +90,11 @@ export interface CustodyDefinitionForSave extends EntityForSave {
 
     CustodianVisibility?: Visibility;
     CustodianDefinitionId?: number;
-    AgentVisibility?: Visibility;
-    TaxIdentificationNumberVisibility?: Visibility;
-    JobVisibility?: Visibility;
-    BankAccountNumberVisibility?: Visibility;
-    UserCardinality?: DefinitionCardinality;
+
+    ExternalReferenceLabel?: string;
+    ExternalReferenceLabel2?: string;
+    ExternalReferenceLabel3?: string;
+    ExternalReferenceVisibility?: Visibility;
 
     // Main Menu
 
@@ -215,11 +215,7 @@ export function metadata_CustodyDefinition(wss: WorkspaceService, trx: Translate
                     format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },
 
-                AgentVisibility: visibilityPropDescriptor('Custody_Agent', trx),
-                TaxIdentificationNumberVisibility: visibilityPropDescriptor('Custody_TaxIdentificationNumber', trx),
-                JobVisibility: visibilityPropDescriptor('Custody_Job', trx),
-                BankAccountNumberVisibility: visibilityPropDescriptor('Custody_BankAccountNumber', trx),
-                UserCardinality: cardinalityPropDescriptor('CustodyDefinition_UserCardinality', trx),
+                ExternalReferenceVisibility: visibilityPropDescriptor('Custody_ExternalReference', trx),
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
@@ -236,7 +232,7 @@ export function metadata_CustodyDefinition(wss: WorkspaceService, trx: Translate
         const multiLangProps = ['TitleSingular', 'TitlePlural',
             'FromDateLabel', 'ToDateLabel', 'Decimal1Label', 'Decimal2Label',
             'Int1Label', 'Int2Label', 'Lookup1Label', 'Lookup2Label', 'Lookup3Label', 'Lookup4Label',
-            'Text1Label', 'Text2Label'];
+            'Text1Label', 'Text2Label', 'ExternalReferenceLabel'];
 
         for (const prop of multiLangProps) {
             if (!ws.settings.SecondaryLanguageId) {

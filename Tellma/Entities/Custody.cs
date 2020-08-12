@@ -111,19 +111,9 @@ namespace Tellma.Entities
 
         #region Custody Only
 
-        [Display(Name = "Custody_Agent")]
-        public int? AgentId { get; set; }
-
-        [Display(Name = "Custody_TaxIdentificationNumber")]
-        [StringLength(30)]
-        public string TaxIdentificationNumber { get; set; }
-
-        [Display(Name = "Custody_Job")]
-        public int? JobId { get; set; }
-
-        [Display(Name = "Custody_BankAccountNumber")]
+        [Display(Name = "Custody_ExternalReference")]
         [StringLength(34)]
-        public string BankAccountNumber { get; set; }
+        public string ExternalReference { get; set; }
 
         #endregion
     }
@@ -209,10 +199,6 @@ namespace Tellma.Entities
         [Display(Name = "Custody_Custodian")]
         [ForeignKey(nameof(CustodianId))]
         public Relation Custodian { get; set; }
-
-        [Display(Name = "Custody_Agent")]
-        [ForeignKey(nameof(AgentId))]
-        public Agent Agent { get; set; }
 
         #endregion
     }

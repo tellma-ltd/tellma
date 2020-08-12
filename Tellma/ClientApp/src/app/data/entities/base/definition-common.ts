@@ -106,6 +106,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'car-side',
           'car',
           'carrot',
+          'cart-arrow-down',
           'cash-register',
           'certificate',
           'chart-area',

@@ -42,8 +42,6 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
       result[propName] = none;
     }
 
-    result.UserCardinality = 'None';
-
     return result;
   }
 
@@ -221,11 +219,10 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
         // Custody Only
         areServerErrors(model.serverErrors.CustodianVisibility) ||
         areServerErrors(model.serverErrors.CustodianDefinitionId) ||
-        areServerErrors(model.serverErrors.AgentVisibility) ||
-        areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
-        areServerErrors(model.serverErrors.JobVisibility) ||
-        areServerErrors(model.serverErrors.BankAccountNumberVisibility) ||
-        areServerErrors(model.serverErrors.UserCardinality)
+        areServerErrors(model.serverErrors.ExternalReferenceLabel) ||
+        areServerErrors(model.serverErrors.ExternalReferenceLabel2) ||
+        areServerErrors(model.serverErrors.ExternalReferenceLabel3) ||
+        areServerErrors(model.serverErrors.ExternalReferenceVisibility)
       ));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
@@ -287,6 +284,8 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
           delete this._getForClientResult[propName];
         }
       }
+
+      console.log(this._getForClientResult);
     }
 
     return this._getForClientResult;

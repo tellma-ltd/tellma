@@ -279,11 +279,10 @@ namespace Tellma.Controllers
                 CustodianVisibility = MapVisibility(def.CustodianVisibility),
                 CustodianDefinitionId = def.CustodianDefinitionId,
 
-                AgentVisibility = MapVisibility(def.AgentVisibility),
-                TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
-                JobVisibility = MapVisibility(def.JobVisibility),
-                BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
-                UserCardinality = MapCardinality(def.UserCardinality),
+                ExternalReferenceLabel = def.ExternalReferenceLabel,
+                ExternalReferenceLabel2 = def.ExternalReferenceLabel2,
+                ExternalReferenceLabel3 = def.ExternalReferenceLabel3,
+                ExternalReferenceVisibility = MapVisibility(def.ExternalReferenceVisibility),
             };
         }
 

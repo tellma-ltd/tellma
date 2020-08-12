@@ -373,20 +373,11 @@
   <data name="Custody" xml:space="preserve">
     <value>عهدة</value>
   </data>
-  <data name="Custody_Agent" xml:space="preserve">
-    <value>الذمة</value>
-  </data>
-  <data name="Custody_BankAccountNumber" xml:space="preserve">
-    <value>رقم حساب البنك</value>
-  </data>
   <data name="Custody_Custodian" xml:space="preserve">
     <value>المتعهد</value>
   </data>
-  <data name="Custody_Job" xml:space="preserve">
-    <value>الوظيفة</value>
-  </data>
-  <data name="Custody_TaxIdentificationNumber" xml:space="preserve">
-    <value>رقم التعريف الضريبي</value>
+  <data name="Custody_ExternalReference" xml:space="preserve">
+    <value>المرجع الخارجي</value>
   </data>
   <data name="CustodyDefinition" xml:space="preserve">
     <value>تعريف عهدة</value>

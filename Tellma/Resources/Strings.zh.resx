@@ -373,20 +373,11 @@
   <data name="Custody" xml:space="preserve">
     <value>保管</value>
   </data>
-  <data name="Custody_Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Custody_BankAccountNumber" xml:space="preserve">
-    <value>银行帐号</value>
-  </data>
   <data name="Custody_Custodian" xml:space="preserve">
     <value>保管人</value>
   </data>
-  <data name="Custody_Job" xml:space="preserve">
-    <value>工作</value>
-  </data>
-  <data name="Custody_TaxIdentificationNumber" xml:space="preserve">
-    <value>税号</value>
+  <data name="Custody_ExternalReference" xml:space="preserve">
+    <value>外部参考</value>
   </data>
   <data name="CustodyDefinition" xml:space="preserve">
     <value>托管定义</value>

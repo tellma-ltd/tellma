@@ -1229,22 +1229,9 @@ namespace Tellma.Controllers
 
                 // Custodies Only
 
-                case nameof(Custody.AgentId):
-                case nameof(Custody.Agent):
-                    display = PropertyDisplay(def.AgentVisibility, display);
-                    isRequired = def.AgentVisibility == Visibility.Required;
-                    break;
-                case nameof(Custody.TaxIdentificationNumber):
-                    display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
-                    isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
-                    break;
-                case nameof(Custody.JobId):
-                    display = PropertyDisplay(def.JobVisibility, display);
-                    isRequired = def.JobVisibility == Visibility.Required;
-                    break;
-                case nameof(Custody.BankAccountNumber):
-                    display = PropertyDisplay(def.BankAccountNumberVisibility, display);
-                    isRequired = def.BankAccountNumberVisibility == Visibility.Required;
+                case nameof(Custody.ExternalReference):
+                    display = PropertyDisplay(settings, def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
+                    isRequired = def.ExternalReferenceVisibility == Visibility.Required;
                     break;
                 case nameof(Custody.Custodian):
                 case nameof(Custody.CustodianId):

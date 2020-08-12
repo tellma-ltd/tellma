@@ -35,10 +35,7 @@ export interface CustodyForSave extends EntityForSave {
   Text2?: string;
   Image?: string;
 
-  AgentId?: number;
-  TaxIdentificationNumber?: string;
-  JobId?: number;
-  BankAccountNumber?: number;
+  ExternalReference?: number;
 }
 
 export interface Custody extends CustodyForSave {
@@ -128,11 +125,7 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
         CustodianId: { control: 'number', label: () => `${trx.instant('Custody_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Custodian: { control: 'navigation', label: () => trx.instant('Custody_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
 
-        AgentId: { control: 'number', label: () => `${trx.instant('Custody_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Agent: { control: 'navigation', label: () => trx.instant('Custody_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },
-        TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Custody_TaxIdentificationNumber') },
-        JobId: { control: 'number', label: () => `${trx.instant('Custody_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        BankAccountNumber: { control: 'text', label: () => trx.instant('Custody_BankAccountNumber') },
+        ExternalReference: { control: 'text', label: () => trx.instant('Custody_ExternalReference') },
 
         // Standard
 
@@ -184,14 +177,14 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
       }
 
       // Simple properties Visibility
-      for (const propName of ['TaxIdentificationNumber', 'BankAccountNumber']) {
+      for (const propName of ['TaxIdentificationNumber']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
           }
       }
 
       // Simple properties Visibility + Label
-      for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
+      for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier', 'ExternalReference']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
           } else {
@@ -202,7 +195,7 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
       }
 
       // Navigation properties
-      for (const propName of ['Currency', 'Center', 'Agent'/*, 'Job'*/]) {
+      for (const propName of ['Currency', 'Center']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
               delete entityDesc.properties[propName + 'Id'];

@@ -661,11 +661,10 @@ namespace Tellma.Controllers.Dto
         public string CustodianVisibility { get; set; }
         public int? CustodianDefinitionId { get; set; }
 
-        public string AgentVisibility { get; set; }
-        public string TaxIdentificationNumberVisibility { get; set; }
-        public string JobVisibility { get; set; }
-        public string BankAccountNumberVisibility { get; set; }
-        public string UserCardinality { get; set; }
+        public string ExternalReferenceLabel { get; set; }
+        public string ExternalReferenceLabel2 { get; set; }
+        public string ExternalReferenceLabel3 { get; set; }
+        public string ExternalReferenceVisibility { get; set; }
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient
