@@ -192,7 +192,7 @@ BEGIN
 				t.[Memo]				= s.[Memo],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
-		WHEN NOT MATCHED THEN
+		WHEN NOT MATCHED BY TARGET THEN
 			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo])
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo])
 		WHEN NOT MATCHED BY SOURCE THEN
@@ -200,13 +200,6 @@ BEGIN
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
 	) AS x
 	WHERE [Index] IS NOT NULL;
-
-	--DECLARE @RelevantEntries dbo.EntryList
-	--INSERT INTO @RelevantEntries
-	--SELECT * FROM @Entries
-	--WHERE
-	--	([Quantity] IS NOT NULL AND [Quantity] <> 0) OR
-	--	([Value] IS NOT NULL AND [Value] <> 0);
 
 	WITH BE AS (
 		SELECT * FROM dbo.[Entries]

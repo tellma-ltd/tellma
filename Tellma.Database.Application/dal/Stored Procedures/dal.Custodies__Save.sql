@@ -42,10 +42,10 @@ SET NOCOUNT ON;
 				[Text1],					
 				[Text2],
 				[CustodianId],
-				[AgentId],
-				[TaxIdentificationNumber],
-				[JobId],
-				[BankAccountNumber]
+				--[AgentId],
+				--[TaxIdentificationNumber],
+				--[JobId],
+				[ExternalReference]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -78,10 +78,10 @@ SET NOCOUNT ON;
 				t.[Text2]					= s.[Text2],
 
 				t.[CustodianId]				= s.[CustodianId],
-				t.[AgentId]					= s.[AgentId],
-				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
-				t.[JobId]					= s.[JobId],
-				t.[BankAccountNumber]		= s.[BankAccountNumber],
+				--t.[AgentId]					= s.[AgentId],
+				--t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
+				--t.[JobId]					= s.[JobId],
+				t.[ExternalReference]		= s.[ExternalReference],
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -113,10 +113,10 @@ SET NOCOUNT ON;
 				[Text2],
 
 				[CustodianId],
-				[AgentId],
-				[TaxIdentificationNumber],
-				[JobId],
-				[BankAccountNumber]
+				--[AgentId],
+				--[TaxIdentificationNumber],
+				--[JobId],
+				[ExternalReference]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -145,10 +145,10 @@ SET NOCOUNT ON;
 				s.[Text2],
 
 				s.[CustodianId],
-				s.[AgentId],
-				s.[TaxIdentificationNumber],
-				s.[JobId],
-				s.[BankAccountNumber]
+				--s.[AgentId],
+				--s.[TaxIdentificationNumber],
+				--s.[JobId],
+				s.[ExternalReference]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;

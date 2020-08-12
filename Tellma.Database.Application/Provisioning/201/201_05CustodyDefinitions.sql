@@ -7,7 +7,7 @@ INSERT INTO @CustodyDefinitionIds([Id]) VALUES
 (@WarehouseCD),
 (@PPECustodyCD),
 (@RentalCD),
-(@ShipperCD);	
+(@TransitCustodyCD);	
 
 EXEC [dal].[CustodyDefinitions__UpdateState]
 	@Ids = @CustodyDefinitionIds,
