@@ -17,7 +17,7 @@ SET NOCOUNT ON;
 				[Index], [Id], [ParentId], [Name], [Name2], [Name3], [Code], [AccountTypeParentId],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node]
 			FROM @Entities 
-		) AS s ON (t.[Code] = s.[Code])
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET

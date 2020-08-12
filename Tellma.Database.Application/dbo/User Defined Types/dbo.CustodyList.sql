@@ -27,9 +27,9 @@
 	[Text2]						NVARCHAR (50), 
 	
 	[CustodianId]				INT,
-	[AgentId]					INT,	
-	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
-	[JobId]						INT,
-	[BankAccountNumber]			NVARCHAR (34),
+	--[AgentId]					INT,	
+	--[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
+	--[JobId]						INT,
+	[ExternalReference]			NVARCHAR (34),
 	INDEX IX_AgentList__Code ([Code])
 );

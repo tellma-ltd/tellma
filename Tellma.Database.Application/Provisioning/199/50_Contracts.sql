@@ -17,7 +17,7 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-SELECT @Agent1 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 1'; -- employee 1 and cash custodian 1 and customer 1
+SELECT @Agent1 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 1'; -- employee 1 and customer 1
 SELECT @Agent2 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 2'; -- employee 2 and partner 2 (related)
 SELECT @Agent3 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 3'; -- customer 3 and supplier 3
 
@@ -25,23 +25,16 @@ SELECT @Agent3 = [Id] FROM dbo.Agents WHERE [Name] = N'Agent 3'; -- customer 3 a
 DELETE FROM @Custodies
 INSERT INTO @Custodies(
 	[Index],	[Code],		[Name],					[CurrencyId],		[CenterId],			[LocationJson],	[FromDate],		[ToDate],	[Decimal1],	[Decimal2],			
-	[Int1],		[Int2],		[Name2],				[Lookup1Id],		[Lookup2Id],		[Lookup3Id],	[Lookup4Id],	[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
-	[JobId],	[BankAccountNumber]) VALUES
+	[Int1],		[Int2],		[Name2],				[Lookup1Id],		[Lookup2Id],		[Lookup3Id],	[Lookup4Id],	[Text1],	[Text2]) VALUES
 (	0,			N'CA1',		N'Exec Off. Cash - SDG',N'SDG',				@107C_Headquarters,	NULL,			NULL,			NULL,		NULL,		NULL,
-	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL,		@Agent1,	NULL,
-	NULL,		NULL),
+	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL),
 (	1,			N'CA2',		N'Purchase Funds - SDG',N'SDG',				@107C_Headquarters,	NULL,			NULL,			NULL,		NULL,		NULL,
-	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL),
+	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL),
 (	2,			N'CA3',		N'Travel Cash - USD',	N'USD',				@107C_Headquarters,	NULL,			NULL,			NULL,		NULL,		NULL,
-	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL),
+	NULL,		NULL,		NULL,					NULL,				NULL,				NULL,			NULL,			NULL,		NULL),
 (	3,			N'CA4',		N'Cashier',				NULL,				@107C_MehiraScheme,	NULL,			NULL,			NULL,		NULL,		NULL,
-	NULL,		NULL,		N'الصندوق',				NULL,				NULL,				NULL,			NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL)
-	
-	
-	;
+	NULL,		NULL,		N'الصندوق',			NULL,				NULL,				NULL,			NULL,			NULL,		NULL)
+;
 
 EXEC [api].[Custodies__Save]
 	@DefinitionId = @SafeCD,
@@ -63,17 +56,13 @@ SELECT @CashOnHandAccount4 = [Id] FROM dbo.[Custodies] WHERE [Code] = N'CA4';
 DELETE FROM @Custodies -- Text1: Branch, Lookup1: Bank Account type
 INSERT INTO @Custodies(
 	[Index],	[Code],		[Name],					[CurrencyId],	[CenterId],			[LocationJson],	[FromDate],	[ToDate],	[Decimal1],	[Decimal2],			
-	[Int1],		[Int2],		[Name2],				[Lookup1Id],	[Lookup2Id],		[Lookup3Id],	[Lookup4Id],[Text1],	[Text2],	[AgentId],	[TaxIdentificationNumber],
-	[JobId],	[BankAccountNumber]) VALUES
+	[Int1],		[Int2],		[Name2],				[Lookup1Id],	[Lookup2Id],		[Lookup3Id],	[Lookup4Id],[Text1],	[Text2], [ExternalReference]) VALUES
 (	0,			N'B01',		N'Omdurman - SDG',		N'SDG',			@107C_Headquarters,	NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL,		N'أم درمان - جنيه',	NULL,			NULL,				NULL,			NULL,		N'الفتيحاب',NULL,		NULL,		NULL,
-	NULL,		N'1111'),
+	NULL,		NULL,		N'أم درمان - جنيه',	NULL,			NULL,				NULL,			NULL,		N'الفتيحاب',NULL,		N'1111'),
 (	1,			N'B02',		N'Omdurman - USD',		N'USD',			@107C_Headquarters,	NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL,		N'أم درمان - دولار',	NULL,			NULL,				NULL,			NULL,		N'الكلاكلا',	NULL,		NULL,		NULL,
-	NULL,		N'2222'),
+	NULL,		NULL,		N'أم درمان - دولار',	NULL,			NULL,				NULL,			NULL,		N'الكلاكلا',	NULL,		N'2222'),
 (	2,			N'B03',		N'Salam - Mehira - SDG',N'SDG',			@107C_MehiraScheme,	NULL,			NULL,		NULL,		NULL,		NULL,
-	NULL,		NULL,		N'السلام - مهيرة - حنيه',NULL,			NULL,				NULL,			NULL,		NULL,		NULL,		NULL,		NULL,
-	NULL,		N'3333');
+	NULL,		NULL,		N'السلام - مهيرة - حنيه',NULL,			NULL,				NULL,			NULL,		NULL,		NULL,		N'3333');
 
 EXEC [api].[Relations__Save]
 	@DefinitionId = @BankAccountCD,

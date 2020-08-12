@@ -1,14 +1,14 @@
-﻿INSERT INTO @CustodyDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility],[BankAccountNumberVisibility], [CustodianVisibility],[CustodianDefinitionId]) VALUES
-(0, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135,N'Required', N'None', N'None', N'None', N'Optional',@BankBranchRLD),
-(1, N'Safe', N'Safe', N'Safes', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeRLD),
-(2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'None', N'Optional',@EmployeeRLD),
-(3, N'PPECustody', N'Fixed Asset Custody', N'Fixed Assets Custodies', N'user-shield', N'FixedAssets',150,N'Required', N'None', N'None', N'None', N'Optional',@EmployeeRLD),
-(4, N'Rental', N'Rental', N'Rentals', N'calendar-alt', N'Sales',155,N'Required', N'None', N'None', N'None', N'Optional',@CustomerRLD),
-(5, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None', N'None',NULL);
+﻿INSERT INTO @CustodyDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility], [CustodianVisibility],[CustodianDefinitionId]) VALUES
+(0, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135,N'Required', N'None', N'None', N'Optional',@BankBranchRLD),
+(1, N'Safe', N'Safe', N'Safes', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'Optional',@EmployeeRLD),
+(2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'Optional',@EmployeeRLD),
+(3, N'PPECustody', N'Fixed Asset Custody', N'Fixed Assets Custodies', N'user-shield', N'FixedAssets',150,N'Required', N'None', N'None', N'Optional',@EmployeeRLD),
+(4, N'Rental', N'Rental', N'Rentals', N'calendar-alt', N'Sales',155,N'Required', N'None', N'None', N'Optional',@CustomerRLD),
+(5, N'TransitCustody', N'Transit Custody', N'Transit Custodies', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None',@SupplierRLD);
 
 UPDATE @CustodyDefinitions
 SET 
-	[CurrencyVisibility] = N'Required', [BankAccountNumberVisibility] = N'Optional',
+	[CurrencyVisibility] = N'Required', [ExternalReferenceVisibility] = N'Optional', [ExternalReferenceLabel] = N'Bank Account Number',
 	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD
 WHERE [Code] IN ( N'BankAccount')
 
@@ -29,4 +29,4 @@ DECLARE @SafeCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = 
 DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Warehouse');
 DECLARE @PPECustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'PPECustody');
 DECLARE @RentalCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Rental');
-DECLARE @ShipperCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Shipper');
+DECLARE @TransitCustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'TransitCustody');

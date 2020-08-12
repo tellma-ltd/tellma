@@ -2417,4 +2417,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CustodianDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="92f51e7b-4477-490d-aac5-c2d4f5367857" ChangeDateTime="08/11/2020 13:48:44">
+    <Property Name="ElementName" Value="[dbo].[CustodyDefinitions].[BankAccountNumberVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustodyDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ExternalReferenceVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9ba865d8-5256-4c98-a05f-dee7964392b4" ChangeDateTime="08/11/2020 13:49:12">
+    <Property Name="ElementName" Value="[dbo].[Custodies].[BankAccountNumber]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Custodies]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ExternalReference]" />
+  </Operation>
 </Operations>

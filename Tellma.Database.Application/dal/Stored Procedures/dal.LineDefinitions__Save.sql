@@ -141,13 +141,13 @@ SET NOCOUNT ON;
 				LDE.[EntryTypeId]
 			FROM @LineDefinitionEntries LDE
 			JOIN @LineDefinitionsIndexedIds II ON LDE.[HeaderIndex] = II.[Index]
-		) AS s
-		ON s.[Id] = t.[Id]
+		) AS s ON s.[Id] = t.[Id]
 		WHEN MATCHED 
 		AND (
-				t.[Direction]						<> s.[Direction] OR
-				t.[AccountTypeId]					<> s.[AccountTypeId] OR
-				ISNULL(t.[EntryTypeId],0)			<> ISNULL(s.[EntryTypeId],0)
+				t.[Index]					<> s.[Index] OR
+				t.[Direction]				<> s.[Direction] OR
+				t.[AccountTypeId]			<> s.[AccountTypeId] OR
+				ISNULL(t.[EntryTypeId],0)	<> ISNULL(s.[EntryTypeId],0)
 		)
 		THEN
 			UPDATE SET
@@ -189,7 +189,11 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[ResourceDefinitionId]	= s.[ResourceDefinitionId]) THEN
+	WHEN MATCHED
+	--AND (
+	--	t.[ResourceDefinitionId] <> s.[ResourceDefinitionId]
+	--)
+	THEN
 		UPDATE SET
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
 			t.[ModifiedAt]				= @Now,
@@ -212,22 +216,26 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[CustodyDefinitionId]	= s.[CustodyDefinitionId]) THEN
+	WHEN MATCHED
+	--AND (
+	--	t.[CustodyDefinitionId]	<> s.[CustodyDefinitionId]
+	--)
+	THEN
 		UPDATE SET
 			t.[CustodyDefinitionId]	= s.[CustodyDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[ModifiedAt]			= @Now,
+			t.[ModifiedById]		= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [CustodyDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[CustodyDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	WITH BLDENCD AS (
+	WITH BLDENRD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryNotedRelationDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
 	)
-	MERGE INTO BLDENCD AS t
+	MERGE INTO BLDENRD AS t
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedRelationDefinitionId]
@@ -235,7 +243,11 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId]) THEN
+	WHEN MATCHED
+	--AND (
+	--	t.[NotedRelationDefinitionId] <> s.[NotedRelationDefinitionId]
+	--)
+	THEN
 		UPDATE SET
 			t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
 			t.[ModifiedAt]				= @Now,
@@ -246,8 +258,11 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
--- TODO: Reduce updates by verifying that information has indeed been changed (like we did for LD, LDV, and LDE)
-	MERGE [dbo].[LineDefinitionColumns] AS t
+	WITH BLDC AS (
+		SELECT * FROM dbo.[LineDefinitionColumns]
+		WHERE LineDefinitionId IN (SELECT [Id] FROM @LineDefinitionsIndexedIds)
+	)
+	MERGE INTO BLDC AS t
 	USING (
 		SELECT
 			LDC.[Id],
@@ -263,11 +278,24 @@ SET NOCOUNT ON;
 			LDC.[ReadOnlyState],
 			LDC.[InheritsFromHeader]
 		FROM @LineDefinitionColumns LDC
-		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
-		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+	--	JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
+		JOIN @LineDefinitionsIndexedIds II ON LDC.[HeaderIndex] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
-	WHEN MATCHED THEN
+	WHEN MATCHED 
+	AND (
+			t.[ColumnName]		<> s.[ColumnName] OR
+			t.[ColumnName]		<> s.[ColumnName] OR
+			t.[EntryIndex]		<> s.[EntryIndex] OR
+			t.[Label]			<> s.[Label] OR
+			t.[Label2]			<> s.[Label2] OR
+			t.[Label3]			<> s.[Label3] OR
+			t.[VisibleState]	<> s.[VisibleState] OR
+			t.[RequiredState]	<> s.[RequiredState] OR
+			t.[ReadOnlyState]	<> s.[ReadOnlyState] OR
+			t.[InheritsFromHeader]<>s.[InheritsFromHeader]
+	)
+	THEN
 		UPDATE SET
 			t.[Index]			= s.[Index],
 			t.[ColumnName]		= s.[ColumnName],
@@ -280,13 +308,17 @@ SET NOCOUNT ON;
 			t.[ReadOnlyState]	= s.[ReadOnlyState],
 			t.[InheritsFromHeader]=s.[InheritsFromHeader],
 			t.[SavedById]		= @UserId
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3], [VisibleState],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
+		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
-	MERGE [dbo].[LineDefinitionGenerateParameters] AS t
+	WITH BLGDP AS (
+		SELECT * FROM dbo.[LineDefinitionGenerateParameters]
+		WHERE LineDefinitionId IN (SELECT [Id] FROM @LineDefinitionsIndexedIds)
+	)
+	MERGE INTO BLGDP AS t
 	USING (
 		SELECT
 			LDGP.[Id],
@@ -300,11 +332,22 @@ SET NOCOUNT ON;
 			LDGP.[DataType],
 			LDGP.[Filter]
 		FROM @LineDefinitionGenerateParameters LDGP
-		JOIN @Entities LD ON LDGP.HeaderIndex = LD.[Index]
-		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+	--	JOIN @Entities LD ON LDGP.HeaderIndex = LD.[Index]
+		JOIN @LineDefinitionsIndexedIds II ON LDGP.[HeaderIndex] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
-	WHEN MATCHED THEN
+	WHEN MATCHED 
+	AND (
+			t.[Index]			<> s.[Index] OR
+			t.[Key]				<> s.[Key] OR
+			t.[Label]			<> s.[Label] OR
+			t.[Label2]			<> s.[Label2] OR
+			t.[Label3]			<> s.[Label3] OR
+			t.[Visibility]		<> s.[Visibility] OR
+			t.[DataType]		<> s.[DataType] OR
+			t.[Filter]			<> s.[Filter]
+	)
+	THEN
 		UPDATE SET
 			t.[Index]			= s.[Index],
 			t.[Key]				= s.[Key],
@@ -315,12 +358,16 @@ SET NOCOUNT ON;
 			t.[DataType]		= s.[DataType],
 			t.[Filter]			= s.[Filter],
 			t.[SavedById]		= @UserId
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[Key],	[Label],	[Label2],	[Label3], [Visibility],	[DataType], [Filter])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[Key], s.[Label], s.[Label2], s.[Label3],s.[Visibility], s.[DataType], s.[Filter]);
+		VALUES (s.[LineDefinitionId], s.[Index], s.[Key], s.[Label], s.[Label2], s.[Label3],s.[Visibility], s.[DataType], s.[Filter])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
+	WITH BLGSR AS (
+		SELECT * FROM dbo.[LineDefinitionStateReasons]
+		WHERE LineDefinitionId IN (SELECT [Id] FROM @LineDefinitionsIndexedIds)
+	)
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (
 		SELECT
@@ -332,11 +379,20 @@ SET NOCOUNT ON;
 			LDSR.[Name3],
 			LDSR.[IsActive]
 		FROM @LineDefinitionStateReasons LDSR
-		JOIN @Entities LD ON LDSR.HeaderIndex = LD.[Index]
-		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+	--	JOIN @Entities LD ON LDSR.HeaderIndex = LD.[Index]
+		JOIN @LineDefinitionsIndexedIds II ON LDSR.[HeaderIndex] = II.[Index]
 	) AS s
 	ON s.Id = t.Id
-	WHEN MATCHED THEN
+	WHEN MATCHED
+	AND (
+			t.[LineDefinitionId]<> s.[LineDefinitionId] OR
+			t.[State]			<> s.[State] OR
+			t.[Name]			<> s.[Name] OR
+			t.[Name2]			<> s.[Name2] OR
+			t.[Name3]			<> s.[Name3] OR
+			t.[IsActive]		<> s.[IsActive]
+	)
+	THEN
 		UPDATE SET
 			t.[LineDefinitionId]= s.[LineDefinitionId],
 			t.[State]			= s.[State],
@@ -345,13 +401,13 @@ SET NOCOUNT ON;
 			t.[Name3]			= s.[Name3],
 			t.[IsActive]		= s.[IsActive],
 			t.[SavedById]		= @UserId
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[State], [Name],	[Name2], [Name3], [IsActive])
-		VALUES (s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive]);
+		VALUES (s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
-	WITH BW AS (
+	WITH BLDW AS (
 		SELECT * FROM dbo.[Workflows]
 		WHERE LineDefinitionId IN (SELECT [Id] FROM @LineDefinitionsIndexedIds)
 	)
@@ -359,7 +415,7 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[LineDefinitionId], x.[Id]
 	FROM
 	(
-		MERGE [dbo].[Workflows] AS t
+		MERGE INTO BLDW AS t
 		USING (
 			SELECT
 				W.[Index],
@@ -367,16 +423,17 @@ SET NOCOUNT ON;
 				II.[Id] AS [LineDefinitionId],
 				W.[ToState]
 			FROM @Workflows W
-			JOIN @Entities LD ON W.[LineDefinitionIndex] = LD.[Index]
-			JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+			JOIN @LineDefinitionsIndexedIds II ON W.[LineDefinitionIndex] = II.[Index]
 		) AS s
 		ON s.[Id] = t.[Id]
-		WHEN MATCHED THEN
+		WHEN MATCHED 
+		--AND (
+		--	t.[ToState] <> s.[ToState]
+		--)
+		THEN
 			UPDATE SET
 				t.[ToState]		= s.[ToState],
 				t.[SavedById]	= @UserId
-		WHEN NOT MATCHED BY SOURCE THEN
-			DELETE
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (
 				[LineDefinitionId],
@@ -386,14 +443,17 @@ SET NOCOUNT ON;
 				s.[LineDefinitionId],
 				s.[ToState]
 			)
-		OUTPUT s.[Index], inserted.[LineDefinitionId], inserted.[Id]
-	) AS x;
+		WHEN NOT MATCHED BY SOURCE THEN
+			DELETE
+		OUTPUT s.[Index], inserted.[Id], inserted.[LineDefinitionId]
+	) AS x
+	WHERE [Index] IS NOT NULL;
 
-	WITH BWS AS (
+	WITH BLDWS AS (
 		SELECT * FROM dbo.[WorkflowSignatures] -- check if there are already signatures for the transition
 		WHERE [WorkflowId] IN (SELECT [Id] FROM @WorkflowIndexedIds)
 	)
-	MERGE [dbo].[WorkflowSignatures] AS t
+	MERGE INTO BLDWS AS t
 	USING (
 		SELECT
 			WS.[Index],
@@ -412,7 +472,18 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionsIndexedIds LDI ON LDI.[Index] =  W.[LineDefinitionIndex]
 		JOIN @WorkflowIndexedIds WI ON W.[Index] = WI.[Index] AND WI.[HeaderId] = LDI.[Id]
 	) AS s ON s.[Id] = t.[Id]
-	WHEN MATCHED THEN
+	WHEN MATCHED
+	--AND (
+	--		t.[RuleType]				<> s.[RuleType] OR
+	--		t.[RuleTypeEntryIndex]		<> s.[RuleTypeEntryIndex] OR
+	--		t.[RoleId]					<> s.[RoleId] OR
+	--		t.[UserId]					<> s.[UserId] OR
+	--		t.[PredicateType]			<> s.[PredicateType] OR
+	--		t.[PredicateTypeEntryIndex]	<> s.[PredicateTypeEntryIndex] OR
+	--		t.[Value]					<> s.[Value] OR
+	--		t.[ProxyRoleId]				<> s.[ProxyRoleId]
+	--) 
+	THEN
 		UPDATE SET
 			t.[RuleType]				= s.[RuleType],
 			t.[RuleTypeEntryIndex]		= s.[RuleTypeEntryIndex],
@@ -423,9 +494,7 @@ SET NOCOUNT ON;
 			t.[Value]					= s.[Value],
 			t.[ProxyRoleId]				= s.[ProxyRoleId],
 			t.[SavedById]				= @UserId
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE
-	WHEN NOT MATCHED BY TARGET THEN
+	WHEN NOT MATCHED THEN
 		INSERT (
 			[WorkflowId],
 			[RuleType],
@@ -447,7 +516,9 @@ SET NOCOUNT ON;
 			s.[PredicateTypeEntryIndex],
 			s.[Value],
 			s.[ProxyRoleId]
-		);
+		)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- Signal clients to refresh their cache
 	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
