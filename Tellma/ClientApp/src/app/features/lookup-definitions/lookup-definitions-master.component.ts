@@ -6,8 +6,6 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
-import { DefinitionState } from '~/app/data/entities/base/definition-common';
 import { LookupDefinition } from '~/app/data/entities/lookup-definition';
 
 @Component({

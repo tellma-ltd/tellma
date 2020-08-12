@@ -227,7 +227,7 @@
     <value>尺寸</value>
   </data>
   <data name="Attachments" xml:space="preserve">
-    <value>的附件</value>
+    <value>附件</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>身份验证器应用</value>
@@ -949,6 +949,9 @@
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>用户“{0}”不是的角色“{1}”的部件。</value>
   </data>
+  <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>指标必须大于或等于零。</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>无效的登录尝试。如果你还没有确认您的电子邮件了，请检查您的电子邮件收件箱</value>
   </data>
@@ -1011,6 +1014,9 @@
   </data>
   <data name="Error_No0WasFoundWhere1Equals2EnsureCaseMatch" xml:space="preserve">
     <value>没有{0}记录，发现其中{1} = '{2}'，确保字母大小写完全匹配。</value>
+  </data>
+  <data name="Error_NoEntryCorrespondsToIndex0" xml:space="preserve">
+    <value>没有条目对应的索引{0}。</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>没有文件被上传。</value>
@@ -1501,8 +1507,59 @@
   <data name="LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>
+  <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
+    <value>允许选择性签名</value>
+  </data>
+  <data name="LineDefinition_Columns" xml:space="preserve">
+    <value>列</value>
+  </data>
+  <data name="LineDefinition_Entries" xml:space="preserve">
+    <value>项</value>
+  </data>
+  <data name="LineDefinition_GenerateLabel" xml:space="preserve">
+    <value>生成标签</value>
+  </data>
+  <data name="LineDefinition_GenerateParameters" xml:space="preserve">
+    <value>生成参数</value>
+  </data>
+  <data name="LineDefinition_GenerateScript" xml:space="preserve">
+    <value>生成脚本</value>
+  </data>
+  <data name="LineDefinition_Script" xml:space="preserve">
+    <value>脚本</value>
+  </data>
+  <data name="LineDefinition_StateReasons" xml:space="preserve">
+    <value>说明理由</value>
+  </data>
+  <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
+    <value>查看默认值形成</value>
+  </data>
+  <data name="LineDefinition_Workflows" xml:space="preserve">
+    <value>工作流程</value>
+  </data>
   <data name="LineDefinitionColumn" xml:space="preserve">
     <value>行定义列</value>
+  </data>
+  <data name="LineDefinitionColumn_ColumnName" xml:space="preserve">
+    <value>列名</value>
+  </data>
+  <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
+    <value>项索引</value>
+  </data>
+  <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
+    <value>继承了头</value>
+  </data>
+  <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
+    <value>行定义</value>
+  </data>
+  <data name="LineDefinitionColumn_ReadOnlyState" xml:space="preserve">
+    <value>只读状态</value>
+  </data>
+  <data name="LineDefinitionColumn_RequiredState" xml:space="preserve">
+    <value>国家要求</value>
+  </data>
+  <data name="LineDefinitionColumn_VisibleState" xml:space="preserve">
+    <value>可视状态</value>
   </data>
   <data name="LineDefinitionColumns" xml:space="preserve">
     <value>行定义列</value>
@@ -1516,8 +1573,41 @@
   <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
     <value>帐户类型</value>
   </data>
+  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
+    <value>托管定义</value>
+  </data>
+  <data name="LineDefinitionEntry_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>条目类型</value>
+  </data>
+  <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
+    <value>行定义</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>注意关联定义</value>
+  </data>
+  <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
+    <value>资源定义</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
+    <value>托管定义</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>行定义条目</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>行定义条目</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>注意到关系定义</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>行定义条目</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
+    <value>资源定义</value>
   </data>
   <data name="LineDefinitionGenerateParameter" xml:space="preserve">
     <value>行定义生成参数</value>
@@ -1702,6 +1792,9 @@
   <data name="Name" xml:space="preserve">
     <value>名称</value>
   </data>
+  <data name="Never" xml:space="preserve">
+    <value>决不</value>
+  </data>
   <data name="NewPassword" xml:space="preserve">
     <value>新密码</value>
   </data>
@@ -1731,6 +1824,9 @@
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>键</value>
+  </data>
+  <data name="Parameter_LineDefinition" xml:space="preserve">
+    <value>行定义</value>
   </data>
   <data name="Parameter_Visibility" xml:space="preserve">
     <value>能见度</value>
@@ -1809,6 +1905,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>请确认</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>值> =</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
@@ -2170,6 +2269,18 @@
   <data name="Row0" xml:space="preserve">
     <value>行{0}</value>
   </data>
+  <data name="RuleType_ByCustodian" xml:space="preserve">
+    <value>通过托管</value>
+  </data>
+  <data name="RuleType_ByRole" xml:space="preserve">
+    <value>通过角色</value>
+  </data>
+  <data name="RuleType_ByUser" xml:space="preserve">
+    <value>按用户</value>
+  </data>
+  <data name="RuleType_Public" xml:space="preserve">
+    <value>上市</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>救</value>
   </data>
@@ -2370,6 +2481,12 @@
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
     <value>为了国家</value>
+  </data>
+  <data name="StateReason_LineDefinition" xml:space="preserve">
+    <value>行定义</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>文本</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
     <value>摘要条目</value>
@@ -2601,6 +2718,54 @@
   </data>
   <data name="Visibility_Required" xml:space="preserve">
     <value>需要</value>
+  </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>工作流程</value>
+  </data>
+  <data name="Workflow_LineDefinition" xml:space="preserve">
+    <value>行定义</value>
+  </data>
+  <data name="Workflow_Signatures" xml:space="preserve">
+    <value>签名</value>
+  </data>
+  <data name="Workflow_ToState" xml:space="preserve">
+    <value>为了国家</value>
+  </data>
+  <data name="Workflows" xml:space="preserve">
+    <value>工作流程</value>
+  </data>
+  <data name="WorkflowSignature" xml:space="preserve">
+    <value>工作流签名</value>
+  </data>
+  <data name="WorkflowSignature_PredicateType" xml:space="preserve">
+    <value>谓词类型</value>
+  </data>
+  <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
+    <value>谓词类型的条目索引</value>
+  </data>
+  <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
+    <value>代理角色</value>
+  </data>
+  <data name="WorkflowSignature_Role" xml:space="preserve">
+    <value>角色</value>
+  </data>
+  <data name="WorkflowSignature_RuleType" xml:space="preserve">
+    <value>规则类型</value>
+  </data>
+  <data name="WorkflowSignature_RuleTypeEntryIndex" xml:space="preserve">
+    <value>护法条目索引</value>
+  </data>
+  <data name="WorkflowSignature_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="WorkflowSignature_Value" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="WorkflowSignature_Workflow" xml:space="preserve">
+    <value>工作流程</value>
+  </data>
+  <data name="WorkflowSignatures" xml:space="preserve">
+    <value>工作流签名</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>是</value>

@@ -182,12 +182,12 @@
 
   <!-- Content Area -->
   <div class="row" [class.t-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
-    [class.t-rest-of-screen]="isScreenMode">
+    [class.t-rest-of-screen]="isScreenMode" [class.t-much-less-dark]="isDark">
     <div class="w-100" [class.t-main-document]="showSidebar" [class.h-100]="!showSidebar">
 
       <!-- Document content -->
       <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">
-        <div class="border bg-white w-100 t-paper">
+        <div class="border w-100 t-paper"  [class.bg-white]="!isDark" [class.t-less-dark]="isDark" [class.t-dark-border]="isDark">
           <div class="border-bottom" *ngIf="documentHeaderTemplate">
             <ng-container
               *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
@@ -219,7 +219,7 @@
       </ng-container>
 
       <!-- Spinner -->
-      <div class="w-100 mt-3" *ngIf="showSpinner">
+      <div class="w-100 mt-3" *ngIf="showSpinner" [class.t-text-whitish]="isDark">
         <div class="w-100 p-2 d-flex justify-content-center">
           <t-spinner [scale]="2"></t-spinner>
         </div>

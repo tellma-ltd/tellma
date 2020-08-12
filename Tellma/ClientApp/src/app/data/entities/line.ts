@@ -8,7 +8,9 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 
-export type LineState = 0 | -1 | 1 | -2 | 2 | -3 | 3 | -4 | 4;
+export type PositiveLineState = 0 | 1 | 2 | 3 | 4;
+export type NegativeLineState = -1 | -2 | -3 | -4;
+export type LineState = PositiveLineState | NegativeLineState;
 
 export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     DefinitionId?: number;

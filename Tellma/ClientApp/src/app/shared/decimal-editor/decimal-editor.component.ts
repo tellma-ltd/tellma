@@ -20,6 +20,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   @Input()
   minDecimalPlaces: number = null;
 
+  @Input()
+  theme: 'light' | 'dark' = 'light';
+
   @ViewChild('input', { static: true })
   input: ElementRef;
 
@@ -180,5 +183,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
 
     // always format the input on blur
     this.input.nativeElement.value = this.format(this.parse(value));
+  }
+
+  public get isDark(): boolean {
+    return this.theme === 'dark';
   }
 }

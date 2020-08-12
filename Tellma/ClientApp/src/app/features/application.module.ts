@@ -161,7 +161,8 @@ import {
   faUtensils,
   faWarehouse,
   faStar,
-  faCalendarAlt
+  faCalendarAlt,
+  faArrowsAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
@@ -229,6 +230,9 @@ import { CustodyDefinitionsPickerComponent } from './custody-definitions/custody
 import { CustodiesPickerComponent } from './custodies/custodies-picker.component';
 import { CustodiesMasterComponent } from './custodies/custodies-master.component';
 import { CustodiesDetailsComponent } from './custodies/custodies-details.component';
+import { LineDefinitionsDetailsComponent } from './line-definitions/line-definitions-details.component';
+import { LineDefinitionsMasterComponent } from './line-definitions/line-definitions-master.component';
+import { LineDefinitionsPickerComponent } from './line-definitions/line-definitions-picker.component';
 
 const routes: Routes = [
   {
@@ -560,6 +564,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Line Definitions
+      {
+        path: 'line-definitions',
+        component: LineDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'line-definitions/:id',
+        component: LineDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -683,6 +699,9 @@ const routes: Routes = [
     CustodiesPickerComponent,
     CustodiesMasterComponent,
     CustodiesDetailsComponent,
+    LineDefinitionsDetailsComponent,
+    LineDefinitionsMasterComponent,
+    LineDefinitionsPickerComponent,
   ],
   imports: [
     SharedModule,
@@ -708,6 +727,7 @@ export class ApplicationModule {
       faAngleDown,
       faAngleUp,
       faArchive,
+      faArrowsAlt,
       faBalanceScale,
       faBarcode,
       faBolt,

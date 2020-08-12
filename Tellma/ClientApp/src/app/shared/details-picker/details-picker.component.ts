@@ -56,6 +56,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   filter: string;
 
   @Input()
+  theme: 'light' | 'dark' = 'light';
+
+  @Input()
   collection: string;
 
   @Input()
@@ -936,5 +939,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   public get inputRightPadding(): string {
     return this.showEditSelected ? !this.workspace.ws.isRtl ? '24px!important' : null : null;
+  }
+
+  public get isDark(): boolean {
+    return this.theme === 'dark';
   }
 }

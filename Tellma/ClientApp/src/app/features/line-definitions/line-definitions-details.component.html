@@ -1,0 +1,1291 @@
+<t-details collection="LineDefinition" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'LineDefinitions' | translate" [detailsCrumb]="detailsCrumb"
+    [idString]="idString" [documentTemplate]="document" [actions]="[]" theme="dark" [isInactive]="isInactive">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ getMultilingualValue(model, 'TitlePlural', ws) }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+
+    <ul ngbNav [(activeId)]="activeTab" #tabs="ngbNav" class="w-100 nav-tabs t-dark-tabs t-dark-border" [destroyOnHide]="true">
+
+        <!-- General -->
+        <li ngbNavItem="general">
+            <a ngbNavLink>
+                <span *ngIf="showGeneralError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'General' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <div class="row m-0 pt-2 pt-sm-3">
+
+                    <!-- TitlePlural -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(titlepluralmodel, model?.serverErrors?.TitlePlural)">
+                        <label class="small"
+                            for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.TitlePlural }}</div>
+                        <input class="form-control t-studio-input" id="titleplural" type="text"
+                            [(ngModel)]="model.TitlePlural" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #titlepluralmodel="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlepluralmodel, serverErrors: model?.serverErrors?.TitlePlural }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitlePlural2 -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(titleplural2model, model?.serverErrors?.TitlePlural2)"
+                        *ngIf="ws.settings.SecondaryLanguageId">
+                        <label class="small"
+                            for="titleplural2">{{ ('TitlePlural' | translate) + ws.secondaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.TitlePlural2 }}</div>
+                        <input class="form-control t-studio-input" id="titleplural2" type="text"
+                            [(ngModel)]="model.TitlePlural2" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #titleplural2model="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural2model, serverErrors: model?.serverErrors?.TitlePlural2 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitlePlural3 -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(titleplural3model, model?.serverErrors?.TitlePlural3)"
+                        *ngIf="ws.settings.TernaryLanguageId">
+                        <label class="small"
+                            for="titleplural3">{{ ('TitlePlural' | translate) + ws.ternaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.TitlePlural3 }}</div>
+                        <input class="form-control t-studio-input" id="titleplural3" type="text"
+                            [(ngModel)]="model.TitlePlural3" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #titleplural3model="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural3model, serverErrors: model?.serverErrors?.TitlePlural3 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitleSingular -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(titlesingularmodel, model?.serverErrors?.TitleSingular)">
+                        <label class="small"
+                            for="titlesingular">{{ ('TitleSingular' | translate) + ws.primaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.TitleSingular }}</div>
+                        <input class="form-control t-studio-input" id="titlesingular" type="text"
+                            [(ngModel)]="model.TitleSingular" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #titlesingularmodel="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingularmodel, serverErrors: model?.serverErrors?.TitleSingular }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitleSingular2 -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(titlesingular2model, model?.serverErrors?.TitleSingular2)"
+                        *ngIf="ws.settings.SecondaryLanguageId">
+                        <label class="small"
+                            for="titlesingular2">{{ ('TitleSingular' | translate) + ws.secondaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.TitleSingular2 }}</div>
+                        <input class="form-control t-studio-input" id="titlesingular2" type="text"
+                            [(ngModel)]="model.TitleSingular2" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" #titlesingular2model="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular2model, serverErrors: model?.serverErrors?.TitleSingular2 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitleSingular3 -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(titlesingular3model, model?.serverErrors?.TitleSingular3)"
+                        *ngIf="ws.settings.TernaryLanguageId">
+                        <label class="small"
+                            for="titlesingular3">{{ ('TitleSingular' | translate) + ws.ternaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.TitleSingular3 }}</div>
+                        <input *ngIf="isEdit" class="form-control t-studio-input" id="titlesingular3" type="text"
+                            [(ngModel)]="model.TitleSingular3" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" #titlesingular3model="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular3model, serverErrors: model?.serverErrors?.TitleSingular3 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Code -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(codemodel, model?.serverErrors?.Code)">
+                        <label class="small" for="code">{{ ('Code' | translate) }}</label>
+                        <div *ngIf="!isEdit">{{ model.Code }}</div>
+                        <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #codemodel="ngModel"
+                            *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: codemodel, serverErrors: model?.serverErrors?.Code }">
+                        </ng-container>
+                    </div>
+
+                    <div class="w-100"></div>
+
+                    <!-- Description -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(descriptionmodel, model?.serverErrors?.Description)">
+                        <label class="small"
+                            for="description">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.Description }}</div>
+                        <textarea class="form-control t-studio-input" id="description" type="text" rows="5"
+                            [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #descriptionmodel="ngModel" *ngIf="isEdit"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: descriptionmodel, serverErrors: model?.serverErrors?.Description }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Description2 -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(description2model, model?.serverErrors?.Description2)"
+                        *ngIf="ws.settings.SecondaryLanguageId">
+                        <label class="small"
+                            for="description2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.Description2 }}</div>
+                        <textarea class="form-control t-studio-input" id="description2" type="text" rows="5"
+                            [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #description2model="ngModel" *ngIf="isEdit"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: description2model, serverErrors: model?.serverErrors?.Description2 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Description3 -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(description3model, model?.serverErrors?.Description3)"
+                        *ngIf="ws.settings.TernaryLanguageId">
+                        <label class="small"
+                            for="description3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.Description3 }}</div>
+                        <textarea class="form-control t-studio-input" id="description3" type="text" rows="5"
+                            [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #description3model="ngModel" *ngIf="isEdit"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: description3model, serverErrors: model?.serverErrors?.Description3 }">
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+
+        <!-- Entries -->
+        <li ngbNavItem="entries">
+            <a ngbNavLink>
+                <span *ngIf="showEntriesError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_Entries' | translate }}
+                    ({{ model.Entries?.length }})</span>
+            </a>
+            <ng-template ngbNavContent>
+                <div class="t-text-whitish pb-1">
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+                        <thead class="small font-weight-normal">
+                            <tr>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Drag handle -->
+                                </th>
+                                <th style="width: 1px;">{{ 'LineDefinitionColumn_EntryIndex' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionEntry_Direction' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionEntry_AccountType' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionEntry_EntryType' | translate }}
+                                </th>
+                                <th style="width: 1px;">
+                                    <!-- More... -->
+                                </th>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Delete -->
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
+                            (cdkDropListDropped)="rowDrop($event, model.Entries)">
+                            <tr *ngFor="let entry of model.Entries; let i = index;" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
+                                    {{ 'LineDefinitionEntry' | translate }}</div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td>
+                                    {{ i }}
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ directionDisplay(entry.Direction) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="entry.Direction" #directionmodel="ngModel">
+                                        <option value="1">
+                                            {{ directionDisplay(1) }}</option>
+                                        <option value="-1">
+                                            {{ directionDisplay(-1) }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: directionmodel, serverErrors: entry?.serverErrors?.Direction }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span
+                                        *ngIf="!isEdit">{{ ws.getMultilingualValue('AccountType', entry.AccountTypeId, 'Name') }}</span>
+                                    <t-account-types-picker *ngIf="isEdit" [(ngModel)]="entry.AccountTypeId"
+                                        theme="dark" #accounttypemodel></t-account-types-picker>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entry?.serverErrors?.AccountTypeId }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span
+                                        *ngIf="!isEdit">{{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}</span>
+                                    <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="entry.EntryTypeId" theme="dark"
+                                        #entrytypemodel></t-entry-types-picker>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: entrytypemodel, serverErrors: entry?.serverErrors?.EntryTypeId }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
+                                        (click)="onLineDefinitionEntryMore(entry, isEdit, i)">{{ ('More' | translate) + '...' }}</button>
+
+                                    <span *ngIf="showMoreError(entry)" class="text-danger t-light-danger t-vertical-align-middle">
+                                        &nbsp;<fa-icon icon="exclamation-triangle">
+                                        </fa-icon>
+                                    </span>
+                                </td>
+                                <td *ngIf="isEdit">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(entry, model.Entries)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!isEdit && model.Entries?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                        (click)="onInsertRow(model.Entries, createEntry)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+
+                </div>
+            </ng-template>
+        </li>
+
+        <!-- Columns -->
+        <li ngbNavItem="columns">
+            <a ngbNavLink>
+                <span *ngIf="showColumnsError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_Columns' | translate }}
+                    ({{ model.Columns?.length }})</span>
+            </a>
+            <ng-template ngbNavContent>
+                <div class="t-text-whitish pb-1">
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+                        <thead class="small font-weight-normal">
+                            <tr>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Drag handle -->
+                                </th>
+                                <th>{{ 'LineDefinitionColumn_ColumnName' | translate }}
+                                </th>
+                                <th style="width: 1px;">{{ 'LineDefinitionColumn_EntryIndex' | translate }}
+                                </th>
+                                <th>{{ ('Label' | translate) + ws.primaryPostfix }}
+                                </th>
+                                <th *ngIf="ws.settings.SecondaryLanguageId">
+                                    {{ ('Label' | translate) + ws.secondaryPostfix }}
+                                </th>
+                                <th *ngIf="ws.settings.TernaryLanguageId">
+                                    {{ ('Label' | translate) + ws.ternaryPostfix }}
+                                </th>
+                                <th>{{ 'LineDefinitionColumn_InheritsFromHeader' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionColumn_VisibleState' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionColumn_RequiredState' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionColumn_ReadOnlyState' | translate }}
+                                </th>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Delete -->
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
+                            (cdkDropListDropped)="rowDrop($event, model.Columns)">
+                            <tr *ngFor="let column of model.Columns" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
+                                    {{ ws.getMultilingualValueImmediate(column, 'Label') }}</div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ columnNameDisplay(column.ColumnName) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="column.ColumnName" #columnnamemodel="ngModel">
+                                        <option *ngFor="let c of columnNameChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: columnnamemodel, serverErrors: column?.serverErrors?.ColumnName }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ column.EntryIndex }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="number" min="0"
+                                        [(ngModel)]="column.EntryIndex" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #entryindexmodel="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: entryindexmodel, serverErrors: column?.serverErrors?.EntryIndex }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ column.Label }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="column.Label" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #labelmodel="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: column?.serverErrors?.Label }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit" *ngIf="ws.settings.SecondaryLanguageId">
+                                    <span *ngIf="!isEdit">{{ column.Label2 }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="column.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #label2model="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: label2model, serverErrors: column?.serverErrors?.Label2 }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit" *ngIf="ws.settings.TernaryLanguageId">
+                                    <span *ngIf="!isEdit">{{ column.Label3 }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="column.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #label3model="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: column?.serverErrors?.Label3 }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span
+                                        *ngIf="!isEdit">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
+                                        <option value="true">
+                                            {{ 'Yes' | translate }}</option>
+                                        <option value="false">
+                                            {{ 'No' | translate }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
+                                    </ng-container>
+                                </td>
+
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ stateDisplay(column.VisibleState) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="column.VisibleState" #visiblestatemodel="ngModel">
+                                        <option *ngFor="let c of stateChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: visiblestatemodel, serverErrors: column?.serverErrors?.VisibleState }">
+                                    </ng-container>
+                                </td>
+
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ stateDisplay(column.RequiredState) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="column.RequiredState" #requiredstatemodel="ngModel">
+                                        <option *ngFor="let c of stateChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: requiredstatemodel, serverErrors: column?.serverErrors?.RequiredState }">
+                                    </ng-container>
+                                </td>
+
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ stateDisplay(column.ReadOnlyState) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="column.ReadOnlyState" #readonlystatemodel="ngModel">
+                                        <option *ngFor="let c of stateChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: readonlystatemodel, serverErrors: column?.serverErrors?.ReadOnlyState }">
+                                    </ng-container>
+                                </td>
+                                <td *ngIf="isEdit">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(column, model.Columns)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!isEdit && model.Columns?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                        (click)="onInsertRow(model.Columns, createColumn)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </div>
+            </ng-template>
+        </li>
+
+        <!-- Preprocess Script -->
+        <li ngbNavItem="preprocessScript">
+            <a ngbNavLink>
+                <span *ngIf="showPreprocessScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_Script' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <div *ngIf="!isEdit && !model.Script" class="text-muted bg-dark p-2 pb-5 font-italic">
+                    ({{ 'Blank' | translate }})
+                </div>
+                <div *ngIf="!isEdit && !!model.Script" style="white-space: pre;"
+                    class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                    {{ model.Script }}
+                </div>
+                <textarea *ngIf="isEdit" class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                    [(ngModel)]="model.Script" #preprocessscriptnmodel="ngModel" rows="25">
+                </textarea>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.Script }">
+                </ng-container>
+            </ng-template>
+        </li>
+
+        <!-- Generate Script -->
+        <li ngbNavItem="generateScript">
+            <a ngbNavLink>
+                <span *ngIf="showGenerateScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'AutoGenerate' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <!-- Generate Labels -->
+                <div class="row m-0 pt-2 pt-sm-3">
+
+                    <!-- GenerateLabel -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(generatelabelmodel, model?.serverErrors?.GenerateLabel)">
+                        <label class="small"
+                            for="generatelabel">{{ ('LineDefinition_GenerateLabel' | translate) + ws.primaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.GenerateLabel }}&zwnj;</div>
+                        <input class="form-control t-studio-input" id="generatelabel" type="text"
+                            [(ngModel)]="model.GenerateLabel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #generatelabelmodel="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: generatelabelmodel, serverErrors: model?.serverErrors?.GenerateLabel }">
+                        </ng-container>
+                    </div>
+
+                    <!-- GenerateLabel2 -->
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.SecondaryLanguageId"
+                        [class.is-invalid]="invalid(generatelabel2model, model?.serverErrors?.GenerateLabel2)">
+                        <label class="small"
+                            for="generatelabel2">{{ ('LineDefinition_GenerateLabel' | translate) + ws.secondaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.GenerateLabel2 }}&zwnj;</div>
+                        <input class="form-control t-studio-input" id="generatelabel2" type="text"
+                            [(ngModel)]="model.GenerateLabel2" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" #generatelabel2model="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: generatelabel2model, serverErrors: model?.serverErrors?.GenerateLabel2 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- GenerateLabel3 -->
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.TernaryLanguageId"
+                        [class.is-invalid]="invalid(generatelabel3model, model?.serverErrors?.GenerateLabel3)">
+                        <label class="small"
+                            for="generatelabel3">{{ ('LineDefinition_GenerateLabel' | translate) + ws.ternaryPostfix }}</label>
+                        <div *ngIf="!isEdit">{{ model.GenerateLabel3 }}&zwnj;</div>
+                        <input class="form-control t-studio-input" id="generatelabel3" type="text"
+                            [(ngModel)]="model.GenerateLabel3" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" #generatelabel3model="ngModel" *ngIf="isEdit" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: generatelabel3model, serverErrors: model?.serverErrors?.GenerateLabel3 }">
+                        </ng-container>
+                    </div>
+                </div>
+
+                <!-- Generate Parameters -->
+                <div class="form-group t-wide-form-group t-text-whitish">
+                    <label class="small">{{ 'LineDefinition_GenerateParameters' | translate }}</label>
+
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+                        <thead class="small font-weight-normal">
+                            <tr>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Drag handle -->
+                                </th>
+                                <th>{{ 'Parameter_Key' | translate }}
+                                </th>
+                                <th>{{ ('Label' | translate) + ws.primaryPostfix }}
+                                </th>
+                                <th *ngIf="ws.settings.SecondaryLanguageId">
+                                    {{ ('Label' | translate) + ws.secondaryPostfix }}
+                                </th>
+                                <th *ngIf="ws.settings.TernaryLanguageId">
+                                    {{ ('Label' | translate) + ws.ternaryPostfix }}
+                                </th>
+                                <th>{{ 'Parameter_Visibility' | translate }}
+                                </th>
+                                <th>{{ 'Parameter_DataType' | translate }}
+                                </th>
+                                <th>{{ 'Parameter_Filter' | translate }}
+                                </th>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Delete -->
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
+                            (cdkDropListDropped)="rowDrop($event, model.GenerateParameters)">
+                            <tr *ngFor="let param of model.GenerateParameters" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
+                                    {{ ws.getMultilingualValueImmediate(param, 'Label') }}</div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ param.Key }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="param.Key" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #keymodel="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: keymodel, serverErrors: param?.serverErrors?.Key }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ param.Label }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="param.Label" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #labelmodel="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: param?.serverErrors?.Label }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit" *ngIf="ws.settings.SecondaryLanguageId">
+                                    <span *ngIf="!isEdit">{{ param.Label2 }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="param.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #label2model="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: label2model, serverErrors: param?.serverErrors?.Label2 }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit" *ngIf="ws.settings.TernaryLanguageId">
+                                    <span *ngIf="!isEdit">{{ param.Label3 }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="param.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #label3model="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: param?.serverErrors?.Label3 }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ visibilityDisplay(param.Visibility) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input" style="min-width: 120px;"
+                                        [(ngModel)]="param.Visibility" #visibilitymodel="ngModel">
+                                        <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: visibilitymodel, serverErrors: param?.serverErrors?.Visibility }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ dataTypeDisplay(param.DataType) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="param.DataType" #datatypemodel="ngModel">
+                                        <option *ngFor="let c of dataTypeChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: datatypemodel, serverErrors: param?.serverErrors?.DataType }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ param.Filter }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="param.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #filtermodel="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: param?.serverErrors?.Filter }">
+                                    </ng-container>
+                                </td>
+                                <td *ngIf="isEdit">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(param, model.GenerateParameters)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!isEdit && model.GenerateParameters?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                        (click)="onInsertRow(model.GenerateParameters)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </div>
+
+                <!-- Generate Script -->
+                <div class="t-wide-form-group">
+                    <label class="small t-text-whitish"
+                        for="generatescript">{{ 'LineDefinition_GenerateScript' | translate }}</label>
+                    <div *ngIf="!isEdit && !model.GenerateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!isEdit && !!model.GenerateScript" style="white-space: pre;"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                        {{ model.GenerateScript }}
+                    </div>
+                    <textarea id="generatescript" *ngIf="isEdit"
+                        class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.GenerateScript" #generatescriptnmodel="ngModel" rows="15"></textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: generatescriptnmodel, serverErrors: model?.serverErrors?.GenerateScript }">
+                    </ng-container>
+                </div>
+            </ng-template>
+        </li>    
+
+        <!-- Workflows -->
+        <li ngbNavItem="workflows">
+            <a ngbNavLink>
+                <span *ngIf="showWorkflowsError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_Workflows' | translate }}
+                    ({{ signaturesCount(model) }})</span>
+            </a>
+            <ng-template ngbNavContent>
+                <div class="t-text-whitish pb-1">
+                    <ng-container *ngFor="let toState of [1, 2, 3, 4]">
+                        <h5 class="mt-3">{{ stateDisplay(toState) }}</h5>
+                        <table class="table table-sm table-dark text-nowrap mb-1">
+                            <thead class="small font-weight-normal">
+                                <tr>
+                                    <th style="width: 1px;" *ngIf="isEdit">
+                                        <!-- Drag handle -->
+                                    </th>
+                                    <th style="width: 60%">{{ 'RequiredSignature' | translate }}
+                                    </th>
+                                    <th style="width: 40%">{{ 'When' | translate }}
+                                    </th>
+                                    <th style="width: 1px;" *ngIf="isEdit">
+                                        <!-- Delete -->
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
+                                (cdkDropListDropped)="rowDrop($event, Signatures(model, toState))">
+                                <tr *ngFor="let signature of Signatures(model, toState)" cdkDrag cdkDragLockAxis="y">
+                                    <ng-container *cdkDragPlaceholder>
+                                        <td>&zwnj;</td>
+                                    </ng-container>
+                                    <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
+                                        {{ ruleTypeDisplay(signature.RuleType) }}</div>
+                                    <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
+                                        <fa-icon icon="arrows-alt"></fa-icon>
+                                    </td>
+
+                                    <td [class.p-0]="isEdit">
+                                        <div class="d-flex align-items-baseline">
+                                            <div [class.flex-grow-1]="isEdit">
+                                                <span *ngIf="!isEdit">{{ ruleTypeDisplay(signature.RuleType) }}</span>
+                                                <select *ngIf="isEdit" class="form-control t-studio-input"
+                                                    style="min-width: 120px;" [(ngModel)]="signature.RuleType"
+                                                    #ruletypemodel="ngModel">
+                                                    <option *ngFor="let c of ruleTypeChoices" value="{{c.value}}">
+                                                        {{ c.name() }}</option>
+                                                </select>
+                                                <ng-container
+                                                    *ngTemplateOutlet="errorsTemplate;context: { control: ruletypemodel, serverErrors: signature?.serverErrors?.RuleType }">
+                                                </ng-container>
+                                            </div>
+                                            <ng-container *ngIf="signature.RuleType === 'ByRole'">
+                                                <div>
+                                                    <span>:&nbsp;</span>
+                                                </div>
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span class="font-weight-bold"
+                                                        *ngIf="!isEdit && !!signature.RoleId">
+                                                        {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                                                    </span>
+                                                    <t-roles-picker class="d-inline-block" theme="dark" id="role"
+                                                        [(ngModel)]="signature.RoleId" filter="IsPublic eq false"
+                                                        #rolemodel="ngModel" *ngIf="isEdit">
+                                                    </t-roles-picker>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: signature?.serverErrors?.RoleId }">
+                                                    </ng-container>
+                                                </div>
+
+                                            </ng-container>
+                                            <ng-container *ngIf="signature.RuleType === 'ByUser'">
+                                                <div>
+                                                    <span>:&nbsp;</span>
+                                                </div>
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span class="font-weight-bold"
+                                                        *ngIf="!isEdit && !!signature.UserId">
+                                                        {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
+                                                    </span>
+                                                    <t-users-picker theme="dark" id="user"
+                                                        [(ngModel)]="signature.UserId" #usermodel="ngModel"
+                                                        *ngIf="isEdit">
+                                                    </t-users-picker>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
+                                                    </ng-container>
+                                                </div>
+
+                                            </ng-container>
+                                            <ng-container *ngIf="signature.RuleType === 'ByCustodian'">
+                                                <div>
+                                                    <span>&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
+                                                </div>
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span class="font-weight-bold"
+                                                        *ngIf="!isEdit && !!signature.RuleTypeEntryIndex">
+                                                        {{ signature.RuleTypeEntryIndex }}
+                                                    </span>
+                                                    <input class="form-control t-studio-input" id="ruletypeentryindex"
+                                                        type="number" [(ngModel)]="signature.RuleTypeEntryIndex" min="0"
+                                                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                                        #ruletypeentryindexmodel="ngModel" *ngIf="isEdit" />
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: ruletypeentryindexmodel, serverErrors: signature?.serverErrors?.RuleTypeEntryIndex }">
+                                                    </ng-container>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="(!!signature.RuleType && signature.RuleType !== 'Public') && (isEdit || !!signature.ProxyRoleId)">
+                                                <div>
+                                                    <span>&nbsp;{{ 'WorkflowSignature_ProxyRole' | translate }}:&nbsp;</span>
+                                                </div>
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span class="font-weight-bold" *ngIf="!isEdit">
+                                                        {{ ws.getMultilingualValue('Role', signature.ProxyRoleId, 'Name') }}
+                                                    </span>
+                                                    <t-roles-picker theme="dark" id="proxyrole"
+                                                        [(ngModel)]="signature.ProxyRoleId" filter="IsPublic eq false"
+                                                        #proxyrolemodel="ngModel" *ngIf="isEdit">
+                                                    </t-roles-picker>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: proxyrolemodel, serverErrors: signature?.serverErrors?.ProxyRoleId }">
+                                                    </ng-container>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </td>
+
+                                    <td [class.p-0]="isEdit">
+                                        <div class="d-flex align-items-baseline">
+                                            <div [class.flex-grow-1]="isEdit">
+                                                <span
+                                                    *ngIf="!isEdit">{{ predicateTypeDisplay(signature.PredicateType) }}</span>
+                                                <select *ngIf="isEdit" class="form-control t-studio-input"
+                                                    style="min-width: 120px;" [(ngModel)]="signature.PredicateType"
+                                                    #predicatetypemodel="ngModel">
+                                                    <option value=""></option>
+                                                    <option *ngFor="let c of predicateTypeChoices" value="{{c.value}}">
+                                                        {{ c.name() }}</option>
+                                                </select>
+                                                <ng-container
+                                                    *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypemodel, serverErrors: signature?.serverErrors?.PredicateType }">
+                                                </ng-container>
+                                            </div>
+                                            <ng-container *ngIf="signature.PredicateType === 'ValueGreaterOrEqual'">
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span class="font-weight-bold" *ngIf="!isEdit">
+                                                        &nbsp;{{ signature.Value | accounting:functionalFormat }}
+                                                    </span>
+                                                    <t-decimal-editor theme="dark" [(ngModel)]="signature.Value"
+                                                        [maxDecimalPlaces]="functionalDecimals"
+                                                        [minDecimalPlaces]="functionalDecimals" #valuemodel="ngModel"
+                                                        *ngIf="isEdit"></t-decimal-editor>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: valuemodel, serverErrors: signature?.serverErrors?.Value }">
+                                                    </ng-container>
+                                                </div>
+                                                <div>
+                                                    <span>&nbsp;{{ functionalDisplay }},&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
+                                                </div>
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span class="font-weight-bold" *ngIf="!isEdit">
+                                                        &nbsp;{{ signature.PredicateTypeEntryIndex }}
+                                                    </span>
+                                                    <input class="form-control t-studio-input"
+                                                        id="predicatetypeentryindex" type="number" min="0"
+                                                        [(ngModel)]="signature.PredicateTypeEntryIndex"
+                                                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                                        #predicatetypeentryindexmodel="ngModel" *ngIf="isEdit" />
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypeentryindexmodel, serverErrors: signature?.serverErrors?.PredicateTypeEntryIndex }">
+                                                    </ng-container>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </td>
+
+                                    <td *ngIf="isEdit">
+                                        <button
+                                            class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                            (click)="onDeleteSignature(model, toState, signature)">
+                                            <fa-icon icon="trash">
+                                            </fa-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="!isEdit && Signatures(model, toState).length === 0" class="font-italic mx-2">
+                            {{ 'NoItemsFound' | translate }}
+                        </div>
+                        <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                            (click)="onInsertSignature(model, toState)">
+                            <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                        </button>
+                    </ng-container>
+                </div>
+            </ng-template>
+        </li>    
+
+        <!-- StateReasons -->
+        <li ngbNavItem="stateReasons">
+            <a ngbNavLink>
+                <span *ngIf="showStateReasonsError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_StateReasons' | translate }}
+                    ({{ model.StateReasons?.length }})</span>
+            </a>
+            <ng-template ngbNavContent>
+                <div class="t-text-whitish pb-1">
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+                        <thead class="small font-weight-normal">
+                            <tr>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Drag handle -->
+                                </th>
+                                <th>{{ 'State' | translate }}
+                                </th>
+                                <th>{{ ('Name' | translate) + ws.primaryPostfix }}
+                                </th>
+                                <th *ngIf="ws.settings.SecondaryLanguageId">
+                                    {{ ('Name' | translate) + ws.secondaryPostfix }}
+                                </th>
+                                <th *ngIf="ws.settings.TernaryLanguageId">
+                                    {{ ('Name' | translate) + ws.ternaryPostfix }}
+                                </th>
+                                <th>{{ 'IsActive' | translate }}
+                                </th>
+                                <th style="width: 1px;" *ngIf="isEdit">
+                                    <!-- Delete -->
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
+                            (cdkDropListDropped)="rowDrop($event, model.StateReasons)">
+                            <tr *ngFor="let reason of model.StateReasons" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
+                                    {{ ws.getMultilingualValueImmediate(reason, 'Name') }}</div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ stateDisplay(reason.State) }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="reason.State" #statemodel="ngModel">
+                                        <option *ngFor="let c of negativeStateChoices" value="{{c.value}}">
+                                            {{ c.name() }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: statemodel, serverErrors: reason?.serverErrors?.State }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ reason.Name }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="reason.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #namemodel="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: namemodel, serverErrors: reason?.serverErrors?.Name }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit" *ngIf="ws.settings.SecondaryLanguageId">
+                                    <span *ngIf="!isEdit">{{ reason.Name2 }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="reason.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #name2model="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: name2model, serverErrors: reason?.serverErrors?.Name2 }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit" *ngIf="ws.settings.TernaryLanguageId">
+                                    <span *ngIf="!isEdit">{{ reason.Name3 }}</span>
+                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
+                                        [(ngModel)]="reason.Name3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        autocomplete="off" #name3model="ngModel" />
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: name3model, serverErrors: reason?.serverErrors?.Name3 }">
+                                    </ng-container>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit">{{ (reason.IsActive ? 'Yes' : 'No') | translate }}</span>
+                                    <select *ngIf="isEdit" class="form-control t-studio-input"
+                                        [(ngModel)]="reason.IsActive" #isactivemodel="ngModel">
+                                        <option value="true">
+                                            {{ 'Yes' | translate }}</option>
+                                        <option value="false">
+                                            {{ 'No' | translate }}</option>
+                                    </select>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: isactivemodel, serverErrors: reason?.serverErrors?.IsActive }">
+                                    </ng-container>
+                                </td>
+                                <td *ngIf="isEdit">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(reason, model.StateReasons)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!isEdit && model.StateReasons?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                        (click)="onInsertRow(model.StateReasons, createStateReason)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </div>
+            </ng-template>
+        </li>
+    </ul>
+    <div class="w-100 overflow-auto" [ngbNavOutlet]="tabs"></div>
+</ng-template>
+
+<ng-template #lineDefinitionEntryModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header t-dark t-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ 'LineDefinitionEntry' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="t-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col t-less-dark t-text-whitish">
+        <div class="row">
+
+            <!-- Index -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ 'LineDefinitionColumn_EntryIndex' | translate }}</label>
+                <div>
+                    {{ entryIndex }}
+                </div>
+            </div>
+
+            <!-- Direction -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ 'LineDefinitionEntry_Direction' | translate }}</label>
+                <div>
+                    <span *ngIf="!modalIsEdit">{{ directionDisplay(entryToEdit.Direction) }}</span>
+                    <select *ngIf="modalIsEdit" class="form-control t-studio-input" [(ngModel)]="entryToEdit.Direction"
+                        #directionmodel="ngModel">
+                        <option value="1">
+                            {{ directionDisplay(1) }}</option>
+                        <option value="-1">
+                            {{ directionDisplay(-1) }}</option>
+                    </select>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: directionmodel, serverErrors: entryToEdit?.serverErrors?.Direction }">
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Account Type -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ 'LineDefinitionEntry_AccountType' | translate }}</label>
+                <div>
+                    <span
+                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('AccountType', entryToEdit.AccountTypeId, 'Name') }}</span>
+                    <t-account-types-picker *ngIf="modalIsEdit" [(ngModel)]="entryToEdit.AccountTypeId" theme="dark"
+                        #accounttypemodel>
+                    </t-account-types-picker>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entryToEdit?.serverErrors?.AccountTypeId }">
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Entry Type -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ 'LineDefinitionEntry_EntryType' | translate }}</label>
+                <div>
+                    <span
+                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('EntryType', entryToEdit.EntryTypeId, 'Name') }}</span>
+                    <t-entry-types-picker *ngIf="modalIsEdit" [(ngModel)]="entryToEdit.EntryTypeId" theme="dark"
+                        #entrytypemodel>
+                    </t-entry-types-picker>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: entrytypemodel, serverErrors: entryToEdit?.serverErrors?.EntryTypeId }">
+                    </ng-container>
+                </div>
+            </div>
+
+        </div>
+        <ul ngbNav [(activeId)]="activeEntryTab" #entryTabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs t-dark-tabs t-dark-border"
+            [destroyOnHide]="true">
+
+            <!-- Custody Definitions -->
+            <li ngbNavItem="custodyDefinitions">
+                <a ngbNavLink>
+                    <span *ngIf="showCustodyDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_CustodyDefinitions' | translate }}
+                        ({{ entryToEdit.CustodyDefinitions?.length }})</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+
+                        <tbody cdkDropList [cdkDropListDisabled]="!modalIsEdit"
+                            (cdkDropListDropped)="rowDrop($event, entryToEdit.CustodyDefinitions)">
+                            <tr *ngFor="let def of entryToEdit.CustodyDefinitions" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="t-transparent">
+                                </div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;width:1px" *ngIf="modalIsEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td [class.p-0]="modalIsEdit">
+                                    <span
+                                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('CustodyDefinition', def.CustodyDefinitionId, 'TitleSingular') }}</span>
+                                    <t-custody-definitions-picker *ngIf="modalIsEdit"
+                                        [(ngModel)]="def.CustodyDefinitionId" theme="dark" #custodydefinitionmodel>
+                                    </t-custody-definitions-picker>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: custodydefinitionmodel, serverErrors: def?.serverErrors?.CustodyDefinitionId }">
+                                    </ng-container>
+                                </td>
+                                <td *ngIf="modalIsEdit" style="width:1px">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(def, entryToEdit.CustodyDefinitions)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!modalIsEdit && entryToEdit.CustodyDefinitions?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="modalIsEdit"
+                        class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
+                        (click)="onInsertRow(entryToEdit.CustodyDefinitions)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </ng-template>
+            </li>
+
+            <!-- Resource Definitions -->
+            <li ngbNavItem="resourceDefinitions">
+                <a ngbNavLink>
+                    <span *ngIf="showResourceDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_ResourceDefinitions' | translate }}
+                        ({{ entryToEdit.ResourceDefinitions?.length }})</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+
+                        <tbody cdkDropList [cdkDropListDisabled]="!modalIsEdit"
+                            (cdkDropListDropped)="rowDrop($event, entryToEdit.ResourceDefinitions)">
+                            <tr *ngFor="let def of entryToEdit.ResourceDefinitions" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="t-transparent">
+                                </div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;width: 1px;" *ngIf="modalIsEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td [class.p-0]="modalIsEdit">
+                                    <span
+                                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('ResourceDefinition', def.ResourceDefinitionId, 'TitleSingular') }}</span>
+                                    <t-resource-definitions-picker *ngIf="modalIsEdit"
+                                        [(ngModel)]="def.ResourceDefinitionId" theme="dark" #resourcedefinitionmodel>
+                                    </t-resource-definitions-picker>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: resourcedefinitionmodel, serverErrors: def?.serverErrors?.ResourceDefinitionId }">
+                                    </ng-container>
+                                </td>
+                                <td *ngIf="modalIsEdit" style="width: 1px;">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(def, entryToEdit.ResourceDefinitions)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!modalIsEdit && entryToEdit.ResourceDefinitions?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="modalIsEdit"
+                        class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
+                        (click)="onInsertRow(entryToEdit.ResourceDefinitions)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </ng-template>
+            </li>
+
+            <!-- NotedRelation Definitions -->
+            <li ngbNavItem="notedRelationDefinitions">
+                <a ngbNavLink>
+                    <span *ngIf="showNotedRelationDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_NotedRelationDefinitions' | translate }}
+                        ({{ entryToEdit.NotedRelationDefinitions?.length }})</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+
+                        <tbody cdkDropList [cdkDropListDisabled]="!modalIsEdit"
+                            (cdkDropListDropped)="rowDrop($event, entryToEdit.NotedRelationDefinitions)">
+                            <tr *ngFor="let def of entryToEdit.NotedRelationDefinitions" cdkDrag cdkDragLockAxis="y">
+                                <ng-container *cdkDragPlaceholder>
+                                    <td>&zwnj;</td>
+                                </ng-container>
+                                <div *cdkDragPreview class="t-transparent">
+                                </div>
+                                <td cdkDragHandle class="px-2" style="cursor: move;width: 1px;" *ngIf="modalIsEdit">
+                                    <fa-icon icon="arrows-alt"></fa-icon>
+                                </td>
+                                <td [class.p-0]="modalIsEdit">
+                                    <span
+                                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('NotedRelationDefinition', def.NotedRelationDefinitionId, 'TitleSingular') }}</span>
+                                    <t-relation-definitions-picker *ngIf="modalIsEdit"
+                                        [(ngModel)]="def.NotedRelationDefinitionId" theme="dark"
+                                        #notedrelationdefinitionmodel>
+                                    </t-relation-definitions-picker>
+                                    <ng-container
+                                        *ngTemplateOutlet="errorsTemplate;context: { control: notedrelationdefinitionmodel, serverErrors: def?.serverErrors?.NotedRelationDefinitionId }">
+                                    </ng-container>
+                                </td>
+                                <td *ngIf="modalIsEdit" style="width: 1px;">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(def, entryToEdit.NotedRelationDefinitions)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!modalIsEdit && entryToEdit.NotedRelationDefinitions?.length === 0"
+                        class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="modalIsEdit"
+                        class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
+                        (click)="onInsertRow(entryToEdit.NotedRelationDefinitions)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </ng-template>
+            </li>
+        </ul>
+        <div class="w-100 overflow-auto" [ngbNavOutlet]="entryTabs"></div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Done' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Template for Validation Errors -->
+<ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
+    <div *ngIf="invalid(control, serverErrors)" class="text-wrap">
+        <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+            {{ e() }}
+        </span>
+    </div>
+</ng-template>
+
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+<ng-template #editDefinition> {{ 'EditDefinition' | translate }} </ng-template>

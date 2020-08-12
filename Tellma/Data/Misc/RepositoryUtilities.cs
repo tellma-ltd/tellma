@@ -209,6 +209,300 @@ namespace Tellma.Data
             return (docsTable, linesTable, entriesTable);
         }
 
+        public static (
+            DataTable lineDefinitions,
+            DataTable lineDefinitionEntries,
+            DataTable lineDefinitionEntryCustodyDefinitions,
+            DataTable lineDefinitionEntryResourceDefinitions,
+            DataTable lineDefinitionEntryNotedRelationDefinitions,
+            DataTable lineDefinitionColumns,
+            DataTable lineDefinitionGenerateParameters,
+            DataTable lineDefinitionStateReasons,
+            DataTable workflows,
+            DataTable workflowSignatures) 
+            DataTableFromLineDefinitions(IEnumerable<LineDefinitionForSave> lineDefinitions)
+        {
+            DataTable lineDefinitionsTable = new DataTable();
+            lineDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            var lineDefinitionProps = AddColumnsFromProperties<LineDefinitionForSave>(lineDefinitionsTable);
+
+            DataTable lineDefinitionEntriesTable = new DataTable();
+            lineDefinitionEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            var lineDefinitionEntryProps = AddColumnsFromProperties<LineDefinitionEntryForSave>(lineDefinitionEntriesTable);
+
+            DataTable lineDefinitionEntryCustodyDefinitionsTable = new DataTable();
+            lineDefinitionEntryCustodyDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntryCustodyDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+            lineDefinitionEntryCustodyDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var lineDefinitionEntryCustodyDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryCustodyDefinitionForSave>(lineDefinitionEntryCustodyDefinitionsTable);
+
+            DataTable lineDefinitionEntryResourceDefinitionsTable = new DataTable();
+            lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+            lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var lineDefinitionEntryResourceDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryResourceDefinitionForSave>(lineDefinitionEntryResourceDefinitionsTable);
+
+            DataTable lineDefinitionEntryNotedRelationDefinitionsTable = new DataTable();
+            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var lineDefinitionEntryNotedRelationDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryNotedRelationDefinitionForSave>(lineDefinitionEntryNotedRelationDefinitionsTable);
+
+            DataTable lineDefinitionColumnsTable = new DataTable();
+            lineDefinitionColumnsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionColumnsTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            var lineDefinitionColumnProps = AddColumnsFromProperties<LineDefinitionColumnForSave>(lineDefinitionColumnsTable);
+
+            DataTable lineDefinitionGenerateParametersTable = new DataTable();
+            lineDefinitionGenerateParametersTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionGenerateParametersTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            var lineDefinitionGenerateParameterProps = AddColumnsFromProperties<LineDefinitionGenerateParameterForSave>(lineDefinitionGenerateParametersTable);
+
+            DataTable lineDefinitionStateReasonsTable = new DataTable();
+            lineDefinitionStateReasonsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionStateReasonsTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            var lineDefinitionStateReasonProps = AddColumnsFromProperties<LineDefinitionStateReasonForSave>(lineDefinitionStateReasonsTable);
+
+            DataTable workflowsTable = new DataTable();
+            workflowsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            workflowsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var workflowProps = AddColumnsFromProperties<WorkflowForSave>(workflowsTable);
+
+            DataTable workflowSignaturesTable = new DataTable();
+            workflowSignaturesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            workflowSignaturesTable.Columns.Add(new DataColumn("WorkflowIndex", typeof(int)));
+            workflowSignaturesTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var workflowSignatureProps = AddColumnsFromProperties<WorkflowSignatureForSave>(workflowSignaturesTable);
+
+            // LineDefinitions
+            int lineDefinitionIndex = 0;
+            foreach (var lineDefinition in lineDefinitions)
+            {
+                DataRow lineDefinitionsRow = lineDefinitionsTable.NewRow();
+
+                lineDefinitionsRow["Index"] = lineDefinitionIndex;
+                foreach (var prop in lineDefinitionProps)
+                {
+                    var value = prop.GetValue(lineDefinition);
+                    lineDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                }
+
+                // Entries
+                if (lineDefinition.Entries != null)
+                {
+                    int lineDefinitionEntryIndex = 0;
+                    lineDefinition.Entries.ForEach(lineDefinitionEntry =>
+                    {
+                        DataRow lineDefinitionEntriesRow = lineDefinitionEntriesTable.NewRow();
+
+                        lineDefinitionEntriesRow["Index"] = lineDefinitionEntryIndex;
+                        lineDefinitionEntriesRow["HeaderIndex"] = lineDefinitionIndex;
+                        foreach (var prop in lineDefinitionEntryProps)
+                        {
+                            var value = prop.GetValue(lineDefinitionEntry);
+                            lineDefinitionEntriesRow[prop.Name] = value ?? DBNull.Value;
+                        }
+
+                        // Entries/CustodyDefinitions
+                        if (lineDefinitionEntry.CustodyDefinitions != null)
+                        {
+                            int lineDefinitionEntryCustodyDefinitionIndex = 0;
+                            lineDefinitionEntry.CustodyDefinitions.ForEach(lineDefinitionEntryCustodyDefinition =>
+                            {
+                                DataRow lineDefinitionEntryCustodyDefinitionsRow = lineDefinitionEntryCustodyDefinitionsTable.NewRow();
+
+                                lineDefinitionEntryCustodyDefinitionsRow["Index"] = lineDefinitionEntryCustodyDefinitionIndex;
+                                lineDefinitionEntryCustodyDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                lineDefinitionEntryCustodyDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+
+                                foreach (var prop in lineDefinitionEntryCustodyDefinitionProps)
+                                {
+                                    var value = prop.GetValue(lineDefinitionEntryCustodyDefinition);
+                                    lineDefinitionEntryCustodyDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                }
+
+                                lineDefinitionEntryCustodyDefinitionsTable.Rows.Add(lineDefinitionEntryCustodyDefinitionsRow);
+                                lineDefinitionEntryCustodyDefinitionIndex++;
+                            });
+                        }
+
+                        // Entries/ResourceDefinitions
+                        if (lineDefinitionEntry.ResourceDefinitions != null)
+                        {
+                            int lineDefinitionEntryResourceDefinitionIndex = 0;
+                            lineDefinitionEntry.ResourceDefinitions.ForEach(lineDefinitionEntryResourceDefinition =>
+                            {
+                                DataRow lineDefinitionEntryResourceDefinitionsRow = lineDefinitionEntryResourceDefinitionsTable.NewRow();
+
+                                lineDefinitionEntryResourceDefinitionsRow["Index"] = lineDefinitionEntryResourceDefinitionIndex;
+                                lineDefinitionEntryResourceDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                lineDefinitionEntryResourceDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+
+                                foreach (var prop in lineDefinitionEntryResourceDefinitionProps)
+                                {
+                                    var value = prop.GetValue(lineDefinitionEntryResourceDefinition);
+                                    lineDefinitionEntryResourceDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                }
+
+                                lineDefinitionEntryResourceDefinitionsTable.Rows.Add(lineDefinitionEntryResourceDefinitionsRow);
+                                lineDefinitionEntryResourceDefinitionIndex++;
+                            });
+                        }
+
+                        // Entries/NotedRelationDefinitions
+                        if (lineDefinitionEntry.NotedRelationDefinitions != null)
+                        {
+                            int lineDefinitionEntryNotedRelationDefinitionIndex = 0;
+                            lineDefinitionEntry.NotedRelationDefinitions.ForEach(lineDefinitionEntryNotedRelationDefinition =>
+                            {
+                                DataRow lineDefinitionEntryNotedRelationDefinitionsRow = lineDefinitionEntryNotedRelationDefinitionsTable.NewRow();
+
+                                lineDefinitionEntryNotedRelationDefinitionsRow["Index"] = lineDefinitionEntryNotedRelationDefinitionIndex;
+                                lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+
+                                foreach (var prop in lineDefinitionEntryNotedRelationDefinitionProps)
+                                {
+                                    var value = prop.GetValue(lineDefinitionEntryNotedRelationDefinition);
+                                    lineDefinitionEntryNotedRelationDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                }
+
+                                lineDefinitionEntryNotedRelationDefinitionsTable.Rows.Add(lineDefinitionEntryNotedRelationDefinitionsRow);
+                                lineDefinitionEntryNotedRelationDefinitionIndex++;
+                            });
+                        }
+
+                        lineDefinitionEntriesTable.Rows.Add(lineDefinitionEntriesRow);
+                        lineDefinitionEntryIndex++;
+                    });
+                }
+
+                // Columns
+                if (lineDefinition.Columns != null)
+                {
+                    int lineDefinitionColumnIndex = 0;
+                    lineDefinition.Columns.ForEach(lineDefinitionColumn =>
+                    {
+                        DataRow lineDefinitionColumnsRow = lineDefinitionColumnsTable.NewRow();
+
+                        lineDefinitionColumnsRow["Index"] = lineDefinitionColumnIndex;
+                        lineDefinitionColumnsRow["HeaderIndex"] = lineDefinitionIndex;
+                        foreach (var prop in lineDefinitionColumnProps)
+                        {
+                            var value = prop.GetValue(lineDefinitionColumn);
+                            lineDefinitionColumnsRow[prop.Name] = value ?? DBNull.Value;
+                        }
+
+                        lineDefinitionColumnsTable.Rows.Add(lineDefinitionColumnsRow);
+                        lineDefinitionColumnIndex++;
+                    });
+                }
+
+                // GenerateParameters
+                if (lineDefinition.GenerateParameters != null)
+                {
+                    int lineDefinitionGenerateParameterIndex = 0;
+                    lineDefinition.GenerateParameters.ForEach(lineDefinitionGenerateParameter =>
+                    {
+                        DataRow lineDefinitionGenerateParametersRow = lineDefinitionGenerateParametersTable.NewRow();
+
+                        lineDefinitionGenerateParametersRow["Index"] = lineDefinitionGenerateParameterIndex;
+                        lineDefinitionGenerateParametersRow["HeaderIndex"] = lineDefinitionIndex;
+                        foreach (var prop in lineDefinitionGenerateParameterProps)
+                        {
+                            var value = prop.GetValue(lineDefinitionGenerateParameter);
+                            lineDefinitionGenerateParametersRow[prop.Name] = value ?? DBNull.Value;
+                        }
+
+                        lineDefinitionGenerateParametersTable.Rows.Add(lineDefinitionGenerateParametersRow);
+                        lineDefinitionGenerateParameterIndex++;
+                    });
+                }
+
+                // StateReasons
+                if (lineDefinition.StateReasons != null)
+                {
+                    int lineDefinitionStateReasonIndex = 0;
+                    lineDefinition.StateReasons.ForEach(lineDefinitionStateReason =>
+                    {
+                        DataRow lineDefinitionStateReasonsRow = lineDefinitionStateReasonsTable.NewRow();
+
+                        lineDefinitionStateReasonsRow["Index"] = lineDefinitionStateReasonIndex;
+                        lineDefinitionStateReasonsRow["HeaderIndex"] = lineDefinitionIndex;
+                        foreach (var prop in lineDefinitionStateReasonProps)
+                        {
+                            var value = prop.GetValue(lineDefinitionStateReason);
+                            lineDefinitionStateReasonsRow[prop.Name] = value ?? DBNull.Value;
+                        }
+
+                        lineDefinitionStateReasonsTable.Rows.Add(lineDefinitionStateReasonsRow);
+                        lineDefinitionStateReasonIndex++;
+                    });
+                }
+
+                // Workflows
+                if (lineDefinition.Workflows != null)
+                {
+                    int workflowIndex = 0;
+                    lineDefinition.Workflows.ForEach(workflow =>
+                    {
+                        DataRow workflowsRow = workflowsTable.NewRow();
+
+                        workflowsRow["Index"] = workflowIndex;
+                        workflowsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+                        foreach (var prop in workflowProps)
+                        {
+                            var value = prop.GetValue(workflow);
+                            workflowsRow[prop.Name] = value ?? DBNull.Value;
+                        }
+
+                        // Workflows/Signatures
+                        if (workflow.Signatures != null)
+                        {
+                            int workflowSignatureIndex = 0;
+                            workflow.Signatures.ForEach(workflowSignature =>
+                            {
+                                DataRow workflowSignaturesRow = workflowSignaturesTable.NewRow();
+
+                                workflowSignaturesRow["Index"] = workflowSignatureIndex;
+                                workflowSignaturesRow["WorkflowIndex"] = workflowIndex;
+                                workflowSignaturesRow["LineDefinitionIndex"] = lineDefinitionIndex;
+                                foreach (var prop in workflowSignatureProps)
+                                {
+                                    var value = prop.GetValue(workflowSignature);
+                                    workflowSignaturesRow[prop.Name] = value ?? DBNull.Value;
+                                }
+
+
+                                workflowSignaturesTable.Rows.Add(workflowSignaturesRow);
+                                workflowSignatureIndex++;
+                            });
+                        }
+
+                        workflowsTable.Rows.Add(workflowsRow);
+                        workflowIndex++;
+                    });
+                }
+
+                lineDefinitionsTable.Rows.Add(lineDefinitionsRow);
+                lineDefinitionIndex++;
+            }
+
+            return (
+                lineDefinitionsTable, 
+                lineDefinitionEntriesTable, 
+                lineDefinitionEntryCustodyDefinitionsTable,
+                lineDefinitionEntryResourceDefinitionsTable,
+                lineDefinitionEntryNotedRelationDefinitionsTable,
+                lineDefinitionColumnsTable,
+                lineDefinitionGenerateParametersTable,
+                lineDefinitionStateReasonsTable,
+                workflowsTable,
+                workflowSignaturesTable
+                );
+        }
+
         private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table) where T : Entity
         {
             var props = TypeDescriptor.Get<T>().SimpleProperties;

@@ -18,6 +18,9 @@ export class PickerBaseComponent {
   @Input()
   ensureAdditionalSelect = false;
 
+  @Input()
+  public theme: 'light' | 'dark';
+
   @Output()
   entityLoaded = new EventEmitter<void>();
 

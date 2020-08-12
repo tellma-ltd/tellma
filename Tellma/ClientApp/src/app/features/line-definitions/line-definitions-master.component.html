@@ -1,0 +1,47 @@
+<t-master collection="LineDefinition" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'LineDefinitions' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code" selectForTiles="Code,TitlePlural" theme="dark"
+  [multiselectActions]="[]" [filterDefinition]="{
+            'SavedBy' : [
+              { template: savedByMe, expression: 'SavedById eq me'}
+            ]
+          }">
+</t-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('LineDefinition', id, 'TitlePlural') }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <div class="text-truncate flex-grow-1">
+      <t-auto-cell collection="LineDefinition" path="Code" [entity]="c[id]"></t-auto-cell>
+    </div>
+    <!-- <t-auto-cell collection="LineDefinition" path="State" [entity]="c[id]"></t-auto-cell> -->
+  </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+  {{ 'LineDefinition' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+  <span class="text-truncate">
+    <t-auto-cell collection="LineDefinition" [entity]="c[id]"></t-auto-cell>
+  </span>
+</ng-template>
+
+<!-- Filter Options -->
+<ng-template #savedByMe> {{ 'SavedByMe' | translate }} </ng-template>
+
+<!-- <ng-template #hidden> {{ 'Definition_State_Hidden' | translate }} </ng-template>
+<ng-template #visible> {{ 'Definition_State_Visible' | translate }} </ng-template>
+<ng-template #archived> {{ 'Definition_State_Archived' | translate }} </ng-template> -->
+
+<!-- Actions -->
+<!-- <ng-template #makeHidden> {{ 'Definition_Hide' | translate }} </ng-template>
+<ng-template #makeVisible> {{ 'Definition_Show' | translate }} </ng-template>
+<ng-template #makeArchived> {{ 'Definition_Archive' | translate }} </ng-template> -->

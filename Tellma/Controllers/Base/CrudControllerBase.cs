@@ -1,12 +1,8 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +16,6 @@ using System.Transactions;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Utilities;
-using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Entities.Descriptors;
@@ -53,6 +48,19 @@ namespace Tellma.Controllers
 
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
+                // Basic sanity check, to prevent null entities
+                if (entities == null && !ModelState.IsValid)
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest("Body was empty");
+                    } 
+                    else
+                    {
+                        return UnprocessableEntity(ModelState);
+                    }
+                }
+
                 // Calculate server time at the very beginning for consistency
                 var serverTime = DateTimeOffset.UtcNow;
 

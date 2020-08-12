@@ -7,8 +7,8 @@
               { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
               { template: makeArchived, action: onMakeArchived, showAction: showMakeArchived, canAction: hasStatePermission, actionTooltip: stateTooltip }
   ]" [filterDefinition]="{
-            'CreatedBy' : [
-              { template: createdByMe, expression: 'CreatedById eq me'}
+            'SavedBy' : [
+              { template: savedByMe, expression: 'SavedById eq me'}
             ],
             'State' : [
               { template: hidden, expression: 'State eq \'Hidden\'' },
@@ -44,7 +44,7 @@
 </ng-template>
 
 <!-- Filter Options -->
-<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+<ng-template #savedByMe> {{ 'SavedByMe' | translate }} </ng-template>
 
 <ng-template #hidden> {{ 'Definition_State_Hidden' | translate }} </ng-template>
 <ng-template #visible> {{ 'Definition_State_Visible' | translate }} </ng-template>

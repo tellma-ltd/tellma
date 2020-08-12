@@ -88,6 +88,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'angle-right',
           'archive',
           'arrow-circle-right',
+          'arrows-alt',
           'asterisk',
           'balance-scale',
           'barcode',

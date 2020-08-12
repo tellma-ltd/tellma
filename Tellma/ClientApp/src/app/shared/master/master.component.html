@@ -167,7 +167,7 @@
           </div>
         </div>
 
-        <t-spinner class="t-vertical-align-middle" *ngIf="showExportSpinner">
+        <t-spinner class="t-vertical-align-middle" *ngIf="showExportSpinner" [class.t-text-whitish]="isDark">
         </t-spinner>
       </div>
 
@@ -538,12 +538,12 @@
       </div>
 
       <!-- Spinner -->
-      <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
+      <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner" [class.t-text-whitish]="isDark">
         <t-spinner [scale]="2"></t-spinner>
       </div>
 
       <!-- No items found -->
-      <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
+      <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound" [class.t-text-whitish]="isDark">
         {{ 'NoItemsFound' | translate }}
       </div>
 

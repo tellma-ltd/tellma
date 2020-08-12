@@ -45,6 +45,7 @@ import { LookupDefinition } from './entities/lookup-definition';
 import { CustodyDefinition } from './entities/custody-definition';
 import { Custody } from './entities/custody';
 import { EntitiesResponse } from './dto/entities-response';
+import { LineDefinition } from './entities/line-definition';
 
 enum WhichWorkspace {
   /**
@@ -372,6 +373,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   CustodyDefinition: EntityWorkspace<CustodyDefinition>;
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
   LookupDefinition: EntityWorkspace<LookupDefinition>;
+  LineDefinition: EntityWorkspace<LineDefinition>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -410,6 +412,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.CustodyDefinition = {};
     this.ResourceDefinition = {};
     this.LookupDefinition = {};
+    this.LineDefinition = {};
 
     this.notifyStateChanged();
   }

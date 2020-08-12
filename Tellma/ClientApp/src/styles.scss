@@ -61,6 +61,11 @@ a {
   color: $dark-primary;
 }
 
+.t-dark-tabs a {
+  color: $whitish;
+  // border-color: $gray-800 !important;
+}
+
 .navbar {
   padding: 0.375rem 0.75rem;
 }
@@ -241,6 +246,16 @@ ngb-tabset li.nav-item .small {
 .btn-dark.active {
   background-color: $gray-800 !important;
   border-color: $gray-800 !important;
+}
+
+// So tabs look better in dark mode
+.nav-tabs.t-dark-tabs .nav-link.active {
+  color: $whitish;
+  background-color: $gray-700;
+  border-bottom-color: $gray-700;
+  border-left-color: $gray-800 !important;
+  border-right-color: $gray-800 !important;
+  // border-color: #dee2e6 #dee2e6 #ffffff;
 }
 
 ///////////////////////////////// Tellma /////////////////////////////////
@@ -512,7 +527,6 @@ input.t-h2,
 
 .t-much-less-dark {
   background-color: $gray-600;
-  color: $whitish;
 }
 
 .t-studio-input::placeholder {
@@ -663,6 +677,10 @@ $slightly-less-white: rgba(255, 255, 255, 0.9);
 .t-dark-theme .modal-dialog,
 .t-dark-theme .modal-content {
   background-color: $gray-900;
+}
+
+.t-wider-modal .modal-dialog {
+  max-width: 750px;
 }
 
 .cdk-drop-list-dragging .t-drag-label {
@@ -1803,4 +1821,24 @@ $menu-padding: 46px;
 .t-rtl .t-menu-text {
   margin-right: 0;
   margin-left: $menu-padding / 2;
+}
+
+.t-studio-table {
+  width: 100%;
+  border-collapse: separate;
+  background-color: $gray-800;
+  color: $whitish;
+  white-space: nowrap;
+}
+
+.t-studio-table td {
+  padding: 0.3rem;
+}
+
+td .t-studio-input {
+  height: 1.75rem;
+}
+
+.t-code {
+  font-family: monospace;
 }

@@ -140,7 +140,7 @@ namespace Tellma.Controllers
         private string UndatedFilter(StatementArguments args)
         {
             // State == Finalized
-            string stateFilter = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Finalized}";
+            string stateFilter = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Posted}";
             if (!(args.IncludeCompleted ?? false))
             {
                 // OR State == Completed

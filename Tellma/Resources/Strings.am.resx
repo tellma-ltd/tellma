@@ -949,6 +949,9 @@
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>የተጠቃሚ «{0} '' {1}» ሚና አባል አይደለም.</value>
   </data>
+  <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>ማውጫ የበለጠ መሆን ወይም ዜሮ እኩል መሆን አለባቸው.</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>በመለያ-ውስጥ ልክ ያልኾነ ሙከራ. በእርስዎ ኢሜይል አረጋግጧል አይደለም ከሆነ እስካሁን የኢሜይል ገቢ መልዕክት ሳጥን ምልክት ያድርጉ</value>
   </data>
@@ -1011,6 +1014,9 @@
   </data>
   <data name="Error_No0WasFoundWhere1Equals2EnsureCaseMatch" xml:space="preserve">
     <value>{1} = «{2}», ጉዳዮች በትክክል የሚዛመዱ ደብዳቤ ማረጋገጥ የት አይ {0} መዝገብ አልተገኘም.</value>
+  </data>
+  <data name="Error_NoEntryCorrespondsToIndex0" xml:space="preserve">
+    <value>ምንም የመግቢያ ጠቋሚ {0} ጋር ይዛመዳል.</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>ምንም ፋይል አልተጫነም።</value>
@@ -1501,8 +1507,59 @@
   <data name="LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>
   </data>
+  <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
+    <value>የሚመርጥ መፈረም ፍቀድ</value>
+  </data>
+  <data name="LineDefinition_Columns" xml:space="preserve">
+    <value>አምዶች</value>
+  </data>
+  <data name="LineDefinition_Entries" xml:space="preserve">
+    <value>ግቤቶች</value>
+  </data>
+  <data name="LineDefinition_GenerateLabel" xml:space="preserve">
+    <value>መሰየሚያ አመንጭ</value>
+  </data>
+  <data name="LineDefinition_GenerateParameters" xml:space="preserve">
+    <value>መለኪያዎች አመንጭ</value>
+  </data>
+  <data name="LineDefinition_GenerateScript" xml:space="preserve">
+    <value>ስክሪፕት አመንጭ</value>
+  </data>
+  <data name="LineDefinition_Script" xml:space="preserve">
+    <value>ስክሪፕት</value>
+  </data>
+  <data name="LineDefinition_StateReasons" xml:space="preserve">
+    <value>መንግስት ምክንያቶች</value>
+  </data>
+  <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
+    <value>ቅጽ ይመልከቱ ነባሪዎችን</value>
+  </data>
+  <data name="LineDefinition_Workflows" xml:space="preserve">
+    <value>Workflows</value>
+  </data>
   <data name="LineDefinitionColumn" xml:space="preserve">
     <value>የመስመር ፍቺ አምድ</value>
+  </data>
+  <data name="LineDefinitionColumn_ColumnName" xml:space="preserve">
+    <value>የአምድ ስም</value>
+  </data>
+  <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
+    <value>የሚመዘገብ መረጃ ጠቋሚ</value>
+  </data>
+  <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
+    <value>የራስጌ ከ በመውረስ</value>
+  </data>
+  <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
+    <value>የመስመር ፍቺ</value>
+  </data>
+  <data name="LineDefinitionColumn_ReadOnlyState" xml:space="preserve">
+    <value>አንብብ-ብቻ ስቴት</value>
+  </data>
+  <data name="LineDefinitionColumn_RequiredState" xml:space="preserve">
+    <value>ያስፈልጋል ግዛት</value>
+  </data>
+  <data name="LineDefinitionColumn_VisibleState" xml:space="preserve">
+    <value>የሚታይ መንግስት</value>
   </data>
   <data name="LineDefinitionColumns" xml:space="preserve">
     <value>የመስመር ፍቺ አምዶች</value>
@@ -1516,8 +1573,41 @@
   <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
     <value>የመለያ አይነት</value>
   </data>
+  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
+    <value>የጥበቃ ፍቺዎች</value>
+  </data>
+  <data name="LineDefinitionEntry_Direction" xml:space="preserve">
+    <value>አቅጣጫ</value>
+  </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
+  </data>
+  <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
+    <value>የመስመር ፍቺ</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
+  </data>
+  <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
+    <value>ሪሶርስ ፍቺዎች</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
+    <value>የጥበቃ ፍቺ</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>የመስመር ፍቺ Entry</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>የመስመር ፍቺ Entry</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>የመስመር ፍቺ Entry</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
+    <value>የመገልገያ ፍቺ</value>
   </data>
   <data name="LineDefinitionGenerateParameter" xml:space="preserve">
     <value>መስመር ፍቺ መለኪያ ፍጠር</value>
@@ -1702,6 +1792,9 @@
   <data name="Name" xml:space="preserve">
     <value>ስም</value>
   </data>
+  <data name="Never" xml:space="preserve">
+    <value>በጭራሽ</value>
+  </data>
   <data name="NewPassword" xml:space="preserve">
     <value>አዲስ የይለፍ ቃል</value>
   </data>
@@ -1731,6 +1824,9 @@
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>ቁልፍ</value>
+  </data>
+  <data name="Parameter_LineDefinition" xml:space="preserve">
+    <value>የመስመር ፍቺ</value>
   </data>
   <data name="Parameter_Visibility" xml:space="preserve">
     <value>ለማየት መቻል</value>
@@ -1809,6 +1905,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>እሴት> =</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
@@ -2170,6 +2269,18 @@
   <data name="Row0" xml:space="preserve">
     <value>ረድፍ {0}</value>
   </data>
+  <data name="RuleType_ByCustodian" xml:space="preserve">
+    <value>የምዝግቦች በ</value>
+  </data>
+  <data name="RuleType_ByRole" xml:space="preserve">
+    <value>ሚና በ</value>
+  </data>
+  <data name="RuleType_ByUser" xml:space="preserve">
+    <value>ተጠቃሚ በማድረግ</value>
+  </data>
+  <data name="RuleType_Public" xml:space="preserve">
+    <value>ሕዝባዊ</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>አስቀምጥ</value>
   </data>
@@ -2370,6 +2481,12 @@
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
     <value>ለመግለጽ</value>
+  </data>
+  <data name="StateReason_LineDefinition" xml:space="preserve">
+    <value>የመስመር ፍቺ</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>ጽሑፍ</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
     <value>ማጠቃለያ ምዝግቦችን</value>
@@ -2601,6 +2718,54 @@
   </data>
   <data name="Visibility_Required" xml:space="preserve">
     <value>የሚያስፈልግ</value>
+  </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>የስራ ፍሰት</value>
+  </data>
+  <data name="Workflow_LineDefinition" xml:space="preserve">
+    <value>የመስመር ፍቺ</value>
+  </data>
+  <data name="Workflow_Signatures" xml:space="preserve">
+    <value>ፊርማዎች</value>
+  </data>
+  <data name="Workflow_ToState" xml:space="preserve">
+    <value>ወደ ስቴት</value>
+  </data>
+  <data name="Workflows" xml:space="preserve">
+    <value>Workflows</value>
+  </data>
+  <data name="WorkflowSignature" xml:space="preserve">
+    <value>የስራ ፍሰት ፊርማ</value>
+  </data>
+  <data name="WorkflowSignature_PredicateType" xml:space="preserve">
+    <value>ተሳቢው አይነት</value>
+  </data>
+  <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
+    <value>ተሳቢው አይነት የገባበት ማውጫ</value>
+  </data>
+  <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
+    <value>የተኪ ሚና</value>
+  </data>
+  <data name="WorkflowSignature_Role" xml:space="preserve">
+    <value>ሚና</value>
+  </data>
+  <data name="WorkflowSignature_RuleType" xml:space="preserve">
+    <value>የደንብ አይነት</value>
+  </data>
+  <data name="WorkflowSignature_RuleTypeEntryIndex" xml:space="preserve">
+    <value>ጠባቂ የሚመዘገብ መረጃ ጠቋሚ</value>
+  </data>
+  <data name="WorkflowSignature_User" xml:space="preserve">
+    <value>ተጠቃሚ</value>
+  </data>
+  <data name="WorkflowSignature_Value" xml:space="preserve">
+    <value>ዋጋ</value>
+  </data>
+  <data name="WorkflowSignature_Workflow" xml:space="preserve">
+    <value>የስራ ፍሰት</value>
+  </data>
+  <data name="WorkflowSignatures" xml:space="preserve">
+    <value>የስራ ፍሰት ፊርማዎች</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>አዎ</value>

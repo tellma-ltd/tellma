@@ -4,15 +4,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "LineDefinitionEntryCustodyDefinition", Plural = "LineDefinitionEntryCustodyDefinitions")]
     public class LineDefinitionEntryCustodyDefinitionForSave : EntityWithKey<int>
     {
+        [Display(Name = "LineDefinitionEntryCustodyDefinition_CustodyDefinition")]
+        [Required]
         public int? CustodyDefinitionId { get; set; }
     }
 
     public class LineDefinitionEntryCustodyDefinition : LineDefinitionEntryCustodyDefinitionForSave
     {
+        [Display(Name = "LineDefinitionEntryCustodyDefinition_LineDefinitionEntry")]
         public int? LineDefinitionEntryId { get; set; }
 
+        [Display(Name = "LineDefinitionEntryCustodyDefinition_CustodyDefinition")]
         [ForeignKey(nameof(CustodyDefinitionId))]
         public CustodyDefinition CustodyDefinition { get; set; }
 

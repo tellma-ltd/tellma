@@ -31,9 +31,10 @@ import { metadata_Agent } from '../agent';
 import { metadata_RelationDefinition } from '../relation-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
 import { metadata_LookupDefinition } from '../lookup-definition';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { metadata_Custody } from '../custody';
 import { metadata_CustodyDefinition } from '../custody-definition';
+import { metadata_LineDefinition } from '../line-definition';
 
 export const metadata: {
     [collection: string]: (
@@ -70,6 +71,7 @@ export const metadata: {
     CustodyDefinition: metadata_CustodyDefinition,
     ResourceDefinition: metadata_ResourceDefinition,
     LookupDefinition: metadata_LookupDefinition,
+    LineDefinition: metadata_LineDefinition,
 
     // Admin
     AdminUser: metadata_AdminUser,

@@ -949,6 +949,9 @@
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>User '{0}' is not a member of role '{1}'.</value>
   </data>
+  <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>Index must be greater than or equal to zero.</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox</value>
   </data>
@@ -1011,6 +1014,9 @@
   </data>
   <data name="Error_No0WasFoundWhere1Equals2EnsureCaseMatch" xml:space="preserve">
     <value>No {0} record was found where {1} = '{2}', ensure that letter cases match exactly.</value>
+  </data>
+  <data name="Error_NoEntryCorrespondsToIndex0" xml:space="preserve">
+    <value>No entry corresponds to index {0}.</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>No file was uploaded.</value>
@@ -1501,8 +1507,59 @@
   <data name="LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
   </data>
+  <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
+    <value>Allow Selective Signing</value>
+  </data>
+  <data name="LineDefinition_Columns" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="LineDefinition_Entries" xml:space="preserve">
+    <value>Entries</value>
+  </data>
+  <data name="LineDefinition_GenerateLabel" xml:space="preserve">
+    <value>Generate Label</value>
+  </data>
+  <data name="LineDefinition_GenerateParameters" xml:space="preserve">
+    <value>Generate Parameters</value>
+  </data>
+  <data name="LineDefinition_GenerateScript" xml:space="preserve">
+    <value>Generate Script</value>
+  </data>
+  <data name="LineDefinition_Script" xml:space="preserve">
+    <value>Script</value>
+  </data>
+  <data name="LineDefinition_StateReasons" xml:space="preserve">
+    <value>State Reasons</value>
+  </data>
+  <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
+    <value>View Defaults To Form</value>
+  </data>
+  <data name="LineDefinition_Workflows" xml:space="preserve">
+    <value>Workflows</value>
+  </data>
   <data name="LineDefinitionColumn" xml:space="preserve">
     <value>Line Definition Column</value>
+  </data>
+  <data name="LineDefinitionColumn_ColumnName" xml:space="preserve">
+    <value>Column Name</value>
+  </data>
+  <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
+    <value>Entry Index</value>
+  </data>
+  <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
+    <value>Inherits From Header</value>
+  </data>
+  <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
+  </data>
+  <data name="LineDefinitionColumn_ReadOnlyState" xml:space="preserve">
+    <value>Read-Only State</value>
+  </data>
+  <data name="LineDefinitionColumn_RequiredState" xml:space="preserve">
+    <value>Required State</value>
+  </data>
+  <data name="LineDefinitionColumn_VisibleState" xml:space="preserve">
+    <value>Visible State</value>
   </data>
   <data name="LineDefinitionColumns" xml:space="preserve">
     <value>Line Definition Columns</value>
@@ -1516,8 +1573,41 @@
   <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
     <value>Account Type</value>
   </data>
+  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
+    <value>Custody Definitions</value>
+  </data>
+  <data name="LineDefinitionEntry_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>Entry Type</value>
+  </data>
+  <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>Noted Relation Definitions</value>
+  </data>
+  <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
+    <value>Resource Definitions</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
+    <value>Custody Definition</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>Line Definition Entry</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>Line Definition Entry</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>Noted Relation Definition</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>Line Definition Entry</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
+    <value>Resource Definition</value>
   </data>
   <data name="LineDefinitionGenerateParameter" xml:space="preserve">
     <value>Line Definition Generate Parameter</value>
@@ -1702,6 +1792,9 @@
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
   <data name="NewPassword" xml:space="preserve">
     <value>New Password</value>
   </data>
@@ -1731,6 +1824,9 @@
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>Key</value>
+  </data>
+  <data name="Parameter_LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
   </data>
   <data name="Parameter_Visibility" xml:space="preserve">
     <value>Visibility</value>
@@ -1809,6 +1905,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>Value >=</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
@@ -2170,6 +2269,18 @@
   <data name="Row0" xml:space="preserve">
     <value>Row {0}</value>
   </data>
+  <data name="RuleType_ByCustodian" xml:space="preserve">
+    <value>By Custodian</value>
+  </data>
+  <data name="RuleType_ByRole" xml:space="preserve">
+    <value>By Role</value>
+  </data>
+  <data name="RuleType_ByUser" xml:space="preserve">
+    <value>By User</value>
+  </data>
+  <data name="RuleType_Public" xml:space="preserve">
+    <value>Public</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
@@ -2370,6 +2481,12 @@
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
     <value>To State</value>
+  </data>
+  <data name="StateReason_LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>Text</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
     <value>Summary Entries</value>
@@ -2601,6 +2718,54 @@
   </data>
   <data name="Visibility_Required" xml:space="preserve">
     <value>Required</value>
+  </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>Workflow</value>
+  </data>
+  <data name="Workflow_LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
+  </data>
+  <data name="Workflow_Signatures" xml:space="preserve">
+    <value>Signatures</value>
+  </data>
+  <data name="Workflow_ToState" xml:space="preserve">
+    <value>To State</value>
+  </data>
+  <data name="Workflows" xml:space="preserve">
+    <value>Workflows</value>
+  </data>
+  <data name="WorkflowSignature" xml:space="preserve">
+    <value>Workflow Signature</value>
+  </data>
+  <data name="WorkflowSignature_PredicateType" xml:space="preserve">
+    <value>Predicate Type</value>
+  </data>
+  <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
+    <value>Predicate Type Entry Index</value>
+  </data>
+  <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
+    <value>Proxy Role</value>
+  </data>
+  <data name="WorkflowSignature_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="WorkflowSignature_RuleType" xml:space="preserve">
+    <value>Rule Type</value>
+  </data>
+  <data name="WorkflowSignature_RuleTypeEntryIndex" xml:space="preserve">
+    <value>Custodian Entry Index</value>
+  </data>
+  <data name="WorkflowSignature_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="WorkflowSignature_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="WorkflowSignature_Workflow" xml:space="preserve">
+    <value>Workflow</value>
+  </data>
+  <data name="WorkflowSignatures" xml:space="preserve">
+    <value>Workflow Signatures</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>

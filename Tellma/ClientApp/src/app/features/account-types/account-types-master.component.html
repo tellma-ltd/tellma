@@ -5,8 +5,8 @@
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
   ]" [filterDefinition]="{
-    'CreatedBy' : [
-      { template: createdByMe, expression: 'SavedById eq me'}
+    'SavedBy' : [
+      { template: savedByMe, expression: 'SavedById eq me'}
     ]
   }">
 </t-master>
@@ -38,4 +38,4 @@
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
 
 <!-- Filter Options -->
-<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+<ng-template #savedByMe> {{ 'SavedByMe' | translate }} </ng-template>

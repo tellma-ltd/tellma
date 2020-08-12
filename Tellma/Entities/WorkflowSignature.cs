@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
@@ -9,8 +7,9 @@ namespace Tellma.Entities
     public class WorkflowSignatureForSave : EntityWithKey<int>
     {
         [Display(Name = "WorkflowSignature_RuleType")]
-        [ChoiceList(new object[] { "ByRole", "ByCustodian", "ByUser", "Public" }, 
-            new string[] { "RuleType_ByRole", "RuleType_ByCustodian", "RuleType_ByUser", "RuleType_Public" })]
+        [ChoiceList(new object[] { RuleTypes.ByRole, RuleTypes.ByCustodian, RuleTypes.ByUser, RuleTypes.Public }, 
+            new string[] { RuleTypeNames.ByRole, RuleTypeNames.ByCustodian, RuleTypeNames.ByUser, RuleTypeNames.Public })]
+        [Required]
         public string RuleType { get; set; }
 
         [Display(Name = "WorkflowSignature_RuleTypeEntryIndex")]
@@ -23,8 +22,8 @@ namespace Tellma.Entities
         public int? UserId { get; set; } // FK
 
         [Display(Name = "WorkflowSignature_PredicateType")]
-        [ChoiceList(new object[] { "ValueGreaterOrEqual" },
-            new string[] { "PredicateType_ValueGreaterOrEqual" })]        
+        [ChoiceList(new object[] { PredicateTypes.ValueGreaterOrEqual },
+            new string[] { PredicateTypeNames.ValueGreaterOrEqual })]
         public string PredicateType { get; set; }
 
         [Display(Name = "WorkflowSignature_PredicateTypeEntryIndex")]
@@ -62,5 +61,35 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
+    }
+
+    public static class RuleTypes
+    {
+        public const string ByRole = nameof(ByRole);
+        public const string ByCustodian = nameof(ByCustodian);
+        public const string ByUser = nameof(ByUser);
+        public const string Public = nameof(Public);
+    }
+
+    public static class RuleTypeNames
+    {
+        private const string _prefix = "RuleType_";
+
+        public const string ByRole = _prefix + RuleTypes.ByRole;
+        public const string ByCustodian = _prefix + RuleTypes.ByCustodian;
+        public const string ByUser = _prefix + RuleTypes.ByUser;
+        public const string Public = _prefix + RuleTypes.Public;
+    }
+
+    public static class PredicateTypes
+    {
+        public const string ValueGreaterOrEqual = nameof(ValueGreaterOrEqual);
+    }
+
+    public static class PredicateTypeNames
+    {
+        private const string _prefix = "PredicateType_";
+
+        public const string ValueGreaterOrEqual = _prefix + PredicateTypes.ValueGreaterOrEqual;
     }
 }

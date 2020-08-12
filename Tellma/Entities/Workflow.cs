@@ -9,9 +9,22 @@ namespace Tellma.Entities
     public class WorkflowForSave<TWorkflowSignature> : EntityWithKey<int>
     {
         [Display(Name = "Workflow_ToState")]
+        [ChoiceList(new object[] {
+            LineState.Requested,
+            LineState.Authorized,
+            LineState.Completed,
+            LineState.Posted
+        },
+            new string[] {
+            LineStateName.Requested,
+            LineStateName.Authorized,
+            LineStateName.Completed,
+            LineStateName.Posted
+        })]
         public short? ToState { get; set; }
 
         [Display(Name = "Workflow_Signatures")]
+        [ForeignKey(nameof(WorkflowSignature.WorkflowId))]
         public List<TWorkflowSignature> Signatures { get; set; }
     }
 

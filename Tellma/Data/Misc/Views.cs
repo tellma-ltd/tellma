@@ -235,6 +235,17 @@
                             Li("State")
                         }
                     },
+                    new ViewInfo
+                    {
+                        Id = "line-definitions",
+                        Name = "LineDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                        }
+                    },
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",

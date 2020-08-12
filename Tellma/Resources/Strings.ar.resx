@@ -949,6 +949,9 @@
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>المستخدم ({0}) ليس عضوا في الدور ({1}).</value>
   </data>
+  <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>الرقم ينبغي أن يكون أكبر من أو يساوي صفرا.</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
   </data>
@@ -1011,6 +1014,9 @@
   </data>
   <data name="Error_No0WasFoundWhere1Equals2EnsureCaseMatch" xml:space="preserve">
     <value>لم يتم العثور على بيان {0} مستوف لـ: {1} = ({2}).</value>
+  </data>
+  <data name="Error_NoEntryCorrespondsToIndex0" xml:space="preserve">
+    <value>لا يوجد تعريف سطر عنده رقم {0}.</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>لم يتم رفع أي ملف</value>
@@ -1501,8 +1507,59 @@
   <data name="LineDefinition" xml:space="preserve">
     <value>تعريف سطر</value>
   </data>
+  <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
+    <value>يسمح بالتوقيع الجزئي</value>
+  </data>
+  <data name="LineDefinition_Columns" xml:space="preserve">
+    <value>الأعمدة</value>
+  </data>
+  <data name="LineDefinition_Entries" xml:space="preserve">
+    <value>الأسطر</value>
+  </data>
+  <data name="LineDefinition_GenerateLabel" xml:space="preserve">
+    <value>عنوان زر الإنئشاء التلقائي</value>
+  </data>
+  <data name="LineDefinition_GenerateParameters" xml:space="preserve">
+    <value>معاملات التوليد التلقائي</value>
+  </data>
+  <data name="LineDefinition_GenerateScript" xml:space="preserve">
+    <value>كود الإنشاء التلقائي</value>
+  </data>
+  <data name="LineDefinition_Script" xml:space="preserve">
+    <value>كود الحفظ</value>
+  </data>
+  <data name="LineDefinition_StateReasons" xml:space="preserve">
+    <value>أسباب التوقيع</value>
+  </data>
+  <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
+    <value>يعرض على شكل استمارة</value>
+  </data>
+  <data name="LineDefinition_Workflows" xml:space="preserve">
+    <value>دورات العمل</value>
+  </data>
   <data name="LineDefinitionColumn" xml:space="preserve">
     <value>تعريف عمود سطر</value>
+  </data>
+  <data name="LineDefinitionColumn_ColumnName" xml:space="preserve">
+    <value>اسم العمود</value>
+  </data>
+  <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
+    <value>حركة السطر</value>
+  </data>
+  <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
+    <value>تأخذ القيمة من المستند</value>
+  </data>
+  <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
+    <value>تعريف السطر</value>
+  </data>
+  <data name="LineDefinitionColumn_ReadOnlyState" xml:space="preserve">
+    <value>غير قابل للتعديل من حالة</value>
+  </data>
+  <data name="LineDefinitionColumn_RequiredState" xml:space="preserve">
+    <value>مطلوب من حالة</value>
+  </data>
+  <data name="LineDefinitionColumn_VisibleState" xml:space="preserve">
+    <value>يظهر من حالة</value>
   </data>
   <data name="LineDefinitionColumns" xml:space="preserve">
     <value>تعريفات أعمدة أسطر</value>
@@ -1516,8 +1573,41 @@
   <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
     <value>نوع الحساب</value>
   </data>
+  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
+    <value>تعريفات العهد</value>
+  </data>
+  <data name="LineDefinitionEntry_Direction" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
     <value>نوع السطر</value>
+  </data>
+  <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
+    <value>تعريف السطر</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>تعريفات الذمم المعنية</value>
+  </data>
+  <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
+    <value>تعريفات الموارد</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
+    <value>تعريف العهدة</value>
+  </data>
+  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>تعريف حركة السطر</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>تعريف حركة السطر</value>
+  </data>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>تعريف الذمة</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
+    <value>تعريف حركة السطر</value>
+  </data>
+  <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
+    <value>تعريف المورد</value>
   </data>
   <data name="LineDefinitionGenerateParameter" xml:space="preserve">
     <value>معامل توليد الأسطر</value>
@@ -1702,6 +1792,9 @@
   <data name="Name" xml:space="preserve">
     <value>الاسم</value>
   </data>
+  <data name="Never" xml:space="preserve">
+    <value>على الإطلاق</value>
+  </data>
   <data name="NewPassword" xml:space="preserve">
     <value>كلمة المرور الجديدة</value>
   </data>
@@ -1731,6 +1824,9 @@
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>المفتاح</value>
+  </data>
+  <data name="Parameter_LineDefinition" xml:space="preserve">
+    <value>تعريف السطر</value>
   </data>
   <data name="Parameter_Visibility" xml:space="preserve">
     <value>المظهر</value>
@@ -1809,6 +1905,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>يرجى التأكيد</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>القيمة أكبر من أو تساوي</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
@@ -2170,6 +2269,18 @@
   <data name="Row0" xml:space="preserve">
     <value>السطر {0}</value>
   </data>
+  <data name="RuleType_ByCustodian" xml:space="preserve">
+    <value>بصاحب العهدة</value>
+  </data>
+  <data name="RuleType_ByRole" xml:space="preserve">
+    <value>بالدور</value>
+  </data>
+  <data name="RuleType_ByUser" xml:space="preserve">
+    <value>بالمستخدم</value>
+  </data>
+  <data name="RuleType_Public" xml:space="preserve">
+    <value>متاح للكل</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>حفظ</value>
   </data>
@@ -2370,6 +2481,12 @@
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
     <value>إلى حالة</value>
+  </data>
+  <data name="StateReason_LineDefinition" xml:space="preserve">
+    <value>تعريف السطر</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>نص</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
     <value>أسطر مجملة</value>
@@ -2601,6 +2718,54 @@
   </data>
   <data name="Visibility_Required" xml:space="preserve">
     <value>مطلوب</value>
+  </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>دورة عمل</value>
+  </data>
+  <data name="Workflow_LineDefinition" xml:space="preserve">
+    <value>تعريف السطر</value>
+  </data>
+  <data name="Workflow_Signatures" xml:space="preserve">
+    <value>التوقيعات</value>
+  </data>
+  <data name="Workflow_ToState" xml:space="preserve">
+    <value>إلى الحالة</value>
+  </data>
+  <data name="Workflows" xml:space="preserve">
+    <value>دورات عمل</value>
+  </data>
+  <data name="WorkflowSignature" xml:space="preserve">
+    <value>توقيع دورة عمل</value>
+  </data>
+  <data name="WorkflowSignature_PredicateType" xml:space="preserve">
+    <value>نوع الشرط</value>
+  </data>
+  <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
+    <value>حركة السطر للشرط</value>
+  </data>
+  <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
+    <value>الدور الوسيط</value>
+  </data>
+  <data name="WorkflowSignature_Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="WorkflowSignature_RuleType" xml:space="preserve">
+    <value>توع القاعدة</value>
+  </data>
+  <data name="WorkflowSignature_RuleTypeEntryIndex" xml:space="preserve">
+    <value>حركة السطر لصاحب العهدة</value>
+  </data>
+  <data name="WorkflowSignature_User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="WorkflowSignature_Value" xml:space="preserve">
+    <value>القيمة</value>
+  </data>
+  <data name="WorkflowSignature_Workflow" xml:space="preserve">
+    <value>دور العمل</value>
+  </data>
+  <data name="WorkflowSignatures" xml:space="preserve">
+    <value>توقيعات دورات عمل</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>نعم</value>

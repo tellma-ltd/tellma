@@ -2,16 +2,18 @@
 
   <!-- The Search Field -->
   <div class="input-group" [class.t-disabled-background]="isDisabled">
-    <input class="form-control t-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
-      ngbDropdownAnchor autocomplete="off" />
-    <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1"
-       tabindex="-1" *ngIf="showEditSelected && !isDisabled" type="button"
-      title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()" [disabled]="disableEditSelected">
+    <input class="form-control" [class.t-input]="!isDark" [class.t-studio-input]="isDark" #input (blur)="onBlur()"
+      [disabled]="isDisabled" (keydown)="onKeyDown($event)" ngbDropdownAnchor autocomplete="off" />
+    <button class="btn btn-sm t-white-button p-0 px-1" [class.btn-light]="!isDark" [class.text-primary]="!isDark"
+      [class.btn-secondary]="isDark" [class.t-text-whitish]="isDark" tabindex="-1"
+      *ngIf="showEditSelected && !isDisabled" type="button" title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()"
+      [disabled]="disableEditSelected">
       <fa-icon icon="external-link-alt"></fa-icon>
     </button>
-    <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1 t-magnifier-btn"
-      style="width:22.6px;" tabindex="-1" *ngIf="showMagnifier && !isDisabled"
-      type="button" title="{{ 'Search' | translate }}" (click)="openSearchModal()">
+    <button class="btn btn-sm t-white-button p-0 px-1 t-magnifier-btn" [class.btn-light]="!isDark"
+      [class.text-primary]="!isDark" [class.btn-secondary]="isDark" [class.t-text-whitish]="isDark"
+      style="width:22.6px;" tabindex="-1" *ngIf="showMagnifier && !isDisabled" type="button"
+      title="{{ 'Search' | translate }}" (click)="openSearchModal()">
       <fa-icon icon="search"></fa-icon>
     </button>
   </div>

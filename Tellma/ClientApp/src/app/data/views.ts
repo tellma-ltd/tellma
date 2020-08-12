@@ -218,6 +218,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('State')
         ]
     },
+    'line-definitions': {
+        name: 'LineDefinitions',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [ ]
+    },
     'settings': {
         name: 'Settings',
         actions: [

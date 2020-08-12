@@ -4,15 +4,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "LineDefinitionEntryResourceDefinition", Plural = "LineDefinitionEntryResourceDefinitions")]
     public class LineDefinitionEntryResourceDefinitionForSave : EntityWithKey<int>
     {
+        [Display(Name = "LineDefinitionEntryResourceDefinition_ResourceDefinition")]
+        [Required]
         public int? ResourceDefinitionId { get; set; }
     }
 
     public class LineDefinitionEntryResourceDefinition : LineDefinitionEntryResourceDefinitionForSave
     {
+        [Display(Name = "LineDefinitionEntryResourceDefinition_LineDefinitionEntry")]
         public int? LineDefinitionEntryId { get; set; }
 
+        [Display(Name = "LineDefinitionEntryResourceDefinition_ResourceDefinition")]
         [ForeignKey(nameof(ResourceDefinitionId))]
         public ResourceDefinition ResourceDefinition { get; set; }
 

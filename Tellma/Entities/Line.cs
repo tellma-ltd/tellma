@@ -51,7 +51,7 @@ namespace Tellma.Entities
             LineState.Failed,
             LineState.Completed,
             LineState.Invalid,
-            LineState.Finalized
+            LineState.Posted
         },
             new string[] {
             LineStateName.Draft,
@@ -62,7 +62,7 @@ namespace Tellma.Entities
             LineStateName.Failed,
             LineStateName.Completed,
             LineStateName.Invalid,
-            LineStateName.Finalized
+            LineStateName.Posted
         })]
         public short? State { get; set; }
 
@@ -109,7 +109,7 @@ namespace Tellma.Entities
         public const short Failed = -3;
         public const short Completed = 3;
         public const short Invalid = -4;
-        public const short Finalized = 4;
+        public const short Posted = 4;
     }
 
     public static class LineStateName
@@ -124,6 +124,6 @@ namespace Tellma.Entities
         public const string Failed = _prefix + "minus_3";
         public const string Completed = _prefix + "3";
         public const string Invalid = _prefix + "minus_4";
-        public const string Finalized = _prefix + "4";
+        public const string Posted = _prefix + "4";
     }
 }

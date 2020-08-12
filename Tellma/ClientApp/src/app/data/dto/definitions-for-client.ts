@@ -298,6 +298,13 @@ export interface LineDefinitionGenerateParameterForClient {
     Visibility: Visibility;
 }
 
+export const entryColumnNames = ['Memo', 'PostingDate', 'TemplateLineId',
+    'Multiplier', 'AccountId', 'CurrencyId',
+    'CustodyId', 'ResourceId', 'CenterId', 'EntryTypeId',
+    'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
+    'ExternalReference', 'AdditionalReference', 'NotedRelationId',
+    'NotedAgentName', 'NotedAmount', 'NotedDate'];
+
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
     'CustodyId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |

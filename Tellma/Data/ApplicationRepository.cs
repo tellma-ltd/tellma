@@ -258,7 +258,6 @@ namespace Tellma.Data
                 nameof(EntryType) => "[map].[EntryTypes]()",
                 nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
                 nameof(Document) => "[map].[Documents]()",
-                nameof(LineDefinition) => "[map].[LineDefinitions]()",
                 nameof(Line) => "[map].[Lines]()",
                 nameof(LineForQuery) => "[map].[Lines]()",
                 nameof(Entry) => "[map].[Entries]()",
@@ -275,6 +274,19 @@ namespace Tellma.Data
                 nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
                 nameof(ExchangeRate) => "[map].[ExchangeRates]()",
                 nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+
+                // Line Definition stuff
+                nameof(LineDefinition) => "[map].[LineDefinitions]()",
+                nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
+                nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
+                nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
+                nameof(LineDefinitionEntryNotedRelationDefinition) => "[map].[LineDefinitionEntryNotedRelationDefinitions]()",
+                nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
+                nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
+                nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
+                nameof(Workflow) => "[map].[Workflows]()",
+                nameof(WorkflowSignature) => "[map].[WorkflowSignatures]()",
+
                 // Fact tables
                 nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
                 nameof(DetailsEntry) => "[map].[DetailsEntries]()",
@@ -6312,6 +6324,280 @@ namespace Tellma.Data
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
+        }
+
+        #endregion
+
+        #region LineDefinition
+
+        public async Task<IEnumerable<ValidationError>> LineDefinitions_Validate__Save(List<LineDefinitionForSave> entities, int top)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Tables
+            var (
+                lineDefinitionsTable,
+                lineDefinitionEntriesTable,
+                lineDefinitionEntryCustodyDefinitionsTable,
+                lineDefinitionEntryResourceDefinitionsTable,
+                lineDefinitionEntryNotedRelationDefinitionsTable,
+                lineDefinitionColumnsTable,
+                lineDefinitionGenerateParametersTable,
+                lineDefinitionStateReasonsTable,
+                workflowsTable,
+                workflowSignaturesTable
+                ) = RepositoryUtilities.DataTableFromLineDefinitions(entities);
+
+            // TVPs
+            var lineDefinitionsTvp = new SqlParameter("@Entities", lineDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionEntriesTvp = new SqlParameter("@LineDefinitionEntries", lineDefinitionEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionEntry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionEntryCustodyDefinitionsTvp = new SqlParameter("@LineDefinitionEntryCustodyDefinitions", lineDefinitionEntryCustodyDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionEntryCustodyDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionEntryResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryResourceDefinitions", lineDefinitionEntryResourceDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionColumn)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionGenerateParametersTvp = new SqlParameter("@LineDefinitionGenerateParameters", lineDefinitionGenerateParametersTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionGenerateParameter)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var lineDefinitionStateReasonsTvp = new SqlParameter("@LineDefinitionStateReasons", lineDefinitionStateReasonsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionStateReason)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var workflowsTvp = new SqlParameter("@Workflows", workflowsTable)
+            {
+                TypeName = $"[dbo].[{nameof(Workflow)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var workflowSignaturesTvp = new SqlParameter("@WorkflowSignatures", workflowSignaturesTable)
+            {
+                TypeName = $"[dbo].[{nameof(WorkflowSignature)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(lineDefinitionsTvp);
+            cmd.Parameters.Add(lineDefinitionEntriesTvp);
+            cmd.Parameters.Add(lineDefinitionEntryCustodyDefinitionsTvp);
+            cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
+            cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
+            cmd.Parameters.Add(lineDefinitionColumnsTvp);
+            cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
+            cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
+            cmd.Parameters.Add(workflowsTvp);
+            cmd.Parameters.Add(workflowSignaturesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(LineDefinitions_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> LineDefinitions__Save(List<LineDefinitionForSave> entities, bool returnIds)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions__Save));
+
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Tables
+                var (
+                    lineDefinitionsTable,
+                    lineDefinitionEntriesTable,
+                    lineDefinitionEntryCustodyDefinitionsTable,
+                    lineDefinitionEntryResourceDefinitionsTable,
+                    lineDefinitionEntryNotedRelationDefinitionsTable,
+                    lineDefinitionColumnsTable,
+                    lineDefinitionGenerateParametersTable,
+                    lineDefinitionStateReasonsTable,
+                    workflowsTable,
+                    workflowSignaturesTable
+                    ) = RepositoryUtilities.DataTableFromLineDefinitions(entities);
+
+                // TVPs
+                var lineDefinitionsTvp = new SqlParameter("@Entities", lineDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionEntriesTvp = new SqlParameter("@LineDefinitionEntries", lineDefinitionEntriesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntry)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionEntryCustodyDefinitionsTvp = new SqlParameter("@LineDefinitionEntryCustodyDefinitions", lineDefinitionEntryCustodyDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryCustodyDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionEntryResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryResourceDefinitions", lineDefinitionEntryResourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionColumn)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionGenerateParametersTvp = new SqlParameter("@LineDefinitionGenerateParameters", lineDefinitionGenerateParametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionGenerateParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var lineDefinitionStateReasonsTvp = new SqlParameter("@LineDefinitionStateReasons", lineDefinitionStateReasonsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionStateReason)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var workflowsTvp = new SqlParameter("@Workflows", workflowsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Workflow)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var workflowSignaturesTvp = new SqlParameter("@WorkflowSignatures", workflowSignaturesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(WorkflowSignature)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(lineDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
+                cmd.Parameters.Add(lineDefinitionEntryCustodyDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionColumnsTvp);
+                cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
+                cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
+                cmd.Parameters.Add(workflowsTvp);
+                cmd.Parameters.Add(workflowSignaturesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                // Command
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(LineDefinitions__Save)}]";
+
+                if (returnIds)
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task<IEnumerable<ValidationError>> LineDefinitions_Validate__Delete(List<int> ids, int top)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions_Validate__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(LineDefinitions_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task LineDefinitions__Delete(IEnumerable<int> ids)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(LineDefinitions__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
         }
 
         #endregion

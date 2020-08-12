@@ -8,6 +8,19 @@ namespace Tellma.Entities
     {
         [Display(Name = "State")]
         [AlwaysAccessible]
+        [ChoiceList(new object[] {
+            LineState.Void,
+            LineState.Rejected,
+            LineState.Failed,
+            LineState.Invalid
+        },
+            new string[] {
+            LineStateName.Void,
+            LineStateName.Rejected,
+            LineStateName.Failed,
+            LineStateName.Invalid
+        })]
+        [Required]
         public short? State { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
@@ -33,6 +46,7 @@ namespace Tellma.Entities
 
     public class LineDefinitionStateReason : LineDefinitionStateReasonForSave
     {
+        [Display(Name = "StateReason_LineDefinition")]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
