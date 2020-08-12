@@ -29,6 +29,17 @@ namespace Tellma.Controllers
         {
             return _service;
         }
+        protected override Task OnSuccessfulSave(List<LineDefinition> data, Extras extras)
+        {
+            Response.Headers.Set("x-definitions-version", Constants.Stale);
+            return base.OnSuccessfulSave(data, extras);
+        }
+
+        protected override Task OnSuccessfulDelete(List<int> ids)
+        {
+            Response.Headers.Set("x-definitions-version", Constants.Stale);
+            return base.OnSuccessfulDelete(ids);
+        }
     }
 
     public class LineDefinitionsService : CrudServiceBase<LineDefinitionForSave, LineDefinition, int>
