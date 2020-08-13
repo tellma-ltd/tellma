@@ -44,19 +44,19 @@
 
             <!-- Definition -->
             <div class="flex-grow-1 overflow-auto">
-                <!-- Title Section -->
-                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Title')">
+                <!-- General Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('General')">
                     &nbsp;
-                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Title'))"
-                        [rotate]="rotateIcon(showSection('Title'))">
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('General'))"
+                        [rotate]="rotateIcon(showSection('General'))">
                     </fa-icon>
                     &nbsp;
-                    {{ 'Title' | translate }}
+                    {{ 'General' | translate }}
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                        *ngIf="sectionErrors('Title', model)">
+                        *ngIf="sectionErrors('General', model)">
                     </fa-icon>
                 </div>
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('General')">
                     <!-- Code -->
                     <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
                         <label class="small" for="code">{{ 'Code' | translate }}</label>
@@ -186,19 +186,19 @@
                     </div>
                 </div>
 
-                <!-- Fields Section -->
-                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Fields')">
+                <!-- Definition Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Definition')">
                     &nbsp;
-                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Fields'))"
-                        [rotate]="rotateIcon(showSection('Fields'))">
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Definition'))"
+                        [rotate]="rotateIcon(showSection('Definition'))">
                     </fa-icon>
                     &nbsp;
-                    {{ 'Fields' | translate }}
+                    {{ 'Definition' | translate }}
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                        *ngIf="sectionErrors('Fields', model)">
+                        *ngIf="sectionErrors('Definition', model)">
                     </fa-icon>
                 </div>
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Fields')">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Definition')">
 
                     <!-- Line Definitions -->
                     <div class="form-group">
@@ -212,9 +212,9 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let lineDef of model.LineDefinitions; let i = index;" cdkDrag cdkDragLockAxis="y">
                                 <div class="d-flex">
-                                    <!-- <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                                        *ngIf="weakEntityErrors(dim)">
-                                    </fa-icon> -->
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(lineDef)">
+                                    </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
                                         {{ ws.getMultilingualValue('LineDefinition', lineDef.LineDefinitionId, 'TitlePlural') }}
                                     </span>
@@ -233,8 +233,10 @@
                                 </div>
                             </div>
                         </div>
+                        <span class="small t-light-danger px-1" *ngFor="let e of model.serverErrors?.LineDefinitions">
+                            {{ e }}
+                        </span>
                     </div>
-
 
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Clearance', propLower: 'clearance', fieldName: 'Document_Clearance' }">

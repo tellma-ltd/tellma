@@ -204,6 +204,25 @@ ngb-datepicker {
   background-color: $gray-300;
 }
 
+.t-less-dark {
+  .dropdown-item:hover,
+  .dropdown-item:focus {
+    background-color: $gray-650;
+  }
+}
+
+.t-less-dark {
+  .dropdown-item.active,
+  .dropdown-item:active {
+    color: $whitish;
+    background-color: $gray-600;
+  }
+}
+
+.t-less-dark .dropdown-item:hover {
+  background: t
+}
+
 ngb-tabset li.nav-item .small {
   font-weight: 500;
 }
@@ -226,6 +245,10 @@ ngb-tabset li.nav-item .small {
 }
 
 .t-less-dark .breadcrumb-item + .breadcrumb-item::before {
+  color: $whitish;
+}
+
+.t-less-dark .dropdown-item {
   color: $whitish;
 }
 
@@ -1243,8 +1266,9 @@ tr.t-highlight {
   }
   .modal-body,
   .model-footer {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 15px;
+    // padding-top: 0;
+    // padding-bottom: 0;
   }
 }
 
@@ -1254,8 +1278,9 @@ tr.t-highlight {
   }
   .modal-body,
   .model-footer {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 15px;
+    // padding-top: 0;
+    // padding-bottom: 0;
   }
 }
 

@@ -19,7 +19,7 @@
   </div>
 
   <!-- The Results Dropdown -->
-  <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1050">
+  <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1050" [class.t-less-dark]="isDark">
     <ng-container *ngIf="showResults">
       <button class="dropdown-item" *ngFor="let item of searchResults; let i = index"
         [class.active]="i===highlightedIndex" (mouseenter)="onMouseEnter(i)" style="cursor:default"
@@ -39,9 +39,9 @@
     <ng-container *ngIf="showCreateNew">
       <hr />
       <div [placement]="placement" [ngbTooltip]="createNewTooltip">
-        <button class="dropdown-item t-slightly-bold" [class.text-primary]="canCreateNew"
-          [class.text-muted]="!canCreateNew" [class.active]="highlightCreateNew" (click)="onCreateFromFocus()"
-          [disabled]="!canCreateNew">
+        <button class="dropdown-item t-slightly-bold" [class.text-primary]="canCreateNew && !isDark"
+          [class.t-text-whitish]="canCreateNew && isDark" [class.text-muted]="!canCreateNew"
+          [class.active]="highlightCreateNew" (click)="onCreateFromFocus()" [disabled]="!canCreateNew">
           {{ 'Create' | translate }}...
         </button>
       </div>

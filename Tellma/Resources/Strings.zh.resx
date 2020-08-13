@@ -925,6 +925,9 @@
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>该文档不是{0}。</value>
   </data>
+  <data name="Error_DuplicateLineDefinition" xml:space="preserve">
+    <value>重复行的定义。</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>电子邮件没有被外部登录提供。</value>
   </data>
@@ -1038,6 +1041,9 @@
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>数据点的数超过了最大的{0}。</value>
+  </data>
+  <data name="Error_OneLineDefinitionIsRquired" xml:space="preserve">
+    <value>至少一条线定义需要</value>
   </data>
   <data name="Error_OnlyCsvOrExcelAreSupported" xml:space="preserve">
     <value>未知的文件格式。</value>

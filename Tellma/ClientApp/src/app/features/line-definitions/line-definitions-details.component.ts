@@ -46,6 +46,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       result.TitleSingular3 = this.initialText;
     }
 
+    result.ViewDefaultsToForm = false;
     result.Columns = [];
     result.Entries = [];
     result.GenerateParameters = [];
@@ -126,7 +127,8 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return this.workspace.currentTenant;
   }
 
-  public isInactive: (model: LineDefinition) => string = (_: LineDefinition) => null;
+  public isInactive: (model: LineDefinition) => string = (def: LineDefinition) =>
+    !!def && def.Id === this.ws.definitions.ManualJournalVouchersDefinitionId ? 'Error_CannotModifySystemItem' : null
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;
@@ -348,7 +350,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
         ...relationDefinitions,
       ];
 
-      this._dataTypeDisplayCache = { };
+      this._dataTypeDisplayCache = {};
       for (const choice of this._dataTypeChoices) {
         this._dataTypeDisplayCache[choice.value] = choice.name;
       }

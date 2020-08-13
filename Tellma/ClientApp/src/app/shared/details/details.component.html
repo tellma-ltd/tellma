@@ -150,15 +150,16 @@
   </div>
 
   <!-- Popup Mode -->
-  <div class="row border-bottom justify-content-between flex-row bg-white" *ngIf="isPopupMode">
+  <div class="row border-bottom justify-content-between flex-row" [class.bg-white]="isLight"
+    [class.t-less-dark]="isDark" [class.t-dark-border]="isDark" *ngIf="isPopupMode">
 
     <!-- Modal Breadcrumb -->
     <div class="p-2">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item active" style="z-index: 1">
+        <li class="breadcrumb-item active" [class.t-text-whitish]="isDark" style="z-index: 1">
           {{ masterCrumb }}
         </li>
-        <li class="breadcrumb-item active">
+        <li class="breadcrumb-item active" [class.t-text-whitish]="isDark">
           <ng-container *ngIf="(!showSpinner); else loading">
             <ng-container *ngIf="(!isNew); else new">
               <ng-container *ngTemplateOutlet="detailsCrumb; context: { model: activeModel, extras: extras }">
@@ -169,25 +170,27 @@
           <ng-template #loading>{{ 'Loading' | translate }}...</ng-template>
 
           <!-- Dirty Asterisk -->
-          <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">*</span>
+          <span class="t-dirty-asterisk px-1" [class.text-danger]="isLight" [class.t-light-danger]="isDark"
+            *ngIf="isDirty">*</span>
         </li>
       </ul>
     </div>
 
     <!-- Modal Close Button -->
-    <button type="button" class="close pr-3 pl-3" aria-label="Close" (click)="onCancel()">
+    <button type="button" class="close pr-3 pl-3" aria-label="Close" [class.text-white]="isDark" (click)="onCancel()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <!-- Content Area -->
   <div class="row" [class.t-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
-    [class.t-rest-of-screen]="isScreenMode" [class.t-much-less-dark]="isDark">
+    [class.t-rest-of-screen]="isScreenMode" [class.t-much-less-dark]="isDark" [class.t-dark-border]="isDark">
     <div class="w-100" [class.t-main-document]="showSidebar" [class.h-100]="!showSidebar">
 
       <!-- Document content -->
       <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">
-        <div class="border w-100 t-paper"  [class.bg-white]="!isDark" [class.t-less-dark]="isDark" [class.t-dark-border]="isDark">
+        <div class="border w-100 t-paper" [class.bg-white]="!isDark" [class.t-less-dark]="isDark"
+          [class.t-dark-border]="isDark">
           <div class="border-bottom" *ngIf="documentHeaderTemplate">
             <ng-container
               *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
@@ -245,12 +248,14 @@
   </div>
 
   <!-- Popup Mode Footer -->
-  <div class="row p-3 justify-content-end bg-white" *ngIf="isPopupMode">
-    <button class="btn btn-primary t-toolbar-button" (click)="onSave()">
+  <div class="row p-3 justify-content-end" *ngIf="isPopupMode" [class.t-less-dark]="isDark">
+    <button class="btn t-toolbar-button" (click)="onSave()" [class.btn-primary]="isLight"
+      [class.t-text-whitish]="isDark">
       <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
     </button>
-
-    <button class="btn btn-light text-primary t-white-button t-toolbar-button" (click)="onCancel()">
+    <button class="btn t-toolbar-button"
+      [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
+      (click)="onCancel()">
       <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
     </button>
   </div>

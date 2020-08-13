@@ -157,8 +157,55 @@ namespace Tellma.Controllers
             return query;
         }
 
+        protected override Task<List<DocumentDefinitionForSave>> SavePreprocessAsync(List<DocumentDefinitionForSave> entities)
+        {
+            // Defaults
+            entities?.ForEach(e =>
+            {
+                e.IsOriginalDocument = true;
+                e.CodeWidth ??= 4;
+            });
+
+            return base.SavePreprocessAsync(entities);
+        }
+
         protected override async Task SaveValidateAsync(List<DocumentDefinitionForSave> entities)
         {
+            int docDefIndex = 0;
+            entities?.ForEach(docDef =>
+            {
+                if (docDef.LineDefinitions == null || docDef.LineDefinitions.Count == 0)
+                {
+                    string path = $"[{docDefIndex}].{nameof(DocumentDefinition.LineDefinitions)}";
+                    string msg = _localizer["Error_OneLineDefinitionIsRquired"];
+
+                    ModelState.AddModelError(path, msg);
+                } 
+                else
+                {
+                    // Line Definitions that are duplicated within the same document
+                    var duplicateIndices = docDef.LineDefinitions
+                        .Select((entity, index) => (entity.LineDefinitionId, index))
+                        .GroupBy(pair => pair.LineDefinitionId)
+                        .Where(g => g.Count() > 1)
+                        .SelectMany(g => g)
+                        .Select((_, index) => index);
+
+                    foreach (var index in duplicateIndices)
+                    {
+                        string path = $"[{docDefIndex}].{nameof(DocumentDefinition.LineDefinitions)}[{index}].{nameof(DocumentDefinitionLineDefinition.LineDefinitionId)}";
+                        string msg = _localizer["Error_DuplicateLineDefinition"];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+                }
+
+                docDefIndex++;
+            });
+
+            // No point carrying on if invalid
+            ModelState.ThrowIfInvalid();
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.DocumentDefinitions_Validate__Save(entities, top: remainingErrorCount);

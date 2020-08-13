@@ -105,7 +105,8 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     return true;
   }
 
-  public isInactive: (model: DocumentDefinition) => string = (_: DocumentDefinition) => null;
+  public isInactive: (model: DocumentDefinition) => string = (def: DocumentDefinition) =>
+    !!def && def.Id === this.ws.definitions.ManualJournalVouchersDefinitionId ? 'Error_CannotModifySystemItem' : null
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;
@@ -116,8 +117,8 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   private _sections: { [key: string]: boolean } = {
-    Title: false,
-    Fields: true,
+    General: false,
+    Definition: true,
     MainMenu: false
   };
 
@@ -129,8 +130,13 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._sections[key];
   }
 
+  public weakEntityErrors(model: EntityForSave) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
+  }
+
   public sectionErrors(section: string, model: DocumentDefinition) {
-    if (section === 'Title') {
+    if (section === 'General') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.Code) ||
         areServerErrors(model.serverErrors.Description) ||
@@ -143,7 +149,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.TitlePlural2) ||
         areServerErrors(model.serverErrors.TitlePlural3)
       ));
-    } else if (section === 'Fields') {
+    } else if (section === 'Definition') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MemoVisibility) ||
         areServerErrors(model.serverErrors.IsOriginalDocument) ||
@@ -151,8 +157,12 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Prefix) ||
         areServerErrors(model.serverErrors.CodeWidth) ||
         areServerErrors(model.serverErrors.MemoVisibility) ||
-        areServerErrors(model.serverErrors.ClearanceVisibility)
-      ));
+        areServerErrors(model.serverErrors.ClearanceVisibility) ||
+        areServerErrors(model.serverErrors.LineDefinitions) ||
+        areServerErrors(model.serverErrors.MarkupTemplates)
+      )) ||
+        (!!model.LineDefinitions && model.LineDefinitions.some(e => this.weakEntityErrors(e))) ||
+        (!!model.MarkupTemplates && model.MarkupTemplates.some(e => this.weakEntityErrors(e)));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MainMenuIcon) ||

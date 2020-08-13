@@ -795,8 +795,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     if (optionCount > 1) {
       // Without the setTimeout it misbehaves when createFromFocus,
       // applying the Enter press on the modal itself
+      const windowClass = this.isDark ? 't-dark-theme' : null;
       setTimeout(() => {
-        this.modalService.open(this.masterOptionsTemplate)
+        this.modalService.open(this.masterOptionsTemplate, { windowClass })
           .result.then(
             (definitionId) => {
               // if (!this.canSearchFromOptions(definitionId)) {
@@ -821,7 +822,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._initialText = '';
     this._definitionId = definitionId;
 
-    const modalRef = this.modalService.open(this.masterWrapperTemplate, { windowClass: 't-master-modal' });
+    const modalRef = this.modalService.open(this.masterWrapperTemplate, { windowClass: this.masterModalWindowClass });
 
     // this guarantees that the input will be focused again when the modal closes
     modalRef.result.then(this.onFocusInput, this.onFocusInput);
@@ -847,8 +848,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     } else if (this.createOptions.length > 1) {
       // Without the setTimeout it misbehaves when createFromFocus,
       // applying the Enter press on the modal itself
+      const windowClass = this.isDark ? 't-dark-theme' : null;
       setTimeout(() => {
-        this.modalService.open(this.detailsOptionsTemplate)
+        this.modalService.open(this.detailsOptionsTemplate, { windowClass })
           .result.then(
             (defId) => {
               if (!this.canCreateFromOptions(defId)) {
@@ -867,12 +869,30 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     }
   }
 
+  private get detailsModalWindowClass(): string {
+    let result = 't-details-modal';
+    if (this.isDark) {
+      result += ' ' + 't-dark-theme';
+    }
+
+    return result;
+  }
+
+  private get masterModalWindowClass(): string {
+    let result = 't-master-modal';
+    if (this.isDark) {
+      result += ' ' + 't-dark-theme';
+    }
+
+    return result;
+  }
+
   private openCreateModalInner = (definitionId?: number) => {
     // Launch the details modal
     this._definitionId = definitionId;
     this._idString = 'new';
 
-    const modalRef = this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' });
+    const modalRef = this.modalService.open(this.detailsWrapperTemplate, { windowClass: this.detailsModalWindowClass });
 
     // this guarantees that the input will be focused again when the modal closes
     modalRef.result.then(this.onFocusInput, this.onFocusInput);
@@ -884,7 +904,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       this._definitionId = this.chosenItemDefinitionId;
 
       if (!!this._idString) {
-        this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' })
+        this.modalService.open(this.detailsWrapperTemplate, { windowClass: this.detailsModalWindowClass })
 
           // this guarantees that the input will be focused again when the modal closes
           .result.then(this.onFocusInput, this.onFocusInput);

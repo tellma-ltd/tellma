@@ -11,7 +11,8 @@
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
-    <ul ngbNav [(activeId)]="activeTab" #tabs="ngbNav" class="w-100 nav-tabs t-dark-tabs t-dark-border" [destroyOnHide]="true">
+    <ul ngbNav [(activeId)]="activeTab" #tabs="ngbNav" class="w-100 nav-tabs t-dark-tabs t-dark-border"
+        [destroyOnHide]="true">
 
         <!-- General -->
         <li ngbNavItem="general">
@@ -123,6 +124,27 @@
                             *ngIf="isEdit" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: codemodel, serverErrors: model?.serverErrors?.Code }">
+                        </ng-container>
+                    </div>
+
+
+                    <!-- ViewDefaultsToForm -->
+                    <div class="form-group t-form-group t-text-whitish"
+                        [class.is-invalid]="invalid(defaultstoformmodel, model?.serverErrors?.ViewDefaultsToForm)">
+                        <label class="small"
+                            for="defaultstoform">{{ ('LineDefinition_ViewDefaultsToForm' | translate) }}</label>
+                        <div *ngIf="!isEdit">{{ model.ViewDefaultsToForm }}</div>
+
+                        <select *ngIf="isEdit" class="form-control t-studio-input"
+                            [(ngModel)]="model.ViewDefaultsToForm" #defaultstoformmodel="ngModel">
+                            <option value="true">
+                                {{ 'Yes' | translate }}</option>
+                            <option value="false">
+                                {{ 'No' | translate }}</option>
+                        </select>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultstoformmodel, serverErrors: model?.serverErrors?.ViewDefaultsToForm }">
                         </ng-container>
                     </div>
 
@@ -258,7 +280,8 @@
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
                                         (click)="onLineDefinitionEntryMore(entry, isEdit, i)">{{ ('More' | translate) + '...' }}</button>
 
-                                    <span *ngIf="showMoreError(entry)" class="text-danger t-light-danger t-vertical-align-middle">
+                                    <span *ngIf="showMoreError(entry)"
+                                        class="text-danger t-light-danger t-vertical-align-middle">
                                         &nbsp;<fa-icon icon="exclamation-triangle">
                                         </fa-icon>
                                     </span>
@@ -689,7 +712,7 @@
                     </ng-container>
                 </div>
             </ng-template>
-        </li>    
+        </li>
 
         <!-- Workflows -->
         <li ngbNavItem="workflows">
@@ -893,7 +916,7 @@
                     </ng-container>
                 </div>
             </ng-template>
-        </li>    
+        </li>
 
         <!-- StateReasons -->
         <li ngbNavItem="stateReasons">
@@ -1090,8 +1113,8 @@
             </div>
 
         </div>
-        <ul ngbNav [(activeId)]="activeEntryTab" #entryTabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs t-dark-tabs t-dark-border"
-            [destroyOnHide]="true">
+        <ul ngbNav [(activeId)]="activeEntryTab" #entryTabs="ngbNav"
+            class="w-100 pt-3 pt-sm-4 nav-tabs t-dark-tabs t-dark-border" [destroyOnHide]="true">
 
             <!-- Custody Definitions -->
             <li ngbNavItem="custodyDefinitions">

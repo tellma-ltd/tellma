@@ -925,6 +925,9 @@
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>ሰነዱ አይደለም {0}.</value>
   </data>
+  <data name="Error_DuplicateLineDefinition" xml:space="preserve">
+    <value>አባዛ መስመር ትርጉም.</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>ኢሜሉ በውጫዊ መለያው አልቀረበም ፡፡</value>
   </data>
@@ -1038,6 +1041,9 @@
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>የውሂብ ነጥቦች ብዛት {0} ከፍተኛውን ያልፋል.</value>
+  </data>
+  <data name="Error_OneLineDefinitionIsRquired" xml:space="preserve">
+    <value>ቢያንስ አንድ መስመር ትርጉም ያስፈልጋል</value>
   </data>
   <data name="Error_OnlyCsvOrExcelAreSupported" xml:space="preserve">
     <value>ያልታወቀ የፋይል ቅርጸት.</value>

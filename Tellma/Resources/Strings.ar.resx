@@ -925,6 +925,9 @@
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>المستند ليس في حالة {0}.</value>
   </data>
+  <data name="Error_DuplicateLineDefinition" xml:space="preserve">
+    <value>تعريف السطر مكرر.</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>مسجل الدخول الخارجي لم يفصح عن عنوان بريدك الإلكتروني</value>
   </data>
@@ -1038,6 +1041,9 @@
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
+  </data>
+  <data name="Error_OneLineDefinitionIsRquired" xml:space="preserve">
+    <value>مطلوب تعريف سطر واحد على الأقل</value>
   </data>
   <data name="Error_OnlyCsvOrExcelAreSupported" xml:space="preserve">
     <value>صيغ الملفات المدعومة هي إكسل وCSV فقط.</value>

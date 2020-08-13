@@ -925,6 +925,9 @@
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>The document is not {0}.</value>
   </data>
+  <data name="Error_DuplicateLineDefinition" xml:space="preserve">
+    <value>Duplicate line definition.</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>The email was not provided by the external sign-in.</value>
   </data>
@@ -1038,6 +1041,9 @@
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>Number of data points exceeds the maximum of {0}.</value>
+  </data>
+  <data name="Error_OneLineDefinitionIsRquired" xml:space="preserve">
+    <value>At least one line definition is required</value>
   </data>
   <data name="Error_OnlyCsvOrExcelAreSupported" xml:space="preserve">
     <value>Only CSV and Excel files are supported.</value>

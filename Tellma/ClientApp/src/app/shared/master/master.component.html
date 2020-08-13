@@ -1,17 +1,18 @@
 <div class="h-100 d-flex flex-column">
 
-  <div class="row border-bottom justify-content-between flex-row bg-white" *ngIf="isPopupMode">
+  <div class="row border-bottom justify-content-between flex-row" [class.bg-white]="isLight"
+  [class.t-less-dark]="isDark" [class.t-dark-border]="isDark" *ngIf="isPopupMode">
 
     <!-- Breadcrumb -->
     <div class="p-2">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item active">
+        <li class="breadcrumb-item active" [class.t-text-whitish]="isDark">
           {{ masterCrumb }}
         </li>
       </ul>
     </div>
 
-    <button type="button" class="close pr-3 pl-3" aria-label="Close" (click)="onCancel()">
+    <button type="button" class="close pr-3 pl-3" aria-label="Close" [class.text-white]="isDark" (click)="onCancel()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -39,7 +40,7 @@
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
           <button class="btn btn-sm d-flex t-no-arrow t-filter-button" ngbDropdownToggle
-            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
+            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark }"
             type="button" title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
             <div class="bg-danger t-indicator" *ngIf="isAnyFilterChecked"></div>
@@ -500,14 +501,6 @@
 
         <!-- Template reused in both tree and flat tables -->
         <ng-template #errorsColumn let-id="id">
-
-          <!-- Validation errors -->
-          <!-- <td class="pl-0 pr-0" *ngIf="isScreenMode">
-            <div class="mx-2" *ngIf="showErrorHighlight(id)">
-              <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
-                triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
-            </div>
-          </td> -->
 
           <td class="pl-0 pr-0" *ngIf="isScreenMode">
             <div class="mx-2" *ngIf="showErrorHighlight(id)" [ngbPopover]="errorsPopover" popoverClass="t-error-popover"
