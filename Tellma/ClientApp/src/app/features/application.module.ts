@@ -237,6 +237,7 @@ import { LineDefinitionsPickerComponent } from './line-definitions/line-definiti
 import { DocumentDefinitionsMasterComponent } from './document-definitions/document-definitions-master.component';
 import { DocumentDefinitionsDetailsComponent } from './document-definitions/document-definitions-details.component';
 import { DocumentDefinitionsPickerComponent } from './document-definitions/document-definitions-picker.component';
+import { MarkupTemplatesPickerComponent } from './markup-templates/markup-templates-picker.component';
 
 const routes: Routes = [
   {
@@ -721,6 +722,7 @@ const routes: Routes = [
     DocumentDefinitionsMasterComponent,
     DocumentDefinitionsDetailsComponent,
     DocumentDefinitionsPickerComponent,
+    MarkupTemplatesPickerComponent,
   ],
   imports: [
     SharedModule,

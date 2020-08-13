@@ -234,7 +234,7 @@
 
                 <!-- Editor Content -->
                 <div class="flex-grow-1">
-                    <textarea class="w-100 h-100 form-control t-studio-input text-nowrap border-0" spellcheck="false"
+                    <textarea class="w-100 h-100 form-control t-studio-input text-nowrap border-0 t-code" spellcheck="false"
                         [ngModel]="model.Body" (ngModelChange)="onBodyChange($event, model)"></textarea>
                     <!-- <ace class="w-100 h-100" [config]="config" [value]="model.Body"
                         (valueChange)="onAceValueChange($event, model)"></ace> -->
@@ -252,7 +252,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex flex-column t-rest-of-screen">
+                <div class="d-flex flex-column t-rest-of-screen bg-white">
                     <div class="row mx-0 border-bottom bg-white">
                         <!-- Preview Parameters -->
                         <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection(model)">

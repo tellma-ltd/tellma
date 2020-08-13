@@ -16,6 +16,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { DocumentDefinitionLineDefinition } from '~/app/data/entities/document-definition-line-definition';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DocumentDefinitionMarkupTemplate } from '~/app/data/entities/document-definition-markup-template';
 
 @Component({
   selector: 't-document-definitions-details',
@@ -579,14 +580,15 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     collection.push(item);
   }
 
-  // Line Definitions
-
-  public lineDefinitionToEdit: DocumentDefinitionLineDefinition;
   public itemToEditHasChanged = false;
 
   public onItemToEditChange() {
     this.itemToEditHasChanged = true;
   }
+
+  // Line Definitions
+
+  public lineDefinitionToEdit: DocumentDefinitionLineDefinition;
 
   public onCreateLineDefinition(model: DocumentDefinition) {
     const itemToEdit: DocumentDefinitionLineDefinition = { IsVisibleByDefault: true };
@@ -618,5 +620,35 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public get canApplyLineDefinition(): boolean {
     return !!this.lineDefinitionToEdit && !!this.lineDefinitionToEdit.LineDefinitionId;
+  }
+
+  // Markup Templates
+
+  public markupTemplateToEdit: DocumentDefinitionMarkupTemplate;
+
+  public onCreateMarkupTemplate(model: DocumentDefinition) {
+    const itemToEdit: DocumentDefinitionMarkupTemplate = { };
+    this.markupTemplateToEdit = itemToEdit; // Create new
+    this.modalService.open(this.markupTemplateModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply) {
+        model.MarkupTemplates.push(itemToEdit);
+      }
+    }, (_: any) => { });
+  }
+
+  public onConfigureMarkupTemplate(index: number, model: DocumentDefinition) {
+    this.itemToEditHasChanged = false;
+    const itemToEdit = { ...model.MarkupTemplates[index] } as DocumentDefinitionMarkupTemplate;
+    this.markupTemplateToEdit = itemToEdit;
+    this.modalService.open(this.markupTemplateModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply && this.itemToEditHasChanged) {
+        model.MarkupTemplates[index] = itemToEdit;
+      }
+    }, (_: any) => { });
+  }
+
+  public onDeleteMarkupTemplate(index: number, model: DocumentDefinition) {
+    model.MarkupTemplates.splice(index, 1);
+    this.onDefinitionChange(model);
   }
 }
