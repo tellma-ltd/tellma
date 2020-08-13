@@ -2019,6 +2019,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.saveParentIdsToUserSettings([]);
+
+      // Sometimes the user collapses during load because
+      // the original expanded query is taking forever
+    if (this.showSpinner) {
+      this.fetch();
+    }
   }
 
   public get disableContextMenu(): boolean {
