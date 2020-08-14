@@ -313,7 +313,7 @@
           <ng-container *ngIf="isFlatMode">
             <div class="t-tile-container p-0 p-sm-1" [class.t-popup-tile-container]="isPopupMode"
               *ngFor="let id of flatIds; trackBy: trackById">
-              <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark"
+              <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark" [class.t-text-whitish]="isDark"
                 [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onChoose(id)"
                 [tContextMenu]="recordContextMenu" [tContext]="id" [tDisableMenu]="disableContextMenu">
                 <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">

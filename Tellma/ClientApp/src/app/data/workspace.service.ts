@@ -343,6 +343,11 @@ export class TenantWorkspace extends SpecificWorkspace {
   mdLastKey: string;
 
   /**
+   * Any misc. state that screens may wish to preserve across the session
+   */
+  miscState: { [key: string]: any } = { };
+
+  /**
    * Keeps the state of every report widget
    */
   reportState: { [key: string]: ReportStore };

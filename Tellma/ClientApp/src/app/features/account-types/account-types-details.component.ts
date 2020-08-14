@@ -43,7 +43,42 @@ CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefin
     result.IsAssignable = true;
     result.AllowsPureUnit = false;
 
+    result.CustodyDefinitions = [];
+    result.ResourceDefinitions = [];
+    result.NotedRelationDefinitions = [];
+
     return result;
+  }
+
+  clone: (item: AccountType) => AccountType = (item: AccountType) => {
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as AccountType;
+      clone.Id = null;
+
+      if (!!clone.CustodyDefinitions) {
+        clone.CustodyDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.ResourceDefinitions) {
+        clone.ResourceDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.NotedRelationDefinitions) {
+        clone.NotedRelationDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
+
+      clone.IsSystem = false;
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
   }
 
   public get ws() {

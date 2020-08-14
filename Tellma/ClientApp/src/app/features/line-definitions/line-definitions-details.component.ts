@@ -540,19 +540,19 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   // Tabs
   public get activeTab(): string {
-    return this.details.state.detailsState.activeTab || 'general';
+    return this.ws.miscState.lineDefinition_activeTab || 'general';
   }
 
   public set activeTab(tab: string) {
-    this.details.state.detailsState.activeTab = tab;
+    this.ws.miscState.lineDefinition_activeTab = tab;
   }
 
   public get activeEntryTab(): string {
-    return this.details.state.detailsState.activeEntryTab || 'custodyDefinitions';
+    return this.ws.miscState.lineDefinition_activeEntryTab || 'custodyDefinitions';
   }
 
   public set activeEntryTab(tab: string) {
-    this.details.state.detailsState.activeEntryTab = tab;
+    this.ws.miscState.lineDefinition_activeEntryTab = tab;
   }
 
 }

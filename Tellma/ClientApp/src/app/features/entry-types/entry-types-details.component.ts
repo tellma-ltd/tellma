@@ -42,6 +42,21 @@ export class EntryTypesDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
+  clone: (item: EntryType) => EntryType = (item: EntryType) => {
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as EntryType;
+      clone.Id = null;
+
+      clone.IsSystem = false;
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
+  }
+
   public get ws() {
     return this.workspace.currentTenant;
   }
