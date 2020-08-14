@@ -30,7 +30,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1000,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,1000,	N'Value',		0,			N'Credit',		4,4,0),
 (3,1000,	N'Memo',		0,			N'Memo',		4,4,1);
---1060:PPEReceiptFromTradePayable: PPEFromSupplier(This is the Cash purchase version, we still need credit purchase versions)
+--1060: PPEFromSupplier
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -51,7 +51,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],			[EntryTypeId]) VALUES
 (0,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
-(2,1060,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL);
+(2,1060,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,NULL);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
 (0,0,1060,@PPECustodyCD),
@@ -71,7 +71,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,1060,	N'MonetaryValue',		0,	N'Residual Value',	1,2,0),
 (10,1060,N'PostingDate',			1,	N'Acquired On',		1,4,1),
 (11,1060,N'CenterId',			2,	N'Business Unit',	1,4,1);
---1260:InventoryFromSupplier StockReceiptFromTradePayable: (This is the Cash purchase version, we still need credit purchase versions)
+--1260:InventoryFromSupplier
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -85,7 +85,7 @@ WHERE [Index] = 1260;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],										[EntryTypeId]) VALUES
 (0,1260,+1,	@Inventories,											@ReceiptsReturnsThroughPurchaseExtension),
-(1,1260,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL);
+(1,1260,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,NULL);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
 (0,0,1260,@MerchandiseRD),
@@ -189,7 +189,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],									[EntryTypeId]) VALUES
 (0,1330,+1,	@CostOfMerchandiseSold,								NULL),
 (1,1330,-1,	@Inventories,										@ReceiptsReturnsThroughPurchaseExtension),
-(2,1330,+1,	@GoodsAndServicesIssuedToCustomersControlExtension,	NULL),
+(2,1330,+1,	@IssuesAtPointInTimeToCustomersControlExtension,	NULL),
 (3,1330,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
@@ -255,7 +255,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,1450,+1,		@CashAndCashEquivalents),
 (1,1450,+1,		@WithholdingTaxReceivablesExtension),
 (2,1450,-1,		@CurrentValueAddedTaxPayables),
-(3,1450,-1,		@GoodsAndServicesIssuedToCustomersControlExtension); 
+(3,1450,-1,		@IssuesAtPointInTimeToCustomersControlExtension); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -328,7 +328,7 @@ SET [Script] = N'
 WHERE [Index] = 1660;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
-(0,1660,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtension),
+(0,1660,+1,		@ReceiptsAtPointInTimeFromSuppliersControlExtension),
 (1,1660,+1,		@CurrentValueAddedTaxReceivables),
 (2,1660,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -376,7 +376,7 @@ SET [Script] = N'
 WHERE [Index] = 1680;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
-(0,1680,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtension), -- Item price
+(0,1680,+1,		@ReceiptsAtPointInTimeFromSuppliersControlExtension), -- Item price
 (1,1680,+1,		@CurrentValueAddedTaxReceivables), -- VAT, Taxamble Amount
 (2,1680,-1,		@WithholdingTaxPayableExtension), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
 (3,1680,-1,		@CashAndCashEquivalents); 

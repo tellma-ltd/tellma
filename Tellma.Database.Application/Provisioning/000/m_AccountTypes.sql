@@ -1,4 +1,4 @@
-﻿	IF NOT EXISTS(SELECT * FROM dbo.[AccountTypes])
+﻿IF NOT EXISTS(SELECT * FROM dbo.[AccountTypes])
 BEGIN
 DECLARE @AT TABLE (
 	[Index] INT, [AllowsPureUnit] BIT, [IsMonetary] BIT, [Code] NVARCHAR(50),
@@ -184,7 +184,7 @@ INSERT INTO @AT VALUES(175,0,1,'12214', '/1/2/2/1/4/', NULL,N'CurrentTaxLiabilit
 INSERT INTO @AT VALUES(176,0,1,'12215', '/1/2/2/1/5/', NULL,N'OtherNoncurrentFinancialLiabilities', N'Other non-current financial liabilities',N'The amount of non-current financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities]')
 INSERT INTO @AT VALUES(177,0,1,'122151', '/1/2/2/1/5/1/', NULL,N'NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLoss', N'Non-current financial liabilities at fair value through profit or loss',N'The amount of non-current financial liabilities measured at fair value through profit or loss. [Refer: Financial liabilities at fair value through profit or loss]')
 INSERT INTO @AT VALUES(178,0,1,'1221511', '/1/2/2/1/5/1/1/', NULL,N'NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossClassifiedAsHeldForTrading', N'Non-current financial liabilities at fair value through profit or loss, classified as held for trading',N'The amount of non-current financial liabilities at fair value through profit or loss that meet the definition of held for trading. [Refer: Non-current financial liabilities at fair value through profit or loss]')
-INSERT INTO @AT VALUES(179,0,1,'1221512', '/1/2/2/1/5/1/2/', NULL,N'NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossDesignatedUponInitialRecognition', N'Non-current financial liabilities at fair value through profit or loss, designated upon initial recognition or subsequently',N'The amount of non-current financial liabilities measured at fair value through profit or loss that were designated as such upon initial recognition or subsequently. [Refer: Financial liabilities at fair value through profit or loss, designated upon initial recognition or subsequently]')
+INSERT INTO @AT VALUES(179,0,1,'1221512', '/1/2/2/1/5/1/2/', NULL,N'NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossDesignatedUponInitialRecognition', N'Non-current financial liability 1 at FVTPL, designated upon initial recognition or subsequently',N'The amount of non-current financial liabilities measured at fair value through profit or loss that were designated as such upon initial recognition or subsequently. [Refer: Financial liabilities at fair value through profit or loss, designated upon initial recognition or subsequently]')
 INSERT INTO @AT VALUES(180,0,1,'122152', '/1/2/2/1/5/2/', NULL,N'NoncurrentFinancialLiabilitiesAtAmortisedCost', N'Non-current financial liabilities at amortised cost',N'The amount of non-current financial liabilities measured at amortised cost. [Refer: Financial liabilities at amortised cost]')
 INSERT INTO @AT VALUES(181,0,0,'12216', '/1/2/2/1/6/', NULL,N'OtherNoncurrentNonfinancialLiabilities', N'Other non-current non-financial liabilities',N'The amount of non-current non-financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities]')
 INSERT INTO @AT VALUES(182,0,0,'1222', '/1/2/2/2/', NULL,N'CurrentLiabilities', N'Current liabilities',N'The amount of liabilities that: (a) the entity expects to settle in its normal operating cycle; (b) the entity holds primarily for the purpose of trading; (c) are due to be settled within twelve months after the reporting period; or (d) the entity does not have an unconditional right to defer settlement for at least twelve months after the reporting period.')
@@ -282,64 +282,67 @@ INSERT INTO @AT VALUES(273,0,0,'2111015523', '/2/1/1/1/1/5/5/2/3/', NULL,N'Impai
 INSERT INTO @AT VALUES(274,0,0,'2111015524', '/2/1/1/1/1/5/5/2/4/', NULL,N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances', N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances',N'The amount of impairment loss or reversal of impairment loss recognised in profit or loss for loans and advances. [Refer: Impairment loss recognised in profit or loss; Reversal of impairment loss recognised in profit or loss]')
 INSERT INTO @AT VALUES(275,0,0,'21110157', '/2/1/1/1/1/5/7/', NULL,N'TaxExpenseOtherThanIncomeTaxExpense', N'Tax expense other than income tax expense',N'The amount of tax expense exclusive of income tax expense.')
 INSERT INTO @AT VALUES(276,0,0,'21110159', '/2/1/1/1/1/5/9/', NULL,N'OtherExpenseByNature', N'Other expenses',N'The amount of expenses that the entity does not separately disclose in the same statement or note when the entity uses the ''nature of expense'' form for its analysis of expenses. [Refer: Expenses, by nature]')
-INSERT INTO @AT VALUES(277,0,0,'2111016', '/2/1/1/1/1/6/', NULL,N'OtherGainsLosses', N'Other gains (losses)',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
-INSERT INTO @AT VALUES(278,1,0,'21110162', '/2/1/1/1/1/6/2/', NULL,N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'Gain (loss) on disposal of property, plant and equipment',N'The gains (losses) on disposals of property, plant and equipment. [Refer: Property, plant and equipment]')
-INSERT INTO @AT VALUES(279,1,0,'211101621', '/2/1/1/1/1/6/2/1/', NULL,N'GainsOnDisposalsOfPropertyPlantAndEquipment', N'Gains on disposals of property, plant and equipment',N'The gain on the disposal of property, plant and equipment. [Refer: Property, plant and equipment]')
-INSERT INTO @AT VALUES(280,1,0,'211101622', '/2/1/1/1/1/6/2/2/', NULL,N'LossesOnDisposalsOfPropertyPlantAndEquipment', N'Losses on disposals of property, plant and equipment',N'The losses on the disposal of property, plant and equipment. [Refer: Property, plant and equipment]')
-INSERT INTO @AT VALUES(281,1,0,'21110163', '/2/1/1/1/1/6/3/', NULL,N'GainsLossesOnDisposalsOfInvestmentProperties', N'Gains (losses) on disposals of investment properties',N'The gains (losses) on disposals of investment properties. [Refer: Investment property]')
-INSERT INTO @AT VALUES(282,1,0,'211101631', '/2/1/1/1/1/6/3/1/', NULL,N'GainsOnDisposalsOfInvestmentProperties', N'Gains on disposals of investment properties',N'The gain on disposals of investment properties. [Refer: Investment property]')
-INSERT INTO @AT VALUES(283,1,0,'211101632', '/2/1/1/1/1/6/3/2/', NULL,N'LossesOnDisposalsOfInvestmentProperties', N'Losses on disposals of investment properties',N'The losses on disposals of investment properties. [Refer: Investment property]')
-INSERT INTO @AT VALUES(284,0,0,'21110164', '/2/1/1/1/1/6/4/', NULL,N'GainsLossesOnDisposalsOfInvestments', N'The gains (losses) on disposals of investments.',N'The gains (losses) on disposals of investments.')
-INSERT INTO @AT VALUES(285,0,0,'211101641', '/2/1/1/1/1/6/4/1/', NULL,N'GainsOnDisposalsOfInvestments', N'Gains on disposals of investments',N'The gain on the disposal of investments.')
-INSERT INTO @AT VALUES(286,0,0,'211101642', '/2/1/1/1/1/6/4/2/', NULL,N'LossesOnDisposalsOfInvestments', N'Losses on disposals of investments',N'The losses on the disposal of investments.')
-INSERT INTO @AT VALUES(287,0,0,'21110165', '/2/1/1/1/1/6/5/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationRecognisedInProfitOrLoss', N'Foreign exchange gain (loss)',N'The amount of exchange differences recognised in profit or loss that arise from foreign currency transactions, excluding those arising on financial instruments measured at fair value through profit or loss in accordance with IFRS 9. [Refer: At fair value [member]; Financial instruments, class [member]]')
-INSERT INTO @AT VALUES(288,0,0,'211101651', '/2/1/1/1/1/6/5/1/', NULL,N'NetForeignExchangeGain', N'Net foreign exchange gain',N'The net gain arising from foreign exchange differences. [Refer: Foreign exchange gain (loss)]')
-INSERT INTO @AT VALUES(289,0,0,'211101652', '/2/1/1/1/1/6/5/2/', NULL,N'NetForeignExchangeLoss', N'Net foreign exchange loss',N'The net loss arising from foreign exchange differences. [Refer: Foreign exchange gain (loss)]')
-INSERT INTO @AT VALUES(290,0,0,'211103', '/2/1/1/1/3/', NULL,N'GainsLossesOnNetMonetaryPosition', N'Gains (losses) on net monetary position',N'The gains (losses) representing the difference resulting from the restatement of non-monetary assets, owners'' equity and items in the statement of comprehensive income and the adjustment of index linked assets and liabilities in hyperinflationary reporting.')
-INSERT INTO @AT VALUES(291,0,0,'211104', '/2/1/1/1/4/', NULL,N'GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost', N'Gain (loss) arising from derecognition of financial assets measured at amortised cost',N'The gain (loss) arising from the derecognition of financial assets measured at amortised cost. [Refer: Financial assets at amortised cost]')
-INSERT INTO @AT VALUES(292,0,0,'211105', '/2/1/1/1/5/', NULL,N'FinanceIncome', N'Finance income',N'The amount of income associated with interest and other financing activities of the entity.')
-INSERT INTO @AT VALUES(293,0,0,'211106', '/2/1/1/1/6/', NULL,N'FinanceCosts', N'Finance costs',N'The amount of costs associated with financing activities of the entity.')
-INSERT INTO @AT VALUES(294,0,0,'211107', '/2/1/1/1/7/', NULL,N'ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9', N'Impairment gain and reversal of impairment loss (impairment loss) determined in accordance with IFRS 9',N'The amount of impairment loss, impairment gain or reversal of impairment loss that is recognised in profit or loss in accordance with paragraph 5.5.8 of IFRS 9 and that arises from applying the impairment requirements in Section 5.5 of IFRS 9.')
-INSERT INTO @AT VALUES(295,0,0,'211108', '/2/1/1/1/8/', NULL,N'ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod', N'Share of profit (loss) of associates and joint ventures accounted for using equity method',N'The entity''s share of the profit (loss) of associates and joint ventures accounted for using the equity method. [Refer: Associates [member]; Investments accounted for using equity method; Joint ventures [member]; Profit (loss)]')
-INSERT INTO @AT VALUES(296,0,0,'211109', '/2/1/1/1/9/', NULL,N'OtherIncomeExpenseFromSubsidiariesJointlyControlledEntitiesAndAssociates', N'Other income (expense) from subsidiaries, jointly controlled entities and associates',N'The amount of income or expense from subsidiaries, jointly controlled entities and associates that the entity does not separately disclose in the same statement or note. [Refer: Associates [member]; Subsidiaries [member]]')
-INSERT INTO @AT VALUES(297,0,0,'211110', '/2/1/1/1/10/', NULL,N'GainsLossesArisingFromDifferenceBetweenPreviousCarryingAmountAndFairValueOfFinancialAssetsReclassifiedAsMeasuredAtFairValue', N'Gains (losses) arising from difference between previous amortised cost and fair value of financial assets reclassified out of amortised cost into fair value through profit or loss measurement category',N'The gains (losses) arising from the difference between the previous amortised cost and the fair value of financial assets reclassified out of the amortised cost into the fair value through profit or loss measurement category. [Refer: At fair value [member]; Financial assets at amortised cost]')
-INSERT INTO @AT VALUES(298,0,0,'211111', '/2/1/1/1/11/', NULL,N'CumulativeGainLossPreviouslyRecognisedInOtherComprehensiveIncomeArisingFromReclassificationOfFinancialAssetsOutOfFairValueThroughOtherComprehensiveIncomeIntoFairValueThroughProfitOrLossMeasurementCategory', N'Cumulative gain (loss) previously recognised in other comprehensive income arising from reclassification of financial assets out of fair value through other comprehensive income into fair value through profit or loss measurement category',N'The cumulative gain (loss) previously recognised in other comprehensive income arising from the reclassification of financial assets out of the fair value through other comprehensive income into the fair value through profit or loss measurement category. [Refer: Financial assets measured at fair value through other comprehensive income; Financial assets at fair value through profit or loss; Other comprehensive income]')
-INSERT INTO @AT VALUES(299,0,0,'211112', '/2/1/1/1/12/', NULL,N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'Hedging gains (losses) for hedge of group of items with offsetting risk positions',N'The hedging gains (losses) for hedge of group of items with offsetting risk positions.')
-INSERT INTO @AT VALUES(300,0,0,'2112', '/2/1/1/2/', NULL,N'IncomeTaxExpenseContinuingOperations', N'Tax income (expense)',N'The aggregate amount included in the determination of profit (loss) for the period in respect of current tax and deferred tax. [Refer: Current tax expense (income); Deferred tax expense (income)]')
-INSERT INTO @AT VALUES(301,0,0,'212', '/2/1/2/', NULL,N'ProfitLossFromDiscontinuedOperations', N'Profit (loss) from discontinued operations',N'The profit (loss) from discontinued operations. [Refer: Discontinued operations [member]; Profit (loss)]')
-INSERT INTO @AT VALUES(302,0,0,'3', '/3/', NULL,N'OtherComprehensiveIncome', N'Other comprehensive income',N'')
-INSERT INTO @AT VALUES(303,0,0,'31', '/3/1/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will not be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(304,0,0,'311', '/3/1/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) from changes in the fair value of investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(305,0,0,'312', '/3/1/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation', N'Other comprehensive income, before tax, gains (losses) on revaluation',N'The amount of other comprehensive income, before tax, related to gains (losses) in relation to changes in the revaluation surplus. [Refer: Other comprehensive income, before tax; Revaluation surplus]')
-INSERT INTO @AT VALUES(306,0,0,'313', '/3/1/3/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRemeasurementsOfDefinedBenefitPlans', N'Other comprehensive income, before tax, gains (losses) on remeasurements of defined benefit plans',N'The amount of other comprehensive income, before tax, related to gains (losses) on remeasurements of defined benefit plans, which comprise actuarial gains and losses; the return on plan assets, excluding amounts included in net interest on the net defined benefit liability (asset); and any change in the effect of the asset ceiling, excluding amounts included in net interest on the net defined benefit liability (asset). [Refer: Other comprehensive income, before tax; Defined benefit plans [member]; Plan assets [member]; Net defined benefit liability (asset)]')
-INSERT INTO @AT VALUES(307,0,0,'314', '/3/1/4/', NULL,N'OtherComprehensiveIncomeBeforeTaxChangeInFairValueOfFinancialLiabilityAttributableToChangeInCreditRiskOfLiability', N'Other comprehensive income, before tax, change in fair value of financial liability attributable to change in credit risk of liability',N'The amount of other comprehensive income, before tax, related to change in the fair value of financial liability attributable to change in the credit risk of the liability. [Refer: Other comprehensive income, before tax; Credit risk [member]]')
-INSERT INTO @AT VALUES(308,0,0,'315', '/3/1/5/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnHedgingInstrumentsThatHedgeInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) on hedging instruments that hedge investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) on hedging instruments that hedge investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(309,0,0,'316', '/3/1/6/', NULL,N'OtherComprehensiveIncomeBeforeTaxInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillNotBeReclassifiedToProfitOrLoss', N'Other comprehensive income, before tax, insurance finance income (expenses) from insurance contracts issued excluded from profit or loss that will not be reclassified to profit or loss',N'The amount of other comprehensive income, before tax, related to insurance finance income (expenses) from insurance contracts issued that will not be reclassified subsequently to profit or loss. [Refer: Insurance finance income (expenses); Insurance contracts issued [member]]')
-INSERT INTO @AT VALUES(310,0,0,'317', '/3/1/7/', NULL,N'ShareOfOtherComprehensiveIncomeOfAssociatesAndJointVenturesAccountedForUsingEquityMethodThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Share of other comprehensive income of associates and joint ventures accounted for using equity method that will not be reclassified to profit or loss, before tax',N'Share of the other comprehensive income of associates and joint ventures accounted for using the equity method that will not be reclassified to profit or loss, before tax.')
-INSERT INTO @AT VALUES(311,0,0,'32', '/3/2/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(312,0,0,'321', '/3/2/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxExchangeDifferencesOnTranslation', N'Exchange differences on translation',N'The amount of other comprehensive income, before tax, related to exchange differences on translation of financial statements of foreign operations. [Refer: Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(313,0,0,'3211', '/3/2/1/1/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationBeforeTax', N'Gains (losses) on exchange differences on translation, before tax',N'The gains (losses) recognised in other comprehensive income on exchange differences on the translation of financial statements of foreign operations, before tax. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(314,0,0,'3212', '/3/2/1/2/', NULL,N'ReclassificationAdjustmentsOnExchangeDifferencesOnTranslationBeforeTax', N'Reclassification adjustments on exchange differences on translation, before tax',N'The amount of reclassification adjustments related to exchange differences when the financial statements of foreign operations are translated, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Other comprehensive income]')
-INSERT INTO @AT VALUES(315,0,0,'322', '/3/2/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxAvailableforsaleFinancialAssets', N'Available-for-sale financial assets',N'The amount of other comprehensive income, before tax, related to available-for-sale financial assets. [Refer: Financial assets available-for-sale; Other comprehensive income, before tax]')
-INSERT INTO @AT VALUES(316,0,0,'3221', '/3/2/2/1/', NULL,N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax', N'Gains (losses) on remeasuring available-for-sale financial assets, before tax',N'The gains (losses) recognised in other comprehensive income on remeasuring available-for-sale financial assets, before tax. [Refer: Financial assets available-for-sale]')
-INSERT INTO @AT VALUES(317,0,0,'3222', '/3/2/2/2/', NULL,N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax', N'Reclassification adjustments on available-for-sale financial assets, before tax',N'The amount of reclassification adjustments related to available-for-sale financial assets, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Financial assets available-for-sale; Other comprehensive income]')
-INSERT INTO @AT VALUES(318,0,0,'4', '/4/', NULL,N'ControlAccountsExtension', N'Control accounts',N'')
-INSERT INTO @AT VALUES(319,0,0,'41', '/4/1/', NULL,N'TradersControlAccountsExtension', N'Traders control accounts',N'')
-INSERT INTO @AT VALUES(320,0,0,'411', '/4/1/1/', NULL,N'SuppliersControlAccountsExtension', N'Suppliers control accounts',N'')
-INSERT INTO @AT VALUES(321,0,1,'4111', '/4/1/1/1/', NULL,N'CashPaymentsToSuppliersControlExtension', N'Cash payments to suppliers control',N'')
-INSERT INTO @AT VALUES(322,0,0,'4112', '/4/1/1/2/', NULL,N'GoodsAndServicesReceivedFromSuppliersControlExtensions', N'Goods/services received from suppliers control',N'')
-INSERT INTO @AT VALUES(323,0,0,'412', '/4/1/2/', NULL,N'CustomersControlAccountsExtension', N'Customer control accounts',N'')
-INSERT INTO @AT VALUES(324,0,1,'4121', '/4/1/2/1/', NULL,N'CashReceiptsFromCustomersControlExtension', N'Cash receipts from customers control',N'')
-INSERT INTO @AT VALUES(325,0,0,'4122', '/4/1/2/2/', NULL,N'GoodsAndServicesIssuedToCustomersControlExtension', N'Goods/Services delivered to customers control',N'')
-INSERT INTO @AT VALUES(326,0,0,'413', '/4/1/3/', NULL,N'PayrollControlExtension', N'Payroll control',N'')
-INSERT INTO @AT VALUES(327,0,1,'4131', '/4/1/3/1/', NULL,N'CashPaymentsToEmployeesControlExtension', N'Cash payments to employees control',N'')
-INSERT INTO @AT VALUES(328,0,0,'419', '/4/1/9/', NULL,N'OthersAccountsControlExtension', N'Others control accounts',N'')
-INSERT INTO @AT VALUES(329,0,1,'4191', '/4/1/9/1/', NULL,N'CashPaymentsToOthersControlExtension', N'Cash payments to others control',N'')
-INSERT INTO @AT VALUES(330,0,1,'4192', '/4/1/9/2/', NULL,N'CashReceiptsFromOthersControlExtension', N'Cash receipts from others control',N'')
-INSERT INTO @AT VALUES(331,0,1,'42', '/4/2/', NULL,N'GuaranteesExtension', N'Guarantees',N'')
-INSERT INTO @AT VALUES(332,0,1,'421', '/4/2/1/', NULL,N'CollectionGuaranteeExtension', N'Collection Guarantee',N'e.g., checks, LG, ..')
-INSERT INTO @AT VALUES(333,0,1,'422', '/4/2/2/', NULL,N'DishonouredGuaranteeExtension', N'Dishonoured Guarantee',N'e.g., dishonored check, invalid LG, etc')
-INSERT INTO @AT VALUES(334,0,1,'5', '/5/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
+INSERT INTO @AT VALUES(277,0,0,'211101591', '/2/1/1/1/1/5/9/1/', NULL,N'UnallowedExpensesExtension', N'Other Unallowed expenses',N'')
+INSERT INTO @AT VALUES(278,0,0,'2111016', '/2/1/1/1/1/6/', NULL,N'OtherGainsLosses', N'Other gains (losses)',N'The gains (losses) that the entity does not separately disclose in the same statement or note.')
+INSERT INTO @AT VALUES(279,1,0,'21110162', '/2/1/1/1/1/6/2/', NULL,N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'Gain (loss) on disposal of property, plant and equipment',N'The gains (losses) on disposals of property, plant and equipment. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(280,1,0,'211101621', '/2/1/1/1/1/6/2/1/', NULL,N'GainsOnDisposalsOfPropertyPlantAndEquipment', N'Gains on disposals of property, plant and equipment',N'The gain on the disposal of property, plant and equipment. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(281,1,0,'211101622', '/2/1/1/1/1/6/2/2/', NULL,N'LossesOnDisposalsOfPropertyPlantAndEquipment', N'Losses on disposals of property, plant and equipment',N'The losses on the disposal of property, plant and equipment. [Refer: Property, plant and equipment]')
+INSERT INTO @AT VALUES(282,1,0,'21110163', '/2/1/1/1/1/6/3/', NULL,N'GainsLossesOnDisposalsOfInvestmentProperties', N'Gains (losses) on disposals of investment properties',N'The gains (losses) on disposals of investment properties. [Refer: Investment property]')
+INSERT INTO @AT VALUES(283,1,0,'211101631', '/2/1/1/1/1/6/3/1/', NULL,N'GainsOnDisposalsOfInvestmentProperties', N'Gains on disposals of investment properties',N'The gain on disposals of investment properties. [Refer: Investment property]')
+INSERT INTO @AT VALUES(284,1,0,'211101632', '/2/1/1/1/1/6/3/2/', NULL,N'LossesOnDisposalsOfInvestmentProperties', N'Losses on disposals of investment properties',N'The losses on disposals of investment properties. [Refer: Investment property]')
+INSERT INTO @AT VALUES(285,0,0,'21110164', '/2/1/1/1/1/6/4/', NULL,N'GainsLossesOnDisposalsOfInvestments', N'The gains (losses) on disposals of investments.',N'The gains (losses) on disposals of investments.')
+INSERT INTO @AT VALUES(286,0,0,'211101641', '/2/1/1/1/1/6/4/1/', NULL,N'GainsOnDisposalsOfInvestments', N'Gains on disposals of investments',N'The gain on the disposal of investments.')
+INSERT INTO @AT VALUES(287,0,0,'211101642', '/2/1/1/1/1/6/4/2/', NULL,N'LossesOnDisposalsOfInvestments', N'Losses on disposals of investments',N'The losses on the disposal of investments.')
+INSERT INTO @AT VALUES(288,0,0,'21110165', '/2/1/1/1/1/6/5/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationRecognisedInProfitOrLoss', N'Foreign exchange gain (loss)',N'The amount of exchange differences recognised in profit or loss that arise from foreign currency transactions, excluding those arising on financial instruments measured at fair value through profit or loss in accordance with IFRS 9. [Refer: At fair value [member]; Financial instruments, class [member]]')
+INSERT INTO @AT VALUES(289,0,0,'211101651', '/2/1/1/1/1/6/5/1/', NULL,N'NetForeignExchangeGain', N'Net foreign exchange gain',N'The net gain arising from foreign exchange differences. [Refer: Foreign exchange gain (loss)]')
+INSERT INTO @AT VALUES(290,0,0,'211101652', '/2/1/1/1/1/6/5/2/', NULL,N'NetForeignExchangeLoss', N'Net foreign exchange loss',N'The net loss arising from foreign exchange differences. [Refer: Foreign exchange gain (loss)]')
+INSERT INTO @AT VALUES(291,0,0,'211103', '/2/1/1/1/3/', NULL,N'GainsLossesOnNetMonetaryPosition', N'Gains (losses) on net monetary position',N'The gains (losses) representing the difference resulting from the restatement of non-monetary assets, owners'' equity and items in the statement of comprehensive income and the adjustment of index linked assets and liabilities in hyperinflationary reporting.')
+INSERT INTO @AT VALUES(292,0,0,'211104', '/2/1/1/1/4/', NULL,N'GainLossArisingFromDerecognitionOfFinancialAssetsMeasuredAtAmortisedCost', N'Gain (loss) arising from derecognition of financial assets measured at amortised cost',N'The gain (loss) arising from the derecognition of financial assets measured at amortised cost. [Refer: Financial assets at amortised cost]')
+INSERT INTO @AT VALUES(293,0,0,'211105', '/2/1/1/1/5/', NULL,N'FinanceIncome', N'Finance income',N'The amount of income associated with interest and other financing activities of the entity.')
+INSERT INTO @AT VALUES(294,0,0,'211106', '/2/1/1/1/6/', NULL,N'FinanceCosts', N'Finance costs',N'The amount of costs associated with financing activities of the entity.')
+INSERT INTO @AT VALUES(295,0,0,'211107', '/2/1/1/1/7/', NULL,N'ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9', N'Impairment gain and reversal of impairment loss (impairment loss) determined in accordance with IFRS 9',N'The amount of impairment loss, impairment gain or reversal of impairment loss that is recognised in profit or loss in accordance with paragraph 5.5.8 of IFRS 9 and that arises from applying the impairment requirements in Section 5.5 of IFRS 9.')
+INSERT INTO @AT VALUES(296,0,0,'211108', '/2/1/1/1/8/', NULL,N'ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod', N'Share of profit (loss) of associates and joint ventures accounted for using equity method',N'The entity''s share of the profit (loss) of associates and joint ventures accounted for using the equity method. [Refer: Associates [member]; Investments accounted for using equity method; Joint ventures [member]; Profit (loss)]')
+INSERT INTO @AT VALUES(297,0,0,'211109', '/2/1/1/1/9/', NULL,N'OtherIncomeExpenseFromSubsidiariesJointlyControlledEntitiesAndAssociates', N'Other income (expense) from subsidiaries, jointly controlled entities and associates',N'The amount of income or expense from subsidiaries, jointly controlled entities and associates that the entity does not separately disclose in the same statement or note. [Refer: Associates [member]; Subsidiaries [member]]')
+INSERT INTO @AT VALUES(298,0,0,'211110', '/2/1/1/1/10/', NULL,N'GainsLossesArisingFromDifferenceBetweenPreviousCarryingAmountAndFairValueOfFinancialAssetsReclassifiedAsMeasuredAtFairValue', N'Gains (losses) arising from difference between previous amortised cost and fair value of financial assets reclassified out of amortised cost into fair value through profit or loss measurement category',N'The gains (losses) arising from the difference between the previous amortised cost and the fair value of financial assets reclassified out of the amortised cost into the fair value through profit or loss measurement category. [Refer: At fair value [member]; Financial assets at amortised cost]')
+INSERT INTO @AT VALUES(299,0,0,'211111', '/2/1/1/1/11/', NULL,N'CumulativeGainLossPreviouslyRecognisedInOtherComprehensiveIncomeArisingFromReclassificationOfFinancialAssetsOutOfFairValueThroughOtherComprehensiveIncomeIntoFairValueThroughProfitOrLossMeasurementCategory', N'Cumulative gain (loss) previously recognised in other comprehensive income arising from reclassification of financial assets out of fair value through other comprehensive income into fair value through profit or loss measurement category',N'The cumulative gain (loss) previously recognised in other comprehensive income arising from the reclassification of financial assets out of the fair value through other comprehensive income into the fair value through profit or loss measurement category. [Refer: Financial assets measured at fair value through other comprehensive income; Financial assets at fair value through profit or loss; Other comprehensive income]')
+INSERT INTO @AT VALUES(300,0,0,'211112', '/2/1/1/1/12/', NULL,N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'Hedging gains (losses) for hedge of group of items with offsetting risk positions',N'The hedging gains (losses) for hedge of group of items with offsetting risk positions.')
+INSERT INTO @AT VALUES(301,0,0,'2112', '/2/1/1/2/', NULL,N'IncomeTaxExpenseContinuingOperations', N'Tax income (expense)',N'The aggregate amount included in the determination of profit (loss) for the period in respect of current tax and deferred tax. [Refer: Current tax expense (income); Deferred tax expense (income)]')
+INSERT INTO @AT VALUES(302,0,0,'212', '/2/1/2/', NULL,N'ProfitLossFromDiscontinuedOperations', N'Profit (loss) from discontinued operations',N'The profit (loss) from discontinued operations. [Refer: Discontinued operations [member]; Profit (loss)]')
+INSERT INTO @AT VALUES(303,0,0,'3', '/3/', NULL,N'OtherComprehensiveIncome', N'Other comprehensive income',N'')
+INSERT INTO @AT VALUES(304,0,0,'31', '/3/1/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will not be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will not be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(305,0,0,'311', '/3/1/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesFromInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) from investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) from changes in the fair value of investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(306,0,0,'312', '/3/1/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRevaluation', N'Other comprehensive income, before tax, gains (losses) on revaluation',N'The amount of other comprehensive income, before tax, related to gains (losses) in relation to changes in the revaluation surplus. [Refer: Other comprehensive income, before tax; Revaluation surplus]')
+INSERT INTO @AT VALUES(307,0,0,'313', '/3/1/3/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnRemeasurementsOfDefinedBenefitPlans', N'Other comprehensive income, before tax, gains (losses) on remeasurements of defined benefit plans',N'The amount of other comprehensive income, before tax, related to gains (losses) on remeasurements of defined benefit plans, which comprise actuarial gains and losses; the return on plan assets, excluding amounts included in net interest on the net defined benefit liability (asset); and any change in the effect of the asset ceiling, excluding amounts included in net interest on the net defined benefit liability (asset). [Refer: Other comprehensive income, before tax; Defined benefit plans [member]; Plan assets [member]; Net defined benefit liability (asset)]')
+INSERT INTO @AT VALUES(308,0,0,'314', '/3/1/4/', NULL,N'OtherComprehensiveIncomeBeforeTaxChangeInFairValueOfFinancialLiabilityAttributableToChangeInCreditRiskOfLiability', N'Other comprehensive income, before tax, change in fair value of financial liability attributable to change in credit risk of liability',N'The amount of other comprehensive income, before tax, related to change in the fair value of financial liability attributable to change in the credit risk of the liability. [Refer: Other comprehensive income, before tax; Credit risk [member]]')
+INSERT INTO @AT VALUES(309,0,0,'315', '/3/1/5/', NULL,N'OtherComprehensiveIncomeBeforeTaxGainsLossesOnHedgingInstrumentsThatHedgeInvestmentsInEquityInstruments', N'Other comprehensive income, before tax, gains (losses) on hedging instruments that hedge investments in equity instruments',N'The amount of other comprehensive income, before tax, related to gains (losses) on hedging instruments that hedge investments in equity instruments that the entity has designated at fair value through other comprehensive income. [Refer: Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(310,0,0,'316', '/3/1/6/', NULL,N'OtherComprehensiveIncomeBeforeTaxInsuranceFinanceIncomeExpensesFromInsuranceContractsIssuedExcludedFromProfitOrLossThatWillNotBeReclassifiedToProfitOrLoss', N'Other comprehensive income, before tax, insurance finance income (expenses) from insurance contracts issued excluded from profit or loss that will not be reclassified to profit or loss',N'The amount of other comprehensive income, before tax, related to insurance finance income (expenses) from insurance contracts issued that will not be reclassified subsequently to profit or loss. [Refer: Insurance finance income (expenses); Insurance contracts issued [member]]')
+INSERT INTO @AT VALUES(311,0,0,'317', '/3/1/7/', NULL,N'ShareOfOtherComprehensiveIncomeOfAssociatesAndJointVenturesAccountedForUsingEquityMethodThatWillNotBeReclassifiedToProfitOrLossBeforeTax', N'Share of other comprehensive income of associates and joint ventures accounted for using equity method that will not be reclassified to profit or loss, before tax',N'Share of the other comprehensive income of associates and joint ventures accounted for using the equity method that will not be reclassified to profit or loss, before tax.')
+INSERT INTO @AT VALUES(312,0,0,'32', '/3/2/', NULL,N'ComponentsOfOtherComprehensiveIncomeThatWillBeReclassifiedToProfitOrLossBeforeTax', N'Components of other comprehensive income that will be reclassified to profit or loss, before tax [abstract]',N'The amount of other comprehensive income that will be reclassified to profit or loss, before tax. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(313,0,0,'321', '/3/2/1/', NULL,N'OtherComprehensiveIncomeBeforeTaxExchangeDifferencesOnTranslation', N'Exchange differences on translation',N'The amount of other comprehensive income, before tax, related to exchange differences on translation of financial statements of foreign operations. [Refer: Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(314,0,0,'3211', '/3/2/1/1/', NULL,N'GainsLossesOnExchangeDifferencesOnTranslationBeforeTax', N'Gains (losses) on exchange differences on translation, before tax',N'The gains (losses) recognised in other comprehensive income on exchange differences on the translation of financial statements of foreign operations, before tax. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(315,0,0,'3212', '/3/2/1/2/', NULL,N'ReclassificationAdjustmentsOnExchangeDifferencesOnTranslationBeforeTax', N'Reclassification adjustments on exchange differences on translation, before tax',N'The amount of reclassification adjustments related to exchange differences when the financial statements of foreign operations are translated, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Other comprehensive income]')
+INSERT INTO @AT VALUES(316,0,0,'322', '/3/2/2/', NULL,N'OtherComprehensiveIncomeBeforeTaxAvailableforsaleFinancialAssets', N'Available-for-sale financial assets',N'The amount of other comprehensive income, before tax, related to available-for-sale financial assets. [Refer: Financial assets available-for-sale; Other comprehensive income, before tax]')
+INSERT INTO @AT VALUES(317,0,0,'3221', '/3/2/2/1/', NULL,N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax', N'Gains (losses) on remeasuring available-for-sale financial assets, before tax',N'The gains (losses) recognised in other comprehensive income on remeasuring available-for-sale financial assets, before tax. [Refer: Financial assets available-for-sale]')
+INSERT INTO @AT VALUES(318,0,0,'3222', '/3/2/2/2/', NULL,N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax', N'Reclassification adjustments on available-for-sale financial assets, before tax',N'The amount of reclassification adjustments related to available-for-sale financial assets, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Financial assets available-for-sale; Other comprehensive income]')
+INSERT INTO @AT VALUES(319,0,0,'4', '/4/', NULL,N'ControlAccountsExtension', N'Control accounts',N'')
+INSERT INTO @AT VALUES(320,0,0,'41', '/4/1/', NULL,N'TradersControlAccountsExtension', N'Traders control accounts',N'')
+INSERT INTO @AT VALUES(321,0,0,'411', '/4/1/1/', NULL,N'SuppliersControlAccountsExtension', N'Suppliers control accounts',N'')
+INSERT INTO @AT VALUES(322,0,1,'4111', '/4/1/1/1/', NULL,N'CashPaymentsToSuppliersControlExtension', N'Cash payments to suppliers control',N'')
+INSERT INTO @AT VALUES(323,0,0,'4112', '/4/1/1/2/', NULL,N'ReceiptsAtPointInTimeFromSuppliersControlExtension', N'Receipts at point in time from suppliers control',N'')
+INSERT INTO @AT VALUES(324,0,0,'4113', '/4/1/1/3/', NULL,N'ReceiptsOverPeriodOfTimeFromSuppliersControlExtension', N'Receipts over period of time from suppliers control',N'')
+INSERT INTO @AT VALUES(325,0,0,'412', '/4/1/2/', NULL,N'CustomersControlAccountsExtension', N'Customer control accounts',N'')
+INSERT INTO @AT VALUES(326,0,1,'4121', '/4/1/2/1/', NULL,N'CashReceiptsFromCustomersControlExtension', N'Cash receipts from customers control',N'')
+INSERT INTO @AT VALUES(327,0,0,'4122', '/4/1/2/2/', NULL,N'IssuesAtPointInTimeToCustomersControlExtension', N'Issues at point in time to customers control',N'')
+INSERT INTO @AT VALUES(328,0,0,'4123', '/4/1/2/3/', NULL,N'IssuesOverPeriodOfTimeToCustomersControlExtension', N'Issues over period of time to customers control',N'')
+INSERT INTO @AT VALUES(329,0,0,'413', '/4/1/3/', NULL,N'PayrollControlExtension', N'Payroll control',N'')
+INSERT INTO @AT VALUES(330,0,1,'4131', '/4/1/3/1/', NULL,N'CashPaymentsToEmployeesControlExtension', N'Cash payments to employees control',N'')
+INSERT INTO @AT VALUES(331,0,0,'419', '/4/1/9/', NULL,N'OthersAccountsControlExtension', N'Others control accounts',N'')
+INSERT INTO @AT VALUES(332,0,1,'4191', '/4/1/9/1/', NULL,N'CashPaymentsToOthersControlExtension', N'Cash payments to others control',N'')
+INSERT INTO @AT VALUES(333,0,1,'4192', '/4/1/9/2/', NULL,N'CashReceiptsFromOthersControlExtension', N'Cash receipts from others control',N'')
+INSERT INTO @AT VALUES(334,0,1,'42', '/4/2/', NULL,N'GuaranteesExtension', N'Guarantees',N'')
+INSERT INTO @AT VALUES(335,0,1,'421', '/4/2/1/', NULL,N'CollectionGuaranteeExtension', N'Collection Guarantee',N'e.g., checks, LG, ..')
+INSERT INTO @AT VALUES(336,0,1,'422', '/4/2/2/', NULL,N'DishonouredGuaranteeExtension', N'Dishonoured Guarantee',N'e.g., dishonored check, invalid LG, etc')
+INSERT INTO @AT VALUES(337,0,1,'5', '/5/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
 
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [AllowsPureUnit], [IsMonetary],
 		[EntryTypeParentId], [Description])
@@ -376,20 +379,14 @@ UPDATE  @AccountTypes
 WHERE [Concept] IN (
 	N'NoncurrentValueAddedTaxReceivables',
 	N'CurrentValueAddedTaxReceivables',
-	--N'WithholdingTaxReceivablesExtension',
 	N'NoncurrentValueAddedTaxPayables',
 	N'CurrentValueAddedTaxPayables'
-	--N'WithholdingTaxPayableExtension'
 );
 
 UPDATE  @AccountTypes
 	SET [ExternalReferenceLabel] = N'WT Voucher #'
 WHERE [Concept] IN (
-	--N'NoncurrentValueAddedTaxReceivables',
-	--N'CurrentValueAddedTaxReceivables',
 	N'WithholdingTaxReceivablesExtension',
-	--N'NoncurrentValueAddedTaxPayables',
-	--N'CurrentValueAddedTaxPayables',
 	N'WithholdingTaxPayableExtension'
 );
 
@@ -735,6 +732,7 @@ DECLARE @ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeRece
 DECLARE @ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances');
 DECLARE @TaxExpenseOtherThanIncomeTaxExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TaxExpenseOtherThanIncomeTaxExpense');
 DECLARE @OtherExpenseByNature INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherExpenseByNature');
+DECLARE @UnallowedExpensesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'UnallowedExpensesExtension');
 DECLARE @OtherGainsLosses INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherGainsLosses');
 DECLARE @GainsLossesOnDisposalsOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment');
 DECLARE @GainsOnDisposalsOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsOnDisposalsOfPropertyPlantAndEquipment');
@@ -780,10 +778,12 @@ DECLARE @ControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE
 DECLARE @TradersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TradersControlAccountsExtension');
 DECLARE @SuppliersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SuppliersControlAccountsExtension');
 DECLARE @CashPaymentsToSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashPaymentsToSuppliersControlExtension');
-DECLARE @GoodsAndServicesReceivedFromSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GoodsAndServicesReceivedFromSuppliersControlExtensions');
+DECLARE @ReceiptsAtPointInTimeFromSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ReceiptsAtPointInTimeFromSuppliersControlExtension');
+DECLARE @ReceiptsOverPeriodOfTimeFromSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ReceiptsOverPeriodOfTimeFromSuppliersControlExtension');
 DECLARE @CustomersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomersControlAccountsExtension');
 DECLARE @CashReceiptsFromCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashReceiptsFromCustomersControlExtension');
-DECLARE @GoodsAndServicesIssuedToCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GoodsAndServicesIssuedToCustomersControlExtension');
+DECLARE @IssuesAtPointInTimeToCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'IssuesAtPointInTimeToCustomersControlExtension');
+DECLARE @IssuesOverPeriodOfTimeToCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'IssuesOverPeriodOfTimeToCustomersControlExtension');
 DECLARE @PayrollControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PayrollControlExtension');
 DECLARE @CashPaymentsToEmployeesControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashPaymentsToEmployeesControlExtension');
 DECLARE @OthersAccountsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OthersAccountsControlExtension');
@@ -878,7 +878,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (29,@FinishedGoods,										@FinishedOilRD),
 (30,@FinishedGoods,										@ByproductGrainRD),
 (31,@FinishedGoods,										@ByproductOilRD),
-(32,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(32,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,	@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 (33,@WorkInProgress,									@WorkInProgressRD),
 (34,@RawMaterials,										@RawMaterialsRD),
 (35,@RawMaterials,										@RawGrainRD),
@@ -889,36 +889,37 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (40,@CurrentFuel,										@CurrentFuelRD),
 (41,@OtherInventories,									@OtherInventoriesRD),
 
-(144,@CurrentTradeReceivables,@TradeReceivableRD),
+(144,@CurrentTradeReceivables,							@TradeReceivableRD),
 (145,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@TradeReceivableRD),-- 
 (146,@CurrentPrepayments,								@SalaryAdvanceRD),
 (147,@CurrentAdvancesToSuppliers,						@PrepaymentsRD),
 (148,@CurrentPrepaidExpenses,							@PrepaymentsRD), 
-(149,@CurrentAccruedIncome,@AccruedIncomeRD),
-(150,@CurrentReceivablesFromRentalOfProperties,@ReceivablesFromRentalOfPropertiesRD),
-(151,@OtherCurrentFinancialAssets,@EmployeeLoanRD),
+(149,@CurrentAccruedIncome,								@AccruedIncomeRD),
+(150,@CurrentReceivablesFromRentalOfProperties,			@ReceivablesFromRentalOfPropertiesRD),
+(151,@OtherCurrentFinancialAssets,						@EmployeeLoanRD),
 
 (42,@CashOnHand,										@CheckReceivedRD), -- for checks to be deposited
 
 (153,@LongtermWarrantyProvision,						@WarrantyProvisionRD),
-(154,@LongtermRestructuringProvision,@RestructuringProvisionRD),
-(155,@NoncurrentRefundsProvision,@RefundsProvisionRD),
-(156,@NoncurrentPayablesToTradeSuppliers,@TradePayableRD),
-(157,@NoncurrentPayablesToRelatedParties,@TradePayableRD),
-(158,@DeferredIncomeClassifiedAsNoncurrent,@DeferredIncomeRD),
-(159,@RentDeferredIncomeClassifiedAsNoncurrent,@RentDeferredIncomeRD),
-(160,@AccrualsClassifiedAsNoncurrent,@AccrualsRD),
-(161,@ShorttermWarrantyProvision,@WarrantyProvisionRD),
-(162,@ShorttermRestructuringProvision,@RestructuringProvisionRD),
-(163,@CurrentRefundsProvision,@RefundsProvisionRD),
-(164,@TradeAndOtherCurrentPayablesToTradeSuppliers,@TradePayableRD),
-(165,@TradeAndOtherCurrentPayablesToRelatedParties,@TradePayableRD),
-(166,@DeferredIncomeClassifiedAsCurrent,@DeferredIncomeRD),
-(167,@RentDeferredIncomeClassifiedAsCurrent,@RentDeferredIncomeRD),
-(168,@AccrualsClassifiedAsCurrent,@AccrualsRD),
-(169,@ShorttermEmployeeBenefitsAccruals,@AccrualsRD),
-(170,@CurrentBilledButNotIssuedExtension,@CurrentBilledButNotIssuedRD),
-(171,@CurrentRetentionPayables,							@RetentionPayableRD),
+(154,@LongtermRestructuringProvision,					@RestructuringProvisionRD),
+(155,@NoncurrentRefundsProvision,						@RefundsProvisionRD),
+(156,@NoncurrentPayablesToTradeSuppliers,				@TradePayableRD),
+(157,@NoncurrentPayablesToRelatedParties,				@TradePayableRD),
+(158,@DeferredIncomeClassifiedAsNoncurrent,				@DeferredIncomeRD),
+(159,@RentDeferredIncomeClassifiedAsNoncurrent,			@RentDeferredIncomeRD),
+(160,@AccrualsClassifiedAsNoncurrent,					@AccrualsRD),
+(161,@NoncurrentRetentionPayables,						@RetentionPayableRD),
+(162,@ShorttermWarrantyProvision,						@WarrantyProvisionRD),
+(163,@ShorttermRestructuringProvision,					@RestructuringProvisionRD),
+(164,@CurrentRefundsProvision,							@RefundsProvisionRD),
+(166,@TradeAndOtherCurrentPayablesToTradeSuppliers,		@TradePayableRD),
+(168,@TradeAndOtherCurrentPayablesToRelatedParties,		@TradePayableRD),
+(170,@DeferredIncomeClassifiedAsCurrent,				@DeferredIncomeRD),
+(172,@RentDeferredIncomeClassifiedAsCurrent,			@RentDeferredIncomeRD),
+(174,@AccrualsClassifiedAsCurrent,						@AccrualsRD),
+(176,@ShorttermEmployeeBenefitsAccruals,				@AccrualsRD),
+(178,@CurrentBilledButNotIssuedExtension,				@CurrentBilledButNotIssuedRD),
+(180,@CurrentRetentionPayables,							@RetentionPayableRD),
 
 (46,@RevaluationSurplus,								@LandMemberRD),
 (47,@RevaluationSurplus,								@BuildingsMemberRD),
@@ -1086,10 +1087,14 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 
 
 (35,@CashPaymentsToSuppliersControlExtension,		@SupplierRLD),
-(36,@GoodsAndServicesReceivedFromSuppliersControlExtension,@SupplierRLD),
-(37,@CashReceiptsFromCustomersControlExtension,		@CustomerRLD),
-(38,@GoodsAndServicesIssuedToCustomersControlExtension,@CustomerRLD),
-(39,@CashPaymentsToEmployeesControlExtension,		@EmployeeRLD);
+(36,@ReceiptsAtPointInTimeFromSuppliersControlExtension,@SupplierRLD),
+(37,@ReceiptsOverPeriodOfTimeFromSuppliersControlExtension,@SupplierRLD),
+
+(38,@CashReceiptsFromCustomersControlExtension,		@CustomerRLD),
+(39,@IssuesAtPointInTimeToCustomersControlExtension,@CustomerRLD),
+(40,@IssuesOverPeriodOfTimeToCustomersControlExtension,@CustomerRLD),
+
+(41,@CashPaymentsToEmployeesControlExtension,		@EmployeeRLD);
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,

@@ -39,6 +39,7 @@
 (110899,1108, N'110899',N'Other non-current receivables', N'ذمم مدينة أخرى غير متداولة',@OtherNoncurrentReceivables),
 (1109,11, N'1109',N'Non-current inventories', N'المخزون غير المتداول',@NoncurrentInventories),
 (1110,11, N'1110',N'Deferred tax assets', N'أصول الضريبة المؤجلة',@DeferredTaxAssets),
+(111000,1110, N'111000',N'Deferred tax assets.', N'',@DeferredTaxAssets),
 (1111,11, N'1111',N'Current tax assets, non-current', N'الأصول الضريبية المتداولة، غير جارية',@CurrentTaxAssetsNoncurrent),
 (1112,11, N'1112',N'Other non-current financial assets', N'أصول مالية غير متداولة أخرى',@OtherNoncurrentFinancialAssets),
 (111201,1112, N'111201',N'Non-current financial assets at fair value through profit or loss', N'الأصول المالية غير المتداولة بالقيمة العادلة من خلال الربح أو الخسارة',@NoncurrentFinancialAssetsAtFairValueThroughProfitOrLoss),
@@ -104,7 +105,7 @@
 (3104,31, N'3104',N'Current tax liabilities, non-current', N'الالتزامات الضريبية المتداولة، غير جارية',@CurrentTaxLiabilitiesNoncurrent),
 (3105,31, N'3105',N'Other non-current financial liabilities', N'التزامات مالية غير متداولة أخرى',@OtherNoncurrentFinancialLiabilities),
 (310501,3105, N'310501',N'Non-current financial liabilities at fair value through profit or loss, classified as held for tradi', N'المطلوبات المالية غير المتداولة بالقيمة العادلة من خلال الربح أو الخسارة، وتصنف على أنها محتفظ بها ل',@NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossClassifiedAsHeldForTrading),
-(310502,3105, N'310502',N'Non-current financial liabilities at fair value through profit or loss, designated upon initial reco', N'المطلوبات المالية غير المتداولة بالقيمة العادلة من خلال الربح أو الخسارة، مصنفة عند التحقق المبدئي أ',@NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossDesignatedUponInitialRecognition),
+(310502,3105, N'310502',N'Non-current financial liability 1 at FVTPL, designated upon initial recognition or subsequently', N'المطلوبات المالية غير المتداولة بالقيمة العادلة من خلال الربح أو الخسارة، مصنفة عند التحقق المبدئي أ',@NoncurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossDesignatedUponInitialRecognition),
 (310503,3105, N'310503',N'Non-current financial liabilities at amortised cost', N'المطلوبات المالية غير المتداولة بالتكلفة المطفأة',@NoncurrentFinancialLiabilitiesAtAmortisedCost),
 (3106,31, N'3106',N'Other non-current non-financial liabilities', N'التزامات غير مالية غير متداولة أخرى',@OtherNoncurrentNonfinancialLiabilities),
 (32,3, N'32',N'Current liabilities', N'الالتزامات المتداولة',@CurrentLiabilities),
@@ -180,7 +181,8 @@
 (430604,4306, N'430604',N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances', N'خسارة انخفاض القيمة (عكس خسارة الانخفاض في القيمة) المعترف بها في الربح أو الخسارة، والقروض والسلف',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances),
 (4307,43, N'4307',N'Tax expense other than income tax expense', N'مصروف ضريبة غير مصروف ضريبة الدخل',@TaxExpenseOtherThanIncomeTaxExpense),
 (4399,43, N'4399',N'Other expenses', N'مصاريف أخرى',@OtherExpenseByNature),
-(439900,4399, N'439900',N'Other expenses.', N'مصاريف أخرى.',@OtherExpenseByNature),
+(439901,4399, N'439901',N'Other Allowed Expenses', N'مصاريف أخرى.',@OtherExpenseByNature),
+(439902,4399, N'439902',N'Other Unallowed expenses', N'',@UnallowedExpensesExtension),
 (44,4, N'44',N'Other gains (losses)', N'أرباح (خسائر) الأخرى',@OtherGainsLosses),
 (4400,44, N'4400',N'Other gains (losses).', N'أرباح (خسائر) الأخرى.',@OtherGainsLosses),
 (440002,4400, N'440002',N'Gain (loss) on disposal of property, plant and equipment', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات',@GainsLossesOnDisposalsOfPropertyPlantAndEquipment),
@@ -259,6 +261,7 @@ END;
 --	GOTO Err_Label;
 --END;
 --Declarations
+--Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC11 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'11');
 DECLARE @AC1101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1101');
@@ -299,6 +302,7 @@ DECLARE @AC110807 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC110899 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110899');
 DECLARE @AC1109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1109');
 DECLARE @AC1110 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1110');
+DECLARE @AC111000 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111000');
 DECLARE @AC1111 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1111');
 DECLARE @AC1112 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1112');
 DECLARE @AC111201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'111201');
@@ -440,7 +444,8 @@ DECLARE @AC430603 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC430604 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430604');
 DECLARE @AC4307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4307');
 DECLARE @AC4399 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4399');
-DECLARE @AC439900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439900');
+DECLARE @AC439901 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439901');
+DECLARE @AC439902 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439902');
 DECLARE @AC44 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'44');
 DECLARE @AC4400 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4400');
 DECLARE @AC440002 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'440002');

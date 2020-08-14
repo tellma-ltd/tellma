@@ -190,9 +190,9 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED
-	--AND (
-	--	t.[ResourceDefinitionId] <> s.[ResourceDefinitionId]
-	--)
+	AND (
+		ISNULL(t.[ResourceDefinitionId],0) <> ISNULL(s.[ResourceDefinitionId],0)
+	)
 	THEN
 		UPDATE SET
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
@@ -217,9 +217,9 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED
-	--AND (
-	--	t.[CustodyDefinitionId]	<> s.[CustodyDefinitionId]
-	--)
+	AND (
+		ISNULL(t.[CustodyDefinitionId],0)	<> ISNULL(s.[CustodyDefinitionId],0)
+	)
 	THEN
 		UPDATE SET
 			t.[CustodyDefinitionId]	= s.[CustodyDefinitionId],
@@ -244,9 +244,9 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED
-	--AND (
-	--	t.[NotedRelationDefinitionId] <> s.[NotedRelationDefinitionId]
-	--)
+	AND (
+		ISNULL(t.[NotedRelationDefinitionId],0) <> ISNULL(s.[NotedRelationDefinitionId],0)
+	)
 	THEN
 		UPDATE SET
 			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
@@ -282,19 +282,18 @@ SET NOCOUNT ON;
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED 
-	--AND (
-	--		t.[Index]			<> s.[Index] OR
-	--		t.[ColumnName]		<> s.[ColumnName] OR
-	--		t.[ColumnName]		<> s.[ColumnName] OR
-	--		t.[EntryIndex]		<> s.[EntryIndex] OR
-	--		t.[Label]			<> s.[Label] OR
-	--		t.[Label2]			<> s.[Label2] OR
-	--		t.[Label3]			<> s.[Label3] OR
-	--		t.[VisibleState]	<> s.[VisibleState] OR
-	--		t.[RequiredState]	<> s.[RequiredState] OR
-	--		t.[ReadOnlyState]	<> s.[ReadOnlyState] OR
-	--		t.[InheritsFromHeader]<>s.[InheritsFromHeader]
-	--)
+	AND (
+			t.[Index]				<> s.[Index] OR
+			t.[ColumnName]			<> s.[ColumnName] OR
+			t.[EntryIndex]			<> s.[EntryIndex] OR
+			t.[Label]				<> s.[Label] OR
+			ISNULL(t.[Label2],N'')	<> ISNULL(s.[Label2],N'') OR
+			ISNULL(t.[Label3],N'')	<> ISNULL(s.[Label3],N'') OR
+			t.[VisibleState]		<> s.[VisibleState] OR
+			t.[RequiredState]		<> s.[RequiredState] OR
+			t.[ReadOnlyState]		<> s.[ReadOnlyState] OR
+			t.[InheritsFromHeader]	<>s.[InheritsFromHeader]
+	)
 	THEN
 		UPDATE SET
 			t.[Index]			= s.[Index],
@@ -332,21 +331,20 @@ SET NOCOUNT ON;
 			LDGP.[DataType],
 			LDGP.[Filter]
 		FROM @LineDefinitionGenerateParameters LDGP
-	--	JOIN @Entities LD ON LDGP.HeaderIndex = LD.[Index]
 		JOIN @LineDefinitionsIndexedIds II ON LDGP.[HeaderIndex] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED 
-	--AND (
-	--		t.[Index]			<> s.[Index] OR
-	--		t.[Key]				<> s.[Key] OR
-	--		t.[Label]			<> s.[Label] OR
-	--		t.[Label2]			<> s.[Label2] OR
-	--		t.[Label3]			<> s.[Label3] OR
-	--		t.[Visibility]		<> s.[Visibility] OR
-	--		t.[DataType]		<> s.[DataType] OR
-	--		t.[Filter]			<> s.[Filter]
-	--)
+	AND (
+			t.[Index]				<> s.[Index] OR
+			t.[Key]					<> s.[Key] OR
+			t.[Label]				<> s.[Label] OR
+			ISNULL(t.[Label2],N'')	<> ISNULL(s.[Label2],N'') OR
+			ISNULL(t.[Label3],N'')	<> ISNULL(s.[Label3],N'') OR
+			t.[Visibility]			<> s.[Visibility] OR
+			t.[DataType]			<> s.[DataType] OR
+			ISNULL(t.[Filter],N'')	<> ISNULL(s.[Filter],N'')
+	)
 	THEN
 		UPDATE SET
 			t.[Index]			= s.[Index],
@@ -380,20 +378,19 @@ SET NOCOUNT ON;
 			LDSR.[Name3],
 			LDSR.[IsActive]
 		FROM @LineDefinitionStateReasons LDSR
-	--	JOIN @Entities LD ON LDSR.HeaderIndex = LD.[Index]
 		JOIN @LineDefinitionsIndexedIds II ON LDSR.[HeaderIndex] = II.[Index]
 	) AS s
 	ON s.Id = t.Id
 	WHEN MATCHED
-	--AND (
-	--		t.[Index]			<> s.[Index] OR			
-	--		t.[LineDefinitionId]<> s.[LineDefinitionId] OR
-	--		t.[State]			<> s.[State] OR
-	--		t.[Name]			<> s.[Name] OR
-	--		t.[Name2]			<> s.[Name2] OR
-	--		t.[Name3]			<> s.[Name3] OR
-	--		t.[IsActive]		<> s.[IsActive]
-	--)
+	AND (
+			t.[Index]				<> s.[Index] OR			
+			t.[LineDefinitionId]	<> s.[LineDefinitionId] OR
+			t.[State]				<> s.[State] OR
+			t.[Name]				<> s.[Name] OR
+			ISNULL(t.[Name2],N'')	<> ISNULL(s.[Name2],N'') OR
+			ISNULL(t.[Name3],N'')	<> ISNULL(s.[Name3],N'') OR
+			t.[IsActive]		<> s.[IsActive]
+	)
 	THEN
 		UPDATE SET
 			t.[Index]			= s.[Index],
@@ -460,7 +457,7 @@ SET NOCOUNT ON;
 	USING (
 		SELECT
 			WS.[Index],
-			WS.[Id], -- when 0 then it is inserted
+			WS.[Id],
 			WI.[Id] AS WorkflowId,
 			WS.[RuleType],
 			WS.[RuleTypeEntryIndex],
@@ -476,17 +473,17 @@ SET NOCOUNT ON;
 		JOIN @WorkflowIndexedIds WI ON W.[Index] = WI.[Index] AND WI.[HeaderId] = LDI.[Id]
 	) AS s ON s.[Id] = t.[Id]
 	WHEN MATCHED
-	--AND (
-	--		t.[Index]					<> s.[Index] OR
-	--		t.[RuleType]				<> s.[RuleType] OR
-	--		t.[RuleTypeEntryIndex]		<> s.[RuleTypeEntryIndex] OR
-	--		t.[RoleId]					<> s.[RoleId] OR
-	--		t.[UserId]					<> s.[UserId] OR
-	--		t.[PredicateType]			<> s.[PredicateType] OR
-	--		t.[PredicateTypeEntryIndex]	<> s.[PredicateTypeEntryIndex] OR
-	--		t.[Value]					<> s.[Value] OR
-	--		t.[ProxyRoleId]				<> s.[ProxyRoleId]
-	--) 
+	AND (
+			t.[Index]								<> s.[Index] OR
+			t.[RuleType]							<> s.[RuleType] OR
+			t.[RuleTypeEntryIndex]					<> s.[RuleTypeEntryIndex] OR
+			ISNULL(t.[RoleId],0)					<> ISNULL(s.[RoleId],0) OR
+			ISNULL(t.[UserId],0)					<> ISNULL(s.[UserId],0) OR
+			ISNULL(t.[PredicateType],N'')			<> ISNULL(s.[PredicateType],N'') OR
+			ISNULL(t.[PredicateTypeEntryIndex],0)	<> ISNULL(s.[PredicateTypeEntryIndex],0) OR
+			ISNULL(t.[Value],0)						<> ISNULL(s.[Value],0) OR
+			ISNULL(t.[ProxyRoleId],0)				<> ISNULL(s.[ProxyRoleId],0)
+	) 
 	THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
