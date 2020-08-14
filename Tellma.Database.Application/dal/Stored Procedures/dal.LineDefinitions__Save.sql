@@ -249,9 +249,9 @@ SET NOCOUNT ON;
 	)
 	THEN
 		UPDATE SET
-			t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
+			t.[ModifiedAt]					= @Now,
+			t.[ModifiedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
@@ -278,12 +278,12 @@ SET NOCOUNT ON;
 			LDC.[ReadOnlyState],
 			LDC.[InheritsFromHeader]
 		FROM @LineDefinitionColumns LDC
-	--	JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 		JOIN @LineDefinitionsIndexedIds II ON LDC.[HeaderIndex] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED 
 	AND (
+			t.[Index]			<> s.[Index] OR
 			t.[ColumnName]		<> s.[ColumnName] OR
 			t.[ColumnName]		<> s.[ColumnName] OR
 			t.[EntryIndex]		<> s.[EntryIndex] OR
@@ -371,6 +371,7 @@ SET NOCOUNT ON;
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (
 		SELECT
+			LDSR.[Index],
 			LDSR.[Id],
 			II.[Id] AS [LineDefinitionId],
 			LDSR.[State],
@@ -385,6 +386,7 @@ SET NOCOUNT ON;
 	ON s.Id = t.Id
 	WHEN MATCHED
 	AND (
+			t.[Index]			<> s.[Index] OR			
 			t.[LineDefinitionId]<> s.[LineDefinitionId] OR
 			t.[State]			<> s.[State] OR
 			t.[Name]			<> s.[Name] OR
@@ -394,6 +396,7 @@ SET NOCOUNT ON;
 	)
 	THEN
 		UPDATE SET
+			t.[Index]			= s.[Index],
 			t.[LineDefinitionId]= s.[LineDefinitionId],
 			t.[State]			= s.[State],
 			t.[Name]			= s.[Name],
@@ -402,8 +405,8 @@ SET NOCOUNT ON;
 			t.[IsActive]		= s.[IsActive],
 			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[State], [Name],	[Name2], [Name3], [IsActive])
-		VALUES (s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive])
+		INSERT ([Index], [LineDefinitionId],		[State], [Name],	[Name2], [Name3], [IsActive])
+		VALUES (s.[Index], s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -473,18 +476,20 @@ SET NOCOUNT ON;
 		JOIN @WorkflowIndexedIds WI ON W.[Index] = WI.[Index] AND WI.[HeaderId] = LDI.[Id]
 	) AS s ON s.[Id] = t.[Id]
 	WHEN MATCHED
-	--AND (
-	--		t.[RuleType]				<> s.[RuleType] OR
-	--		t.[RuleTypeEntryIndex]		<> s.[RuleTypeEntryIndex] OR
-	--		t.[RoleId]					<> s.[RoleId] OR
-	--		t.[UserId]					<> s.[UserId] OR
-	--		t.[PredicateType]			<> s.[PredicateType] OR
-	--		t.[PredicateTypeEntryIndex]	<> s.[PredicateTypeEntryIndex] OR
-	--		t.[Value]					<> s.[Value] OR
-	--		t.[ProxyRoleId]				<> s.[ProxyRoleId]
-	--) 
+	AND (
+			t.[Index]					<> s.[Index] OR
+			t.[RuleType]				<> s.[RuleType] OR
+			t.[RuleTypeEntryIndex]		<> s.[RuleTypeEntryIndex] OR
+			t.[RoleId]					<> s.[RoleId] OR
+			t.[UserId]					<> s.[UserId] OR
+			t.[PredicateType]			<> s.[PredicateType] OR
+			t.[PredicateTypeEntryIndex]	<> s.[PredicateTypeEntryIndex] OR
+			t.[Value]					<> s.[Value] OR
+			t.[ProxyRoleId]				<> s.[ProxyRoleId]
+	) 
 	THEN
 		UPDATE SET
+			t.[Index]					= s.[Index],
 			t.[RuleType]				= s.[RuleType],
 			t.[RuleTypeEntryIndex]		= s.[RuleTypeEntryIndex],
 			t.[RoleId]					= s.[RoleId],
@@ -496,6 +501,7 @@ SET NOCOUNT ON;
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT (
+			[Index],
 			[WorkflowId],
 			[RuleType],
 			[RuleTypeEntryIndex],
@@ -507,6 +513,7 @@ SET NOCOUNT ON;
 			[ProxyRoleId]
 		)
 		VALUES (
+			s.[Index],
 			s.[WorkflowId],
 			s.[RuleType],
 			s.[RuleTypeEntryIndex],

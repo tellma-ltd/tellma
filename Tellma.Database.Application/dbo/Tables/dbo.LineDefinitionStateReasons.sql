@@ -2,6 +2,7 @@
 (
 	[Id]				INT				CONSTRAINT [PK_LineDefinitionStateReasons] PRIMARY KEY IDENTITY,
 	[LineDefinitionId]	INT				NOT NULL CONSTRAINT [FK_LineDefinitionStateReasons__LineDefinitionId] REFERENCES dbo.LineDefinitions([Id]),
+	[Index]				INT				NULL DEFAULT 0, -- TODO: Make Not Null
 	[State]				SMALLINT		NOT NULL,
 	[Name]				NVARCHAR (50)	NOT NULL,
 	[Name2]				NVARCHAR (50),
