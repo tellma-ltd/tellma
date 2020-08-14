@@ -27,171 +27,173 @@
                 <div class="row m-0 pt-2 pt-sm-3">
 
                     <!-- TitlePlural -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(titlepluralmodel, model?.serverErrors?.TitlePlural)">
+                    <div class="form-group t-form-group t-text-whitish">
                         <label class="small"
                             for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.TitlePlural }}</div>
-                        <input class="form-control t-studio-input" id="titleplural" type="text"
-                            [(ngModel)]="model.TitlePlural" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #titlepluralmodel="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: titlepluralmodel, serverErrors: model?.serverErrors?.TitlePlural }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else titlepluraltemplate">{{ model.TitlePlural }}</div>
+                        <ng-template #titlepluraltemplate>
+                            <input class="form-control t-studio-input" id="titleplural" type="text"
+                                [(ngModel)]="model.TitlePlural" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #titlepluralmodel="ngModel" required />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: titlepluralmodel, serverErrors: model?.serverErrors?.TitlePlural }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- TitlePlural2 -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(titleplural2model, model?.serverErrors?.TitlePlural2)"
-                        *ngIf="ws.settings.SecondaryLanguageId">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.SecondaryLanguageId">
                         <label class="small"
                             for="titleplural2">{{ ('TitlePlural' | translate) + ws.secondaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.TitlePlural2 }}</div>
-                        <input class="form-control t-studio-input" id="titleplural2" type="text"
-                            [(ngModel)]="model.TitlePlural2" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #titleplural2model="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural2model, serverErrors: model?.serverErrors?.TitlePlural2 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else titleplural2template">{{ model.TitlePlural2 }}</div>
+                        <ng-template #titleplural2template>
+                            <input class="form-control t-studio-input" id="titleplural2" type="text"
+                                [(ngModel)]="model.TitlePlural2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #titleplural2model="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: titleplural2model, serverErrors: model?.serverErrors?.TitlePlural2 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- TitlePlural3 -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(titleplural3model, model?.serverErrors?.TitlePlural3)"
-                        *ngIf="ws.settings.TernaryLanguageId">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.TernaryLanguageId">
                         <label class="small"
                             for="titleplural3">{{ ('TitlePlural' | translate) + ws.ternaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.TitlePlural3 }}</div>
-                        <input class="form-control t-studio-input" id="titleplural3" type="text"
-                            [(ngModel)]="model.TitlePlural3" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #titleplural3model="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural3model, serverErrors: model?.serverErrors?.TitlePlural3 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else titleplural3template">{{ model.TitlePlural3 }}</div>
+                        <ng-template #titleplural3template>
+                            <input class="form-control t-studio-input" id="titleplural3" type="text"
+                                [(ngModel)]="model.TitlePlural3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #titleplural3model="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: titleplural3model, serverErrors: model?.serverErrors?.TitlePlural3 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- TitleSingular -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(titlesingularmodel, model?.serverErrors?.TitleSingular)">
+                    <div class="form-group t-form-group t-text-whitish">
                         <label class="small"
                             for="titlesingular">{{ ('TitleSingular' | translate) + ws.primaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.TitleSingular }}</div>
-                        <input class="form-control t-studio-input" id="titlesingular" type="text"
-                            [(ngModel)]="model.TitleSingular" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #titlesingularmodel="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingularmodel, serverErrors: model?.serverErrors?.TitleSingular }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else titlesingulartemplate">{{ model.TitleSingular }}</div>
+                        <ng-template #titlesingulartemplate>
+                            <input class="form-control t-studio-input" id="titlesingular" type="text"
+                                [(ngModel)]="model.TitleSingular" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #titlesingularmodel="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: titlesingularmodel, serverErrors: model?.serverErrors?.TitleSingular }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- TitleSingular2 -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(titlesingular2model, model?.serverErrors?.TitleSingular2)"
-                        *ngIf="ws.settings.SecondaryLanguageId">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.SecondaryLanguageId">
                         <label class="small"
                             for="titlesingular2">{{ ('TitleSingular' | translate) + ws.secondaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.TitleSingular2 }}</div>
-                        <input class="form-control t-studio-input" id="titlesingular2" type="text"
-                            [(ngModel)]="model.TitleSingular2" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #titlesingular2model="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular2model, serverErrors: model?.serverErrors?.TitleSingular2 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else titlesingular2template">{{ model.TitleSingular2 }}</div>
+                        <ng-template #titlesingular2template>
+                            <input class="form-control t-studio-input" id="titlesingular2" type="text"
+                                [(ngModel)]="model.TitleSingular2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #titlesingular2model="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular2model, serverErrors: model?.serverErrors?.TitleSingular2 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- TitleSingular3 -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(titlesingular3model, model?.serverErrors?.TitleSingular3)"
-                        *ngIf="ws.settings.TernaryLanguageId">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.TernaryLanguageId">
                         <label class="small"
                             for="titlesingular3">{{ ('TitleSingular' | translate) + ws.ternaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.TitleSingular3 }}</div>
-                        <input *ngIf="isEdit" class="form-control t-studio-input" id="titlesingular3" type="text"
-                            [(ngModel)]="model.TitleSingular3" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #titlesingular3model="ngModel" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular3model, serverErrors: model?.serverErrors?.TitleSingular3 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else titlesingular3template">{{ model.TitleSingular3 }}</div>
+                        <ng-template #titlesingular3template>
+                            <input class="form-control t-studio-input" id="titlesingular3" type="text"
+                                [(ngModel)]="model.TitleSingular3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #titlesingular3model="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular3model, serverErrors: model?.serverErrors?.TitleSingular3 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- Code -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(codemodel, model?.serverErrors?.Code)">
+                    <div class="form-group t-form-group t-text-whitish">
                         <label class="small" for="code">{{ ('Code' | translate) }}</label>
-                        <div *ngIf="!isEdit">{{ model.Code }}</div>
-                        <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #codemodel="ngModel"
-                            *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: codemodel, serverErrors: model?.serverErrors?.Code }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else codetemplate">{{ model.Code }}</div>
+                        <ng-template #codetemplate>
+                            <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
+                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #codemodel="ngModel"
+                                required />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: codemodel, serverErrors: model?.serverErrors?.Code }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
-
                     <!-- ViewDefaultsToForm -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(defaultstoformmodel, model?.serverErrors?.ViewDefaultsToForm)">
+                    <div class="form-group t-form-group t-text-whitish">
                         <label class="small"
                             for="defaultstoform">{{ ('LineDefinition_ViewDefaultsToForm' | translate) }}</label>
-                        <div *ngIf="!isEdit">{{ model.ViewDefaultsToForm }}</div>
-
-                        <select *ngIf="isEdit" class="form-control t-studio-input"
-                            [(ngModel)]="model.ViewDefaultsToForm" #defaultstoformmodel="ngModel">
-                            <option value="true">
-                                {{ 'Yes' | translate }}</option>
-                            <option value="false">
-                                {{ 'No' | translate }}</option>
-                        </select>
-
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultstoformmodel, serverErrors: model?.serverErrors?.ViewDefaultsToForm }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else viewdefaultstoformtemplate">{{ (model.ViewDefaultsToForm ? 'Yes' : 'No') | translate }}</div>
+                        <ng-template #viewdefaultstoformtemplate>
+                            <select class="form-control t-studio-input" [(ngModel)]="model.ViewDefaultsToForm"
+                                #defaultstoformmodel="ngModel">
+                                <option value="true">
+                                    {{ 'Yes' | translate }}</option>
+                                <option value="false">
+                                    {{ 'No' | translate }}</option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: defaultstoformmodel, serverErrors: model?.serverErrors?.ViewDefaultsToForm }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <div class="w-100"></div>
 
                     <!-- Description -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(descriptionmodel, model?.serverErrors?.Description)">
+                    <div class="form-group t-form-group t-text-whitish">
                         <label class="small"
                             for="description">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.Description }}</div>
-                        <textarea class="form-control t-studio-input" id="description" type="text" rows="5"
-                            [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #descriptionmodel="ngModel" *ngIf="isEdit"></textarea>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: descriptionmodel, serverErrors: model?.serverErrors?.Description }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else descriptiontemplate">{{ model.Description }}</div>
+                        <ng-template #descriptiontemplate>
+                            <textarea class="form-control t-studio-input" id="description" type="text" rows="5"
+                                [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #descriptionmodel="ngModel"></textarea>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: descriptionmodel, serverErrors: model?.serverErrors?.Description }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- Description2 -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(description2model, model?.serverErrors?.Description2)"
-                        *ngIf="ws.settings.SecondaryLanguageId">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.SecondaryLanguageId">
                         <label class="small"
                             for="description2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.Description2 }}</div>
-                        <textarea class="form-control t-studio-input" id="description2" type="text" rows="5"
-                            [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #description2model="ngModel" *ngIf="isEdit"></textarea>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: description2model, serverErrors: model?.serverErrors?.Description2 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else description2template">{{ model.Description2 }}</div>
+                        <ng-template #description2template>
+                            <textarea class="form-control t-studio-input" id="description2" type="text" rows="5"
+                                [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #description2model="ngModel"></textarea>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: description2model, serverErrors: model?.serverErrors?.Description2 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- Description3 -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(description3model, model?.serverErrors?.Description3)"
-                        *ngIf="ws.settings.TernaryLanguageId">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.TernaryLanguageId">
                         <label class="small"
                             for="description3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.Description3 }}</div>
-                        <textarea class="form-control t-studio-input" id="description3" type="text" rows="5"
-                            [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #description3model="ngModel" *ngIf="isEdit"></textarea>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: description3model, serverErrors: model?.serverErrors?.Description3 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else description3template">{{ model.Description3 }}</div>
+                        <ng-template #description3template>
+                            <textarea class="form-control t-studio-input" id="description3" type="text" rows="5"
+                                [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #description3model="ngModel"></textarea>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: description3model, serverErrors: model?.serverErrors?.Description3 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
                 </div>
             </ng-template>
@@ -246,35 +248,42 @@
                                     {{ i }}
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ directionDisplay(entry.Direction) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="entry.Direction" #directionmodel="ngModel">
-                                        <option value="1">
-                                            {{ directionDisplay(1) }}</option>
-                                        <option value="-1">
-                                            {{ directionDisplay(-1) }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: directionmodel, serverErrors: entry?.serverErrors?.Direction }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else directiontemplate">{{ directionDisplay(entry.Direction) }}</span>
+                                    <ng-template #directiontemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="entry.Direction"
+                                            #directionmodel="ngModel">
+                                            <option value="1">
+                                                {{ directionDisplay(1) }}</option>
+                                            <option value="-1">
+                                                {{ directionDisplay(-1) }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: directionmodel, serverErrors: entry?.serverErrors?.Direction }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit">{{ ws.getMultilingualValue('AccountType', entry.AccountTypeId, 'Name') }}</span>
-                                    <t-account-types-picker *ngIf="isEdit" [(ngModel)]="entry.AccountTypeId"
-                                        theme="dark" #accounttypemodel></t-account-types-picker>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entry?.serverErrors?.AccountTypeId }">
-                                    </ng-container>
+                                        *ngIf="!isEdit; else accounttypetemplate">{{ ws.getMultilingualValue('AccountType', entry.AccountTypeId, 'Name') }}</span>
+                                    <ng-template #accounttypetemplate>
+                                        <t-account-types-picker [(ngModel)]="entry.AccountTypeId" theme="dark"
+                                            #accounttypemodel="ngModel"></t-account-types-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entry?.serverErrors?.AccountTypeId }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit">{{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}</span>
-                                    <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="entry.EntryTypeId" theme="dark"
-                                        #entrytypemodel></t-entry-types-picker>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: entrytypemodel, serverErrors: entry?.serverErrors?.EntryTypeId }">
-                                    </ng-container>
+                                        *ngIf="!isEdit; else entrytypetemplate">{{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}</span>
+                                    <ng-template #entrytypetemplate>
+                                        <t-entry-types-picker [(ngModel)]="entry.EntryTypeId" theme="dark"
+                                            #entrytypemodel="ngModel"></t-entry-types-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: entrytypemodel, serverErrors: entry?.serverErrors?.EntryTypeId }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
@@ -364,101 +373,124 @@
                                     <fa-icon icon="arrows-alt"></fa-icon>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ columnNameDisplay(column.ColumnName) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="column.ColumnName" #columnnamemodel="ngModel">
-                                        <option *ngFor="let c of columnNameChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: columnnamemodel, serverErrors: column?.serverErrors?.ColumnName }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else columnnametemplate">{{ columnNameDisplay(column.ColumnName) }}</span>
+                                    <ng-template #columnnametemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="column.ColumnName"
+                                            #columnnamemodel="ngModel">
+                                            <option *ngFor="let c of columnNameChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: columnnamemodel, serverErrors: column?.serverErrors?.ColumnName }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ column.EntryIndex }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="number" min="0"
-                                        [(ngModel)]="column.EntryIndex" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #entryindexmodel="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: entryindexmodel, serverErrors: column?.serverErrors?.EntryIndex }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else entryindextemplate">{{ column.EntryIndex }}</span>
+                                    <ng-template #entryindextemplate>
+                                        <input class="form-control t-studio-input" type="number" min="0"
+                                            [(ngModel)]="column.EntryIndex" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #entryindexmodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: entryindexmodel, serverErrors: column?.serverErrors?.EntryIndex }">
+                                        </ng-container>
+
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ column.Label }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="column.Label" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #labelmodel="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: column?.serverErrors?.Label }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else labeltemplate">{{ column.Label }}</span>
+                                    <ng-template #labeltemplate>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="column.Label" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #labelmodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: column?.serverErrors?.Label }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit" *ngIf="ws.settings.SecondaryLanguageId">
-                                    <span *ngIf="!isEdit">{{ column.Label2 }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="column.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #label2model="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: label2model, serverErrors: column?.serverErrors?.Label2 }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else label2template">{{ column.Label2 }}</span>
+                                    <ng-template #label2template>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="column.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #label2model="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: label2model, serverErrors: column?.serverErrors?.Label2 }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit" *ngIf="ws.settings.TernaryLanguageId">
-                                    <span *ngIf="!isEdit">{{ column.Label3 }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="column.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #label3model="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: column?.serverErrors?.Label3 }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else label3template">{{ column.Label3 }}</span>
+                                    <ng-template #label3template>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="column.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #label3model="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: column?.serverErrors?.Label3 }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
-                                        <option value="true">
-                                            {{ 'Yes' | translate }}</option>
-                                        <option value="false">
-                                            {{ 'No' | translate }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
-                                    </ng-container>
+                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
+                                    <ng-template #inheritsfromheadertemplate>
+                                        <select class="form-control t-studio-input"
+                                            [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
+                                            <option value="true">
+                                                {{ 'Yes' | translate }}</option>
+                                            <option value="false">
+                                                {{ 'No' | translate }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
 
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ stateDisplay(column.VisibleState) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="column.VisibleState" #visiblestatemodel="ngModel">
-                                        <option *ngFor="let c of stateChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: visiblestatemodel, serverErrors: column?.serverErrors?.VisibleState }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else visiblestatetemplate">{{ stateDisplay(column.VisibleState) }}</span>
+                                    <ng-template #visiblestatetemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="column.VisibleState"
+                                            #visiblestatemodel="ngModel">
+                                            <option *ngFor="let c of stateChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: visiblestatemodel, serverErrors: column?.serverErrors?.VisibleState }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
 
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ stateDisplay(column.RequiredState) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="column.RequiredState" #requiredstatemodel="ngModel">
-                                        <option *ngFor="let c of stateChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: requiredstatemodel, serverErrors: column?.serverErrors?.RequiredState }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else requiredstatetemplate">{{ stateDisplay(column.RequiredState) }}</span>
+                                    <ng-template #requiredstatetemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="column.RequiredState"
+                                            #requiredstatemodel="ngModel">
+                                            <option *ngFor="let c of stateChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: requiredstatemodel, serverErrors: column?.serverErrors?.RequiredState }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
 
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ stateDisplay(column.ReadOnlyState) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="column.ReadOnlyState" #readonlystatemodel="ngModel">
-                                        <option *ngFor="let c of stateChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: readonlystatemodel, serverErrors: column?.serverErrors?.ReadOnlyState }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else readonlystatetemplate">{{ stateDisplay(column.ReadOnlyState) }}</span>
+                                    <ng-template #readonlystatetemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="column.ReadOnlyState"
+                                            #readonlystatemodel="ngModel">
+                                            <option *ngFor="let c of stateChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: readonlystatemodel, serverErrors: column?.serverErrors?.ReadOnlyState }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td *ngIf="isEdit">
                                     <button
@@ -492,19 +524,23 @@
                 <span class="small t-slightly-bold">{{ 'LineDefinition_Script' | translate }}</span>
             </a>
             <ng-template ngbNavContent>
-                <div *ngIf="!isEdit && !model.Script" class="text-muted bg-dark p-2 pb-5 font-italic">
-                    ({{ 'Blank' | translate }})
-                </div>
-                <div *ngIf="!isEdit && !!model.Script" style="white-space: pre;"
-                    class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                    {{ model.Script }}
-                </div>
-                <textarea *ngIf="isEdit" class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                    [(ngModel)]="model.Script" #preprocessscriptnmodel="ngModel" rows="25">
-                </textarea>
-                <ng-container
-                    *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.Script }">
+                <ng-container *ngIf="!isEdit; else preprocessscripttemplate">
+                    <div *ngIf="!model.Script" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!!model.Script" style="white-space: pre;"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                        {{ model.Script }}
+                    </div>
                 </ng-container>
+                <ng-template #preprocessscripttemplate>
+                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.Script" #preprocessscriptnmodel="ngModel" rows="25">
+                    </textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.Script }">
+                    </ng-container>
+                </ng-template>
             </ng-template>
         </li>
 
@@ -522,45 +558,48 @@
                 <div class="row m-0 pt-2 pt-sm-3">
 
                     <!-- GenerateLabel -->
-                    <div class="form-group t-form-group t-text-whitish"
-                        [class.is-invalid]="invalid(generatelabelmodel, model?.serverErrors?.GenerateLabel)">
+                    <div class="form-group t-form-group t-text-whitish">
                         <label class="small"
                             for="generatelabel">{{ ('LineDefinition_GenerateLabel' | translate) + ws.primaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.GenerateLabel }}&zwnj;</div>
-                        <input class="form-control t-studio-input" id="generatelabel" type="text"
-                            [(ngModel)]="model.GenerateLabel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            #generatelabelmodel="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: generatelabelmodel, serverErrors: model?.serverErrors?.GenerateLabel }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else generatelabeltemplate">{{ model.GenerateLabel }}&zwnj;</div>
+                        <ng-template #generatelabeltemplate>
+                            <input class="form-control t-studio-input" id="generatelabel" type="text"
+                                [(ngModel)]="model.GenerateLabel" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #generatelabelmodel="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: generatelabelmodel, serverErrors: model?.serverErrors?.GenerateLabel }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- GenerateLabel2 -->
-                    <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.SecondaryLanguageId"
-                        [class.is-invalid]="invalid(generatelabel2model, model?.serverErrors?.GenerateLabel2)">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.SecondaryLanguageId">
                         <label class="small"
                             for="generatelabel2">{{ ('LineDefinition_GenerateLabel' | translate) + ws.secondaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.GenerateLabel2 }}&zwnj;</div>
-                        <input class="form-control t-studio-input" id="generatelabel2" type="text"
-                            [(ngModel)]="model.GenerateLabel2" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #generatelabel2model="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: generatelabel2model, serverErrors: model?.serverErrors?.GenerateLabel2 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else generatelabel2template">{{ model.GenerateLabel2 }}&zwnj;</div>
+                        <ng-template #generatelabel2template>
+                            <input class="form-control t-studio-input" id="generatelabel2" type="text"
+                                [(ngModel)]="model.GenerateLabel2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #generatelabel2model="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: generatelabel2model, serverErrors: model?.serverErrors?.GenerateLabel2 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
 
                     <!-- GenerateLabel3 -->
-                    <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.TernaryLanguageId"
-                        [class.is-invalid]="invalid(generatelabel3model, model?.serverErrors?.GenerateLabel3)">
+                    <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.TernaryLanguageId">
                         <label class="small"
                             for="generatelabel3">{{ ('LineDefinition_GenerateLabel' | translate) + ws.ternaryPostfix }}</label>
-                        <div *ngIf="!isEdit">{{ model.GenerateLabel3 }}&zwnj;</div>
-                        <input class="form-control t-studio-input" id="generatelabel3" type="text"
-                            [(ngModel)]="model.GenerateLabel3" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #generatelabel3model="ngModel" *ngIf="isEdit" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: generatelabel3model, serverErrors: model?.serverErrors?.GenerateLabel3 }">
-                        </ng-container>
+                        <div *ngIf="!isEdit; else generatelabel3template">{{ model.GenerateLabel3 }}&zwnj;</div>
+                        <ng-template #generatelabel3template>
+                            <input class="form-control t-studio-input" id="generatelabel3" type="text"
+                                [(ngModel)]="model.GenerateLabel3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #generatelabel3model="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: generatelabel3model, serverErrors: model?.serverErrors?.GenerateLabel3 }">
+                            </ng-container>
+                        </ng-template>
                     </div>
                 </div>
 
@@ -607,71 +646,87 @@
                                     <fa-icon icon="arrows-alt"></fa-icon>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ param.Key }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="param.Key" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #keymodel="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: keymodel, serverErrors: param?.serverErrors?.Key }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else keytemplate">{{ param.Key }}</span>
+                                    <ng-template #keytemplate>
+                                        <input class="form-control t-studio-input" type="text" [(ngModel)]="param.Key"
+                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                            #keymodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: keymodel, serverErrors: param?.serverErrors?.Key }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ param.Label }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="param.Label" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #labelmodel="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: param?.serverErrors?.Label }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else labeltemplate">{{ param.Label }}</span>
+                                    <ng-template #labeltemplate>
+                                        <input class="form-control t-studio-input" type="text" [(ngModel)]="param.Label"
+                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                            #labelmodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: param?.serverErrors?.Label }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit" *ngIf="ws.settings.SecondaryLanguageId">
-                                    <span *ngIf="!isEdit">{{ param.Label2 }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="param.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #label2model="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: label2model, serverErrors: param?.serverErrors?.Label2 }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else label2template">{{ param.Label2 }}</span>
+                                    <ng-template #label2template>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="param.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #label2model="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: label2model, serverErrors: param?.serverErrors?.Label2 }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit" *ngIf="ws.settings.TernaryLanguageId">
-                                    <span *ngIf="!isEdit">{{ param.Label3 }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="param.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #label3model="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: param?.serverErrors?.Label3 }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else label3template">{{ param.Label3 }}</span>
+                                    <ng-template #label3template>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="param.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #label3model="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: param?.serverErrors?.Label3 }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ visibilityDisplay(param.Visibility) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input" style="min-width: 120px;"
-                                        [(ngModel)]="param.Visibility" #visibilitymodel="ngModel">
-                                        <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: visibilitymodel, serverErrors: param?.serverErrors?.Visibility }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else visibilitytemplate">{{ visibilityDisplay(param.Visibility) }}</span>
+                                    <ng-template #visibilitytemplate>
+                                        <select class="form-control t-studio-input" style="min-width: 120px;"
+                                            [(ngModel)]="param.Visibility" #visibilitymodel="ngModel">
+                                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: visibilitymodel, serverErrors: param?.serverErrors?.Visibility }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ dataTypeDisplay(param.DataType) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="param.DataType" #datatypemodel="ngModel">
-                                        <option *ngFor="let c of dataTypeChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: datatypemodel, serverErrors: param?.serverErrors?.DataType }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else datatypetemplate">{{ dataTypeDisplay(param.DataType) }}</span>
+                                    <ng-template #datatypetemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="param.DataType"
+                                            #datatypemodel="ngModel">
+                                            <option *ngFor="let c of dataTypeChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: datatypemodel, serverErrors: param?.serverErrors?.DataType }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ param.Filter }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="param.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #filtermodel="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: param?.serverErrors?.Filter }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else filtertemplate">{{ param.Filter }}</span>
+                                    <ng-template #filtertemplate>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="param.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #filtermodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: param?.serverErrors?.Filter }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td *ngIf="isEdit">
                                     <button
@@ -697,19 +752,23 @@
                 <div class="t-wide-form-group">
                     <label class="small t-text-whitish"
                         for="generatescript">{{ 'LineDefinition_GenerateScript' | translate }}</label>
-                    <div *ngIf="!isEdit && !model.GenerateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
-                        ({{ 'Blank' | translate }})
-                    </div>
-                    <div *ngIf="!isEdit && !!model.GenerateScript" style="white-space: pre;"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                        {{ model.GenerateScript }}
-                    </div>
-                    <textarea id="generatescript" *ngIf="isEdit"
-                        class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.GenerateScript" #generatescriptnmodel="ngModel" rows="15"></textarea>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: generatescriptnmodel, serverErrors: model?.serverErrors?.GenerateScript }">
+                    <ng-container *ngIf="!isEdit; else generatescripttemplate">
+                        <div *ngIf="!model.GenerateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                            ({{ 'Blank' | translate }})
+                        </div>
+                        <div *ngIf="!!model.GenerateScript" style="white-space: pre;"
+                            class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                            {{ model.GenerateScript }}
+                        </div>
                     </ng-container>
+                    <ng-template #generatescripttemplate>
+                        <textarea id="generatescript" class="w-100 form-control t-studio-input text-nowrap t-code"
+                            spellcheck="false" [(ngModel)]="model.GenerateScript" #generatescriptnmodel="ngModel"
+                            rows="15"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: generatescriptnmodel, serverErrors: model?.serverErrors?.GenerateScript }">
+                        </ng-container>
+                    </ng-template>
                 </div>
             </ng-template>
         </li>
@@ -758,52 +817,59 @@
                                     <td [class.p-0]="isEdit">
                                         <div class="d-flex align-items-baseline">
                                             <div [class.flex-grow-1]="isEdit">
-                                                <span *ngIf="!isEdit">{{ ruleTypeDisplay(signature.RuleType) }}</span>
-                                                <select *ngIf="isEdit" class="form-control t-studio-input"
-                                                    style="min-width: 120px;" [(ngModel)]="signature.RuleType"
-                                                    #ruletypemodel="ngModel">
-                                                    <option *ngFor="let c of ruleTypeChoices" value="{{c.value}}">
-                                                        {{ c.name() }}</option>
-                                                </select>
-                                                <ng-container
-                                                    *ngTemplateOutlet="errorsTemplate;context: { control: ruletypemodel, serverErrors: signature?.serverErrors?.RuleType }">
-                                                </ng-container>
+                                                <span
+                                                    *ngIf="!isEdit; else ruletypetemplate">{{ ruleTypeDisplay(signature.RuleType) }}</span>
+                                                <ng-template #ruletypetemplate>
+                                                    <select class="form-control t-studio-input"
+                                                        style="min-width: 120px;" [(ngModel)]="signature.RuleType"
+                                                        #ruletypemodel="ngModel">
+                                                        <option *ngFor="let c of ruleTypeChoices" value="{{c.value}}">
+                                                            {{ c.name() }}</option>
+                                                    </select>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: ruletypemodel, serverErrors: signature?.serverErrors?.RuleType }">
+                                                    </ng-container>
+                                                </ng-template>
                                             </div>
                                             <ng-container *ngIf="signature.RuleType === 'ByRole'">
                                                 <div>
                                                     <span>:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold"
-                                                        *ngIf="!isEdit && !!signature.RoleId">
-                                                        {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
-                                                    </span>
-                                                    <t-roles-picker class="d-inline-block" theme="dark" id="role"
-                                                        [(ngModel)]="signature.RoleId" filter="IsPublic eq false"
-                                                        #rolemodel="ngModel" *ngIf="isEdit">
-                                                    </t-roles-picker>
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: signature?.serverErrors?.RoleId }">
+                                                    <ng-container *ngIf="!isEdit; else roletemplate">
+                                                        <span class="font-weight-bold" *ngIf="!!signature.RoleId">
+                                                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                                                        </span>
                                                     </ng-container>
+                                                    <ng-template #roletemplate>
+                                                        <t-roles-picker class="d-inline-block" theme="dark" id="role"
+                                                            [(ngModel)]="signature.RoleId" filter="IsPublic eq false"
+                                                            #rolemodel="ngModel">
+                                                        </t-roles-picker>
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: signature?.serverErrors?.RoleId }">
+                                                        </ng-container>
+                                                    </ng-template>
                                                 </div>
-
                                             </ng-container>
                                             <ng-container *ngIf="signature.RuleType === 'ByUser'">
                                                 <div>
                                                     <span>:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold"
-                                                        *ngIf="!isEdit && !!signature.UserId">
-                                                        {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
-                                                    </span>
-                                                    <t-users-picker theme="dark" id="user"
-                                                        [(ngModel)]="signature.UserId" #usermodel="ngModel"
-                                                        *ngIf="isEdit">
-                                                    </t-users-picker>
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
+                                                    <ng-container *ngIf="!isEdit; else usertemplate">
+                                                        <span class="font-weight-bold" *ngIf="!!signature.UserId">
+                                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
+                                                        </span>
                                                     </ng-container>
+                                                    <ng-template #usertemplate>
+                                                        <t-users-picker theme="dark" id="user"
+                                                            [(ngModel)]="signature.UserId" #usermodel="ngModel">
+                                                        </t-users-picker>
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
+                                                        </ng-container>
+                                                    </ng-template>
                                                 </div>
 
                                             </ng-container>
@@ -812,17 +878,22 @@
                                                     <span>&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold"
-                                                        *ngIf="!isEdit && !!signature.RuleTypeEntryIndex">
-                                                        {{ signature.RuleTypeEntryIndex }}
-                                                    </span>
-                                                    <input class="form-control t-studio-input" id="ruletypeentryindex"
-                                                        type="number" [(ngModel)]="signature.RuleTypeEntryIndex" min="0"
-                                                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                                                        #ruletypeentryindexmodel="ngModel" *ngIf="isEdit" />
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: ruletypeentryindexmodel, serverErrors: signature?.serverErrors?.RuleTypeEntryIndex }">
+                                                    <ng-container *ngIf="!isEdit; else ruletypeentryindextemplate">
+                                                        <span class="font-weight-bold"
+                                                            *ngIf="!!signature.RuleTypeEntryIndex">
+                                                            {{ signature.RuleTypeEntryIndex }}
+                                                        </span>
                                                     </ng-container>
+                                                    <ng-template #ruletypeentryindextemplate>
+                                                        <input class="form-control t-studio-input"
+                                                            id="ruletypeentryindex" type="number"
+                                                            [(ngModel)]="signature.RuleTypeEntryIndex" min="0"
+                                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                                            #ruletypeentryindexmodel="ngModel" />
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: ruletypeentryindexmodel, serverErrors: signature?.serverErrors?.RuleTypeEntryIndex }">
+                                                        </ng-container>
+                                                    </ng-template>
                                                 </div>
                                             </ng-container>
                                             <ng-container
@@ -831,16 +902,19 @@
                                                     <span>&nbsp;{{ 'WorkflowSignature_ProxyRole' | translate }}:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold" *ngIf="!isEdit">
+                                                    <span class="font-weight-bold"
+                                                        *ngIf="!isEdit; else proxyroletemplate">
                                                         {{ ws.getMultilingualValue('Role', signature.ProxyRoleId, 'Name') }}
                                                     </span>
-                                                    <t-roles-picker theme="dark" id="proxyrole"
-                                                        [(ngModel)]="signature.ProxyRoleId" filter="IsPublic eq false"
-                                                        #proxyrolemodel="ngModel" *ngIf="isEdit">
-                                                    </t-roles-picker>
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: proxyrolemodel, serverErrors: signature?.serverErrors?.ProxyRoleId }">
-                                                    </ng-container>
+                                                    <ng-template #proxyroletemplate>
+                                                        <t-roles-picker theme="dark" id="proxyrole"
+                                                            [(ngModel)]="signature.ProxyRoleId"
+                                                            filter="IsPublic eq false" #proxyrolemodel="ngModel">
+                                                        </t-roles-picker>
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: proxyrolemodel, serverErrors: signature?.serverErrors?.ProxyRoleId }">
+                                                        </ng-container>
+                                                    </ng-template>
                                                 </div>
                                             </ng-container>
                                         </div>
@@ -850,46 +924,55 @@
                                         <div class="d-flex align-items-baseline">
                                             <div [class.flex-grow-1]="isEdit">
                                                 <span
-                                                    *ngIf="!isEdit">{{ predicateTypeDisplay(signature.PredicateType) }}</span>
-                                                <select *ngIf="isEdit" class="form-control t-studio-input"
-                                                    style="min-width: 120px;" [(ngModel)]="signature.PredicateType"
-                                                    #predicatetypemodel="ngModel">
-                                                    <option value=""></option>
-                                                    <option *ngFor="let c of predicateTypeChoices" value="{{c.value}}">
-                                                        {{ c.name() }}</option>
-                                                </select>
-                                                <ng-container
-                                                    *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypemodel, serverErrors: signature?.serverErrors?.PredicateType }">
-                                                </ng-container>
+                                                    *ngIf="!isEdit; else predicatetypetemplate">{{ predicateTypeDisplay(signature.PredicateType) }}</span>
+                                                <ng-template #predicatetypetemplate>
+                                                    <select class="form-control t-studio-input"
+                                                        style="min-width: 120px;" [(ngModel)]="signature.PredicateType"
+                                                        #predicatetypemodel="ngModel">
+                                                        <option value=""></option>
+                                                        <option *ngFor="let c of predicateTypeChoices"
+                                                            value="{{c.value}}">
+                                                            {{ c.name() }}</option>
+                                                    </select>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypemodel, serverErrors: signature?.serverErrors?.PredicateType }">
+                                                    </ng-container>
+
+                                                </ng-template>
                                             </div>
                                             <ng-container *ngIf="signature.PredicateType === 'ValueGreaterOrEqual'">
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold" *ngIf="!isEdit">
+                                                    <span class="font-weight-bold" *ngIf="!isEdit; else valuetemplate">
                                                         &nbsp;{{ signature.Value | accounting:functionalFormat }}
                                                     </span>
-                                                    <t-decimal-editor theme="dark" [(ngModel)]="signature.Value"
-                                                        [maxDecimalPlaces]="functionalDecimals"
-                                                        [minDecimalPlaces]="functionalDecimals" #valuemodel="ngModel"
-                                                        *ngIf="isEdit"></t-decimal-editor>
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: valuemodel, serverErrors: signature?.serverErrors?.Value }">
-                                                    </ng-container>
+                                                    <ng-template #valuetemplate>
+                                                        <t-decimal-editor theme="dark" [(ngModel)]="signature.Value"
+                                                            [maxDecimalPlaces]="functionalDecimals"
+                                                            [minDecimalPlaces]="functionalDecimals"
+                                                            #valuemodel="ngModel"></t-decimal-editor>
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: valuemodel, serverErrors: signature?.serverErrors?.Value }">
+                                                        </ng-container>
+                                                    </ng-template>
                                                 </div>
                                                 <div>
                                                     <span>&nbsp;{{ functionalDisplay }},&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold" *ngIf="!isEdit">
+                                                    <span class="font-weight-bold"
+                                                        *ngIf="!isEdit; else predicatetypeentryindextemplate">
                                                         &nbsp;{{ signature.PredicateTypeEntryIndex }}
                                                     </span>
-                                                    <input class="form-control t-studio-input"
-                                                        id="predicatetypeentryindex" type="number" min="0"
-                                                        [(ngModel)]="signature.PredicateTypeEntryIndex"
-                                                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                                                        #predicatetypeentryindexmodel="ngModel" *ngIf="isEdit" />
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypeentryindexmodel, serverErrors: signature?.serverErrors?.PredicateTypeEntryIndex }">
-                                                    </ng-container>
+                                                    <ng-template #predicatetypeentryindextemplate>
+                                                        <input class="form-control t-studio-input"
+                                                            id="predicatetypeentryindex" type="number" min="0"
+                                                            [(ngModel)]="signature.PredicateTypeEntryIndex"
+                                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                                            #predicatetypeentryindexmodel="ngModel" />
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypeentryindexmodel, serverErrors: signature?.serverErrors?.PredicateTypeEntryIndex }">
+                                                        </ng-container>
+                                                    </ng-template>
                                                 </div>
                                             </ng-container>
                                         </div>
@@ -965,55 +1048,66 @@
                                     <fa-icon icon="arrows-alt"></fa-icon>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ stateDisplay(reason.State) }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="reason.State" #statemodel="ngModel">
-                                        <option *ngFor="let c of negativeStateChoices" value="{{c.value}}">
-                                            {{ c.name() }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: statemodel, serverErrors: reason?.serverErrors?.State }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else statetemplate">{{ stateDisplay(reason.State) }}</span>
+                                    <ng-template #statetemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="reason.State"
+                                            #statemodel="ngModel">
+                                            <option *ngFor="let c of negativeStateChoices" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: statemodel, serverErrors: reason?.serverErrors?.State }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ reason.Name }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="reason.Name" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #namemodel="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: namemodel, serverErrors: reason?.serverErrors?.Name }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else nametemplate">{{ reason.Name }}</span>
+                                    <ng-template #nametemplate>
+                                        <input class="form-control t-studio-input" type="text" [(ngModel)]="reason.Name"
+                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                            #namemodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: namemodel, serverErrors: reason?.serverErrors?.Name }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit" *ngIf="ws.settings.SecondaryLanguageId">
-                                    <span *ngIf="!isEdit">{{ reason.Name2 }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="reason.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #name2model="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: name2model, serverErrors: reason?.serverErrors?.Name2 }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else name2template">{{ reason.Name2 }}</span>
+                                    <ng-template #name2template>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="reason.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #name2model="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: name2model, serverErrors: reason?.serverErrors?.Name2 }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit" *ngIf="ws.settings.TernaryLanguageId">
-                                    <span *ngIf="!isEdit">{{ reason.Name3 }}</span>
-                                    <input *ngIf="isEdit" class="form-control t-studio-input" type="text"
-                                        [(ngModel)]="reason.Name3" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        autocomplete="off" #name3model="ngModel" />
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: name3model, serverErrors: reason?.serverErrors?.Name3 }">
-                                    </ng-container>
+                                    <span *ngIf="!isEdit; else name3template">{{ reason.Name3 }}</span>
+                                    <ng-template #name3template>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="reason.Name3" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #name3model="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: name3model, serverErrors: reason?.serverErrors?.Name3 }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit">{{ (reason.IsActive ? 'Yes' : 'No') | translate }}</span>
-                                    <select *ngIf="isEdit" class="form-control t-studio-input"
-                                        [(ngModel)]="reason.IsActive" #isactivemodel="ngModel">
-                                        <option value="true">
-                                            {{ 'Yes' | translate }}</option>
-                                        <option value="false">
-                                            {{ 'No' | translate }}</option>
-                                    </select>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: isactivemodel, serverErrors: reason?.serverErrors?.IsActive }">
-                                    </ng-container>
+                                    <span
+                                        *ngIf="!isEdit; else isactivetemplate">{{ (reason.IsActive ? 'Yes' : 'No') | translate }}</span>
+                                    <ng-template #isactivetemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="reason.IsActive"
+                                            #isactivemodel="ngModel">
+                                            <option value="true">
+                                                {{ 'Yes' | translate }}</option>
+                                            <option value="false">
+                                                {{ 'No' | translate }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: isactivemodel, serverErrors: reason?.serverErrors?.IsActive }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td *ngIf="isEdit">
                                     <button
@@ -1036,6 +1130,7 @@
                 </div>
             </ng-template>
         </li>
+
     </ul>
     <div class="w-100 overflow-auto" [ngbNavOutlet]="tabs"></div>
 </ng-template>
@@ -1068,17 +1163,20 @@
             <div class="form-group col-12 col-sm-6">
                 <label class="small" for="label">{{ 'LineDefinitionEntry_Direction' | translate }}</label>
                 <div>
-                    <span *ngIf="!modalIsEdit">{{ directionDisplay(entryToEdit.Direction) }}</span>
-                    <select *ngIf="modalIsEdit" class="form-control t-studio-input" [(ngModel)]="entryToEdit.Direction"
-                        #directionmodel="ngModel">
-                        <option value="1">
-                            {{ directionDisplay(1) }}</option>
-                        <option value="-1">
-                            {{ directionDisplay(-1) }}</option>
-                    </select>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: directionmodel, serverErrors: entryToEdit?.serverErrors?.Direction }">
-                    </ng-container>
+                    <span
+                        *ngIf="!modalIsEdit; else modaldirectiontemplate">{{ directionDisplay(entryToEdit.Direction) }}</span>
+                    <ng-template #modaldirectiontemplate>
+                        <select class="form-control t-studio-input" [(ngModel)]="entryToEdit.Direction"
+                            #directionmodel="ngModel">
+                            <option value="1">
+                                {{ directionDisplay(1) }}</option>
+                            <option value="-1">
+                                {{ directionDisplay(-1) }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: directionmodel, serverErrors: entryToEdit?.serverErrors?.Direction }">
+                        </ng-container>
+                    </ng-template>
                 </div>
             </div>
 
@@ -1087,13 +1185,15 @@
                 <label class="small" for="label">{{ 'LineDefinitionEntry_AccountType' | translate }}</label>
                 <div>
                     <span
-                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('AccountType', entryToEdit.AccountTypeId, 'Name') }}</span>
-                    <t-account-types-picker *ngIf="modalIsEdit" [(ngModel)]="entryToEdit.AccountTypeId" theme="dark"
-                        #accounttypemodel>
-                    </t-account-types-picker>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entryToEdit?.serverErrors?.AccountTypeId }">
-                    </ng-container>
+                        *ngIf="!modalIsEdit; else modalaccounttypetemplate">{{ ws.getMultilingualValue('AccountType', entryToEdit.AccountTypeId, 'Name') }}</span>
+                    <ng-template #modalaccounttypetemplate>
+                        <t-account-types-picker [(ngModel)]="entryToEdit.AccountTypeId" theme="dark"
+                            #accounttypemodel="ngModel">
+                        </t-account-types-picker>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entryToEdit?.serverErrors?.AccountTypeId }">
+                        </ng-container>
+                    </ng-template>
                 </div>
             </div>
 
@@ -1102,13 +1202,15 @@
                 <label class="small" for="label">{{ 'LineDefinitionEntry_EntryType' | translate }}</label>
                 <div>
                     <span
-                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('EntryType', entryToEdit.EntryTypeId, 'Name') }}</span>
-                    <t-entry-types-picker *ngIf="modalIsEdit" [(ngModel)]="entryToEdit.EntryTypeId" theme="dark"
-                        #entrytypemodel>
-                    </t-entry-types-picker>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: entrytypemodel, serverErrors: entryToEdit?.serverErrors?.EntryTypeId }">
-                    </ng-container>
+                        *ngIf="!modalIsEdit; else modalentrytypetemplate">{{ ws.getMultilingualValue('EntryType', entryToEdit.EntryTypeId, 'Name') }}</span>
+                    <ng-template #modalentrytypetemplate>
+                        <t-entry-types-picker [(ngModel)]="entryToEdit.EntryTypeId" theme="dark"
+                            #entrytypemodel="ngModel">
+                        </t-entry-types-picker>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: entrytypemodel, serverErrors: entryToEdit?.serverErrors?.EntryTypeId }">
+                        </ng-container>
+                    </ng-template>
                 </div>
             </div>
 
@@ -1129,26 +1231,19 @@
                 <ng-template ngbNavContent>
                     <table class="table table-sm table-dark text-nowrap mb-1">
 
-                        <tbody cdkDropList [cdkDropListDisabled]="!modalIsEdit"
-                            (cdkDropListDropped)="rowDrop($event, entryToEdit.CustodyDefinitions)">
-                            <tr *ngFor="let def of entryToEdit.CustodyDefinitions" cdkDrag cdkDragLockAxis="y">
-                                <ng-container *cdkDragPlaceholder>
-                                    <td>&zwnj;</td>
-                                </ng-container>
-                                <div *cdkDragPreview class="t-transparent">
-                                </div>
-                                <td cdkDragHandle class="px-2" style="cursor: move;width:1px" *ngIf="modalIsEdit">
-                                    <fa-icon icon="arrows-alt"></fa-icon>
-                                </td>
+                        <tbody>
+                            <tr *ngFor="let def of entryToEdit.CustodyDefinitions">
                                 <td [class.p-0]="modalIsEdit">
                                     <span
-                                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('CustodyDefinition', def.CustodyDefinitionId, 'TitleSingular') }}</span>
-                                    <t-custody-definitions-picker *ngIf="modalIsEdit"
-                                        [(ngModel)]="def.CustodyDefinitionId" theme="dark" #custodydefinitionmodel>
-                                    </t-custody-definitions-picker>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: custodydefinitionmodel, serverErrors: def?.serverErrors?.CustodyDefinitionId }">
-                                    </ng-container>
+                                        *ngIf="!modalIsEdit; else custodydefinitiontemplate">{{ ws.getMultilingualValue('CustodyDefinition', def.CustodyDefinitionId, 'TitleSingular') }}</span>
+                                    <ng-template #custodydefinitiontemplate>
+                                        <t-custody-definitions-picker [(ngModel)]="def.CustodyDefinitionId" theme="dark"
+                                            #custodydefinitionmodel="ngModel">
+                                        </t-custody-definitions-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: custodydefinitionmodel, serverErrors: def?.serverErrors?.CustodyDefinitionId }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td *ngIf="modalIsEdit" style="width:1px">
                                     <button
@@ -1185,26 +1280,19 @@
                 <ng-template ngbNavContent>
                     <table class="table table-sm table-dark text-nowrap mb-1">
 
-                        <tbody cdkDropList [cdkDropListDisabled]="!modalIsEdit"
-                            (cdkDropListDropped)="rowDrop($event, entryToEdit.ResourceDefinitions)">
-                            <tr *ngFor="let def of entryToEdit.ResourceDefinitions" cdkDrag cdkDragLockAxis="y">
-                                <ng-container *cdkDragPlaceholder>
-                                    <td>&zwnj;</td>
-                                </ng-container>
-                                <div *cdkDragPreview class="t-transparent">
-                                </div>
-                                <td cdkDragHandle class="px-2" style="cursor: move;width: 1px;" *ngIf="modalIsEdit">
-                                    <fa-icon icon="arrows-alt"></fa-icon>
-                                </td>
+                        <tbody>
+                            <tr *ngFor="let def of entryToEdit.ResourceDefinitions">
                                 <td [class.p-0]="modalIsEdit">
                                     <span
-                                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('ResourceDefinition', def.ResourceDefinitionId, 'TitleSingular') }}</span>
-                                    <t-resource-definitions-picker *ngIf="modalIsEdit"
-                                        [(ngModel)]="def.ResourceDefinitionId" theme="dark" #resourcedefinitionmodel>
-                                    </t-resource-definitions-picker>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: resourcedefinitionmodel, serverErrors: def?.serverErrors?.ResourceDefinitionId }">
-                                    </ng-container>
+                                        *ngIf="!modalIsEdit; else resourcedefinitiontemplate">{{ ws.getMultilingualValue('ResourceDefinition', def.ResourceDefinitionId, 'TitleSingular') }}</span>
+                                    <ng-template #resourcedefinitiontemplate>
+                                        <t-resource-definitions-picker [(ngModel)]="def.ResourceDefinitionId"
+                                            theme="dark" #resourcedefinitionmodel="ngModel">
+                                        </t-resource-definitions-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: resourcedefinitionmodel, serverErrors: def?.serverErrors?.ResourceDefinitionId }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td *ngIf="modalIsEdit" style="width: 1px;">
                                     <button
@@ -1241,27 +1329,20 @@
                 <ng-template ngbNavContent>
                     <table class="table table-sm table-dark text-nowrap mb-1">
 
-                        <tbody cdkDropList [cdkDropListDisabled]="!modalIsEdit"
-                            (cdkDropListDropped)="rowDrop($event, entryToEdit.NotedRelationDefinitions)">
-                            <tr *ngFor="let def of entryToEdit.NotedRelationDefinitions" cdkDrag cdkDragLockAxis="y">
-                                <ng-container *cdkDragPlaceholder>
-                                    <td>&zwnj;</td>
-                                </ng-container>
-                                <div *cdkDragPreview class="t-transparent">
-                                </div>
-                                <td cdkDragHandle class="px-2" style="cursor: move;width: 1px;" *ngIf="modalIsEdit">
-                                    <fa-icon icon="arrows-alt"></fa-icon>
-                                </td>
+                        <tbody>
+                            <tr *ngFor="let def of entryToEdit.NotedRelationDefinitions">
                                 <td [class.p-0]="modalIsEdit">
                                     <span
-                                        *ngIf="!modalIsEdit">{{ ws.getMultilingualValue('NotedRelationDefinition', def.NotedRelationDefinitionId, 'TitleSingular') }}</span>
-                                    <t-relation-definitions-picker *ngIf="modalIsEdit"
-                                        [(ngModel)]="def.NotedRelationDefinitionId" theme="dark"
-                                        #notedrelationdefinitionmodel>
-                                    </t-relation-definitions-picker>
-                                    <ng-container
-                                        *ngTemplateOutlet="errorsTemplate;context: { control: notedrelationdefinitionmodel, serverErrors: def?.serverErrors?.NotedRelationDefinitionId }">
-                                    </ng-container>
+                                        *ngIf="!modalIsEdit; else relationdefinitiontemplate">{{ ws.getMultilingualValue('RelationDefinition', def.NotedRelationDefinitionId, 'TitleSingular') }}</span>
+                                    <ng-template #relationdefinitiontemplate>
+                                        <t-relation-definitions-picker 
+                                            [(ngModel)]="def.NotedRelationDefinitionId" theme="dark"
+                                            #notedrelationdefinitionmodel="ngModel">
+                                        </t-relation-definitions-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: notedrelationdefinitionmodel, serverErrors: def?.serverErrors?.NotedRelationDefinitionId }">
+                                        </ng-container>
+                                    </ng-template>
                                 </td>
                                 <td *ngIf="modalIsEdit" style="width: 1px;">
                                     <button

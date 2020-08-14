@@ -223,7 +223,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
 
-  public directionDisplay = (direction: 1 | -1) => {
+  public directionDisplay = (direction: number) => {
     if (direction === 1) {
       return this.translate.instant('Entry_Direction_Debit');
     } else if (direction === -1) {
@@ -540,7 +540,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   // Tabs
   public get activeTab(): string {
-    return this.details.state.detailsState.activeTab;
+    return this.details.state.detailsState.activeTab || 'general';
   }
 
   public set activeTab(tab: string) {
@@ -548,7 +548,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
   public get activeEntryTab(): string {
-    return this.details.state.detailsState.activeEntryTab;
+    return this.details.state.detailsState.activeEntryTab || 'custodyDefinitions';
   }
 
   public set activeEntryTab(tab: string) {

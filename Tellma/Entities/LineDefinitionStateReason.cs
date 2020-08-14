@@ -46,6 +46,9 @@ namespace Tellma.Entities
 
     public class LineDefinitionStateReason : LineDefinitionStateReasonForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         [Display(Name = "StateReason_LineDefinition")]
         public int? LineDefinitionId { get; set; }
 

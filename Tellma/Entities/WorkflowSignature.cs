@@ -38,6 +38,9 @@ namespace Tellma.Entities
 
     public class WorkflowSignature : WorkflowSignatureForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         [Display(Name = "WorkflowSignature_Workflow")]
         public int? WorkflowId { get; set; }
 

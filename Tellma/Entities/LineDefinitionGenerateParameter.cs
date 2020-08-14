@@ -45,6 +45,9 @@ namespace Tellma.Entities
 
     public class LineDefinitionGenerateParameter : LineDefinitionGenerateParameterForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         [Display(Name = "Parameter_LineDefinition")]
         public int? LineDefinitionId { get; set; }
 
