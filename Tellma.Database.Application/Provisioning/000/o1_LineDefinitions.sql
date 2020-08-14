@@ -403,38 +403,6 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name]) VALUES
 (0,100,-3,	N'Insufficient Balance'),
 (1,100,-3,	N'Other reasons');
---104:CashTransferExchange => make into a separate document with transfer only, exchange only, exchange and transfer
-UPDATE @LineDefinitions
-SET [Script] = N'
-	UPDATE @ProcessedWideLines
-	SET
-		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
-		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
-		[CenterId0] = COALESCE((SELECT [CenterId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]), [CenterId2]),
-		[CenterId1] = COALESCE((SELECT [CenterId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]), [CenterId2]),
-		[CurrencyId2] = dbo.fn_FunctionalCurrencyId(),
-		[MonetaryValue0] = IIF([CurrencyId0]=[CurrencyId1],[MonetaryValue1],[MonetaryValue0]),
-		[MonetaryValue2] = wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1])
-							- wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId0], [MonetaryValue0]) 
-'
-WHERE [Index] = 104;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
-(0,104,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(1,104,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(2,104,+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax, NULL); -- Make it an automatic system entry
-INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
-														[ReadOnlyState],
-														[InheritsFromHeader]) VALUES
-(0,104,	N'CustodyId',			1,	N'From Account',	1,2,0),
-(1,104,	N'CustodyId',			0,	N'To Account',		1,2,0),
-(2,104,	N'CurrencyId',			1,	N'From Currency',	1,2,0),
-(3,104,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
-(4,104,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
-(5,104,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
-(6,104,	N'CenterId',			2,	N'Business Unit',	1,4,1),
-(7,104,	N'Memo',				0,	N'Memo',			1,2,1);
 --110:DepositCashToBank -- Make this and the next into a separate document (BankDepositVoucher)
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -554,6 +522,113 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,111,	N'ResourceId',			1,	N'Check Received',	1,2,0),
 (4,111,	N'PostingDate',			1,	N'Posting Date',	4,4,1),
 (5,111,	N'Memo',				0,	N'Memo',			1,2,1);
+
+--120:CashReceiptFromOther: -- assume all in same currency
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE PWL 
+	SET
+		[CurrencyId0]		= [CurrencyId1],
+		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
+		[MonetaryValue0]	= ISNULL([MonetaryValue1], 1),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Relations WHERE [Id] = [NotedRelationId1]),
+		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0]),
+
+		[EntryTypeId0]		=	IIF ([EntryTypeId0] IS NULL,
+			(
+				SELECT [Id] FROM dbo.EntryTypes
+				WHERE [Concept] = CASE
+	--				WHEN RD.Code = N''Employee'' THEN N''''
+					WHEN RD.Code = N''Creditor'' THEN N''ProceedsFromBorrowingsClassifiedAsFinancingActivities''
+					WHEN RD.Code = N''Debtor'' THEN N''CashReceiptsFromRepaymentOfAdvancesAndLoansMadeToOtherPartiesClassifiedAsInvestingActivities''
+					WHEN RD.Code = N''Partner'' THEN N''ProceedsFromIssuingShares''
+					ELSE N''OtherCashPaymentsFromOperatingActivities''
+				END
+			), [EntryTypeId0])
+	FROM @ProcessedWideLines PWL
+	LEFT JOIN dbo.Relations R ON PWL.NotedRelationId0 = R.[Id]
+	LEFT JOIN dbo.RelationDefinitions RD ON R.DefinitionId = RD.Id
+'
+WHERE [Index] = 120;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],	[AccountTypeId]) VALUES
+(0,120,+1,		@CashAndCashEquivalents),
+(1,120,-1,		@CashReceiptsFromOthersControlExtension); 
+INSERT INTO @LineDefinitionEntryNotedRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[NotedRelationDefinitionId]) VALUES
+(0,0,120,@CreditorRLD),
+(1,0,120,@DebtorRLD),
+(2,0,120,@OwnerRLD),
+(3,0,120,@PartnerRLD),
+(4,0,120,@EmployeeRLD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,120,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,120,	N'NotedRelationId',		0,	N'Received From',	1,4,0),
+(2,120,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(3,120,	N'MonetaryValue',		1,	N'Amount',			1,2,0),
+(4,120,	N'EntryTypeId',			0,	N'Purpose',			4,4,0),
+(8,120,	N'ExternalReference',	0,	N'Check #',			5,5,0),
+(9,120,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
+(10,120,N'PostingDate',			1,	N'Receipt Date',	1,2,1),
+(11,120, N'CenterId',			1,	N'Business Unit',	1,4,1),
+(12,120, N'AdditionalReference',0,	N'CRV #',			5,5,0);
+--130:CashPaymentToOther
+UPDATE @LineDefinitions
+SET [Script] = N'
+	UPDATE PWL 
+	SET
+		[CurrencyId1]		= [CurrencyId0],
+		[CenterId1]			= COALESCE([CenterId1], [CenterId0]),
+		[MonetaryValue1]	= ISNULL([MonetaryValue0], 0),
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.Relations WHERE [Id] = [NotedRelationId0]),
+		[AdditionalReference1] = IIF(ISNUMERIC([AdditionalReference1]) = 1, N''CPV'' + [AdditionalReference1], [AdditionalReference1]),
+
+		[EntryTypeId1]		=	IIF ([EntryTypeId1] IS NULL,
+			(
+				SELECT [Id] FROM dbo.EntryTypes
+				WHERE [Concept] = CASE
+					WHEN RD.Code = N''Employee'' THEN N''PaymentsToAndOnBehalfOfEmployees''
+					WHEN RD.Code = N''Creditor'' THEN N''RepaymentsOfBorrowingsClassifiedAsFinancingActivities''
+					WHEN RD.Code = N''Debtor'' THEN N''CashAdvancesAndLoansMadeToOtherPartiesClassifiedAsInvestingActivities''
+					WHEN RD.Code = N''Partner'' THEN N''DividendsPaidClassifiedAsFinancingActivities''
+					ELSE N''OtherCashPaymentsFromOperatingActivities''
+				END
+			), [EntryTypeId1])
+	FROM @ProcessedWideLines PWL
+	LEFT JOIN dbo.Relations R ON PWL.NotedRelationId0 = R.[Id]
+	LEFT JOIN dbo.RelationDefinitions RD ON R.DefinitionId = RD.Id
+'
+WHERE [Index] = 130;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],	[AccountTypeId]) VALUES
+(0,130,+1,		@CashPaymentsToOthersControlExtension),
+(1,130,-1,		@CashAndCashEquivalents);
+INSERT INTO @LineDefinitionEntryNotedRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[NotedRelationDefinitionId]) VALUES
+(0,0,130,@CreditorRLD),
+(1,0,130,@DebtorRLD),
+(2,0,130,@OwnerRLD),
+(3,0,130,@PartnerRLD),
+(4,0,130,@EmployeeRLD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader]) VALUES
+(0,130,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,130,	N'NotedRelationId',		0,	N'Paid To',			1,4,0),
+(2,130,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(3,130,	N'MonetaryValue',		0,	N'Amount',			1,2,0),
+(4,130,	N'EntryTypeId',			1,	N'Purpose',			4,4,0),
+(8,130,	N'ExternalReference',	1,	N'Check #',			5,5,0),
+(9,130,	N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0),
+(10,130,N'PostingDate',			0,	N'Payment Date',	1,2,1),
+(11,130, N'CenterId',			0,	N'Business Unit',	1,4,1),
+(12,130, N'AdditionalReference',1,	N'CPV #',			5,5,0);
+
+
 --120:CashReceiptFromOther
 UPDATE @LineDefinitions
 SET [Script] = N'

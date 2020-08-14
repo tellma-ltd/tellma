@@ -43,18 +43,18 @@ INSERT INTO @LineDefinitionStateReasons
 SELECT [Id],[LineDefinitionId],	[State],[Name]
 FROM dbo.LineDefinitionStateReasons;
 
-INSERT INTO @Workflows([Index],[LineDefinitionIndex],
-[ToState]) Values
-(0,@CashPaymentToOtherLD,+1),
-(1,@CashPaymentToOtherLD,+2),
-(2,@CashPaymentToOtherLD,+3),
-(3,@CashPaymentToOtherLD,+4);
-INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
-[RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,@CashPaymentToOtherLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,@CashPaymentToOtherLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,@CashPaymentToOtherLD,N'ByCustodian',	NULL,			1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,@CashPaymentToOtherLD,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
+--INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+--[ToState]) Values
+--(0,@CashPaymentToOtherLD,+1),
+--(1,@CashPaymentToOtherLD,+2),
+--(2,@CashPaymentToOtherLD,+3),
+--(3,@CashPaymentToOtherLD,+4);
+--INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+--[RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+--(0,0,@CashPaymentToOtherLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+--(0,1,@CashPaymentToOtherLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+--(0,2,@CashPaymentToOtherLD,N'ByCustodian',	NULL,			1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
+--(0,3,@CashPaymentToOtherLD,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values

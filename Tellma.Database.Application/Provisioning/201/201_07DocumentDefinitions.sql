@@ -10,18 +10,28 @@ WHERE [Id] IN
 );
 DELETE FROM @DocumentDefinitionLineDefinitions
 INSERT @DocumentDefinitionLineDefinitions([Index],
-[HeaderIndex],						[LineDefinitionId],							[IsVisibleByDefault]) VALUES
-(11,@CashPaymentVoucherDD,			@CashPaymentToTradePayableLD,				1),
-(12,@CashPaymentVoucherDD,			@CashPaymentToOtherLD,						1),
-(13,@CashPaymentVoucherDD,			@PPEReceiptFromTradePayableLD,				1),
-(14,@CashPaymentVoucherDD,			@StockReceiptFromTradePayableLD,			1),
-(19,@CashPaymentVoucherDD,			@ManualLineLD,								0),
-(21,@CashSaleVoucherDD,			@CashReceiptFromTradeReceivableWithWTLD,	1),
---(22,@CashSaleVoucherDD,			@CashReceiptFromOtherLD,					1),
-(24,@CashSaleVoucherDD,			@StockIssueToTradeReceivableLD,				1),
-(29,@CashSaleVoucherDD,			@ManualLineLD,								0);
-
-
+[HeaderIndex],					[LineDefinitionId],							[IsVisibleByDefault]) VALUES
+(0,@CashPurchaseVoucherDD,		@CashToSupplierWithPointInvoiceLD ,			1),
+(5,@CashPurchaseVoucherDD,		@PPEFromSupplierLD,							1),
+(10,@CashPurchaseVoucherDD,		@InventoryFromSupplierLD,					1),
+(15,@CashPurchaseVoucherDD,		@ManualLineLD,								0),
+(0,@CashSaleVoucherDD,			@CashFromCustomerWithWTWithPointInvoiceLD,	1),
+(5,@CashSaleVoucherDD,			@RevenueFromInventoryLD,					1),
+(10,@CashSaleVoucherDD,			@ManualLineLD,								0);
+/*
+@RevenueFromPeriodServiceLD  
+@RevenueFromInventoryWithPointInvoiceLD  
+@RevenueFromPointServiceWithPointInvoiceLD 
+@RevenueFromPeriodServiceWithPeriodInvoiceLD 
+@CashFromCustomerLD 
+@CashFromCustomerWithWTLD
+@CashFromCustomerWithPointInvoiceLD 
+@CashFromCustomerWithPeriodInvoiceLD 
+@CashFromCustomerWithWTWithPointInvoiceLD 
+@CashFromCustomerWithWTWithPeriodInvoiceLD 
+@PointExpenseFromInventoryLD 
+@PointExpenseFromSupplierLD 
+*/
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
 	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions,
@@ -36,7 +46,7 @@ EXEC [dal].[DocumentDefinitions__UpdateState]
 
 -- Delete what is not in the scope of CPV, mainly because it is acquired from abroad
 DELETE FROM LineDefinitionEntryResourceDefinitions
-WHERE [LineDefinitionEntryId] = (SELECT [Id] FROM dbo.LineDefinitionEntries WHERE LineDefinitionId = @StockReceiptFromTradePayableLD AND [Index] = 0)
+WHERE [LineDefinitionEntryId] = (SELECT [Id] FROM dbo.LineDefinitionEntries WHERE LineDefinitionId = @InventoryFromSupplierLD AND [Index] = 0)
 AND [ResourceDefinitionId] IN (
 	@TangibleExplorationAndEvaluationAssetsMemberRD,
 	@MiningAssetsMemberRD,
@@ -66,7 +76,7 @@ AND [ResourceDefinitionId] IN (
 
 -- Delete what is not in the scope of CPV, mainly because it is acquired from abroad
 DELETE FROM LineDefinitionEntryResourceDefinitions
-WHERE [LineDefinitionEntryId] = (SELECT [Id] FROM dbo.LineDefinitionEntries WHERE LineDefinitionId = @StockIssueToTradeReceivableLD AND [Index] = 0)
+WHERE [LineDefinitionEntryId] = (SELECT [Id] FROM dbo.LineDefinitionEntries WHERE LineDefinitionId = @RevenueFromInventoryLD AND [Index] = 0)
 AND [ResourceDefinitionId] IN (
 	@TangibleExplorationAndEvaluationAssetsMemberRD,
 	@MiningAssetsMemberRD,
