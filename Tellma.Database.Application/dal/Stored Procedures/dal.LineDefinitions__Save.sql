@@ -143,12 +143,12 @@ SET NOCOUNT ON;
 			JOIN @LineDefinitionsIndexedIds II ON LDE.[HeaderIndex] = II.[Index]
 		) AS s ON s.[Id] = t.[Id]
 		WHEN MATCHED 
-		AND (
-				t.[Index]					<> s.[Index] OR
-				t.[Direction]				<> s.[Direction] OR
-				t.[AccountTypeId]			<> s.[AccountTypeId] OR
-				ISNULL(t.[EntryTypeId],0)	<> ISNULL(s.[EntryTypeId],0)
-		)
+		--AND (
+		--		t.[Index]					<> s.[Index] OR
+		--		t.[Direction]				<> s.[Direction] OR
+		--		t.[AccountTypeId]			<> s.[AccountTypeId] OR
+		--		ISNULL(t.[EntryTypeId],0)	<> ISNULL(s.[EntryTypeId],0)
+		--)
 		THEN
 			UPDATE SET
 				t.[Index]					= s.[Index],
@@ -190,9 +190,9 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED
-	--AND (
-	--	t.[ResourceDefinitionId] <> s.[ResourceDefinitionId]
-	--)
+	AND (
+		t.[ResourceDefinitionId] <> s.[ResourceDefinitionId]
+	)
 	THEN
 		UPDATE SET
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
@@ -217,9 +217,9 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED
-	--AND (
-	--	t.[CustodyDefinitionId]	<> s.[CustodyDefinitionId]
-	--)
+	AND (
+		t.[CustodyDefinitionId]	<> s.[CustodyDefinitionId]
+	)
 	THEN
 		UPDATE SET
 			t.[CustodyDefinitionId]	= s.[CustodyDefinitionId],
@@ -244,9 +244,9 @@ SET NOCOUNT ON;
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED
-	--AND (
-	--	t.[NotedRelationDefinitionId] <> s.[NotedRelationDefinitionId]
-	--)
+	AND (
+		t.[NotedRelationDefinitionId] <> s.[NotedRelationDefinitionId]
+	)
 	THEN
 		UPDATE SET
 			t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
