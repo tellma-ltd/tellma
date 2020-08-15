@@ -20,6 +20,10 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   private documentsApi = this.api.documentsApi(null, this.notifyDestruct$); // for intellisense
   private _definitionId: number;
 
+  // caching
+  private _selectDefaultDefinition: DocumentDefinitionForClient;
+  private _selectDefaultResult: string;
+
   @Input()
   public set definitionId(t: number) {
     if (this._definitionId !== t) {
@@ -145,4 +149,22 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
 
   public stateTooltip = (ids: (number | string)[]) => this.hasStatePermission(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  public get selectDefault(): string {
+    const def = this.definition;
+    if (this._selectDefaultDefinition !== def) {
+      this._selectDefaultDefinition = def;
+      let result = 'State,Assignee,AssignedAt';
+      if (!!def.PostingDateVisibility) {
+        result = 'PostingDate,' + result;
+      }
+      if (!!def.MemoVisibility) {
+        result += ',Memo';
+      }
+
+      this._selectDefaultResult = result;
+    }
+
+    return this._selectDefaultResult;
+  }
 }
