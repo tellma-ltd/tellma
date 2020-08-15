@@ -5,7 +5,7 @@ FROM dbo.DocumentDefinitions
 WHERE [Id] IN
 (
 --@ManualJournalVoucherDD,
-@CashPaymentVoucherDD,
+@CashPurchaseVoucherDD,
 @CashSaleVoucherDD
 );
 DELETE FROM @DocumentDefinitionLineDefinitions
