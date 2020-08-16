@@ -629,3 +629,22 @@ export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
   return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }
 
+export function onCodeTextareaKeydown(elem: HTMLTextAreaElement, e: KeyboardEvent, setter: (x: string) => void) {
+
+  const keycode = e.keyCode || e.which;
+  if (keycode === 9) {
+    e.preventDefault();
+
+    const start = elem.selectionStart;
+    const end = elem.selectionEnd;
+
+    // Insert the tab at the caret position
+    elem.value = elem.value || '';
+    elem.value = elem.value.substring(0, start) + '\t' + elem.value.substring(end);
+
+    // Return the caret where it was
+    elem.selectionStart = elem.selectionEnd = start + 1;
+
+    setter(elem.value);
+  }
+}

@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -19,6 +19,7 @@ import { RuleType, ruleTypes, WorkflowSignature, PredicateType, predicateTypes }
 import { PositiveLineState } from '~/app/data/entities/line';
 import { LineDefinitionStateReason } from '~/app/data/entities/line-definition-state-reason';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
+import { onCodeTextareaKeydown } from '~/app/data/util';
 
 @Component({
   selector: 't-line-definitions-details',
@@ -555,4 +556,11 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     this.ws.miscState.lineDefinition_activeEntryTab = tab;
   }
 
+  public onPreprocessScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
+    onCodeTextareaKeydown(elem, $event, v => model.Script = v);
+  }
+
+  public onGenerateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
+    onCodeTextareaKeydown(elem, $event, v => model.GenerateScript = v);
+  }
 }

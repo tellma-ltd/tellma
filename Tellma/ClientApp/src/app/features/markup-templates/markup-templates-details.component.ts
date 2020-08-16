@@ -11,7 +11,7 @@ import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
-import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob } from '~/app/data/util';
+import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob, onCodeTextareaKeydown } from '~/app/data/util';
 import {
   GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments
 } from '~/app/data/dto/generate-markup-arguments';
@@ -669,6 +669,10 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
   public set lang(v: 1 | 2 | 3) {
     this.state.detailsState.lang = v;
+  }
+
+  public onKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: MarkupTemplate) {
+    onCodeTextareaKeydown(elem, $event, v => model.Body = v);
   }
 }
 

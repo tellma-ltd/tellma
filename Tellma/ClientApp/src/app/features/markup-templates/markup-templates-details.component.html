@@ -235,7 +235,8 @@
                 <!-- Editor Content -->
                 <div class="flex-grow-1">
                     <textarea class="w-100 h-100 form-control t-studio-input text-nowrap border-0 t-code" spellcheck="false"
-                        [ngModel]="model.Body" (ngModelChange)="onBodyChange($event, model)"></textarea>
+                        [ngModel]="model.Body" (ngModelChange)="onBodyChange($event, model)"
+                        #textarea (keydown)="onKeydown(textarea, $event, model)"></textarea>
                     <!-- <ace class="w-100 h-100" [config]="config" [value]="model.Body"
                         (valueChange)="onAceValueChange($event, model)"></ace> -->
                 </div>
