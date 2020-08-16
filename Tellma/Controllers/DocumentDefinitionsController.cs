@@ -44,7 +44,7 @@ namespace Tellma.Controllers
                 {
                     return Ok();
                 }
-            }, 
+            },
             _logger);
         }
 
@@ -69,16 +69,39 @@ namespace Tellma.Controllers
     public class DocumentDefinitionsService : CrudServiceBase<DocumentDefinitionForSave, DocumentDefinition, int>
     {
         private readonly ApplicationRepository _repo;
+        private readonly IDefinitionsCache _defCache;
 
         private string View => DocumentDefinitionsController.BASE_ADDRESS;
 
-        public DocumentDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public DocumentDefinitionsService(ApplicationRepository repo, IDefinitionsCache defCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
+            _defCache = defCache;
         }
 
         public async Task<(List<DocumentDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
         {
+            // Make sure 
+            int jvDefId = _defCache.GetCurrentDefinitionsIfCached()?.Data?.ManualJournalVouchersDefinitionId ??
+                throw new BadRequestException("The Manual Journal Voucher Id is not defined");
+
+            int index = 0;
+            ids.ForEach(id =>
+            {
+                if (id == jvDefId)
+                {
+                    string path = $"[{index}]";
+                    string msg = _localizer["Error_CannotModifySystemItem"];
+
+                    ModelState.AddModelError(path, msg);
+                }
+
+                index++;
+            });
+
+            // No point carrying on
+            ModelState.ThrowIfInvalid();
+
             // Check user permissions
             var action = "State";
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
@@ -180,7 +203,7 @@ namespace Tellma.Controllers
                     string msg = _localizer["Error_OneLineDefinitionIsRquired"];
 
                     ModelState.AddModelError(path, msg);
-                } 
+                }
                 else
                 {
                     // Line Definitions that are duplicated within the same document
@@ -221,6 +244,26 @@ namespace Tellma.Controllers
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
+            int jvDefId = _defCache.GetCurrentDefinitionsIfCached()?.Data?.ManualJournalVouchersDefinitionId ??
+                throw new BadRequestException("The Manual Journal Voucher Id is not defined");
+
+            int index = 0;
+            ids.ForEach(id =>
+            {
+                if (id == jvDefId)
+                {
+                    string path = $"[{index}]";
+                    string msg = _localizer["Error_CannotModifySystemItem"];
+
+                    ModelState.AddModelError(path, msg);
+                }
+
+                index++;
+            });
+
+            // No point carrying on
+            ModelState.ThrowIfInvalid();
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.DocumentDefinitions_Validate__Delete(ids, top: remainingErrorCount);
