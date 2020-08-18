@@ -41,6 +41,52 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
 
+	-- Cannot change currency if Custody is already used in Entries with different currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheCustodyWasUsedInDocument0WithCurrency1',
+		D.[Code],
+		E.[CurrencyId]
+	FROM @Entities C
+	JOIN dbo.Entries E ON C.[Id] = E.CustodyId
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
+	WHERE C.[CurrencyId] IS NOT NULL AND E.[CurrencyId] <> C.[CurrencyId]
 
+	-- Cannot change currency if Custody is already used in Account with different currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheCustodyWasUsedInAccount0WithCurrency1',
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
+		A.[CurrencyId]
+	FROM @Entities C
+	JOIN dbo.Accounts A ON C.[Id] = A.CustodyId
+	WHERE C.[CurrencyId] IS NOT NULL AND A.[CurrencyId] <> C.[CurrencyId]
+
+	-- Cannot change Center if Custody is already used in Entries with different Center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheCustodyWasUsedInDocument0WithCenter1',
+		D.[Code],
+		E.[CenterId]
+	FROM @Entities C
+	JOIN dbo.Entries E ON C.[Id] = E.CustodyId
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
+	WHERE C.[CenterId] IS NOT NULL AND E.[CenterId] <> C.[CenterId]
+
+	-- Cannot change Center if Custody is already used in Account with different Center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheCustodyWasUsedInAccount0WithCenter1',
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
+		A.[CenterId]
+	FROM @Entities C
+	JOIN dbo.Accounts A ON C.[Id] = A.CustodyId
+	WHERE C.[CenterId] IS NOT NULL AND A.[CenterId] <> C.[CenterId]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -154,7 +154,7 @@ BEGIN
 	SELECT DISTINCT DefinitionId FROM @L
 	WHERE DefinitionId IN (
 		SELECT [Id] FROM dbo.LineDefinitions
-		WHERE [Script] IS NOT NULL
+		WHERE [PreprocessScript] IS NOT NULL
 	);
 	-- Copy lines and entries with no script as they are
 	INSERT INTO @PreprocessedDocuments
@@ -181,7 +181,7 @@ BEGIN
 		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
 		WHILE @@FETCH_STATUS = 0  
 		BEGIN 
-			SELECT @Script = @PreScript + ISNULL([Script],N'') + @PostScript
+			SELECT @Script = @PreScript + ISNULL([PreprocessScript],N'') + @PostScript
 			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
 			DELETE FROM @WL;
@@ -200,7 +200,7 @@ BEGIN
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId]),
-		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
+		E.[CurrencyId]		= R.[CurrencyId],
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]

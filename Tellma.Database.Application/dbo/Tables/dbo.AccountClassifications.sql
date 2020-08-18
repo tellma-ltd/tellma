@@ -19,6 +19,8 @@
 	[IsLeaf]						BIT					DEFAULT 0
 );
 GO
+CREATE INDEX [IX_AccountClassifications__ParentId] ON dbo.AccountClassifications([ParentId]);
+GO
 CREATE TRIGGER [dbo].[trIU_AccountClassifications] ON [dbo].[AccountClassifications] AFTER INSERT, UPDATE
 AS
 IF UPDATE([Id]) OR UPDATE([ParentId])

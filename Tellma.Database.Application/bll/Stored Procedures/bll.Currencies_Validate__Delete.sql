@@ -7,7 +7,7 @@ SET NOCOUNT ON;
 
 	-- The currency should not be used in Accounts
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-    SELECT TOP (@Top)
+    SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0IsUsedInAccount1', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
@@ -17,7 +17,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON A.CurrencyId = FE.[Id];
 	-- Currency must not be used in Resources
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-    SELECT TOP (@Top)
+    SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0IsUsedInResource12', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [Currency],

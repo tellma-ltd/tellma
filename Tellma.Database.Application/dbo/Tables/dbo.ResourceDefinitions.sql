@@ -9,7 +9,7 @@
 	[TitlePlural2]						NVARCHAR (100),
 	[TitlePlural3]						NVARCHAR (100),
 	-----Resource Properties Common with Contracts
-	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
+	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'Required' CHECK ([CurrencyVisibility] IN (N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
@@ -87,6 +87,9 @@
 	[IdentifierLabel]					NVARCHAR (50), -- searchable, unique index
 	[IdentifierLabel2]					NVARCHAR (50),
 	[IdentifierLabel3]					NVARCHAR (50),
+	[VatRateVisibility]					NVARCHAR (50)	DEFAULT N'None' CHECK ([VatRateVisibility] IN (N'None', N'Optional', N'Required')),-- TODO: Make required
+	[DefaultVatRate]					DECIMAL (9,4)	CONSTRAINT [ResourceDefinitions__DefaultVatRate] CHECK ([DefaultVatRate] BETWEEN 0 AND 1),
+
 	-- Inventory
 	[ReorderLevelVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),

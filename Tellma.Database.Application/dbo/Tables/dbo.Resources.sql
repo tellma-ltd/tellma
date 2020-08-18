@@ -7,8 +7,7 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
-	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	--CONSTRAINT [CK_Resources__Id_CurrencyId] UNIQUE ([Id], [CurrencyId]),
+	[CurrencyId]				NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[CenterId]					INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
@@ -30,6 +29,7 @@
 	[Text2]						NVARCHAR (50), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (50),
+	[VatRate]					DECIMAL (19,4)		CONSTRAINT [Resources__VatRate] CHECK ([VatRate] BETWEEN 0 AND 1),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
 	-- for non current, unit = usage unit (must NOT be pure). 

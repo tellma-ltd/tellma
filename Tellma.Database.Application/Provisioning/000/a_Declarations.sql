@@ -55,6 +55,7 @@
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
+	DECLARE @MarkupTemplates MarkupTemplateList;
 
 	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList], @Custodies dbo.[CustodyList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;

@@ -24,3 +24,5 @@
 	[Path]						AS [Node].ToString() PERSISTED 
 );
 GO
+CREATE INDEX [IX_EntryTypes__ParentId] ON dbo.EntryTypes([ParentId]);
+GO
