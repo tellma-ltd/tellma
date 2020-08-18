@@ -283,6 +283,12 @@ namespace Tellma.Entities
         [VisibilityDisplay(Name = "Resource_Identifier"), VisibilityChoiceList]
         public string IdentifierVisibility { get; set; }
 
+        [VisibilityDisplay(Name = "Resource_VatRate"), VisibilityChoiceList]
+        public string VatRateVisibility { get; set; }
+
+        [DefaultDisplay(Name = "Resource_VatRate")]
+        public decimal? DefaultVatRate { get; set; }
+
         // Inventory
 
         [VisibilityDisplay(Name = "Resource_ReorderLevel"), VisibilityChoiceList]

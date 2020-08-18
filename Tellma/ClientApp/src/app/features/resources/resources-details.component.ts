@@ -104,6 +104,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     // result.Lookup5Id = defs.Lookup5DefaultValue;
     // result.Text1 = defs.Text1DefaultValue;
     // result.Text2 = defs.Text2DefaultValue;
+    result.VatRate = defs.DefaultVatRate;
     result.UnitId = defs.DefaultUnitId;
     result.UnitMassUnitId = defs.DefaultUnitMassUnitId;
     result.Units = [];
@@ -457,6 +458,14 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.IdentifierLabel ?
       this.ws.getMultilingualValueImmediate(this.definition, 'IdentifierLabel') :
       this.translate.instant('Resource_Identifier');
+  }
+
+  public get VatRate_isVisible(): boolean {
+    return !!this.definition.VatRateVisibility;
+  }
+
+  public get VatRate_isRequired(): boolean {
+    return this.definition.VatRateVisibility === 'Required';
   }
 
   public currencyPostfix(model: ResourceForSave): string {

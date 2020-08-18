@@ -64,10 +64,6 @@ namespace Tellma.Entities
 
         [Display(Name = "LineDefinition_ViewDefaultsToForm")]
         public bool? ViewDefaultsToForm { get; set; }
-
-        [Display(Name = "LineDefinition_GenerateScript")]
-        public string GenerateScript { get; set; }
-
         [MultilingualDisplay(Name = "LineDefinition_GenerateLabel", Language = Language.Primary)]
         [StringLength(50)]
         public string GenerateLabel { get; set; }
@@ -80,8 +76,14 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string GenerateLabel3 { get; set; }
 
-        [Display(Name = "LineDefinition_Script")]
-        public string Script { get; set; }
+        [Display(Name = "LineDefinition_GenerateScript")]
+        public string GenerateScript { get; set; }
+
+        [Display(Name = "LineDefinition_PreprocessScript")]
+        public string PreprocessScript { get; set; }
+
+        [Display(Name = "LineDefinition_ValidateScript")]
+        public string ValidateScript { get; set; }
 
         [Display(Name = "LineDefinition_Entries")]
         [ForeignKey(nameof(LineDefinitionEntry.LineDefinitionId))]

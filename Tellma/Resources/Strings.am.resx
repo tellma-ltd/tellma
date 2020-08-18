@@ -832,6 +832,9 @@
   <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
     <value>በ {0} መንገድ የዳሰሳ መስክ እንደ የዋለው አንድ ቀላል መስክ {1} ይዟል.</value>
   </data>
+  <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
+    <value>መለያ »{0} 'ሃብት የለውም, ገና እሴት ሚዛን 0 አይደለም.</value>
+  </data>
   <data name="Error_Account0QuantityBalanceIsWrong" xml:space="preserve">
     <value>ይህ የራስ አሃድ ይጠቀማል ጀምሮ መለያ ጋር መስመር «{0} '0 ወይም 1 ወይ የሆነ መጠን ሊኖረው ይችላል.</value>
   </data>
@@ -839,7 +842,10 @@
     <value>መለያ መስመር «{0} 'የራስ አሃድ ጋር ሌላ መስመር ይጠይቃል.</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>መለያ »{0}» አገልግሎት ቀሪ አሉታዊ ይሆናል.</value>
+    <value>መለያ የአገልግሎት ዋጋ ሚዛን «{0}» አሉታዊ ይሆናል.</value>
+  </data>
+  <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
+    <value>መለያ ዋጋ ሚዛን «{0}» አሉታዊ ይሆናል.</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ አይነት «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
@@ -1063,6 +1069,12 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ግንኙነት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
+  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
+    <value>ንጥሉ ውስጥ «{0} '' {1} 'አንድ በኋላ ሰነድ ውስጥ ጥቅም ላይ ይውላሉ.</value>
+  </data>
+  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
+    <value>«{0} 'ይሆናል አሉታዊ ለ ሒሳብ.</value>
+  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ሀብት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
@@ -1114,6 +1126,9 @@
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ ምደባ «{0}» መለያ ላይ ውሏል «{1}»</value>
   </data>
+  <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
+    <value>የመለያ አይነት «{0}» ሊመደብ አይደለም.</value>
+  </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>የመለያ አይነት «{0}» ያልሆነ ዜሮ ሚዛን ጋር አንድ መለያ «{1}» አለው.</value>
   </data>
@@ -1150,11 +1165,26 @@
   <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
     <value>{0} «{1}« {2} {3} ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
-    <value>የጥበቃ ትርጉም «{0} '' {1}» ጋር ተኳሃኝ አይደለም.</value>
+  <data name="Error_TheCustody0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>የመለያ ማዕከል ያለው ሳለ የማሳደግ «{0} '' {1}» «{2} 'ማዕከል አለው.</value>
+  </data>
+  <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>መለያ ምንዛሬ ያለው ሳለ የማሳደግ «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>
   </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>የጥበቃ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
+    <value>የማሳደግ «{0}» «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
+    <value>የማሳደግ «{0}» «{2}» ምንዛሬ ጋር መለያ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
+    <value>የማሳደግ «{0}» «{2} 'ማዕከል ጋር ሰነድ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
+    <value>የማሳደግ «{0}» «{2}» ምንዛሬ ጋር ሰነድ {1} ላይ ውሏል.</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>አንዳንድ መስመሮች ለጥፏል አይደሉም.</value>
@@ -1228,8 +1258,23 @@
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
   </data>
+  <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>የመለያ ማዕከል ያለው ሳለ ሃብት «{0} '' {1}» «{2} 'ማዕከል አለው.</value>
+  </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>መለያ ምንዛሬ ያለው ሳለ መለያ ሃብት «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
+    <value>ሃብት «{0}» «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
+    <value>ሃብት «{0}» «{2}» ምንዛሬ ጋር መለያ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
+    <value>ሃብት «{0}» «{2} 'ማዕከል ጋር ሰነድ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
+    <value>ሃብት «{0}» «{2}» ምንዛሬ ጋር ሰነድ {1} ላይ ውሏል.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -1293,6 +1338,9 @@
   </data>
   <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
     <value>እሴት «{0}» በ {1} መስክ ትክክል አይደለም, የሚደገፉ እሴቶች ናቸው: {2}.</value>
+  </data>
+  <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
+    <value>የቫት ተመን 0 እና 1 መካከል መሆን አለበት.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>የመለወጫ ተመን</value>
@@ -1546,11 +1594,14 @@
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>ስክሪፕት አመንጭ</value>
   </data>
-  <data name="LineDefinition_Script" xml:space="preserve">
-    <value>ስክሪፕት</value>
+  <data name="LineDefinition_PreprocessScript" xml:space="preserve">
+    <value>Preprocess ስክሪፕት</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>መንግስት ምክንያቶች</value>
+  </data>
+  <data name="LineDefinition_ValidateScript" xml:space="preserve">
+    <value>ለሚያረጋግጡ ስክሪፕት</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>ቅጽ ይመልከቱ ነባሪዎችን</value>
@@ -2241,6 +2292,9 @@
   </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>
+  </data>
+  <data name="Resource_VatRate" xml:space="preserve">
+    <value>የቫት ተመን</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>የመገልገያ ፍቺ</value>

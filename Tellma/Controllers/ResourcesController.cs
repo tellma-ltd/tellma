@@ -229,6 +229,7 @@ namespace Tellma.Controllers
             {
                 entity.UnitId ??= def.DefaultUnitId;
                 entity.UnitMassUnitId ??= def.DefaultUnitMassUnitId;
+                entity.VatRate ??= def.DefaultVatRate;
             });
 
             entities.ForEach(e =>
@@ -275,9 +276,6 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
-            var def = Definition();
-            var unitIsRequired = def.UnitCardinality != null; // "None" is mapped to null
-
             foreach (var (e, i) in entities.Select((e, i) => (e, i)))
             {
                 if (e.EntityMetadata.LocationJsonParseError != null)
@@ -288,7 +286,17 @@ namespace Tellma.Controllers
                         return;
                     }
                 }
+
+                if (e.VatRate < 0m || e.VatRate > 1m)
+                {
+                    var path = $"[{i}].{nameof(ResourceDefinition.DefaultVatRate)}";
+                    var msg = _localizer["Error_VatRateMustBeBetweenZeroAndOne"];
+
+                    ModelState.AddModelError(path, msg);
+                }
             }
+
+            ModelState.ThrowIfInvalid();
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
@@ -297,23 +305,6 @@ namespace Tellma.Controllers
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
-
-        //private void SetDefaultValue<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, TKey defaultValue)
-        //{
-        //    if (defaultValue != null)
-        //    {
-        //        Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
-        //        Action<ResourceForSave, TKey> setPropValue = ControllerUtilities.GetAssigner(selector).Compile();
-
-        //        entities.ForEach(entity =>
-        //        {
-        //            if (getPropValue(entity) == null)
-        //            {
-        //                setPropValue(entity, defaultValue);
-        //            }
-        //        });
-        //    }
-        //}
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {

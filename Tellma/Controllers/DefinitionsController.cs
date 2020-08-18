@@ -378,6 +378,9 @@ namespace Tellma.Controllers
                 IdentifierLabel3 = def.IdentifierLabel3,
                 IdentifierVisibility = MapVisibility(def.IdentifierVisibility),
 
+                VatRateVisibility = MapVisibility(def.VatRateVisibility),
+                DefaultVatRate = def.DefaultVatRate,
+
                 ReorderLevelVisibility = MapVisibility(def.ReorderLevelVisibility),
                 EconomicOrderQuantityVisibility = MapVisibility(def.EconomicOrderQuantityVisibility),
                 UnitCardinality = MapCardinality(def.UnitCardinality),

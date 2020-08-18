@@ -475,7 +475,12 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   public showPreprocessScriptError(model: LineDefinition): boolean {
     return !!model.serverErrors && (
-      areServerErrors(model.serverErrors.Script));
+      areServerErrors(model.serverErrors.PreprocessScript));
+  }
+
+  public showValidateScriptError(model: LineDefinition): boolean {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.ValidateScript));
   }
 
   public showGenerateScriptError(model: LineDefinition): boolean {
@@ -557,7 +562,11 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
   public onPreprocessScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
-    onCodeTextareaKeydown(elem, $event, v => model.Script = v);
+    onCodeTextareaKeydown(elem, $event, v => model.PreprocessScript = v);
+  }
+
+  public onValidateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
+    onCodeTextareaKeydown(elem, $event, v => model.ValidateScript = v);
   }
 
   public onGenerateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {

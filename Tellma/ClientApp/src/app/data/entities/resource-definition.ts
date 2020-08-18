@@ -93,6 +93,9 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     IdentifierLabel3?: string;
     IdentifierVisibility?: Visibility;
 
+    VatRateVisibility?: Visibility;
+    DefaultVatRate?: number;
+
     ReorderLevelVisibility?: Visibility;
     EconomicOrderQuantityVisibility?: Visibility;
     UnitCardinality?: DefinitionCardinality;
@@ -221,6 +224,9 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 IdentifierLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.secondaryPostfix },
                 IdentifierLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.ternaryPostfix },
                 IdentifierVisibility: visibilityPropDescriptor('Resource_Identifier', trx),
+
+                VatRateVisibility: visibilityPropDescriptor('Resource_VatRate', trx),
+                DefaultVatRate: { control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_VatRate') })}`, maxDecimalPlaces: 2, minDecimalPlaces: 4 },
 
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),

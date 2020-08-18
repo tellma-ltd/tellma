@@ -832,6 +832,9 @@
   <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
     <value>The {0} path contains a simple field {1} that was used like a navigation field.</value>
   </data>
+  <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
+    <value>Account '{0}' does not have a resource, yet the value balance is not 0.</value>
+  </data>
   <data name="Error_Account0QuantityBalanceIsWrong" xml:space="preserve">
     <value>Line with account '{0}' can have a quantity of either 0 or 1 since it uses the self unit .</value>
   </data>
@@ -839,7 +842,10 @@
     <value>Line with account '{0}' requires another line with the self unit.</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>Account '{0}' service balance will become negative.</value>
+    <value>The service value balance for account '{0}' will become negative.</value>
+  </data>
+  <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
+    <value>The value balance for account '{0}' will become negative.</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>Account type '{0}' is used in account '{1}'.</value>
@@ -1063,6 +1069,12 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Relation DefinitionId '{0}' could not be found.</value>
   </data>
+  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
+    <value>The item '{0}' in '{1}' are used in a later document.</value>
+  </data>
+  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
+    <value>Balance for '{0}' will become negative.</value>
+  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
   </data>
@@ -1114,6 +1126,9 @@
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>The account classification '{0}' is used in account '{1}'</value>
   </data>
+  <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
+    <value>Account Type '{0}' is not assignable.</value>
+  </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>Account type '{0}' has an account '{1}' with a non-zero balance.</value>
   </data>
@@ -1150,11 +1165,26 @@
   <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
     <value>{0} '{1}' is used in {2} {3}.</value>
   </data>
-  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
-    <value>Custody definition '{0}' is not compatible with '{1}'.</value>
+  <data name="Error_TheCustody0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>The custody '{0}' has center '{1}' while the account has center '{2}'.</value>
+  </data>
+  <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>The custody '{0}' has currency '{1}' while the account has currency '{2}'.</value>
   </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>Custody definition '{0}' is used in account type '{1}'.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
+    <value>The custody '{0}' is used in account {1} with center '{2}'.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
+    <value>The custody '{0}' is used in account {1} with currency '{2}'.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
+    <value>The custody '{0}' is used in document {1} with center '{2}'.</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
+    <value>The custody '{0}' is used in document {1} with currency '{2}'.</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>Some lines are not posted.</value>
@@ -1228,8 +1258,23 @@
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
   </data>
+  <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>The resource '{0}' has center '{1}' while the account has center '{2}'.</value>
+  </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>Account resource '{0}' has currency '{1}' while the account has currency '{2}'.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
+    <value>The resource '{0}' is used in account {1} with center '{2}'.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
+    <value>The resource '{0}' is used in account {1} with currency '{2}'.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
+    <value>The resource '{0}' is used in document {1} with center '{2}'.</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
+    <value>The resource '{0}' is used in document {1} with currency '{2}'.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>The role '{0}' is not active.</value>
@@ -1293,6 +1338,9 @@
   </data>
   <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
     <value>Value '{0}' is not valid for the {1} field, supported values are: {2}.</value>
+  </data>
+  <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
+    <value>VAT Rate must be between 0 and 1.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>Exchange Rate</value>
@@ -1546,11 +1594,14 @@
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>Generate Script</value>
   </data>
-  <data name="LineDefinition_Script" xml:space="preserve">
-    <value>Script</value>
+  <data name="LineDefinition_PreprocessScript" xml:space="preserve">
+    <value>Preprocess Script</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>State Reasons</value>
+  </data>
+  <data name="LineDefinition_ValidateScript" xml:space="preserve">
+    <value>Validate Script</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>View Defaults To Form</value>
@@ -2241,6 +2292,9 @@
   </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>Measurement Units</value>
+  </data>
+  <data name="Resource_VatRate" xml:space="preserve">
+    <value>VAT Rate</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>Resource Definition</value>

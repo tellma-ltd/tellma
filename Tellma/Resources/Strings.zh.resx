@@ -832,6 +832,9 @@
   <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
     <value>{0}路径包含的是使用如导航字段的简单字段{1}。</value>
   </data>
+  <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
+    <value>帐户“{0}”没有资源，但价值余额不为0。</value>
+  </data>
   <data name="Error_Account0QuantityBalanceIsWrong" xml:space="preserve">
     <value>与帐户线“{0}”可具有0或1的量，因为它使用自单元。</value>
   </data>
@@ -839,7 +842,10 @@
     <value>与帐户线“{0}”需要与自单元另一条线。</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>帐户“{0}”服务的平衡将变为负。</value>
+    <value>帐户的服务价值平衡“{0}”将变为负。</value>
+  </data>
+  <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
+    <value>帐户的价值平衡“{0}”将变为负。</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>帐户类型 '{0}' 帐户 '{1}' 中使用。</value>
@@ -1063,6 +1069,12 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
   </data>
+  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
+    <value>该项目在“{0}”“{1}”将在后面的文件中使用。</value>
+  </data>
+  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
+    <value>平衡“{0}”将变为负。</value>
+  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>资源DefinitionId“{0}”未能找到。</value>
   </data>
@@ -1114,6 +1126,9 @@
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>帐户“ {1}”中使用了帐户分类“ {0}”</value>
   </data>
+  <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
+    <value>帐户类型“{0}”是不可转让。</value>
+  </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>帐户类型“{0}”的帐户“{1}”与非零平衡。</value>
   </data>
@@ -1150,11 +1165,26 @@
   <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
     <value>{0} '{1}' 在{2} {3}被使用。</value>
   </data>
-  <data name="Error_TheCustodyDefinition0IsNotCompatibleWithCustody1" xml:space="preserve">
-    <value>保管定义 '{0}' 不兼容 '{1}'。</value>
+  <data name="Error_TheCustody0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>保管 '{0}' 中心 '{1}'，而该帐户具有中心 '{2}'。</value>
+  </data>
+  <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>保管 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
   </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>保管定义“{0}”中的帐户类型“{1}”中使用。</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
+    <value>保管 '{0}' 在帐户{1}与中心 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
+    <value>保管 '{0}' 在帐户{1}提供货币 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
+    <value>保管 '{0}' 在文件{1}与中心 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
+    <value>保管 '{0}' 在文件{1}提供货币 '{2}' 中使用。</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>有些线路没有公布。</value>
@@ -1228,8 +1258,23 @@
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
   </data>
+  <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>资源 '{0}' 中心 '{1}'，而该帐户具有中心 '{2}'。</value>
+  </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>帐户资源 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
+    <value>资源 '{0}' 在帐户{1}与中心 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
+    <value>资源 '{0}' 在帐户{1}提供货币 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
+    <value>资源 '{0}' 在文件{1}与中心 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
+    <value>资源 '{0}' 在文件{1}提供货币 '{2}' 中使用。</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>角色“{0}”无效。</value>
@@ -1293,6 +1338,9 @@
   </data>
   <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
     <value>值 '{0}' 是无效的{1}字段中，所支持的值是：{2}。</value>
+  </data>
+  <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
+    <value>增值税率必须在0和1之间。</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>汇率</value>
@@ -1546,11 +1594,14 @@
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>生成脚本</value>
   </data>
-  <data name="LineDefinition_Script" xml:space="preserve">
-    <value>脚本</value>
+  <data name="LineDefinition_PreprocessScript" xml:space="preserve">
+    <value>预处理脚本</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>说明理由</value>
+  </data>
+  <data name="LineDefinition_ValidateScript" xml:space="preserve">
+    <value>验证脚本</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>查看默认值形成</value>
@@ -2241,6 +2292,9 @@
   </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>测量单位</value>
+  </data>
+  <data name="Resource_VatRate" xml:space="preserve">
+    <value>增值税税率</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>资源定义</value>

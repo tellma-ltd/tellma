@@ -38,6 +38,7 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
 
     // Resource Only
     Identifier?: string;
+    VatRate?: number;
     ReorderLevel?: number;
     EconomicOrderQuantity?: number;
     MonetaryValue?: number;
@@ -132,6 +133,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
 
                 // Resource Only
                 Identifier: { control: 'text', label: () => trx.instant('Resource_Identifier') },
+                VatRate: { control: 'number', label: () => trx.instant('Resource_VatRate'), minDecimalPlaces: 2, maxDecimalPlaces: 4 },
                 ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
@@ -207,7 +209,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility
-            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'MonetaryValue', 'UnitMass']) {
+            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'MonetaryValue', 'UnitMass', 'VatRate']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 }
