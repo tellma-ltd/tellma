@@ -1,13 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__Sign]
 	@Ids dbo.[IndexedIdList] READONLY,
-	@OnBehalfOfuserId INT,
+	@OnBehalfOfUserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT = NULL,
 	@ToState SMALLINT,
-	@Top INT = 10--	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
-	--'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
-   -- 'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
-    --'ReasonId', 'ReasonDetails'
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -17,7 +14,7 @@ SET NOCOUNT ON;
 	-- TODO:
 	-- No inactive Resource, No inactive User
 
-	IF @OnBehalfOfuserId IS NULL SET @OnBehalfOfuserId = @UserId
+	IF @OnBehalfOfUserId IS NULL SET @OnBehalfOfUserId = @UserId
 	-- Must not sign lines in a document that is already closed/canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
@@ -32,13 +29,13 @@ SET NOCOUNT ON;
 	IF @RuleType = N'ByRole'
 	IF @RoleId NOT IN (
 		SELECT RoleId FROM dbo.RoleMemberships 
-		WHERE [UserId] = @OnBehalfOfuserId
+		WHERE [UserId] = @OnBehalfOfUserId
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	VALUES (
 		N'UserId',
 		N'Error_IncompatibleUser0Role1',
-		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId),
+		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfUserId),
 		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Roles WHERE [Id] = @RoleId)
 	);
 
@@ -58,7 +55,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineMustBeInState0First',
-			N'localize:Line_State_minus_' + ABS([LastUnsignedState])
+			N'localize:Line_State_minus_' + CAST(ABS([LastUnsignedState]) AS NVARCHAR(5))
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
@@ -68,20 +65,20 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineIsAlreadyInState0',
-			N'localize:Line_State_minus_' + ABS([LastNegativeState])
+			N'localize:Line_State_minus_' + CAST(ABS([LastNegativeState]) AS NVARCHAR(5))
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE LastNegativeState IS NOT NULL
 
 	-- If signing on behalf of User
-	IF (@OnBehalfOfuserId IS NOT NULL) AND (@OnBehalfOfuserId <> @UserId)
+	IF (@OnBehalfOfUserId IS NOT NULL) AND (@OnBehalfOfUserId <> @UserId)
 	BEGIN
 		-- If there is no proxy role, then User must sign in person
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineCannotBeSignedOnBehalfOfUser0',
-			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId)
+			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfUserId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT L.[Id] 
@@ -97,7 +94,7 @@ SET NOCOUNT ON;
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_User0LacksPermissionToSignLineOnBehalfOfUser1',
 			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @UserId),
-			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId)
+			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfUserId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT L.[Id] 

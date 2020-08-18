@@ -3,7 +3,7 @@
 	@ToState SMALLINT, -- NVARCHAR(30),
 	@ReasonId INT,
 	@ReasonDetails	NVARCHAR(1024),
-	@OnBehalfOfuserId INT,
+	@OnBehalfOfUserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT,
 	@SignedAt DATETIMEOFFSET(7),
@@ -14,7 +14,7 @@ AS
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
-		@OnBehalfOfuserId = @OnBehalfOfuserId,
+		@OnBehalfOfUserId = @OnBehalfOfUserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
 		@SignedAt = @SignedAt;

@@ -3,7 +3,7 @@
 	@ToState SMALLINT,
 	@ReasonId INT = NULL,
 	@ReasonDetails	NVARCHAR(1024) = NULL,
-	@OnBehalfOfuserId INT = NULL, -- we allow selecting the user manually, when entering from an external source document
+	@OnBehalfOfUserId INT = NULL, -- we allow selecting the user manually, when entering from an external source document
 	@RuleType NVARCHAR (50),
 	@RoleId INT = NULL, -- we allow selecting the role manually, 
 	@SignedAt DATETIMEOFFSET(7) = NULL,
@@ -15,7 +15,7 @@ SET NOCOUNT ON;
 
 	IF @RoleId NOT IN (
 		SELECT RoleId FROM dbo.RoleMemberships 
-		WHERE [UserId] = @OnBehalfOfuserId
+		WHERE [UserId] = @OnBehalfOfUserId
 	)
 	BEGIN
 		RAISERROR(N'Error_IncompatibleUserRole', 16, 1);
@@ -31,7 +31,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors	
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @Lines,
-		@OnBehalfOfuserId = @OnBehalfOfuserId,
+		@OnBehalfOfUserId = @OnBehalfOfUserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
 		@ToState = @ToState;
@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
-		@OnBehalfOfuserId = @OnBehalfOfuserId,
+		@OnBehalfOfUserId = @OnBehalfOfUserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
 		@SignedAt = @SignedAt

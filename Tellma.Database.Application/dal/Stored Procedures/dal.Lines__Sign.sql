@@ -3,7 +3,7 @@
 	@ToState SMALLINT,
 	@ReasonId INT,
 	@ReasonDetails	NVARCHAR(1024),
-	@OnBehalfOfuserId INT,
+	@OnBehalfOfUserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT,
 	@SignedAt DATETIMEOFFSET(7)
@@ -15,7 +15,7 @@ BEGIN
 		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId],			[RuleType], [RoleId], [SignedAt]
 	)
 	SELECT
-		[Id], @ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfuserId, @UserId), @RuleType, @RoleId, @SignedAt
+		[Id], @ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfUserId, @UserId), @RuleType, @RoleId, @SignedAt
 	FROM @Ids
 
 	SELECT DISTINCT [DocumentId] FROM [dbo].[Lines] WHERE [Id] IN (SELECT [Id] FROM @Ids)

@@ -10,8 +10,11 @@ RETURN (
 			WS.RoleId,
 			COALESCE(
 				WS.UserId,
-				(SELECT MIN(UserId) FROM dbo.[RelationUsers] WHERE [RelationId] IN (
-					SELECT [CustodyId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+				(
+					SELECT MIN(UserId) FROM dbo.[RelationUsers] WHERE [RelationId] IN (
+						SELECT [CustodianId] FROM dbo.Custodies WHERE [Id] IN (
+							SELECT [CustodyId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+						)
 					)
 				)
 			) AS UserId,
@@ -59,7 +62,7 @@ RETURN (
 		LEFT JOIN (
 			SELECT RoleId FROM dbo.RoleMemberships
 			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
-		) RM2 ON RS.ProxyRoleId = RM.RoleId
+		) RM2 ON RS.ProxyRoleId = RM2.RoleId
 		WHERE RS.RuleType = N'ByRole'
 		UNION
 		SELECT
