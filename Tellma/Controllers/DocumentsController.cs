@@ -1697,8 +1697,12 @@ namespace Tellma.Controllers
 
         protected override async Task NonTransactionalSideEffectsForSave(List<DocumentForSave> entities, List<Document> data)
         {
+            var block = _instrumentation.Block("hub.Notify");
+
             // Notify affected users
             await _hubContext.NotifyInboxAsync(TenantId, _notificationInfos);
+
+            block.Dispose();
 
             // Delete the file Ids retrieved earlier if any
             if (_fileIdsToDelete.Any())
