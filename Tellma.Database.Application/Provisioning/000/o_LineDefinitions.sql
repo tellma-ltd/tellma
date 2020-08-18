@@ -799,9 +799,6 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],										[EntryTypeId]) VALUES
 (0,1730,+1,	@CashPaymentsToSuppliersControlExtension,NULL),
 (1,1730,-1,	@WithholdingTaxPayableExtension,NULL);
-INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[CustodyDefinitionId]) VALUES
-(0,0,1730,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -878,9 +875,9 @@ WITH InventoryAccounts AS (
 '
 WHERE [Index] = 1770;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],										[EntryTypeId]) VALUES
-(0,1770,+1,	@ExpenseByNature,										NULL),
-(1,1770,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,	NULL);
+[Direction],[AccountTypeId],			[EntryTypeId]) VALUES
+(0,1770,+1,	@ExpenseByNature,			NULL),
+(1,1770,-1,	@Inventories,				@IncreaseDecreaseThrougConsumptionExtension);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
 (0,1,1770,@WarehouseCD);
@@ -890,7 +887,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,1770,	N'Memo',				1,	N'Memo',			1,4,1),
 (1,1770,	N'CustodyId'	,		1,	N'Warehouse',		3,4,1),
-(2,1770,	N'ResourceId',			1,	N'Item',			1,2,1),
+(2,1770,	N'ResourceId',			1,	N'Item',			1,2,0),
 (3,1770,	N'Quantity',			1,	N'Qty',				1,2,0),
 (4,1770,	N'UnitId',				1,	N'Unit',			1,2,0),
 (5,1770,	N'CenterId',			0,	N'Cost Center',		1,2,0),

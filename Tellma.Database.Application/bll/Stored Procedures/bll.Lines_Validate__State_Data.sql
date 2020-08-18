@@ -269,10 +269,61 @@ BEGIN
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 END
--- must post (1,2,3=>4) in historical order
 -- must unpost (4=>1,2,3) in reverse historical order
--- must complete (1,2,=>3) in historical order
--- must uncomplete (3=>1,2) in reverse historical order
+IF @State < 4
+BEGIN
+	WITH InventoryAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
+		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
+		WHERE ATP.[Concept] = N'Inventories'
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+			N'Error_ResourceAndCustodyAppearInLaterDocument0',
+			BD.Code
+		FROM (
+			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex]
+			FROM @Lines LFE
+			JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
+			WHERE LBE.[State] = 4
+		) L -- focus on lines that were posted and now are being unposted
+		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
+		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
+		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+		WHERE BL.[State] = 4
+		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id)
+END
+-- must post (1,2,3=>4) in historical order
+IF @State = 4
+BEGIN
+	WITH InventoryAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
+		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
+		WHERE ATP.[Concept] = N'Inventories'
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+			N'Error_ResourceAndCustodyAppearInLaterDocument0',
+			BD.Code
+		FROM @Lines L
+		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
+		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
+		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+		WHERE BL.[State] = 4
+		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND L.Id > 0)
+END
 -- cannot complete/post if causes negative quantity
 IF @State IN (3, 4)
 BEGIN
@@ -311,7 +362,7 @@ BEGIN
 				*	RBU.[UnitAmount] / RBU.[BaseAmount]
 					AS DECIMAL (19,4)
 				)
-			)) As [BaseQuantity]--,-- Quantity in Base unit of that resource
+			)) As [NetQuantity]--,-- Quantity in Base unit of that resource
 		--	IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass]) AS [Density]
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -327,12 +378,14 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ '].ResourceId',
 		N'Error_ResourceBalanceShortage0',
-		0
+		ISNULL(PB.NetQuantity, 0) + ISNULL(CB.[NetQuantity], 0) AS [Shortage]
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
+	WHERE
+			ISNULL(PB.NetQuantity, 0) + ISNULL(CB.[NetQuantity], 0) < 0
 END
- -- We cannot go up to 3 there are subsequent stock of the same resources
 
 IF @State > 0
 BEGIN
