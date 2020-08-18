@@ -1,17 +1,17 @@
 ﻿	SET @DefinitionID = @EmployeeBenefitRD; DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[Name],						[UnitId]) VALUES
-	(0,	N'Basic',					@wmo),
-	(1, N'Transportation Allowance',@wmo),
-	(2, N'Day Overtime',			@hr),
-	(3, N'Night Overtime',			@hr),
-	(4, N'Rest Overtime',			@hr),
-	(5, N'Holiday Overtime',		@hr),
-	(6, N'Labor (hourly)',			@hr),
-	(7, N'Labor (daily)',			@wd),
-	(8, N'Data package',			@wmo),
-	(9, N'SS Contribution (11%)',	@wmo),
-	(10,N'Meal Allowance',			@wmo);
+		[Name],						[UnitId], [CurrencyId]) VALUES
+	(0,	N'Basic',					@wmo,		@ETB),
+	(1, N'Transportation Allowance',@wmo,		@ETB),
+	(2, N'Day Overtime',			@hr,		@ETB),
+	(3, N'Night Overtime',			@hr,		@ETB),
+	(4, N'Rest Overtime',			@hr,		@ETB),
+	(5, N'Holiday Overtime',		@hr,		@ETB),
+	(6, N'Labor (hourly)',			@hr,		@ETB),
+	(7, N'Labor (daily)',			@wd,		@ETB),
+	(8, N'Data package',			@wmo,		@ETB),
+	(9, N'SS Contribution (11%)',	@wmo,		@ETB),
+	(10,N'Meal Allowance',			@wmo,		@ETB);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
 		@DefinitionId = @DefinitionID,
@@ -27,11 +27,11 @@
 	
 	SET @DefinitionID = @RevenueServiceRD; DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 		INSERT INTO @Resources ([Index],
-		[Name],						[UnitId]) VALUES
-	(0,	N'Monthly Subscription',	@mo),
-	(1, N'Yearly Support',			@yr),
-	(2, N'ERP Implementation',		@ea),
-	(3, N'ERP Stabilization',		@mo)	
+		[Name],						[UnitId],[CurrencyId]) VALUES
+	(0,	N'Monthly Subscription',	@mo,		@ETB),
+	(1, N'Yearly Support',			@yr,		@ETB),
+	(2, N'ERP Implementation',		@ea,		@ETB),
+	(3, N'ERP Stabilization',		@mo,		@ETB)	
 	;
 
 EXEC [api].[Resources__Save] -- N'services-expenses'

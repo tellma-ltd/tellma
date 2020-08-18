@@ -77,10 +77,7 @@ BEGIN
 		N'Error_TransactionHasDebitCreditDifference0',
 		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
 	FROM @Lines L
---	JOIN dbo.Lines BE ON L.[Id] = BE.[Id]
---	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
---	WHERE LD.[HasWorkflow] = 0 AND BE.[State] = 0
 	GROUP BY L.[DocumentIndex], L.[Index]
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 
@@ -154,6 +151,10 @@ BEGIN
 		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
+		JOIN (
+			SELECT DISTINCT [AccountId], [ResourceId], [CustodyId]
+			FROM @Entries
+		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId]
 		WHERE
 			AC.[AllowsPureUnit] = 1
 		AND L.[State] = 4
@@ -268,8 +269,74 @@ BEGIN
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 END
-	-- No inactive account, for any positive state
+-- must post (1,2,3=>4) in historical order
+-- must unpost (4=>1,2,3) in reverse historical order
+-- must complete (1,2,=>3) in historical order
+-- must uncomplete (3=>1,2) in reverse historical order
+-- cannot complete/post if causes negative quantity
+IF @State IN (3, 4)
+BEGIN
+	WITH InventoryAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
+		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
+		WHERE ATP.[Concept] = N'Inventories'
+	),
+	PreBalances AS (
+		SELECT
+			E.[AccountId], E.[CustodyId],  E.[ResourceId],
+			SUM(E.[AlgebraicQuantity]) AS NetQuantity
+		FROM map.[DetailsEntries]() E
+		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN (
+			SELECT DISTINCT [AccountId], [ResourceId], [CustodyId]
+			FROM @Entries
+		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId]
+		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
+		AND L.[State] IN (3, 4)
+		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
+		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
+		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId]
+	),
+	CurrentBalances AS (
+		SELECT
+			E.[AccountId], E.[CustodyId],  E.[ResourceId],
+			SUM(IIF(EU.UnitType = N'Pure',
+				E.[Quantity],
+				CAST(
+					E.[Direction]
+				*	E.[Quantity] -- Quantity in E.UnitId
+				*	EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
+				*	RBU.[UnitAmount] / RBU.[BaseAmount]
+					AS DECIMAL (19,4)
+				)
+			)) As [BaseQuantity]--,-- Quantity in Base unit of that resource
+		--	IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass]) AS [Density]
+		FROM @Lines L
+		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN dbo.[Resources] R ON E.ResourceId = R.[Id]
+		JOIN dbo.Units EU ON E.UnitId = EU.[Id]
+		JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
+		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
+		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId]
+	)	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ '].ResourceId',
+		N'Error_ResourceBalanceShortage0',
+		0
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+END
+ -- We cannot go up to 3 there are subsequent stock of the same resources
+
 IF @State > 0
+BEGIN
+	-- No inactive account, for any positive state
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
@@ -279,7 +346,7 @@ IF @State > 0
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsActive] = 0);
-
+	-- Cannot bypass the balance limits
 	WITH FE_AB (EntryId, AccountBalanceId) AS (
 		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
 		FROM @Lines FE
@@ -330,7 +397,7 @@ IF @State > 0
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
 	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
-
+END
 	---- Some Entry Definitions with some Account Types require an Entry Type
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	--SELECT TOP (@Top)

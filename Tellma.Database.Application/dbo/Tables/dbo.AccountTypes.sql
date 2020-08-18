@@ -51,3 +51,5 @@
 )
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[AccountTypesHistory]));
 GO
+CREATE INDEX [IX_AccountTypes__ParentId] ON dbo.AccountTypes([ParentId]);
+GO

@@ -2431,4 +2431,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ExternalReference]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0f6c6c02-3c6c-44f3-b635-1c63d77312eb" ChangeDateTime="08/18/2020 00:51:32">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitions].[Script]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PreprocessScript]" />
+  </Operation>
 </Operations>

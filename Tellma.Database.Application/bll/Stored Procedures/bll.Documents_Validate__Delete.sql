@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 
 	-- Cannot delete unless in Draft state or negative states
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+    SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsClosed'
 	FROM @Ids FE 
@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 
 	-- Cannot delete If there are completed lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+    SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHasCompletedLines',
 		CAST(L.[State] AS NVARCHAR(50))

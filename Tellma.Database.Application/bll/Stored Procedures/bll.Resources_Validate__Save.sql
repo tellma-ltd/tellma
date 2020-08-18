@@ -136,4 +136,52 @@ SET NOCOUNT ON;
 	WHERE URU.[UnitType] <> N'Mass'
 	AND URU.[UnitType] <> UR.[UnitType]
 
+	-- Cannot change currency if resource is already used in Entries with different currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheResourceWasUsedInDocument0WithCurrency1',
+		D.[Code],
+		E.[CurrencyId]
+	FROM @Entities R
+	JOIN dbo.Entries E ON R.[Id] = E.ResourceId
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
+	WHERE R.[CurrencyId] IS NOT NULL AND E.[CurrencyId] <> R.[CurrencyId]
+
+	-- Cannot change currency if resource is already used in Account with different currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheResourceWasUsedInAccount0WithCurrency1',
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
+		A.[CurrencyId]
+	FROM @Entities R
+	JOIN dbo.Accounts A ON R.[Id] = A.ResourceId
+	WHERE R.[CurrencyId] IS NOT NULL AND A.[CurrencyId] <> R.[CurrencyId]
+
+	-- Cannot change Center if resource is already used in Entries with different Center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheResourceWasUsedInDocument0WithCenter1',
+		D.[Code],
+		E.[CenterId]
+	FROM @Entities R
+	JOIN dbo.Entries E ON R.[Id] = E.ResourceId
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
+	WHERE R.[CenterId] IS NOT NULL AND E.[CenterId] <> R.[CenterId]
+
+	-- Cannot change Center if resource is already used in Account with different Center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheResourceWasUsedInAccount0WithCenter1',
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
+		A.[CenterId]
+	FROM @Entities R
+	JOIN dbo.Accounts A ON R.[Id] = A.ResourceId
+	WHERE R.[CenterId] IS NOT NULL AND A.[CenterId] <> R.[CenterId]
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

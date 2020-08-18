@@ -27,6 +27,7 @@
 	[Text2]						NVARCHAR (50), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (50),
+	[VatRate]					DECIMAL (19,4)		CHECK ([VatRate] BETWEEN 0 AND 1),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
 	[UnitId]					INT,

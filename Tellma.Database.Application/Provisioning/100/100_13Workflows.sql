@@ -4,8 +4,8 @@ DELETE FROM @LineDefinitionEntryCustodyDefinitions; DELETE FROM @LineDefinitionE
 DELETE FROM @LineDefinitionEntryNotedRelationDefinitions; DELETE FROM @LineDefinitionStateReasons;
 -- refresh the collections with back end data
 INSERT INTO @LineDefinitions
-(	[Index], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [Script])
-SELECT [Id], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [Script]
+(	[Index], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [GenerateScript], [PreprocessScript], [ValidateScript])
+SELECT [Id], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [GenerateScript], [PreprocessScript], [ValidateScript]
 FROM dbo.LineDefinitions;
 INSERT INTO @LineDefinitionEntries
 (	[Index], [HeaderIndex],		[Id], [Direction], [AccountTypeId], [EntryTypeId])

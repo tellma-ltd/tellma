@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 				[TitlePlural2],
 				[TitlePlural3],
 				-----Contract properties common with resources
-				[CurrencyVisibility],
+				--[CurrencyVisibility],
 				[CenterVisibility],
 				[ImageVisibility],
 				[DescriptionVisibility],
@@ -95,6 +95,8 @@ SET NOCOUNT ON;
 				[IdentifierLabel2],
 				[IdentifierLabel3],
 				[IdentifierVisibility],
+				[VatRateVisibility],
+				[DefaultVatRate],
 				-- Inventory
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
@@ -123,7 +125,7 @@ SET NOCOUNT ON;
 				t.[TitlePlural2]			= s.[TitlePlural2],
 				t.[TitlePlural3]			= s.[TitlePlural3],
 
-				t.[CurrencyVisibility]		= s.[CurrencyVisibility],
+				--t.[CurrencyVisibility]		= s.[CurrencyVisibility],
 				t.[CenterVisibility]		= s.[CenterVisibility],
 				t.[ImageVisibility]			= s.[ImageVisibility],
 				t.[DescriptionVisibility]	= s.[DescriptionVisibility],
@@ -195,6 +197,8 @@ SET NOCOUNT ON;
 				t.[IdentifierLabel2]		= s.[IdentifierLabel2],
 				t.[IdentifierLabel3]		= s.[IdentifierLabel3],
 				t.[IdentifierVisibility]	= s.[IdentifierVisibility],
+				t.[VatRateVisibility]		= s.[VatRateVisibility],
+				t.[DefaultVatRate]			= s.[DefaultVatRate],
 				-- Inventory
 				t.[ReorderLevelVisibility] = s.[ReorderLevelVisibility],
 				t.[EconomicOrderQuantityVisibility]
@@ -212,7 +216,7 @@ SET NOCOUNT ON;
 				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED THEN
 		INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3],
-				[CurrencyVisibility],
+				--[CurrencyVisibility],
 				[CenterVisibility],
 				[ImageVisibility],
 				[DescriptionVisibility],
@@ -284,6 +288,8 @@ SET NOCOUNT ON;
 				[IdentifierLabel2],
 				[IdentifierLabel3],
 				[IdentifierVisibility],
+				[VatRateVisibility],
+				[DefaultVatRate],
 				-- Inventory
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
@@ -301,7 +307,7 @@ SET NOCOUNT ON;
 			
 				)
 			VALUES (s.[Code],	s.[TitleSingular],	s.[TitleSingular2], s.[TitleSingular3],		s.[TitlePlural],	s.[TitlePlural2],		s.[TitlePlural3],
-				s.[CurrencyVisibility],
+				--s.[CurrencyVisibility],
 				s.[CenterVisibility],
 				s.[ImageVisibility],
 				s.[DescriptionVisibility],
@@ -373,6 +379,8 @@ SET NOCOUNT ON;
 				s.[IdentifierLabel2],
 				s.[IdentifierLabel3],
 				s.[IdentifierVisibility],
+				s.[VatRateVisibility],
+				s.[DefaultVatRate],
 				-- Inventory
 				s.[ReorderLevelVisibility],
 				s.[EconomicOrderQuantityVisibility],

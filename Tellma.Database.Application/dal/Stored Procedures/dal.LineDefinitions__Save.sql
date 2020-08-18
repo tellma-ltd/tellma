@@ -38,11 +38,12 @@ SET NOCOUNT ON;
 				[TitlePlural3],
 				[AllowSelectiveSigning],
 				[ViewDefaultsToForm],
-				[GenerateScript],
 				[GenerateLabel],
 				[GenerateLabel2],
 				[GenerateLabel3],
-				[Script]
+				[GenerateScript],
+				[PreprocessScript],
+				[ValidateScript]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
@@ -75,11 +76,12 @@ SET NOCOUNT ON;
 				t.[TitlePlural3]				= s.[TitlePlural3],
 				t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 				t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
-				t.[GenerateScript]				= s.[GenerateScript],
 				t.[GenerateLabel]				= s.[GenerateLabel],
 				t.[GenerateLabel2]				= s.[GenerateLabel2],
 				t.[GenerateLabel3]				= s.[GenerateLabel3],
-				t.[Script]						= s.[Script],
+				t.[GenerateScript]				= s.[GenerateScript],
+				t.[PreprocessScript]			= s.[PreprocessScript],
+				t.[ValidateScript]				= s.[ValidateScript],
 				t.[SavedById]					= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
@@ -95,11 +97,12 @@ SET NOCOUNT ON;
 				[TitlePlural3],
 				[AllowSelectiveSigning],
 				[ViewDefaultsToForm],
-				[GenerateScript],
 				[GenerateLabel],
 				[GenerateLabel2],
 				[GenerateLabel3],
-				[Script]
+				[GenerateScript],
+				[PreprocessScript],
+				[ValidateScript]
 			)
 			VALUES (
 				s.[Code],
@@ -114,11 +117,13 @@ SET NOCOUNT ON;
 				s.[TitlePlural3],
 				s.[AllowSelectiveSigning],
 				s.[ViewDefaultsToForm],
-				s.[GenerateScript],
 				s.[GenerateLabel],
 				s.[GenerateLabel2],
 				s.[GenerateLabel3],
-				s.[Script])
+				s.[GenerateScript],
+				s.[PreprocessScript],
+				s.[ValidateScript]
+			)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
@@ -292,21 +297,21 @@ SET NOCOUNT ON;
 			t.[VisibleState]		<> s.[VisibleState] OR
 			t.[RequiredState]		<> s.[RequiredState] OR
 			t.[ReadOnlyState]		<> s.[ReadOnlyState] OR
-			t.[InheritsFromHeader]	<>s.[InheritsFromHeader]
+			t.[InheritsFromHeader]	<> s.[InheritsFromHeader]
 	)
 	THEN
 		UPDATE SET
-			t.[Index]			= s.[Index],
-			t.[ColumnName]		= s.[ColumnName],
-			t.[EntryIndex]		= s.[EntryIndex],
-			t.[Label]			= s.[Label],
-			t.[Label2]			= s.[Label2],
-			t.[Label3]			= s.[Label3],
-			t.[VisibleState]	= s.[VisibleState],
-			t.[RequiredState]	= s.[RequiredState],
-			t.[ReadOnlyState]	= s.[ReadOnlyState],
-			t.[InheritsFromHeader]=s.[InheritsFromHeader],
-			t.[SavedById]		= @UserId
+			t.[Index]				= s.[Index],
+			t.[ColumnName]			= s.[ColumnName],
+			t.[EntryIndex]			= s.[EntryIndex],
+			t.[Label]				= s.[Label],
+			t.[Label2]				= s.[Label2],
+			t.[Label3]				= s.[Label3],
+			t.[VisibleState]		= s.[VisibleState],
+			t.[RequiredState]		= s.[RequiredState],
+			t.[ReadOnlyState]		= s.[ReadOnlyState],
+			t.[InheritsFromHeader]	=s.[InheritsFromHeader],
+			t.[SavedById]			= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3], [VisibleState],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
 		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader])

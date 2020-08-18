@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Centers] (
 	[Id]					INT					CONSTRAINT [PK_Centers]  PRIMARY KEY NONCLUSTERED IDENTITY,
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
-	[ParentId]				INT,
+	[ParentId]				INT					CONSTRAINT [FK_Centers__ParentId] REFERENCES dbo.Centers([Id]),
 	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (255)		NOT NULL,
 												CONSTRAINT [CK_Centers__CenterType] CHECK (
@@ -32,6 +32,8 @@
 	[IsLeaf]				BIT					NOT NULL DEFAULT 1,
 	[IsSegment]				AS					CAST(IIF([Node].GetAncestor(1) = hierarchyid::GetRoot(), 1, 0) AS BIT) PERSISTED
 );
+GO
+CREATE INDEX [IX_Centers__ParentId] ON dbo.Centers([ParentId]);
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name]
   ON [dbo].[Centers]([CenterType], [Name]);

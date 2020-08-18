@@ -59,7 +59,7 @@ PRINT N'';
 --72:ProjectCompletionToInventory
 /*
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[MonetaryValue1] = [MonetaryValue0], -- TODO: When we add V29, we need to change this
@@ -374,7 +374,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,93,	N'CenterId',			1,	N'Shipment',			4,4,1);
 --100:CashPaymentToOther
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0] = [CurrencyId1],
@@ -405,7 +405,7 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (1,100,-3,	N'Other reasons');
 --110:DepositCashToBank -- Make this and the next into a separate document (BankDepositVoucher)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
@@ -497,7 +497,7 @@ INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 (1,111,N'CustodyId1',	N'Cashier',				N'Required',	N'Custody/' + CAST (@EmployeeRLD AS NVARCHAR(50)),	NULL),
 (2,111,N'PostingDate',	N'As Of Date',			N'Required',	N'Date',	NULL);
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
@@ -525,7 +525,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 --120:CashReceiptFromOther: -- assume all in same currency
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE PWL 
 	SET
 		[CurrencyId0]		= [CurrencyId1],
@@ -577,7 +577,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (12,120, N'AdditionalReference',0,	N'CRV #',			5,5,0);
 --130:CashPaymentToOther
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE PWL 
 	SET
 		[CurrencyId1]		= [CurrencyId0],
@@ -631,7 +631,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 --120:CashReceiptFromOther
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0] = [CurrencyId1],
@@ -657,7 +657,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,120,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
 --121:CheckReceiptFromOtherInCashier
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0] = (SELECT [CurrencyId] FROM dbo.[Resources] WHERE [Id] = [ResourceId0]),
@@ -688,7 +688,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 --300:CashPaymentToTradePayable: Supplier (=> Cash Purchase Voucher),-- CashPaymentToEmployee (=> Employee Payment Voucher),-- CashPaymentToCustomer (=> Customer refund Voucher)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId0],
@@ -718,7 +718,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,300,	N'CenterId',			0,	N'Business Unit',	1,4,1);
 --301:InvoiceFromTradePayable:
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0]		= [CurrencyId1],
@@ -749,7 +749,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (11,301,N'CenterId',			2,	N'Business Unit',	1,4,1);
 --302:StockReceiptFromTradePayable: (We need two versions with invoice and w/o invoice)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0]		= [CurrencyId1],
@@ -802,7 +802,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 /*
 --400:CashReceiptFromTradeReceivable
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
@@ -831,7 +831,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 --401:CheckReceiptFromTradeReceivable
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[MonetaryValue0] = (SELECT [MonetaryValue] FROM dbo.[Resources] WHERE [Id] = [ResourceId0]),
@@ -863,7 +863,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 GOTO DONE_LD
 --3:PaymentToEmployee (used in a payroll voucher)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]	= [CurrencyId0],
@@ -891,7 +891,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,3,	N'CenterId',			1,	N'Inv. Ctr',		4,4,1);
 --11:StockReceiptCreditPurchase (inv-gs,cash) [rarely used in ET]
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1] = [CurrencyId0],
@@ -922,7 +922,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 /*
 --12:StockReceiptPurchase (inv-cash-gs),  (inv-cash,gs), (gs,inv-cash)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1] = [CurrencyId0],
@@ -949,7 +949,7 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,12,	@TradingControlExtension);
 --13:ConsumableServiceReceiptCreditPurchase (inv-gs,cash) [rarely used, applies to travel expenses]
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1] = [CurrencyId0],
@@ -998,7 +998,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,13,	N'NotedRelationId',		0,	N'Supplier',		3,3,1);
 --14:ConsumableServiceReceiptPurchase (inv-cash-gs) (inv-cash,gs) (gs,inv-cash), can used for LeaseIn as well...
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1] = [CurrencyId0],
@@ -1049,7 +1049,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 -- prepayment: Dr. Cash, Cr. VAT Payable, Cr. Unearned Revenues
 -- post pay accrual: Dr. Cash, Cr. VAT Payable, Cr. Accrued income
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId0],
@@ -1078,7 +1078,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,21,	N'CenterId',			0,	N'Inv. Ctr',		4,4,1);
 --22:PaymentFromCustomerSale (inv-cash-gs) (inv-Cash,gs) (gs,inv-cash)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId2],
@@ -1118,7 +1118,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (22,22,	N'CenterId',			0,	N'Inv. Ctr',		4,4,1);
 --33:Service Issue Credit Sale (inv-gs,cash) --31:Stock Issue Credit Sale --32:Stock Issue Sale
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	--SET NOCOUNT ON
 	--DECLARE @ProcessedWideLines WideLineList;
 
@@ -1163,7 +1163,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --(11,33,	N'CenterId',		0,	N'Segment',			4,4,1);
 --34:Service Issue Sale,  (inv-cash-gs) (inv-Cash,gs) (gs,inv-cash)
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	--SET NOCOUNT ON
 	--DECLARE @ProcessedWideLines WideLineList;
 
@@ -1202,7 +1202,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --(9,34,	N'CenterId',		0,	N'Segment',			4,4,1);
 --91:PPEDepreciation
 UPDATE @LineDefinitions
-SET [Script] = N'
+SET [PreprocessScript] = N'
 	--SET NOCOUNT ON
 	--DECLARE @ProcessedWideLines WideLineList;
 

@@ -1,7 +1,7 @@
 ﻿DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 INSERT INTO @Resources([Index],
-[Code],     [Name],			[Name2],			[Decimal1]) VALUES(
-0,N'107L1', N'Soba 51 Land', N'أرض سوبا 51',	50000);
+[Code],     [Name],			[Name2],			[Decimal1], [CurrencyId]) VALUES(
+0,N'107L1', N'Soba 51 Land', N'أرض سوبا 51',	50000,      @USD);
 
 UPDATE @Resources 
 SET [LocationJson] = 
@@ -65,8 +65,8 @@ END;
 
 DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 INSERT INTO @Resources([Index],
-[Code],     [Name],			        [Name2],			    [CenterId],         [Text1],        [Lookup1Id],  [UnitId]) VALUES(
-0,N'MV01',  N'Hyundai Santa Cruz', N'هيونداي سانتا كروز',	@107C_MehiraScheme, N'2KH-14414',   @HyundaiLKP, @mo);
+[Code],     [Name],			        [Name2],			    [CenterId],         [Text1],        [Lookup1Id],  [UnitId], [CurrencyId]) VALUES(
+0,N'MV01',  N'Hyundai Santa Cruz', N'هيونداي سانتا كروز',	@107C_MehiraScheme, N'2KH-14414',   @HyundaiLKP, @mo,       @USD);
 
 EXEC api.Resources__Save
 	@DefinitionId = @MotorVehiclesMemberRD,

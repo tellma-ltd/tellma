@@ -27,3 +27,9 @@ CREATE CLUSTERED INDEX [IX_Accounts__Code] ON dbo.Accounts([Code]);
 GO
 CREATE INDEX [IX_Accounts__AccountTypeId] ON [dbo].[Accounts]([AccountTypeId]);
 GO
+CREATE INDEX [IX_Accounts__AccountClassificationId] ON [dbo].[Accounts]([ClassificationId]);
+GO
+CREATE INDEX [IX_Accounts__CustodyDefinitionId_CustodyId] ON [dbo].[Accounts]([CustodyDefinitionId], [CustodyId]);
+GO
+CREATE INDEX [IX_Accounts__ResourceDefinitionId_ResourceId] ON [dbo].[Accounts]([ResourceDefinitionId], [ResourceId]);
+GO
