@@ -211,6 +211,23 @@
                         *ngTemplateOutlet="labeledProp; context: { prop: 'Identifier', propLower: 'identifier', fieldName: 'Resource_Identifier' }">
                     </ng-container>
                     <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'VatRate', propLower: 'vatrate', fieldName: 'Resource_VatRate' }">
+                    </ng-container>
+
+                    <!-- DefaultVatRate -->
+                    <div class="form-group" *ngIf="isVisible(model.VatRateVisibility)"
+                        [class.is-invalid]="invalid(defaultvatrate, serverErrors(model, 'DefaultVatRate'))">
+                        <label class="small"
+                            for="defaultvatrate">{{ 'Field0Default' | translate: { '0': ('Resource_VatRate' | translate) } }}</label>
+                        <t-decimal-editor theme="dark" [(ngModel)]="model.DefaultVatRate" [minDecimalPlaces]="2" [maxDecimalPlaces]="4"
+                            (ngModelChange)="onDefinitionChange(model)" id="defaultvatrate" #defaultvatrate="ngModel">
+                        </t-decimal-editor>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defaultvatrate, serverErrors: serverErrors(model, 'DefaultVatRate') }">
+                        </ng-container>
+                    </div>
+
+                    <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'ReorderLevel', propLower: 'reorderlevel', fieldName: 'Resource_ReorderLevel' }">
                     </ng-container>
                     <ng-container

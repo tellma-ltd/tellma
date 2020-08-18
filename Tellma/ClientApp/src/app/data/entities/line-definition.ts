@@ -29,11 +29,12 @@ export interface LineDefinitionForSave<
     TitlePlural3?: string;
     AllowSelectiveSigning?: boolean;
     ViewDefaultsToForm?: boolean;
-    GenerateScript?: string;
     GenerateLabel?: string;
     GenerateLabel2?: string;
     GenerateLabel3?: string;
-    Script?: string;
+    GenerateScript?: string;
+    PreprocessScript?: string;
+    ValidateScript?: string;
     Entries?: TEntry[];
     Columns?: TColumn[];
     StateReasons?: TStateReason[];
@@ -84,11 +85,12 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
                 AllowSelectiveSigning: { control: 'boolean', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
                 ViewDefaultsToForm: { control: 'boolean', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
-                GenerateScript: { control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
                 GenerateLabel: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.primaryPostfix },
                 GenerateLabel2: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.secondaryPostfix },
                 GenerateLabel3: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.ternaryPostfix },
-                Script: { control: 'text', label: () => trx.instant('LineDefinition_Script') },
+                GenerateScript: { control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
+                PreprocessScript: { control: 'text', label: () => trx.instant('LineDefinition_PreprocessScript') },
+                ValidateScript: { control: 'text', label: () => trx.instant('LineDefinition_ValidateScript') },
                 SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }
             }

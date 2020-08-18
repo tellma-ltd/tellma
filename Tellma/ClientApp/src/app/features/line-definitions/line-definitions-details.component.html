@@ -522,25 +522,56 @@
                     <fa-icon icon="exclamation-triangle">
                     </fa-icon>&nbsp;
                 </span>
-                <span class="small t-slightly-bold">{{ 'LineDefinition_Script' | translate }}</span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_PreprocessScript' | translate }}</span>
             </a>
             <ng-template ngbNavContent>
                 <ng-container *ngIf="!isEdit; else preprocessscripttemplate">
-                    <div *ngIf="!model.Script" class="text-muted bg-dark p-2 pb-5 font-italic">
+                    <div *ngIf="!model.PreprocessScript" class="text-muted bg-dark p-2 pb-5 font-italic">
                         ({{ 'Blank' | translate }})
                     </div>
-                    <div *ngIf="!!model.Script" style="white-space: pre;"
+                    <div *ngIf="!!model.PreprocessScript" style="white-space: pre;"
                         class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                        {{ model.Script }}
+                        {{ model.PreprocessScript }}
                     </div>
                 </ng-container>
                 <ng-template #preprocessscripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.Script" #preprocessscriptnmodel="ngModel" rows="25" #pstextarea
+                        [(ngModel)]="model.PreprocessScript" #preprocessscriptnmodel="ngModel" rows="25" #pstextarea
                         (keydown)="onPreprocessScriptKeydown(pstextarea, $event, model)">
                     </textarea>
                     <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.Script }">
+                        *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.PreprocessScript }">
+                    </ng-container>
+                </ng-template>
+            </ng-template>
+        </li>
+
+        <!-- Validate Script -->
+        <li ngbNavItem="validateScript">
+            <a ngbNavLink>
+                <span *ngIf="showValidateScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_ValidateScript' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <ng-container *ngIf="!isEdit; else validatescripttemplate">
+                    <div *ngIf="!model.ValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!!model.ValidateScript" style="white-space: pre;"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                        {{ model.ValidateScript }}
+                    </div>
+                </ng-container>
+                <ng-template #validatescripttemplate>
+                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.ValidateScript" #validatescriptnmodel="ngModel" rows="25" #pstextarea
+                        (keydown)="onValidateScriptKeydown(pstextarea, $event, model)">
+                    </textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: validatescriptnmodel, serverErrors: model?.serverErrors?.ValidateScript }">
                     </ng-container>
                 </ng-template>
             </ng-template>
@@ -881,8 +912,7 @@
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
                                                     <ng-container *ngIf="!isEdit; else ruletypeentryindextemplate">
-                                                        <span class="font-weight-bold"
-                                                            *ngIf="!!signature.RuleTypeEntryIndex">
+                                                        <span class="font-weight-bold">
                                                             {{ signature.RuleTypeEntryIndex }}
                                                         </span>
                                                     </ng-container>

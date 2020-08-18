@@ -65,7 +65,7 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
+                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'LookupDefinition', foreignKeyName: 'DefinitionId' },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },

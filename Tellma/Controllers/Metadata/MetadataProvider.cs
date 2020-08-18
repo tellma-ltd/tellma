@@ -905,6 +905,17 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
                     isRequired = def.IdentifierVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.VatRate):
+                    display = PropertyDisplay(def.VatRateVisibility, display);
+                    if (def.VatRateVisibility == null)
+                    {
+                        display = null;
+                    }
+                    else if (def.DefaultVatRate == null)
+                    {
+                        isRequired = true;
+                    }
+                    break;
                 case nameof(Resource.Units):
                     if (def.UnitCardinality != Cardinality.Multiple)
                     {

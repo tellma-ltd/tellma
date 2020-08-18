@@ -161,6 +161,22 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceDefinitionForSave> entities)
         {
+            int index = 0;
+            entities.ForEach(entity =>
+            {
+                if (entity.DefaultVatRate < 0m || entity.DefaultVatRate > 1m)
+                {
+                    var path = $"[{index}].{nameof(ResourceDefinition.DefaultVatRate)}";
+                    var msg = _localizer["Error_VatRateMustBeBetweenZeroAndOne"];
+
+                    ModelState.AddModelError(path, msg);
+                }
+
+                index++;
+            });
+
+            ModelState.ThrowIfInvalid();
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.ResourceDefinitions_Validate__Save(entities, top: remainingErrorCount);

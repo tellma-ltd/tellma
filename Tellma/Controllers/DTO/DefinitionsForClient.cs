@@ -457,6 +457,9 @@ namespace Tellma.Controllers.Dto
         public string IdentifierLabel3 { get; set; }
         public string IdentifierVisibility { get; set; }
 
+        public string VatRateVisibility { get; set; }
+        public decimal? DefaultVatRate { get; set; }
+
         public string ReorderLevelVisibility { get; set; }
         public string EconomicOrderQuantityVisibility { get; set; }
         public string UnitCardinality { get; set; }

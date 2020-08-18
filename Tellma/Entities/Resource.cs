@@ -114,6 +114,9 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Identifier { get; set; } // Check
 
+        [Display(Name = "Resource_VatRate")]
+        public decimal? VatRate { get; set; }
+
         [Display(Name = "Resource_ReorderLevel")]
         public decimal? ReorderLevel { get; set; } // Check
 
