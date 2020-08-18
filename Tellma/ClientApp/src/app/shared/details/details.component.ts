@@ -851,7 +851,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     if (!this.isDirty && !this.isNew) {
       if (this.isPopupMode) {
         // In popup mode, just notify the outside world that a save has happened
-        this.saved.emit(this._editModel.Id);
+        this.saved.emit(this.viewModel.Id);
 
       } else {
         // since no changes, don't save to the database

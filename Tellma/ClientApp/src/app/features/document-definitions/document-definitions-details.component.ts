@@ -106,8 +106,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     return true;
   }
 
-  public isInactive: (model: DocumentDefinition) => string = (def: DocumentDefinition) =>
-    !!def && def.Id === this.ws.definitions.ManualJournalVouchersDefinitionId ? 'Error_CannotModifySystemItem' : null
+  public isInactive: (model: DocumentDefinition) => string = (def: DocumentDefinition) => null;
+
+  public isSystem = (def: DocumentDefinition) => !!def && def.Id === this.ws.definitions.ManualJournalVouchersDefinitionId;
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;
@@ -314,7 +315,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
             }
 
             // CreditResource
-            if (colDef.ColumnName === 'ResourceId' && entryDef.Direction === 1) {
+            if (colDef.ColumnName === 'ResourceId' && entryDef.Direction === -1) {
               result.CreditResourceVisibility = true;
               if (!result.CreditResourceLabel) {
                 result.CreditResourceLabel = result.CreditResourceLabel || colDef.Label;
@@ -354,7 +355,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
             }
 
             // CreditCustody
-            if (colDef.ColumnName === 'CustodyId' && entryDef.Direction === 1) {
+            if (colDef.ColumnName === 'CustodyId' && entryDef.Direction === -1) {
               result.CreditCustodyVisibility = true;
               if (!result.CreditCustodyLabel) {
                 result.CreditCustodyLabel = result.CreditCustodyLabel || colDef.Label;
@@ -627,7 +628,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
   public markupTemplateToEdit: DocumentDefinitionMarkupTemplate;
 
   public onCreateMarkupTemplate(model: DocumentDefinition) {
-    const itemToEdit: DocumentDefinitionMarkupTemplate = { };
+    const itemToEdit: DocumentDefinitionMarkupTemplate = {};
     this.markupTemplateToEdit = itemToEdit; // Create new
     this.modalService.open(this.markupTemplateModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
       if (apply) {

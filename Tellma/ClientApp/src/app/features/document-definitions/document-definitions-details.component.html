@@ -58,7 +58,7 @@
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('General')">
                     <!-- Code -->
-                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
+                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)" *ngIf="!isSystem(model)">
                         <label class="small" for="code">{{ 'Code' | translate }}</label>
                         <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
                             #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
@@ -201,7 +201,7 @@
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Definition')">
 
                     <!-- Line Definitions -->
-                    <div class="form-group">
+                    <div class="form-group" *ngIf="!isSystem(model)">
                         <label class="small">{{ 'DocumentDefinition_LineDefinitions' | translate }}</label>&nbsp;
                         <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                             (click)="onCreateLineDefinition(model)" [title]="'Create' | translate">
@@ -281,8 +281,10 @@
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Clearance', propLower: 'clearance', fieldName: 'Document_Clearance' }">
                     </ng-container>
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Memo', propLower: 'memo', fieldName: 'Memo' }">
+                    <ng-container *ngIf="!isSystem(model)">
+                        <ng-container
+                            *ngTemplateOutlet="unlabeledProp; context: { prop: 'Memo', propLower: 'memo', fieldName: 'Memo' }">
+                        </ng-container>
                     </ng-container>
 
                     <!-- Prefix -->

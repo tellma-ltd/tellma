@@ -134,7 +134,8 @@
                     <div class="form-group t-form-group t-text-whitish">
                         <label class="small"
                             for="defaultstoform">{{ ('LineDefinition_ViewDefaultsToForm' | translate) }}</label>
-                        <div *ngIf="!isEdit; else viewdefaultstoformtemplate">{{ (model.ViewDefaultsToForm ? 'Yes' : 'No') | translate }}</div>
+                        <div *ngIf="!isEdit; else viewdefaultstoformtemplate">
+                            {{ (model.ViewDefaultsToForm ? 'Yes' : 'No') | translate }}</div>
                         <ng-template #viewdefaultstoformtemplate>
                             <select class="form-control t-studio-input" [(ngModel)]="model.ViewDefaultsToForm"
                                 #defaultstoformmodel="ngModel">
@@ -535,7 +536,8 @@
                 </ng-container>
                 <ng-template #preprocessscripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.Script" #preprocessscriptnmodel="ngModel" rows="25">
+                        [(ngModel)]="model.Script" #preprocessscriptnmodel="ngModel" rows="25" #pstextarea
+                        (keydown)="onPreprocessScriptKeydown(pstextarea, $event, model)">
                     </textarea>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.Script }">
@@ -764,7 +766,7 @@
                     <ng-template #generatescripttemplate>
                         <textarea id="generatescript" class="w-100 form-control t-studio-input text-nowrap t-code"
                             spellcheck="false" [(ngModel)]="model.GenerateScript" #generatescriptnmodel="ngModel"
-                            rows="15"></textarea>
+                            rows="15" #gstextarea (keydown)="onGenerateScriptKeydown(gstextarea, $event, model)"></textarea>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: generatescriptnmodel, serverErrors: model?.serverErrors?.GenerateScript }">
                         </ng-container>
@@ -1335,9 +1337,8 @@
                                     <span
                                         *ngIf="!modalIsEdit; else relationdefinitiontemplate">{{ ws.getMultilingualValue('RelationDefinition', def.NotedRelationDefinitionId, 'TitleSingular') }}</span>
                                     <ng-template #relationdefinitiontemplate>
-                                        <t-relation-definitions-picker 
-                                            [(ngModel)]="def.NotedRelationDefinitionId" theme="dark"
-                                            #notedrelationdefinitionmodel="ngModel">
+                                        <t-relation-definitions-picker [(ngModel)]="def.NotedRelationDefinitionId"
+                                            theme="dark" #notedrelationdefinitionmodel="ngModel">
                                         </t-relation-definitions-picker>
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: notedrelationdefinitionmodel, serverErrors: def?.serverErrors?.NotedRelationDefinitionId }">

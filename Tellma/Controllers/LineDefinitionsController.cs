@@ -45,12 +45,14 @@ namespace Tellma.Controllers
     public class LineDefinitionsService : CrudServiceBase<LineDefinitionForSave, LineDefinition, int>
     {
         private readonly ApplicationRepository _repo;
+        private readonly IDefinitionsCache _defCache;
 
         private string View => LineDefinitionsController.BASE_ADDRESS;
 
-        public LineDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public LineDefinitionsService(ApplicationRepository repo, IDefinitionsCache defCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
+            _defCache = defCache;
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -281,6 +283,24 @@ namespace Tellma.Controllers
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
+            // Make sure 
+            int jvDefId = _defCache.GetCurrentDefinitionsIfCached()?.Data?.ManualLinesDefinitionId ??
+                throw new BadRequestException("The Manual Line Id is not defined");
+
+            int index = 0;
+            ids.ForEach(id =>
+            {
+                if (id == jvDefId)
+                {
+                    string path = $"[{index}]";
+                    string msg = _localizer["Error_CannotModifySystemItem"];
+
+                    ModelState.AddModelError(path, msg);
+                }
+
+                index++;
+            });
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.LineDefinitions_Validate__Delete(ids, top: remainingErrorCount);

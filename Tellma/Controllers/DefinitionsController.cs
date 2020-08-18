@@ -624,6 +624,7 @@ namespace Tellma.Controllers
                     if (colDef.ColumnName == nameof(Line.Memo))
                     {
                         result.MemoIsCommonVisibility = true;
+                        result.MemoVisibility ??= Visibility.Optional; // If a line inherits from header, override the header definition
                         if (string.IsNullOrWhiteSpace(result.MemoLabel))
                         {
                             result.MemoLabel = colDef.Label;
