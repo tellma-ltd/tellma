@@ -152,6 +152,11 @@
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-lookup-definitions-picker>
 
+                            <t-document-definitions-picker *ngSwitchCase="'DocumentDefinition'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-document-definitions-picker>
+
                             <div class="text-danger font-weight-bold" *ngSwitchDefault>
                                 TODO: control for '{{ p.desc['type'] || p.desc['collection'] }}''
                             </div>

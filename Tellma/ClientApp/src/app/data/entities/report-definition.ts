@@ -179,7 +179,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                 },
                 DefaultsToChart: { control: 'boolean', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
                 Collection: { control: 'text', label: () => trx.instant('ReportDefinition_Collection') },
-                DefinitionId: { control: 'text', label: () => trx.instant('ReportDefinition_DefinitionId') },
+                DefinitionId: { control: 'number', label: () => trx.instant('ReportDefinition_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Filter: { control: 'text', label: () => trx.instant('ReportDefinition_Filter') },
                 OrderBy: { control: 'text', label: () => trx.instant('ReportDefinition_OrderBy') },
                 Top: { control: 'number', label: () => trx.instant('ReportDefinition_Top'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
