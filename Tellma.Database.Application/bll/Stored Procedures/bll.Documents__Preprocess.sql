@@ -224,6 +224,13 @@ BEGIN
 	WHERE
 		RD.UnitCardinality = N'Single'
 	AND AC.[AllowsPureUnit] = 0
+
+	UPDATE E
+	SET E.[Quantity] = 1
+	FROM @PreprocessedEntries E
+	JOIN dbo.Units U ON E.[UnitId] = U.[Id]
+	WHERE U.UnitType = N'Pure'
+
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
