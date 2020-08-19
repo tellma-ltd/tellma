@@ -1069,8 +1069,8 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العلاقة ({0}).</value>
   </data>
-  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
-    <value>الصنف ({0}) في ({1}) مذكور في مستند لاحق.</value>
+  <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} والبيان ({3}) من نوع {2} مذكوران في مستند لاحق {4}.</value>
   </data>
   <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
     <value>ليس هناك رصيد كاف لسحب هذه الكمية من ({0}).</value>

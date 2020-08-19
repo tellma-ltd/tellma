@@ -1069,8 +1069,8 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
   </data>
-  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
-    <value>该项目在“{0}”“{1}”将在后面的文件中使用。</value>
+  <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
+    <value>在{0} '{1}' 在{2} '{3}' 在后面的文件{4}被使用。</value>
   </data>
   <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
     <value>平衡“{0}”将变为负。</value>
