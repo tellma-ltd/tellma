@@ -1069,8 +1069,8 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ግንኙነት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
-  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
-    <value>ንጥሉ ውስጥ «{0} '' {1} 'አንድ በኋላ ሰነድ ውስጥ ጥቅም ላይ ይውላሉ.</value>
+  <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
+    <value>በ {0} «{1}« {2} «{3} 'አንድ በኋላ ሰነድ {4} ላይ ውሏል ውስጥ.</value>
   </data>
   <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
     <value>«{0} 'ይሆናል አሉታዊ ለ ሒሳብ.</value>

@@ -14,6 +14,8 @@ SET NOCOUNT ON;
     WHERE Id <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[ExchangeRates]);
 
+	-- TODO: Check that CurrencyId is valid
+
 	-- [CurrencyId] and [ValidAsOf] must not be available in the DB
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)

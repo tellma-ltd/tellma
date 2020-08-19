@@ -1069,8 +1069,8 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Relation DefinitionId '{0}' could not be found.</value>
   </data>
-  <data name="Error_ResourceAndCustodyAppearInLaterDocument0" xml:space="preserve">
-    <value>The item '{0}' in '{1}' are used in a later document.</value>
+  <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
+    <value>The {0} '{1}' in {2} '{3}' is used in a later document {4}.</value>
   </data>
   <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
     <value>Balance for '{0}' will become negative.</value>
