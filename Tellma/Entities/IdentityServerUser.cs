@@ -9,7 +9,6 @@ namespace Tellma.Entities
         [Display(Name = "User_Email")]
         [Required]
         [EmailAddress]
-        [StringLength(256)]
         [AlwaysAccessible]
         public string Email { get; set; }
 

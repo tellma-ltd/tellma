@@ -23,6 +23,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   @Input()
   theme: 'light' | 'dark' = 'light';
 
+  @Input()
+  isPercentage = false;
+
   @ViewChild('input', { static: true })
   input: ElementRef;
 
@@ -35,14 +38,18 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   public onTouched: () => void = () => { };
   public onValidatorChange: () => void = () => { };
 
-  writeValue(v: any): void {
+  writeValue(num: number): void {
+    num = this.isPercentage ? (num * 100) : num;
+    const s = this.format(num);
 
-    this.input.nativeElement.value = this.format(v); // Format
+    this.input.nativeElement.value = s;
   }
 
   registerOnChange(fn: (val: any) => void): void {
-    this.onChange = (val) => {
-      fn(this.parse(val));
+    this.onChange = (s) => {
+      let num = this.parse(s);
+      num = this.isPercentage ? (num / 100) : num;
+      fn(num);
     };
   }
 
@@ -58,7 +65,8 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
     // to update the formatting if any of the inputs change
     if ((!!changes.maxDecimalPlaces && !changes.maxDecimalPlaces.isFirstChange())
       || (!!changes.minDecimalPlaces && !changes.minDecimalPlaces.isFirstChange())) {
-      this.input.nativeElement.value = this.format(this.input.nativeElement.value);
+      const parsed = this.parse(this.input.nativeElement.value);
+      this.input.nativeElement.value = this.format(parsed);
     }
   }
 
@@ -89,22 +97,23 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   /**
-   * Takes a number and formats it with a decimal point and a thousands separator
+   * Takes a number and formats it with a decimal point and a thousands separator and a percent sign
    */
-  private format(value: number | string): string {
-    if (value === null || value === undefined || value === '') {
+  private format(value: number): string {
+    if (!value && value !== 0) {
       return '';
     }
 
-    let valueString = (value || '0').toString();
+    // if (this.isPercentage) {
+    //   value *= 100;
+    // }
 
-    const isNegativeBrackets =  this.isBracketed(valueString);
-    if (isNegativeBrackets) {
-      valueString = this.removeBrackets(valueString);
-    }
+    const isNegative = value < 0;
+    const valueString = (Math.abs(value) || '0').toString();
 
     let [integer, fraction = ''] = valueString.split(this.decimalSeparator);
 
+    // Trim the fraction part as per min and max decimal places
     let min = this.minDecimalPlaces;
     if (min === null) {
       min = fraction.length;
@@ -123,20 +132,21 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
       ? this.decimalSeparator + (fraction + this.padding).substring(0, fractionSize)
       : '';
 
+    // Insert the thousands separator in the integer part
     integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandsSeparator);
 
-    // If there is a negative sign remove it
-    const isNegativeSign = integer.startsWith('-');
-    if (isNegativeSign) {
-      integer = integer.substring(1);
+    // Combine for final result
+    let result = integer + fraction;
+
+    // Add percent sign if specified
+    if (this.isPercentage) {
+      result = result + '%';
     }
 
-    let result = integer + fraction;
-    if ((isNegativeBrackets && !isNegativeSign) || (isNegativeSign && !isNegativeBrackets)) {
-      // If one of the two negatives is true, add brackets around the result
+    // Add brackets if negative number
+    if (isNegative) {
       result = `(${result})`;
     }
-
     return result;
   }
 
@@ -155,6 +165,11 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
       value = this.removeBrackets(value).trim(); // remove the brackets
     }
 
+    if (this.isPercentage) {
+      while (value.endsWith('%')) {
+        value = value.slice(0, -1);
+      }
+    }
 
     let [integer, fraction = ''] = value.split(this.decimalSeparator);
 
@@ -171,6 +186,11 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
 
     const stringResult = integer + fraction;
     const result = !!stringResult ? +stringResult : 0;
+
+    // If percentage: divide by 0
+    // if (this.isPercentage) {
+    //   result = result / 100.00;
+    // }
 
     return isNegativeBrackets ? -result : result;
   }

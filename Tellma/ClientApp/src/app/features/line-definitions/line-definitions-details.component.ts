@@ -47,6 +47,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       result.TitleSingular3 = this.initialText;
     }
 
+    result.AllowSelectiveSigning = false;
     result.ViewDefaultsToForm = false;
     result.Columns = [];
     result.Entries = [];

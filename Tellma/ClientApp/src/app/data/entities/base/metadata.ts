@@ -288,6 +288,16 @@ export interface NumberPropDescriptor extends PropDescriptorBase {
     // formatAsCurrency?: boolean;
 }
 
+export interface PercentPropDescriptor extends PropDescriptorBase {
+    control: 'percent';
+
+    /**
+     * Number of decimal places to display
+     */
+    minDecimalPlaces: number;
+    maxDecimalPlaces: number;
+}
+
 export interface DatePropDscriptor extends PropDescriptorBase {
     control: 'date';
 }
@@ -330,7 +340,7 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
 }
 
 export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor | BooleanPropDescriptor
-    | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor
+    | NumberPropDescriptor | PercentPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor
     | StatePropDescriptor | SerialPropDescriptor;
 
 export function entityDescriptorImpl(

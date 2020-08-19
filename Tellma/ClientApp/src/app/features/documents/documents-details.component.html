@@ -774,7 +774,7 @@
                             </ng-container>
 
                             <!-- No signature but can sign -->
-                            <ng-container *ngIf="!signature.SignedById && signature.CanSign">
+                            <ng-container *ngIf="!signature.SignedById && (signature.CanSign)">
                                 <div class="w-50 px-1" placement="bottom"
                                     [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
                                     <button class="btn btn-danger px-2 w-100 h-100"
@@ -795,7 +795,7 @@
                             </ng-container>
 
                             <!-- No signature and cannot sign -->
-                            <ng-container *ngIf="!signature.SignedById && !signature.CanSign">
+                            <ng-container *ngIf="!signature.SignedById && !(signature.CanSign)">
 
                             </ng-container>
                         </div>

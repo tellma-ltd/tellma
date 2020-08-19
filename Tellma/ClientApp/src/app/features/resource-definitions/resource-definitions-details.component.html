@@ -220,7 +220,7 @@
                         <label class="small"
                             for="defaultvatrate">{{ 'Field0Default' | translate: { '0': ('Resource_VatRate' | translate) } }}</label>
                         <t-decimal-editor theme="dark" [(ngModel)]="model.DefaultVatRate" [minDecimalPlaces]="2" [maxDecimalPlaces]="4"
-                            (ngModelChange)="onDefinitionChange(model)" id="defaultvatrate" #defaultvatrate="ngModel">
+                            (ngModelChange)="onDefinitionChange(model)" id="defaultvatrate" #defaultvatrate="ngModel" [isPercentage]="true">
                         </t-decimal-editor>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: defaultvatrate, serverErrors: serverErrors(model, 'DefaultVatRate') }">

@@ -133,7 +133,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
 
                 // Resource Only
                 Identifier: { control: 'text', label: () => trx.instant('Resource_Identifier') },
-                VatRate: { control: 'number', label: () => trx.instant('Resource_VatRate'), minDecimalPlaces: 2, maxDecimalPlaces: 4 },
+                VatRate: { control: 'percent', label: () => trx.instant('Resource_VatRate'), minDecimalPlaces: 2, maxDecimalPlaces: 4 },
                 ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },

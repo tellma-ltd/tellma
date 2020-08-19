@@ -53,11 +53,11 @@ namespace Tellma.Entities
         public DateTime? Time2 { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
-        [StringLength(255)]
+        [StringLength(50)]
         public string ExternalReference { get; set; }
 
         [Display(Name = "Entry_AdditionalReference")]
-        [StringLength(255)]
+        [StringLength(50)]
         public string AdditionalReference { get; set; }
 
         [Display(Name = "Entry_NotedRelation")]
