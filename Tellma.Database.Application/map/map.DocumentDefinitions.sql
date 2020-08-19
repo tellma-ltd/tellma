@@ -4,9 +4,9 @@ AS
 RETURN (
 	SELECT DD.*, 
 		CAST(IIF([1] > 0, 1, 0) AS BIT) AS [CanReachState1],
-		CAST(IIF([2] > 1, 1, 0) AS BIT) AS [CanReachState2],
+		CAST(IIF([2] > 0, 1, 0) AS BIT) AS [CanReachState2],
 		CAST(IIF([3] > 0, 1, 0) AS BIT) AS [CanReachState3],
-		CAST(IIF([4] > 0, 1, 0) AS BIT) AS [HasWorkflow]
+		CAST(IIF([1] + [2] + [3] + [4] > 0, 1, 0) AS BIT) AS [HasWorkflow]
 	FROM dbo.DocumentDefinitions DD
 	LEFT JOIN
 	(

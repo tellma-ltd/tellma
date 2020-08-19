@@ -508,8 +508,6 @@
                     </t-form-group>
 
                     <ng-template #formGroupContents>
-                        <!-- <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)"
-                                [ngSwitch]="columnName(lineDefId, columnIndex)"> -->
                         <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
