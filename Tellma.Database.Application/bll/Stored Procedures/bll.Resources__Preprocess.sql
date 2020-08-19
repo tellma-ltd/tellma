@@ -37,8 +37,4 @@ SET [CenterId] = (
 		WHERE [C].[IsActive] = 1 AND [C].[IsLeaf] = 1
 	);
 
-UPDATE @PreprocessedResources
-SET VatRate = VatRate / 100
-WHERE VatRate BETWEEN 1 and 100;
-
 SELECT * FROM @PreprocessedResources;

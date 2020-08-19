@@ -284,7 +284,7 @@ BEGIN
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_ResourceAndCustodyAppearInLaterDocument0',
+			N'Error_Resource01AndCustody23AppearInLaterDocument4',
 			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
 			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
@@ -322,7 +322,7 @@ BEGIN
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Resource01AndCustody23ppearInLaterDocument4',
+			N'Error_Resource01AndCustody23AppearInLaterDocument4',
 			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
 			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
