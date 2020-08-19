@@ -279,12 +279,16 @@ BEGIN
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories'
 	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 			N'Error_ResourceAndCustodyAppearInLaterDocument0',
+			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
+			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
 			BD.Code
 		FROM (
 			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex]
@@ -296,6 +300,10 @@ BEGIN
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
+		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
+		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
+		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
 		WHERE BL.[State] = 4
 		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id)
 END
@@ -309,18 +317,26 @@ BEGIN
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories'
 	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_ResourceAndCustodyAppearInLaterDocument0',
+			N'Error_Resource01AndCustody23ppearInLaterDocument4',
+			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
+			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
 			BD.Code
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
+		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
+		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
+		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
 		WHERE BL.[State] = 4
 		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND L.Id > 0)
 END

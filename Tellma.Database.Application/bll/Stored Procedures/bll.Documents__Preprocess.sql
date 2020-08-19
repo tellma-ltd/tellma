@@ -222,7 +222,7 @@ BEGIN
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
-		RD.UnitCardinality = N'Single'
+		RD.UnitCardinality IN (N'Single', N'None')
 	AND AC.[AllowsPureUnit] = 0
 
 	UPDATE E

@@ -318,11 +318,11 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	WITH BLGDP AS (
+	WITH BLDGP AS (
 		SELECT * FROM dbo.[LineDefinitionGenerateParameters]
 		WHERE LineDefinitionId IN (SELECT [Id] FROM @LineDefinitionsIndexedIds)
 	)
-	MERGE INTO BLGDP AS t
+	MERGE INTO BLDGP AS t
 	USING (
 		SELECT
 			LDGP.[Id],
@@ -367,11 +367,11 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	WITH BLGSR AS (
+	WITH BLDSR AS (
 		SELECT * FROM dbo.[LineDefinitionStateReasons]
 		WHERE LineDefinitionId IN (SELECT [Id] FROM @LineDefinitionsIndexedIds)
 	)
-	MERGE [dbo].[LineDefinitionStateReasons] AS t
+	MERGE INTO BLDSR AS t
 	USING (
 		SELECT
 			LDSR.[Index],
