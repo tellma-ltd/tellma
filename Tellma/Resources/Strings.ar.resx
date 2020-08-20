@@ -863,7 +863,7 @@
     <value>لا يمكنك إيقاف نشاط المستخدم خاصتك</value>
   </data>
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
-    <value>تعذر حذف بيان من نوع {0} لأنه مستخدم</value>
+    <value>تعذر حذف بيان من نوع {0} لأنه مستخدم.</value>
   </data>
   <data name="Error_CannotDeleteSystemRecords" xml:space="preserve">
     <value>البيانات المعرفة من النظام لا يمكن حذفها.</value>
@@ -1340,7 +1340,7 @@
     <value>القيمة ({0}) لا تتناسب مع الحقل {1}، القيم المدعومة هي: {2}.</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
-    <value>معدل ضريبة القيمة المضافة ينبغي أن يكون بين 0 و1.</value>
+    <value>معدل ضريبة القيمة المضافة ينبغي أن يكون بين 0% و100%.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>سعر صرف</value>

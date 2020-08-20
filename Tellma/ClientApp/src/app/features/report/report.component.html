@@ -28,6 +28,13 @@
                             [maxDecimalPlaces]="p.desc['maxDecimalPlaces']">
                         </t-decimal-editor>
 
+                        <!-- Percent -->
+                        <t-decimal-editor *ngSwitchCase="'percent'" [(ngModel)]="arguments[p.key]"
+                            [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="p.desc['minDecimalPlaces']"
+                            [maxDecimalPlaces]="p.desc['maxDecimalPlaces']" [isPercentage]="true">
+                        </t-decimal-editor>
+
                         <!-- Serial -->
                         <t-decimal-editor *ngSwitchCase="'serial'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"

@@ -10,17 +10,17 @@ namespace Tellma.Entities
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 

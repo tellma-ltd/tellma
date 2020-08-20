@@ -26,7 +26,7 @@ namespace Tellma.Entities
         public string Name3 { get; set; } // Check
 
         [Display(Name = "Code")]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; } // Check
 
@@ -94,11 +94,11 @@ namespace Tellma.Entities
         //public int? Lookup5Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
-        [StringLength(255)]
+        [StringLength(50)]
         public string Text1 { get; set; } // Check
 
         [Display(Name = "Entity_Text2")]
-        [StringLength(255)]
+        [StringLength(50)]
         public string Text2 { get; set; } // Check
 
         [NotMapped]

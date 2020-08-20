@@ -515,68 +515,6 @@
             </ng-template>
         </li>
 
-        <!-- Preprocess Script -->
-        <li ngbNavItem="preprocessScript">
-            <a ngbNavLink>
-                <span *ngIf="showPreprocessScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'LineDefinition_PreprocessScript' | translate }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <ng-container *ngIf="!isEdit; else preprocessscripttemplate">
-                    <div *ngIf="!model.PreprocessScript" class="text-muted bg-dark p-2 pb-5 font-italic">
-                        ({{ 'Blank' | translate }})
-                    </div>
-                    <div *ngIf="!!model.PreprocessScript" style="white-space: pre;"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                        {{ model.PreprocessScript }}
-                    </div>
-                </ng-container>
-                <ng-template #preprocessscripttemplate>
-                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.PreprocessScript" #preprocessscriptnmodel="ngModel" rows="25" #pstextarea
-                        (keydown)="onPreprocessScriptKeydown(pstextarea, $event, model)">
-                    </textarea>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.PreprocessScript }">
-                    </ng-container>
-                </ng-template>
-            </ng-template>
-        </li>
-
-        <!-- Validate Script -->
-        <li ngbNavItem="validateScript">
-            <a ngbNavLink>
-                <span *ngIf="showValidateScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'LineDefinition_ValidateScript' | translate }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <ng-container *ngIf="!isEdit; else validatescripttemplate">
-                    <div *ngIf="!model.ValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
-                        ({{ 'Blank' | translate }})
-                    </div>
-                    <div *ngIf="!!model.ValidateScript" style="white-space: pre;"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                        {{ model.ValidateScript }}
-                    </div>
-                </ng-container>
-                <ng-template #validatescripttemplate>
-                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.ValidateScript" #validatescriptnmodel="ngModel" rows="25" #pstextarea
-                        (keydown)="onValidateScriptKeydown(pstextarea, $event, model)">
-                    </textarea>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: validatescriptnmodel, serverErrors: model?.serverErrors?.ValidateScript }">
-                    </ng-container>
-                </ng-template>
-            </ng-template>
-        </li>
-
         <!-- Generate Script -->
         <li ngbNavItem="generateScript">
             <a ngbNavLink>
@@ -803,6 +741,68 @@
                         </ng-container>
                     </ng-template>
                 </div>
+            </ng-template>
+        </li>
+
+        <!-- Preprocess Script -->
+        <li ngbNavItem="preprocessScript">
+            <a ngbNavLink>
+                <span *ngIf="showPreprocessScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_PreprocessScript' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <ng-container *ngIf="!isEdit; else preprocessscripttemplate">
+                    <div *ngIf="!model.PreprocessScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!!model.PreprocessScript" style="white-space: pre;"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                        {{ model.PreprocessScript }}
+                    </div>
+                </ng-container>
+                <ng-template #preprocessscripttemplate>
+                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.PreprocessScript" #preprocessscriptnmodel="ngModel" rows="25" #pstextarea
+                        (keydown)="onPreprocessScriptKeydown(pstextarea, $event, model)">
+                    </textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscriptnmodel, serverErrors: model?.serverErrors?.PreprocessScript }">
+                    </ng-container>
+                </ng-template>
+            </ng-template>
+        </li>
+
+        <!-- Validate Script -->
+        <li ngbNavItem="validateScript">
+            <a ngbNavLink>
+                <span *ngIf="showValidateScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_ValidateScript' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <ng-container *ngIf="!isEdit; else validatescripttemplate">
+                    <div *ngIf="!model.ValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!!model.ValidateScript" style="white-space: pre;"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
+                        {{ model.ValidateScript }}
+                    </div>
+                </ng-container>
+                <ng-template #validatescripttemplate>
+                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.ValidateScript" #validatescriptnmodel="ngModel" rows="25" #pstextarea
+                        (keydown)="onValidateScriptKeydown(pstextarea, $event, model)">
+                    </textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: validatescriptnmodel, serverErrors: model?.serverErrors?.ValidateScript }">
+                    </ng-container>
+                </ng-template>
             </ng-template>
         </li>
 

@@ -26,7 +26,7 @@ namespace Tellma.Entities
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
@@ -94,11 +94,11 @@ namespace Tellma.Entities
         //public int? Lookup5Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
-        [StringLength(255)]
+        [StringLength(50)]
         public string Text1 { get; set; }
 
         [Display(Name = "Entity_Text2")]
-        [StringLength(255)]
+        [StringLength(50)]
         public string Text2 { get; set; }
 
         [NotMapped]
@@ -113,7 +113,7 @@ namespace Tellma.Entities
         public int? AgentId { get; set; }
 
         [Display(Name = "Relation_TaxIdentificationNumber")]
-        [StringLength(30)]
+        [StringLength(18)]
         public string TaxIdentificationNumber { get; set; }
 
         [Display(Name = "Relation_Job")]

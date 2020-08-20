@@ -52,7 +52,6 @@ namespace Tellma.Entities
         public decimal? NegativeAlgebraicMonetaryValue { get; set; }
 
         [Display(Name = "Entry_Currency")]
-        [StringLength(3)]
         public string CurrencyId { get; set; }
 
         [Display(Name = "DetailsEntry_Count")]
@@ -95,18 +94,15 @@ namespace Tellma.Entities
         public DateTime? Time2 { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
-        [StringLength(255)]
         public string ExternalReference { get; set; }
 
         [Display(Name = "Entry_AdditionalReference")]
-        [StringLength(255)]
         public string AdditionalReference { get; set; }
 
         [Display(Name = "Entry_NotedRelation")]
         public int? NotedRelationId { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
-        [StringLength(50)]
         public string NotedAgentName { get; set; }
 
         [Display(Name = "Entry_NotedAmount")]

@@ -115,6 +115,7 @@ export class ReportComponent implements OnInit, OnDestroy {
                   urlValue = urlStringValue;
                   break;
                 case 'number':
+                case 'percent':
                 case 'serial':
                   urlValue = +urlStringValue;
                   break;

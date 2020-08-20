@@ -48,12 +48,12 @@ namespace Tellma.Entities
         public string TitlePlural3 { get; set; }
 
         [Display(Name = "MainMenuIcon")]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string MainMenuIcon { get; set; }
 
         [Display(Name = "MainMenuSection")]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string MainMenuSection { get; set; }
 

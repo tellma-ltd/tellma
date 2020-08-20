@@ -1340,7 +1340,7 @@
     <value>值 '{0}' 是无效的{1}字段中，所支持的值是：{2}。</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
-    <value>增值税率必须在0和1之间。</value>
+    <value>增值税率必须在0％到100％之间。</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>汇率</value>

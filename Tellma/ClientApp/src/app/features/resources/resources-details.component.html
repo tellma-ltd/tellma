@@ -374,10 +374,10 @@
     <t-form-group *ngIf="VatRate_isVisible" class="t-form-group" [label]="'Resource_VatRate' | translate"
         [serverErrors]="model?.serverErrors?.VatRate">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.VatRate">
-            <div *ngIf="!isEdit">{{ model?.VatRate | accounting:'1.0-4' }}</div>
+            <div *ngIf="!isEdit">{{ model?.VatRate | percent:'1.2-4' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.VatRate" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="VatRate_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+            [required]="VatRate_isRequired" [minDecimalPlaces]="2" [maxDecimalPlaces]="4" [isPercentage]="true">
         </t-decimal-editor>
     </t-form-group>
 

@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
 import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
-import { formatNumber, formatDate } from '@angular/common';
+import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 
 // This handy function takes the entities from the response and all their related entities
@@ -586,6 +586,13 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
       }
       const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
       return formatAccounting(value, digitsInfo);
+    }
+    case 'percent': {
+      if (value === undefined) {
+        return null;
+      }
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      return isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
     }
     case 'date': {
       if (value === undefined) {

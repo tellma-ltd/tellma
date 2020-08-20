@@ -28,36 +28,36 @@ namespace Tellma.Entities
 
         [Display(Name = "Settings_PrimaryLanguage")]
         [Required]
-        [StringLength(2)]
+        [StringLength(5)]
         [CultureChoiceList]
         public string PrimaryLanguageId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguageSymbol")]
-        [StringLength(255)]
+        [StringLength(5)]
         public string PrimaryLanguageSymbol { get; set; }
 
         [Display(Name = "Settings_SecondaryLanguage")]
-        [StringLength(2)]
+        [StringLength(5)]
         [CultureChoiceList]
         public string SecondaryLanguageId { get; set; }
 
         [Display(Name = "Settings_SecondaryLanguageSymbol")]
-        [StringLength(255)]
+        [StringLength(5)]
         public string SecondaryLanguageSymbol { get; set; }
 
         [Display(Name = "Settings_TernaryLanguage")]
-        [StringLength(2)]
+        [StringLength(5)]
         [CultureChoiceList]
         public string TernaryLanguageId { get; set; }
 
         [Display(Name = "Settings_TernaryLanguageSymbol")]
-        [StringLength(255)]
+        [StringLength(5)]
         public string TernaryLanguageSymbol { get; set; }
 
         // Branding
 
         [Display(Name = "Settings_BrandColor")]
-        [StringLength(255)]
+        [StringLength(7)]
         public string BrandColor { get; set; } // e.g. #0284AB
 
         // Financial

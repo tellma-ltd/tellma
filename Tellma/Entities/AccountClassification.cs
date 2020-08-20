@@ -33,7 +33,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Code")]
         [Required]
-        [StringLength(255)]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; } // The basis of the tree structure
 
