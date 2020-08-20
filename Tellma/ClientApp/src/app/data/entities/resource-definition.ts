@@ -226,7 +226,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 IdentifierVisibility: visibilityPropDescriptor('Resource_Identifier', trx),
 
                 VatRateVisibility: visibilityPropDescriptor('Resource_VatRate', trx),
-                DefaultVatRate: { control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_VatRate') })}`, maxDecimalPlaces: 2, minDecimalPlaces: 4 },
+                DefaultVatRate: { control: 'percent', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_VatRate') })}`, minDecimalPlaces: 2, maxDecimalPlaces: 4 },
 
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),

@@ -132,17 +132,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   @ViewChild('confirmModal', { static: true })
   confirmModal: TemplateRef<any>;
 
-  @ViewChild('negativeSignatureModal', { static: true })
-  negativeSignatureModal: TemplateRef<any>;
+  @ViewChild('signatureModal', { static: true })
+  signatureModal: TemplateRef<any>;
 
   @ViewChild('autoGenerateModal', { static: true })
   autoGenerateModal: TemplateRef<any>;
 
   public confirmationMessage: string;
-  public signatureForNegativeModal: RequiredSignature;
-  public reasonChoicesForNegativeModal: SelectorChoice[];
-  public reasonDetails: string;
-  public reasonId: number;
 
   public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
   public additionalSelectAccount = '$DocumentDetails';
@@ -2207,13 +2203,70 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return currentHash;
   }
 
+  // Binding for signature modal
+  public isNegative: boolean;
+  public reasonChoicesForNegativeModal: SelectorChoice[];
+  public onBehalfOfUserAmbiguous: boolean;
+
+  // Data collected in signature modal
+  public reasonDetails: string;
+  public reasonId: number;
+  public onBehalfOfUserId: number;
+
   public onSignYes(signature: RequiredSignature): void {
-    this.onSign(signature, true);
+    const decision = true;
+
+    if (signature.CanSign) {
+      // The user can sign herself, straightforward
+      this.onSign(signature, decision, null);
+    } else if (signature.CanSignOnBehalf) {
+      if (!!signature.OnBehalfOfUserId) {
+        // The user can sign on behalf of another uniquely-determined user, also straight-forward
+        this.onSign(signature, decision, signature.OnBehalfOfUserId);
+      } else {
+        // The user can sign on behalf 2 or more users, launch a modal that asks which one
+
+        // Reset the params
+        this.reasonDetails = null;
+        this.reasonId = null;
+        this.onBehalfOfUserId = null;
+
+        // Affect the contens of the modal
+        this.reasonChoicesForNegativeModal = [];
+        this.isNegative = !decision;
+        this.onBehalfOfUserAmbiguous = true;
+
+        // Launch the modal
+        const modalRef = this.modalService.open(this.signatureModal);
+        modalRef.result.then(
+          (confirmed: boolean) => {
+            if (confirmed) {
+              this.onSign(signature, decision, this.onBehalfOfUserId);
+            }
+          },
+          _ => { }
+        );
+      }
+    } else {
+      // Programmer mistake
+      console.error('Should not be able to sign');
+      return;
+    }
   }
 
   public onSignNo(lineDefId: number, signature: RequiredSignature): void {
-    // Remember the required signature that the user is signing
-    this.signatureForNegativeModal = signature;
+    if (!signature.CanSign && !signature.CanSignOnBehalf) {
+      // Programmer mistake
+      console.error('Should not be able to sign');
+      return;
+    }
+
+    const decision = false;
+
+    // Reset the params
+    this.reasonDetails = null;
+    this.reasonId = null;
+    this.onBehalfOfUserId = !signature.CanSign && signature.CanSignOnBehalf ? signature.OnBehalfOfUserId : null;
 
     // Remember the reason choices for the current line Definition and state
     const lineDef = this.lineDefinition(lineDefId);
@@ -2222,24 +2275,28 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       .filter(e => Math.abs(e.State) === Math.abs(signature.ToState))
       .map(e => ({ name: () => this.ws.getMultilingualValueImmediate(e, 'Name'), value: e.Id }));
 
-    // Launch the modal that asks the user for the reason behind the negative signature
-    const modalRef = this.modalService.open(this.negativeSignatureModal);
+    this.isNegative = !decision; // Affects the contents of the modal
+    this.onBehalfOfUserAmbiguous = !signature.CanSign && signature.CanSignOnBehalf && !this.onBehalfOfUserId;
+
+    // Launch the modal that asks the user for the reason behind the negative
+    // signature and - if needed - whom is she signing on behalf of
+    const modalRef = this.modalService.open(this.signatureModal);
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.onSign(signature, false);
+          this.onSign(signature, decision, this.onBehalfOfUserId);
         }
       },
       _ => { }
     );
   }
 
-  private onSign(signature: RequiredSignature, yes: boolean): void {
+  private onSign(signature: RequiredSignature, yes: boolean, onBehalfOfUserId: number): void {
     const lineIds = this.lineIds(signature);
     this.documentsApi.sign(lineIds, {
       returnEntities: true,
       select: this.select,
-      onBehalfOfUserId: signature.OnBehalfOfUserId,
+      onBehalfOfUserId,
       toState: yes ? Math.abs(signature.ToState) : -Math.abs(signature.ToState),
       roleId: signature.RoleId,
       ruleType: signature.RuleType,
@@ -2278,7 +2335,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public canUnsign(signature: RequiredSignature) {
-    return !!signature.SignedById && signature.SignedById === this.ws.userSettings.UserId;
+    return !!signature.SignedById && (signature.SignedById === this.ws.userSettings.UserId ||
+      signature.OnBehalfOfUserId === this.ws.userSettings.UserId);
   }
 
   public disableUnsign(_: RequiredSignature, model: Document) {
