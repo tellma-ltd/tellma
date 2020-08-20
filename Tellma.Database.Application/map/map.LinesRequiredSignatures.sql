@@ -19,13 +19,19 @@ RETURN (
 				)
 			) AS UserId,
 			(
+				SELECT MIN(UserId) FROM dbo.RoleMemberships
+				WHERE [RoleId] = WS.[RoleId]
+				GROUP BY [RoleId]
+				HAVING MIN([UserId]) = MAX([UserId])
+			) AS OnBehalfOfRoleUserId,
+			(
 				SELECT C.[CustodianId] FROM dbo.Entries E
 				JOIN dbo.Custodies C ON E.[CustodyId] = C.[Id]
 				WHERE LineId = L.Id
 				AND [Index] = WS.[RuleTypeEntryIndex]
 			) AS [CustodianId],
 			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value],
-			W.ToState, WS.ProxyRoleId
+			W.ToState, WS.[ProxyRoleId]
 		FROM dbo.Lines L
 		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId
 		JOIN dbo.WorkflowSignatures WS ON WS.WorkflowId = W.[Id]
@@ -48,7 +54,8 @@ RETURN (
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
 			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
-			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
+			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt,
+			COALESCE(LS.[OnBehalfOfUserId], RS.[OnBehalfOfRoleUserId]) AS OnBehalfOfUserId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
 			CAST(IIF(RM2.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
@@ -69,7 +76,8 @@ RETURN (
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
 			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
-			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
+			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt,
+			COALESCE(LS.[OnBehalfOfUserId], RS.[UserId]) AS OnBehalfOfUserId,
 			CAST(IIF(RS.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')), 1, 0) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
@@ -86,7 +94,8 @@ RETURN (
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
 			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
-			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
+			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt,
+			COALESCE(LS.[OnBehalfOfUserId], RS.[UserId]) AS OnBehalfOfUserId,
 			CAST(1 AS BIT) AS CanSign,
 			RS.ProxyRoleId,
 			CAST(1 AS BIT) AS CanSignOnBehalf,

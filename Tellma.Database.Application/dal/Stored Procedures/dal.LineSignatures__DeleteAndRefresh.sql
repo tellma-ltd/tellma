@@ -11,7 +11,7 @@ AS
 	SET [RevokedAt] = @Now,
 		[RevokedById] = @UserId
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
-	AND [OnBehalfOfUserId] = @UserId;
+	AND ([OnBehalfOfUserId] = @UserId OR [CreatedById] = @UserId);
 
 	-- Refresh the lines states
 	INSERT INTO @LineIds([Id])
