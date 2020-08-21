@@ -4,7 +4,8 @@
 (2, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'Optional',@EmployeeRLD),
 (3, N'PPECustody', N'Fixed Asset Custody', N'Fixed Assets Custodies', N'user-shield', N'FixedAssets',150,N'Required', N'None', N'None', N'Optional',@EmployeeRLD),
 (4, N'Rental', N'Rental', N'Rentals', N'calendar-alt', N'Sales',155,N'Required', N'None', N'None', N'Optional',@CustomerRLD),
-(5, N'TransitCustody', N'Transit Custody', N'Transit Custodies', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None',@SupplierRLD);
+(5, N'TransitCustody', N'Transit Custody', N'Transit Custodies', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None',@SupplierRLD),
+(6, N'TaskCustody', N'Task Assignment', N'Tasks Assignments', N'clipboard-list', N'Administration',170,N'Required', N'None', N'None', N'Required',@EmployeeRLD);
 
 UPDATE @CustodyDefinitions
 SET 
@@ -30,3 +31,4 @@ DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Cod
 DECLARE @PPECustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'PPECustody');
 DECLARE @RentalCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Rental');
 DECLARE @TransitCustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'TransitCustody');
+DECLARE @TaskCustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'TaskCustody');

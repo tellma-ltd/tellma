@@ -20,6 +20,15 @@
 (110202,1102, N'110202',N'Investment property under construction or development', N'العقارات الاستثمارية قيد الإنشاء أو التطوير',@InvestmentPropertyUnderConstructionOrDevelopment),
 (1103,11, N'1103',N'Goodwill', N'الشهرة',@Goodwill),
 (1104,11, N'1104',N'Intangible assets other than goodwill', N'الأصول غير الملموسة باستثناء الشهرة',@IntangibleAssetsOtherThanGoodwill),
+(110401,1104, N'110401',N'Brand names', N'أسماء العلامات',@BrandNames),
+(110402,1104, N'110402',N'Intangible exploration and evaluation assets', N'أصول الاكتشاف والتقييم غير الملموسة',@IntangibleExplorationAndEvaluationAssets),
+(110403,1104, N'110403',N'Mastheads and publishing titles', N'أسماء الصحف وعناوين النشر',@MastheadsAndPublishingTitles),
+(110404,1104, N'110404',N'Computer software', N'برمجيات الحاسوب',@ComputerSoftware),
+(110405,1104, N'110405',N'Licences and franchises', N'التراخيص والامتيازات',@LicencesAndFranchises),
+(110406,1104, N'110406',N'Copyrights, patents and other industrial property rights, service and operating rights', N'حقوق التأليف والبراءات وحقوق الملكية الصناعية الأخرى، حقوق الخدمة والتشغيل',@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights),
+(110407,1104, N'110407',N'Recipes, formulae, models, designs and prototypes', N'الوصفات والصيغ والنماذج والتصاميم والأنماط',@RecipesFormulaeModelsDesignsAndPrototypes),
+(110408,1104, N'110408',N'Intangible assets under development', N'الأصول غير الملموسة قيد التطوير',@IntangibleAssetsUnderDevelopment),
+(110409,1104, N'110409',N'Other intangible assets', N'أصول غير ملموسة أخرى',@OtherIntangibleAssets),
 (1105,11, N'1105',N'Investments accounted for using equity method', N'الاستثمارات التي يتم محاسبتها باستخدام طريقة حقوق الملكية',@InvestmentAccountedForUsingEquityMethod),
 (110501,1105, N'110501',N'Investments in associates accounted for using equity method', N'الاستثمارات في المشاريع المشتركة التي يتم محاسبتها باستخدام طريقة حقوق الملكية',@InvestmentsInAssociatesAccountedForUsingEquityMethod),
 (110502,1105, N'110502',N'Investments in joint ventures accounted for using equity method', N'الاستثمارات في المنشآت الزميلة التي يتم محاسبتها باستخدام طريقة حقوق الملكية',@InvestmentsInJointVenturesAccountedForUsingEquityMethod),
@@ -133,8 +142,9 @@
 (4101,41, N'4101',N'Revenue from sales of merchandise', N'الإيرادات من بيع السلع',@RevenueFromSaleOfGoods),
 (410101,4101, N'410101',N'Revenue from sales of Merchandise.', N'الإيرادات من بيع السلع.',@RevenueFromSaleOfGoods),
 (410102,4101, N'410102',N'Revenue from sales of finished goods', N'الإيرادات من بيع السلع الجاهزة.',@RevenueFromSaleOfGoods),
-(4102,41, N'4102',N'Revenue from rendering of services', N'الإيراد من تقديم الخدمات',@RevenueFromRenderingOfServices),
-(410201,4102, N'410201',N'Revenue from rendering of services (by service type)', N'الإيرادات من تقديم الخدمات (بنوع الخدمة)',@RevenueFromRenderingOfServices),
+(4102,41, N'4102',N'Revenue from rendering of services', N'الإيراد من تقديم الخدمات والإيجارات',@RevenueFromRenderingOfServices),
+(410201,4102, N'410201',N'Revenue from rendering of point services', N'الإيرادات من تقديم الخدمات',@RevenueFromRenderingOfPointOfTimeServices),
+(410202,4102, N'410202',N'Revenue from rendering of period services', N'الإيرادات من الإيجارات والاشتراكات',@RevenueFromRenderingOfPeriodOfTimeServices),
 (4103,41, N'4103',N'Revenue from construction contracts', N'الإيراد من عقود الإنشاء',@RevenueFromConstructionContracts),
 (4104,41, N'4104',N'Royalty income', N'دخل الملكية',@RevenueFromRoyalties),
 (4105,41, N'4105',N'Licence fee income', N'دخل حقوق الانتفاع',@LicenceFeeIncome),
@@ -228,13 +238,20 @@
 (710200,7102, N'710200',N'Customer control accounts.', N'مراقبة حسابات الزبائن.',@CustomersControlAccountsExtension),
 (7103,71, N'7103',N'Payroll control', N'مراقبة الرواتب',@PayrollControlExtension),
 (710300,7103, N'710300',N'Payroll control.', N'مراقبة الرواتب.',@PayrollControlExtension),
-(7109,71, N'7109',N'Others control accounts', N'مراقبة حسابات الآخرين',@OthersAccountsControlExtension),
-(710900,7109, N'710900',N'Others control accounts.', N'مراقبة حسابات الآخرين.',@OthersAccountsControlExtension),
-(72,7, N'72',N'Guarantees', N'حسابات مراقبة الضمانات',@GuaranteesExtension),
-(7200,72, N'7200',N'Guarantees.', N'حسابات مراقبة الضمانات.',@GuaranteesExtension),
-(720001,7200, N'720001',N'Collection Guarantee', N'ضمانات تحصيل',@CollectionGuaranteeExtension),
-(720002,7200, N'720002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension),
-(8,NULL, N'8',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension);
+(72,7, N'72',N'Others control accounts', N'مراقبة حسابات الآخرين',@OthersAccountsControlExtension),
+(7201,72, N'7201',N'Others cash control accounts', N'مراقبة حسابات الآخرين.',@OthersCashAccountsControlExtension),
+(720100,7201, N'720100',N'Others cash control accounts.', N'مراقبة حسابات الآخرين.',NULL),
+(8,NULL, N'8',N'Statistical accounts', N'حسابات إحصائية',@StatisticalAccountsExtension),
+(81,8, N'81',N'Guarantees', N'حسابات الضمانات',@GuaranteesExtension),
+(8100,81, N'8100',N'Financial guarantees', N'حسابات الضمانات.',@FinancialGuaranteesExtension),
+(810001,8100, N'810001',N'Collection Guarantee', N'ضمانات تحصيل',@CollectionGuaranteeExtension),
+(810002,8100, N'810002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension),
+(82,8, N'82',N'Tasks', N'المهام',@TasksExtension),
+(8201,82, N'8201',N'SG&A tasks', N'المهام الإدارية',@SellingGeneralAndAdministrationTasksExtension),
+(820100,8201, N'820100',N'SG&A tasks.', N'المهام الإدارية.',@SellingGeneralAndAdministrationTasksExtension),
+(8202,82, N'8202',N'Operational tasks', N'المهام التشغيلية',@OperationalTasksExtension),
+(820200,8202, N'820200',N'Operational tasks.', N'المهام التشغيلية.',@OperationalTasksExtension),
+(9,NULL, N'9',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension);
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @AccountClassifications,
@@ -261,7 +278,6 @@ END;
 --	GOTO Err_Label;
 --END;
 --Declarations
---Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC11 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'11');
 DECLARE @AC1101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1101');
@@ -283,6 +299,15 @@ DECLARE @AC110201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC110202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110202');
 DECLARE @AC1103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1103');
 DECLARE @AC1104 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1104');
+DECLARE @AC110401 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110401');
+DECLARE @AC110402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110402');
+DECLARE @AC110403 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110403');
+DECLARE @AC110404 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110404');
+DECLARE @AC110405 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110405');
+DECLARE @AC110406 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110406');
+DECLARE @AC110407 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110407');
+DECLARE @AC110408 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110408');
+DECLARE @AC110409 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110409');
 DECLARE @AC1105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1105');
 DECLARE @AC110501 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110501');
 DECLARE @AC110502 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110502');
@@ -398,6 +423,7 @@ DECLARE @AC410101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC410102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410102');
 DECLARE @AC4102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4102');
 DECLARE @AC410201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410201');
+DECLARE @AC410202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'410202');
 DECLARE @AC4103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4103');
 DECLARE @AC4104 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4104');
 DECLARE @AC4105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4105');
@@ -491,10 +517,17 @@ DECLARE @AC7102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC710200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710200');
 DECLARE @AC7103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7103');
 DECLARE @AC710300 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710300');
-DECLARE @AC7109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7109');
-DECLARE @AC710900 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710900');
 DECLARE @AC72 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'72');
-DECLARE @AC7200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7200');
-DECLARE @AC720001 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720001');
-DECLARE @AC720002 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720002');
+DECLARE @AC7201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7201');
+DECLARE @AC720100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720100');
 DECLARE @AC8 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8');
+DECLARE @AC81 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'81');
+DECLARE @AC8100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8100');
+DECLARE @AC810001 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'810001');
+DECLARE @AC810002 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'810002');
+DECLARE @AC82 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'82');
+DECLARE @AC8201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8201');
+DECLARE @AC820100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'820100');
+DECLARE @AC8202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8202');
+DECLARE @AC820200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'820200');
+DECLARE @AC9 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'9');

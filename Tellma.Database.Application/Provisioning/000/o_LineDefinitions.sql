@@ -633,7 +633,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,1550,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
 (6,1550,	N'CenterId',			2,	N'Business Unit',	1,4,1),
 (7,1550,	N'Memo',				0,	N'Memo',			1,2,1),
-(8,1550,	N'PostingDate',			0,	N'Transfer Date',	1,2,1);
+(8,1550,	N'PostingDate',			0,	N'Transfer Date',	1,4,1);
 --1560:CashTransfer
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -642,6 +642,7 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
 		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0)
+		-- Currency and Center inherits from header and are overridden with those of custody, if any
 '
 WHERE [Index] = 1560;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -654,11 +655,13 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,1560,	N'CustodyId',			1,	N'From Account',	1,2,0),
 (1,1560,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(2,1560,	N'CustodyId',			0,	N'To Account',		1,2,0),
-(3,1560,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(4,1560,	N'MonetaryValue',		1,	N'Amount',			1,3,0),
-(5,1560,	N'Memo',				0,	N'Memo',			1,2,1),
-(6,1560,	N'PostingDate',			0,	N'Transfer Date',	1,2,1);
+(2,1560,	N'CenterId',			1,	N'Business Unit',	2,4,1),
+(3,1560,	N'CustodyId',			0,	N'To Account',		1,2,0),
+(4,1560,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(5,1560,	N'CenterId',			0,	N'Business Unit',	2,4,1),
+(6,1560,	N'MonetaryValue',		1,	N'Amount',			1,2,0),
+(7,1560,	N'Memo',				0,	N'Memo',			1,3,1),
+(8,1560,	N'PostingDate',			0,	N'Transfer Date',	0,4,1);
 --1570:CashExchange
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
