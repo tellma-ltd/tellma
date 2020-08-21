@@ -2486,7 +2486,7 @@
     <value>السبب</value>
   </data>
   <data name="Signature_ReasonDetails" xml:space="preserve">
-    <value>تفصيل السبب</value>
+    <value>تفصيل</value>
   </data>
   <data name="Signature_Role" xml:space="preserve">
     <value>الدور</value>

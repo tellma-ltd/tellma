@@ -2254,6 +2254,24 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public reasonDisplay(lineDefId: number, reasonId: number): string {
+    if (!reasonId) {
+      return '';
+    }
+
+  // No need to optimize this, it is rare anyways
+    const lineDef = this.lineDefinition(lineDefId);
+    if (!!lineDef.StateReasons) {
+      for (const reason of lineDef.StateReasons) {
+        if (reason.Id === reasonId) {
+          return this.ws.getMultilingualValueImmediate(reason, 'Name');
+        }
+      }
+    }
+
+    return '';
+  }
+
   public onSignNo(lineDefId: number, signature: RequiredSignature): void {
     if (!signature.CanSign && !signature.CanSignOnBehalf) {
       // Programmer mistake
@@ -3166,8 +3184,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   private missingSignatures(_: Document, requiredSignatures: RequiredSignature[]): boolean {
-    return !!requiredSignatures && requiredSignatures.length > 0 &&
-      requiredSignatures.some(e => !e.SignedById);
+    return !!requiredSignatures &&
+      // requiredSignatures.filter(e => (!e.LastNegativeState || !!e.SignedById)).some(e => !e.SignedById);
+      requiredSignatures.some(e => !e.LastNegativeState && !e.SignedById);
   }
 
   private someWorkflowLinesAreNotNegative(_: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -3200,9 +3219,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     } else if (this.missingSignatures(doc, requiredSignatures)) {
       return this.translate.instant('Error_LineIsMissingSignatures');
     }
-    // else if (!!doc && !doc.PostingDate) {
-    //   return this.translate.instant('Error_ThePostingDateIsRequiredForClosing');
-    // }
 
     return null;
   }
