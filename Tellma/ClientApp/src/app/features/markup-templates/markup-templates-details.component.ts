@@ -319,7 +319,9 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       window.URL.revokeObjectURL(this.url);
     }
     this.url = undefined;
-    (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(undefined);
+    if (!!this.iframe) {
+      (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(undefined);
+    }
     this.contenType = undefined;
     this.fileSizeDisplay = undefined;
     this.error = undefined;

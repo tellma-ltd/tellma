@@ -13,6 +13,9 @@ namespace Tellma.Entities
 
     public class DocumentDefinitionMarkupTemplate : DocumentDefinitionMarkupTemplateForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         [Display(Name = "DocumentDefinition")]
         public int? DocumentDefinitionId { get; set; }
 

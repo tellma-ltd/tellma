@@ -16,6 +16,9 @@ namespace Tellma.Entities
 
     public class DocumentDefinitionLineDefinition : DocumentDefinitionLineDefinitionForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         [Display(Name = "DocumentDefinition")]
         public int? DocumentDefinitionId { get; set; }
 
