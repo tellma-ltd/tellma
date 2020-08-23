@@ -388,15 +388,21 @@ BEGIN
 		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
 		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId]
 	)	
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3] )
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ '].ResourceId',
-		N'Error_ResourceBalanceShortage0',
-		ISNULL(PB.NetQuantity, 0) + ISNULL(CB.[NetQuantity], 0) AS [Shortage]
+		N'Error_Resource01AvailableBalance2Unit3',
+		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
+		ISNULL(PB.NetQuantity, 0) AS [AvailableBalance],
+		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS UnitName
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+	JOIN dbo.Units U ON R.[UnitId] = U.[Id]
+	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
 	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
 	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
 	WHERE
