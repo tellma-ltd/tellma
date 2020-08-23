@@ -8,6 +8,8 @@ import { Observable, Observer } from 'rxjs';
 import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
+import { insert, set, getSelection } from 'text-field-edit';
+import { TextAttribute } from '@angular/compiler/src/render3/r3_ast';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -636,22 +638,54 @@ export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
   return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }
 
-export function onCodeTextareaKeydown(elem: HTMLTextAreaElement, e: KeyboardEvent, setter: (x: string) => void) {
+/**
+ * Overrides the default behavior of the TAB key and implements insertion of tab and block
+ * indentation instead, for a more natural experience for textareas used to edit code
+ */
+export function onCodeTextareaKeydown(txtarea: HTMLTextAreaElement, e: KeyboardEvent, setter: (x: string) => void) {
+  if ((e.keyCode || e.which) === 9) {
 
-  const keycode = e.keyCode || e.which;
-  if (keycode === 9) {
+    // Prevent TAB's default behavior
     e.preventDefault();
 
-    const start = elem.selectionStart;
-    const end = elem.selectionEnd;
+    // IF the user highlight spans multiple lines, we indent all the highlighted lines (block-indent)
+    const selection = getSelection(txtarea);
+    if (!!selection && /\r|\n/.test(selection)) {
 
-    // Insert the tab at the caret position
-    elem.value = elem.value || '';
-    elem.value = elem.value.substring(0, start) + '\t' + elem.value.substring(end);
+      // Get selection boundaries
+      const selectionFrom = Math.min(txtarea.selectionStart, txtarea.selectionEnd);
+      const selectionTo = Math.max(txtarea.selectionStart, txtarea.selectionEnd);
 
-    // Return the caret where it was
-    elem.selectionStart = elem.selectionEnd = start + 1;
+      // Get the entire text
+      const text = txtarea.value;
 
-    setter(elem.value);
+      // Find the beginning of the first highlighted line
+      let startOfFirstLine = selectionFrom;
+      while (startOfFirstLine > 0) {
+        if (text[startOfFirstLine - 1] === '\n') {
+          break;
+        }
+        startOfFirstLine--;
+      }
+
+      // Split the text on the selection boundaries
+      const before = text.slice(0, startOfFirstLine);
+      const after = text.slice(selectionTo);
+      let between = text.slice(startOfFirstLine, selectionTo);
+
+      // Indent all lines in the between segment
+      between = '\t' + between.replace(/\r|\n/g, '\n\t');
+
+      // Reassemble the pieces and replace the textarea contents with the new result
+      const finalText = before + between + after;
+      set(txtarea, finalText);
+
+      // Reset the selection where it was before pressing TAB
+      txtarea.selectionStart = selectionFrom + (startOfFirstLine === selectionFrom ? 0 : 1); // +1 To account for the extra tab
+      txtarea.selectionEnd = before.length + between.length;
+    } else {
+      // ELSE: Relies on text-field-edit to insert an undo-able tab character
+      insert(txtarea, '\t');
+    }
   }
 }

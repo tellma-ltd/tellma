@@ -349,13 +349,13 @@
                                 <th *ngIf="ws.settings.TernaryLanguageId">
                                     {{ ('Label' | translate) + ws.ternaryPostfix }}
                                 </th>
-                                <th>{{ 'LineDefinitionColumn_InheritsFromHeader' | translate }}
-                                </th>
                                 <th>{{ 'LineDefinitionColumn_VisibleState' | translate }}
                                 </th>
                                 <th>{{ 'LineDefinitionColumn_RequiredState' | translate }}
                                 </th>
                                 <th>{{ 'LineDefinitionColumn_ReadOnlyState' | translate }}
+                                </th>
+                                <th>{{ 'LineDefinitionColumn_InheritsFromHeader' | translate }}
                                 </th>
                                 <th style="width: 1px;" *ngIf="isEdit">
                                     <!-- Delete -->
@@ -432,22 +432,6 @@
                                         </ng-container>
                                     </ng-template>
                                 </td>
-                                <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
-                                    <ng-template #inheritsfromheadertemplate>
-                                        <select class="form-control t-studio-input"
-                                            [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
-                                            <option value="true">
-                                                {{ 'Yes' | translate }}</option>
-                                            <option value="false">
-                                                {{ 'No' | translate }}</option>
-                                        </select>
-                                        <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
-                                        </ng-container>
-                                    </ng-template>
-                                </td>
 
                                 <td [class.p-0]="isEdit">
                                     <span
@@ -490,6 +474,22 @@
                                         </select>
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: readonlystatemodel, serverErrors: column?.serverErrors?.ReadOnlyState }">
+                                        </ng-container>
+                                    </ng-template>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <span
+                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
+                                    <ng-template #inheritsfromheadertemplate>
+                                        <select class="form-control t-studio-input"
+                                            [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
+                                            <option value="true">
+                                                {{ 'Yes' | translate }}</option>
+                                            <option value="false">
+                                                {{ 'No' | translate }}</option>
+                                        </select>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
                                         </ng-container>
                                     </ng-template>
                                 </td>
