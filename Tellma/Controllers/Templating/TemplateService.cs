@@ -149,45 +149,15 @@ namespace Tellma.Controllers.Templating
                         args.Skip = queryByFilter.Skip.Value;
                     }
 
-                    switch (query.Collection)
+                    try 
                     {
-                        case nameof(Document):
-                            {
-                                FactServiceBase<Document> controller;
-                                if (query.DefinitionId == null)
-                                {
-                                    controller = _provider.GetRequiredService<DocumentsGenericService>();
-                                }
-                                else
-                                {
-                                    controller = _provider.GetRequiredService<DocumentsService>().SetDefinitionId(query.DefinitionId.Value);
-                                }
-
-                                var (list, _, _, _) = await controller.GetFact(args, cancellation);
-
-                                queryResults[query] = list;
-                                break;
-                            }
-                        case nameof(DetailsEntry): // TODO
-                        case nameof(Relation):
-                            {
-                                FactServiceBase<Relation> controller;
-                                if (query.DefinitionId == null)
-                                {
-                                    controller = _provider.GetRequiredService<RelationsGenericService>();
-                                }
-                                else
-                                {
-                                    controller = _provider.GetRequiredService<RelationsService>().SetDefinitionId(query.DefinitionId.Value);
-                                }
-
-                                var (list, _, _, _) = await controller.GetFact(args, cancellation);
-
-                                queryResults[query] = list;
-                                break;
-                            }
-                        default:
-                            throw new TemplateException($"Unknown collection '{query.Collection}'");
+                        var service = _provider.FactServiceByCollectionName(query.Collection, query.DefinitionId);
+                        var (list, _, _, _) = await service.GetFact(args, cancellation);
+                        queryResults[query] = list;
+                    } 
+                    catch (UnknownCollectionException)
+                    {
+                        throw new TemplateException($"Unknown collection '{query.Collection}'");
                     }
                 }
                 else if (query is QueryByIdInfo queryById)
@@ -198,49 +168,21 @@ namespace Tellma.Controllers.Templating
                         Select = select
                     };
 
-                    switch (query.Collection)
+                    try
                     {
-                        case nameof(Document):
-                            {
-                                // Definition Id
-                                var defId = query.DefinitionId ??
-                                    throw new TemplateException("To query documents by Id, the source parameter must contain the definitionId. E.g. 'documents/ManualJournalVoucher'");
+                        // Load the result
+                        var service = _provider.FactGetByIdServiceByCollectionName(query.Collection, query.DefinitionId);
+                        var (entity, _) = await service.GetById(queryById.Id, args, cancellation);
 
-                                // Id
-                                if (!int.TryParse(queryById.Id, out int id))
-                                {
-                                    throw new TemplateException("To query documents by Id, the id must be of type integer");
-                                }
-
-                                // Load the result
-                                FactGetByIdServiceBase<Document, int> controller = _provider.GetRequiredService<DocumentsService>().SetDefinitionId(defId); ;
-                                var (entity, _) = await controller.GetById(id, args, cancellation);
-
-                                queryResults[query] = entity;
-                                break;
-                            }
-                        case nameof(DetailsEntry): // TODO
-                        case nameof(Relation):
-                            {
-                                // Definition Id
-                                var defId = query.DefinitionId ??
-                                    throw new TemplateException("To query documents by Id, the source parameter must contain the definitionId. E.g. 'documents/ManualJournalVoucher'");
-
-                                // Id
-                                if (!int.TryParse(queryById.Id, out int id))
-                                {
-                                    throw new TemplateException("To query documents by Id, the id must be of type integer");
-                                }
-
-                                // Load the result
-                                FactGetByIdServiceBase<Relation, int> controller = _provider.GetRequiredService<RelationsService>().SetDefinitionId(defId); ;
-                                var (entity, _) = await controller.GetById(id, args, cancellation);
-
-                                queryResults[query] = entity;
-                                break;
-                            }
-                        default:
-                            throw new TemplateException($"Unknown collection '{query.Collection}'");
+                        queryResults[query] = entity;
+                    }
+                    catch (UnknownCollectionException)
+                    {
+                        throw new TemplateException($"Unknown collection '{query.Collection}'");
+                    }
+                    catch (RequiredDefinitionIdException)
+                    {
+                        throw new TemplateException($"To query collection '{query.Collection}' by Id, the source parameter must contain the definition Id. E.g. '{query.Collection}/1'");
                     }
                 }
                 else

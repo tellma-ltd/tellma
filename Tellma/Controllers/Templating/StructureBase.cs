@@ -87,7 +87,7 @@ namespace Tellma.Controllers.Templating
             }
             else
             {
-                throw new TemplateException("Unrecognized structural expression " + exp + $", allowed structural expressions are {_foreach} and {_if}");
+                throw new TemplateException($"Unrecognized structural expression {exp}, allowed structural expressions are {_define}, {_foreach} and {_if}");
             }
         }
     }

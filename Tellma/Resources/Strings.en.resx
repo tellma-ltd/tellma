@@ -2486,7 +2486,7 @@
     <value>Reason</value>
   </data>
   <data name="Signature_ReasonDetails" xml:space="preserve">
-    <value>Reason Details</value>
+    <value>Details</value>
   </data>
   <data name="Signature_Role" xml:space="preserve">
     <value>Role</value>

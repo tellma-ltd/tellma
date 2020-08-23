@@ -169,24 +169,6 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Debit Resource -->
-    <t-form-group class="t-form-group" [label]="labelDocumentDebitResource(model)"
-        [serverErrors]="model?.serverErrors?.DebitResourceId" *ngIf="showDocumentDebitResource(model)">
-        <ng-container *ngIf="model?.DebitResourceIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitResourceId">
-                <t-view-link [link]="'../../../resources/' + ws.get('Resource', model?.DebitResourceId)?.DefinitionId"
-                    [itemId]="model?.DebitResourceId">
-                    {{ ws.getMultilingualValue('Resource', model?.DebitResourceId, 'Name') }}
-                </t-view-link>
-            </t-restricted>
-            <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.DebitResourceId"
-                [definitionIds]="documentDebitResourceDefinitionIds(model)"
-                [required]="requireDocumentDebitResource(model)" [disabled]="readonlyDocumentDebitResource(model)">
-            </t-resources-picker>
-        </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitResourceIsCommon' }"></ng-container>
-    </t-form-group>
-
     <!-- Credit Resource -->
     <t-form-group class="t-form-group" [label]="labelDocumentCreditResource(model)"
         [serverErrors]="model?.serverErrors?.CreditResourceId" *ngIf="showDocumentCreditResource(model)">
@@ -205,22 +187,22 @@
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditResourceIsCommon' }"></ng-container>
     </t-form-group>
 
-    <!-- Debit Custody -->
-    <t-form-group class="t-form-group" [label]="labelDocumentDebitCustody(model)"
-        [serverErrors]="model?.serverErrors?.DebitCustodyId" *ngIf="showDocumentDebitCustody(model)">
-        <ng-container *ngIf="model?.DebitCustodyIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitCustodyId">
-                <t-view-link [link]="'../../../custodies/' + ws.get('Custody', model?.DebitCustodyId)?.DefinitionId"
-                    [itemId]="model?.DebitCustodyId">
-                    {{ ws.getMultilingualValue('Custody', model?.DebitCustodyId, 'Name') }}
+    <!-- Debit Resource -->
+    <t-form-group class="t-form-group" [label]="labelDocumentDebitResource(model)"
+        [serverErrors]="model?.serverErrors?.DebitResourceId" *ngIf="showDocumentDebitResource(model)">
+        <ng-container *ngIf="model?.DebitResourceIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitResourceId">
+                <t-view-link [link]="'../../../resources/' + ws.get('Resource', model?.DebitResourceId)?.DefinitionId"
+                    [itemId]="model?.DebitResourceId">
+                    {{ ws.getMultilingualValue('Resource', model?.DebitResourceId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-custodies-picker *ngIf="isEdit" [(ngModel)]="model.DebitCustodyId"
-                [definitionIds]="documentDebitCustodyDefinitionIds(model)"
-                [required]="requireDocumentDebitCustody(model)" [disabled]="readonlyDocumentDebitCustody(model)">
-            </t-custodies-picker>
+            <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.DebitResourceId"
+                [definitionIds]="documentDebitResourceDefinitionIds(model)"
+                [required]="requireDocumentDebitResource(model)" [disabled]="readonlyDocumentDebitResource(model)">
+            </t-resources-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitCustodyIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitResourceIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Credit Custody -->
@@ -239,6 +221,24 @@
             </t-custodies-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditCustodyIsCommon' }"></ng-container>
+    </t-form-group>
+
+    <!-- Debit Custody -->
+    <t-form-group class="t-form-group" [label]="labelDocumentDebitCustody(model)"
+        [serverErrors]="model?.serverErrors?.DebitCustodyId" *ngIf="showDocumentDebitCustody(model)">
+        <ng-container *ngIf="model?.DebitCustodyIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitCustodyId">
+                <t-view-link [link]="'../../../custodies/' + ws.get('Custody', model?.DebitCustodyId)?.DefinitionId"
+                    [itemId]="model?.DebitCustodyId">
+                    {{ ws.getMultilingualValue('Custody', model?.DebitCustodyId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-custodies-picker *ngIf="isEdit" [(ngModel)]="model.DebitCustodyId"
+                [definitionIds]="documentDebitCustodyDefinitionIds(model)"
+                [required]="requireDocumentDebitCustody(model)" [disabled]="readonlyDocumentDebitCustody(model)">
+            </t-custodies-picker>
+        </ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitCustodyIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Noted Relation -->
@@ -766,9 +766,17 @@
                                 <ng-container *ngIf="!!signature.ReasonDetails || !!signature.ReasonId">
                                     &nbsp;&nbsp;
                                     <div class="text-danger small align-items-center" style="max-width: 120px;">
-                                        <span
-                                            class="font-weight-bold">{{ 'Signature_Reason' | translate }}:&nbsp;</span>
-                                        <span>{{ signature.ReasonDetails }}</span>
+                                        <div *ngIf="!!signature.ReasonId">
+                                            <span
+                                                class="font-weight-bold">{{ 'Signature_Reason' | translate }}:&nbsp;</span>
+                                            <span>{{ reasonDisplay(lineDefId, signature.ReasonId) }}</span>
+                                        </div>
+
+                                        <div *ngIf="!!signature.ReasonDetails">
+                                            <span
+                                                class="font-weight-bold">{{ 'Signature_ReasonDetails' | translate }}:&nbsp;</span>
+                                            <span>{{ signature.ReasonDetails }}</span>
+                                        </div>
                                     </div>
                                 </ng-container>
                             </ng-container>
@@ -792,6 +800,13 @@
                                         <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
                                         <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
                                     </button>
+                                </div>
+                                <div *ngIf="!signature.CanSign && !!signature.OnBehalfOfUserId">
+                                    <span>
+                                    {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
+                                        [itemId]="signature.OnBehalfOfUserId">
+                                        {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
+                                    </t-view-link></span>
                                 </div>
                             </ng-container>
 
@@ -829,7 +844,7 @@
 
                                     <!-- # of lines -->
                                     <span
-                                        *ngIf="lineIds(signature).length !== lines(lineDefId, model).length">&nbsp;{{ '(' + ('Count0Lines' | translate: { '0': (lineIds(signature).length | number) }) + ')' }}</span>
+                                        *ngIf="lineIds(signature).length !== lines(lineDefId, model).length">&nbsp;{{ '- ' + ('Count0Lines' | translate: { '0': (lineIds(signature).length | number) }) }}</span>
                                 </span>
                             </div>
                             <div>

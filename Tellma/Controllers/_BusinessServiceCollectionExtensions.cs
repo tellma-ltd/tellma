@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using Tellma.Controllers;
 using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Templating;
@@ -82,14 +83,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Retrieves the <see cref="IFactServiceBase"/> implementation associated with a certain <see cref="Entity"/> type
         /// </summary>
-        public static IFactServiceBase FactServiceByEntityType(this IServiceProvider sp, Type entityType, int? definitionId = null)
+        public static IFactServiceBase FactServiceByCollectionName(this IServiceProvider sp, string collection, int? definitionId = null)
         {
-            if (entityType is null)
-            {
-                throw new ArgumentNullException(nameof(entityType));
-            }
-
-            return entityType.Name switch
+            return collection switch
             {
                 nameof(VoucherBooklet) => sp.GetRequiredService<VoucherBookletsService>(),
                 nameof(Account) => sp.GetRequiredService<AccountsService>(),
@@ -124,10 +120,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
 
-                _ => throw new InvalidOperationException($"Bug: Entity type {entityType.Name} does not have a known {nameof(IFactServiceBase)} implementation")
+                _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactServiceBase)} implementation")
             };
         }
-
 
         /// <summary>
         /// Retrieves the <see cref="IFactServiceBase"/> implementation associated with a certain <see cref="Entity"/> type
@@ -173,8 +168,62 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
 
-                _ => throw new InvalidOperationException($"Bug: Entity type {entityType.Name} does not have a known {nameof(IFactWithIdService)} implementation")
+                _ => throw new UnknownCollectionException($"Bug: Entity type {entityType.Name} does not have a known {nameof(IFactWithIdService)} implementation")
             };
+        }
+
+        /// <summary>
+        /// Retrieves the <see cref="IFactServiceBase"/> implementation associated with a certain <see cref="Entity"/> type
+        /// </summary>
+        public static IFactGetByIdServiceBase FactGetByIdServiceByCollectionName(this IServiceProvider sp, string collection, int? definitionId = null)
+        {
+            return collection switch
+            {
+                nameof(VoucherBooklet) => sp.GetRequiredService<VoucherBookletsService>(),
+                nameof(Account) => sp.GetRequiredService<AccountsService>(),
+                nameof(AccountType) => sp.GetRequiredService<AccountTypesService>(),
+                nameof(AdminUser) => sp.GetRequiredService<AdminUsersService>(),
+                nameof(Agent) => sp.GetRequiredService<AgentsService>(),
+                nameof(RelationDefinition) => sp.GetRequiredService<RelationDefinitionsService>(),
+                nameof(Relation) => definitionId != null ? sp.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Relation)} requires a definition Id"),
+                nameof(CustodyDefinition) => sp.GetRequiredService<CustodyDefinitionsService>(),
+                nameof(Custody) => definitionId != null ? sp.GetRequiredService<CustodiesService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Custody)} requires a definition Id"),
+                nameof(Center) => sp.GetRequiredService<CentersService>(),
+                nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
+                nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),
+                nameof(Document) => definitionId != null ? sp.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Document)} requires a definition Id"),
+                nameof(EntryType) => sp.GetRequiredService<EntryTypesService>(),
+                nameof(ExchangeRate) => sp.GetRequiredService<ExchangeRatesService>(),
+                nameof(IdentityServerUser) => sp.GetRequiredService<IdentityServerUsersService>(),
+                nameof(IfrsConcept) => sp.GetRequiredService<IfrsConceptsService>(),
+                nameof(LookupDefinition) => sp.GetRequiredService<LookupDefinitionsService>(),
+                nameof(Lookup) => definitionId != null ? sp.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Lookup)} requires a definition Id"),
+                nameof(MarkupTemplate) => sp.GetRequiredService<MarkupTemplatesService>(),
+                nameof(ReportDefinition) => sp.GetRequiredService<ReportDefinitionsService>(),
+                nameof(ResourceDefinition) => sp.GetRequiredService<ResourceDefinitionsService>(),
+                nameof(Resource) => definitionId != null ? sp.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Resource)} requires a definition Id"),
+                nameof(Role) => sp.GetRequiredService<RolesService>(),
+                nameof(Unit) => sp.GetRequiredService<UnitsService>(),
+                nameof(User) => sp.GetRequiredService<UsersService>(),
+                nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
+                nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
+
+                _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IFactGetByIdServiceBase)} implementation")
+            };
+        }
+    }
+
+    public class UnknownCollectionException : Exception
+    {
+        public UnknownCollectionException(string msg): base(msg)
+        {
+        }
+    }
+
+    public class RequiredDefinitionIdException : Exception
+    {
+        public RequiredDefinitionIdException(string msg): base(msg)
+        {
         }
     }
 }

@@ -461,8 +461,17 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       );
     }
 
+    const stamp = this.additionalSelectKey;
     return obs$.pipe(
       tap((response: EntitiesResponse) => {
+        // First, stamp all the loaded entities as adhering to additionalSelect
+        // This stamp is used to check when ensureAdditionalSelect = true
+        if (!!stamp) {
+          for (const entity of response.Result) {
+            entity.EntityMetadata[stamp] = 2;
+          }
+        }
+
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
         s.extras = response.Extras;
@@ -485,6 +494,14 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }),
       finalize(() => this.cdr.markForCheck())
     );
+  }
+
+  private get additionalSelectKey(): string {
+    if (!!this.additionalSelect) {
+      return `__${this.additionalSelect}`;
+    } else {
+      return null;
+    }
   }
 
   private fetchNodeChildren(parentNode: NodeInfo): void {

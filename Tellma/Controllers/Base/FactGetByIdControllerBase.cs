@@ -101,7 +101,30 @@ namespace Tellma.Controllers
 
         async Task<(EntityWithKey, Extras)> IFactGetByIdServiceBase.GetById(object id, GetByIdArguments args, CancellationToken cancellation)
         {
-            return await GetById((TKey)id, args, cancellation);
+            Type target = typeof(TKey);
+            if (target == typeof(string))
+            {
+                id = id?.ToString();
+                return await GetById((TKey)id, args, cancellation);
+            }
+            else if (target == typeof(int) || target == typeof(int?))
+            {
+                string stringId = id?.ToString();
+                if(int.TryParse(stringId, out int intId))
+                {
+                    id = intId;
+                    return await GetById((TKey)id, args, cancellation);
+                } 
+                else
+                {
+                    throw new BadRequestException($"Value '{id}' could not be interpreted as a valid integer");
+                }
+            } 
+            else
+            {
+                throw new InvalidOperationException("Bug: Only integer and string Ids are supported");
+            }
+
         }
     }
 
