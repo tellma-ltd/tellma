@@ -44,7 +44,7 @@ namespace Tellma.Controllers.Templating
                 }
                 else
                 {
-                    throw new TemplateException($"If expression could not be applied. Expression ({ConditionCandidate.ToString()}) does not evaluate to a true or false");
+                    throw new TemplateException($"If expression could not be applied. Expression ({ConditionCandidate}) does not evaluate to a true or false");
                 }
             }
         }
