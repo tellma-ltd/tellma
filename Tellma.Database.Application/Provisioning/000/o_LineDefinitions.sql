@@ -327,7 +327,7 @@ WITH InventoryAccounts AS (
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-		WHERE ATP.[Concept] = N'Inventories'
+		WHERE ATP.[Concept] = N''Inventories''
 	),
 	ResourceCosts AS (
 		SELECT
@@ -687,14 +687,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1570,	N'CustodyId',			1,	N'Account',			1,2,0),
-(2,1570,	N'CurrencyId',			1,	N'From Currency',	1,2,0),
-(3,1570,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
-(4,1570,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
+(0,1570,	N'CustodyId',			1,	N'From Account',	1,2,0),
+(1,1570,	N'CurrencyId',			1,	N'From Currency',	1,2,0),
+(2,1570,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
+(3,1570,	N'CustodyId',			1,	N'To Account',		1,2,0),
+(4,1570,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
 (5,1570,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
 (6,1570,	N'CenterId',			2,	N'Business Unit',	1,4,1),
-(7,1570,	N'Memo',				0,	N'Memo',			1,2,1),
-(8,1570,	N'PostingDate',			0,	N'Exchange Date',	1,2,1);
+(7,1570,	N'Memo',				0,	N'Memo',			1,4,1),
+(8,1570,	N'PostingDate',			0,	N'Exchange Date',	0,2,1);
 --1660:CashToSupplierWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -802,7 +803,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 1700;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId],							[EntryTypeId]) VALUES
-(0,1700,+1,		@CashReceiptsToSuppliersControlExtension,	NULL),
+(0,1700,+1,		@CashPaymentsToSuppliersControlExtension,	NULL),
 (1,1700,-1,		@CashAndCashEquivalents,					@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -981,9 +982,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,1800,	N'MonetaryValue',		1,	N'VAT',				1,2,0),
 (5,1800,	N'MonetaryValue',		2,	N'Line Total',		0,0,0),
 (6,1800,	N'ExternalReference',	2,	N'Invoice #',		4,5,0),
-(6,1800,	N'CenterId',			0,	N'Cost Center',		1,4,0),
-(7,1800,	N'PostingDate',			2,	N'Received On',		1,4,1),
-(8,1800,	N'CenterId',			2,	N'Business Unit',	0,4,1);
+(7,1800,	N'CenterId',			0,	N'Cost Center',		1,4,0),
+(8,1800,	N'PostingDate',			2,	N'Received On',		1,4,1),
+(9,1800,	N'CenterId',			2,	N'Business Unit',	0,4,1);
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
 	@LineDefinitionEntries = @LineDefinitionEntries,

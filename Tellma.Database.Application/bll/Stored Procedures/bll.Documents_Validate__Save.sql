@@ -11,6 +11,18 @@ SET NOCOUNT ON;
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
+
+	DECLARE @PreScript NVARCHAR(MAX) =N'
+	SET NOCOUNT ON
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	------
+	';
+	DECLARE @Script NVARCHAR (MAX);
+	DECLARE @PostScript NVARCHAR(MAX) = N'
+	-----
+	SELECT TOP (@Top) * FROM @ValidationErrors;
+	';
 	--=-=-=-=-=-=- [C# Validation]
 	/* 
 	
@@ -277,6 +289,37 @@ SET NOCOUNT ON;
 			AND [Id] IN (SELECT [Id] FROM @Lines)
 		)
 	END
+	-- Verify Custom Validation Script
+	-- Get line definition which have script to validate
+	INSERT INTO @ScriptLineDefinitions
+	SELECT DISTINCT DefinitionId FROM @L
+	WHERE DefinitionId IN (
+		SELECT [Id] FROM dbo.LineDefinitions
+		WHERE [ValidateScript] IS NOT NULL
+	);
+	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
+	BEGIN
+		-- run script to validate information
+		DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions;  
+		OPEN LineDefinition_Cursor  
+		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
+		WHILE @@FETCH_STATUS = 0  
+		BEGIN 
+			SELECT @Script =  @PreScript + ISNULL([ValidateScript],N'') + @PostScript
+			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+
+			INSERT INTO @ValidationErrors
+			EXECUTE	sp_executesql @Script, N'
+				@DefinitionId INT,
+				@Documents [dbo].[DocumentList] READONLY,
+				@Lines [dbo].[LineList] READONLY, 
+				@Entries [dbo].EntryList READONLY,
+				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
+			
+			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
+		END
+	END
+	
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 
