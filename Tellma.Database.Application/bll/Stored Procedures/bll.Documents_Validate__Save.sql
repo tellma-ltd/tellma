@@ -76,6 +76,7 @@ SET NOCOUNT ON;
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
 
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
+	-- Similar logic in bll.Accounts_Validate__Save
 	WITH ExpendituresParentAccountTypes AS (
 		SELECT [Node]
 		FROM dbo.[AccountTypes]
@@ -264,11 +265,24 @@ SET NOCOUNT ON;
 
 	-- verify that all required fields are available
 	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;
-		SELECT @LineState = MIN([State])
-		FROM dbo.Lines
-		WHERE [State] > 0
-		AND [Id] IN (SELECT [Id] FROM @Lines)
-	
+
+--	Apply to inserted lines	
+	DELETE FROM @L; DELETE FROM @E;
+	INSERT INTO @L SELECT * FROM @Lines WHERE [Id] = 0;
+	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	INSERT INTO @ValidationErrors
+	EXEC [bll].[Lines_Validate__State_Data]
+	-- @Documents = @D, 
+	@Lines = @L, 
+	@Entries = @E, 
+	@State = 0;
+
+	-- Apply to updated lines
+	SELECT @LineState = MIN([State])
+	FROM dbo.Lines
+	WHERE [State] >= 0
+	AND [Id] IN (SELECT [Id] FROM @Lines)
+
 	WHILE @LineState IS NOT NULL
 	BEGIN
 		/* DELETE FROM @D; */ DELETE FROM @L; DELETE FROM @E;

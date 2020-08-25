@@ -42,6 +42,29 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
 
+	-- Name must be unique
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
+		N'Error_TheName0IsUsed',
+		FE.Name
+	FROM @Entities FE 
+	JOIN [dbo].[Relations] BE ON FE.Name = BE.Name
+	WHERE (BE.DefinitionId = @DefinitionId) AND ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
 
+		-- Name must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
+		N'Error_TheName0IsDuplicated',
+		[Name]
+	FROM @Entities
+	WHERE [Name] IN (
+		SELECT [Name]
+		FROM @Entities
+		WHERE [Name] IS NOT NULL
+		GROUP BY [Name]
+		HAVING COUNT(*) > 1
+	) OPTION (HASH JOIN);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

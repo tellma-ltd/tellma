@@ -2438,4 +2438,10 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[PreprocessScript]" />
   </Operation>
+  <Operation Name="Move Schema" Key="4b7955be-da58-49bb-a0c8-67527ad72e94" ChangeDateTime="08/23/2020 09:37:01">
+    <Property Name="ElementName" Value="[dbo].[AssetsDepreciation__Populate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="wiz" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

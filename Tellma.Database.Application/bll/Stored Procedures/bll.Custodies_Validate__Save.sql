@@ -89,4 +89,36 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON C.[Id] = A.CustodyId
 	WHERE C.[CenterId] IS NOT NULL AND A.[CenterId] <> C.[CenterId]
 
+	-- Cannot assign an inactive Custodian
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodianId',
+		N'Error_TheCustodian01IsInactive',
+		dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]),
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3])
+	FROM @Entities FE
+	JOIN dbo.Relations RL ON FE.CustodianId = RL.Id
+	JOIN dbo.RelationDefinitions RLD ON RL.DefinitionId = RLD.[Id]
+	WHERE RL.IsActive = 0
+
+	-- Cannot assign an inactive center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheCenter0IsInactive',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
+	FROM @Entities FE
+	JOIN dbo.Centers C ON FE.CenterId = C.Id
+	WHERE C.IsActive = 0
+
+	-- Cannot assign an inactive currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheCurrency0IsInactive',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
+	FROM @Entities FE
+	JOIN dbo.Currencies C ON FE.CurrencyId = C.Id
+	WHERE C.IsActive = 0
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

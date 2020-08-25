@@ -45,6 +45,23 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
 	);
 
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + N'].' + FL.[Id],
+		N'Error_Field0IsRequired',
+		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
+	FROM @Lines L
+	CROSS JOIN (VALUES
+		(N'PostingDate'),(N'Memo')
+	) FL([Id])
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = FL.[Id]
+	WHERE @State >= LDC.[RequiredState]
+	AND L.[DefinitionId] <> @ManualLineLD
+	AND	(
+		FL.Id = N'PostingDate'	AND L.[PostingDate] IS NULL OR
+		FL.Id = N'Memo'			AND L.[Memo] IS NULL
+	);
 	-- No Null account when in state 4
 IF @State = 4 -- posted
 BEGIN
@@ -297,6 +314,7 @@ BEGIN
 			WHERE LBE.[State] = 4
 		) L -- focus on lines that were posted and now are being unposted
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
@@ -330,6 +348,7 @@ BEGIN
 			BD.Code
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
@@ -352,23 +371,23 @@ BEGIN
 	),
 	PreBalances AS (
 		SELECT
-			E.[AccountId], E.[CustodyId],  E.[ResourceId],
+			E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId],
 			SUM(E.[AlgebraicQuantity]) AS NetQuantity
 		FROM map.[DetailsEntries]() E
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		JOIN (
-			SELECT DISTINCT [AccountId], [ResourceId], [CustodyId]
+			SELECT DISTINCT [AccountId], [ResourceId], [CustodyId],  [CenterId]
 			FROM @Entries
-		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId]
+		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId] AND E.[CenterId] = FE.[CenterId]
 		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
 		AND L.[State] IN (3, 4)
 		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
 		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
-		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId],  E.[CenterId], E.[CenterId]
 	),
 	CurrentBalances AS (
 		SELECT
-			E.[AccountId], E.[CustodyId],  E.[ResourceId],
+			E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId],
 			SUM(IIF(EU.UnitType = N'Pure',
 				E.[Quantity],
 				CAST(
@@ -386,7 +405,7 @@ BEGIN
 		JOIN dbo.Units EU ON E.UnitId = EU.[Id]
 		JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
-		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId]
 	)	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3] )
 	SELECT DISTINCT TOP (@Top)
@@ -403,8 +422,8 @@ BEGIN
 	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 	JOIN dbo.Units U ON R.[UnitId] = U.[Id]
 	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId] AND E.[CenterId] = CB.[CenterId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId] AND E.[CenterId] = PB.[CenterId]
 	WHERE
 			ISNULL(PB.NetQuantity, 0) + ISNULL(CB.[NetQuantity], 0) < 0
 END

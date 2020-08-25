@@ -173,6 +173,15 @@ SET NOCOUNT ON;
 	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
 	WHERE R.[CenterId] IS NOT NULL AND E.[CenterId] <> R.[CenterId]
 
+	-- Only business units may be assigned to resources
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP(@Top)
+		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_CenterMutBeBusinessUnit'
+	FROM @Entities R
+	JOIN dbo.Centers C ON R.[CenterId] = C.[Id]
+	WHERE R.[CenterId] IS NOT NULL AND C.[CenterType] <> N'BusinessUnit'
+
 	-- Cannot change Center if resource is already used in Account with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP(@Top)
@@ -183,5 +192,37 @@ SET NOCOUNT ON;
 	FROM @Entities R
 	JOIN dbo.Accounts A ON R.[Id] = A.ResourceId
 	WHERE R.[CenterId] IS NOT NULL AND A.[CenterId] <> R.[CenterId]
+
+	-- Cannot assign an inactive participant
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParticipantId',
+		N'Error_TheParticipant01IsInactive',
+		dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]),
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3])
+	FROM @Entities FE
+	JOIN dbo.Relations RL ON FE.ParticipantId = RL.Id
+	JOIN dbo.RelationDefinitions RLD ON RL.DefinitionId = RLD.[Id]
+	WHERE RL.IsActive = 0
+
+	-- Cannot assign an inactive center
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheCenter0IsInactive',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
+	FROM @Entities FE
+	JOIN dbo.Centers C ON FE.CenterId = C.Id
+	WHERE C.IsActive = 0
+
+	-- Cannot assign an inactive currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheCurrency0IsInactive',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
+	FROM @Entities FE
+	JOIN dbo.Currencies C ON FE.CurrencyId = C.Id
+	WHERE C.IsActive = 0
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
