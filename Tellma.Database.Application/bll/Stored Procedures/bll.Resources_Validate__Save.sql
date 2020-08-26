@@ -6,6 +6,10 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @TitleSingular NVARCHAR (50);
+	SELECT @TitleSingular = dbo.fn_Localize(TitleSingular, TitleSingular2, TitleSingular3)
+	FROM dbo.ResourceDefinitions
+	WHERE [Id] = @DefinitionId
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
     SELECT TOP(@Top)
@@ -137,10 +141,11 @@ SET NOCOUNT ON;
 	AND URU.[UnitType] <> UR.[UnitType]
 
 	-- Cannot change currency if resource is already used in Entries with different currency
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CurrencyId',
-		N'Error_TheResourceWasUsedInDocument0WithCurrency1',
+		N'Error_TheResource0WasUsedInDocument1WithCurrency2',
+		@TitleSingular,
 		D.[Code],
 		E.[CurrencyId]
 	FROM @Entities R
@@ -150,10 +155,11 @@ SET NOCOUNT ON;
 	WHERE R.[CurrencyId] IS NOT NULL AND E.[CurrencyId] <> R.[CurrencyId]
 
 	-- Cannot change currency if resource is already used in Account with different currency
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CurrencyId',
-		N'Error_TheResourceWasUsedInAccount0WithCurrency1',
+		N'Error_TheResource0WasUsedInAccount1WithCurrency2',
+		@TitleSingular,
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
 		A.[CurrencyId]
 	FROM @Entities R
@@ -161,10 +167,11 @@ SET NOCOUNT ON;
 	WHERE R.[CurrencyId] IS NOT NULL AND A.[CurrencyId] <> R.[CurrencyId]
 
 	-- Cannot change Center if resource is already used in Entries with different Center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
-		N'Error_TheResourceWasUsedInDocument0WithCenter1',
+		N'Error_TheResource0WasUsedInDocument1WithCenter2',
+		@TitleSingular,
 		D.[Code],
 		E.[CenterId]
 	FROM @Entities R
@@ -183,10 +190,11 @@ SET NOCOUNT ON;
 	WHERE R.[CenterId] IS NOT NULL AND C.[CenterType] <> N'BusinessUnit'
 
 	-- Cannot change Center if resource is already used in Account with different Center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
-		N'Error_TheResourceWasUsedInAccount0WithCenter1',
+		N'Error_TheResource0WasUsedInAccount1WithCenter2',
+		@TitleSingular,
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
 		A.[CenterId]
 	FROM @Entities R

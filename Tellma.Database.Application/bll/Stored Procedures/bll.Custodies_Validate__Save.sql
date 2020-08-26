@@ -5,6 +5,10 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @TitleSingular NVARCHAR (50);
+	SELECT @TitleSingular = dbo.fn_Localize(TitleSingular, TitleSingular2, TitleSingular3)
+	FROM dbo.CustodyDefinitions
+	WHERE [Id] = @DefinitionId
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -42,10 +46,11 @@ SET NOCOUNT ON;
 	) OPTION (HASH JOIN);
 
 	-- Cannot change currency if Custody is already used in Entries with different currency
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CurrencyId',
-		N'Error_TheCustodyWasUsedInDocument0WithCurrency1',
+		N'Error_TheCustody0WasUsedInDocument1WithCurrency2',
+		@TitleSingular,
 		D.[Code],
 		E.[CurrencyId]
 	FROM @Entities C
@@ -55,10 +60,11 @@ SET NOCOUNT ON;
 	WHERE C.[CurrencyId] IS NOT NULL AND E.[CurrencyId] <> C.[CurrencyId]
 
 	-- Cannot change currency if Custody is already used in Account with different currency
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CurrencyId',
-		N'Error_TheCustodyWasUsedInAccount0WithCurrency1',
+		N'Error_TheCustody0WasUsedInAccount1WithCurrency2',
+		@TitleSingular,
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
 		A.[CurrencyId]
 	FROM @Entities C
@@ -66,10 +72,11 @@ SET NOCOUNT ON;
 	WHERE C.[CurrencyId] IS NOT NULL AND A.[CurrencyId] <> C.[CurrencyId]
 
 	-- Cannot change Center if Custody is already used in Entries with different Center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CenterId',
-		N'Error_TheCustodyWasUsedInDocument0WithCenter1',
+		N'Error_TheCustody0WasUsedInDocument1WithCenter2',
+		@TitleSingular,
 		D.[Code],
 		E.[CenterId]
 	FROM @Entities C
@@ -79,10 +86,11 @@ SET NOCOUNT ON;
 	WHERE C.[CenterId] IS NOT NULL AND E.[CenterId] <> C.[CenterId]
 
 	-- Cannot change Center if Custody is already used in Account with different Center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CenterId',
-		N'Error_TheCustodyWasUsedInAccount0WithCenter1',
+		N'Error_TheCustody0WasUsedInAccount1WithCenter2',
+		@TitleSingular,
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
 		A.[CenterId]
 	FROM @Entities C
