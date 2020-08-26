@@ -11,7 +11,7 @@ INSERT INTO @Lookups([Index],[Code],[Name], [Name2]) VALUES
 (8, N'AB', N'Agricultural Bank', N'بنك الزراعي السوداني'),
 (9, N'ABTD', N'African Bank for Trade and Development', N'مصرف الساحل والصحراء للاستثمار والتجارة'),
 (10, N'SEB', N'Sudanese Egyptian Bank', N'البنك السوداني المصري'),
-(11, N'BBA', N'Balad Bank', N'مصرف البلد'),
+(11, N'BLDB', N'Balad Bank', N'مصرف البلد'),
 (12, N'RECB', N'Real Estates Commercial Bank', N'البنك العقاري التجاري'),
 (13, N'BBS', N'Baraka Bank (Sudan )', N'بنك البركة السوداني'),
 (14, N'SFB', N'Sudanese French Bank', N'البنك السوداني الفرنسي'),

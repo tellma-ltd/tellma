@@ -676,6 +676,7 @@
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
+    <Build Include="map\map.AccountTypeNotedRelationDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

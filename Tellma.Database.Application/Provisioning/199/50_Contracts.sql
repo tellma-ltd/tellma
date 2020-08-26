@@ -64,11 +64,10 @@ INSERT INTO @Custodies(
 (	2,			N'B03',		N'Salam - Mehira - SDG',N'SDG',			@107C_MehiraScheme,	NULL,			NULL,		NULL,		NULL,		NULL,
 	NULL,		NULL,		N'السلام - مهيرة - حنيه',NULL,			NULL,				NULL,			NULL,		NULL,		NULL,		N'3333');
 
-EXEC [api].[Relations__Save]
+EXEC [api].[Custodies__Save]
 	@DefinitionId = @BankAccountCD,
 	@Entities = @Custodies,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

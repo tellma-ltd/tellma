@@ -7,11 +7,11 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
-
 	[ClassificationId]			INT,
--- Major properties: NULL means it is not defined.
+	[CustodianId]				INT,
 	[CustodyDefinitionId]		INT,
 	[CustodyId]					INT,
+	[ParticipantId]				INT,
 	[ResourceDefinitionId]		INT,
 	[ResourceId]				INT,
 	[CurrencyId]				NCHAR (3),

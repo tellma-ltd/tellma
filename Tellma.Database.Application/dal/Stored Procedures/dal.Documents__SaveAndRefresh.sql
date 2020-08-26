@@ -5,7 +5,6 @@
 	@Entries [dbo].[EntryList] READONLY,
 	@Attachments [dbo].[AttachmentList] READONLY,
 	@ReturnIds BIT = 0
-	--,	@ReturnResult NVARCHAR(MAX) = NULL OUTPUT
 AS
 BEGIN
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexIdWithHeaderList], @DeletedFileIds [dbo].[StringList];
@@ -209,8 +208,8 @@ BEGIN
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineId], E.[Index], E.[IsSystem], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[CustodyId], E.[ResourceId], E.[CenterId],
-			E.[EntryTypeId], --[BatchCode], 
+			E.[CustodianId], E.[CustodyId], E.[ParticipantId], E.[ResourceId], E.[CenterId],
+			E.[EntryTypeId],
 			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
 			E.[Time1], E.[Time2],
 			E.[ExternalReference],
@@ -230,7 +229,9 @@ BEGIN
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
+			t.[CustodianId]				= s.[CustodianId],
 			t.[CustodyId]				= s.[CustodyId],
+			t.[ParticipantId]			= s.[ParticipantId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[CenterId]				= s.[CenterId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -250,8 +251,8 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [IsSystem], [Direction], [AccountId], [CurrencyId],
-			[CustodyId], [ResourceId], [CenterId],
-			[EntryTypeId], --[BatchCode], 
+			[CustodianId], [CustodyId], [ParticipantId], [ResourceId], [CenterId],
+			[EntryTypeId],
 			[MonetaryValue], [Quantity], [UnitId], [Value],
 			[Time1], [Time2],
 			[ExternalReference],
@@ -262,8 +263,8 @@ BEGIN
 			[NotedDate]
 		)
 		VALUES (s.[LineId], s.[Index], s.[IsSystem], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[CustodyId], s.[ResourceId], s.[CenterId],
-			s.[EntryTypeId], --[BatchCode], 
+			s.[CustodianId], s.[CustodyId], s.[ParticipantId], s.[ResourceId], s.[CenterId],
+			s.[EntryTypeId],
 			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
 			s.[Time1], s.[Time2],
 			s.[ExternalReference],
@@ -309,9 +310,7 @@ BEGIN
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
 	) AS x
 	WHERE x.[InsertedFileId] IS NULL
-		
-	--SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
-	
+
 	-- if we added/deleted draft lines, the document state should change
 
 	--DECLARE @DocIds dbo.IdList;

@@ -22,6 +22,8 @@ SET NOCOUNT ON;
 				E.[IsMonetary],
 				E.[IsAssignable],
 				E.[AllowsPureUnit],
+				E.[CustodianDefinitionId],
+				E.[ParticipantDefinitionId],
 				E.[EntryTypeParentId],
 				E.[NotedRelationDefinitionId],
 				E.[Time1Label],
@@ -62,6 +64,8 @@ SET NOCOUNT ON;
 				t.[IsMonetary]				= IIF(t.[IsSystem]=0,s.[IsMonetary],t.[IsMonetary]),
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[AllowsPureUnit]			= IIF(t.[IsSystem]=0,s.[AllowsPureUnit],t.[AllowsPureUnit]),
+				t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
+				t.[ParticipantDefinitionId]	= s.[ParticipantDefinitionId],
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
 				t.[NotedRelationDefinitionId]=IIF(t.[IsSystem]=0,s.[NotedRelationDefinitionId],t.[NotedRelationDefinitionId]),
 				t.[Time1Label]				= s.[Time1Label],
@@ -94,6 +98,8 @@ SET NOCOUNT ON;
 					[IsMonetary],
 					[IsAssignable],
 					[AllowsPureUnit],
+					[CustodianDefinitionId],
+					[ParticipantDefinitionId],
 					[EntryTypeParentId],
 					[NotedRelationDefinitionId],
 					[Time1Label],
@@ -125,6 +131,8 @@ SET NOCOUNT ON;
 					s.[IsMonetary],
 					s.[IsAssignable],
 					s.[AllowsPureUnit],
+					s.[CustodianDefinitionId],
+					s.[ParticipantDefinitionId],
 					s.[EntryTypeParentId],
 					s.[NotedRelationDefinitionId],
 					s.[Time1Label],
@@ -173,7 +181,7 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	-- AccountTypeContractDefinitions
+	-- AccountTypeCoustodyDefinitions
 	WITH BEATCD AS (
 		SELECT * FROM dbo.[AccountTypeCustodyDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)

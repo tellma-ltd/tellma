@@ -57,25 +57,25 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (2,1060,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,NULL);
-INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[CustodyDefinitionId]) VALUES
-(0,0,1060,@PPECustodyCD),
-(0,1,1060,@PPECustodyCD);
+--INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+--[CustodyDefinitionId]) VALUES
+--(0,0,1060,@PPECustodyCD),
+--(0,1,1060,@PPECustodyCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,1060,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1060,	N'NotedRelationId',		2,	N'Supplier',		3,4,1),
-(2,1060,	N'CustodyId',			0,	N'Custody',			5,5,0),
+(1,1060,	N'ParticipantId',		2,	N'Supplier',		3,4,1), -- Document Header. TODO: Participant Id Is Common
+(2,1060,	N'CustodianId',			0,	N'Custodian',		5,5,0), -- TODO: No CustodyDefinitions for PPEs. Just Custodian Definition
 (3,1060,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0),
 (4,1060,	N'Quantity',			1,	N'Life/Usage',		2,4,0),
 (5,1060,	N'UnitId',				1,	N'Unit',			2,4,0),
-(6,1060,	N'CurrencyId',			2,	N'Currency',		1,2,1),
+(6,1060,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header
 (7,1060,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0),
 (8,1060,	N'MonetaryValue',		0,	N'Residual Value',	1,2,0),
-(10,1060,	N'PostingDate',			1,	N'Acquired On',		1,4,1),
-(11,1060,	N'CenterId',			2,	N'Business Unit',	1,4,1);
+(10,1060,	N'PostingDate',			1,	N'Acquired On',		0,4,1), -- Document Header
+(11,1060,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header
 --1200:InventoryTransfer
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -147,15 +147,13 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,1200,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1200,	N'NotedRelationId',		1,	N'Supplier',		3,4,1),
-(2,1200,	N'CustodyId',			0,	N'Warehouse',		3,4,1),
-(3,1200,	N'ResourceId',			0,	N'Item',			2,4,0),
+(1,1200,	N'CustodyId'	,		1,	N'From Warehouse',	3,4,1), -- Document header. -- Warehouse is a custody, because one employee 
+(2,1200,	N'CustodyId',			0,	N'To Warehouse',	3,4,1), -- Tab header		-- might be in charge of many warehouses  
+(3,1200,	N'ResourceId',			0,	N'Item',			2,4,0),						-- containing same items
 (4,1200,	N'Quantity',			0,	N'Qty',				2,4,0),
 (5,1200,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,1200,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(7,1200,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
-(10,1200,	N'PostingDate',			1,	N'Received On',		1,4,1),
-(11,1200,	N'CenterId',			1,	N'Business Unit',	1,4,1);
+(6,1200,	N'PostingDate',			1,	N'Issued On',		1,4,1), -- Document header
+(7,1200,	N'CenterId',			1,	N'Business Unit',	1,4,1); -- Should it be part of custody?
 --1260:InventoryFromSupplier
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
