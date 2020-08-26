@@ -79,7 +79,8 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.NotedRelationDefinitionId IS NULL;
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	WHERE AC.NotedRelationDefinitionId IS NULL;
 
 	-- TODO:  Remove labels, etc.
 

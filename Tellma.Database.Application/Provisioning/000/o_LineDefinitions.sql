@@ -1056,7 +1056,6 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionEntries = @LineDefinitionEntries,
 	@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,

@@ -15,6 +15,7 @@
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
 	[AllowsPureUnit]			BIT					NOT NULL DEFAULT 0,
 	[EntryTypeParentId]			INT,
+	[NotedRelationDefinitionId]	INT	,
 	[Time1Label]				NVARCHAR (50),
 	[Time1Label2]				NVARCHAR (50),
 	[Time1Label3]				NVARCHAR (50),

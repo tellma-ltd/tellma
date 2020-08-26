@@ -15,6 +15,5 @@
 	[ResourceDefinitionId]		INT,
 	[ResourceId]				INT,
 	[CurrencyId]				NCHAR (3),
-	[EntryTypeId]				INT,
-	[NotedRelationDefinitionId]	INT	
+	[EntryTypeId]				INT
 );

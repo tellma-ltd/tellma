@@ -598,7 +598,6 @@ DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 DECLARE @LineDefinitionEntryCustodyDefinitions LineDefinitionEntryCustodyDefinitionList;
 DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
-DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
 DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 DECLARE @Workflows dbo.[WorkflowList];
 DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
@@ -1301,7 +1300,6 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionEntries = @LineDefinitionEntries,
 	@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,

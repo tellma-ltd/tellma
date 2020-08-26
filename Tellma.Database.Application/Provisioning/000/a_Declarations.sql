@@ -29,7 +29,6 @@
 	DECLARE @AccountTypes dbo.AccountTypeList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
 	DECLARE @AccountTypeCustodyDefinitions AccountTypeCustodyDefinitionList;
-	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDimensionDefinitionList;
@@ -50,7 +49,6 @@
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 	DECLARE @LineDefinitionEntryCustodyDefinitions LineDefinitionEntryCustodyDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
-	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;

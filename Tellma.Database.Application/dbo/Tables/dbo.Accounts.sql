@@ -14,7 +14,6 @@
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
-	[NotedRelationDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedRelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
 	[IsActive]					BIT				NOT NULL DEFAULT 1,
 	-- Audit details
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

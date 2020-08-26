@@ -27,8 +27,7 @@ SET NOCOUNT ON;
 				[ResourceDefinitionId],
 				[ResourceId],
 				[CurrencyId],
-				[EntryTypeId],
-				[NotedRelationDefinitionId]
+				[EntryTypeId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -48,7 +47,6 @@ SET NOCOUNT ON;
 				t.[ResourceId]			= s.[ResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
 				t.[EntryTypeId]			= s.[EntryTypeId],
-				t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
@@ -66,8 +64,7 @@ SET NOCOUNT ON;
 				[ResourceDefinitionId],
 				[ResourceId],
 				[CurrencyId],
-				[EntryTypeId],
-				[NotedRelationDefinitionId])
+				[EntryTypeId])
 			VALUES (
 				s.[AccountTypeId],
 				s.[CenterId],
@@ -82,8 +79,7 @@ SET NOCOUNT ON;
 				s.[ResourceDefinitionId],
 				s.[ResourceId],
 				s.[CurrencyId],
-				s.[EntryTypeId],
-				s.[NotedRelationDefinitionId])
+				s.[EntryTypeId])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

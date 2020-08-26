@@ -554,13 +554,6 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
 (0,120,+1,		@CashAndCashEquivalents),
 (1,120,-1,		@CashReceiptsFromOthersControlExtension); 
-INSERT INTO @LineDefinitionEntryNotedRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[NotedRelationDefinitionId]) VALUES
-(0,0,120,@CreditorRLD),
-(1,0,120,@DebtorRLD),
-(2,0,120,@OwnerRLD),
-(3,0,120,@PartnerRLD),
-(4,0,120,@EmployeeRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -606,19 +599,12 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[AccountTypeId]) VALUES
 (0,130,+1,		@CashPaymentsToOthersControlExtension),
 (1,130,-1,		@CashAndCashEquivalents);
-INSERT INTO @LineDefinitionEntryNotedRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[NotedRelationDefinitionId]) VALUES
-(0,0,130,@CreditorRLD),
-(1,0,130,@DebtorRLD),
-(2,0,130,@OwnerRLD),
-(3,0,130,@PartnerRLD),
-(4,0,130,@EmployeeRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,130,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,130,	N'NotedRelationId',		0,	N'Paid To',			1,4,0),
+(1,130,	N'NotedAgentName',		0,	N'Paid To',			1,4,0),
 (2,130,	N'CurrencyId',			0,	N'Currency',		1,2,1),
 (3,130,	N'MonetaryValue',		0,	N'Amount',			1,2,0),
 (4,130,	N'EntryTypeId',			1,	N'Purpose',			4,4,0),
@@ -707,7 +693,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,300,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,300,	N'NotedRelationId',		0,	N'Supplier',		3,4,1),
+(1,300,	N'ParticipantId',		0,	N'Supplier',		3,4,1),
 (2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
 (3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
 (4,300,	N'NotedAmount',			0,	N'Withholding',		1,4,0),
@@ -1253,7 +1239,6 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionEntries = @LineDefinitionEntries,
 	@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,

@@ -525,19 +525,15 @@
     <None Include="Provisioning\000\l_ResourceDefinitions.sql" />
     <None Include="Provisioning\000\i_LookupDefinitions.sql" />
     <None Include="Provisioning\000\j_RelationDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypeNotedRelationDefinitions.sql" />
     <None Include="Provisioning\000\p_DocumentDefinitions.sql" />
     <Build Include="map\map.AccountTypeCustodyDefinitions.sql" />
-    <Build Include="map\map.AccountTypeNotedRelationDefinitions.sql" />
     <Build Include="map\map.AccountTypeResourceDefinitions.sql" />
     <Build Include="map\map.Agents.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryCustodyDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryResourceDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.LineDefinitionEntryNotedRelationDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryCustodyDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedRelationDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryResourceDefinitionList.sql" />
     <None Include="Provisioning\103_105\01_Security\a_Users.sql" />
     <None Include="Provisioning\103_105\01_Security\b_Permissions.sql" />
@@ -594,7 +590,6 @@
     <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeCustodyDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedRelationDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.CustodyDefinitionList.sql" />
     <Build Include="dbo\Tables\dbo.CustodyDefinitions.sql" />
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Save.sql" />
@@ -668,7 +663,6 @@
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
     <Build Include="map\map.LineDefinitionEntryCustodyDefinitions.sql" />
     <Build Include="map\map.LineDefinitionEntryResourceDefinitions.sql" />
-    <Build Include="map\map.LineDefinitionEntryNotedRelationDefinitions.sql" />
     <Build Include="map\map.LineDefinitionColumns.sql" />
     <Build Include="map\map.LineDefinitionGenerateParameters.sql" />
     <Build Include="map\map.LineDefinitionStateReasons.sql" />

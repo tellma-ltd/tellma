@@ -2,7 +2,6 @@
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeCustodyDefinitions [AccountTypeCustodyDefinitionList] READONLY,
-	@AccountTypeNotedRelationDefinitions [AccountTypeNotedRelationDefinitionList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -24,6 +23,7 @@ SET NOCOUNT ON;
 				E.[IsAssignable],
 				E.[AllowsPureUnit],
 				E.[EntryTypeParentId],
+				E.[NotedRelationDefinitionId],
 				E.[Time1Label],
 				E.[Time1Label2],
 				E.[Time1Label3],
@@ -63,6 +63,7 @@ SET NOCOUNT ON;
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[AllowsPureUnit]			= IIF(t.[IsSystem]=0,s.[AllowsPureUnit],t.[AllowsPureUnit]),
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
+				t.[NotedRelationDefinitionId]=IIF(t.[IsSystem]=0,s.[NotedRelationDefinitionId],t.[NotedRelationDefinitionId]),
 				t.[Time1Label]				= s.[Time1Label],
 				t.[Time1Label2]				= s.[Time1Label2],
 				t.[Time1Label3]				= s.[Time1Label3],
@@ -94,6 +95,7 @@ SET NOCOUNT ON;
 					[IsAssignable],
 					[AllowsPureUnit],
 					[EntryTypeParentId],
+					[NotedRelationDefinitionId],
 					[Time1Label],
 					[Time1Label2],
 					[Time1Label3],
@@ -124,6 +126,7 @@ SET NOCOUNT ON;
 					s.[IsAssignable],
 					s.[AllowsPureUnit],
 					s.[EntryTypeParentId],
+					s.[NotedRelationDefinitionId],
 					s.[Time1Label],
 					s.[Time1Label2],
 					s.[Time1Label3],
@@ -188,27 +191,6 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([AccountTypeId],	[CustodyDefinitionId])
 		VALUES (s.[AccountTypeId], s.[CustodyDefinitionId])
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
-
-	-- AccountTypeNotedRelationDefinitions
-	WITH BEATNCD AS (
-		SELECT * FROM dbo.[AccountTypeNotedRelationDefinitions]
-		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
-	)
-	MERGE INTO BEATNCD AS t
-	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedRelationDefinitionId]
-		FROM @AccountTypeNotedRelationDefinitions L
-		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
-	) AS s ON t.Id = s.Id
-	WHEN MATCHED THEN
-		UPDATE SET 
-			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId], 
-			t.[SavedById]					= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[NotedRelationDefinitionId])
-		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
