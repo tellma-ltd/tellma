@@ -22,8 +22,9 @@ SET NOCOUNT ON;
 				[TitlePlural],
 				[TitlePlural2],
 				[TitlePlural3],
+				[ResourceDefinitionType],
 				-----Contract properties common with resources
-				--[CurrencyVisibility],
+				[CurrencyVisibility],
 				[CenterVisibility],
 				[ImageVisibility],
 				[DescriptionVisibility],
@@ -124,8 +125,8 @@ SET NOCOUNT ON;
 				t.[TitlePlural]				= s.[TitlePlural],
 				t.[TitlePlural2]			= s.[TitlePlural2],
 				t.[TitlePlural3]			= s.[TitlePlural3],
-
-				--t.[CurrencyVisibility]		= s.[CurrencyVisibility],
+				t.[ResourceDefinitionType]	= s.[ResourceDefinitionType],
+				t.[CurrencyVisibility]		= s.[CurrencyVisibility],
 				t.[CenterVisibility]		= s.[CenterVisibility],
 				t.[ImageVisibility]			= s.[ImageVisibility],
 				t.[DescriptionVisibility]	= s.[DescriptionVisibility],
@@ -216,7 +217,8 @@ SET NOCOUNT ON;
 				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED THEN
 		INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3],
-				--[CurrencyVisibility],
+				[ResourceDefinitionType],
+				[CurrencyVisibility],
 				[CenterVisibility],
 				[ImageVisibility],
 				[DescriptionVisibility],
@@ -307,7 +309,8 @@ SET NOCOUNT ON;
 			
 				)
 			VALUES (s.[Code],	s.[TitleSingular],	s.[TitleSingular2], s.[TitleSingular3],		s.[TitlePlural],	s.[TitlePlural2],		s.[TitlePlural3],
-				--s.[CurrencyVisibility],
+				s.[ResourceDefinitionType],
+				s.[CurrencyVisibility],
 				s.[CenterVisibility],
 				s.[ImageVisibility],
 				s.[DescriptionVisibility],

@@ -597,7 +597,7 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
 		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0)
-		-- Currency and Center inherits from header and are overridden with those of custody, if any
+		-- Currency and Center are set by custody
 '
 WHERE [Index] = 1560;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -610,10 +610,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,1560,	N'CustodyId',			1,	N'From Account',	1,2,0),
 (1,1560,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(2,1560,	N'CenterId',			1,	N'Business Unit',	2,4,1),
 (3,1560,	N'CustodyId',			0,	N'To Account',		1,2,0),
 (4,1560,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(5,1560,	N'CenterId',			0,	N'Business Unit',	2,4,1),
 (6,1560,	N'MonetaryValue',		1,	N'Amount',			1,2,0),
 (7,1560,	N'Memo',				0,	N'Memo',			1,3,1),
 (8,1560,	N'PostingDate',			0,	N'Transfer Date',	0,4,1);
@@ -625,8 +623,6 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
 		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
 		[CustodyId0] = [CustodyId1],
-		[CenterId0] = COALESCE((SELECT [CenterId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]), [CenterId2]),
-		[CenterId1] = COALESCE((SELECT [CenterId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]), [CenterId2]),
 		[CurrencyId2] = dbo.fn_FunctionalCurrencyId(),
 		[MonetaryValue0] = IIF([CurrencyId0]=[CurrencyId1],[MonetaryValue1],[MonetaryValue0]),
 		[MonetaryValue2] = wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1])
@@ -648,7 +644,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,1570,	N'CustodyId',			1,	N'To Account',		1,2,0),
 (4,1570,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
 (5,1570,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
-(6,1570,	N'CenterId',			2,	N'Business Unit',	1,4,1),
 (7,1570,	N'Memo',				0,	N'Memo',			1,4,1),
 (8,1570,	N'PostingDate',			0,	N'Exchange Date',	0,2,1);
 --1660:CashToSupplierWithPointInvoice

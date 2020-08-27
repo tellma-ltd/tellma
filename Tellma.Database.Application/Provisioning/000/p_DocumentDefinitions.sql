@@ -214,9 +214,22 @@ INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description],
 (120, N'StockManagementVoucher',2, N'stock transfer and/or conversion',N'Stock Mgmt Voucher', N'Stock Mgmt Vouchers', N'SMV',NULL, N'Inventory', 1120),
 (130, N'ProductionVoucher',2, N'',N'Production Voucher', N'Production Vouchers', N'PDV',NULL, N'Production', 1130),
 (140, N'EmployeeLeaveVoucher',2, N'',N'Employee Leave Voucher', N'Employee Leave Vouchers', N'ELV',NULL, N'HumanCapital', 1140);
-
+-- DELETE all _07 Documents folders
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-(0,0, @ManualLineLD, 1);
+(0,0, @ManualLineLD, 1)
+
+/*,
+-- 10:CashPurchaseVoucher
+(10,10,@CashToSupplierWithPointInvoiceLD,1),
+(15,10,@PPEFromSupplierLD,1),
+(20,10,@InventoryFromSupplierLD,1),
+(25,10,@PPEFromSupplierLD,1),
+(30,10,@ManualLineLD,1),
+-- 50:CashSaleVoucher
+(35,10,@CashFromCustomerWithWTWithPointInvoiceLD,1),
+(40,10,@RevenueFromInventoryLD,1);
+
+*/
 
 INSERT INTO @DocumentDefinitionMarkupTemplates([Index], [HeaderIndex], [MarkupTemplateId]) VALUES
 (0, 0, @JVCoverLetterMT);

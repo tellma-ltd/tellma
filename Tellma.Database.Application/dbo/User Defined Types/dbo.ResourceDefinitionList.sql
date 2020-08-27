@@ -8,6 +8,21 @@
 	[TitlePlural]						NVARCHAR (100),
 	[TitlePlural2]						NVARCHAR (100),
 	[TitlePlural3]						NVARCHAR (100),
+	[ResourceDefinitionType]			NVARCHAR (255) NULL CHECK ([ResourceDefinitionType] IN (
+		N'PropertyPlantAndEquipment',
+		N'InvestmentProperty',
+		N'IntangibleAssetsOtherThanGoodwill',
+		N'OtherFinancialAssets',
+		N'BiologicalAssets',
+		N'InventoriesTotal',
+		N'TradeAndOtherReceivables',
+		N'CashAndCashEquivalents',
+		N'TradeAndOtherPayables',
+		N'Provisions',
+		N'OtherFinancialLiabilities',
+		N'Miscellaneous' -- Tasks, etc.
+	)),
+
 	-----Resource Properties Common with Contracts
 	[CurrencyVisibility]				NVARCHAR (50),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
