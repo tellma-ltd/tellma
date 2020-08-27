@@ -90,10 +90,10 @@ namespace Tellma.Data
         /// <summary>
         /// Initializes the connection if it is not already initialized, this version does
         /// not invoke <see cref="OnConnect(string, string, string, string)"/>, it is used
-        /// to retrieve metadata from the admin database such as the accessible database Id
+        /// to perform system operations that are not specific to an <see cref="AdminUser"/>
         /// </summary>
         /// <returns>The connection string that was initialized</returns>
-        private async Task<SqlConnection> GetDirectoryConnectionAsync(CancellationToken cancellation = default)
+        private async Task<SqlConnection> GetRawConnectionAsync(CancellationToken cancellation = default)
         {
             if (_conn == null)
             {
@@ -382,7 +382,7 @@ namespace Tellma.Data
 
             DatabaseConnectionInfo result = null;
 
-            var conn = await GetDirectoryConnectionAsync(cancellation);
+            var conn = await GetRawConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -419,7 +419,7 @@ namespace Tellma.Data
             var databaseIds = new List<int>();
             var isAdmin = false;
 
-            var conn = await GetDirectoryConnectionAsync(cancellation);
+            var conn = await GetRawConnectionAsync(cancellation);
             using var cmd = conn.CreateCommand();
 
             // Parameters
@@ -453,7 +453,7 @@ namespace Tellma.Data
         {
             using var _ = _instrumentation.Block("AdminRepo." + nameof(DirectoryUsers__SetEmailByExternalId));
 
-            var conn = await GetDirectoryConnectionAsync();
+            var conn = await GetRawConnectionAsync();
             using var cmd = conn.CreateCommand();
 
             // Parameters
@@ -472,7 +472,7 @@ namespace Tellma.Data
         {
             using var _ = _instrumentation.Block("AdminRepo." + nameof(DirectoryUsers__SetExternalIdByEmail));
 
-            var conn = await GetDirectoryConnectionAsync();
+            var conn = await GetRawConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
             cmd.Parameters.Add("Email", email);
@@ -492,7 +492,7 @@ namespace Tellma.Data
 
             var result = new List<string>();
 
-            var conn = await GetDirectoryConnectionAsync();
+            var conn = await GetRawConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -787,6 +787,53 @@ namespace Tellma.Data
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
+        }
+
+        #endregion
+
+        #region Jobs
+
+        public async Task Heartbeat(Guid instanceId, int keepAliveInSeconds, CancellationToken cancellation)
+        {
+            var conn = await GetRawConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@InstanceId", instanceId);
+            cmd.Parameters.Add("@KeepAliveInSeconds", keepAliveInSeconds);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Heartbeat)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync(cancellation);
+        }
+
+        public async Task<IEnumerable<int>> AdoptOrphans(Guid instanceId, int keepAliveInSeconds, int orphanCount, CancellationToken cancellation)
+        {
+            var result = new List<int>();
+
+            var conn = await GetRawConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@InstanceId", instanceId);
+            cmd.Parameters.Add("@KeepAliveInSeconds", keepAliveInSeconds);
+            cmd.Parameters.Add("@OrphanCount", orphanCount);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdoptOrphans)}]";
+
+            // Execute and Load
+            using var reader = await cmd.ExecuteReaderAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                result.Add(reader.GetInt32(0));
+            }
+
+            return result;
         }
 
         #endregion

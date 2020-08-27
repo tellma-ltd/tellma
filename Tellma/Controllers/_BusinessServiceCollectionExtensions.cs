@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualBasic;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 using System;
 using Tellma.Controllers;
 using Tellma.Controllers.ImportExport;
+using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Templating;
 using Tellma.Entities;
 
@@ -12,12 +14,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds the services that encapsulate the business logic of the system
         /// </summary>
-        public static IServiceCollection AddBusinessServices(this IServiceCollection services)
+        public static IServiceCollection AddBusinessServices(this IServiceCollection services, IConfiguration config)
         {
             if (services is null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
+
+            // Bind
+            services.Configure<JobsOptions>(config.GetSection("Jobs"));
+
+            // Register background jobs
+            services = services
+                .AddHostedService<HeartbeatJob>()
+                .AddHostedService<OrphanCareJob>();
 
             // These are helper services that business services rely on
             services = services

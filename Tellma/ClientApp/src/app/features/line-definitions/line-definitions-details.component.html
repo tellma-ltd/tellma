@@ -680,7 +680,7 @@
                                     <ng-template #datatypetemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="param.DataType"
                                             #datatypemodel="ngModel">
-                                            <option *ngFor="let c of dataTypeChoices" value="{{c.value}}">
+                                            <option *ngFor="let c of dataTypeChoices()" value="{{c.value}}">
                                                 {{ c.name() }}</option>
                                         </select>
                                         <ng-container

@@ -1072,8 +1072,8 @@
   <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
     <value>在{0} '{1}' 在{2} '{3}' 在后面的文件{4}被使用。</value>
   </data>
-  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
-    <value>平衡“{0}”将变为负。</value>
+  <data name="Error_Resource01AvailableBalance2Unit3" xml:space="preserve">
+    <value>余额为{0} '{1}' 是{2} {3}，不足以完成该事务</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>资源DefinitionId“{0}”未能找到。</value>

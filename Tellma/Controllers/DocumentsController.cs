@@ -1294,7 +1294,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    throw new BadRequestException($"Line #{lineIndex + 1}: CenterId is still NULL after preprocess");
+                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: CenterId is still NULL after preprocess");
                                 }
                             }
 
@@ -1319,7 +1319,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    throw new BadRequestException($"Line #{lineIndex + 1}: CurrencyId is still NULL after preprocess");
+                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: CurrencyId is still NULL after preprocess");
                                 }
                             }
 

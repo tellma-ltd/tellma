@@ -1072,8 +1072,8 @@
   <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
     <value>The {0} '{1}' in {2} '{3}' is used in a later document {4}.</value>
   </data>
-  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
-    <value>Balance for '{0}' will become negative.</value>
+  <data name="Error_Resource01AvailableBalance2Unit3" xml:space="preserve">
+    <value>Remaining balance for {0} '{1}' is {2} {3}, not enough to complete this transaction</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>

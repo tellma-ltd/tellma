@@ -188,7 +188,7 @@ namespace Tellma
                 services.AddMarkupTemplates();
 
                 // Add the business logic services (DocumentsService, ResourcesService, etc...)
-                services.AddBusinessServices();
+                services.AddBusinessServices(_config);
 
             }
             catch (Exception ex)

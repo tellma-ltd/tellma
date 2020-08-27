@@ -303,14 +303,14 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   private _dataTypeDisplayCache: { [key: string]: () => string };
   public dataTypeDisplay = (datatype: string) => {
-    const _ = this.dataTypeChoices; // This will populate the cac
+    this.dataTypeChoices(); // This will populate the cac
     const displayFunc = this._dataTypeDisplayCache[datatype];
     return !!displayFunc ? displayFunc() : '';
   }
 
   private _dataTypeChoicesDefinitions: DefinitionsForClient;
   private _dataTypeChoices: SelectorChoice[];
-  public get dataTypeChoices(): SelectorChoice[] {
+  public dataTypeChoices(): SelectorChoice[] {
     const ws = this.ws;
     const defs = ws.definitions;
     if (this._dataTypeChoicesDefinitions !== defs) {

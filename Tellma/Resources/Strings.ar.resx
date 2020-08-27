@@ -1072,8 +1072,8 @@
   <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} والبيان ({3}) من نوع {2} مذكوران في مستند لاحق {4}.</value>
   </data>
-  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
-    <value>ليس هناك رصيد كاف لسحب هذه الكمية من ({0}).</value>
+  <data name="Error_Resource01AvailableBalance2Unit3" xml:space="preserve">
+    <value>الرصيد المتبقي من {0} من نوع {1} يساوي {2} {3}، غير كاف لإتمام هذه العملية.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المورد ({0}).</value>

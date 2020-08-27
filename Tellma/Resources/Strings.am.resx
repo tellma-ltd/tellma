@@ -137,7 +137,7 @@
     <value>የሆነው ገንዘብ ከዚህ</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
-    <value>እንደተጠቀሰው ወኪል ስም መሰየሚያ</value>
+    <value>እንደተጠቀሰው Agent ስም መሰየሚያ</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>እንደተጠቀሰው መጠን መለያ ስም</value>
@@ -1072,8 +1072,8 @@
   <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
     <value>በ {0} «{1}« {2} «{3} 'አንድ በኋላ ሰነድ {4} ላይ ውሏል ውስጥ.</value>
   </data>
-  <data name="Error_ResourceBalanceShortage0" xml:space="preserve">
-    <value>«{0} 'ይሆናል አሉታዊ ለ ሒሳብ.</value>
+  <data name="Error_Resource01AvailableBalance2Unit3" xml:space="preserve">
+    <value>{0} ለ ሒሳብ ይቀራል «{1} 'ይህን ግብይት ለማጠናቀቅ በቂ አይደለም {2} {3} ነው</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ሀብት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
@@ -1619,19 +1619,19 @@
     <value>የሚመዘገብ መረጃ ጠቋሚ</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
-    <value>የራስጌ ከ በመውረስ</value>
+    <value>ከርዕሱ ውርስ</value>
   </data>
   <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>
   </data>
   <data name="LineDefinitionColumn_ReadOnlyState" xml:space="preserve">
-    <value>አንብብ-ብቻ ስቴት</value>
+    <value>ሁኔታው ንባብ-ብቻ</value>
   </data>
   <data name="LineDefinitionColumn_RequiredState" xml:space="preserve">
-    <value>ያስፈልጋል ግዛት</value>
+    <value>ሁኔታው ያስፈልጋል</value>
   </data>
   <data name="LineDefinitionColumn_VisibleState" xml:space="preserve">
-    <value>የሚታይ መንግስት</value>
+    <value>ሁኔታው የሚታይ</value>
   </data>
   <data name="LineDefinitionColumns" xml:space="preserve">
     <value>የመስመር ፍቺ አምዶች</value>
