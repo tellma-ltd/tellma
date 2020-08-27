@@ -37,7 +37,7 @@ INSERT INTO @Custodies(
 ;
 
 EXEC [api].[Custodies__Save]
-	@DefinitionId = @SafeCD,
+	@DefinitionId = @CashOnHandAccountCD,
 	@Entities = @Custodies,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

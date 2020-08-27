@@ -8,6 +8,8 @@
 RETURNS DECIMAL (19,4)
 AS
 BEGIN
+	IF @FromCurrencyId = @ToCurrencyId RETURN @FromAmount;
+
 	DECLARE @E INT, @FunctionalCurrencyId NCHAR (3) = dbo.fn_FunctionalCurrencyId();
 	DECLARE @FunctionalAmount  DECIMAL (19,4), @Result  DECIMAL (19,4);
 	SELECT @E = E FROM dbo.Currencies WHERE [Id] = @FunctionalCurrencyId;

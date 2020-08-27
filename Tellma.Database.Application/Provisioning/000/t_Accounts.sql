@@ -110,8 +110,8 @@
 (12029801,@OtherCurrentReceivables,@AC120298, '12029801', N'Other current receivables (by name)', N'ذمم مدينة متداولة أخرى (باسم المدين)',NULL,NULL, NULL,NULL),
 (12050100,@OtherCurrentFinancialAssets,@AC120501, '12050100', N'Staff loans -', N'سلفيات متداولة لموظفين -',NULL,NULL, @EmployeeLoanRD,NULL),
 (12050101,@OtherCurrentFinancialAssets,@AC120501, '12050101', N'Staff loan (by employee name)', N'مدينون موظفون (باسم الموظف)',NULL,NULL, @EmployeeLoanRD,NULL),
-(12070110,@CashOnHand,@AC120701, '12070110', N'Cash on hand -', N'النقدية في الصندوق -',NULL,NULL, NULL,@SafeCD),
-(12070120,@CashOnHand,@AC120701, '12070120', N'Checks on hand -', N'الشيكات في الصندوق -',NULL,NULL, @CheckReceivedRD,@SafeCD),
+(12070110,@CashOnHand,@AC120701, '12070110', N'Cash on hand -', N'النقدية في الصندوق -',NULL,NULL, NULL,@CashOnHandAccountCD),
+(12070120,@CashOnHand,@AC120701, '12070120', N'Checks on hand -', N'الشيكات في الصندوق -',NULL,NULL, @CheckReceivedRD,@CashOnHandAccountCD),
 (12070130,@BalancesWithBanks,@AC120701, '12070130', N'Balances with banks -', N'الأرصدة لدى البنوك',NULL,NULL, NULL,@BankAccountCD),
 (12070210,@ShorttermDepositsClassifiedAsCashEquivalents,@AC120702, '12070210', N'Short-term deposits, classified as cash equivalents', N'الودائع قصيرة الأجل، المصنفة على أنها نقد معادل',NULL,NULL, NULL,NULL),
 (12070240,@ShorttermInvestmentsClassifiedAsCashEquivalents,@AC120702, '12070240', N'Short-term investments, classified as cash equivalents', N'الاستثمارات قصيرة الأجل، المصنفة على أنها نقد معادل',NULL,NULL, NULL,NULL),
@@ -321,8 +321,8 @@
 (71030001,@CashPaymentsToEmployeesControlExtension,@AC710300, '71030001', N'Cash payments to employees control', N'مراقبة دفعيات الموظفين',NULL,NULL, NULL,NULL),
 (72010001,@CashPaymentsToOthersControlExtension,@AC720100, '72010001', N'Cash payments to others control', N'مراقبة الدفعيات إلى الآخرين',NULL,NULL, NULL,NULL),
 (72010002,@CashReceiptsFromOthersControlExtension,@AC720100, '72010002', N'Cash receipts from others control', N'مراقبة الدفعيات من الآخرين',NULL,NULL, NULL,NULL),
-(81000100,@CollectionGuaranteeExtension,@AC810001, '81000100', N'Checks Guarantee -', N'شيكات ضمان',NULL,NULL, @CheckReceivedRD,@SafeCD),
-(81000200,@DishonouredGuaranteeExtension,@AC810002, '81000200', N'Checks Dishonored -', N'شيكات مرتجعة',NULL,NULL, @CheckReceivedRD,@SafeCD),
+(81000100,@CollectionGuaranteeExtension,@AC810001, '81000100', N'Checks Guarantee -', N'شيكات ضمان',NULL,NULL, @CheckReceivedRD,@CashOnHandAccountCD),
+(81000200,@DishonouredGuaranteeExtension,@AC810002, '81000200', N'Checks Dishonored -', N'شيكات مرتجعة',NULL,NULL, @CheckReceivedRD,@CashOnHandAccountCD),
 (82010000,@SellingGeneralAndAdministrationTasksExtension,@AC820100, '82010000', N'SG&A tasks', N'المهام الإدارية -',NULL,NULL, NULL,@TaskCustodyCD)
 UPDATE dbo.AccountTypes SET IsAssignable = 1 WHERE [Id] IN (SELECT [AccountTypeId] FROM @Accounts);
 EXEC [api].[Accounts__Save]

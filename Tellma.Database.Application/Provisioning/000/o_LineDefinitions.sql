@@ -35,21 +35,28 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1000,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,1000,	N'Value',		0,			N'Credit',		4,4,0),
 (3,1000,	N'Memo',		0,			N'Memo',		4,4,1);
---1060: PPEFromSupplier
+--1060: PPEFromSupplier, appears in Purchase vouchers, with purchases of inventory, Investment property, and C/S 
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
+	DECLARE @FunctionalCurrencyId = dbo.fn_FunctionalCurrencyId();
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId0]		= [CurrencyId2],
-		[CurrencyId1]		= [CurrencyId2],
-		[CenterId0]			= COALESCE([CenterId0], [CenterId2]),
-		[CenterId1]			= COALESCE([CenterId1], [CenterId2]),
-		[CustodyId1]		= [CustodyId0],
-		[MonetaryValue1]	= ISNULL([MonetaryValue2],0) - ISNULL([MonetaryValue0],0),
+		[CurrencyId0]		= ISNULL([CurrencyId0], @FunctionalCurrencyId), -- overridden by resource/currency
+		[CurrencyId1]		= ISNULL([CurrencyId1], @FunctionalCurrencyId), -- overridden by resource/currency
+		[CenterId0]			= ISNULL([CenterId0], [CenterId2]),
+		[CenterId1]			= ISNULL([CenterId1], [CenterId2]),
+		[CustodianId1]		= [CustodianId0], -- Same custodian for both standard and pure
+		[MonetaryValue0]	= dbo.fn_[bll].[fn_ConvertCurrencies]([PostingDate] , [CurrencyId2],
+								ISNULL([CurrencyId0], @FunctionalCurrencyId), 
+								[NotedAmount0]),
+		[MonetaryValue1]	= dbo.fn_[bll].[fn_ConvertCurrencies]([PostingDate] , [CurrencyId2],
+								ISNULL([CurrencyId1], @FunctionalCurrencyId),
+								ISNULL([MonetaryValue2],0) - ISNULL([NotedAmount0],0), -- <==  Depreciable value in Supplier currency
+								),
 		[ResourceId1]		= [ResourceId0],
 		[Quantity0]			= 1,
-		[UnitId0]			= (SELECT [Id] FROM dbo.Units WHERE Code = N''pure''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
+		[UnitId0]			= (SELECT MIN([Id]) FROM dbo.Units WHERE [UnitType] = N''Pure''),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [Participant2])	
 '
 WHERE [Index] = 1060;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -57,81 +64,57 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (2,1060,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,NULL);
---INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
---[CustodyDefinitionId]) VALUES
---(0,0,1060,@PPECustodyCD),
---(0,1,1060,@PPECustodyCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1060,	N'Memo',				1,	N'Memo',			1,4,1),
+(0,1060,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
 (1,1060,	N'ParticipantId',		2,	N'Supplier',		3,4,1), -- Document Header. TODO: Participant Id Is Common
 (2,1060,	N'CustodianId',			0,	N'Custodian',		5,5,0), -- TODO: No CustodyDefinitions for PPEs. Just Custodian Definition
 (3,1060,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0),
 (4,1060,	N'Quantity',			1,	N'Life/Usage',		2,4,0),
 (5,1060,	N'UnitId',				1,	N'Unit',			2,4,0),
-(6,1060,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header
-(7,1060,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0),
-(8,1060,	N'MonetaryValue',		0,	N'Residual Value',	1,2,0),
-(10,1060,	N'PostingDate',			1,	N'Acquired On',		0,4,1), -- Document Header
+(6,1060,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header, Supplier's currency
+(7,1060,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0), -- In Supplier's currency
+(8,1060,	N'NotedAmount',			0,	N'Residual Value',	1,2,0), -- In Supplier's currency
+(10,1060,	N'PostingDate',			1,	N'Purchase Date',	0,4,1), -- Document Header, shared with other purchases
 (11,1060,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header
---1200:InventoryTransfer
+--1200:InventoryTransfer, appears in SIV, with issue to expenditure, (to sale is either in CSV or CRSV)
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
- WITH InventoryAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-		WHERE ATP.[Concept] = N''Inventories''
-	),
-	ResourceCosts AS (
-		SELECT
-		PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1],
-			SUM(E.[AlgebraicMonetaryValue]) AS NetMonetaryValue,
-			SUM(E.[AlgebraicValue]) AS NetValue,
-			SUM(E.[AlgebraicQuantity]) AS NetQuantity
-		FROM map.[DetailsEntries]() E
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-		JOIN @ProcessedWideLines PWL ON PWL.[ResourceId1] = E.[ResourceId] AND PWL.[CustodyId1] = E.[CustodyId] AND L.PostingDate <= PWL.[PostingDate]
-		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
-		AND L.[State] = 4
-		GROUP BY PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1]
-	)	
 	UPDATE PWL
 	SET
 		[CurrencyId0]		= R.[CurrencyId],
 		[CurrencyId1]		= R.[CurrencyId],
 		[ResourceId0]		= PWL.[ResourceId1], [Quantity0] = PWL.[Quantity1], [UnitId0] = PWL.[UnitId1],
 		[MonetaryValue0]	= IIF (
-						ISNULL(RC.[NetQuantity],0) = 0,
-						0,
-						RC.NetMonetaryValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
-					),
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetMonetaryValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+							),
 		-- Assuming that, for foreign currency, value is credit at same ratio as Monetary Value
-		[Value0]		= IIF (
-						ISNULL(RC.[NetQuantity],0) = 0,
-						0,
-						RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
-					),
+		[Value0]			= IIF (
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+							),
 		[MonetaryValue1]	= IIF (
-						ISNULL(RC.[NetQuantity],0) = 0,
-						0,
-						RC.NetMonetaryValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
-					),
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetMonetaryValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+							),
 		[Value1]			= IIF (
-						ISNULL(RC.[NetQuantity],0) = 0,
-						0,
-						RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
-					),
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+							),
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId1]),
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId0])
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN ResourceCosts RC ON PWL.[ResourceId1] = RC.[ResourceId1] AND PWL.[CustodyId1] = RC.[CustodyId1] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
-	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id] 
+	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 '
 WHERE [Index] = 1200;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -146,24 +129,27 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1200,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1200,	N'CustodyId'	,		1,	N'From Warehouse',	3,4,1), -- Document header. -- Warehouse is a custody, because one employee 
-(2,1200,	N'CustodyId',			0,	N'To Warehouse',	3,4,1), -- Tab header		-- might be in charge of many warehouses  
+(0,1200,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1200,	N'CustodyId'	,		1,	N'From Warehouse',	3,4,1), -- Document Header. -- Warehouse is a custody, because one employee 
+(2,1200,	N'CustodyId',			0,	N'To Warehouse',	3,4,1), -- Tab Header		-- might be in charge of many warehouses  
 (3,1200,	N'ResourceId',			0,	N'Item',			2,4,0),						-- containing same items
 (4,1200,	N'Quantity',			0,	N'Qty',				2,4,0),
 (5,1200,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,1200,	N'PostingDate',			1,	N'Issued On',		1,4,1), -- Document header
-(7,1200,	N'CenterId',			1,	N'Business Unit',	1,4,1); -- Should it be part of custody?
---1260:InventoryFromSupplier
+(6,1200,	N'PostingDate',			1,	N'Issued On',		1,4,1); -- Document Header
+--1260:InventoryFromSupplier, appears in Purchase vouchers, with purchases of PPE, Investment property, and C/S. (SRV is from non purchases)
 UPDATE @LineDefinitions
-SET [PreprocessScript] = N'
+SET
+	[PreprocessScript] = N'
+	DECLARE @FunctionalCurrencyId = dbo.fn_FunctionalCurrencyId();
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId0]		= [CurrencyId1],
-		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
-		[MonetaryValue0]	= [MonetaryValue1],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])
-'
+		[CurrencyId0]		= ISNULL([CurrencyId0], @FunctionalCurrencyId), -- overridden by resource/currency
+		[CenterId0]			= ISNULL([CenterId0], [CenterId1]), -- Overridden by Custody/Business Unit
+		[MonetaryValue0]	=  dbo.fn_[bll].[fn_ConvertCurrencies]([PostingDate] , [CurrencyId1],
+								ISNULL([CurrencyId0], @FunctionalCurrencyId), 
+								[MonetaryValue1]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [Participant1])',
+	[ValidateScript] = NULL
 WHERE [Index] = 1260;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeId],										[EntryTypeId]) VALUES
@@ -193,59 +179,48 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1260,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1260,	N'NotedRelationId',		1,	N'Supplier',		3,4,1),
-(2,1260,	N'CustodyId',			0,	N'Warehouse',		3,4,1),
+(0,1260,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1260,	N'ParticipantId',		1,	N'Supplier',		3,4,1), -- Document Header
+(2,1260,	N'CustodyId',			0,	N'Warehouse',		3,4,1), -- Tab Header
 (3,1260,	N'ResourceId',			0,	N'Item',			2,4,0),
 (4,1260,	N'Quantity',			0,	N'Qty',				2,4,0),
 (5,1260,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,1260,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(7,1260,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
-(10,1260,	N'PostingDate',			1,	N'Received On',		1,4,1),
-(11,1260,	N'CenterId',			1,	N'Business Unit',	1,4,1);
---1330:RevenueFromInventory
+(6,1260,	N'CurrencyId',			1,	N'Currency',		1,2,1), -- Document Header, Supplier's currency
+(7,1260,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0), -- In Supplier's currency
+(8,1260,	N'PostingDate',			1,	N'Purchase Date',	1,4,1),
+(9,1260,	N'CenterId',			1,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash purchase. useful for credit purchase
+--1330:RevenueFromInventory, appears in CSV and CRSV, but not in SRV
+-- Where do we store the salesman? STUDY CAREFULLY...
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
-	WITH InventoryAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-		WHERE ATP.[Concept] = N''Inventories''
-	),
-	ResourceCosts AS (
-		SELECT
-		PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1],
-			SUM(E.[AlgebraicMonetaryValue]) AS NetMonetaryValue,
-			SUM(E.[AlgebraicValue]) AS NetValue,
-			SUM(E.[AlgebraicQuantity]) AS NetQuantity
-		FROM map.[DetailsEntries]() E
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-		JOIN @ProcessedWideLines PWL ON PWL.[ResourceId1] = E.[ResourceId] AND PWL.[CustodyId1] = E.[CustodyId] AND L.PostingDate <= PWL.[PostingDate]
-		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
-		AND L.[State] = 4
-		GROUP BY PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1]
-	)	
 	UPDATE PWL
 	SET
-		[CustodyId0]		= PWL.[CustodyId1],
-		[CustodyId3]		= PWL.[CustodyId1],
-		[CurrencyId0]		= R.[CurrencyId],
-		[CurrencyId1]		= R.[CurrencyId],
-		[CurrencyId3]		= PWL.[CurrencyId2],
-		[CenterId1]			= COALESCE(PWL.[CenterId1], PWL.[CenterId2]),
-		[CenterId0]			= (
+		[CustodyId0]		= PWL.[CustodyId1], -- Warehouse in COS account
+		[CustodyId3]		= PWL.[CustodyId1], -- Warehouse in Revenue account
+		[CurrencyId0]		= ISNULL(R.[CurrencyId], PWL.[CurrencyId2]),
+		[CurrencyId1]		= ISNULL(R.[CurrencyId], PWL.[CurrencyId2]),
+		[CurrencyId3]		= ISNULL(R.[CurrencyId], PWL.[CurrencyId2]), -- revenues is calculated in resource currency
+		[CenterId1]			= ISNULL(C.[CenterId], PWL.[CenterId2]),
+		[CenterId0]			= ( -- cost of sale center
 								SELECT [Id]
 								FROM dbo.Centers
-								WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.Centers WHERE [Id] = PWL.[CenterId2])) = 1
-								AND CenterType IN (N''BusinessUnit'', N''CostOfSales'') AND [IsLeaf] = 1
-								),
-		[CenterId3]			= (
+								WHERE [Node].IsDescendantOf((
+									SELECT [Node] FROM dbo.Centers
+									WHERE [Id] = ISNULL(C.[CenterId], PWL.[CenterId2])
+								)) = 1
+								AND CenterType IN (N''BusinessUnit'', N''CostOfSales'')
+								AND [IsLeaf] = 1
+							),
+		[CenterId3]			= ( -- cost of sale cenrer
 								SELECT [Id]
 								FROM dbo.Centers
-								WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.Centers WHERE [Id] = PWL.[CenterId2])) = 1
-								AND CenterType IN (N''BusinessUnit'', N''CostOfSales'') AND [IsLeaf] = 1
-								),
+								WHERE [Node].IsDescendantOf((
+									SELECT [Node] FROM dbo.Centers
+									WHERE [Id] = ISNULL(C.[CenterId], PWL.[CenterId2])
+								)) = 1
+								AND CenterType IN (N''BusinessUnit'', N''CostOfSales'')
+								AND [IsLeaf] = 1
+							),
 		[ResourceId0]		= PWL.[ResourceId1], [Quantity0] = PWL.[Quantity1], [UnitId0] = PWL.[UnitId1],
 		[ResourceId3]		= PWL.[ResourceId1], [Quantity3] = PWL.[Quantity1],	[UnitId3] = PWL.[UnitId1],
 		[MonetaryValue0]	= IIF (
@@ -270,12 +245,13 @@ SET [PreprocessScript] = N'
 								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
 								),
 		[MonetaryValue2]	= [MonetaryValue3],
-		[NotedRelationId0]	= [NotedRelationId3],
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId3]),
+		[NotedRelationId0]	= [ParticipantId3],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId3]),
 		[NotedRelationId2]	= [NotedRelationId3]
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN ResourceCosts RC ON PWL.[ResourceId1] = RC.[ResourceId1] AND PWL.[CustodyId1] = RC.[CustodyId1] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
+	LEFT JOIN dbo.[Custodies] C ON C.[Id] = PWL.[CustodyId1]
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 '
@@ -308,40 +284,20 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1330,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1330,	N'NotedRelationId',		3,	N'Customer',		3,4,1),
-(2,1330,	N'CustodyId',			1,	N'Warehouse',		3,4,1),
+(0,1330,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1330,	N'ParticipantId',		2,	N'Customer',		3,4,1), -- Document Header
+(2,1330,	N'CustodyId',			1,	N'Warehouse',		3,4,1), -- Tab Header
 (3,1330,	N'ResourceId',			1,	N'Item',			2,4,0),
 (4,1330,	N'Quantity',			1,	N'Qty',				2,4,0),
 (5,1330,	N'UnitId',				1,	N'Unit',			2,4,0),
-(6,1330,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(7,1330,	N'MonetaryValue',		3,	N'Cost (VAT Excl.)',1,2,0),
-(10,1330,	N'PostingDate',			1,	N'Issued On',		1,4,1),
-(11,1330,	N'CenterId',			2,	N'Business Unit',	1,4,1);
+(6,1330,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header, Customer's currency
+(7,1330,	N'MonetaryValue',		3,	N'Price (VAT Excl.)',1,2,0), -- In Customer's currency
+(8,1330,	N'PostingDate',			1,	N'Sales Date',		1,4,1),
+(9,1330,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash sale. useful for credit purchase
+
 --1360:RevenueFromInventoryWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
-WITH InventoryAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-		WHERE ATP.[Concept] = N''Inventories''
-	),
-	ResourceCosts AS (
-		SELECT
-		PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1], R.[VatRate],
-			SUM(E.[AlgebraicMonetaryValue]) AS NetMonetaryValue,
-			SUM(E.[AlgebraicValue]) AS NetValue,
-			SUM(E.[AlgebraicQuantity]) AS NetQuantity
-		FROM map.[DetailsEntries]() E
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-		JOIN @ProcessedWideLines PWL ON PWL.[ResourceId1] = E.[ResourceId] AND PWL.[CustodyId1] = E.[CustodyId] AND L.PostingDate <= PWL.[PostingDate]
-		JOIN dbo.Resources R ON PWL.[ResourceId1] = R.[Id]
-		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
-		AND L.[State] = 4
-		GROUP BY PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1]
-	)	
 	UPDATE PWL
 	SET
 		[CustodyId0]		= PWL.[CustodyId1],
@@ -387,14 +343,14 @@ WITH InventoryAccounts AS (
 								0,
 								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
 								),
-		[MonetaryValue2]	= ISNULL([MonetaryValue4],0) * ( 1 + PWL.[VatRate]), -- Total Due
-		[MonetaryValue3]	= ISNULL([MonetaryValue4],0) * PWL.[VatRate], -- VAT
+		[MonetaryValue2]	= ISNULL([MonetaryValue4],0) * ( 1 + R.[VatRate]), -- Total Due
+		[MonetaryValue3]	= ISNULL([MonetaryValue4],0) * R.[VatRate], -- VAT
 		[NotedAmount3]		= ISNULL([MonetaryValue4],0), -- Revenues, Taxable Amount
 		[NotedRelationId0]	= [NotedRelationId4],
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId4]),
 		[NotedRelationId2]	= [NotedRelationId4]
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN ResourceCosts RC ON PWL.[ResourceId1] = RC.[ResourceId1] AND PWL.[CustodyId1] = RC.[CustodyId1] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
@@ -430,13 +386,13 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,1360,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1360,	N'NotedRelationId',		4,	N'Customer',		3,4,1),
+(1,1360,	N'ParticipantId',		3,	N'Customer',		3,4,1),
 (2,1360,	N'CustodyId',			1,	N'Warehouse',		3,4,1),
 (3,1360,	N'ResourceId',			1,	N'Item',			2,4,0),
 (4,1360,	N'Quantity',			1,	N'Qty',				2,4,0),
 (5,1360,	N'UnitId',				1,	N'Unit',			2,4,0),
 (6,1360,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(7,1360,	N'MonetaryValue',		4,	N'Cost (VAT Excl.)',1,2,0),
+(7,1360,	N'MonetaryValue',		4,	N'Price (VAT Excl.)',1,2,0),
 (8,1360,	N'MonetaryValue',		3,	N'VAT',				0,0,0),
 (9,1360,	N'MonetaryValue',		2,	N'Line Total',		0,0,0),
 (10,1360,	N'ExternalReference',	2,	N'Invoice #',		1,4,0),

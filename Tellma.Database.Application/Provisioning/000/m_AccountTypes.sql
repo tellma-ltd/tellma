@@ -1088,15 +1088,15 @@ INSERT INTO @AccountTypeCustodyDefinitions([Index],
 (317,@CurrentInventoriesInTransit,					@TransitCustodyCD),
 (319,@OtherInventories,								@WarehouseCD),
 (325,@CurrentReceivablesFromRentalOfProperties,		@RentalCD),
-(327,@CashOnHand,									@SafeCD),
+(327,@CashOnHand,									@CashOnHandAccountCD),
 (328,@BalancesWithBanks,							@BankAccountCD),
 (329,@RevenueFromSaleOfGoods,						@WarehouseCD),
 (330,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
 (331,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
 (331,@OtherRevenue,									@WarehouseCD),
 (332,@CostOfMerchandiseSold,						@WarehouseCD),
-(344,@CollectionGuaranteeExtension,					@SafeCD),
-(345,@DishonouredGuaranteeExtension,				@SafeCD);
+(344,@CollectionGuaranteeExtension,					@CashOnHandAccountCD),
+(345,@DishonouredGuaranteeExtension,				@CashOnHandAccountCD);
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,

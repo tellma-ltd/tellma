@@ -1,30 +1,30 @@
-﻿-- Safe
+﻿-- Cash On Hand
 DELETE FROM @IndexedIds
-INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Custodies] WHERE DefinitionId = @SafeCD;
+INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Custodies] WHERE DefinitionId = @CashOnHandAccountCD;
 EXEC [api].[Custodies__Delete]
-	@DefinitionId = @SafeCD,
+	@DefinitionId = @CashOnHandAccountCD,
 	@IndexedIds = @IndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Default Safes: Deleting: ' + @ValidationErrorsJson
+	Print 'Default Cash On Hand Accounts: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
-DELETE FROM @Safes;
-INSERT INTO @Safes([Index],	
+DELETE FROM @CashOnHandAccounts;
+INSERT INTO @CashOnHandAccounts([Index],	
 	[Code], [Name],					[CenterId], [CurrencyId]) VALUES
-(0,	N'CA0',	N'GM Safe',				@102C11,		@ETB),
+(0,	N'CA0',	N'GM Cash On Hand',				@102C11,		@ETB),
 (1,	N'CA1',	N'Wendy Petty Cash',	@102C11,		@ETB),
 (2,	N'CA2',	N'Abu Bakr Petty Cash',	@102C11,		@ETB);
 
 ;
 EXEC [api].[Custodies__Save]
-	@DefinitionId = @SafeCD,
-	@Entities = @Safes,
+	@DefinitionId = @CashOnHandAccountCD,
+	@Entities = @CashOnHandAccounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Safe Custodies: Inserting: ' + @ValidationErrorsJson
+	Print 'Cash Accounts: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 
