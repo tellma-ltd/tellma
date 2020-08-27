@@ -6,7 +6,8 @@ AS
 	-- Just in case the instance executes [AdoptOrphans] before [Heartbeat] for the very first time, and someone else snatches the same orphans
 	EXEC [dal].[Heartbeat] @InstanceId = @InstanceId, @KeepAliveInSeconds = @KeepAliveInSeconds;
 
-	-- Adopt the top N orphans 
+	-- Adopt the top N orphans
+	-- TODO: can the default isolation level cause two instances to retrieve the same orphans? That would be dangerous
 	UPDATE TOP (@OrphanCount) DB
 	SET [AdopterId] = @InstanceId
 	OUTPUT INSERTED.Id

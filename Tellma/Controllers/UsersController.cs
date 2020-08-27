@@ -321,7 +321,7 @@ namespace Tellma.Controllers
             }
 
             var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-            await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
+            await _emailSender.SendAsync(toEmail, subject, htmlMessage);
         }
 
         public async Task<User> GetMyUser(CancellationToken cancellation)
@@ -698,7 +698,7 @@ namespace Tellma.Controllers
                     substitutions.Add(new Dictionary<string, string> { { "-message-", body } });
                 }
 
-                await _emailSender.SendEmailBulkAsync(
+                await _emailSender.SendBulkAsync(
                     tos: tos,
                     subjects: subjects,
                     htmlMessage: $"-message-",

@@ -17,12 +17,14 @@ namespace Tellma.Controllers.Jobs
     {
         private readonly ILogger<HeartbeatJob> _logger;
         private readonly IServiceProvider _services;
+        private readonly InstanceInfoProvider _instanceInfo;
         private readonly JobsOptions _options;
 
-        public HeartbeatJob(ILogger<HeartbeatJob> logger, IServiceProvider services, IOptions<JobsOptions> options)
+        public HeartbeatJob(ILogger<HeartbeatJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<JobsOptions> options)
         {
             _logger = logger;
             _services = services;
+            _instanceInfo = instanceInfo;
             _options = options.Value;
         }
 
@@ -35,7 +37,7 @@ namespace Tellma.Controllers.Jobs
                     using var scope = _services.CreateScope();
 
                     var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                    await repo.Heartbeat(Instance.Id, _options.InstanceKeepAliveInSeconds, stoppingToken);
+                    await repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, stoppingToken);
                 } 
                 catch (Exception ex)
                 {

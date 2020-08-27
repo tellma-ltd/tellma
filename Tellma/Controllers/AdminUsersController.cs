@@ -538,7 +538,7 @@ namespace Tellma.Controllers
                     substitutions.Add(new Dictionary<string, string> { { "-message-", body } });
                 }
 
-                await _emailSender.SendEmailBulkAsync(
+                await _emailSender.SendBulkAsync(
                     tos: tos,
                     subjects: subjects,
                     htmlMessage: $"-message-",

@@ -137,7 +137,7 @@
     <value>የሆነው ገንዘብ ከዚህ</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
-    <value>እንደተጠቀሰው Agent ስም መሰየሚያ</value>
+    <value>እንደተጠቀሰው ወኪል ስም መሰየሚያ</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>እንደተጠቀሰው መጠን መለያ ስም</value>
@@ -901,6 +901,9 @@
   <data name="Error_Center0IsNotLeaf" xml:space="preserve">
     <value>ማዕከል «{0} 'አንድ ቅጠል አይደለም.</value>
   </data>
+  <data name="Error_CenterMustBeBusinessUnit" xml:space="preserve">
+    <value>ማዕከሉ የንግድ መለኪያ መሆን አለበት.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ ላይ ሳለ አንድ ስህተት ተከስቷል.</value>
   </data>
@@ -1132,11 +1135,17 @@
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>የመለያ አይነት «{0}» ያልሆነ ዜሮ ሚዛን ጋር አንድ መለያ «{1}» አለው.</value>
   </data>
+  <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
+    <value>የመለያ ዓይነት ምደባ ጋር ተኳሃኝ አይደለም.</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>መጠን 0 የበለጠ መሆን አለበት.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>ተመጣጣኝ 1 የበለጠ መሆን አለበት.</value>
+  </data>
+  <data name="Error_TheCenter0IsInactive" xml:space="preserve">
+    <value>ማዕከሉ «{0}» ያልነቃ ነው.</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
@@ -1146,6 +1155,9 @@
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>ቀን {1} ላይ የገንዘብ ምንዛሪ የምንዛሬ ተመን «{0}» የተባዙ ነው.</value>
+  </data>
+  <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
+    <value>ምንዛሬ «{0}» ያልነቃ ነው.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
     <value>ምንዛሬ «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
@@ -1159,6 +1171,9 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>ምንዛሬ ወደ ተግባራዊ ምንዛሪ የተለየ መሆን አለበት.</value>
   </data>
+  <data name="Error_TheCustodian01IsInactive" xml:space="preserve">
+    <value>በ {0} «{1}» ያልነቃ ነው.</value>
+  </data>
   <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
     <value>ሂሳብ ውስጥ ጥቅም ላይ ነው {0} «{1}» «{2}».</value>
   </data>
@@ -1171,20 +1186,20 @@
   <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>መለያ ምንዛሬ ያለው ሳለ የማሳደግ «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>
   </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2}» ምንዛሬ ጋር መለያ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2} 'ማዕከል ጋር ሰነድ {1} ላይ ውሏል.</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2}» ምንዛሬ ጋር ሰነድ {1} ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>የጥበቃ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>የማሳደግ «{0}» «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>የማሳደግ «{0}» «{2}» ምንዛሬ ጋር መለያ {1} ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>የማሳደግ «{0}» «{2} 'ማዕከል ጋር ሰነድ {1} ላይ ውሏል.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>የማሳደግ «{0}» «{2}» ምንዛሬ ጋር ሰነድ {1} ላይ ውሏል.</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>አንዳንድ መስመሮች ለጥፏል አይደሉም.</value>
@@ -1231,6 +1246,9 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>መታወቂያ ጋር ከመዝገብ «{0}» አልተገኘም. ምናልባት ቀደም ተሰርዟል, አድሰው ይሞክሩ.</value>
   </data>
+  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
+    <value>መስመር ትርጓሜዎችን ምንም የመለያ አይነት የተጋሩ.</value>
+  </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>መስመር ምንም ምዝግቦች የለውም.</value>
   </data>
@@ -1249,6 +1267,9 @@
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>የወላጅ ማዕከል «{0} 'ንቁ አይደለም.</value>
   </data>
+  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
+    <value>በ {0} «{1}» ያልነቃ ነው.</value>
+  </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
   </data>
@@ -1264,17 +1285,17 @@
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>መለያ ምንዛሬ ያለው ሳለ መለያ ሃብት «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>ሃብት «{0}» «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>ሃብት «{0}» «{2}» ምንዛሬ ጋር መለያ {1} ላይ ውሏል.</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2}» ምንዛሬ ጋር መለያ {1} ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>ሃብት «{0}» «{2} 'ማዕከል ጋር ሰነድ {1} ላይ ውሏል.</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2} 'ማዕከል ጋር ሰነድ {1} ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>ሃብት «{0}» «{2}» ምንዛሬ ጋር ሰነድ {1} ላይ ውሏል.</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>ይህ {0} መዝገብ «{2}» ምንዛሬ ጋር ሰነድ {1} ላይ ውሏል.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -2255,7 +2276,7 @@
     <value>የእርስዎ የይለፍ ቃል ዳግም ውስጥ ለመግባት ከዚህ በታች ጠቅ ያድርጉ ቆይቷል</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>እዚህ <a href='{0}'>ጠቅ</a> በማድረግ የይለፍ ቃልዎን ዳግም ያስጀምሩት.</value>
+    <value>የሚከተለውን አገናኝ ጠቅ በማድረግ የይለፍ ቃልዎን ዳግም ያስጀምሩት:</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>ማግኛ ኮዶች ዳግም አስጀምር</value>

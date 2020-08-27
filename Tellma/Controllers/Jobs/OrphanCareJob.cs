@@ -7,19 +7,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Data;
 
-
 namespace Tellma.Controllers.Jobs
 {
     public class OrphanCareJob : BackgroundService
     {
         private readonly ILogger<OrphanCareJob> _logger;
         private readonly IServiceProvider _services;
+        private readonly InstanceInfoProvider _instanceInfo;
         private readonly JobsOptions _options;
 
-        public OrphanCareJob(ILogger<OrphanCareJob> logger, IServiceProvider services, IOptions<JobsOptions> options)
+        public OrphanCareJob(ILogger<OrphanCareJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<JobsOptions> options)
         {
             _logger = logger;
             _services = services;
+            _instanceInfo = instanceInfo;
             _options = options.Value;
         }
 
@@ -32,10 +33,10 @@ namespace Tellma.Controllers.Jobs
                     using var scope = _services.CreateScope();
 
                     var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                    var orphans = await repo.AdoptOrphans(Instance.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, stoppingToken);
+                    var orphans = await repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, stoppingToken);
 
                     // This makes them available for processing by all the various background Jobs
-                    Instance.AddNewlyAdoptedOrphans(orphans);
+                    _instanceInfo.AddNewlyAdoptedOrphans(orphans);
                 }
                 catch (Exception ex)
                 {

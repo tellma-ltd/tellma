@@ -57,11 +57,14 @@ namespace Tellma.Areas.Identity.Pages.Account
                     values: new { code, email = Input.Email },
                     protocol: Request.Scheme);
 
-                string emailSubject = _localizer["ResetYourPassword"];
-                string emailBody = _localizer["ResetPasswordEmailMessage", HtmlEncoder.Default.Encode(callbackUrl)];
+                string toResetClickTheFollowingLink = _localizer["ResetPasswordEmailMessage"];
+                string resetMyPassword = _localizer["ResetMyPassword"];
+                string resetLink = $@" <a href=""{HtmlEncoder.Default.Encode(callbackUrl)}"" >{resetMyPassword}</a>";
+                string emailBody = toResetClickTheFollowingLink + resetLink;
 
-                await _emailSender.SendEmailAsync(
-                    email: Input.Email,
+                string emailSubject = _localizer["ResetYourPassword"];
+                await _emailSender.SendAsync(
+                    to: Input.Email,
                     subject: emailSubject,
                     htmlMessage: emailBody);
 

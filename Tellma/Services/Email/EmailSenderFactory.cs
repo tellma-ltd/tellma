@@ -7,33 +7,24 @@ namespace Tellma.Services.Email
 {
     public class EmailSenderFactory : IEmailSenderFactory
     {
-        private readonly EmailOptions _config;
         private readonly GlobalOptions _globalConfig;
-        private readonly ILogger<SendGridEmailSender> _logger;
+        private readonly SendGridEmailSender _sendGridEmailSender;
 
-        public EmailSenderFactory(IOptions<EmailOptions> options, IOptions<GlobalOptions> globalOptions, ILogger<SendGridEmailSender> logger)
+        public EmailSenderFactory(IOptions<GlobalOptions> globalOptions, SendGridEmailSender sendGridEmailSender)
         {
-            _config = options.Value;
             _globalConfig = globalOptions.Value;
-            _logger = logger;
+            _sendGridEmailSender = sendGridEmailSender;
         }
 
         public IEmailSender Create()
         {
             if(_globalConfig.EmailEnabled)
             {
-                // Scream for missing yet required stuff
-                if (string.IsNullOrWhiteSpace(_config?.SendGrid?.ApiKey))
-                {
-                    throw new InvalidOperationException(
-                        $"A SendGrid API Key must be in a configuration provider under the key 'Email:SendGrid:ApiKey', you can get a free key on https://sendgrid.com/");
-                }
-
-                return new SendGridEmailSender(_config.SendGrid, _logger);
+                return _sendGridEmailSender;
             }
             else
             {
-                return new OfflineEmailSender();
+                return new DisabledEmailSender();
             }
         }
     }

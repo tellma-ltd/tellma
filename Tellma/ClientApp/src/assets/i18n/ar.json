@@ -324,7 +324,6 @@
   "Error_PageNotFoundMessage": "الوصلة غير سليمة ولا تشير إلى صفحة موجودة في النظام.",
   "Error_PendingFilesExceedMaximumSizeOf0": "مجموع حجم الملفات التي لم تحفظ بعد يتجاوز الحد الأقصى المسموح به: {{size}}، قم بحفظ المستند ثم إعادة المحاولة مرة أخرى.",
   "Error_RecordNotFound": "لم يتم العثور على البيان المطلوب.",
-  "Error_ThePostingDateIsRequiredForClosing": "حقل التاريخ مطلوب قبل الإقفال.",
   "Error_UnableToReachServer": "تعذر الوصول إلى الخادم، يرجى التأكد من اتصال جهازك بالشبكة",
   "Error_UnableToValidateYourCredentials": "تعذر التأكد من صحة هويتك، السبب غالبا هو أن إعدادات النظام غير سليمة",
   "Error_UnauthorizedForAdmin": "حسابك على النظام لم يعد متاحا له الدخول إلى واجهة المشرف.",

@@ -728,9 +728,7 @@
                             ({{ 'Blank' | translate }})
                         </div>
                         <div *ngIf="!!model.GenerateScript"
-                            class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                            {{ model.GenerateScript }}
-                        </div>
+                            class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.GenerateScript }}</div>
                     </ng-container>
                     <ng-template #generatescripttemplate>
                         <textarea id="generatescript" class="w-100 form-control t-studio-input text-nowrap t-code"
@@ -759,9 +757,7 @@
                         ({{ 'Blank' | translate }})
                     </div>
                     <div *ngIf="!!model.PreprocessScript"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                        {{ model.PreprocessScript }}
-                    </div>
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.PreprocessScript }}</div>
                 </ng-container>
                 <ng-template #preprocessscripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
@@ -790,9 +786,7 @@
                         ({{ 'Blank' | translate }})
                     </div>
                     <div *ngIf="!!model.ValidateScript"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto">
-                        {{ model.ValidateScript }}
-                    </div>
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.ValidateScript }}</div>
                 </ng-container>
                 <ng-template #validatescripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"

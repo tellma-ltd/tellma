@@ -901,6 +901,9 @@
   <data name="Error_Center0IsNotLeaf" xml:space="preserve">
     <value>المركز ({0}) تحته فروع.</value>
   </data>
+  <data name="Error_CenterMustBeBusinessUnit" xml:space="preserve">
+    <value>المركز ينبغي أن يكون وحدة أعمال.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
   </data>
@@ -1132,11 +1135,17 @@
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>نوع الحساب ({0}) تحته حساب فيه رصيد ({1}).</value>
   </data>
+  <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
+    <value>نوع الحساب لا يتناسب مع تصنيف الحساب.</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>المبلغ ينبغي أن يكون أكبر من 0.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>المقابل ينبغي أن يكون أكبر من 0.</value>
+  </data>
+  <data name="Error_TheCenter0IsInactive" xml:space="preserve">
+    <value>المركز ({0}) غير منشط.</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>الكود ({0}) مكرر</value>
@@ -1146,6 +1155,9 @@
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>سعر صرف العملة ({0}) في التاريخ {1} مكرر أكثر من مرة.</value>
+  </data>
+  <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
+    <value>العملة ({0}) غير منشطة.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
     <value>العملة ({0}) مستخدمة في الحساب ({1}).</value>
@@ -1159,6 +1171,9 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية.</value>
   </data>
+  <data name="Error_TheCustodian01IsInactive" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} غير منشط.</value>
+  </data>
   <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم في الحساب ({2}).</value>
   </data>
@@ -1171,20 +1186,20 @@
   <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>العهدة ({0}) عملتها ({1}) بينما عملة الحساب ({2}).</value>
   </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في الحساب ({1}) مع المركز ({2}).</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في الحساب ({1}) مع العملة ({2}).</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في المستند {1} مع المركز ({2}).</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في المستند {1} مع العملة ({2}).</value>
+  </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>تعريف العهدة ({0}) مستخدم في نوع الحساب ({1}).</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>العهدة ({0}) مستخدمة في الحساب ({1}) مع المركز ({2}).</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>العهدة ({0}) مستخدمة في الحساب ({1}) مع العملة ({2}).</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>العهدة ({0}) مستخدمة في المستند {1} مع المركز ({2}).</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>العهدة ({0}) مستخدمة في المستند {1} مع العملة ({2}).</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>بعض الأسطر ليست مرحلة بعد.</value>
@@ -1231,6 +1246,9 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
   </data>
+  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
+    <value>تعريفات السطور لا يجمع بينها تصنيف حساب مشترك.</value>
+  </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>السطر خاو.</value>
   </data>
@@ -1249,6 +1267,9 @@
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>المركز الأصل ({0}) ليس منشطا.</value>
   </data>
+  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} غير منشط.</value>
+  </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
   </data>
@@ -1264,17 +1285,17 @@
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>مورد الحساب ({0}) عملته ({1}) بينما الحساب عملته ({2}).</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>المورد ({0}) مستخدم في الحساب ({1}) مع المركز ({2}).</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في الحساب ({1}) مع المركز ({2}).</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>المورد ({0}) مستخدم في الحساب ({1}) مع العملة ({2}).</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في الحساب ({1}) مع العملة ({2}).</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>المورد ({0}) مستخدم في المستند {1} مع المركز ({2}).</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في المستند {1} مع المركز ({2}).</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>المورد ({0}) مستخدم في المستند {1} مع العملة ({2}).</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>هذا البيان من نوع {0} مستخدم في المستند {1} مع العملة ({2}).</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>الدور ({0}) غير منشط</value>
@@ -2255,7 +2276,7 @@
     <value>أعيد تعيين كلمة مرورك بنجاح، يمكنك تسجيل دخولك بالضغط على الزر أدناه</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>حدد كلمة مرور جديدة عبر <a href='{0}'>هذه الوصلة</a>.</value>
+    <value>حدد كلمة مرور جديدة بالضغط على الوصلة التالية:</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>إعادة توليد أكواد الاسترداد</value>

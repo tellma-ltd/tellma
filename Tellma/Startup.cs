@@ -18,6 +18,7 @@ using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
 using System.Threading.Tasks;
+using Tellma.Services.Sms;
 
 namespace Tellma
 {
@@ -149,7 +150,10 @@ namespace Tellma
                 services.AddApiAuthentication(apiAuthConfig);
 
                 // Add Email
-                services.AddEmail(_config.GetSection("Email"));
+                services.AddEmail(GlobalOptions.EmailEnabled, _config);
+
+                //// Add SMS
+                //services.AddSms(GlobalOptions.SmsEnabled, _config);
 
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>

@@ -4,12 +4,13 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Tellma.Services.Sms;
+using System.Linq;
+using Tellma.Services.Email;
 
 namespace Tellma.Controllers
 {

@@ -4,6 +4,8 @@
     {
         public bool EmailEnabled { get; set; } = true;
 
+        public bool SmsEnabled { get; set; }
+
         public bool EmbeddedIdentityServerEnabled { get; set; }
 
         public bool EmbeddedClientApplicationEnabled { get; set; }

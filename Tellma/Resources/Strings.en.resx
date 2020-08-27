@@ -901,6 +901,9 @@
   <data name="Error_Center0IsNotLeaf" xml:space="preserve">
     <value>Center '{0}' is not a leaf.</value>
   </data>
+  <data name="Error_CenterMustBeBusinessUnit" xml:space="preserve">
+    <value>The center must be a business unit.</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
   </data>
@@ -1132,11 +1135,17 @@
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>Account type '{0}' has an account '{1}' with a non-zero balance.</value>
   </data>
+  <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
+    <value>The account type is incompatible with the classification.</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>The amount must be greater than 0.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>The equivalent must be greater than 1.</value>
+  </data>
+  <data name="Error_TheCenter0IsInactive" xml:space="preserve">
+    <value>The center '{0}' is inactive.</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>The code '{0}' is duplicated.</value>
@@ -1146,6 +1155,9 @@
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>The exchange rate for currency '{0}' on date {1} is duplicated.</value>
+  </data>
+  <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
+    <value>The currency '{0}' is inactive.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
     <value>Currency '{0}' is used in account '{1}'.</value>
@@ -1159,6 +1171,9 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>The currency should be different than the functional currency.</value>
   </data>
+  <data name="Error_TheCustodian01IsInactive" xml:space="preserve">
+    <value>The {0} '{1}' is inactive.</value>
+  </data>
   <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
     <value>{0} '{1}' is used in account '{2}'.</value>
   </data>
@@ -1171,20 +1186,20 @@
   <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>The custody '{0}' has currency '{1}' while the account has currency '{2}'.</value>
   </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>This {0} record is used in account {1} with center '{2}'.</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>This {0} record is used in account {1} with currency '{2}'.</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>This {0} record is used in document {1} with center '{2}'.</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>This {0} record is used in document {1} with currency '{2}'.</value>
+  </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>Custody definition '{0}' is used in account type '{1}'.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>The custody '{0}' is used in account {1} with center '{2}'.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>The custody '{0}' is used in account {1} with currency '{2}'.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>The custody '{0}' is used in document {1} with center '{2}'.</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>The custody '{0}' is used in document {1} with currency '{2}'.</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>Some lines are not posted.</value>
@@ -1231,6 +1246,9 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing.</value>
   </data>
+  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
+    <value>The line definitions have no shared account type.</value>
+  </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>The line has no entries.</value>
   </data>
@@ -1249,6 +1267,9 @@
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>The parent center '{0}' is not active.</value>
   </data>
+  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
+    <value>The {0} '{1}' is inactive.</value>
+  </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>The password and confirmation password do not match.</value>
   </data>
@@ -1264,17 +1285,17 @@
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>Account resource '{0}' has currency '{1}' while the account has currency '{2}'.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>The resource '{0}' is used in account {1} with center '{2}'.</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>This {0} record is used in account {1} with center '{2}'.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>The resource '{0}' is used in account {1} with currency '{2}'.</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>This {0} record is used in account {1} with currency '{2}'.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>The resource '{0}' is used in document {1} with center '{2}'.</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>This {0} record is used in document {1} with center '{2}'.</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>The resource '{0}' is used in document {1} with currency '{2}'.</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>This {0} record is used in document {1} with currency '{2}'.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>The role '{0}' is not active.</value>
@@ -2255,7 +2276,7 @@
     <value>Your password has been reset, click below to sign in</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>Please reset your password by <a href='{0}'>clicking here</a>.</value>
+    <value>Please reset your password by clicking the following link:</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>Reset Recovery Codes</value>

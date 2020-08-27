@@ -54,6 +54,7 @@
     <PackageReference Include="Sendgrid" Version="9.16.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="Twilio" Version="5.46.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,32 +1,38 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using SendGrid.Helpers.Reliability;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Services.Email
 {
     public class SendGridEmailSender : IEmailSender
     {
-        private readonly SendGridOptions _config;
+        private readonly SendGridOptions _options;
         private readonly ILogger<SendGridEmailSender> _logger;
+        private readonly HttpClient _client = new HttpClient(); // Singleton HttpClient to avoid memroy leaks https://bit.ly/2EGUgte
 
-        public SendGridEmailSender(SendGridOptions config, ILogger<SendGridEmailSender> logger)
+        public SendGridEmailSender(IOptions<SendGridOptions> options, ILogger<SendGridEmailSender> logger)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
         }
 
-        public async Task SendEmailBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
+        public async Task SendBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
         {
             string fromName = "Tellma";
-            fromEmail ??= _config.DefaultFromEmail;
-            string sendGridApiKey = _config.ApiKey;
+            fromEmail ??= _options.DefaultFromEmail;
+            string sendGridApiKey = _options.ApiKey;
 
-            var client = new SendGridClient(sendGridApiKey);
+            var client = new SendGridClient(_client, sendGridApiKey);
             var from = new EmailAddress(fromEmail, fromName);
             var toAddresses = tos.Select(e => new EmailAddress(e)).ToList();
 
@@ -52,15 +58,47 @@ namespace Tellma.Services.Email
             }
         }
 
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage, string fromEmail = null)
+        public async Task SendAsync(string email, string subject, string htmlMessage, string fromEmail = null)
         {
-            await SendEmailBulkAsync(
-                tos: new List<string> { email },
-                subjects: new List<string> { subject },
-                htmlMessage: htmlMessage,
-                substitutions: new List<Dictionary<string, string>> { new Dictionary<string, string> { } },
-                fromEmail: fromEmail
-                );
+            var from = new EmailAddress(fromEmail ?? _options.DefaultFromEmail, "Tellma ERP");
+            var to = new EmailAddress(email);
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
+
+            await SendEmailAsync(msg, default);
+
+            //await SendEmailBulkAsync(
+            //    tos: new List<string> { email },
+            //    subjects: new List<string> { subject },
+            //    htmlMessage: htmlMessage,
+            //    substitutions: new List<Dictionary<string, string>> { new Dictionary<string, string> { } },
+            //    fromEmail: fromEmail
+            //    );
+        }
+
+        private async Task<string> SendEmailAsync(SendGridMessage msg, CancellationToken cancellation)
+        {
+            var options = new SendGridClientOptions
+            {
+                 ApiKey = _options.ApiKey,
+                 ReliabilitySettings = new ReliabilitySettings(
+                     maximumNumberOfRetries: 5, 
+                     minimumBackoff: TimeSpan.FromSeconds(1), 
+                     maximumBackOff: TimeSpan.FromSeconds(25),
+                     deltaBackOff: TimeSpan.FromSeconds(1))
+            };
+
+            var client = new SendGridClient(_client, options);
+            Response response = await client.SendEmailAsync(msg, cancellation);
+
+            if (cancellation.IsCancellationRequested)
+            {
+                // Doesn't matter since the request was cancelled
+                return "";
+            }
+            else
+            {
+                return response.Headers.GetValues("X-Message-Id").FirstOrDefault();
+            }
         }
     }
 }

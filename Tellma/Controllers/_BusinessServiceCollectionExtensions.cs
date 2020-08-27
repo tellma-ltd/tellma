@@ -21,13 +21,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            // Bind
-            services.Configure<JobsOptions>(config.GetSection("Jobs"));
+            //// Bind
+            //services.Configure<JobsOptions>(config.GetSection("Jobs"));
 
-            // Register background jobs
-            services = services
-                .AddHostedService<HeartbeatJob>()
-                .AddHostedService<OrphanCareJob>();
+            //// Register background jobs
+            //services = services
+            //    .AddSingleton<InstanceInfoProvider>()
+            //    .AddHostedService<HeartbeatJob>()
+            //    .AddHostedService<OrphanCareJob>();
 
             // These are helper services that business services rely on
             services = services

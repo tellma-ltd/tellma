@@ -901,6 +901,9 @@
   <data name="Error_Center0IsNotLeaf" xml:space="preserve">
     <value>中心“{0}”不是叶子。</value>
   </data>
+  <data name="Error_CenterMustBeBusinessUnit" xml:space="preserve">
+    <value>该中心必须是一个业务部门。</value>
+  </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
   </data>
@@ -1132,11 +1135,17 @@
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>帐户类型“{0}”的帐户“{1}”与非零平衡。</value>
   </data>
+  <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
+    <value>帐户类型与分类不兼容。</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>量必须大于0。</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>等效必须大于1。</value>
+  </data>
+  <data name="Error_TheCenter0IsInactive" xml:space="preserve">
+    <value>中心“{0}”是不活动的。</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>该代码“{0}”被复制。</value>
@@ -1146,6 +1155,9 @@
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>汇率货币“{0}”上日期{1}被复制。</value>
+  </data>
+  <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
+    <value>货币“{0}”是不活动的。</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
     <value>货币 '{0}' 帐户 '{1}' 中使用。</value>
@@ -1159,6 +1171,9 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>货币应该比本位币不同。</value>
   </data>
+  <data name="Error_TheCustodian01IsInactive" xml:space="preserve">
+    <value>在{0} '{1}' 是不活动的。</value>
+  </data>
   <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
     <value>在帐户用于{0} '{1}' '{2}'。</value>
   </data>
@@ -1171,20 +1186,20 @@
   <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>保管 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
   </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>此{0}记录在帐户{1}与中心 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>此{0}记录在帐户{1}提供货币 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>此{0}记录于文件{1}与中心 '{2}' 中使用。</value>
+  </data>
+  <data name="Error_TheCustody0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>此{0}记录于文件{1}提供货币 '{2}' 中使用。</value>
+  </data>
   <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
     <value>保管定义“{0}”中的帐户类型“{1}”中使用。</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>保管 '{0}' 在帐户{1}与中心 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>保管 '{0}' 在帐户{1}提供货币 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>保管 '{0}' 在文件{1}与中心 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustodyWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>保管 '{0}' 在文件{1}提供货币 '{2}' 中使用。</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>有些线路没有公布。</value>
@@ -1231,6 +1246,9 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>与ID的记录“{0}”没有被发现。也许它已经被删除，请重新整理。</value>
   </data>
+  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
+    <value>该生产线的定义也没有共享的帐户类型。</value>
+  </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>该行没有条目。</value>
   </data>
@@ -1249,6 +1267,9 @@
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>父中心“{0}”不活跃。</value>
   </data>
+  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
+    <value>在{0} '{1}' 是不活动的。</value>
+  </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>密码和确认密码不匹配。</value>
   </data>
@@ -1264,17 +1285,17 @@
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>帐户资源 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCenter1" xml:space="preserve">
-    <value>资源 '{0}' 在帐户{1}与中心 '{2}' 中使用。</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
+    <value>此{0}记录在帐户{1}与中心 '{2}' 中使用。</value>
   </data>
-  <data name="Error_TheResourceWasUsedInAccount0WithCurrency1" xml:space="preserve">
-    <value>资源 '{0}' 在帐户{1}提供货币 '{2}' 中使用。</value>
+  <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
+    <value>此{0}记录在帐户{1}提供货币 '{2}' 中使用。</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCenter1" xml:space="preserve">
-    <value>资源 '{0}' 在文件{1}与中心 '{2}' 中使用。</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCenter2" xml:space="preserve">
+    <value>此{0}记录于文件{1}与中心 '{2}' 中使用。</value>
   </data>
-  <data name="Error_TheResourceWasUsedInDocument0WithCurrency1" xml:space="preserve">
-    <value>资源 '{0}' 在文件{1}提供货币 '{2}' 中使用。</value>
+  <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
+    <value>此{0}记录于文件{1}提供货币 '{2}' 中使用。</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>角色“{0}”无效。</value>
@@ -2255,7 +2276,7 @@
     <value>您的密码已重置，请点击下面登录</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>请通过<a href='{0}'>点击这里</a>重置您的密码。</value>
+    <value>请点击以下链接重置密码：</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>重置恢复代码</value>

@@ -324,7 +324,6 @@
   "Error_PageNotFoundMessage": "这个环节被打破，没有指向有效的网页。",
   "Error_PendingFilesExceedMaximumSizeOf0": "所有未保存附件的总大小超过了允许的最大值{{size}}，请保存文档，然后再试一次",
   "Error_RecordNotFound": "指定的记录没有被发现。",
-  "Error_ThePostingDateIsRequiredForClosing": "日期字段需要关闭。",
   "Error_UnableToReachServer": "无法连接到服务器，请检查您的设备的连接",
   "Error_UnableToValidateYourCredentials": "无法验证您的凭据，这可能是由于错误配置的系统",
   "Error_UnauthorizedForAdmin": "您的帐户可以再访问管理控制台。",
