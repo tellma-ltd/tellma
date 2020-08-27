@@ -184,7 +184,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
-		N'Error_CenterMutBeBusinessUnit'
+		N'Error_CenterMustBeBusinessUnit'
 	FROM @Entities R
 	JOIN dbo.Centers C ON R.[CenterId] = C.[Id]
 	WHERE R.[CenterId] IS NOT NULL AND C.[CenterType] <> N'BusinessUnit'
