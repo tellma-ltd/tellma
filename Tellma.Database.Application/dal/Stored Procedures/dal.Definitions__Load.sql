@@ -55,16 +55,6 @@ JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.[AccountTypeCustodyDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodyDefinitions])
 	
--- Get the noted contract definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [NotedRelationDefinitionId] FROM [dbo].[LineDefinitionEntryNotedRelationDefinitions]
-UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [NotedRelationDefinitionId]
-FROM dbo.LineDefinitionEntries LDE
-JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
-JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.[AccountTypeNotedRelationDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryNotedRelationDefinitions])
-	
 -- Get the resource definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions]
 UNION

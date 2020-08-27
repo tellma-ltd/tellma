@@ -3,7 +3,6 @@
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionEntryCustodyDefinitions [LineDefinitionEntryCustodyDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionEntryNotedRelationDefinitions [LineDefinitionEntryNotedRelationDefinitionList] READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
@@ -233,33 +232,6 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [CustodyDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[CustodyDefinitionId])
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
-
-	WITH BLDENRD AS (
-		SELECT * FROM dbo.[LineDefinitionEntryNotedRelationDefinitions]
-		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
-	)
-	MERGE INTO BLDENRD AS t
-	USING (
-		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedRelationDefinitionId]
-		FROM @LineDefinitionEntryNotedRelationDefinitions E
-		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
-		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED
-	AND (
-		ISNULL(t.[NotedRelationDefinitionId],0) <> ISNULL(s.[NotedRelationDefinitionId],0)
-	)
-	THEN
-		UPDATE SET
-			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
-			t.[ModifiedAt]					= @Now,
-			t.[ModifiedById]				= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

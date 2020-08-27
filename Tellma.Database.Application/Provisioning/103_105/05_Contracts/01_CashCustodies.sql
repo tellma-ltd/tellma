@@ -8,7 +8,7 @@ IF @DB = N'104' -- Walia Steel, ETB, en/am
 	([Index], [Name]) VALUES
 	(0,		N'Cashier - Tigist');
 EXEC [api].[Custodies__Save]
-	@DefinitionId = @SafeCD,
+	@DefinitionId = @CashOnHandAccountCD,
 	@Entities = @cashiers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -24,7 +24,7 @@ IF @DB = N'104' -- Walia Steel, ETB, en/am
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 EXEC [api].[Custodies__Save]
-	@DefinitionId = @SafeCD,
+	@DefinitionId = @CashOnHandAccountCD,
 	@Entities = @petty_cash_funds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 

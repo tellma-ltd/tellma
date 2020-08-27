@@ -2444,4 +2444,11 @@
     <Property Name="NewSchema" Value="wiz" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b063decc-1868-4986-a23d-49bdec0d6d89" ChangeDateTime="08/27/2020 04:34:43">
+    <Property Name="ElementName" Value="[bll].[fi_ResourceCosts]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fi_InventoryAverageCosts]" />
+  </Operation>
 </Operations>

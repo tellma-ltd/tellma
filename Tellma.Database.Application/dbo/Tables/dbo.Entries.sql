@@ -8,7 +8,9 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
+	[CustodianId]				INT				CONSTRAINT [FK_Entries_CustodianId] REFERENCES dbo.[Relations] ([Id]),
 	[CustodyId]					INT				CONSTRAINT [FK_Entries__CustodyId] REFERENCES dbo.[Custodies]([Id]),
+	[ParticipantId]				INT				CONSTRAINT [FK_Entries__PerticipantId] REFERENCES dbo.[Relations] ([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.[Resources]([Id]),
 	[CenterId]					INT				NOT NULL CONSTRAINT [FK_Entries__CentertId] REFERENCES dbo.[Centers]([Id]),
 	-- Entry Type Id is Required in Entries only if we have Parent Entry type in AccountTypes

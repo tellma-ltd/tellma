@@ -215,17 +215,6 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETC ON FE.[EntryTypeId] = ETC.[Id]
 	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
 
-	-- Account NotedRelation Definition must be compatible with Account Type NotedRelation Definitions
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].NotedRelationDefinitionId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_NotedRelationDefinition'
-	FROM @Entities FE
-	LEFT JOIN dbo.AccountTypeNotedRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedRelationDefinitionId] = ATRD.[NotedRelationDefinitionId]
-	WHERE FE.[NotedRelationDefinitionId] IS NOT NULL
-	AND ATRD.[NotedRelationDefinitionId] IS NULL;
-
 	-- Account Resource must be compatible with Account Resource definition
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)

@@ -21,11 +21,12 @@
 		N'CashAndCashEquivalents',
 		N'TradeAndOtherPayables',
 		N'Provisions',
-		N'OtherFinancialLiabilities'
+		N'OtherFinancialLiabilities',
+		N'Miscellaneous' -- Tasks, etc.
 	)),
 
 	-----Resource Properties Common with Contracts
-	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'Required' CHECK ([CurrencyVisibility] IN (N'Required')),
+	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'Required' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),

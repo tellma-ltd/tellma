@@ -1,7 +1,7 @@
 ﻿DELETE FROM @LineDefinitions; DELETE FROM @LineDefinitionEntries; DELETE FROM @LineDefinitionColumns;
 DELETE FROM @LineDefinitionGenerateParameters;
 DELETE FROM @LineDefinitionEntryCustodyDefinitions; DELETE FROM @LineDefinitionEntryResourceDefinitions;
-DELETE FROM @LineDefinitionEntryNotedRelationDefinitions; DELETE FROM @LineDefinitionStateReasons;
+DELETE FROM @LineDefinitionStateReasons;
 -- refresh the collections with back end data
 INSERT INTO @LineDefinitions
 (	[Index], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [GenerateScript], [PreprocessScript], [ValidateScript])
@@ -20,11 +20,6 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions
 (		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[ResourceDefinitionId])
 SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[ResourceDefinitionId]
 FROM dbo.LineDefinitionEntryResourceDefinitions LDECD
-JOIN dbo.LineDefinitionEntries LDE ON LDECD.LineDefinitionEntryId = LDE.Id
-INSERT INTO @LineDefinitionEntryNotedRelationDefinitions
-(		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[NotedRelationDefinitionId])
-SELECT LDECD.[Id], LDECD.[LineDefinitionEntryId], LDE.[LineDefinitionId],	LDECD.[Id], LDECD.[NotedRelationDefinitionId]
-FROM dbo.[LineDefinitionEntryNotedRelationDefinitions] LDECD
 JOIN dbo.LineDefinitionEntries LDE ON LDECD.LineDefinitionEntryId = LDE.Id
 INSERT INTO @LineDefinitionColumns
 ([Index], [HeaderIndex],		[Id], [ColumnName], [EntryIndex], [Label], [InheritsFromHeader],
@@ -89,7 +84,6 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionEntries = @LineDefinitionEntries,
 	@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,

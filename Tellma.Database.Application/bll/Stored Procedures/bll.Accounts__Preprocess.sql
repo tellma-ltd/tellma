@@ -36,11 +36,6 @@ FROM  @ProcessedEntities A
 LEFT JOIN dbo.AccountTypeResourceDefinitions ATRD ON A.AccountTypeId = ATRD.AccountTypeId AND A.ResourceDefinitionId = ATRD.ResourceDefinitionId
 WHERE A.ResourceDefinitionId IS NOT NULL AND ATRD.ResourceDefinitionId IS NULL
 
-UPDATE A
-SET NotedRelationDefinitionId = NULL 
-FROM  @ProcessedEntities A
-LEFT JOIN dbo.AccountTypeNotedRelationDefinitions ATNRD ON A.AccountTypeId = ATNRD.AccountTypeId AND A.NotedRelationDefinitionId = ATNRD.NotedRelationDefinitionId
-WHERE A.NotedRelationDefinitionId IS NOT NULL AND ATNRD.NotedRelationDefinitionId IS NULL
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 -- Below we set things to the only value that matches the Definition
 -- NOTE: This is WRONG. What if we want to add more currencies after

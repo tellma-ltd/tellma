@@ -12,7 +12,9 @@
 	[Id0]						INT				NOT NULL DEFAULT 0,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
+	[CustodianId0]				INT,
 	[CustodyId0]				INT,
+	[ParticipantI0]				INT,
 	[ResourceId0]				INT,
 	[CenterId0]					INT,
 	[CurrencyId0]				NCHAR (3),
@@ -33,7 +35,9 @@
 	[Id1]						INT				NOT NULL DEFAULT 0,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
+	[CustodianId1]				INT,
 	[CustodyId1]				INT,
+	[ParticipantI1]				INT,
 	[ResourceId1]				INT,
 	[CenterId1]					INT,
 	[CurrencyId1]				NCHAR (3),
@@ -54,7 +58,9 @@
 	[Id2]						INT				NULL DEFAULT 0, -- since a wide line may be two entries only
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
+	[CustodianId2]				INT,
 	[CustodyId2]				INT,
+	[ParticipantI2]				INT,
 	[ResourceId2]				INT,
 	[CenterId2]					INT,
 	[CurrencyId2]				NCHAR (3),
@@ -76,7 +82,9 @@
 	[Id3]						INT				NULL DEFAULT 0,
 	[Direction3]				SMALLINT,
 	[AccountId3]				INT,
+	[CustodianId3]				INT,
 	[CustodyId3]				INT,
+	[ParticipantI3]				INT,
 	[ResourceId3]				INT,
 	[CenterId3]					INT,
 	[CurrencyId3]				NCHAR (3),
@@ -97,7 +105,9 @@
 	[Id4]						INT				NULL DEFAULT 0,
 	[Direction4]				SMALLINT,
 	[AccountId4]				INT,
+	[CustodianId4]				INT,
 	[CustodyId4]				INT,
+	[ParticipantI4]				INT,
 	[ResourceId4]				INT,
 	[CenterId4]					INT,
 	[CurrencyId4]				NCHAR (3),
@@ -118,7 +128,9 @@
 	[Id5]						INT				NULL DEFAULT 0,
 	[Direction5]				SMALLINT,
 	[AccountId5]				INT,
+	[CustodianId5]				INT,
 	[CustodyId5]				INT,
+	[ParticipantI5]				INT,
 	[ResourceId5]				INT,
 	[CenterId5]					INT,
 	[CurrencyId5]				NCHAR (3),
@@ -134,5 +146,51 @@
 	[NotedRelationId5]			INT,
 	[NotedAgentName5]			NVARCHAR (51),
 	[NotedAmount5]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[NotedDate5]				DATE
+	[NotedDate5]				DATE,
+
+	[Id6]						INT				NULL DEFAULT 0,
+	[Direction6]				SMALLINT,
+	[AccountId6]				INT,
+	[CustodianId6]				INT,
+	[CustodyId6]				INT,
+	[ParticipantI6]				INT,
+	[ResourceId6]				INT,
+	[CenterId6]					INT,
+	[CurrencyId6]				NCHAR (3),
+	[EntryTypeId6]				INT,
+	[MonetaryValue6]			DECIMAL (19,4),
+	[Quantity6]					DECIMAL (19,4),
+	[UnitId6]					INT,
+	[Value6]					DECIMAL (19,4),-- equivalent in functional currency		
+	[Time16]					DATETIME2 (2),	-- from time
+	[Time26]					DATETIME2 (2),	-- to time
+	[ExternalReference6]		NVARCHAR (61),
+	[AdditionalReference6]		NVARCHAR (61),
+	[NotedRelationId6]			INT,
+	[NotedAgentName6]			NVARCHAR (61),
+	[NotedAmount6]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate6]				DATE,
+
+	[Id7]						INT				NULL DEFAULT 0,
+	[Direction7]				SMALLINT,
+	[AccountId7]				INT,
+	[CustodianId7]				INT,
+	[CustodyId7]				INT,
+	[ParticipantI7]				INT,
+	[ResourceId7]				INT,
+	[CenterId7]					INT,
+	[CurrencyId7]				NCHAR (3),
+	[EntryTypeId7]				INT,
+	[MonetaryValue7]			DECIMAL (19,4),
+	[Quantity7]					DECIMAL (19,4),
+	[UnitId7]					INT,
+	[Value7]					DECIMAL (19,4),-- equivalent in functional currency		
+	[Time17]					DATETIME2 (2),	-- from time
+	[Time27]					DATETIME2 (2),	-- to time
+	[ExternalReference7]		NVARCHAR (71),
+	[AdditionalReference7]		NVARCHAR (71),
+	[NotedRelationId7]			INT,
+	[NotedAgentName7]			NVARCHAR (71),
+	[NotedAmount7]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate7]				DATE
 );

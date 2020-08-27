@@ -53,11 +53,27 @@ BEGIN
 	END
 --	Remove Residuals
 	UPDATE E
+	SET E.ParticipantId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+	WHERE AC.[ParticipantDefinitionId] IS NULL;
+
+	UPDATE E
 	SET E.[ResourceId] = NULL, E.Quantity = NULL, E.UnitId = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE  A.ResourceDefinitionId IS NULL;
+
+	UPDATE E
+	SET E.CustodianId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+	WHERE AC.[CustodianDefinitionId] IS NULL;
 
 	UPDATE E
 	SET E.[CustodyId] = NULL
@@ -67,7 +83,7 @@ BEGIN
 	WHERE A.[CustodyDefinitionId] IS NULL;
 
 	UPDATE E
-	SET E.EntryTypeId = NULL
+	SET E.[EntryTypeId] = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
@@ -79,7 +95,8 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.NotedRelationDefinitionId IS NULL;
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	WHERE AC.NotedRelationDefinitionId IS NULL;
 
 	-- TODO:  Remove labels, etc.
 
@@ -89,7 +106,9 @@ BEGIN
 		E.[Direction]		= COALESCE(ES.[Direction], E.[Direction]),
 		E.[AccountId]		= COALESCE(ES.[AccountId], E.[AccountId]),
 		E.[CurrencyId]		= COALESCE(ES.[CurrencyId], E.[CurrencyId]),
+		E.[CustodianId]		= COALESCE(ES.[CustodianId], E.[CustodianId]),
 		E.[CustodyId]		= COALESCE(ES.[CustodyId], E.[CustodyId]),
+		E.[ParticipantId]	= COALESCE(ES.[ParticipantId], E.[ParticipantId]),
 		E.[ResourceId]		= COALESCE(ES.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(ES.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(ES.[EntryTypeId], E.[EntryTypeId]),
@@ -114,9 +133,9 @@ BEGIN
 	-- TODO : Overwrite readonly Memo
 	WITH CTE AS (
 		SELECT
-			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodyId],
-			E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],  E.[ExternalReference], 
-			E.[AdditionalReference], E.[NotedRelationId],  E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
+			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodianId], E.[CustodyId],
+			E.[ParticipantId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
+			E.[ExternalReference], E.[AdditionalReference], E.[NotedRelationId],  E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
 		JOIN dbo.Entries BE ON E.Id = BE.Id
@@ -128,7 +147,9 @@ BEGIN
 	SET
 		E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
 		E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
+		E.[CustodianId]			= IIF(CTE.[ColumnName] = N'CustodianId', CTE.[CustodianId], E.[CustodianId]),
 		E.[CustodyId]			= IIF(CTE.[ColumnName] = N'CustodyId', CTE.[CustodyId], E.[CustodyId]),
+		E.[ParticipantId]		= IIF(CTE.[ColumnName] = N'ParticipantId', CTE.[ParticipantId], E.[ParticipantId]),
 		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
 		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
 		E.[UnitId]				= IIF(CTE.[ColumnName] = N'UnitId', CTE.[UnitId], E.[UnitId]),
@@ -195,21 +216,22 @@ BEGIN
 	-- for all lines, Get currency and center from Resources
 	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
 
+	--	For Manual JV, get center from resource, if any
 	WITH BalanceSheetAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts]
 		WHERE [AccountTypeId] IN (
 			SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@BalanceSheetNode) = 1
 		)
 	)
-	-- This works for JVs only, since in intelligent screens, the account is null
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
-	JOIN BalanceSheetAccounts A ON E.[AccountId] = A.[Id]
+	JOIN BalanceSheetAccounts A ON E.[AccountId] = A.[Id] -- E.AccountId is NULL for smart screens
 
+	-- For smart lines, get center from resource, if any
 	UPDATE E
 	SET
 		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId])
@@ -218,12 +240,14 @@ BEGIN
 	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
 	JOIN dbo.AccountTypes AC ON LDE.[AccountTypeId] = AC.[Id]
 	JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-	 WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
+	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
+	-- for all lines, get currency from resource (which is required), and monetary value, if any
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= R.[CurrencyId],
-		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
+		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
+		E.[ParticipantId]	= COALESCE(R.[ParticipantId], E.[ParticipantId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
@@ -232,10 +256,12 @@ BEGIN
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),
-		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
+		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId]),
+		E.[CustodianId]		= COALESCE(C.[CustodianId], E.[CustodianId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Custodies] C ON E.[CustodyId] = C.Id;
+
 	-- When the resource has exactly one non-null unit Id, and the account does not allow PureUnit set it as the Entry's UnitId
 	UPDATE E
 	SET E.[UnitId] = COALESCE(R.UnitId, E.[UnitId])
@@ -258,7 +284,9 @@ BEGIN
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
+		E.[CustodianId]		= COALESCE(A.[CustodianId], E.[CustodianId]),
 		E.[CustodyId]		= COALESCE(A.[CustodyId], E.[CustodyId]),
+		E.[ParticipantId]	= COALESCE(A.[ParticipantId], E.[ParticipantId]),
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
@@ -292,8 +320,10 @@ BEGIN
 
 	-- Set the Account based on provided info so far
 	With LineEntries AS (
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-				C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId], E.[CenterId], E.[CurrencyId]
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], 
+				E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId],
+				E.[ParticipantId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+				E.[CenterId], E.[CurrencyId]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
@@ -303,14 +333,6 @@ BEGIN
 		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
 		WHERE L.DefinitionId <> @ManualLineLD
 		AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1
-		--WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
-		--	SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
-		--	WHERE [LineDefinitionEntryId] = LDE.[Id]
-		--))
-		--AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] IN (
-		--	SELECT [CustodyDefinitionId] FROM [LineDefinitionEntryCustodyDefinitions]
-		--	WHERE [LineDefinitionEntryId] = LDE.[Id]		
-		--))
 	),
 	ConformantAccounts AS (
 		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], MIN(A.Id) AS MINAccountId, MAX(A.[Id]) AS MAXAccountId
@@ -320,10 +342,12 @@ BEGIN
 			(A.[IsActive] = 1)
 		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
-		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
-		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+		AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
 		AND (A.[CustodyDefinitionId] IS NULL AND LE.[CustodyDefinitionId] IS NULL OR A.[CustodyDefinitionId] = LE.[CustodyDefinitionId])
 		AND (A.[CustodyId] IS NULL OR A.[CustodyId] = LE.[CustodyId])
+		AND (A.[ParticipantId] IS NULL OR A.[ParticipantId] = LE.[ParticipantId])
+		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
 		GROUP BY LE.[Index], LE.[LineIndex], LE.[DocumentIndex]
 	)
 	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
@@ -333,8 +357,10 @@ BEGIN
 	WHERE CA.MINAccountId = CA.MAXAccountId;
 
 	With LineEntries2 AS (
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-				C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId], E.[CenterId], E.[CurrencyId]
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
+				E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId],
+				E.[ParticipantId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+				E.[CenterId], E.[CurrencyId]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
@@ -353,10 +379,12 @@ BEGIN
 			(A.[IsActive] = 1)
 		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
-		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
-		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+		AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
 		AND (A.[CustodyDefinitionId] IS NULL AND LE.[CustodyDefinitionId] IS NULL OR A.[CustodyDefinitionId] = LE.[CustodyDefinitionId])
 		AND (A.[CustodyId] IS NULL OR A.[CustodyId] = LE.[CustodyId])
+		AND (A.[ParticipantId] IS NULL OR A.[ParticipantId] = LE.[ParticipantId])
+		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
 	)
 	UPDATE E -- Set account to null, if non conformant
 	SET E.AccountId = NULL

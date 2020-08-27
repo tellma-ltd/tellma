@@ -2,7 +2,7 @@
 DELETE FROM @CustodyDefinitionIds;
 INSERT INTO @CustodyDefinitionIds([Id]) VALUES
 (@BankAccountCD),
-(@SafeCD),
+(@CashOnHandAccountCD),
 --(@WarehouseCD),
 (@PPECustodyCD);
 --(@RentalCD),
