@@ -2451,4 +2451,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fi_InventoryAverageCosts]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="98b5f18f-fb23-49f6-8f61-de958aa76e76" ChangeDateTime="08/27/2020 09:26:44">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AllowsPureUnit]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StandardAndPure]" />
+  </Operation>
 </Operations>

@@ -46,4 +46,16 @@ AS
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
 	WHERE LDE.[Index] = 5
 
+	UPDATE WL
+	SET
+		WL.[Direction6]					= LDE.[Direction]
+	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
+	WHERE LDE.[Index] = 6
+
+	UPDATE WL
+	SET
+		WL.[Direction7]					= LDE.[Direction]
+	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
+	WHERE LDE.[Index] = 7
+
 	SELECT * FROM @WideLines;

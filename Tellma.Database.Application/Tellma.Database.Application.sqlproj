@@ -676,7 +676,6 @@
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
-    <Build Include="map\map.AccountTypeNotedRelationDefinitions.sql" />
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
   </ItemGroup>
   <ItemGroup>

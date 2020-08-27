@@ -13,7 +13,7 @@
 	[Description3]				NVARCHAR (1024),
 	[IsMonetary]				BIT					DEFAULT 1,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
-	[AllowsPureUnit]			BIT					NOT NULL DEFAULT 0,
+	[StandardAndPure]			BIT					NOT NULL DEFAULT 0,
 	[CustodianDefinitionId]		INT,
 	[ParticipantDefinitionId]	INT,
 	[EntryTypeParentId]			INT,

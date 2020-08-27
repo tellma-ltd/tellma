@@ -16,7 +16,7 @@ SELECT
     Q.[Node],
     Q.[IsMonetary],
     Q.[IsAssignable],
-    Q.[AllowsPureUnit],
+    Q.[StandardAndPure],
     Q.[CustodianDefinitionId],
     Q.[ParticipantDefinitionId],
     Q.[EntryTypeParentId],

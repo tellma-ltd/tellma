@@ -1,7 +1,7 @@
 ﻿IF NOT EXISTS(SELECT * FROM dbo.[AccountTypes])
 BEGIN
 DECLARE @AT TABLE (
-	[Index] INT, [AllowsPureUnit] BIT, [IsMonetary] BIT, [Code] NVARCHAR(50),
+	[Index] INT, [StandardAndPure] BIT, [IsMonetary] BIT, [Code] NVARCHAR(50),
 	[Node] HIERARCHYID, [EntryTypeParentConcept] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX),
 	[NotedRelationDefinitionId] INT
 )
@@ -362,9 +362,9 @@ INSERT INTO @AT VALUES(521,0,1,'521', '/5/2/1/', NULL,N'SellingGeneralAndAdminis
 INSERT INTO @AT VALUES(522,0,1,'522', '/5/2/2/', NULL,N'OperationalTasksExtension', N'Operational tasks',N'',NULL)
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'',NULL)
 
-INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [AllowsPureUnit], [IsMonetary],
+INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
 		[EntryTypeParentId], [Description], [NotedRelationDefinitionId])
-SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [AllowsPureUnit], [IsMonetary],
+SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [StandardAndPure], [IsMonetary],
 		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = RC.EntryTypeParentConcept), [Description], [NotedRelationDefinitionId]
 FROM @AT RC;
 UPDATE @AccountTypes SET IsAssignable = 1
@@ -837,7 +837,7 @@ INSERT INTO @AccountTypes(
 	[Description], [Description2], [Description3], 
 	[IsMonetary],
 	[IsAssignable],
-	[AllowsPureUnit],
+	[StandardAndPure],
 	[EntryTypeParentId],
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
@@ -855,7 +855,7 @@ SELECT
 	[Description], [Description2], [Description3], 
 	[IsMonetary],
 	[IsAssignable],
-	[AllowsPureUnit],
+	[StandardAndPure],
 	[EntryTypeParentId],
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
@@ -892,12 +892,12 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (115,@InvestmentPropertyCompleted,						@InvestmentPropertyCompletedMemberRD),
 (120,@InvestmentPropertyUnderConstructionOrDevelopment,	@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 
-(125,@NoncurrentTradeReceivables,@TradeReceivableRD),
-(130,@NoncurrentReceivablesDueFromRelatedParties,@TradeReceivableRD),
-(135,@NoncurrentPrepayments,@PrepaymentsRD),
-(140,@NoncurrentAccruedIncome,@AccruedIncomeRD),
-(145,@NoncurrentReceivablesFromSaleOfProperties,@ReceivablesFromSaleOfPropertiesRD),
-(150,@NoncurrentReceivablesFromRentalOfProperties,@ReceivablesFromRentalOfPropertiesRD),
+(125,@NoncurrentTradeReceivables,						@TradeReceivableRD),
+(130,@NoncurrentReceivablesDueFromRelatedParties,		@TradeReceivableRD),
+(135,@NoncurrentPrepayments,							@PrepaymentsRD),
+(140,@NoncurrentAccruedIncome,							@AccruedIncomeRD),
+(145,@NoncurrentReceivablesFromSaleOfProperties,		@ReceivablesFromSaleOfPropertiesRD),
+(150,@NoncurrentReceivablesFromRentalOfProperties,		@ReceivablesFromRentalOfPropertiesRD),
 
 (160,@Merchandise,										@MerchandiseRD),
 (161,@Merchandise,										@TradeMedicineRD),

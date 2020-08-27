@@ -272,7 +272,7 @@ BEGIN
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
 		RD.UnitCardinality IN (N'Single', N'None')
-	AND AC.[AllowsPureUnit] = 0
+	AND AC.[StandardAndPure] = 0
 
 	UPDATE E
 	SET E.[Quantity] = 1

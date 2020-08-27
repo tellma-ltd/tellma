@@ -173,7 +173,7 @@ BEGIN
 			FROM @Entries
 		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId]
 		WHERE
-			AC.[AllowsPureUnit] = 1
+			AC.[StandardAndPure] = 1
 		AND L.[State] = 4
 		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
 		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
@@ -190,7 +190,7 @@ BEGIN
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 		WHERE
-			AC.[AllowsPureUnit] = 1
+			AC.[StandardAndPure] = 1
 		GROUP BY E.[AccountId], E.[ResourceId], E.[CustodyId]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -209,7 +209,7 @@ BEGIN
 	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
 	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
 	WHERE
-		AC.[AllowsPureUnit] = 1
+		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) NOT IN (0, 1)
 	UNION
 	SELECT DISTINCT TOP (@Top)
@@ -227,7 +227,7 @@ BEGIN
 	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
 	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
 	WHERE
-		AC.[AllowsPureUnit] = 1
+		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) < 0
 	UNION
 	SELECT DISTINCT TOP (@Top)
@@ -245,7 +245,7 @@ BEGIN
 	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
 	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
 	WHERE
-		AC.[AllowsPureUnit] = 1
+		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) < 0
 	UNION
 	SELECT DISTINCT TOP (@Top)
@@ -263,7 +263,7 @@ BEGIN
 	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
 	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
 	WHERE
-		AC.[AllowsPureUnit] = 1
+		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) <> 0
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 	UNION
@@ -282,7 +282,7 @@ BEGIN
 	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId]
 	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId]
 	WHERE
-		AC.[AllowsPureUnit] = 1
+		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 END
