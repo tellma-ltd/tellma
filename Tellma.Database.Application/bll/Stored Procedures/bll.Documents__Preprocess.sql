@@ -57,16 +57,14 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE  A.ResourceDefinitionId IS NULL
-	--AND L.DefinitionId = @ManualLineLD;
+	WHERE  A.ResourceDefinitionId IS NULL;
 
 	UPDATE E
 	SET E.[CustodyId] = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.[CustodyDefinitionId] IS NULL
-	--AND L.DefinitionId = @ManualLineLD;
+	WHERE A.[CustodyDefinitionId] IS NULL;
 
 	UPDATE E
 	SET E.EntryTypeId = NULL
@@ -74,16 +72,14 @@ BEGIN
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.EntryTypeParentId IS NULL
-	--AND L.DefinitionId = @ManualLineLD;
+	WHERE AC.EntryTypeParentId IS NULL;
 
 	UPDATE E
 	SET E.[NotedRelationId] = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.NotedRelationDefinitionId IS NULL
-	--AND L.DefinitionId = @ManualLineLD;
+	WHERE A.NotedRelationDefinitionId IS NULL;
 
 	-- TODO:  Remove labels, etc.
 
@@ -196,15 +192,42 @@ BEGIN
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
 	END
-	-- for all lines, Get currency and center from (financial) Resources
+	-- for all lines, Get currency and center from Resources
+	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
+
+	WITH BalanceSheetAccounts AS (
+		SELECT [Id] FROM dbo.[Accounts]
+		WHERE [AccountTypeId] IN (
+			SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@BalanceSheetNode) = 1
+		)
+	)
+	-- This works for JVs only, since in intelligent screens, the account is null
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId]),
+		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId])
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
+	JOIN BalanceSheetAccounts A ON E.[AccountId] = A.[Id]
+
+	UPDATE E
+	SET
+		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId])
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
+	JOIN dbo.AccountTypes AC ON LDE.[AccountTypeId] = AC.[Id]
+	JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
+	 WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
+
+	UPDATE E 
+	SET
 		E.[CurrencyId]		= R.[CurrencyId],
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
+
 	-- for all lines, Get currency and center from Custodies if available.
 	UPDATE E 
 	SET
@@ -243,7 +266,7 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE L.DefinitionId = @ManualLineLD;
-	-- to here: Ends
+
 	-- Copy information from Line definitions to Entries
 	UPDATE E
 	SET

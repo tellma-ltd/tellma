@@ -11,6 +11,18 @@ SET NOCOUNT ON;
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
+
+	DECLARE @PreScript NVARCHAR(MAX) =N'
+	SET NOCOUNT ON
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	------
+	';
+	DECLARE @Script NVARCHAR (MAX);
+	DECLARE @PostScript NVARCHAR(MAX) = N'
+	-----
+	SELECT TOP (@Top) * FROM @ValidationErrors;
+	';
 	--=-=-=-=-=-=- [C# Validation]
 	/* 
 	
@@ -64,6 +76,7 @@ SET NOCOUNT ON;
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
 
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
+	-- Similar logic in bll.Accounts_Validate__Save
 	WITH ExpendituresParentAccountTypes AS (
 		SELECT [Node]
 		FROM dbo.[AccountTypes]
@@ -252,11 +265,24 @@ SET NOCOUNT ON;
 
 	-- verify that all required fields are available
 	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;
-		SELECT @LineState = MIN([State])
-		FROM dbo.Lines
-		WHERE [State] > 0
-		AND [Id] IN (SELECT [Id] FROM @Lines)
-	
+
+--	Apply to inserted lines	
+	DELETE FROM @L; DELETE FROM @E;
+	INSERT INTO @L SELECT * FROM @Lines WHERE [Id] = 0;
+	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	INSERT INTO @ValidationErrors
+	EXEC [bll].[Lines_Validate__State_Data]
+	-- @Documents = @D, 
+	@Lines = @L, 
+	@Entries = @E, 
+	@State = 0;
+
+	-- Apply to updated lines
+	SELECT @LineState = MIN([State])
+	FROM dbo.Lines
+	WHERE [State] >= 0
+	AND [Id] IN (SELECT [Id] FROM @Lines)
+
 	WHILE @LineState IS NOT NULL
 	BEGIN
 		/* DELETE FROM @D; */ DELETE FROM @L; DELETE FROM @E;
@@ -277,6 +303,37 @@ SET NOCOUNT ON;
 			AND [Id] IN (SELECT [Id] FROM @Lines)
 		)
 	END
+	-- Verify Custom Validation Script
+	-- Get line definition which have script to validate
+	INSERT INTO @ScriptLineDefinitions
+	SELECT DISTINCT DefinitionId FROM @L
+	WHERE DefinitionId IN (
+		SELECT [Id] FROM dbo.LineDefinitions
+		WHERE [ValidateScript] IS NOT NULL
+	);
+	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
+	BEGIN
+		-- run script to validate information
+		DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions;  
+		OPEN LineDefinition_Cursor  
+		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
+		WHILE @@FETCH_STATUS = 0  
+		BEGIN 
+			SELECT @Script =  @PreScript + ISNULL([ValidateScript],N'') + @PostScript
+			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+
+			INSERT INTO @ValidationErrors
+			EXECUTE	sp_executesql @Script, N'
+				@DefinitionId INT,
+				@Documents [dbo].[DocumentList] READONLY,
+				@Lines [dbo].[LineList] READONLY, 
+				@Entries [dbo].EntryList READONLY,
+				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
+			
+			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
+		END
+	END
+	
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 

@@ -8,6 +8,22 @@
 	[TitlePlural]						NVARCHAR (100),
 	[TitlePlural2]						NVARCHAR (100),
 	[TitlePlural3]						NVARCHAR (100),
+	-- TODO Make NOT NULL
+	[ResourceDefinitionType]			NVARCHAR (255) NULL
+	CONSTRAINT [CK_ResourceDefinitions__ResourceDefinitionType] CHECK ([ResourceDefinitionType] IN (
+		N'PropertyPlantAndEquipment',
+		N'InvestmentProperty',
+		N'IntangibleAssetsOtherThanGoodwill',
+		N'OtherFinancialAssets',
+		N'BiologicalAssets',
+		N'InventoriesTotal',
+		N'TradeAndOtherReceivables',
+		N'CashAndCashEquivalents',
+		N'TradeAndOtherPayables',
+		N'Provisions',
+		N'OtherFinancialLiabilities'
+	)),
+
 	-----Resource Properties Common with Contracts
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'Required' CHECK ([CurrencyVisibility] IN (N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
