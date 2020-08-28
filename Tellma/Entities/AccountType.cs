@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave<TCustodyDef, TNotedRelationDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountTypeForSave<TCustodyDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -67,13 +67,25 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
 
-        [Display(Name = "AccountType_AllowsPureUnit")]
+        [Display(Name = "AccountType_StandardAndPure")]
         [AlwaysAccessible]
-        public bool? AllowsPureUnit { get; set; }
+        public bool? StandardAndPure { get; set; }
+
+        [Display(Name = "AccountType_CustodianDefinition")]
+        [AlwaysAccessible]
+        public int? CustodianDefinitionId { get; set; }
+
+        [Display(Name = "AccountType_ParticipantDefinition")]
+        [AlwaysAccessible]
+        public int? ParticipantDefinitionId { get; set; }
 
         [Display(Name = "AccountType_EntryTypeParent")]
         [AlwaysAccessible]
         public int? EntryTypeParentId { get; set; }
+
+        [Display(Name = "AccountType_NotedRelationDefinition")]
+        [AlwaysAccessible]
+        public int? NotedRelationDefinitionId { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Primary)]
         [StringLength(50)]
@@ -110,7 +122,7 @@ namespace Tellma.Entities
         [MultilingualDisplay(Name = "AccountType_ExternalReferenceLabel", Language = Language.Ternary)]
         [StringLength(50)]
         public string ExternalReferenceLabel3 { get; set; }
-               
+
         [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Primary)]
         [StringLength(50)]
         public string AdditionalReferenceLabel { get; set; }
@@ -163,20 +175,16 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AccountTypeCustodyDefinition.AccountTypeId))]
         public List<TCustodyDef> CustodyDefinitions { get; set; }
 
-        [Display(Name = "AccountType_NotedRelationDefinitions")]
-        [ForeignKey(nameof(AccountTypeNotedRelationDefinition.AccountTypeId))]
-        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
-
         [Display(Name = "AccountType_ResourceDefinitions")]
         [ForeignKey(nameof(AccountTypeResourceDefinition.AccountTypeId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodyDefinitionForSave, AccountTypeNotedRelationDefinitionForSave, AccountTypeResourceDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodyDefinitionForSave, AccountTypeResourceDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
+    public class AccountType : AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -201,6 +209,10 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 
+        public int? CustodyDefinitionsCount { get; set; }
+
+        public int? ResourceDefinitionsCount { get; set; }
+
         // For Query
 
         [AlwaysAccessible]
@@ -214,8 +226,20 @@ namespace Tellma.Entities
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
 
+        [Display(Name = "AccountType_CustodianDefinition")]
+        [ForeignKey(nameof(CustodianDefinitionId))]
+        public RelationDefinition CustodianDefinition { get; set; }
+
+        [Display(Name = "AccountType_ParticipantDefinition")]
+        [ForeignKey(nameof(ParticipantDefinitionId))]
+        public RelationDefinition ParticipantDefinition { get; set; }
+
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]
         public EntryType EntryTypeParent { get; set; }
+
+        [Display(Name = "AccountType_NotedRelationDefinition")]
+        [ForeignKey(nameof(NotedRelationDefinitionId))]
+        public RelationDefinition NotedRelationDefinition { get; set; }
     }
 }

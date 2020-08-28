@@ -12,6 +12,8 @@ RETURN (
 		[TitlePlural2],
 		[TitlePlural3],
 
+		[ResourceDefinitionType],
+
 		[CurrencyVisibility],
 		[CenterVisibility],
 		[ImageVisibility],

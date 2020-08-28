@@ -22,8 +22,12 @@ namespace Tellma.Controllers.Dto
 
         public int? SegmentId { get; set; }
 
+        public int? CustodianId { get; set; }
+
         public int? CustodyId { get; set; }
-        
+
+        public int? ParticipantId { get; set; }
+
         public int? ResourceId { get; set; }
 
         public int? EntryTypeId { get; set; }

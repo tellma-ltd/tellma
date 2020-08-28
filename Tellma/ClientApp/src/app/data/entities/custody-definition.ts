@@ -210,7 +210,7 @@ export function metadata_CustodyDefinition(wss: WorkspaceService, trx: Translate
                 CustodianVisibility: visibilityPropDescriptor('Custody_Custodian', trx),
                 CustodianDefinitionId: {
                     control: 'choice',
-                    label: () => trx.instant('Field0Definition', { 0: 'Custody_Custodian' }),
+                    label: () => trx.instant('Field0Definition', { 0: trx.instant('Custody_Custodian') }),
                     choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
                     format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },

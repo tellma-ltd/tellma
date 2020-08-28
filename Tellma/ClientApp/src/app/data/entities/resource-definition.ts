@@ -18,6 +18,8 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     TitlePlural2?: string;
     TitlePlural3?: string;
 
+    ResourceDefinitionType?: string;
+
     // Common with Relation
     CurrencyVisibility?: Visibility;
     CenterVisibility?: Visibility;
@@ -155,6 +157,26 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 TitlePlural: { control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
                 TitlePlural2: { control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
                 TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
+
+                ResourceDefinitionType: {
+                    control: 'choice',
+                    label: () => trx.instant('ResourceDefinition_ResourceDefinitionType'),
+                    choices: [
+                        'PropertyPlantAndEquipment',
+                        'InvestmentProperty',
+                        'IntangibleAssetsOtherThanGoodwill',
+                        'OtherFinancialAssets',
+                        'BiologicalAssets',
+                        'InventoriesTotal',
+                        'TradeAndOtherReceivables',
+                        'CashAndCashEquivalents',
+                        'TradeAndOtherPayables',
+                        'Provisions',
+                        'OtherFinancialLiabilities',
+                        'Miscellaneous',
+                    ],
+                    format: (c: string) => !!c ? trx.instant('RD_Type_' + c) : ''
+                },
 
                 // Common with Relation
 

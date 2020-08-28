@@ -1277,6 +1277,81 @@ namespace Tellma.Controllers
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
+                        // Value must be positive
+                        if (entry.Value < 0)
+                        {
+                            string fieldLabel;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                fieldLabel = entry.Direction == -1 ? _localizer["Credit"] : _localizer["Debit"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Value));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                                else
+                                {
+                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: Value is negative after preprocess");
+                                }
+                            }
+
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                        }
+
+                        // MonetaryValue must be positive
+                        if (entry.MonetaryValue < 0)
+                        {
+                            string fieldLabel;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                fieldLabel = _localizer["Entry_MonetaryValue"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.MonetaryValue));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                                else
+                                {
+                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: MonetaryValue is negative after preprocess");
+                                }
+                            }
+
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                        }
+
+                        // Quantity must be positive
+                        if (entry.Quantity < 0)
+                        {
+                            string fieldLabel;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                fieldLabel = _localizer["Entry_Quantity"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Quantity));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                                else
+                                {
+                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: Quantity is negative after preprocess");
+                                }
+                            }
+
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                        }
+
                         // Center is required
                         if (entry.CenterId == null)
                         {

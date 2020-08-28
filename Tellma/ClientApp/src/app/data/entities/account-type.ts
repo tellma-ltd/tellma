@@ -8,7 +8,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { AccountTypeCustodyDefinitionForSave, AccountTypeCustodyDefinition } from './account-type-custody-definition';
-import { AccountTypeNotedRelationDefinitionForSave, AccountTypeNotedRelationDefinition } from './account-type-noted-relation-definition';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 
 export type RequiredAssignment = 'A' | 'E';
@@ -16,7 +15,6 @@ export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
 export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionForSave,
-  TNotedRelationDef = AccountTypeNotedRelationDefinitionForSave,
   TResourceDef = AccountTypeResourceDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
@@ -28,8 +26,11 @@ export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionFo
   Code?: string;
   Concept?: string;
   IsAssignable?: boolean;
-  AllowsPureUnit?: boolean;
+  StandardAndPure?: boolean;
+  CustodianDefinitionId?: number;
+  ParticipantDefinitionId?: number;
   EntryTypeParentId?: number;
+  NotedRelationDefinitionId?: number;
   IsMonetary?: boolean;
   Time1Label?: string;
   Time1Label2?: string;
@@ -54,11 +55,10 @@ export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionFo
   NotedDateLabel3?: string;
 
   CustodyDefinitions?: TCustodyDef[];
-  NotedRelationDefinitions?: TNotedRelationDef[];
   ResourceDefinitions?: TResourceDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeNotedRelationDefinition, AccountTypeResourceDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeResourceDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;
@@ -66,6 +66,9 @@ export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefini
   IsActive?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
+
+  CustodyDefinitionsCount?: number;
+  ResourceDefinitionsCount?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -107,9 +110,15 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Code: { control: 'text', label: () => trx.instant('Code') },
         Concept: { control: 'text', label: () => trx.instant('AccountType_Concept') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
-        AllowsPureUnit: { control: 'boolean', label: () => trx.instant('AccountType_AllowsPureUnit') },
+        StandardAndPure: { control: 'boolean', label: () => trx.instant('AccountType_StandardAndPure') },
+        CustodianDefinitionId: { control: 'number', label: () => `${trx.instant('AccountType_CustodianDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        CustodianDefinition: { control: 'navigation', label: () => trx.instant('AccountType_CustodianDefinition'), type: 'RelationDefinition', foreignKeyName: 'CustodianDefinitionId' },
+        ParticipantDefinitionId: { control: 'number', label: () => `${trx.instant('AccountType_ParticipantDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ParticipantDefinition: { control: 'navigation', label: () => trx.instant('AccountType_ParticipantDefinition'), type: 'RelationDefinition', foreignKeyName: 'ParticipantDefinitionId' },
         EntryTypeParentId: { control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { control: 'navigation', label: () => trx.instant('AccountType_EntryTypeParent'), type: 'EntryType', foreignKeyName: 'EntryTypeParentId' },
+        NotedRelationDefinitionId: { control: 'number', label: () => `${trx.instant('AccountType_NotedRelationDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        NotedRelationDefinition: { control: 'navigation', label: () => trx.instant('AccountType_NotedRelationDefinition'), type: 'RelationDefinition', foreignKeyName: 'NotedRelationDefinitionId' },
         Time1Label: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.primaryPostfix },
         Time1Label2: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.secondaryPostfix },
         Time1Label3: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.ternaryPostfix },

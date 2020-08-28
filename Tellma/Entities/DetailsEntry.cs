@@ -21,11 +21,17 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }
 
+        [Display(Name = "Entry_Custodian")]
+        public int? CustodianId { get; set; }
+
         [Display(Name = "Entry_Custody")]
         public int? CustodyId { get; set; }
 
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; }
+
+        [Display(Name = "Entry_Participant")]
+        public int? ParticipantId { get; set; }
 
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
@@ -137,6 +143,10 @@ namespace Tellma.Entities
         [ForeignKey(nameof(EntryTypeId))]
         public EntryType EntryType { get; set; }
 
+        [Display(Name = "Entry_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
+
         [Display(Name = "Entry_Custody")]
         [ForeignKey(nameof(CustodyId))]
         public Custody Custody { get; set; }
@@ -148,6 +158,10 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Currency")]
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
+
+        [Display(Name = "Entry_Participant")]
+        [ForeignKey(nameof(ParticipantId))]
+        public Relation Participant { get; set; }
 
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]

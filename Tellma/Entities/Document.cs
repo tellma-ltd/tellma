@@ -421,7 +421,6 @@ namespace Tellma.Entities
 
             // Definitions
             nameof(Account.CustodyDefinitionId),
-            nameof(Account.NotedRelationDefinitionId),
             nameof(Account.ResourceDefinitionId)
         );
         public static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
@@ -434,7 +433,14 @@ namespace Tellma.Entities
 
             // Misc
             nameof(AccountType.EntryTypeParentId),
-            nameof(AccountType.AllowsPureUnit),
+            nameof(AccountType.StandardAndPure),
+
+            // Definitions
+            nameof(AccountType.CustodianDefinitionId),
+            nameof(AccountType.ParticipantDefinitionId),
+            nameof(AccountType.NotedRelationDefinitionId),
+            nameof(AccountType.CustodyDefinitionsCount),
+            nameof(AccountType.ResourceDefinitionsCount),
 
             // Labels
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),

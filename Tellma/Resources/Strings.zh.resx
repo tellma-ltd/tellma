@@ -79,6 +79,9 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>保管人</value>
+  </data>
   <data name="Account_Custody" xml:space="preserve">
     <value>代理人</value>
   </data>
@@ -88,8 +91,8 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>注意到关系定义</value>
+  <data name="Account_Participant" xml:space="preserve">
+    <value>参加者</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
@@ -118,17 +121,17 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>其他参考标签</value>
   </data>
-  <data name="AccountType_AllowsPureUnit" xml:space="preserve">
-    <value>允许单位自</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>概念</value>
+  </data>
+  <data name="AccountType_CustodianDefinition" xml:space="preserve">
+    <value>护法定义</value>
   </data>
   <data name="AccountType_CustodyDefinitions" xml:space="preserve">
     <value>托管定义</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
-    <value>输入型亲</value>
+    <value>目的父</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>外部参考标签</value>
@@ -145,11 +148,17 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>注意关联定义</value>
+  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
+    <value>注意到关系定义</value>
+  </data>
+  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
+    <value>与会者定义</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
+  </data>
+  <data name="AccountType_StandardAndPure" xml:space="preserve">
+    <value>标准和纯</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>时间1个标签</value>
@@ -162,12 +171,6 @@
   </data>
   <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
     <value>帐户类型定义保管</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
-    <value>帐户类型注意到关系定义</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
-    <value>帐户类型注意到关联定义</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>帐户类型资源定义</value>
@@ -1663,9 +1666,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>行定义条目</value>
   </data>
-  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
-    <value>帐户类型</value>
-  </data>
   <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
     <value>托管定义</value>
   </data>
@@ -1678,8 +1678,8 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>注意关联定义</value>
+  <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
+    <value>父帐户类型</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -1689,12 +1689,6 @@
   </data>
   <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>行定义条目</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>行定义条目</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>注意到关系定义</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>行定义条目</value>
@@ -2004,6 +1998,42 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
+  </data>
+  <data name="RD_Type_BiologicalAssets" xml:space="preserve">
+    <value>生物资产</value>
+  </data>
+  <data name="RD_Type_CashAndCashEquivalents" xml:space="preserve">
+    <value>现金及现金等价物</value>
+  </data>
+  <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
+    <value>除商誉等无形资产</value>
+  </data>
+  <data name="RD_Type_InventoriesTotal" xml:space="preserve">
+    <value>存货</value>
+  </data>
+  <data name="RD_Type_InvestmentProperty" xml:space="preserve">
+    <value>投资性房地产</value>
+  </data>
+  <data name="RD_Type_Miscellaneous" xml:space="preserve">
+    <value>杂</value>
+  </data>
+  <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
+    <value>其他金融资产</value>
+  </data>
+  <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
+    <value>其他金融负债</value>
+  </data>
+  <data name="RD_Type_PropertyPlantAndEquipment" xml:space="preserve">
+    <value>物业，厂房及设备</value>
+  </data>
+  <data name="RD_Type_Provisions" xml:space="preserve">
+    <value>规定</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherPayables" xml:space="preserve">
+    <value>贸易及其他应付款</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
+    <value>贸易及其他receiveables</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>恢复码</value>
@@ -2319,6 +2349,9 @@
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>资源定义</value>
+  </data>
+  <data name="ResourceDefinition_ResourceDefinitionType" xml:space="preserve">
+    <value>资源定义类型</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>单位基数</value>

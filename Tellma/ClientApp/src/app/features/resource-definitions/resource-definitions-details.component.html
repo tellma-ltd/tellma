@@ -149,6 +149,23 @@
                             *ngTemplateOutlet="errorsTemplate;context: { control: titleplural3, serverErrors: model.serverErrors?.TitlePlural3 }">
                         </ng-container>
                     </div>
+                    
+
+                    <!-- ResourceDefinitionType -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(resourcedefinitointype, serverErrors(model, 'ResourceDefinitionType'))">
+                        <label class="small"
+                            for="resourcedefinitointype">{{ 'ResourceDefinition_ResourceDefinitionType' | translate }}</label>
+                        <select class="form-control t-studio-input" id="resourcedefinitointype"
+                            [(ngModel)]="model.ResourceDefinitionType" (ngModelChange)="onDefinitionChange(model)"
+                            #resourcedefinitointype="ngModel">
+                            <option *ngFor="let c of resourceDefinitionTypeChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: resourcedefinitointype, serverErrors: serverErrors(model, 'ResourceDefinitionType') }">
+                        </ng-container>
+                    </div>
                 </div>
 
                 <!-- Fields Section -->

@@ -59,6 +59,18 @@
                         </t-currencies-picker>
                     </t-form-group>
 
+                    <!-- Custodian -->
+                    <t-form-group class="t-form-group" [label]="labelCustodian_Manual" *ngIf="showCustodianParameter">
+                        <t-relations-picker *ngIf="!readonlyCustodian_Manual" [(ngModel)]="custodianId"
+                            [definitionIds]="definitionIdsCustodian_Manual" [showCreate]="false">
+                        </t-relations-picker>
+                        <t-view-link *ngIf="readonlyCustodian_Manual"
+                            [link]="link('relations/') + ws.get('Relation', readonlyValueCustodianId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueCustodianId_Manual">
+                            {{ ws.getMultilingualValue('Relation', readonlyValueCustodianId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
                     <!-- Custody -->
                     <t-form-group class="t-form-group" [label]="labelCustody_Manual" *ngIf="showCustodyParameter">
                         <t-custodies-picker *ngIf="!readonlyCustody_Manual" [(ngModel)]="custodyId"
@@ -69,6 +81,18 @@
                             [link]="link('custodies/') + ws.get('Custody', readonlyValueCustodyId_Manual)?.DefinitionId"
                             [itemId]="readonlyValueCustodyId_Manual">
                             {{ ws.getMultilingualValue('Custody', readonlyValueCustodyId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+                    
+                    <!-- Participant -->
+                    <t-form-group class="t-form-group" [label]="labelParticipant_Manual" *ngIf="showParticipantParameter">
+                        <t-relations-picker *ngIf="!readonlyParticipant_Manual" [(ngModel)]="participantId"
+                            [definitionIds]="definitionIdsParticipant_Manual" [showCreate]="false">
+                        </t-relations-picker>
+                        <t-view-link *ngIf="readonlyParticipant_Manual"
+                            [link]="link('relations/') + ws.get('Relation', readonlyValueParticipantId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueParticipantId_Manual">
+                            {{ ws.getMultilingualValue('Relation', readonlyValueParticipantId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 

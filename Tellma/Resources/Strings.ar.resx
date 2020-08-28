@@ -79,6 +79,9 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>صاحب العهدة</value>
+  </data>
   <data name="Account_Custody" xml:space="preserve">
     <value>العهدة</value>
   </data>
@@ -88,8 +91,8 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>تعريف العلاقة المعنية</value>
+  <data name="Account_Participant" xml:space="preserve">
+    <value>الطرف الثاني</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
@@ -118,11 +121,11 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الإضافي</value>
   </data>
-  <data name="AccountType_AllowsPureUnit" xml:space="preserve">
-    <value>يسمح بوحدة الذات</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
+  </data>
+  <data name="AccountType_CustodianDefinition" xml:space="preserve">
+    <value>تعريف صاحب العهدة</value>
   </data>
   <data name="AccountType_CustodyDefinitions" xml:space="preserve">
     <value>تعريفات العهد</value>
@@ -145,11 +148,17 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>اسم التاريخ المعني</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>تعريفات العلاقات المعنية</value>
+  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
+    <value>تعريف العلاقة المعنية</value>
+  </data>
+  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
+    <value>تعريف الطرف الثاني</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>تعريفات الذمم</value>
+  </data>
+  <data name="AccountType_StandardAndPure" xml:space="preserve">
+    <value>عين مع منفعة</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>اسم الزمن 1</value>
@@ -162,12 +171,6 @@
   </data>
   <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
     <value>تعريفات عهد أنواع حسابات</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
-    <value>تعريف علاقة معنية بنوع حساب</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
-    <value>تعريفات علاقات معنية بأنواع حسابات</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>تعريف مورد نوع حساب</value>
@@ -1663,9 +1666,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>تعريف حركة سطر</value>
   </data>
-  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
-    <value>نوع الحساب</value>
-  </data>
   <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
     <value>تعريفات العهد</value>
   </data>
@@ -1678,8 +1678,8 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>تعريف السطر</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>تعريفات الذمم المعنية</value>
+  <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
+    <value>نوع الحساب الأصل</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>تعريفات الموارد</value>
@@ -1689,12 +1689,6 @@
   </data>
   <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>تعريف حركة السطر</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>تعريف حركة السطر</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>تعريف الذمة</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>تعريف حركة السطر</value>
@@ -2004,6 +1998,42 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
+  </data>
+  <data name="RD_Type_BiologicalAssets" xml:space="preserve">
+    <value>أصول بيولوجية</value>
+  </data>
+  <data name="RD_Type_CashAndCashEquivalents" xml:space="preserve">
+    <value>نقد ونقد المعادل</value>
+  </data>
+  <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
+    <value>أصول غير ملموسة باستثناء الشهرة</value>
+  </data>
+  <data name="RD_Type_InventoriesTotal" xml:space="preserve">
+    <value>مخزون</value>
+  </data>
+  <data name="RD_Type_InvestmentProperty" xml:space="preserve">
+    <value>عقارات استثمارية</value>
+  </data>
+  <data name="RD_Type_Miscellaneous" xml:space="preserve">
+    <value>مختلف</value>
+  </data>
+  <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
+    <value>أصول مالية أخرى</value>
+  </data>
+  <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
+    <value>التزامات مالية أخرى</value>
+  </data>
+  <data name="RD_Type_PropertyPlantAndEquipment" xml:space="preserve">
+    <value>ممتلكات ومصانع ومعدات</value>
+  </data>
+  <data name="RD_Type_Provisions" xml:space="preserve">
+    <value>مخصصات</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherPayables" xml:space="preserve">
+    <value>ذمم دائنة تجارية وأخرى</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
+    <value>ذمم مدينة  تجارية أخرى</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>كود الاسترداد</value>
@@ -2319,6 +2349,9 @@
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>تعريف مورد</value>
+  </data>
+  <data name="ResourceDefinition_ResourceDefinitionType" xml:space="preserve">
+    <value>نوع تعريف المورد</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>عدد الوحدات</value>

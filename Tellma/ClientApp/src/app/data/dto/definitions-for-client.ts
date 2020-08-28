@@ -263,9 +263,11 @@ export interface LineDefinitionEntryForClient {
     AccountTypeId?: number;
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
+    CustodianDefinitionIds: number[];
     CustodyDefinitionIds: number[];
-    NotedRelationDefinitionIds: number[];
+    ParticipantDefinitionIds: number[];
     ResourceDefinitionIds: number[];
+    NotedRelationDefinitionIds: number[];
 }
 
 export interface LineDefinitionColumnForClient {
@@ -300,14 +302,14 @@ export interface LineDefinitionGenerateParameterForClient {
 
 export const entryColumnNames = ['Memo', 'PostingDate', 'TemplateLineId',
     'Multiplier', 'AccountId', 'CurrencyId',
-    'CustodyId', 'ResourceId', 'CenterId', 'EntryTypeId',
+    'CustodianId', 'CustodyId', 'ParticipantId', 'ResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
     'ExternalReference', 'AdditionalReference', 'NotedRelationId',
     'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
-    'CustodyId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
+    'CustodianId' | 'CustodyId' | 'ParticipantId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
     'ExternalReference' | 'AdditionalReference' | 'NotedRelationId' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';

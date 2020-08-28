@@ -251,7 +251,6 @@ namespace Tellma.Data
                 nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
                 nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
-                nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
                 nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
                 nameof(Account) => "[map].[Accounts]()",
                 nameof(Center) => "[map].[Centers]()",
@@ -282,7 +281,6 @@ namespace Tellma.Data
                 nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
                 nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
                 nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
-                nameof(LineDefinitionEntryNotedRelationDefinition) => "[map].[LineDefinitionEntryNotedRelationDefinitions]()",
                 nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
                 nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
                 nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
@@ -593,7 +591,11 @@ namespace Tellma.Data
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
             IEnumerable<DocumentDefinition>,
-            IEnumerable<LineDefinition>)>
+            IEnumerable<LineDefinition>,
+            Dictionary<int, List<int>>,
+            Dictionary<int, List<int>>,
+            Dictionary<int, List<int>>,
+            Dictionary<int, List<int>>)>
             Definitions__Load(CancellationToken cancellation)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Definitions__Load));
@@ -606,6 +608,11 @@ namespace Tellma.Data
             var reportDefinitions = new List<ReportDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
             var lineDefinitions = new List<LineDefinition>();
+
+            Dictionary<int, List<int>> entryCustodianDefs = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> entryCustodyDefs = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> entryParticipantDefs = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> entryResourceDefs = new Dictionary<int, List<int>>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -663,7 +670,6 @@ namespace Tellma.Data
 
                     relationDefinitions.Add(entity);
                 }
-
 
                 // Next load custody definitions
                 var custodyDefinitionProps = TypeDescriptor.Get<CustodyDefinition>().SimpleProperties;
@@ -928,7 +934,6 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var lineDefinitionsDic = new Dictionary<int, LineDefinition>();
-                var lineDefinitionEntrisDic = new Dictionary<int, LineDefinitionEntry>();
                 var lineDefinitionProps = TypeDescriptor.Get<LineDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -953,7 +958,6 @@ namespace Tellma.Data
                     var entity = new LineDefinitionEntry
                     {
                         CustodyDefinitions = new List<LineDefinitionEntryCustodyDefinition>(),
-                        NotedRelationDefinitions = new List<LineDefinitionEntryNotedRelationDefinition>(),
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
                     };
 
@@ -966,16 +970,14 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    if (entity.AccountTypeId != null)
+                    if (entity.ParentAccountTypeId != null)
                     {
-                        entity.AccountType = accountTypesDic.GetValueOrDefault(entity.AccountTypeId.Value);
+                        entity.ParentAccountType = accountTypesDic.GetValueOrDefault(entity.ParentAccountTypeId.Value);
                     }
 
                     var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
                     lineDefinition.Entries ??= new List<LineDefinitionEntry>();
                     lineDefinition.Entries.Add(entity);
-
-                    lineDefinitionEntrisDic[entity.Id] = entity;
                 }
 
                 // line definition columns
@@ -1040,53 +1042,76 @@ namespace Tellma.Data
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
-                // Line Definition Entry Custody Definitions
+                // Custodian Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new LineDefinitionEntryCustodyDefinition
-                    {
-                        LineDefinitionEntryId = reader.GetInt32(i++),
-                        CustodyDefinitionId = reader.GetInt32(i++),
-                    };
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
 
-                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.CustodyDefinitions.Add(entity);
+                    if (!entryCustodianDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryCustodianDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
                 }
 
-                // Line Definition Entry Noted Relation Definitions
+                // Custody Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new LineDefinitionEntryNotedRelationDefinition
-                    {
-                        LineDefinitionEntryId = reader.GetInt32(i++),
-                        NotedRelationDefinitionId = reader.GetInt32(i++),
-                    };
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
 
-                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.NotedRelationDefinitions.Add(entity);
+                    if (!entryCustodyDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryCustodyDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
                 }
 
-                // Line Definition Entry Resource Definitions
+                // Participant Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new LineDefinitionEntryResourceDefinition
-                    {
-                        LineDefinitionEntryId = reader.GetInt32(i++),
-                        ResourceDefinitionId = reader.GetInt32(i++),
-                    };
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
 
-                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.ResourceDefinitions.Add(entity);
+                    if (!entryParticipantDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryParticipantDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
+                }
+
+                // Resource Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
+
+                    if (!entryResourceDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryResourceDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
                 }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions);
+            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
         }
 
         #endregion
@@ -3506,17 +3531,9 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
-            DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
-            var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
-            {
-                TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
             cmd.Parameters.Add(entitiesTvp);
             cmd.Parameters.Add(resourceDefinitionsTvp);
             cmd.Parameters.Add(custodyDefinitionsTvp);
-            cmd.Parameters.Add(notedRelationDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -3557,17 +3574,9 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
-                var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
-                {
-                    TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
                 cmd.Parameters.Add(custodyDefinitionsTvp);
-                cmd.Parameters.Add(notedRelationDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -5128,7 +5137,7 @@ namespace Tellma.Data
         #endregion
 
         #region Lines
-        
+
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
@@ -5192,8 +5201,10 @@ namespace Tellma.Data
                 {
                     AccountId = reader.Int32(i++),
                     CurrencyId = reader.String(i++),
-                    ResourceId = reader.Int32(i++),
+                    CustodianId = reader.Int32(i++),
                     CustodyId = reader.Int32(i++),
+                    ParticipantId = reader.Int32(i++),
+                    ResourceId = reader.Int32(i++),
                     EntryTypeId = reader.Int32(i++),
                     NotedRelationId = reader.Int32(i++),
                     CenterId = reader.Int32(i++),
@@ -6345,7 +6356,6 @@ namespace Tellma.Data
                 lineDefinitionEntriesTable,
                 lineDefinitionEntryCustodyDefinitionsTable,
                 lineDefinitionEntryResourceDefinitionsTable,
-                lineDefinitionEntryNotedRelationDefinitionsTable,
                 lineDefinitionColumnsTable,
                 lineDefinitionGenerateParametersTable,
                 lineDefinitionStateReasonsTable,
@@ -6374,11 +6384,7 @@ namespace Tellma.Data
                 TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
-            var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
-            {
-                TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+
             var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
             {
                 TypeName = $"[dbo].[{nameof(LineDefinitionColumn)}List]",
@@ -6409,7 +6415,6 @@ namespace Tellma.Data
             cmd.Parameters.Add(lineDefinitionEntriesTvp);
             cmd.Parameters.Add(lineDefinitionEntryCustodyDefinitionsTvp);
             cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
-            cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
             cmd.Parameters.Add(lineDefinitionColumnsTvp);
             cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
             cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
@@ -6440,7 +6445,6 @@ namespace Tellma.Data
                     lineDefinitionEntriesTable,
                     lineDefinitionEntryCustodyDefinitionsTable,
                     lineDefinitionEntryResourceDefinitionsTable,
-                    lineDefinitionEntryNotedRelationDefinitionsTable,
                     lineDefinitionColumnsTable,
                     lineDefinitionGenerateParametersTable,
                     lineDefinitionStateReasonsTable,
@@ -6467,11 +6471,6 @@ namespace Tellma.Data
                 var lineDefinitionEntryResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryResourceDefinitions", lineDefinitionEntryResourceDefinitionsTable)
                 {
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-                var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
-                {
-                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
                 var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
@@ -6504,7 +6503,6 @@ namespace Tellma.Data
                 cmd.Parameters.Add(lineDefinitionEntriesTvp);
                 cmd.Parameters.Add(lineDefinitionEntryCustodyDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
-                cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionColumnsTvp);
                 cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
                 cmd.Parameters.Add(lineDefinitionStateReasonsTvp);

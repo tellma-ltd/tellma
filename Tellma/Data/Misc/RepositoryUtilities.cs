@@ -214,7 +214,6 @@ namespace Tellma.Data
             DataTable lineDefinitionEntries,
             DataTable lineDefinitionEntryCustodyDefinitions,
             DataTable lineDefinitionEntryResourceDefinitions,
-            DataTable lineDefinitionEntryNotedRelationDefinitions,
             DataTable lineDefinitionColumns,
             DataTable lineDefinitionGenerateParameters,
             DataTable lineDefinitionStateReasons,
@@ -242,12 +241,6 @@ namespace Tellma.Data
             lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
             lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
             var lineDefinitionEntryResourceDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryResourceDefinitionForSave>(lineDefinitionEntryResourceDefinitionsTable);
-
-            DataTable lineDefinitionEntryNotedRelationDefinitionsTable = new DataTable();
-            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
-            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
-            var lineDefinitionEntryNotedRelationDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryNotedRelationDefinitionForSave>(lineDefinitionEntryNotedRelationDefinitionsTable);
 
             DataTable lineDefinitionColumnsTable = new DataTable();
             lineDefinitionColumnsTable.Columns.Add(new DataColumn("Index", typeof(int)));
@@ -347,29 +340,6 @@ namespace Tellma.Data
 
                                 lineDefinitionEntryResourceDefinitionsTable.Rows.Add(lineDefinitionEntryResourceDefinitionsRow);
                                 lineDefinitionEntryResourceDefinitionIndex++;
-                            });
-                        }
-
-                        // Entries/NotedRelationDefinitions
-                        if (lineDefinitionEntry.NotedRelationDefinitions != null)
-                        {
-                            int lineDefinitionEntryNotedRelationDefinitionIndex = 0;
-                            lineDefinitionEntry.NotedRelationDefinitions.ForEach(lineDefinitionEntryNotedRelationDefinition =>
-                            {
-                                DataRow lineDefinitionEntryNotedRelationDefinitionsRow = lineDefinitionEntryNotedRelationDefinitionsTable.NewRow();
-
-                                lineDefinitionEntryNotedRelationDefinitionsRow["Index"] = lineDefinitionEntryNotedRelationDefinitionIndex;
-                                lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
-                                lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
-
-                                foreach (var prop in lineDefinitionEntryNotedRelationDefinitionProps)
-                                {
-                                    var value = prop.GetValue(lineDefinitionEntryNotedRelationDefinition);
-                                    lineDefinitionEntryNotedRelationDefinitionsRow[prop.Name] = value ?? DBNull.Value;
-                                }
-
-                                lineDefinitionEntryNotedRelationDefinitionsTable.Rows.Add(lineDefinitionEntryNotedRelationDefinitionsRow);
-                                lineDefinitionEntryNotedRelationDefinitionIndex++;
                             });
                         }
 
@@ -494,7 +464,6 @@ namespace Tellma.Data
                 lineDefinitionEntriesTable, 
                 lineDefinitionEntryCustodyDefinitionsTable,
                 lineDefinitionEntryResourceDefinitionsTable,
-                lineDefinitionEntryNotedRelationDefinitionsTable,
                 lineDefinitionColumnsTable,
                 lineDefinitionGenerateParametersTable,
                 lineDefinitionStateReasonsTable,
