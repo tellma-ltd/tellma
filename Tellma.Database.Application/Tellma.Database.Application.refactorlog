@@ -2458,4 +2458,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[StandardAndPure]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="cf67eef5-58d9-455d-b793-f44d505da18b" ChangeDateTime="08/28/2020 03:18:53">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ParentAccountTypeId]" />
+  </Operation>
 </Operations>

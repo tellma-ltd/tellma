@@ -295,7 +295,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,1330,	N'PostingDate',			1,	N'Sales Date',		1,4,1),
 (9,1330,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash sale. useful for credit purchase
 
---1360:RevenueFromInventoryWithPointInvoice
+--1360:RevenueFromInventoryWithPointInvoice, appears in cash sales and credit sales, in addition to Revenue from 
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE PWL

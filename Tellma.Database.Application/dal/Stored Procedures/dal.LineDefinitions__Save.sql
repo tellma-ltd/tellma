@@ -141,7 +141,7 @@ SET NOCOUNT ON;
 				II.[Id] AS [LineDefinitionId],
 				LDE.[Index],
 				LDE.[Direction],
-				LDE.[AccountTypeId],
+				LDE.[ParentAccountTypeId],
 				LDE.[EntryTypeId]
 			FROM @LineDefinitionEntries LDE
 			JOIN @LineDefinitionsIndexedIds II ON LDE.[HeaderIndex] = II.[Index]
@@ -157,7 +157,7 @@ SET NOCOUNT ON;
 			UPDATE SET
 				t.[Index]					= s.[Index],
 				t.[Direction]				= s.[Direction],
-				t.[AccountTypeId]			= s.[AccountTypeId],
+				t.[ParentAccountTypeId]			= s.[ParentAccountTypeId],
 				t.[EntryTypeId]				= s.[EntryTypeId],
 				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
@@ -172,7 +172,7 @@ SET NOCOUNT ON;
 				s.[LineDefinitionId],
 				s.[Index],
 				s.[Direction],
-				s.[AccountTypeId],
+				s.[ParentAccountTypeId],
 				s.[EntryTypeId]
 			)
 		WHEN NOT MATCHED BY SOURCE THEN

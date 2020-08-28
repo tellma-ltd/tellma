@@ -11,11 +11,11 @@ SET NOCOUNT ON;
 
 	-- List all document definitions where no account type is common to All their line definitions
 	WITH DDAccountTypes AS (
-		SELECT LD.HeaderIndex, LDE.AccountTypeId, COUNT(DISTINCT LD.LineDefinitionId) AS AccountTypeOccurrences
+		SELECT LD.HeaderIndex, LDE.[ParentAccountTypeId], COUNT(DISTINCT LD.LineDefinitionId) AS AccountTypeOccurrences
 		FROM dbo.LineDefinitionEntries LDE
 		JOIN @DocumentDefinitionLineDefinitions LD ON LDE.LineDefinitionId = LD.LineDefinitionId
 		WHERE LD.[Id] <> @ManualLineLD
-		GROUP BY LD.HeaderIndex, LDE.AccountTypeId
+		GROUP BY LD.HeaderIndex, LDE.[ParentAccountTypeId]
 	),
 	DDLineDefinitions AS (
 		SELECT [HeaderIndex], COUNT(LineDefinitionId) AS TabCount
@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 		GROUP BY [HeaderIndex]
 	),
 	ConformantDD AS (
-		SELECT DDAT.HeaderIndex, DDAT.AccountTypeId
+		SELECT DDAT.HeaderIndex, DDAT.[ParentAccountTypeId]
 		FROM DDAccountTypes DDAT
 		JOIN DDLineDefinitions DDLD ON DDAT.HeaderIndex = DDLD.HeaderIndex
 		WHERE DDAT.AccountTypeOccurrences = DDLD.TabCount

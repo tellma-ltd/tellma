@@ -35,7 +35,7 @@ SELECT * FROM [dbo].[DocumentDefinitionMarkupTemplates] WHERE [DocumentDefinitio
 
 -- Load relevant information from Account Types
 SELECT T.[Id], T.[EntryTypeParentId] FROM [map].[AccountTypes]() T 
-WHERE T.[Id] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+WHERE T.[Id] IN (SELECT [ParentAccountTypeId] FROM [map].[LineDefinitionEntries]())
 
 -- Get the line definitions
 SELECT * FROM [map].[LineDefinitions]();
@@ -50,7 +50,7 @@ SELECT [LineDefinitionEntryId], [CustodyDefinitionId] FROM [dbo].[LineDefinition
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [CustodyDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
-JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
+JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.[AccountTypeCustodyDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodyDefinitions])
@@ -60,7 +60,7 @@ SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitio
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [ResourceDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
-JOIN dbo.AccountTypes ATP ON LDE.AccountTypeId = ATP.[Id]
+JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryResourceDefinitions])

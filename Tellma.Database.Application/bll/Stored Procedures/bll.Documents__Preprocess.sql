@@ -238,7 +238,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
-	JOIN dbo.AccountTypes AC ON LDE.[AccountTypeId] = AC.[Id]
+	JOIN dbo.AccountTypes AC ON LDE.[ParentAccountTypeId] = AC.[Id]
 	JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
@@ -327,7 +327,7 @@ BEGIN
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-		JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeId] = ATP.[Id]
+		JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
@@ -364,7 +364,7 @@ BEGIN
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-		JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeId] = ATP.[Id]
+		JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]

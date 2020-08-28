@@ -9,7 +9,7 @@ SELECT [Id], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [Allow
 FROM dbo.LineDefinitions;
 INSERT INTO @LineDefinitionEntries
 (	[Index], [HeaderIndex],		[Id], [Direction], [AccountTypeId], [EntryTypeId])
-SELECT [Id], [LineDefinitionId],[Id], [Direction], [AccountTypeId], [EntryTypeId]
+SELECT [Id], [LineDefinitionId],[Id], [Direction], [ParentAccountTypeId], [EntryTypeId]
 FROM dbo.LineDefinitionEntries;
 INSERT INTO @LineDefinitionEntryCustodyDefinitions
 (		[Index],	[LineDefinitionEntryIndex],		[LineDefinitionIndex],	[Id],		[CustodyDefinitionId])

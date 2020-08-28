@@ -28,7 +28,6 @@ SET NOCOUNT ON;
 	
 	 [✓] The SerialNumber is required if original document
 	 [✓] The SerialNumber is not duplicated in the uploaded list
-	 -- TODO: Apply the following two rules on Lines as well in C#
 	 [✓] The PostingDate is not after 1 day in the future
 	 [✓] The PostingDate cannot be before archive date
 	 [✓] If Entry.CurrencyId is functional, the value must be the same as monetary value
