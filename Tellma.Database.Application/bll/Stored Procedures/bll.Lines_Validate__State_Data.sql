@@ -18,8 +18,8 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
-		(N'CurrencyId'),(N'CustodyId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue'),
-		(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
+		(N'CurrencyId'),('CustodianId'),(N'CustodyId'),(N'ParticipantId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
+		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
 		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -28,7 +28,9 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
+		FL.Id = N'CustodianId'			AND E.[CustodianId] IS NULL OR
 		FL.Id = N'CustodyId'			AND E.[CustodyId] IS NULL OR
+		FL.Id = N'ParticipantId'		AND E.[ParticipantId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR

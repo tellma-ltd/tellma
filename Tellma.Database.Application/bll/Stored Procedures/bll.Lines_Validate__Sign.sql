@@ -157,13 +157,13 @@ SET NOCOUNT ON;
 
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [CustodyId], [ResourceId], [CenterId],
+	[Direction], [AccountId], [CurrencyId], [CustodianId], [CustodyId],[ParticipantId], [ResourceId],  [CenterId],
 	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
 	[Time2], [ExternalReference], [AdditionalReference], [NotedRelationId], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodyId],E.[ResourceId],E.[CenterId],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodianId],E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
 	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]

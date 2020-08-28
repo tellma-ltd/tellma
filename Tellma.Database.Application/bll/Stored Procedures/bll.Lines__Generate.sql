@@ -33,8 +33,10 @@ AS
 	SELECT
 	[E].[AccountId],
 	[E].[CurrencyId],
-	[E].[ResourceId],
+	[E].[CustodianId],
 	[E].[CustodyId],
+	[E].[ParticipantId],
+	[E].[ResourceId],
 	[E].[EntryTypeId],
 	[E].[NotedRelationId],
 	[E].[CenterId],

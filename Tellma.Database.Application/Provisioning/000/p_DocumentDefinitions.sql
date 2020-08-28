@@ -217,20 +217,133 @@ INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description],
 -- DELETE all _07 Documents folders
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 (0,0, @ManualLineLD, 1),
--- 10:CashPurchaseVoucher
+------ Capitalization of CIP expenses
+--@PPEFromCIPLD
+--@PPEFromCostCapitalizationLD
+--@CIPFromCostCapitalizationLD
+
+------ Capitalization of IPUCD expenses
+--@PPEFromIPUCDLD <CANCELED>
+--@IPCFromIPUCDLD
+--@IPCFromCostCapitalizationLD
+--@IPUCDFromCostCapitalizationLD
+
+------ Capitalization of IIT expenses
+--@PPEFromIITLD
+
+------ ReclassificationVoucher
+--@PPEFromIPCLD
+--@PPEFromInventoryLD
+--@InventoryFromPPELD
+--@InventoryFromIPCLD
+
+------ 10:CashPurchaseVoucher
 (100,10,@CashToSupplierWithPointInvoiceLD,1),
 (105,10,@PPEFromSupplierLD,1),
+--@PPEFromSupplierWithPointInvoiceLD
 (110,10,@InventoryFromSupplierLD,1),
 (115,10,@PointExpenseFromSupplierLD,1),
 (120,10,@ManualLineLD,1),
--- 30:CreditPurchaseVoucher
+------ 30:CreditPurchaseVoucher
 (300,30,@PPEFromSupplierLD,1),
+--@PPEFromSupplierWithPointInvoiceLD
 (305,30,@InventoryFromSupplierLD,1),
 (310,30,@PointExpenseFromSupplierLD,1),
 (315,30,@ManualLineLD,1),
--- 50:CashSaleVoucher
+-- Fixed Assets Conversion Voucher (Split/combine)
+--@PPEConversionLD <Vertical LD>
+--@IPCConversionLD <vertical LD>
+
+------ Fixed Asset Transfer Voucher
+--@PPETransferLD
+
+------ Stock Production/Conversion Voucher
+--@InventoryConversionLD <Vertical LD>
+
+------ Stock Issue Voucher
+--@InventoryTransferLD
+
+------ 50:CashSaleVoucher
 (35,10,@CashFromCustomerWithWTWithPointInvoiceLD,1),
 (40,10,@RevenueFromInventoryLD,1);
+
+
+--@ManualLineLD
+
+
+
+--@InventoryAndByProductFromInventoryLD
+--@InventoryAndByProductFromInventoryAndSuppliesLD
+--@InventoryFromWIPLD
+--@InventoryFromIITLD
+--@InventoryFromSupplierLD
+--@InventoryFromSupplierWithPointInvoiceLD
+--@InventoryFromCostCapitalizationLD
+--@WIPFromCostCapitalizationLD
+--@IITFromCostCapitalizationLD
+--@SalePointInvoiceLD
+--@SalePeriodInvoiceLD
+--@RevenueFromInventoryLD
+--@RevenueFromPointServiceLD
+--@RevenueFromPeriodServiceLD
+--@RevenueFromInventoryWithPointInvoiceLD
+--@RevenueFromPointServiceWithPointInvoiceLD
+--@RevenueFromPeriodServiceWithPeriodInvoiceLD
+--@PPEToCustomerLD
+--@CustomerWTLD
+--@CashFromCustomerLD
+--@CashFromCustomerWithWTLD
+--@CashFromCustomerWithPointInvoiceLD
+--@CashFromCustomerWithPeriodInvoiceLD
+--@CashFromCustomerWithWTWithPointInvoiceLD
+--@CashFromCustomerWithWTWithPeriodInvoiceLD
+--@CashReceiptFromOtherLD
+--@CheckInSafeFromCustomerLD
+--@CheckInSafeFromCustomerWithWTLD
+--@CheckInSafeFromCustomerWithPointInvoiceLD
+--@CheckInSafeFromCustomerWithPeriodInvoiceLD
+--@CheckInSafeFromCustomerWithWTWithPointInvoiceLD
+--@CheckInSafeFromCustomerWithWTWithPeriodInvoiceLD
+--@CheckReceiptFromOtherToCashierLD
+--@CashExchangeLD
+--@CashTransferLD
+--@CashToBankLD
+--@CheckToBankLD
+--@CashFromSupplierLD
+--@PPEToSupplierLD
+--@InventoryToSupplierLD
+--@CashToSalariesLD
+--@CashToSalariesWithAdvanceLD
+--@CashToSalariesWithAdvanceAndStaffLoanLD
+--@CashToSupplierWithPointInvoiceLD
+--@CashToSupplierWithPeriodInvoiceLD
+--@CashToSupplierWithPointInvoiceWithWTLD
+--@CashToSupplierWithPeriodInvoiceWithWTLD
+--@CashToSupplierLD
+--@PurchasePointInvoiceLD
+--@PurchasePeriodInvoiceLD
+--@SupplierWTLD
+--@CreditNoteFromSupplierLD
+--@PenaltyOnEmployeeLD
+--@CreditNoteToCustomerLD
+--@PointExpenseFromInventoryLD
+--@PointExpenseFromSupplierLD
+--@PeriodExpenseFromSupplierLD
+--@ExpenseFromSupplierWithInvoiceLD
+--@WageExpenseLD
+--@SalaryTransportationOvertimePenaltyWithPensionWithCostSharingLD
+--@SalaryTransportationOvertimePenaltyWithPensionWithCostSharingLD
+--@OvertimeLD
+--@DepreciationPPELD
+--@DepreciationIPCLD
+--@IntangibleAmortizationLD
+--@AnnualLeaveAllowanceLD
+--@AnnualLeaveUsageLD
+--@UnpaidLeaveLD
+--@ExchangeVarianceLD
+--@TradeSettlementLD
+--@HyperinflationLD
+--@TaskAssignmentLD
 
 
 

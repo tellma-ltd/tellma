@@ -41,11 +41,6 @@
 	-- Additional properties, Is Active at the end
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[IsSystem]					BIT					NOT NULL DEFAULT 0,
-	-- Audit details
-	-- Pure SQL properties and computed properties
-	--[ParentNode]				AS [Node].GetAncestor(1) PERSISTED,
-	--[Level]						AS [Node].GetLevel() PERSISTED,
-	--[Path]						AS [Node].ToString() PERSISTED,
 	-- Audit properties
 	[SavedById]					INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AccountTypes__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]					DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
