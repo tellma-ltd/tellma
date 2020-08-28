@@ -157,7 +157,7 @@ SET NOCOUNT ON;
 			UPDATE SET
 				t.[Index]					= s.[Index],
 				t.[Direction]				= s.[Direction],
-				t.[ParentAccountTypeId]			= s.[ParentAccountTypeId],
+				t.[ParentAccountTypeId]		= s.[ParentAccountTypeId],
 				t.[EntryTypeId]				= s.[EntryTypeId],
 				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
@@ -165,7 +165,7 @@ SET NOCOUNT ON;
 				[LineDefinitionId],
 				[Index],
 				[Direction],
-				[AccountTypeId],
+				[ParentAccountTypeId],
 				[EntryTypeId]
 			)
 			VALUES (

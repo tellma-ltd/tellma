@@ -8,7 +8,7 @@ INSERT INTO @LineDefinitions
 SELECT [Id], [Id], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm], [GenerateScript], [PreprocessScript], [ValidateScript]
 FROM dbo.LineDefinitions;
 INSERT INTO @LineDefinitionEntries
-(	[Index], [HeaderIndex],		[Id], [Direction], [AccountTypeId], [EntryTypeId])
+(	[Index], [HeaderIndex],		[Id], [Direction], [ParentAccountTypeId], [EntryTypeId])
 SELECT [Id], [LineDefinitionId],[Id], [Direction], [ParentAccountTypeId], [EntryTypeId]
 FROM dbo.LineDefinitionEntries;
 INSERT INTO @LineDefinitionEntryCustodyDefinitions

@@ -33,7 +33,7 @@
 (404, N'ServiceDeliveryToTradeReceivable', N'Delivering service to customer', N'Service', N'Services', 0, 0);
 
 --0: ManualLine
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [AccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [ParentAccountTypeId]) VALUES (0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 													[ReadOnlyState],
@@ -67,7 +67,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 72;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,72,+1,	@PropertyIntendedForSaleInOrdinaryCourseOfBusiness, @IncreaseDecreaseThroughProductionExtension),
 (1,72,-1,	@InvestmentPropertyUnderConstructionOrDevelopment, NULL)
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -128,7 +128,7 @@ INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 (1,83,N'ExchangeRate',	N'Official Exchange Rate',	N'Required',	N'Decimal', NULL),
 (2,83,N'PostingDate',	N'As Of Date',				N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,83,	+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
@@ -152,7 +152,7 @@ SET [GenerateScript] = N'
 		WITH ExpenseByNatureAccounts AS (
 			SELECT A.[Id]
 			FROM dbo.Accounts A
-			JOIN dbo.AccountTypes [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+			JOIN dbo.AccountTypes [ATC] ON A.[ParentAccountTypeId] = [ATC].[Id]
 			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 		)
 		INSERT INTO @WideLines(
@@ -200,7 +200,7 @@ INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 (0,91,N'CenterId',		N'Project',		N'Required',	N'Center',	N'CenterType = ''WorkInProgressExpendituresControl'''),
 (1,91,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,91,	+1, @ConstructionInProgress),
 (1,91,	-1, @ExpenseByNature);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -230,7 +230,7 @@ SET [GenerateScript] = N'
 		WITH ExpenseByNatureAccounts AS (
 			SELECT A.[Id]
 			FROM dbo.Accounts A
-			JOIN dbo.AccountTypes [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+			JOIN dbo.AccountTypes [ATC] ON A.[ParentAccountTypeId] = [ATC].[Id]
 			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 		)
 		INSERT INTO @WideLines(
@@ -278,7 +278,7 @@ INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 (0,92,N'CenterId',		N'Scheme',		N'Required',	N'Center',	N'CenterType = ''ConstructionInProgressExpendituresControl'''),
 (1,92,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,92,	+1, @InvestmentPropertyUnderConstructionOrDevelopment),
 (1,92,	-1, @ExpenseByNature);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -308,7 +308,7 @@ SET [GenerateScript] = N'
 		WITH ExpenseByNatureAccounts AS (
 			SELECT A.[Id]
 			FROM dbo.Accounts A
-			JOIN dbo.AccountTypes [ATC] ON A.[AccountTypeId] = [ATC].[Id]
+			JOIN dbo.AccountTypes [ATC] ON A.[ParentAccountTypeId] = [ATC].[Id]
 			WHERE [ATC].[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 		)
 		INSERT INTO @WideLines(
@@ -356,7 +356,7 @@ INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 (0,93,N'CenterId',		N'Shipment',		N'Required',	N'Center',	N'CenterType = ''CurrentInventoriesInTransitExpendituresControl'''),
 (1,93,N'PostingDate',	N'As Of Date',	N'Required',	N'Date',	NULL);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,93,	+1, @CurrentInventoriesInTransit),
 (1,93,	-1, @ExpenseByNature);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -383,7 +383,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 100;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,100,	+1, @CashPaymentsToOthersControlExtension),
 (1,100,	-1, @CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -415,7 +415,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 110;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],	[EntryTypeId]) VALUES
+[Direction],[ParentAccountTypeId],	[EntryTypeId]) VALUES
 (0,110,+1,	@BalancesWithBanks,	@InternalCashTransferExtension),
 (1,110,-1,	@CashOnHand,		@InternalCashTransferExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -444,7 +444,7 @@ SET [GenerateScript] = N'
 		WITH CheckOnHandAccounts AS
 		(
 			SELECT A.[Id] FROM dbo.Accounts A
-			JOIN dbo.AccountTypes ATC ON A.AccountTypeId = ATC.[Id]
+			JOIN dbo.AccountTypes ATC ON A.ParentAccountTypeId = ATC.[Id]
 			JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 			WHERE ATP.[Concept] = N''CashOnHand''
 		)
@@ -510,7 +510,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 111;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],	[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],	[EntryTypeId]) VALUES
 (0,111,+1,	@BalancesWithBanks, @InternalCashTransferExtension),
 (1,111,-1,	@CashOnHand,		@InternalCashTransferExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -551,7 +551,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 120;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],	[AccountTypeId]) VALUES
+[Direction],	[ParentAccountTypeId]) VALUES
 (0,120,+1,		@CashAndCashEquivalents),
 (1,120,-1,		@CashReceiptsFromOthersControlExtension); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -596,7 +596,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 130;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],	[AccountTypeId]) VALUES
+[Direction],	[ParentAccountTypeId]) VALUES
 (0,130,+1,		@CashPaymentsToOthersControlExtension),
 (1,130,-1,		@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -626,7 +626,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 120;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,120,	+1, @CashAndCashEquivalents),
 (1,120,	-1, @CashReceiptsFromOthersControlExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -654,7 +654,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 121;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,121,	+1, @CashOnHand),
 (1,121,	-1, @CashReceiptsFromOthersControlExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -684,7 +684,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,300,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
 (1,300,-1,	@WT, NULL),
 (2,300,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
@@ -714,7 +714,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 301;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],	[AccountTypeId],	[EntryTypeId]) VALUES
+[Direction],	[ParentAccountTypeId],	[EntryTypeId]) VALUES
 (0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL),
 (1,301,+1,		@VATReceivable,		NULL),
 (2,301,-1,		@CashPaymentsToSuppliersControlExtension, NULL); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
@@ -745,7 +745,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 302;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],										[EntryTypeId]) VALUES
+[Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
 (0,302,+1,	@Inventories,											@ReceiptsReturnsThroughPurchaseExtension),
 (2,302,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
@@ -801,7 +801,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 400;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,400,+1,	@CashOnHand,		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),-- cashier
 (1,400,-1,	@CashReceiptsFromCustomersControlExtension, NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -831,7 +831,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 401;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,401,+1,	@CashOnHand,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices), -- only in cashier
 (1,401,-1,	@CashReceiptsFromCustomersControlExtension, NULL);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
@@ -860,7 +860,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 3;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 -- We might better add ContractDefinitionId and limit it to employees for this case
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,3,+1,	@OtherCurrentPayables, NULL),
 (1,3,-1,	@CashAndCashEquivalents, @PaymentsToAndOnBehalfOfEmployees);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -885,7 +885,7 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 11;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],				[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],				[EntryTypeId]) VALUES
 (0,11,+1,	@Inventories,					@ReceiptsReturnsThroughPurchaseExtension), -- 
 (1,11,-1,	@CurrentValueAddedTaxReceivables,NULL), 
 (2,11,-1,	@GoodsAndServicesReceivedFromSuppliersControlExtension,		NULL);
@@ -916,11 +916,11 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 12;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,12,+1,	@ReceiptsReturnsThroughPurchaseExtension), -- @Inventories
 (1,12,-1,	NULL); -- @TradingControlExtension
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,12,	@RawMaterials),
 (1,0,12,	@ProductionSupplies),
 (2,0,12,	@Merchandise),
@@ -943,12 +943,12 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 13;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,13,+1,	NULL), -- @ExpenseByNature
 (1,13,-1,	NULL), -- @CurrentValueAddedTaxReceivables
 (2,13,-1,	NULL); -- @TradeAndOtherCurrentPayablesToTradeSuppliers
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,13,	@RawMaterialsAndConsumablesUsed),
 (1,0,13,	@CostOfMerchandiseSold),
 (2,0,13,	@InsuranceExpense),
@@ -992,11 +992,11 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 14;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,14,+1,	NULL), -- @ExpenseByNature
 (1,14,-1,	NULL); 
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,14,	@RawMaterialsAndConsumablesUsed),
 (1,0,14,	@CostOfMerchandiseSold),
 (2,0,14,	@InsuranceExpense),
@@ -1045,11 +1045,11 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 21;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,21,+1,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices), -- @CashAndCashEquivalents
 (1,21,-1,	NULL); -- @CurrentTradeReceivables
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,21,	@CashAndCashEquivalents),
 (0,1,21,	@CurrentTradeReceivables);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -1076,12 +1076,12 @@ SET [PreprocessScript] = N'
 '
 WHERE [Index] = 22;
 INSERT INTO @LineDefinitionEntries([Index],[HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,22,+1,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices), -- @CashAndCashEquivalents
 (1,22,-1,	NULL), -- @CurrentValueAddedTaxPayables
 (2,22,-1,	NULL); -- @TradingControlExtension
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,22,	@CashAndCashEquivalents),
 (0,1,22,	@CurrentValueAddedTaxPayables),
 (0,2,22,	@TradingControlExtension);
@@ -1122,12 +1122,12 @@ SET [PreprocessScript] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 33;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,33,+1), -- @TradingControlExtension
 (1,33,-1), -- @CurrentValueAddedTaxPayables
 (2,33,-1); -- @RevenueFromRenderingOfServices
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,33,	@TradingControlExtension),
 (0,1,33,	@CurrentValueAddedTaxPayables),
 (0,2,33,	@RevenueFromRenderingOfServices);
@@ -1165,11 +1165,11 @@ SET [PreprocessScript] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 34;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId]) VALUES
+[Direction], [ParentAccountTypeId]) VALUES
 (0,34,+1), -- @TradingControlExtension
 (1,34,-1); -- @RevenueFromRenderingOfServices
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,34,	@TradingControlExtension),
 (0,1,34,	@RevenueFromRenderingOfServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -1203,11 +1203,11 @@ SET [PreprocessScript] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 91;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [AccountTypeId],[EntryTypeId]) VALUES
+[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
 (0,91,+1,	NULL), -- @DepreciationExpense
 (1,91,-1,	@DepreciationPropertyPlantAndEquipment); -- @PropertyPlantAndEquipment
 INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
-			[AccountTypeId]) VALUES
+			[ParentAccountTypeId]) VALUES
 (0,0,91,	@DepreciationExpense),
 (1,1,91,	@Buildings),
 (2,1,91,	@Machinery),

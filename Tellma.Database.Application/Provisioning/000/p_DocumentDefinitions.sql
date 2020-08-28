@@ -221,12 +221,12 @@ INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitio
 (100,10,@CashToSupplierWithPointInvoiceLD,1),
 (105,10,@PPEFromSupplierLD,1),
 (110,10,@InventoryFromSupplierLD,1),
-(115,10,@PointExpenseFromSupplier,1),
+(115,10,@PointExpenseFromSupplierLD,1),
 (120,10,@ManualLineLD,1),
 -- 30:CreditPurchaseVoucher
 (300,30,@PPEFromSupplierLD,1),
 (305,30,@InventoryFromSupplierLD,1),
-(310,30,@PointExpenseFromSupplier,1),
+(310,30,@PointExpenseFromSupplierLD,1),
 (315,30,@ManualLineLD,1),
 -- 50:CashSaleVoucher
 (35,10,@CashFromCustomerWithWTWithPointInvoiceLD,1),
