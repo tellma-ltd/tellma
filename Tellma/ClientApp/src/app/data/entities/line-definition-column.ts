@@ -8,6 +8,7 @@ export interface LineDefinitionColumnForSave extends EntityForSave {
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Filter?: string;
     InheritsFromHeader?: boolean;
     VisibleState?: PositiveLineState | 5;
     RequiredState?: PositiveLineState | 5;

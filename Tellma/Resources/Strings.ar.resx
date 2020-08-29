@@ -763,6 +763,9 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
+  <data name="Entry_Custodian" xml:space="preserve">
+    <value>صاحب العهدة</value>
+  </data>
   <data name="Entry_Custody" xml:space="preserve">
     <value>العهدة</value>
   </data>
@@ -798,6 +801,9 @@
   </data>
   <data name="Entry_NotedRelation" xml:space="preserve">
     <value>العلاقة المعنية</value>
+  </data>
+  <data name="Entry_Participant" xml:space="preserve">
+    <value>الطرف الثاني</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>الكمية</value>
@@ -1641,6 +1647,9 @@
   </data>
   <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
     <value>حركة السطر</value>
+  </data>
+  <data name="LineDefinitionColumn_Filter" xml:space="preserve">
+    <value>المصفاة</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
     <value>تأخذ القيمة من المستند</value>

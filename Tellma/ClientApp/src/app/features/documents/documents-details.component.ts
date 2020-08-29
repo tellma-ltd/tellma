@@ -2995,11 +2995,28 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!entryDef && !!entryDef.ResourceDefinitionIds ? entryDef.ResourceDefinitionIds : [];
   }
 
+  public getFilter(lineDefId: number, columnIndex: number): string {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    return !!colDef ? colDef.Filter : null;
+  }
+
   public entryTypeFilter(lineDefId: number, columnIndex: number): string {
     // Filter for smart line
     // TODO: What about EntryTypeId ??
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
+    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
+
+    const customFilter = this.getFilter(lineDefId, columnIndex);
+
+    if (!!parentFilter && !!customFilter) {
+      return `(${parentFilter}) and (${customFilter})`;
+    } else if (!!parentFilter) {
+      return parentFilter;
+    } else if (customFilter) {
+      return customFilter;
+    } else {
+      return null;
+    }
   }
 
   public serverErrors(lineDefId: number, columnIndex: number, line: LineForSave): string[] {

@@ -349,6 +349,8 @@
                                 <th *ngIf="ws.settings.TernaryLanguageId">
                                     {{ ('Label' | translate) + ws.ternaryPostfix }}
                                 </th>
+                                <th>{{ 'LineDefinitionColumn_Filter' | translate }}
+                                </th>
                                 <th>{{ 'LineDefinitionColumn_VisibleState' | translate }}
                                 </th>
                                 <th>{{ 'LineDefinitionColumn_RequiredState' | translate }}
@@ -429,6 +431,18 @@
                                             autocomplete="off" #label3model="ngModel" />
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: label3model, serverErrors: column?.serverErrors?.Label3 }">
+                                        </ng-container>
+                                    </ng-template>
+                                </td>
+
+                                <td [class.p-0]="isEdit">
+                                    <span *ngIf="!isEdit; else filtertemplate">{{ column.Filter }}</span>
+                                    <ng-template #filtertemplate>
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="column.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            autocomplete="off" #filtermodel="ngModel" />
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: column?.serverErrors?.Filter }">
                                         </ng-container>
                                     </ng-template>
                                 </td>
@@ -728,12 +742,14 @@
                             ({{ 'Blank' | translate }})
                         </div>
                         <div *ngIf="!!model.GenerateScript"
-                            class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.GenerateScript }}</div>
+                            class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.GenerateScript }}
+                        </div>
                     </ng-container>
                     <ng-template #generatescripttemplate>
                         <textarea id="generatescript" class="w-100 form-control t-studio-input text-nowrap t-code"
                             spellcheck="false" [(ngModel)]="model.GenerateScript" #generatescriptnmodel="ngModel"
-                            rows="15" #gstextarea (keydown)="onGenerateScriptKeydown(gstextarea, $event, model)"></textarea>
+                            rows="15" #gstextarea
+                            (keydown)="onGenerateScriptKeydown(gstextarea, $event, model)"></textarea>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: generatescriptnmodel, serverErrors: model?.serverErrors?.GenerateScript }">
                         </ng-container>
@@ -756,8 +772,8 @@
                     <div *ngIf="!model.PreprocessScript" class="text-muted bg-dark p-2 pb-5 font-italic">
                         ({{ 'Blank' | translate }})
                     </div>
-                    <div *ngIf="!!model.PreprocessScript"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.PreprocessScript }}</div>
+                    <div *ngIf="!!model.PreprocessScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
+                        {{ model.PreprocessScript }}</div>
                 </ng-container>
                 <ng-template #preprocessscripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
@@ -785,8 +801,8 @@
                     <div *ngIf="!model.ValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
                         ({{ 'Blank' | translate }})
                     </div>
-                    <div *ngIf="!!model.ValidateScript"
-                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">{{ model.ValidateScript }}</div>
+                    <div *ngIf="!!model.ValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
+                        {{ model.ValidateScript }}</div>
                 </ng-container>
                 <ng-template #validatescripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"

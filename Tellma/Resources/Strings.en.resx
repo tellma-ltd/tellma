@@ -763,6 +763,9 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="Entry_Custodian" xml:space="preserve">
+    <value>Custodian</value>
+  </data>
   <data name="Entry_Custody" xml:space="preserve">
     <value>Custody</value>
   </data>
@@ -798,6 +801,9 @@
   </data>
   <data name="Entry_NotedRelation" xml:space="preserve">
     <value>Noted Relation</value>
+  </data>
+  <data name="Entry_Participant" xml:space="preserve">
+    <value>Participant</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>Quantity</value>
@@ -1641,6 +1647,9 @@
   </data>
   <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
     <value>Entry Index</value>
+  </data>
+  <data name="LineDefinitionColumn_Filter" xml:space="preserve">
+    <value>Filter</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
     <value>Inherits From Header</value>

@@ -42,6 +42,9 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
+        [Display(Name = "LineDefinitionColumn_Filter")]
+        public string Filter { get; set; }
+
         [Display(Name = "LineDefinitionColumn_InheritsFromHeader")]
         public bool? InheritsFromHeader { get; set; }
 

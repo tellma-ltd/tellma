@@ -334,6 +334,7 @@ namespace Tellma.Controllers.Dto
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
+        public string Filter { get; set; }
         public short? RequiredState { get; set; }
         public short? ReadOnlyState { get; set; }
         public bool? InheritsFromHeader { get; set; }

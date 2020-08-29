@@ -763,6 +763,9 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
+  <data name="Entry_Custodian" xml:space="preserve">
+    <value>保管人</value>
+  </data>
   <data name="Entry_Custody" xml:space="preserve">
     <value>代理人</value>
   </data>
@@ -798,6 +801,9 @@
   </data>
   <data name="Entry_NotedRelation" xml:space="preserve">
     <value>相关代理</value>
+  </data>
+  <data name="Entry_Participant" xml:space="preserve">
+    <value>参加者</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>数量</value>
@@ -1109,7 +1115,7 @@
     <value>帐户 '{0}' 在{1} {2}中。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
-    <value>帐户 '{0}' 在{1} {2}使用不相容条目类型 '{3}'。</value>
+    <value>帐户 '{0}' 在{1 {} 2}使用不相容条目类型 '{3}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与中心 '{3}' 中使用。</value>
@@ -1641,6 +1647,9 @@
   </data>
   <data name="LineDefinitionColumn_EntryIndex" xml:space="preserve">
     <value>项索引</value>
+  </data>
+  <data name="LineDefinitionColumn_Filter" xml:space="preserve">
+    <value>过滤</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
     <value>继承了头</value>
