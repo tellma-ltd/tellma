@@ -482,7 +482,11 @@ namespace Tellma.Controllers
             };
         }
 
-        private static LineDefinitionForClient MapLineDefinition(LineDefinition def)
+        private static LineDefinitionForClient MapLineDefinition(LineDefinition def, 
+            Dictionary<int, List<int>> entryCustodianDefs,
+            Dictionary<int, List<int>> entryCustodyDefs,
+            Dictionary<int, List<int>> entryParticipantDefs,
+            Dictionary<int, List<int>> entryResourceDefs)
         {
             var line = new LineDefinitionForClient
             {
@@ -505,12 +509,14 @@ namespace Tellma.Controllers
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     Direction = e.Direction.Value,
-                    AccountTypeId = e.AccountTypeId,
+                    ParentAccountTypeId = e.ParentAccountTypeId,
                     EntryTypeId = e.EntryTypeId,
-                    EntryTypeParentId = e.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
-                    CustodyDefinitionIds = e.CustodyDefinitions.Select(e => e.CustodyDefinitionId.Value).ToList(),
-                    NotedRelationDefinitionIds = e.NotedRelationDefinitions.Select(e => e.NotedRelationDefinitionId.Value).ToList(),
-                    ResourceDefinitionIds = e.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList(),
+                    EntryTypeParentId = e.ParentAccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
+
+                    CustodianDefinitionIds = entryCustodianDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    CustodyDefinitionIds = entryCustodyDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    ParticipantDefinitionIds = entryParticipantDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -943,7 +949,7 @@ namespace Tellma.Controllers
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
-            var (version, lookupDefs, relationDefs, custodyDefs, resourceDefs, reportDefs, docDefs, lineDefs) = await repo.Definitions__Load(cancellation);
+            var (version, lookupDefs, relationDefs, custodyDefs, resourceDefs, reportDefs, docDefs, lineDefs, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs) = await repo.Definitions__Load(cancellation);
 
             // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
@@ -953,7 +959,7 @@ namespace Tellma.Controllers
                 Custodies = custodyDefs.ToDictionary(def => def.Id, def => MapCustodyDefinition(def)),
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def))
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs))
             };
 
             // Map Lines and Documents (Special handling)

@@ -40,11 +40,17 @@ namespace Tellma.Entities
         [Display(Name = "Account_Classification")]
         public int? ClassificationId { get; set; }
 
+        [Display(Name = "Account_Custodian")]
+        public int? CustodianId { get; set; }
+
         [Display(Name = "Account_CustodyDefinition")]
         public int? CustodyDefinitionId { get; set; }
 
         [Display(Name = "Account_Custody")]
         public int? CustodyId { get; set; }
+
+        [Display(Name = "Account_Participant")]
+        public int? ParticipantId { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         public int? ResourceDefinitionId { get; set; }
@@ -58,9 +64,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Account_EntryType")]
         public int? EntryTypeId { get; set; }
-
-        [Display(Name = "Account_NotedRelationDefinition")]
-        public int? NotedRelationDefinitionId { get; set; }
     }
 
     public class Account : AccountForSave
@@ -109,9 +112,17 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
 
+        [Display(Name = "Account_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
+
         [Display(Name = "Account_Custody")]
         [ForeignKey(nameof(CustodyId))]
         public Custody Custody { get; set; }
+
+        [Display(Name = "Account_Participant")]
+        [ForeignKey(nameof(ParticipantId))]
+        public Relation Participant { get; set; }
 
         [Display(Name = "Account_Resource")]
         [ForeignKey(nameof(ResourceId))]
@@ -128,9 +139,5 @@ namespace Tellma.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
-
-        [Display(Name = "Account_NotedRelationDefinition")]
-        [ForeignKey(nameof(NotedRelationDefinitionId))]
-        public RelationDefinition NotedRelationDefinition { get; set; }
     }
 }

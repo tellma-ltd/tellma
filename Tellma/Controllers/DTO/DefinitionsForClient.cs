@@ -315,13 +315,15 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
-        public int? AccountTypeId { get; set; }
+        public int? ParentAccountTypeId { get; set; }
         public int? EntryTypeId { get; set; }
 
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
-        public List<int> ResourceDefinitionIds { get; set; }
+        public List<int> CustodianDefinitionIds { get; set; }
         public List<int> CustodyDefinitionIds { get; set; }
+        public List<int> ParticipantDefinitionIds { get; set; }
+        public List<int> ResourceDefinitionIds { get; set; }
         public List<int> NotedRelationDefinitionIds { get; set; }
     }
 

@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, TemplateRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -33,8 +33,8 @@ export class LineDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   // private lineDefinitionsApi = this.api.lineDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Columns,Entries/AccountType,Entries/EntryType,Entries/CustodyDefinitions/CustodyDefinition,
-Entries/ResourceDefinitions/ResourceDefinition,Entries/NotedRelationDefinitions/NotedRelationDefinition,GenerateParameters,
+  public expand = `Columns,Entries/ParentAccountType,Entries/EntryType,Entries/CustodyDefinitions/CustodyDefinition,
+Entries/ResourceDefinitions/ResourceDefinition,GenerateParameters,
 Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRole,StateReasons`;
 
   create = () => {
@@ -77,10 +77,6 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
           });
 
           e.ResourceDefinitions.forEach(x => {
-            x.Id = null;
-          });
-
-          e.NotedRelationDefinitions.forEach(x => {
             x.Id = null;
           });
         });
@@ -366,7 +362,6 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       Direction: 1,
       CustodyDefinitions: [],
       ResourceDefinitions: [],
-      NotedRelationDefinitions: [],
     };
   }
 
@@ -464,14 +459,9 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return !!entry.ResourceDefinitions && entry.ResourceDefinitions.some(e => this.weakEntityErrors(e));
   }
 
-  public showNotedRelationDefinitionsError(entry: LineDefinitionEntry): boolean {
-    return !!entry.NotedRelationDefinitions && entry.NotedRelationDefinitions.some(e => this.weakEntityErrors(e));
-  }
-
   public showMoreError(entry: LineDefinitionEntry): boolean {
     return this.showCustodyDefinitionsError(entry) ||
-      this.showResourceDefinitionsError(entry) ||
-      this.showNotedRelationDefinitionsError(entry);
+      this.showResourceDefinitionsError(entry);
   }
 
   public showPreprocessScriptError(model: LineDefinition): boolean {

@@ -48,6 +48,38 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
 
+        [Display(Name = "ResourceDefinition_ResourceDefinitionType")]
+        [ChoiceList(new object[] { 
+            "PropertyPlantAndEquipment", 
+            "InvestmentProperty", 
+            "IntangibleAssetsOtherThanGoodwill", 
+            "OtherFinancialAssets",
+            "BiologicalAssets",
+            "InventoriesTotal",
+            "TradeAndOtherReceivables",
+            "CashAndCashEquivalents",
+            "TradeAndOtherPayables",
+            "Provisions",
+            "OtherFinancialLiabilities",
+            "Miscellaneous",
+        },
+            new string[] {
+            "RD_Type_PropertyPlantAndEquipment",
+            "RD_Type_InvestmentProperty",
+            "RD_Type_IntangibleAssetsOtherThanGoodwill",
+            "RD_Type_OtherFinancialAssets",
+            "RD_Type_BiologicalAssets",
+            "RD_Type_InventoriesTotal",
+            "RD_Type_TradeAndOtherReceivables",
+            "RD_Type_CashAndCashEquivalents",
+            "RD_Type_TradeAndOtherPayables",
+            "RD_Type_Provisions",
+            "RD_Type_OtherFinancialLiabilities",
+            "RD_Type_Miscellaneous",
+            })]
+        [StringLength(255)]
+        public string ResourceDefinitionType { get; set; }
+
         #endregion
 
         #region Common with Relations

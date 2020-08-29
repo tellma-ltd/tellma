@@ -42,7 +42,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'segment_id', 'custody_id', 'resource_id', 'entry_type_id', 'center_id'];
+        return ['account_id', 'segment_id', 'custodian_id', 'custody_id', 'participant_id', 'resource_id', 'entry_type_id', 'center_id'];
       case 'relation':
         return ['relation_id', 'account_id', 'resource_id'];
       default:
@@ -298,8 +298,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       args.segmentId = this.segmentId;
     }
 
+    if (!!this.custodianId && this.showCustodianParameter) {
+      args.custodianId = this.custodianId;
+    }
+
     if (!!this.custodyId && this.showCustodyParameter) {
       args.custodyId = this.custodyId;
+    }
+
+    if (!!this.participantId && this.showParticipantParameter) {
+      args.participantId = this.participantId;
     }
 
     if (!!this.resourceId && this.showResourceParameter) {
@@ -510,8 +518,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
         }
+        if (!!args.custodianId) {
+          data.push(this.normalize([this.labelCustodian_Manual, this.ws.getMultilingualValue('Relation', args.custodianId, 'Name')], columns.length));
+        }
         if (!!args.custodyId) {
           data.push(this.normalize([this.labelCustody_Manual, this.ws.getMultilingualValue('Custody', args.custodyId, 'Name')], columns.length));
+        }
+        if (!!args.participantId) {
+          data.push(this.normalize([this.labelParticipant_Manual, this.ws.getMultilingualValue('Relation', args.participantId, 'Name')], columns.length));
         }
         if (!!args.resourceId) {
           data.push(this.normalize([this.labelResource_Manual, this.ws.getMultilingualValue('Resource', args.resourceId, 'Name')], columns.length));
@@ -821,6 +835,47 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.ws.settings.FunctionalCurrencyId;
   }
 
+  // Custodian
+
+  public get custodianId(): number {
+    return this.state.arguments.custodian_id;
+  }
+
+  public set custodianId(v: number) {
+    const args = this.state.arguments;
+    if (args.custodian_id !== v) {
+      args.custodian_id = v;
+      this.parametersChanged();
+    }
+  }
+
+  public get showCustodianParameter(): boolean {
+    const at = this.accountType();
+    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+  }
+
+  public get readonlyCustodian_Manual(): boolean {
+    const account = this.account();
+    return !!account && !!account.CustodianId;
+  }
+
+  public get readonlyValueCustodianId_Manual(): number {
+    const account = this.account();
+    return !!account ? account.CustodianId : null;
+  }
+
+  public get labelCustodian_Manual(): string {
+    const at = this.accountType();
+    const defId = !!at ? at.CustodianDefinitionId : null;
+
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public get definitionIdsCustodian_Manual(): number[] {
+    const at = this.accountType();
+    return [at.CustodianDefinitionId];
+  }
+
   // Custody
   public relationAdditionalSelect = '$DocumentDetails';
   public custodyAdditionalSelect = '$DocumentDetails';
@@ -895,22 +950,63 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.ws.getMultilingualValueImmediate(this.relationDefinition, 'TitleSingular');
   }
 
-  public get definitionIdsRelation_Smart(): number [] {
+  public get definitionIdsRelation_Smart(): number[] {
     return [this.definitionId];
   }
 
   // Noted Relation
 
   public get showNotedRelation_Manual(): boolean {
-    const account = this.account();
-    return !!account && !!account.NotedRelationDefinitionId;
+    const at = this.accountType();
+    return !!at && !!at.NotedRelationDefinitionId;
   }
 
   public get labelNotedRelation_Manual(): string {
-    const account = this.account();
-    const defId = !!account ? account.NotedRelationDefinitionId : null;
+    const at = this.accountType();
+    const defId = !!at ? at.NotedRelationDefinitionId : null;
 
     return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  // Participant
+
+  public get participantId(): number {
+    return this.state.arguments.participant_id;
+  }
+
+  public set participantId(v: number) {
+    const args = this.state.arguments;
+    if (args.participant_id !== v) {
+      args.participant_id = v;
+      this.parametersChanged();
+    }
+  }
+
+  public get showParticipantParameter(): boolean {
+    const at = this.accountType();
+    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+  }
+
+  public get readonlyParticipant_Manual(): boolean {
+    const account = this.account();
+    return !!account && !!account.ParticipantId;
+  }
+
+  public get readonlyValueParticipantId_Manual(): number {
+    const account = this.account();
+    return !!account ? account.ParticipantId : null;
+  }
+
+  public get labelParticipant_Manual(): string {
+    const at = this.accountType();
+    const defId = !!at ? at.ParticipantDefinitionId : null;
+
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public get definitionIdsParticipant_Manual(): number[] {
+    const at = this.accountType();
+    return [at.ParticipantDefinitionId];
   }
 
   // Resource
@@ -1247,6 +1343,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         weight: 1
       });
 
+      // Custodian
+      if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !this.custodianId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['Custodian/Name,Custodian/Name2,Custodian/Name3'],
+          label: () => this.labelCustodian_Manual,
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('Relation', entry.CustodianId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
       // Custody
       if (this.showCustodyParameter && !this.readonlyCustody_Manual && !this.custodyId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
@@ -1372,6 +1481,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
+      // Participant
+      if (this.showParticipantParameter && !this.readonlyParticipant_Manual && !this.participantId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['Participant/Name,Participant/Name2,Participant/Name3'],
+          label: () => this.labelParticipant_Manual,
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('Relation', entry.ParticipantId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
       // Resource
       if (this.showResourceParameter && !this.readonlyResource_Manual && !this.resourceId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
@@ -1389,7 +1511,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showResourceParameter) {
         // Determine whether the resource specifies a single well defined unit
         const resourceDef = this.resourceDefinition();
-        const singleUnitDefined = !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId && !!accountType && !accountType.AllowsPureUnit;
+        const singleUnitDefined = !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
         const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
         this._columns.push({

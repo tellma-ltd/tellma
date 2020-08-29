@@ -9,13 +9,13 @@ namespace Tellma.Entities
         [Display(Name = "LineDefinitionColumn_ColumnName")]
         [ChoiceList(new object[] { "Memo", "PostingDate", "TemplateLineId",
             "Multiplier", "AccountId", "CurrencyId",
-            "CustodyId", "ResourceId", "CenterId", "EntryTypeId",
+            "CustodianId", "CustodyId", "ParticipantId","ResourceId",  "CenterId", "EntryTypeId",
             "MonetaryValue", "Quantity", "UnitId", "Time1", "Time2", "Value",
             "ExternalReference", "AdditionalReference", "NotedRelationId",
             "NotedAgentName", "NotedAmount", "NotedDate" }, 
             new string[] { "Memo", "Line_PostingDate", "Line_TemplateLine",
             "Line_Multiplier", "Entry_Account", "Entry_Currency",
-            "Entry_Custody", "Entry_Resource", "Entry_Center", "Entry_EntryType",
+            "Entry_Custodian", "Entry_Custody", "Entry_Participant", "Entry_Resource", "Entry_Center", "Entry_EntryType",
             "Entry_MonetaryValue", "Entry_Quantity", "Entry_Unit", "Entry_Time1", "Entry_Time2", "Entry_Value",
             "Entry_ExternalReference", "Entry_AdditionalReference", "Entry_NotedRelation",
             "Entry_NotedAgentName", "Entry_NotedAmount", "Entry_NotedDate" })]

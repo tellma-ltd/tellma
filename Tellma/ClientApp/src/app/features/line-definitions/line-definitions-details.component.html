@@ -222,7 +222,7 @@
                                 </th>
                                 <th>{{ 'LineDefinitionEntry_Direction' | translate }}
                                 </th>
-                                <th>{{ 'LineDefinitionEntry_AccountType' | translate }}
+                                <th>{{ 'LineDefinitionEntry_ParentAccountType' | translate }}
                                 </th>
                                 <th>{{ 'LineDefinitionEntry_EntryType' | translate }}
                                 </th>
@@ -266,12 +266,12 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit; else accounttypetemplate">{{ ws.getMultilingualValue('AccountType', entry.AccountTypeId, 'Name') }}</span>
-                                    <ng-template #accounttypetemplate>
-                                        <t-account-types-picker [(ngModel)]="entry.AccountTypeId" theme="dark"
-                                            #accounttypemodel="ngModel"></t-account-types-picker>
+                                        *ngIf="!isEdit; else parentaccounttypetemplate">{{ ws.getMultilingualValue('AccountType', entry.ParentAccountTypeId, 'Name') }}</span>
+                                    <ng-template #parentaccounttypetemplate>
+                                        <t-account-types-picker [(ngModel)]="entry.ParentAccountTypeId" theme="dark"
+                                            #parentaccounttypemodel="ngModel"></t-account-types-picker>
                                         <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entry?.serverErrors?.AccountTypeId }">
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: parentaccounttypemodel, serverErrors: entry?.serverErrors?.ParentAccountTypeId }">
                                         </ng-container>
                                     </ng-template>
                                 </td>
@@ -1206,18 +1206,18 @@
                 </div>
             </div>
 
-            <!-- Account Type -->
+            <!-- Parent Account Type -->
             <div class="form-group col-12 col-sm-6">
-                <label class="small" for="label">{{ 'LineDefinitionEntry_AccountType' | translate }}</label>
+                <label class="small" for="label">{{ 'LineDefinitionEntry_ParentAccountType' | translate }}</label>
                 <div>
                     <span
-                        *ngIf="!modalIsEdit; else modalaccounttypetemplate">{{ ws.getMultilingualValue('AccountType', entryToEdit.AccountTypeId, 'Name') }}</span>
-                    <ng-template #modalaccounttypetemplate>
-                        <t-account-types-picker [(ngModel)]="entryToEdit.AccountTypeId" theme="dark"
-                            #accounttypemodel="ngModel">
+                        *ngIf="!modalIsEdit; else modalparentaccounttypetemplate">{{ ws.getMultilingualValue('AccountType', entryToEdit.ParentAccountTypeId, 'Name') }}</span>
+                    <ng-template #modalparentaccounttypetemplate>
+                        <t-account-types-picker [(ngModel)]="entryToEdit.ParentAccountTypeId" theme="dark"
+                            #parentaccounttypemodel="ngModel">
                         </t-account-types-picker>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: accounttypemodel, serverErrors: entryToEdit?.serverErrors?.AccountTypeId }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: parentaccounttypemodel, serverErrors: entryToEdit?.serverErrors?.ParentAccountTypeId }">
                         </ng-container>
                     </ng-template>
                 </div>
@@ -1337,56 +1337,6 @@
                     <button *ngIf="modalIsEdit"
                         class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
                         (click)="onInsertRow(entryToEdit.ResourceDefinitions)">
-                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
-                    </button>
-                </ng-template>
-            </li>
-
-            <!-- NotedRelation Definitions -->
-            <li ngbNavItem="notedRelationDefinitions">
-                <a ngbNavLink>
-                    <span *ngIf="showNotedRelationDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
-                        <fa-icon icon="exclamation-triangle">
-                        </fa-icon>&nbsp;
-                    </span>
-                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_NotedRelationDefinitions' | translate }}
-                        ({{ entryToEdit.NotedRelationDefinitions?.length }})</span>
-                </a>
-                <ng-template ngbNavContent>
-                    <table class="table table-sm table-dark text-nowrap mb-1">
-
-                        <tbody>
-                            <tr *ngFor="let def of entryToEdit.NotedRelationDefinitions">
-                                <td [class.p-0]="modalIsEdit">
-                                    <span
-                                        *ngIf="!modalIsEdit; else relationdefinitiontemplate">{{ ws.getMultilingualValue('RelationDefinition', def.NotedRelationDefinitionId, 'TitleSingular') }}</span>
-                                    <ng-template #relationdefinitiontemplate>
-                                        <t-relation-definitions-picker [(ngModel)]="def.NotedRelationDefinitionId"
-                                            theme="dark" #notedrelationdefinitionmodel="ngModel">
-                                        </t-relation-definitions-picker>
-                                        <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: notedrelationdefinitionmodel, serverErrors: def?.serverErrors?.NotedRelationDefinitionId }">
-                                        </ng-container>
-                                    </ng-template>
-                                </td>
-                                <td *ngIf="modalIsEdit" style="width: 1px;">
-                                    <button
-                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
-                                        (click)="onDeleteRow(def, entryToEdit.NotedRelationDefinitions)">
-                                        <fa-icon icon="trash">
-                                        </fa-icon>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div *ngIf="!modalIsEdit && entryToEdit.NotedRelationDefinitions?.length === 0"
-                        class="font-italic mx-2">
-                        {{ 'NoItemsFound' | translate }}
-                    </div>
-                    <button *ngIf="modalIsEdit"
-                        class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
-                        (click)="onInsertRow(entryToEdit.NotedRelationDefinitions)">
                         <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                     </button>
                 </ng-template>

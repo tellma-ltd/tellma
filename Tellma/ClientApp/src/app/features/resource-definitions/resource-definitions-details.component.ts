@@ -302,6 +302,18 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._getForClientResult;
   }
 
+  private _resourceDefinitionTypeChoices: SelectorChoice[];
+  public get resourceDefinitionTypeChoices(): SelectorChoice[] {
+    if (!this._resourceDefinitionTypeChoices) {
+      const propDesc = metadata_ResourceDefinition(this.workspace, this.translate)
+        .properties.ResourceDefinitionType as ChoicePropDescriptor;
+
+      this._resourceDefinitionTypeChoices = getChoices(propDesc);
+    }
+
+    return this._resourceDefinitionTypeChoices;
+  }
+
   private _visibilityChoices: SelectorChoice[];
   public get visibilityChoices(): SelectorChoice[] {
     if (!this._visibilityChoices) {

@@ -1428,6 +1428,35 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return accountCenterId || resourceCenterId || custodyCenterId;
   }
 
+  // CustodianId
+
+  public showCustodian_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+  }
+
+  public readonlyCustodian_Manual(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !!account.CustodianId;
+  }
+
+  public readonlyValueCustodianId_Manual(entry: Entry): number {
+    const account = this.account(entry);
+    return !!account ? account.CustodianId : null;
+  }
+
+  public labelCustodian_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    const defId = !!at ? at.CustodianDefinitionId : null;
+
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public definitionIdsCustodian_Manual(entry: Entry): number[] {
+    const at = this.accountType(entry);
+    return [at.CustodianDefinitionId];
+  }
+
   // CustodyId
 
   public showCustody_Manual(entry: Entry): boolean {
@@ -1472,20 +1501,49 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Noted Relation Id
 
   public showNotedRelation_Manual(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && !!account.NotedRelationDefinitionId;
+    const at = this.accountType(entry);
+    return !!at && !!at.NotedRelationDefinitionId;
   }
 
   public labelNotedRelation_Manual(entry: Entry): string {
-    const account = this.account(entry);
-    const defId = !!account ? account.NotedRelationDefinitionId : null;
+    const at = this.accountType(entry);
+    const defId = !!at ? at.NotedRelationDefinitionId : null;
 
     return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
   }
 
   public definitionIdsNotedRelation_Manual(entry: Entry): number[] {
+    const at = this.accountType(entry);
+    return [at.NotedRelationDefinitionId];
+  }
+
+  // ParticipantId
+
+  public showParticipant_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+  }
+
+  public readonlyParticipant_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return [account.NotedRelationDefinitionId];
+    return !!account && !!account.ParticipantId;
+  }
+
+  public readonlyValueParticipantId_Manual(entry: Entry): number {
+    const account = this.account(entry);
+    return !!account ? account.ParticipantId : null;
+  }
+
+  public labelParticipant_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    const defId = !!at ? at.ParticipantDefinitionId : null;
+
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public definitionIdsParticipant_Manual(entry: Entry): number[] {
+    const at = this.accountType(entry);
+    return [at.ParticipantDefinitionId];
   }
 
   // ResourceId
@@ -1531,7 +1589,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const accountType = this.accountType(entry);
     const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
     return !!resourceDef && resourceDef.UnitCardinality === 'Single'
-      && !!resource && !!resource.UnitId && !!accountType && !accountType.AllowsPureUnit;
+      && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
   }
 
   public readonlyValueUnitId(entry: Entry): number {
@@ -1560,7 +1618,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // If account type allows pure, add it to the filter
     const accountType = this.accountType(entry);
-    if (!!accountType && accountType.AllowsPureUnit) {
+    if (!!accountType && accountType.StandardAndPure) {
       const pureFilter = `UnitType eq 'Pure'`;
       if (!!filter) {
         filter += ` or ${pureFilter}`;
@@ -2259,7 +2317,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return '';
     }
 
-  // No need to optimize this, it is rare anyways
+    // No need to optimize this, it is rare anyways
     const lineDef = this.lineDefinition(lineDefId);
     if (!!lineDef.StateReasons) {
       for (const reason of lineDef.StateReasons) {
@@ -2912,6 +2970,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
+  public definitionIdsCustodian_Smart(lineDefId: number, columnIndex: number): number[] {
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.CustodianDefinitionIds ? entryDef.CustodianDefinitionIds : [];
+  }
+
   public definitionIdsCustody_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
     return !!entryDef && !!entryDef.CustodyDefinitionIds ? entryDef.CustodyDefinitionIds : [];
@@ -2920,6 +2983,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public definitionIdsNotedRelation_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
     return !!entryDef && !!entryDef.NotedRelationDefinitionIds ? entryDef.NotedRelationDefinitionIds : [];
+  }
+
+  public definitionIdsParticipant_Smart(lineDefId: number, columnIndex: number): number[] {
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.ParticipantDefinitionIds ? entryDef.ParticipantDefinitionIds : [];
   }
 
   public definitionIdsResource_Smart(lineDefId: number, columnIndex: number): number[] {

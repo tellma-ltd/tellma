@@ -16,8 +16,8 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Parent,EntryTypeParent,
-CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefinition,ResourceDefinitions/ResourceDefinition`;
+  public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,NotedRelationDefinition,
+CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -41,11 +41,10 @@ CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefin
     }
 
     result.IsAssignable = true;
-    result.AllowsPureUnit = false;
+    result.StandardAndPure = false;
 
     result.CustodyDefinitions = [];
     result.ResourceDefinitions = [];
-    result.NotedRelationDefinitions = [];
 
     return result;
   }
@@ -62,11 +61,6 @@ CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefin
       }
       if (!!clone.ResourceDefinitions) {
         clone.ResourceDefinitions.forEach(e => {
-          e.Id = null;
-        });
-      }
-      if (!!clone.NotedRelationDefinitions) {
-        clone.NotedRelationDefinitions.forEach(e => {
           e.Id = null;
         });
       }
@@ -114,9 +108,39 @@ CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefin
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 
+  public showCustodianDefinition(_: AccountType): boolean {
+    return true;
+  }
+
+  public showParticipantDefinition(_: AccountType): boolean {
+    return true;
+  }
+
   // Entry Type Parent
   public showEntryTypeParent(_: AccountType): boolean {
     return true;
+  }
+
+  public showNotedRelationDefinition(_: AccountType): boolean {
+    return true;
+  }
+
+  public resourceDefinitionFilter(model: AccountType): string {
+    let filter = `State ne 'Hidden'`;
+    if (!!model && !!model.ParticipantDefinitionId) {
+      filter += ` and ParticipantDefinitionId eq ${model.ParticipantDefinitionId}`;
+    }
+
+    return filter;
+  }
+
+  public custodyDefinitionFilter(model: AccountType): string {
+    let filter = `State ne 'Hidden'`;
+    if (!!model && !!model.CustodianDefinitionId) {
+      filter += ` and CustodianDefinitionId eq ${model.CustodianDefinitionId}`;
+    }
+
+    return filter;
   }
 
   // Is Inactive
@@ -137,10 +161,6 @@ CustodyDefinitions/CustodyDefinition,NotedRelationDefinitions/NotedRelationDefin
 
   public showCustodyDefinitionsError(model: AccountType): boolean {
     return !!model && !!model.CustodyDefinitions && model.CustodyDefinitions.some(e => !!e.serverErrors);
-  }
-
-  public showNotedRelationDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.NotedRelationDefinitions && model.NotedRelationDefinitions.some(e => !!e.serverErrors);
   }
 
   public showResourceDefinitionsError(model: AccountType): boolean {

@@ -13,6 +13,7 @@ import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AccountClassification } from '~/app/data/entities/account-classification';
 import { Custody } from '~/app/data/entities/custody';
+import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 't-accounts-details',
@@ -23,8 +24,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType/CustodyDefinitions,AccountType/NotedRelationDefinitions,AccountType/ResourceDefinitions
-,Classification,Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custody/Center,EntryType`;
+  public expand = `AccountType/CustodyDefinitions,AccountType/ResourceDefinitions,Classification,
+Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custody/Center,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -162,35 +163,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return null;
   }
 
-  // Noted Relation Definition
-  private _choicesNotedRelationDefinitionIdAccountType: AccountType;
-  private _choicesNotedRelationDefinitionIdResult: SelectorChoice[] = [];
-  public choicesNotedRelationDefinitionId(model: Account): SelectorChoice[] {
-
-    const at = this.accountType(model);
-    if (this._choicesNotedRelationDefinitionIdAccountType !== at) {
-      this._choicesNotedRelationDefinitionIdAccountType = at;
-
-      if (!at || !at.NotedRelationDefinitions) {
-        this._choicesNotedRelationDefinitionIdResult = [];
-      } else {
-        const ws = this.ws;
-        const defs = ws.definitions;
-        this._choicesNotedRelationDefinitionIdResult = at.NotedRelationDefinitions.map(d =>
-          ({
-            value: d.NotedRelationDefinitionId,
-            name: () => ws.getMultilingualValueImmediate(defs.Relations[d.NotedRelationDefinitionId], 'TitleSingular')
-          }));
-      }
-    }
-
-    return this._choicesNotedRelationDefinitionIdResult;
-  }
-
-  public showNotedRelationDefinitionId(model: Account): boolean {
-    return this.choicesNotedRelationDefinitionId(model).length > 0;
-  }
-
   public formatRelationDefinitionId(defId: number): string {
     if (!defId) {
       return '';
@@ -201,20 +173,25 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   // Custody Definition
+  private _choicesCustodyDefinitionIdDefinitions: DefinitionsForClient;
   private _choicesCustodyDefinitionIdAccountType: AccountType;
   private _choicesCustodyDefinitionIdResult: SelectorChoice[] = [];
   public choicesCustodyDefinitionId(model: Account): SelectorChoice[] {
 
+    const ws = this.ws;
+    const defs = ws.definitions;
     const at = this.accountType(model);
-    if (this._choicesCustodyDefinitionIdAccountType !== at) {
+    if (this._choicesCustodyDefinitionIdAccountType !== at ||
+      this._choicesCustodyDefinitionIdDefinitions !== defs) {
       this._choicesCustodyDefinitionIdAccountType = at;
+      this._choicesCustodyDefinitionIdDefinitions = defs;
 
       if (!at || !at.CustodyDefinitions) {
         this._choicesCustodyDefinitionIdResult = [];
       } else {
-        const ws = this.ws;
-        const defs = ws.definitions;
-        this._choicesCustodyDefinitionIdResult = at.CustodyDefinitions.map(d =>
+        this._choicesCustodyDefinitionIdResult = at.CustodyDefinitions
+        .filter(d => !!defs.Custodies[d.CustodyDefinitionId])
+        .map(d =>
           ({
             value: d.CustodyDefinitionId,
             name: () => ws.getMultilingualValueImmediate(defs.Custodies[d.CustodyDefinitionId], 'TitleSingular')
@@ -275,21 +252,82 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
+  // Custodian
+
+  public showCustodian(model: AccountForSave): boolean {
+    const at = this.accountType(model);
+    return !!at && !!at.CustodianDefinitionId && !this.showCustodyDefinitionId(model);
+  }
+
+  public labelCustodian(model: AccountForSave): string {
+    let postfix = '';
+    const at = this.accountType(model);
+    if (!!at && !!at.CustodianDefinitionId) {
+      const relationDef = this.ws.definitions.Relations[at.CustodianDefinitionId];
+      if (!!relationDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')})`;
+      }
+    }
+    return this.translate.instant('Account_Custodian') + postfix;
+  }
+
+  public definitionIdsCustodian(model: AccountForSave): number[] {
+    const at = this.accountType(model);
+    if (!!at && !!at.CustodianDefinitionId) {
+      return [at.CustodianDefinitionId];
+    } else {
+      return [];
+    }
+  }
+
+  // Participant
+
+  public showParticipant(model: AccountForSave): boolean {
+    const at = this.accountType(model);
+    return  !!at && !!at.ParticipantDefinitionId && !this.showCustodyDefinitionId(model);
+  }
+
+  public labelParticipant(model: AccountForSave): string {
+    let postfix = '';
+    const at = this.accountType(model);
+    if (!!at && !!at.ParticipantDefinitionId) {
+      const relationDef = this.ws.definitions.Relations[at.ParticipantDefinitionId];
+      if (!!relationDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')})`;
+      }
+    }
+    return this.translate.instant('Account_Participant') + postfix;
+  }
+
+  public definitionIdsParticipant(model: AccountForSave): number[] {
+    const at = this.accountType(model);
+    if (!!at && !!at.ParticipantDefinitionId) {
+      return [at.ParticipantDefinitionId];
+    } else {
+      return [];
+    }
+  }
+
   // Resource Definition
+  private _choicesResourceDefinitionIdDefinitions: DefinitionsForClient;
   private _choicesResourceDefinitionIdAccountType: AccountType;
   private _choicesResourceDefinitionIdResult: SelectorChoice[] = [];
   public choicesResourceDefinitionId(model: Account): SelectorChoice[] {
 
+    const ws = this.ws;
+    const defs = ws.definitions;
     const at = this.accountType(model);
-    if (this._choicesResourceDefinitionIdAccountType !== at) {
+    if (this._choicesResourceDefinitionIdAccountType !== at ||
+      this._choicesResourceDefinitionIdDefinitions !== defs) {
       this._choicesResourceDefinitionIdAccountType = at;
+      this._choicesResourceDefinitionIdDefinitions = defs;
 
       if (!at || !at.ResourceDefinitions) {
         this._choicesResourceDefinitionIdResult = [];
       } else {
-        const ws = this.ws;
-        const defs = ws.definitions;
-        this._choicesResourceDefinitionIdResult = at.ResourceDefinitions.map(d =>
+        this._choicesResourceDefinitionIdResult = at.ResourceDefinitions
+        .filter(d => !!defs.Resources[d.ResourceDefinitionId])
+        .map(d =>
           ({
             value: d.ResourceDefinitionId,
             name: () => ws.getMultilingualValueImmediate(defs.Resources[d.ResourceDefinitionId], 'TitleSingular')
@@ -378,8 +416,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   public get accountTypeAdditionalSelect(): string {
     const defaultSelect = `CustodyDefinitions/CustodyDefinitionId,
-    NotedRelationDefinitions/NotedRelationDefinitionId,
-    ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId`;
+    ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId,CustodianDefinitionId,ParticipantDefinitionId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
@@ -413,4 +450,5 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   public custodyAdditionalSelect =
     `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Center/Name,Center/Name2,Center/Name3`;
+
 }

@@ -79,6 +79,9 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>Custodian</value>
+  </data>
   <data name="Account_Custody" xml:space="preserve">
     <value>Custody</value>
   </data>
@@ -88,8 +91,8 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>Noted Relation Definition</value>
+  <data name="Account_Participant" xml:space="preserve">
+    <value>Participant</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -118,11 +121,11 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>Additional Reference Label</value>
   </data>
-  <data name="AccountType_AllowsPureUnit" xml:space="preserve">
-    <value>Allows Self Unit</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
+  </data>
+  <data name="AccountType_CustodianDefinition" xml:space="preserve">
+    <value>Custodian Definition</value>
   </data>
   <data name="AccountType_CustodyDefinitions" xml:space="preserve">
     <value>Custody Definitions</value>
@@ -145,11 +148,17 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>Noted Relation Definitions</value>
+  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
+    <value>Noted Relation Definition</value>
+  </data>
+  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
+    <value>Participant Definition</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
+  </data>
+  <data name="AccountType_StandardAndPure" xml:space="preserve">
+    <value>Standard and Pure</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>Time 1 Label</value>
@@ -162,12 +171,6 @@
   </data>
   <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
     <value>Account Type Custody Definitions</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
-    <value>Account Type Noted Relation Definition</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
-    <value>Account Type Noted Relation Definitions</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>Account Type Resource Definition</value>
@@ -1663,9 +1666,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>Line Definition Entry</value>
   </data>
-  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
-    <value>Account Type</value>
-  </data>
   <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
     <value>Custody Definitions</value>
   </data>
@@ -1678,8 +1678,8 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>Noted Relation Definitions</value>
+  <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
+    <value>Parent Account Type</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
@@ -1689,12 +1689,6 @@
   </data>
   <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>Line Definition Entry</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>Line Definition Entry</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>Noted Relation Definition</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>Line Definition Entry</value>
@@ -2004,6 +1998,42 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
+  </data>
+  <data name="RD_Type_BiologicalAssets" xml:space="preserve">
+    <value>Biological assets</value>
+  </data>
+  <data name="RD_Type_CashAndCashEquivalents" xml:space="preserve">
+    <value>Cash and cash equivalents</value>
+  </data>
+  <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
+    <value>Intangible assets other than goodwill</value>
+  </data>
+  <data name="RD_Type_InventoriesTotal" xml:space="preserve">
+    <value>Inventories</value>
+  </data>
+  <data name="RD_Type_InvestmentProperty" xml:space="preserve">
+    <value>Investment property</value>
+  </data>
+  <data name="RD_Type_Miscellaneous" xml:space="preserve">
+    <value>Miscellaneous</value>
+  </data>
+  <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
+    <value>Other financial assets</value>
+  </data>
+  <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
+    <value>Other financial liabilities</value>
+  </data>
+  <data name="RD_Type_PropertyPlantAndEquipment" xml:space="preserve">
+    <value>Property, plant and equipment</value>
+  </data>
+  <data name="RD_Type_Provisions" xml:space="preserve">
+    <value>Provisions</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherPayables" xml:space="preserve">
+    <value>Trade and other payables</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
+    <value>Trade and other receiveables</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>Recovery Code</value>
@@ -2319,6 +2349,9 @@
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>Resource Definition</value>
+  </data>
+  <data name="ResourceDefinition_ResourceDefinitionType" xml:space="preserve">
+    <value>Resource Definition Type</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>Unit Cardinality</value>

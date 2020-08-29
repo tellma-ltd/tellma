@@ -14,13 +14,14 @@ export interface AccountForSave extends EntityWithKey {
     Code?: string;
     AccountTypeId?: string;
     ClassificationId?: number;
+    CustodianId?: number;
     CustodyDefinitionId?: number;
     CustodyId?: number;
+    ParticipantId?: number;
     ResourceDefinitionId?: number;
     ResourceId?: number;
     CurrencyId?: string;
     EntryTypeId?: number;
-    NotedRelationDefinitionId?: number;
 }
 
 export interface Account extends AccountForSave {
@@ -71,6 +72,8 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
                 ClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Classification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'ClassificationId' },
+                CustodianId: { control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: {control: 'navigation', label: () => trx.instant('Account_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId'},
                 CustodyDefinitionId: {
                     control: 'choice',
                     label: () => trx.instant('Account_CustodyDefinition'),
@@ -80,6 +83,8 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 CustodyDefinition: { control: 'navigation', label: () => trx.instant('Account_CustodyDefinition'), type: 'CustodyDefinition', foreignKeyName: 'CustodyDefinitionId' },
                 CustodyId: { control: 'number', label: () => `${trx.instant('Account_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Custody: { control: 'navigation', label: () => trx.instant('Account_Custody'), type: 'Custody', foreignKeyName: 'CustodyId' },
+                ParticipantId: { control: 'number', label: () => `${trx.instant('Account_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: {control: 'navigation', label: () => trx.instant('Account_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId'},
                 ResourceDefinitionId: {
                     control: 'choice',
                     label: () => trx.instant('Account_ResourceDefinition'),
@@ -93,13 +98,6 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 Currency: { control: 'navigation', label: () => trx.instant('Account_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Account_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
-                NotedRelationDefinitionId: {
-                    control: 'choice',
-                    label: () => trx.instant('Account_NotedRelationDefinition'),
-                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
-                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
-                },
-                NotedRelationDefinition: { control: 'navigation', label: () => trx.instant('Account_NotedRelationDefinition'), type: 'RelationDefinition', foreignKeyName: 'NotedRelationDefinitionId' },
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

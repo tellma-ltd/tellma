@@ -79,6 +79,9 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>ጠባቂ</value>
+  </data>
   <data name="Account_Custody" xml:space="preserve">
     <value>ወኪል</value>
   </data>
@@ -88,8 +91,8 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
+  <data name="Account_Participant" xml:space="preserve">
+    <value>ተካፉይ</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -118,17 +121,17 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>ተጨማሪ ማጣቀሻ መሰየሚያ</value>
   </data>
-  <data name="AccountType_AllowsPureUnit" xml:space="preserve">
-    <value>ራስን ዩኒት ይፈቅዳል</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>ሐሳብ</value>
+  </data>
+  <data name="AccountType_CustodianDefinition" xml:space="preserve">
+    <value>ጠባቂ ትርጓሜ</value>
   </data>
   <data name="AccountType_CustodyDefinitions" xml:space="preserve">
     <value>የጥበቃ ፍቺዎች</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
-    <value>ምዝግብ አይነት ወላጅ</value>
+    <value>ዓላማ ወላጅ</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>የውጭ ማጣቀሻ መሰየሚያ</value>
@@ -145,11 +148,17 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
+  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
+  </data>
+  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
+    <value>የተሳታፊ ፍቺ</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
+  </data>
+  <data name="AccountType_StandardAndPure" xml:space="preserve">
+    <value>መደበኛ እና ንጹህ</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>ጊዜ 1 መሰየሚያ</value>
@@ -162,12 +171,6 @@
   </data>
   <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
     <value>የመለያ አይነት የጥበቃ ፍቺዎች</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
-    <value>የመለያ አይነት በመቆየቱ ግንኙነት ፍቺ</value>
-  </data>
-  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
-    <value>የመለያ አይነት በመቆየቱ ግንኙነት ፍቺዎች</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>የመለያ አይነት ሃብት ፍቺ</value>
@@ -1604,7 +1607,7 @@
     <value>አምዶች</value>
   </data>
   <data name="LineDefinition_Entries" xml:space="preserve">
-    <value>ግቤቶች</value>
+    <value>ኢንትሪስ</value>
   </data>
   <data name="LineDefinition_GenerateLabel" xml:space="preserve">
     <value>መሰየሚያ አመንጭ</value>
@@ -1616,19 +1619,19 @@
     <value>ስክሪፕት አመንጭ</value>
   </data>
   <data name="LineDefinition_PreprocessScript" xml:space="preserve">
-    <value>Preprocess ስክሪፕት</value>
+    <value>የቅድመ-ዝግጅት ስክሪፕት</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
-    <value>መንግስት ምክንያቶች</value>
+    <value>የሁኔታው ምክንያቶች</value>
   </data>
   <data name="LineDefinition_ValidateScript" xml:space="preserve">
-    <value>ለሚያረጋግጡ ስክሪፕት</value>
+    <value>ትክክለኛ ስክሪፕት</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>ቅጽ ይመልከቱ ነባሪዎችን</value>
   </data>
   <data name="LineDefinition_Workflows" xml:space="preserve">
-    <value>Workflows</value>
+    <value>የስራ ፍሰት</value>
   </data>
   <data name="LineDefinitionColumn" xml:space="preserve">
     <value>የመስመር ፍቺ አምድ</value>
@@ -1663,9 +1666,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>የመስመር ፍቺ Entry</value>
   </data>
-  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
-    <value>የመለያ አይነት</value>
-  </data>
   <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
     <value>የጥበቃ ፍቺዎች</value>
   </data>
@@ -1678,8 +1678,8 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
+  <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
+    <value>የወላጅ መለያ አይነት</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
@@ -1689,12 +1689,6 @@
   </data>
   <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>የመስመር ፍቺ Entry</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>የመስመር ፍቺ Entry</value>
-  </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
     <value>የመስመር ፍቺ Entry</value>
@@ -2004,6 +1998,42 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
+  </data>
+  <data name="RD_Type_BiologicalAssets" xml:space="preserve">
+    <value>ባዮሎጂካል ንብረቶች</value>
+  </data>
+  <data name="RD_Type_CashAndCashEquivalents" xml:space="preserve">
+    <value>በጥሬ ገንዘብ እና በጥሬ ገንዘብ ተመጣጣኝ</value>
+  </data>
+  <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
+    <value>በጎ ይልቅ ሌሎች ምርቶችንም ንብረቶች</value>
+  </data>
+  <data name="RD_Type_InventoriesTotal" xml:space="preserve">
+    <value>Inventories</value>
+  </data>
+  <data name="RD_Type_InvestmentProperty" xml:space="preserve">
+    <value>የኢንቨስትመንት ንብረት</value>
+  </data>
+  <data name="RD_Type_Miscellaneous" xml:space="preserve">
+    <value>ልዩ ልዩ</value>
+  </data>
+  <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
+    <value>ሌሎች ገንዘብ ነክ ንብረቶች</value>
+  </data>
+  <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
+    <value>ሌሎች የገንዘብ ተጠያቂነቶች</value>
+  </data>
+  <data name="RD_Type_PropertyPlantAndEquipment" xml:space="preserve">
+    <value>ንብረት, ተክል እና መሣሪያዎች</value>
+  </data>
+  <data name="RD_Type_Provisions" xml:space="preserve">
+    <value>ድንጋጌዎች</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherPayables" xml:space="preserve">
+    <value>የንግድ እና ሌሎች payables</value>
+  </data>
+  <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
+    <value>የንግድ እና ሌሎች receiveables</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>መልሶ ማግኛ ኮድ</value>
@@ -2319,6 +2349,9 @@
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>የመገልገያ ፍቺ</value>
+  </data>
+  <data name="ResourceDefinition_ResourceDefinitionType" xml:space="preserve">
+    <value>የመገልገያ ፍቺ አይነት</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>ክፍል የቁጥሮች</value>
@@ -2828,7 +2861,7 @@
     <value>ወደ ስቴት</value>
   </data>
   <data name="Workflows" xml:space="preserve">
-    <value>Workflows</value>
+    <value>የስራ ፍሰት</value>
   </data>
   <data name="WorkflowSignature" xml:space="preserve">
     <value>የስራ ፍሰት ፊርማ</value>

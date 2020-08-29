@@ -159,9 +159,19 @@ namespace Tellma.Controllers
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.Document)}/{nameof(Document.SegmentId)} {Ops.eq} {args.SegmentId.Value}");
             }
 
+            if (args.CustodianId != null)
+            {
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodianId)} {Ops.eq} {args.CustodianId.Value}");
+            }
+
             if (args.CustodyId != null)
             {
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodyId)} {Ops.eq} {args.CustodyId.Value}");
+            }
+
+            if (args.ParticipantId != null)
+            {
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ParticipantId)} {Ops.eq} {args.ParticipantId.Value}");
             }
 
             if (args.ResourceId != null)
