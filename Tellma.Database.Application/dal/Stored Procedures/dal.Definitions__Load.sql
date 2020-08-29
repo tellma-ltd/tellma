@@ -45,7 +45,14 @@ SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 	
--- Get the contract definitions of the line definition entries
+-- Get the Custodian definitions of the line definition entries
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[CustodianDefinitionId]
+FROM dbo.LineDefinitionEntries LDE
+JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
+JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
+WHERE ATC.[CustodianDefinitionId] IS NOT NULL
+
+-- Get the Custody definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [CustodyDefinitionId] FROM [dbo].[LineDefinitionEntryCustodyDefinitions]
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [CustodyDefinitionId]
@@ -54,7 +61,14 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.[AccountTypeCustodyDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodyDefinitions])
-	
+
+-- Get the Participant definitions of the line definition entries
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[ParticipantDefinitionId]
+FROM dbo.LineDefinitionEntries LDE
+JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
+JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
+WHERE ATC.[ParticipantDefinitionId] IS NOT NULL
+
 -- Get the resource definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions]
 UNION

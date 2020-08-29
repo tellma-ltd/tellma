@@ -250,6 +250,7 @@ SET NOCOUNT ON;
 			LDC.[Label],
 			LDC.[Label2],
 			LDC.[Label3],
+			LDC.[Filter],
 			LDC.[VisibleState],
 			LDC.[RequiredState],
 			LDC.[ReadOnlyState],
@@ -266,6 +267,7 @@ SET NOCOUNT ON;
 			t.[Label]				<> s.[Label] OR
 			ISNULL(t.[Label2],N'')	<> ISNULL(s.[Label2],N'') OR
 			ISNULL(t.[Label3],N'')	<> ISNULL(s.[Label3],N'') OR
+			ISNULL(t.[Filter],N'')	<> ISNULL(s.[Filter],N'') OR
 			t.[VisibleState]		<> s.[VisibleState] OR
 			t.[RequiredState]		<> s.[RequiredState] OR
 			t.[ReadOnlyState]		<> s.[ReadOnlyState] OR
@@ -279,14 +281,15 @@ SET NOCOUNT ON;
 			t.[Label]				= s.[Label],
 			t.[Label2]				= s.[Label2],
 			t.[Label3]				= s.[Label3],
+			t.[Filter]				= s.[Filter],
 			t.[VisibleState]		= s.[VisibleState],
 			t.[RequiredState]		= s.[RequiredState],
 			t.[ReadOnlyState]		= s.[ReadOnlyState],
 			t.[InheritsFromHeader]	=s.[InheritsFromHeader],
 			t.[SavedById]			= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3], [VisibleState],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader])
+		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3], [Filter], [VisibleState],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[Filter], s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

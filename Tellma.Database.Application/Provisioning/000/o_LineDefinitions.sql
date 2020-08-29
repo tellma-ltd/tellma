@@ -1,30 +1,53 @@
 ﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (1000, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
-(1060, N'PPEFromSupplier', N'Receiving property, plant and equipment from supplier, invoiced separately', N'PPE Purchase', N'PPE Purchases', 0, 1),
-(1200, N'InventoryTransfer', N'Inventory transfer between warehouses (1-1)', N'Stock Transfer', N'Stock Transfers + Conversions', 0, 0),
-(1260, N'InventoryFromSupplier', N'Receiving inventory from supplier/contractor', N'Stock Purchase', N'Stock Purchases', 0, 0),
-(1330, N'RevenueFromInventory', N'Issuing inventory to customer, invoiced separately', N'Inventory (Sale)', N'Inventories (Sale)', 0, 0),
---(1350, N'RevenueFromPeriodService', N'Rendering period services to customer, invoiced separately', N'Lease Out', N'Leases Out', 0, 1),
-(1360, N'RevenueFromInventoryWithPointInvoice', N'Issuing inventory to customer + point invoice', N'Inventory (Sale) + Invoice', N'Inventories (Sale) + Invoices', 0, 0),
---(1370, N'RevenueFromPointServiceWithPointInvoice', N'Rendering point services to customer + point invoice', N'Service (Sale) + Invoice (Point)', N'Services (Sales) + Invoices (Point)', 0, 1),
---(1380, N'RevenueFromPeriodServiceWithPeriodInvoice', N'Rendering period services to customer + period invoice', N'Service (Sale) + Invoice (Period)', N'Services (Sale) + Invoices (Period)', 0, 1),
-(1410, N'CashFromCustomer', N'Collecting cash from customer/lessee, Invoiced separately', N'Cash Receipt (Sale)', N'Cash Receipts (Sale)', 0, 1),
-(1420, N'CashFromCustomerWithWT', N'Collecting cash from customer/lessee with WT, Invoiced separately', N'Cash Receipt + WT', N'Cash Receipts + WT', 0, 1),
-(1430, N'CashFromCustomerWithPointInvoice', N'Collecting cash from customer + point invoice', N'Cash Receipt + Point Invoice', N'Cash Receipts + Point Invoices', 0, 1),
---(1440, N'CashFromCustomerWithPeriodInvoice', N'Collecting cash from lessee + period invoice', N'Cash Receipt + Period Invoice', N'Cash Receipts + Period Invoices', 0, 1),
-(1450, N'CashFromCustomerWithWTWithPointInvoice', N'Collecting cash from customer + WT + point invoice', N'Cash Receipt + WT + Point Invoice', N'Cash Receipts + WT + Point Invoices', 0, 1),
---(1460, N'CashFromCustomerWithWTWithPeriodInvoice', N'Collecting cash from lessee + WT + period invoice', N'Cash Receipt + WT + Period Invoice', N'Cash Receipts + WT + Period Invoices', 0, 1),
-(1550, N'CashTransferExchange', N'Cash transfer and currency exchange', N'Cash Transfer & Exchange', N'Cash Transfers & Exchanges', 0, 1),
-(1560, N'CashTransfer', N'Cash transfer, same currency', N'Cash Transfer', N'Cash Transfers', 0, 1),
-(1570, N'CashExchange', N'Currency exchange, same account', N'Cash Exchange', N'Cash Exchanges', 0, 1),
-(1660, N'CashToSupplierWithPointInvoice', N'Paying cash to supplier/lessor/.. + point invoice', N'Cash Payment + Point Invoice', N'Cash Payments + Point Invoices', 0, 1),
-(1680, N'CashToSupplierWithPointInvoiceWithWT', N'Paying cash to supplier/lessor/.. + point invoice + WT', N'Cash Payment + Point Invoice + WT', N'Cash Payments + Point Invoices + WT', 0, 1),
-(1700, N'CashToSupplier', N'Paying cash to supplier/lessor/.., invoiced separately', N'Payment (Purchase)', N'Payments (Purchase)', 0, 1),
-(1730, N'SupplierWT', N'WT from supplier', N'WT (Purchase)', N'WT (Purchases)', 0, 1),
-(1770, N'PointExpenseFromInventory', N'Issuing inventory to cost center (maintenance, job order, production line, construction project..)', N'Stock Consumption', N'Stock Consumptions', 0, 0),
-(1780, N'PointExpenseFromSupplier', N'Receiving consumables and point services from supplier, invoiced separately', N'C/S Purchase', N'C/S Purchases', 0, 0),
-(1800, N'ExpenseFromSupplierWithInvoice', N'Receiving Point/Period service from supplier + Point/Period invoice', N'C/S Purchase + Invoice', N'C/S Purchases + Invoices', 0, 1),
-(1850, N'DepreciationPPE', N'Depreciating assets that are time based, and using the number of days as criteria', N'Depreciation (PPE)', N'Depreciations (PPE)', 0, 0);
+(1020, N'PPEFromIPC', N'Reclassifying investment property as property for use', N'IPC => PPE', N'IPC => PPE', 0, 0),
+(1030, N'PPEFromInventory', N'Reclassifying Inventory as property, plant and equipment', N'Inventory => PPE', N'Inventories => PPE', 0, 1),
+(1040, N'PPEFromSupplier', N'Receiving property, plant and equipment from supplier, invoiced separately', N'PPE Purchase', N'PPE Purchases', 0, 1),
+(1050, N'PPEFromSupplierWithPointInvoice', N'Receiving property, plant and equipment from supplier + point invoice', N'PPE Purchase + Invoice', N'PPE Purchases + Invoices', 0, 1),
+(1060, N'CIPFromConstructionExpense', N'Capitalization of costs into construction in progress', N'Cost => CIP', N'Costs => CIP', 0, 0),
+(1110, N'IPUCDFromDevelopmentExpense', N'Capitalization of costs into investment property under construction or development', N'Cost => IPCD', N'Costs => IPCD', 0, 0),
+(1120, N'InventoryFromPPE', N'Reclassifying property, plant and equipment as inventory', N'PPE => Inventory', N'PPE => Inventories', 0, 0),
+(1130, N'InventoryFromIPC', N'Reclassifying investment property as property for sale', N'IPC => Inventory', N'IPC => Inventories', 0, 0),
+(1140, N'InventoryTransfer', N'Inventory transfer between warehouses (1-1)', N'Stock Transfer', N'Stock Transfers + Conversions', 0, 0),
+(1150, N'InventoryConversion', N'Inventory conversion (1-1)', N'Stock Conversion', N'Stock Conversions', 0, 0),
+(1190, N'InventoryFromIIT', N'Receiving inventory from transit', N'Transit => Inventory', N'Transit => Inventories', 0, 0),
+(1200, N'InventoryFromSupplier', N'Receiving inventory from supplier/contractor', N'Stock Purchase', N'Stock Purchases', 0, 0),
+(1210, N'InventoryFromSupplierWithPointInvoice', N'Receiving inventory from supplier/contractor + point invoice', N'Stock Purchase + Invoice', N'Stock Purchases + Invoices', 0, 0),
+(1220, N'IITFromLC', N'Receiving inventory in transit, paid by LC', N'LC => Transit', N'LCs => Transit', 0, 0),
+(1225, N'IITFromTransitExpense', N'Capitalization of transit expense into inventories in transit', N'Cost => IIT', N'Costs => IIT', 0, 0),
+(1230, N'WIPFromProductionExpense', N'Capitalization of production expense into work in progress', N'Cost => WIP', N'Costs => WIP', 0, 0),
+(1270, N'RevenueFromInventory', N'Issuing inventory to customer, invoiced separately', N'Inventory (Sale)', N'Inventories (Sale)', 0, 0),
+(1290, N'RevenueFromPeriodService', N'Rendering period services to customer, invoiced separately', N'Lease Out', N'Leases Out', 0, 1),
+(1300, N'RevenueFromInventoryWithPointInvoice', N'Issuing inventory to customer + point invoice', N'Inventory (Sale) + Invoice', N'Inventories (Sale) + Invoices', 0, 0),
+(1310, N'RevenueFromPointServiceWithPointInvoice', N'Rendering point services to customer + point invoice', N'Service (Sale) + Invoice (Point)', N'Services (Sale) + Invoices (Point)', 0, 1),
+(1320, N'RevenueFromPeriodServiceWithPeriodInvoice', N'Rendering period services to customer + period invoice', N'Service (Sale) + Invoice (Period)', N'Services (Sale) + Invoices (Period)', 0, 1),
+(1350, N'CashFromCustomer', N'Collecting cash from customer/lessee, Invoiced separately', N'Cash Receipt (Sale)', N'Cash Receipts (Sale)', 0, 1),
+(1360, N'CashFromCustomerWithWT', N'Collecting cash from customer/lessee with WT, Invoiced separately', N'Cash Receipt + WT', N'Cash Receipts + WT', 0, 1),
+(1370, N'CashFromCustomerWithPointInvoice', N'Collecting cash from customer + point invoice', N'Cash Receipt + Point Invoice', N'Cash Receipts + Point Invoices', 0, 1),
+(1380, N'CashFromCustomerWithPeriodInvoice', N'Collecting cash from lessee + period invoice', N'Cash Receipt + Period Invoice', N'Cash Receipts + Period Invoices', 0, 1),
+(1390, N'CashFromCustomerWithWTWithPointInvoice', N'Collecting cash from customer + WT + point invoice', N'Cash Receipt + WT + Point Invoice', N'Cash Receipts + WT + Point Invoices', 0, 1),
+(1400, N'CashFromCustomerWithWTWithPeriodInvoice', N'Collecting cash from lessee + WT + period invoice', N'Cash Receipt + WT + Period Invoice', N'Cash Receipts + WT + Period Invoices', 0, 1),
+(1490, N'CashExchange', N'Currency exchange', N'Cash Exchange', N'Cash Exchanges', 0, 1),
+(1500, N'CashTransfer', N'Cash transfer, same currency', N'Cash Transfer', N'Cash Transfers', 0, 1),
+(1560, N'CashToSalaries', N'Paying cash to employees (payroll)', N'Payment (Payroll)', N'Payments (Payroll)', 0, 0),
+(1590, N'CashToSupplierWithPointInvoice', N'Paying cash to supplier/lessor/.. + point invoice', N'Cash Payment + Point Invoice', N'Cash Payments + Point Invoices', 0, 1),
+(1600, N'CashToSupplierWithPeriodInvoice', N'Paying cash to supplier/lessor/.. + period invoice', N'Cash Payment + Period Invoice', N'Cash Payments + Period Invoices', 0, 1),
+(1610, N'CashToSupplierWithPointInvoiceWithWT', N'Paying cash to supplier/lessor/.. + point invoice + WT', N'Cash Payment + Point Invoice + WT', N'Cash Payments + Point Invoices + WT', 0, 1),
+(1630, N'CashToSupplier', N'Paying cash to supplier/lessor/.., invoiced separately', N'Payment (Purchase)', N'Payments (Purchase)', 0, 1),
+(1660, N'SupplierWT', N'WT from supplier', N'WT (Purchase)', N'WT (Purchases)', 0, 1),
+(1700, N'PointExpenseFromInventory', N'Issuing inventory to cost center (maintenance, job order, production line, construction project..)', N'Stock Consumption', N'Stock Consumptions', 0, 0),
+(1710, N'PointExpenseFromSupplier', N'Receiving consumables and point services from supplier, invoiced separately', N'C/S Purchase', N'C/S Purchases', 0, 0),
+(1720, N'PeriodExpenseFromSupplier', N'Receiving period service from supplier, invoiced separately', N'Lease In', N'Leases In', 0, 1),
+(1730, N'ExpenseFromSupplierWithInvoice', N'Receiving Point/Period service from supplier + Point/Period invoice', N'C/S Purchase + Invoice', N'C/S Purchases + Invoices', 0, 1),
+(1750, N'SalaryTransportationOtherOvertimePension', N'Salary, transportation allowance, other allowances, overtime, pension', N'Salary v1', N'Salaries v1', 0, 0),
+(1760, N'SalaryTransportationOvertimePenaltyPensionProvidentCostSharing', N'Salary, transportation allowance, overtime, penalty, pension, provident, cost sharing', N'Salary v2', N'Salaries v2', 0, 0),
+(1770, N'Overtime', N'Receiving overtime from employees', N'Overtime', N'Overtimes', 0, 0),
+(1780, N'DepreciationPPE', N'Depreciating assets that are time based, and using the number of days as criteria', N'Depreciation (PPE)', N'Depreciations (PPE)', 0, 0),
+(1810, N'AnnualLeaveAllowance', N'Yearly allowance for paid leaves', N'Leave Allowance', N'Leave Allowances', 0, 0),
+(1820, N'AnnualLeaveUsage', N'Usage of paid leave', N'Paid Leave', N'Paid Leaves', 0, 1),
+(1830, N'UnpaidLeave', N'Usage of unpaid leave', N'Unpaid Leave', N'Unpaid Leaves', 0, 1),
+(1850, N'TradeSettlement', N'Adjusting trade payables and trade receivables balances', N'Settlement', N'Settlements', 0, 0),
+(1870, N'TaskAssignment', N'Tracking task assignments', N'Assignment', N'', 1, 1);
 --1000: ManualLine
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [ParentAccountTypeId]) VALUES (0,1000,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -35,7 +58,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1000,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,1000,	N'Value',		0,			N'Credit',		4,4,0),
 (3,1000,	N'Memo',		0,			N'Memo',		4,4,1);
---1060: PPEFromSupplier, appears in Purchase vouchers, with purchases of inventory, Investment property, and C/S 
+--1040: PPEFromSupplier, appears in Purchase vouchers, with purchases of inventory, Investment property, and C/S 
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	DECLARE @FunctionalCurrencyId = dbo.fn_FunctionalCurrencyId();
@@ -58,28 +81,28 @@ SET [PreprocessScript] = N'
 		[UnitId0]			= (SELECT MIN([Id]) FROM dbo.Units WHERE [UnitType] = N''Pure''),
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [Participant2])	
 '
-WHERE [Index] = 1060;
+WHERE [Index] = 1040;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],			[EntryTypeId]) VALUES
-(0,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
-(1,1060,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
-(2,1060,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,NULL);
+(0,1040,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
+(1,1040,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
+(2,1040,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1060,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
-(1,1060,	N'ParticipantId',		2,	N'Supplier',		3,4,1), -- Document Header. TODO: Participant Id Is Common
-(2,1060,	N'CustodianId',			0,	N'Custodian',		5,5,0), -- TODO: No CustodyDefinitions for PPEs. Just Custodian Definition
-(3,1060,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0),
-(4,1060,	N'Quantity',			1,	N'Life/Usage',		2,4,0),
-(5,1060,	N'UnitId',				1,	N'Unit',			2,4,0),
-(6,1060,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header, Supplier's currency
-(7,1060,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0), -- In Supplier's currency
-(8,1060,	N'NotedAmount',			0,	N'Residual Value',	1,2,0), -- In Supplier's currency
-(10,1060,	N'PostingDate',			1,	N'Purchase Date',	0,4,1), -- Document Header, shared with other purchases
-(11,1060,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header
---1200:InventoryTransfer, appears in SIV, with issue to expenditure, (to sale is either in CSV or CRSV)
+(0,1040,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1040,	N'ParticipantId',		2,	N'Supplier',		3,4,1), -- Document Header. TODO: Participant Id Is Common
+(2,1040,	N'CustodianId',			0,	N'Custodian',		5,5,0), -- TODO: No CustodyDefinitions for PPEs. Just Custodian Definition
+(3,1040,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0),
+(4,1040,	N'Quantity',			1,	N'Life/Usage',		2,4,0),
+(5,1040,	N'UnitId',				1,	N'Unit',			2,4,0),
+(6,1040,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header, Supplier's currency
+(7,1040,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0), -- In Supplier's currency
+(8,1040,	N'NotedAmount',			0,	N'Residual Value',	1,2,0), -- In Supplier's currency
+(10,1040,	N'PostingDate',			1,	N'Purchase Date',	0,4,1), -- Document Header, shared with other purchases
+(11,1040,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Heade
+--1140:InventoryTransfer, appears in SIV, with issue to expenditure, (to sale is either in CSV or CRSV)
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE PWL
@@ -116,27 +139,27 @@ SET [PreprocessScript] = N'
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 '
-WHERE [Index] = 1200;
+WHERE [Index] = 1140;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],	[EntryTypeId]) VALUES
-(0,1200,+1,	@Inventories,		@InternalInventoryTransferExtension),
-(1,1200,-1,	@Inventories,		NULL);
+(0,1140,+1,	@Inventories,		@InternalInventoryTransferExtension),
+(1,1140,-1,	@Inventories,		NULL);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
-(0,0,1200,@WarehouseCD),
-(0,1,1200,@WarehouseCD);
+(0,0,1140,@WarehouseCD),
+(0,1,1140,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1200,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
-(1,1200,	N'CustodyId'	,		1,	N'From Warehouse',	3,4,1), -- Document Header. -- Warehouse is a custody, because one employee 
-(2,1200,	N'CustodyId',			0,	N'To Warehouse',	3,4,1), -- Tab Header		-- might be in charge of many warehouses  
-(3,1200,	N'ResourceId',			0,	N'Item',			2,4,0),						-- containing same items
-(4,1200,	N'Quantity',			0,	N'Qty',				2,4,0),
-(5,1200,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,1200,	N'PostingDate',			1,	N'Issued On',		1,4,1); -- Document Header
---1260:InventoryFromSupplier, appears in Purchase vouchers, with purchases of PPE, Investment property, and C/S. (SRV is from non purchases)
+(0,1140,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1140,	N'CustodyId'	,		1,	N'From Warehouse',	3,4,1), -- Document Header. -- Warehouse is a custody, because one employee 
+(2,1140,	N'CustodyId',			0,	N'To Warehouse',	3,4,1), -- Tab Header		-- might be in charge of many warehouses  
+(3,1140,	N'ResourceId',			0,	N'Item',			2,4,0),						-- containing same items
+(4,1140,	N'Quantity',			0,	N'Qty',				2,4,0),
+(5,1140,	N'UnitId',				0,	N'Unit',			2,4,0),
+(6,1140,	N'PostingDate',			1,	N'Issued On',		1,4,1); -- Document Header
+--1200:InventoryFromSupplier, appears in Purchase vouchers, with purchases of PPE, Investment property, and C/S. (SRV is from non purchases)
 UPDATE @LineDefinitions
 SET
 	[PreprocessScript] = N'
@@ -150,47 +173,46 @@ SET
 								[MonetaryValue1]),
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [Participant1])',
 	[ValidateScript] = NULL
-WHERE [Index] = 1260;
+WHERE [Index] = 1200;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1260,+1,	@Inventories,											@ReceiptsReturnsThroughPurchaseExtension),
-(1,1260,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,	NULL);
+(0,1200,+1,	@Inventories,											@AdditionsFromPurchasesInventoriesExtension),
+(1,1200,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,	NULL);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
-(0,0,1260,@MerchandiseRD),
-(1,0,1260,@CurrentFoodAndBeverageRD),
-(2,0,1260,@CurrentAgriculturalProduceRD),
-(3,0,1260,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
-(4,0,1260,@RawMaterialsRD),
-(5,0,1260,@ProductionSuppliesRD),
-(6,0,1260,@CurrentPackagingAndStorageMaterialsRD),
-(7,0,1260,@SparePartsRD),
-(8,0,1260,@CurrentFuelRD),
-(9,0,1260,@OtherInventoriesRD),
-(10,0,1260,@TradeMedicineRD),
-(11,0,1260,@TradeConstructionMaterialRD),
-(12,0,1260,@TradeSparePartRD),
-(13,0,1260,@RawGrainRD),
-(14,0,1260,@RawVehicleRD);
+(0,0,1200,@MerchandiseRD),
+(1,0,1200,@CurrentFoodAndBeverageRD),
+(2,0,1200,@CurrentAgriculturalProduceRD),
+(3,0,1200,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(4,0,1200,@RawMaterialsRD),
+(5,0,1200,@ProductionSuppliesRD),
+(6,0,1200,@CurrentPackagingAndStorageMaterialsRD),
+(7,0,1200,@SparePartsRD),
+(8,0,1200,@CurrentFuelRD),
+(9,0,1200,@OtherInventoriesRD),
+(10,0,1200,@TradeMedicineRD),
+(11,0,1200,@TradeConstructionMaterialRD),
+(12,0,1200,@TradeSparePartRD),
+(13,0,1200,@RawGrainRD),
+(14,0,1200,@RawVehicleRD);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
-(0,0,1260,@WarehouseCD);
+(0,0,1200,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1260,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
-(1,1260,	N'ParticipantId',		1,	N'Supplier',		3,4,1), -- Document Header
-(2,1260,	N'CustodyId',			0,	N'Warehouse',		3,4,1), -- Tab Header
-(3,1260,	N'ResourceId',			0,	N'Item',			2,4,0),
-(4,1260,	N'Quantity',			0,	N'Qty',				2,4,0),
-(5,1260,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,1260,	N'CurrencyId',			1,	N'Currency',		1,2,1), -- Document Header, Supplier's currency
-(7,1260,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0), -- In Supplier's currency
-(8,1260,	N'PostingDate',			1,	N'Purchase Date',	1,4,1),
-(9,1260,	N'CenterId',			1,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash purchase. useful for credit purchase
---1330:RevenueFromInventory, appears in CSV and CRSV, but not in SRV
--- Where do we store the salesman? STUDY CAREFULLY...
+(0,1200,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1200,	N'ParticipantId',		1,	N'Supplier',		3,4,1), -- Document Header
+(2,1200,	N'CustodyId',			0,	N'Warehouse',		3,4,1), -- Tab Header
+(3,1200,	N'ResourceId',			0,	N'Item',			2,4,0),
+(4,1200,	N'Quantity',			0,	N'Qty',				2,4,0),
+(5,1200,	N'UnitId',				0,	N'Unit',			2,4,0),
+(6,1200,	N'CurrencyId',			1,	N'Currency',		1,2,1), -- Document Header, Supplier's currency
+(7,1200,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0), -- In Supplier's currency
+(8,1200,	N'PostingDate',			1,	N'Purchase Date',	1,4,1),
+(9,1200,	N'CenterId',			1,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash purchase. useful for credit purchase
+--1270:RevenueFromInventory, appears in CSV and CRSV, but not in SRV
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE PWL
@@ -255,47 +277,46 @@ SET [PreprocessScript] = N'
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 '
-WHERE [Index] = 1330;
+WHERE [Index] = 1270;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
-(0,1330,+1,	@CostOfMerchandiseSold,								NULL),
-(1,1330,-1,	@Inventories,										@ReturnsIssuesThroughSaleExtension),
-(2,1330,+1,	@IssuesAtPointInTimeToCustomersControlExtension,	NULL),
-(3,1330,-1,	@Revenue,											NULL)
+(0,1270,+1,	@CostOfMerchandiseSold,								NULL),
+(1,1270,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
+(2,1270,+1,	@IssuesAtPointInTimeToCustomersControlExtension,	NULL),
+(3,1270,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
-(0,1,1330,@MerchandiseRD),
-(1,1,1330,@CurrentFoodAndBeverageRD),
-(2,1,1330,@CurrentAgriculturalProduceRD),
-(3,1,1330,@FinishedGoodsRD),
-(4,1,1330,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
-(5,1,1330,@TradeMedicineRD),
-(6,1,1330,@TradeConstructionMaterialRD),
-(7,1,1330,@TradeSparePartRD),
-(8,1,1330,@FinishedGrainRD),
-(9,1,1330,@ByproductGrainRD),
-(10,1,1330,@FinishedVehicleRD),
-(11,1,1330,@FinishedOilRD),
-(12,1,1330,@ByproductOilRD);
+(0,1,1270,@MerchandiseRD),
+(1,1,1270,@CurrentFoodAndBeverageRD),
+(2,1,1270,@CurrentAgriculturalProduceRD),
+(3,1,1270,@FinishedGoodsRD),
+(4,1,1270,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(5,1,1270,@TradeMedicineRD),
+(6,1,1270,@TradeConstructionMaterialRD),
+(7,1,1270,@TradeSparePartRD),
+(8,1,1270,@FinishedGrainRD),
+(9,1,1270,@ByproductGrainRD),
+(10,1,1270,@FinishedVehicleRD),
+(11,1,1270,@FinishedOilRD),
+(12,1,1270,@ByproductOilRD);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
-(0,1,1330,@WarehouseCD);
+(0,1,1270,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1330,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
-(1,1330,	N'ParticipantId',		2,	N'Customer',		3,4,1), -- Document Header
-(2,1330,	N'CustodyId',			1,	N'Warehouse',		3,4,1), -- Tab Header
-(3,1330,	N'ResourceId',			1,	N'Item',			2,4,0),
-(4,1330,	N'Quantity',			1,	N'Qty',				2,4,0),
-(5,1330,	N'UnitId',				1,	N'Unit',			2,4,0),
-(6,1330,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header, Customer's currency
-(7,1330,	N'MonetaryValue',		3,	N'Price (VAT Excl.)',1,2,0), -- In Customer's currency
-(8,1330,	N'PostingDate',			1,	N'Sales Date',		1,4,1),
-(9,1330,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash sale. useful for credit purchase
-
---1360:RevenueFromInventoryWithPointInvoice, appears in cash sales and credit sales, in addition to Revenue from 
+(0,1270,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Header
+(1,1270,	N'ParticipantId',		2,	N'Customer',		3,4,1), -- Document Header
+(2,1270,	N'CustodyId',			1,	N'Warehouse',		3,4,1), -- Tab Header
+(3,1270,	N'ResourceId',			1,	N'Item',			2,4,0),
+(4,1270,	N'Quantity',			1,	N'Qty',				2,4,0),
+(5,1270,	N'UnitId',				1,	N'Unit',			2,4,0),
+(6,1270,	N'CurrencyId',			2,	N'Currency',		1,2,1), -- Document Header, Customer's currency
+(7,1270,	N'MonetaryValue',		3,	N'Price (VAT Excl.)',1,2,0), -- In Customer's currency
+(8,1270,	N'PostingDate',			1,	N'Sales Date',		1,4,1),
+(9,1270,	N'CenterId',			2,	N'Business Unit',	1,4,1); -- Document Header, ignored for cash sale. useful for credit purchase
+--1300:RevenueFromInventoryWithPointInvoice, appears in cash sales and credit sales, in addition to Revenue from 
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE PWL
@@ -355,51 +376,51 @@ SET [PreprocessScript] = N'
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 '
-WHERE [Index] = 1360;
+WHERE [Index] = 1300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
-(0,1360,+1,	@CostOfMerchandiseSold,								NULL),
-(1,1360,-1,	@Inventories,										@ReturnsIssuesThroughSaleExtension),
-(2,1360,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
-(3,1360,-1,	@CurrentValueAddedTaxPayables,						NULL),
-(4,1360,-1,	@Revenue,											NULL)
+(0,1300,+1,	@CostOfMerchandiseSold,								NULL),
+(1,1300,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
+(2,1300,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
+(3,1300,-1,	@CurrentValueAddedTaxPayables,						NULL),
+(4,1300,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
-(0,1,1360,@MerchandiseRD),
-(1,1,1360,@CurrentFoodAndBeverageRD),
-(2,1,1360,@CurrentAgriculturalProduceRD),
-(3,1,1360,@FinishedGoodsRD),
-(4,1,1360,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
-(5,1,1360,@TradeMedicineRD),
-(6,1,1360,@TradeConstructionMaterialRD),
-(7,1,1360,@TradeSparePartRD),
-(8,1,1360,@FinishedGrainRD),
-(9,1,1360,@ByproductGrainRD),
-(10,1,1360,@FinishedVehicleRD),
-(11,1,1360,@FinishedOilRD),
-(12,1,1360,@ByproductOilRD);
+(0,1,1300,@MerchandiseRD),
+(1,1,1300,@CurrentFoodAndBeverageRD),
+(2,1,1300,@CurrentAgriculturalProduceRD),
+(3,1,1300,@FinishedGoodsRD),
+(4,1,1300,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(5,1,1300,@TradeMedicineRD),
+(6,1,1300,@TradeConstructionMaterialRD),
+(7,1,1300,@TradeSparePartRD),
+(8,1,1300,@FinishedGrainRD),
+(9,1,1300,@ByproductGrainRD),
+(10,1,1300,@FinishedVehicleRD),
+(11,1,1300,@FinishedOilRD),
+(12,1,1300,@ByproductOilRD);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
-(0,1,1360,@WarehouseCD);
+(0,1,1300,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1360,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1360,	N'ParticipantId',		3,	N'Customer',		3,4,1),
-(2,1360,	N'CustodyId',			1,	N'Warehouse',		3,4,1),
-(3,1360,	N'ResourceId',			1,	N'Item',			2,4,0),
-(4,1360,	N'Quantity',			1,	N'Qty',				2,4,0),
-(5,1360,	N'UnitId',				1,	N'Unit',			2,4,0),
-(6,1360,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(7,1360,	N'MonetaryValue',		4,	N'Price (VAT Excl.)',1,2,0),
-(8,1360,	N'MonetaryValue',		3,	N'VAT',				0,0,0),
-(9,1360,	N'MonetaryValue',		2,	N'Line Total',		0,0,0),
-(10,1360,	N'ExternalReference',	2,	N'Invoice #',		1,4,0),
-(11,1360,	N'PostingDate',			1,	N'Issued On',		1,4,1),
-(12,1360,	N'CenterId',			1,	N'Business Unit',	1,4,1),
-(13,1360,	N'CenterId',			2,	N'Business Unit',	1,4,1);
---1410:CashFromCustomer
+(0,1300,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,1300,	N'ParticipantId',		3,	N'Customer',		3,4,1),
+(2,1300,	N'CustodyId',			1,	N'Warehouse',		3,4,1),
+(3,1300,	N'ResourceId',			1,	N'Item',			2,4,0),
+(4,1300,	N'Quantity',			1,	N'Qty',				2,4,0),
+(5,1300,	N'UnitId',				1,	N'Unit',			2,4,0),
+(6,1300,	N'CurrencyId',			2,	N'Currency',		1,2,1),
+(7,1300,	N'MonetaryValue',		4,	N'Price (VAT Excl.)',1,2,0),
+(8,1300,	N'MonetaryValue',		3,	N'VAT',				0,0,0),
+(9,1300,	N'MonetaryValue',		2,	N'Line Total',		0,0,0),
+(10,1300,	N'ExternalReference',	2,	N'Invoice #',		1,4,0),
+(11,1300,	N'PostingDate',			1,	N'Issued On',		1,4,1),
+(12,1300,	N'CenterId',			1,	N'Business Unit',	1,4,1),
+(13,1300,	N'CenterId',			2,	N'Business Unit',	1,4,1);
+--1350:CashFromCustomer
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -411,25 +432,25 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
-WHERE [Index] = 1410;
+WHERE [Index] = 1350;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
-(0,1410,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,1410,-1,		@CashReceiptsFromCustomersControlExtension,	NULL);
+(0,1350,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,1350,-1,		@CashReceiptsFromCustomersControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1410,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1410,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
-(2,1410,	N'MonetaryValue',		1,	N'Amount',			1,2,0), 
-(3,1410,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(4,1410,	N'NotedRelationId',		1,	N'Customer',		1,4,1),
-(5,1410,	N'PostingDate',			1,	N'Received On',		1,4,1),
-(6,1410,	N'ExternalReference',	0,	N'Check #',			5,5,0),
-(7,1410,	N'CenterId',			1,	N'Business Unit',	1,4,1),
-(8,1410,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
---1420:CashFromCustomerWithWT
+(0,1350,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,1350,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
+(2,1350,	N'MonetaryValue',		1,	N'Amount',			1,2,0), 
+(3,1350,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(4,1350,	N'NotedRelationId',		1,	N'Customer',		1,4,1),
+(5,1350,	N'PostingDate',			1,	N'Received On',		1,4,1),
+(6,1350,	N'ExternalReference',	0,	N'Check #',			5,5,0),
+(7,1350,	N'CenterId',			1,	N'Business Unit',	1,4,1),
+(8,1350,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
+--1360:CashFromCustomerWithWT
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
  UPDATE @ProcessedWideLines
@@ -444,29 +465,29 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId2]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0]) 
 '
-WHERE [Index] = 1420;
+WHERE [Index] = 1360;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
-(0,1420,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,1420,+1,		@WithholdingTaxReceivablesExtension,		NULL),
-(2,1420,-1,		@CashReceiptsFromCustomersControlExtension,	NULL); 
+(0,1360,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,1360,+1,		@WithholdingTaxReceivablesExtension,		NULL),
+(2,1360,-1,		@CashReceiptsFromCustomersControlExtension,	NULL); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1420,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1420,	N'NotedRelationId',		2,	N'Customer',		1,4,1),
-(2,1420,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(3,1420,	N'MonetaryValue',		2,	N'Due Amount',		1,2,0), -- 
-(6,1420,	N'MonetaryValue',		1,	N'Amount Withheld',	4,4,0),
-(7,1420,	N'ExternalReference',	1,	N'WT Voucher #',	5,5,0),
-(8,1420,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0),
-(9,1420,	N'ExternalReference',	0,	N'Check #',			5,5,0),
-(10,1420,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
-(11,1420,	N'PostingDate',			2,	N'Payment Date',	1,2,1),
-(12,1420,	N'CenterId',			2,	N'Business Unit',	1,4,1),
-(13,1420,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
---1430:CashFromCustomerWithWithPointInvoice
+(0,1360,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,1360,	N'NotedRelationId',		2,	N'Customer',		1,4,1),
+(2,1360,	N'CurrencyId',			2,	N'Currency',		1,2,1),
+(3,1360,	N'MonetaryValue',		2,	N'Due Amount',		1,2,0), -- 
+(6,1360,	N'MonetaryValue',		1,	N'Amount Withheld',	4,4,0),
+(7,1360,	N'ExternalReference',	1,	N'WT Voucher #',	5,5,0),
+(8,1360,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0),
+(9,1360,	N'ExternalReference',	0,	N'Check #',			5,5,0),
+(10,1360,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
+(11,1360,	N'PostingDate',			2,	N'Payment Date',	1,2,1),
+(12,1360,	N'CenterId',			2,	N'Business Unit',	1,4,1),
+(13,1360,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
+--1370:CashFromCustomerWithWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -483,29 +504,29 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId2]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
-WHERE [Index] = 1430;
+WHERE [Index] = 1370;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],								[EntryTypeId]) VALUES
-(0,1430,+1,		@CashAndCashEquivalents,						@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,1430,-1,		@CurrentValueAddedTaxPayables,					NULL),
-(2,1430,-1,		@IssuesAtPointInTimeToCustomersControlExtension,NULL); 
+(0,1370,+1,		@CashAndCashEquivalents,						@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,1370,-1,		@CurrentValueAddedTaxPayables,					NULL),
+(2,1370,-1,		@IssuesAtPointInTimeToCustomersControlExtension,NULL); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1430,	N'Memo',				0,	N'Memo',			1,4,1),
-(1,1430,	N'NotedRelationId',		2,	N'Customer',		1,4,1),
-(2,1430,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(3,1430,	N'MonetaryValue',		2,	N'Amount (VAT Excl)',1,2,0), -- 
-(4,1430,	N'MonetaryValue',		1,	N'VAT',				0,0,0),
-(5,1430,	N'ExternalReference',	1,	N'Invoice #',		1,4,0),
-(8,1430,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0),
-(9,1430,	N'ExternalReference',	0,	N'Check #',			5,5,0),
-(10,1430,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
-(11,1430,	N'PostingDate',			2,	N'Payment Date',	1,2,1),
-(12,1430,	N'CenterId',			2,	N'Business Unit',	1,4,1),
-(13,1430,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
---1450:CashFromCustomerWithWTWithPointInvoice
+(0,1370,	N'Memo',				0,	N'Memo',			1,4,1),
+(1,1370,	N'NotedRelationId',		2,	N'Customer',		1,4,1),
+(2,1370,	N'CurrencyId',			2,	N'Currency',		1,2,1),
+(3,1370,	N'MonetaryValue',		2,	N'Amount (VAT Excl)',1,2,0), -- 
+(4,1370,	N'MonetaryValue',		1,	N'VAT',				0,0,0),
+(5,1370,	N'ExternalReference',	1,	N'Invoice #',		1,4,0),
+(8,1370,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0),
+(9,1370,	N'ExternalReference',	0,	N'Check #',			5,5,0),
+(10,1370,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
+(11,1370,	N'PostingDate',			2,	N'Payment Date',	1,2,1),
+(12,1370,	N'CenterId',			2,	N'Business Unit',	1,4,1),
+(13,1370,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
+--1390:CashFromCustomerWithWTWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -531,32 +552,32 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId3]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
-WHERE [Index] = 1450;
+WHERE [Index] = 1390;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId]) VALUES
-(0,1450,+1,		@CashAndCashEquivalents),
-(1,1450,+1,		@WithholdingTaxReceivablesExtension),
-(2,1450,-1,		@CurrentValueAddedTaxPayables),
-(3,1450,-1,		@IssuesAtPointInTimeToCustomersControlExtension); 
+(0,1390,+1,		@CashAndCashEquivalents),
+(1,1390,+1,		@WithholdingTaxReceivablesExtension),
+(2,1390,-1,		@CurrentValueAddedTaxPayables),
+(3,1390,-1,		@IssuesAtPointInTimeToCustomersControlExtension); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1450,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1450,	N'NotedRelationId',		3,	N'Customer',		1,4,1),
-(2,1450,	N'CurrencyId',			3,	N'Currency',		1,2,1),
-(3,1450,	N'MonetaryValue',		3,	N'Amount (VAT Excl)',1,2,0), -- 
-(4,1450,	N'MonetaryValue',		2,	N'VAT',				0,0,0),
-(5,1450,	N'ExternalReference',	2,	N'Invoice #',		1,4,0),
-(6,1450,	N'MonetaryValue',		1,	N'Amount Withheld',	4,4,0),
-(7,1450,	N'ExternalReference',	1,	N'WT Voucher #',	5,5,0),
-(8,1450,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0),
-(9,1450,	N'ExternalReference',	0,	N'Check #',			5,5,0),
-(10,1450,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
-(11,1450,	N'PostingDate',			3,	N'Payment Date',	1,2,1),
-(12,1450,	N'CenterId',			3,	N'Business Unit',	1,4,1),
-(13,1450,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
---1550:CashTransferExchange
+(0,1390,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,1390,	N'NotedRelationId',		3,	N'Customer',		1,4,1),
+(2,1390,	N'CurrencyId',			3,	N'Currency',		1,2,1),
+(3,1390,	N'MonetaryValue',		3,	N'Amount (VAT Excl)',1,2,0), -- 
+(4,1390,	N'MonetaryValue',		2,	N'VAT',				0,0,0),
+(5,1390,	N'ExternalReference',	2,	N'Invoice #',		1,4,0),
+(6,1390,	N'MonetaryValue',		1,	N'Amount Withheld',	4,4,0),
+(7,1390,	N'ExternalReference',	1,	N'WT Voucher #',	5,5,0),
+(8,1390,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0),
+(9,1390,	N'ExternalReference',	0,	N'Check #',			5,5,0),
+(10,1390,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
+(11,1390,	N'PostingDate',			3,	N'Payment Date',	1,2,1),
+(12,1390,	N'CenterId',			3,	N'Business Unit',	1,4,1),
+(13,1390,	N'AdditionalReference',	0,	N'CRV #',			5,5,0);
+--1490:CashExchange
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -570,26 +591,26 @@ SET [PreprocessScript] = N'
 		[MonetaryValue2] = wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1])
 							- wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId0], [MonetaryValue0]) 
 '
-WHERE [Index] = 1550;
+WHERE [Index] = 1490;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
-(0,1550,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(1,1550,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(2,1550,+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax, NULL); -- Make it an automatic system entry
+(0,1490,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
+(1,1490,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
+(2,1490,+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax, NULL); -- Make it an automatic system entry
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1550,	N'CustodyId',			1,	N'From Account',	1,2,0),
-(1,1550,	N'CustodyId',			0,	N'To Account',		1,2,0),
-(2,1550,	N'CurrencyId',			1,	N'From Currency',	1,2,0),
-(3,1550,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
-(4,1550,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
-(5,1550,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
-(6,1550,	N'CenterId',			2,	N'Business Unit',	1,4,1),
-(7,1550,	N'Memo',				0,	N'Memo',			1,2,1),
-(8,1550,	N'PostingDate',			0,	N'Transfer Date',	1,4,1);
---1560:CashTransfer
+(0,1490,	N'CustodyId',			1,	N'From Account',	1,2,0),
+(1,1490,	N'CustodyId',			0,	N'To Account',		1,2,0),
+(2,1490,	N'CurrencyId',			1,	N'From Currency',	1,2,0),
+(3,1490,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
+(4,1490,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
+(5,1490,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
+(6,1490,	N'CenterId',			2,	N'Business Unit',	1,4,1),
+(7,1490,	N'Memo',				0,	N'Memo',			1,2,1),
+(8,1490,	N'PostingDate',			0,	N'Transfer Date',	1,4,1);
+--1500:CashTransfer
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -599,54 +620,23 @@ SET [PreprocessScript] = N'
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0)
 		-- Currency and Center are set by custody
 '
-WHERE [Index] = 1560;
+WHERE [Index] = 1500;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
-(0,1560,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(1,1560,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension);
+(0,1500,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
+(1,1500,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1560,	N'CustodyId',			1,	N'From Account',	1,2,0),
-(1,1560,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(3,1560,	N'CustodyId',			0,	N'To Account',		1,2,0),
-(4,1560,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(6,1560,	N'MonetaryValue',		1,	N'Amount',			1,2,0),
-(7,1560,	N'Memo',				0,	N'Memo',			1,3,1),
-(8,1560,	N'PostingDate',			0,	N'Transfer Date',	0,4,1);
---1570:CashExchange
-UPDATE @LineDefinitions
-SET [PreprocessScript] = N'
-	UPDATE @ProcessedWideLines
-	SET
-		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
-		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
-		[CustodyId0] = [CustodyId1],
-		[CurrencyId2] = dbo.fn_FunctionalCurrencyId(),
-		[MonetaryValue0] = IIF([CurrencyId0]=[CurrencyId1],[MonetaryValue1],[MonetaryValue0]),
-		[MonetaryValue2] = wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1])
-							- wiz.fn_ConvertToFunctional([PostingDate], [CurrencyId0], [MonetaryValue0]) 
-'
-WHERE [Index] = 1570;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
-(0,1570,+1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(1,1570,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension),
-(2,1570,+1,	@GainsLossesOnExchangeDifferencesOnTranslationBeforeTax, NULL); -- Make it an automatic system entry
-INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
-														[ReadOnlyState],
-														[InheritsFromHeader]) VALUES
-(0,1570,	N'CustodyId',			1,	N'From Account',	1,2,0),
-(1,1570,	N'CurrencyId',			1,	N'From Currency',	1,2,0),
-(2,1570,	N'MonetaryValue',		1,	N'From Amount',		1,3,0),
-(3,1570,	N'CustodyId',			1,	N'To Account',		1,2,0),
-(4,1570,	N'CurrencyId',			0,	N'To Currency',		1,2,0),
-(5,1570,	N'MonetaryValue',		0,	N'To Amount',		1,3,0),
-(7,1570,	N'Memo',				0,	N'Memo',			1,4,1),
-(8,1570,	N'PostingDate',			0,	N'Exchange Date',	0,2,1);
---1660:CashToSupplierWithPointInvoice
+(0,1500,	N'CustodyId',			1,	N'From Account',	1,2,0),
+(1,1500,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(3,1500,	N'CustodyId',			0,	N'To Account',		1,2,0),
+(4,1500,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(6,1500,	N'MonetaryValue',		1,	N'Amount',			1,2,0),
+(7,1500,	N'Memo',				0,	N'Memo',			1,3,1),
+(8,1500,	N'PostingDate',			0,	N'Transfer Date',	0,4,1);
+--1590:CashToSupplierWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -665,29 +655,29 @@ SET [PreprocessScript] = N'
 		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
 		[AdditionalReference2] = IIF(ISNUMERIC([AdditionalReference2]) = 1, N''CPV'' + [AdditionalReference2], [AdditionalReference2])
 '
-WHERE [Index] = 1660;
+WHERE [Index] = 1590;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId]) VALUES
-(0,1660,+1,		@ReceiptsAtPointInTimeFromSuppliersControlExtension),
-(1,1660,+1,		@CurrentValueAddedTaxReceivables),
-(2,1660,-1,		@CashAndCashEquivalents); 
+(0,1590,+1,		@ReceiptsAtPointInTimeFromSuppliersControlExtension),
+(1,1590,+1,		@CurrentValueAddedTaxReceivables),
+(2,1590,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1660,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1660,	N'NotedRelationId',		0,	N'Supplier',		1,4,1),
-(2,1660,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(3,1660,	N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0),
-(4,1660,	N'MonetaryValue',		1,	N'VAT',				1,4,0),
-(5,1660,	N'ExternalReference',	1,	N'Invoice #',		1,4,0),
-(6,1660,	N'MonetaryValue',		2,	N'Net To Pay',		0,0,0),
-(8,1660,	N'ExternalReference',	2,	N'Check #',			5,5,0),
-(9,1660,	N'CustodyId',			2,	N'Cash/Bank Acct',	4,4,0),
-(10,1660,N'PostingDate',			0,	N'Payment Date',	1,2,1),
-(11,1660, N'CenterId',			0,	N'Business Unit',	1,4,1),
-(12,1660, N'AdditionalReference',2,	N'CPV #',			1,4,0);
---1680:CashToSupplierWithPointInvoiceWithWT CashPaymentToTradePayableWithWT: (basically, it is the VAT) -- assume all in same currency
+(0,1590,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,1590,	N'NotedRelationId',		0,	N'Supplier',		1,4,1),
+(2,1590,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(3,1590,	N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0),
+(4,1590,	N'MonetaryValue',		1,	N'VAT',				1,4,0),
+(5,1590,	N'ExternalReference',	1,	N'Invoice #',		1,4,0),
+(6,1590,	N'MonetaryValue',		2,	N'Net To Pay',		0,0,0),
+(8,1590,	N'ExternalReference',	2,	N'Check #',			5,5,0),
+(9,1590,	N'CustodyId',			2,	N'Cash/Bank Acct',	4,4,0),
+(10,1590,N'PostingDate',			0,	N'Payment Date',	1,2,1),
+(11,1590, N'CenterId',			0,	N'Business Unit',	1,4,1),
+(12,1590, N'AdditionalReference',2,	N'CPV #',			1,4,0);
+--1610:CashToSupplierWithPointInvoiceWithWT CashPaymentToTradePayableWithWT: (basically, it is the VAT) -- assume all in same currency
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -713,32 +703,32 @@ SET [PreprocessScript] = N'
 		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
 		[AdditionalReference3] = IIF(ISNUMERIC([AdditionalReference3]) = 1, N''CPV'' + [AdditionalReference3], [AdditionalReference3])
 '
-WHERE [Index] = 1680;
+WHERE [Index] = 1610;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId]) VALUES
-(0,1680,+1,		@ReceiptsAtPointInTimeFromSuppliersControlExtension), -- Item price
-(1,1680,+1,		@CurrentValueAddedTaxReceivables), -- VAT, Taxamble Amount
-(2,1680,-1,		@WithholdingTaxPayableExtension), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
-(3,1680,-1,		@CashAndCashEquivalents); 
+(0,1610,+1,		@ReceiptsAtPointInTimeFromSuppliersControlExtension), -- Item price
+(1,1610,+1,		@CurrentValueAddedTaxReceivables), -- VAT, Taxamble Amount
+(2,1610,-1,		@WithholdingTaxPayableExtension), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
+(3,1610,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1680,N'Memo',				1,	N'Memo',			1,4,1),
-(1,1680,N'NotedRelationId',		0,	N'Supplier',		1,4,1),
-(2,1680,N'CurrencyId',			0,	N'Currency',		1,2,1),
-(3,1680,N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0),
-(4,1680,N'MonetaryValue',		1,	N'VAT',				1,4,0),
-(5,1680,N'ExternalReference',	1,	N'Invoice #',		1,4,0),
-(6,1680,N'MonetaryValue',		2,	N'Amount Withheld',	4,4,0),
-(7,1680,N'ExternalReference',	2,	N'WT Voucher #',	5,5,0),
-(8,1680,N'MonetaryValue',		3,	N'Net To Pay',		0,0,0),
-(9,1680,N'ExternalReference',	3,	N'Check #',			5,5,0),
-(10,1680,N'CustodyId',			3,	N'Cash/Bank Acct',	4,4,0),
-(11,1680,N'PostingDate',		0,	N'Payment Date',	1,2,1),
-(12,1680,N'CenterId',			0,	N'Business Unit',	1,4,1),
-(13,1680,N'AdditionalReference',3,	N'CPV #',			1,4,0);
---1700:CashToSupplier
+(0,1610,N'Memo',				1,	N'Memo',			1,4,1),
+(1,1610,N'NotedRelationId',		0,	N'Supplier',		1,4,1),
+(2,1610,N'CurrencyId',			0,	N'Currency',		1,2,1),
+(3,1610,N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0),
+(4,1610,N'MonetaryValue',		1,	N'VAT',				1,4,0),
+(5,1610,N'ExternalReference',	1,	N'Invoice #',		1,4,0),
+(6,1610,N'MonetaryValue',		2,	N'Amount Withheld',	4,4,0),
+(7,1610,N'ExternalReference',	2,	N'WT Voucher #',	5,5,0),
+(8,1610,N'MonetaryValue',		3,	N'Net To Pay',		0,0,0),
+(9,1610,N'ExternalReference',	3,	N'Check #',			5,5,0),
+(10,1610,N'CustodyId',			3,	N'Cash/Bank Acct',	4,4,0),
+(11,1610,N'PostingDate',		0,	N'Payment Date',	1,2,1),
+(12,1610,N'CenterId',			0,	N'Business Unit',	1,4,1),
+(13,1610,N'AdditionalReference',3,	N'CPV #',			1,4,0);
+--1630:CashToSupplier
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -750,25 +740,25 @@ SET [PreprocessScript] = N'
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
 		[AdditionalReference1] = IIF(ISNUMERIC([AdditionalReference1]) = 1, N''CPV'' + [AdditionalReference1], [AdditionalReference1]) 
 '
-WHERE [Index] = 1700;
+WHERE [Index] = 1630;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
-(0,1700,+1,		@CashPaymentsToSuppliersControlExtension,	NULL),
-(1,1700,-1,		@CashAndCashEquivalents,					@PaymentsToSuppliersForGoodsAndServices);
+(0,1630,+1,		@CashPaymentsToSuppliersControlExtension,	NULL),
+(1,1630,-1,		@CashAndCashEquivalents,					@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1700,	N'Memo',				0,	N'Memo',			1,4,1),
-(1,1700,	N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0),
-(2,1700,	N'MonetaryValue',		0,	N'Amount',			1,2,0), 
-(3,1700,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(4,1700,	N'NotedRelationId',		0,	N'Supplier',		1,4,1),
-(5,1700,	N'PostingDate',			0,	N'Paid On',			1,4,1),
-(6,1700,	N'ExternalReference',	1,	N'Check #',			5,5,0),
-(7,1700,	N'CenterId',			0,	N'Business Unit',	1,4,1),
-(8,1700,	N'AdditionalReference',	1,	N'CPV #',			5,5,0);
---1730:SupplierWT
+(0,1630,	N'Memo',				0,	N'Memo',			1,4,1),
+(1,1630,	N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0),
+(2,1630,	N'MonetaryValue',		0,	N'Amount',			1,2,0), 
+(3,1630,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(4,1630,	N'NotedRelationId',		0,	N'Supplier',		1,4,1),
+(5,1630,	N'PostingDate',			0,	N'Paid On',			1,4,1),
+(6,1630,	N'ExternalReference',	1,	N'Check #',			5,5,0),
+(7,1630,	N'CenterId',			0,	N'Business Unit',	1,4,1),
+(8,1630,	N'AdditionalReference',	1,	N'CPV #',			5,5,0);
+--1660:SupplierWT
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
  UPDATE @ProcessedWideLines
@@ -779,24 +769,24 @@ SET [PreprocessScript] = N'
 		[MonetaryValue0]	= ISNULL(0.02 * [NotedAmount1], 0),
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1]) 
 '
-WHERE [Index] = 1730;
+WHERE [Index] = 1660;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1730,+1,	@CashPaymentsToSuppliersControlExtension,NULL),
-(1,1730,-1,	@WithholdingTaxPayableExtension,NULL);
+(0,1660,+1,	@CashPaymentsToSuppliersControlExtension,NULL),
+(1,1660,-1,	@WithholdingTaxPayableExtension,NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1730,N'Memo',				1,	N'Memo',			1,4,1),
-(1,1730,N'NotedRelationId',		1,	N'Supplier',		3,4,1),
-(2,1730,N'CurrencyId',			1,	N'Currency',		1,2,1),
-(3,1730,N'NotedAmount',			1,	N'Amount (VAT Excl.)',3,3,0),
-(4,1730,N'MonetaryValue',		1,	N'Amount Withheld',	0,0,0),
-(9,1730,N'ExternalReference',	1,	N'Voucher #',		1,4,1),
-(10,1730,N'PostingDate',		1,	N'Voucher Date',	1,4,1),
-(11,1730,N'CenterId',			1,	N'Business Unit',	1,4,1);
---1770:PointExpenseFromInventory
+(0,1660,N'Memo',				1,	N'Memo',			1,4,1),
+(1,1660,N'NotedRelationId',		1,	N'Supplier',		3,4,1),
+(2,1660,N'CurrencyId',			1,	N'Currency',		1,2,1),
+(3,1660,N'NotedAmount',			1,	N'Amount (VAT Excl.)',3,3,0),
+(4,1660,N'MonetaryValue',		1,	N'Amount Withheld',	0,0,0),
+(9,1660,N'ExternalReference',	1,	N'Voucher #',		1,4,1),
+(10,1660,N'PostingDate',		1,	N'Voucher Date',	1,4,1),
+(11,1660,N'CenterId',			1,	N'Business Unit',	1,4,1);
+--1700:PointExpenseFromInventory
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 WITH InventoryAccounts AS (
@@ -858,27 +848,27 @@ WITH InventoryAccounts AS (
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
 	LEFT JOIN dbo.Centers C ON PWL.[CenterId0] = C.[Id]
 '
-WHERE [Index] = 1770;
+WHERE [Index] = 1700;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],			[EntryTypeId]) VALUES
-(0,1770,+1,	@ExpenseByNature,			NULL),
-(1,1770,-1,	@Inventories,				@IncreaseDecreaseThrougConsumptionExtension);
+(0,1700,+1,	@ExpenseByNature,			NULL),
+(1,1700,-1,	@Inventories,				@InventoriesUsedInOperationExtension);
 INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [CustodyDefinitionId]) VALUES
-(0,1,1770,@WarehouseCD);
+(0,1,1700,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1770,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1770,	N'CustodyId'	,		1,	N'Warehouse',		3,4,1),
-(2,1770,	N'ResourceId',			1,	N'Item',			1,2,0),
-(3,1770,	N'Quantity',			1,	N'Qty',				1,2,0),
-(4,1770,	N'UnitId',				1,	N'Unit',			1,2,0),
-(5,1770,	N'CenterId',			0,	N'Cost Center',		1,2,0),
-(6,1770,	N'PostingDate',			1,	N'Issued On',		1,4,1),
-(7,1770,	N'CenterId',			1,	N'Business Unit',	1,4,1);
---1780:PointExpenseFromSupplier
+(0,1700,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,1700,	N'CustodyId'	,		1,	N'Warehouse',		3,4,1),
+(2,1700,	N'ResourceId',			1,	N'Item',			1,2,0),
+(3,1700,	N'Quantity',			1,	N'Qty',				1,2,0),
+(4,1700,	N'UnitId',				1,	N'Unit',			1,2,0),
+(5,1700,	N'CenterId',			0,	N'Cost Center',		1,2,0),
+(6,1700,	N'PostingDate',			1,	N'Issued On',		1,4,1),
+(7,1700,	N'CenterId',			1,	N'Business Unit',	1,4,1);
+--1710:PointExpenseFromSupplier
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -887,23 +877,23 @@ SET [PreprocessScript] = N'
 		[CurrencyId0] = [CurrencyId1],
 		[NotedRelationId0] = [NotedRelationId1] 
 '
-WHERE [Index] = 1780;
+WHERE [Index] = 1710;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1780,+1,	@ExpenseByNature,										NULL),
-(1,1780,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,	NULL);
+(0,1710,+1,	@ExpenseByNature,										NULL),
+(1,1710,-1,	@ReceiptsAtPointInTimeFromSuppliersControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1780,	N'Memo',				0,	N'Memo',			1,5,1),
-(1,1780,	N'NotedRelationId',		1,	N'Supplier',		2,3,1),
-(2,1780,	N'CurrencyId',			1,	N'Currency',		1,2,1),
-(3,1780,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
-(4,1780,	N'CenterId',			0,	N'Cost Center',		1,4,0),
-(5,1780,	N'PostingDate',			1,	N'Received On',		1,4,1),
-(6,1780,	N'CenterId',			1,	N'Business Unit',	1,4,1);
---1800:ExpenseFromSupplierWithInvoice
+(0,1710,	N'Memo',				0,	N'Memo',			1,5,1),
+(1,1710,	N'NotedRelationId',		1,	N'Supplier',		2,3,1),
+(2,1710,	N'CurrencyId',			1,	N'Currency',		1,2,1),
+(3,1710,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0),
+(4,1710,	N'CenterId',			0,	N'Cost Center',		1,4,0),
+(5,1710,	N'PostingDate',			1,	N'Received On',		1,4,1),
+(6,1710,	N'CenterId',			1,	N'Business Unit',	1,4,1);
+--1730:ExpenseFromSupplierWithInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
@@ -916,27 +906,27 @@ SET [PreprocessScript] = N'
 		[NotedRelationId1] = [NotedRelationId2],
 		[NotedRelationId0] = [NotedRelationId2] 
 '
-WHERE [Index] = 1800;
+WHERE [Index] = 1730;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1800,+1,	@ExpenseByNature,										NULL),
-(1,1800,+1,	@CurrentValueAddedTaxReceivables,						NULL),
-(2,1800,-1,	@CashPaymentsToSuppliersControlExtension,				NULL);
+(0,1730,+1,	@ExpenseByNature,										NULL),
+(1,1730,+1,	@CurrentValueAddedTaxReceivables,						NULL),
+(2,1730,-1,	@CashPaymentsToSuppliersControlExtension,				NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1800,	N'Memo',				0,	N'Memo',			1,5,1),
-(1,1800,	N'NotedRelationId',		2,	N'Supplier',		2,3,1),
-(2,1800,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(3,1800,	N'MonetaryValue',		0,	N'Cost (VAT Excl.)',1,2,0),
-(4,1800,	N'MonetaryValue',		1,	N'VAT',				1,2,0),
-(5,1800,	N'MonetaryValue',		2,	N'Line Total',		0,0,0),
-(6,1800,	N'ExternalReference',	2,	N'Invoice #',		4,5,0),
-(7,1800,	N'CenterId',			0,	N'Cost Center',		1,4,0),
-(8,1800,	N'PostingDate',			2,	N'Received On',		1,4,1),
-(9,1800,	N'CenterId',			2,	N'Business Unit',	0,4,1);
---1850:DepreciationPPE
+(0,1730,	N'Memo',				0,	N'Memo',			1,5,1),
+(1,1730,	N'NotedRelationId',		2,	N'Supplier',		2,3,1),
+(2,1730,	N'CurrencyId',			2,	N'Currency',		1,2,1),
+(3,1730,	N'MonetaryValue',		0,	N'Cost (VAT Excl.)',1,2,0),
+(4,1730,	N'MonetaryValue',		1,	N'VAT',				1,2,0),
+(5,1730,	N'MonetaryValue',		2,	N'Line Total',		0,0,0),
+(6,1730,	N'ExternalReference',	2,	N'Invoice #',		4,5,0),
+(7,1730,	N'CenterId',			0,	N'Cost Center',		1,4,0),
+(8,1730,	N'PostingDate',			2,	N'Received On',		1,4,1),
+(9,1730,	N'CenterId',			2,	N'Business Unit',	0,4,1);
+--1780:DepreciationPPE
 UPDATE @LineDefinitions
 SET
 	[GenerateScript] = N'
@@ -979,23 +969,23 @@ SET
 	FROM @ProcessedWideLines PWL
 	LEFT JOIN PPEBalancesPre PPB ON PWL.[ResourceId1] = PPB.[ResourceId] 
 '
-WHERE [Index] = 1850;
+WHERE [Index] = 1780;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],			[EntryTypeId]) VALUES
-(0,1850,+1,	@DepreciationExpense,		NULL),
-(1,1850,-1,	@PropertyPlantAndEquipment,	@DepreciationPropertyPlantAndEquipment);
+(0,1780,+1,	@DepreciationExpense,		NULL),
+(1,1780,-1,	@PropertyPlantAndEquipment,	@DepreciationPropertyPlantAndEquipment);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1850,N'PostingDate',			0,	N'Posting Date',	0,0,0),
-(1,1850,N'ResourceId',			1,	N'FIxed Asset',		0,0,0),
-(2,1850,N'Quantity',			1,	N'Usage/Period',	0,1,0),
-(3,1850,N'UnitId',				1,	N'Unit',			0,0,0),
-(4,1850,N'MonetaryValue',		1,	N'Depreciation',	0,4,0),
-(5,1850,N'CurrencyId',			1,	N'Currency',		0,0,0),
-(6,1850,N'CenterId',			0,	N'Cost Center',		1,4,0),
-(7,1850,N'Memo',				0,	N'Memo',			0,5,1);
+(0,1780,N'PostingDate',			0,	N'Posting Date',	0,0,0),
+(1,1780,N'ResourceId',			1,	N'FIxed Asset',		0,0,0),
+(2,1780,N'Quantity',			1,	N'Usage/Period',	0,1,0),
+(3,1780,N'UnitId',				1,	N'Unit',			0,0,0),
+(4,1780,N'MonetaryValue',		1,	N'Depreciation',	0,4,0),
+(5,1780,N'CurrencyId',			1,	N'Currency',		0,0,0),
+(6,1780,N'CenterId',			0,	N'Cost Center',		1,4,0),
+(7,1780,N'Memo',				0,	N'Memo',			0,5,1);
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],				[Visibility],	[DataType],	[Filter]) VALUES
 (0,1,N'PostingDate',	N'Posting Date',		N'Required',	N'Date',	NULL);
@@ -1013,9 +1003,22 @@ EXEC [api].[LineDefinitions__Save]
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 -- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+DECLARE @PPEFromIPCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromIPC');
+DECLARE @PPEFromInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromInventory');
 DECLARE @PPEFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromSupplier');
+DECLARE @PPEFromSupplierWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromSupplierWithPointInvoice');
+DECLARE @CIPFromConstructionExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense');
+DECLARE @IPUCDFromDevelopmentExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense');
+DECLARE @InventoryFromPPELD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromPPE');
+DECLARE @InventoryFromIPCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromIPC');
 DECLARE @InventoryTransferLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryTransfer');
+DECLARE @InventoryConversionLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryConversion');
+DECLARE @InventoryFromIITLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromIIT');
 DECLARE @InventoryFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromSupplier');
+DECLARE @InventoryFromSupplierWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromSupplierWithPointInvoice');
+DECLARE @IITFromLCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromLC');
+DECLARE @IITFromTransitExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense');
+DECLARE @WIPFromProductionExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense');
 DECLARE @RevenueFromInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventory');
 DECLARE @RevenueFromPeriodServiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromPeriodService');
 DECLARE @RevenueFromInventoryWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventoryWithPointInvoice');
@@ -1027,14 +1030,29 @@ DECLARE @CashFromCustomerWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefi
 DECLARE @CashFromCustomerWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithPeriodInvoice');
 DECLARE @CashFromCustomerWithWTWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithWTWithPointInvoice');
 DECLARE @CashFromCustomerWithWTWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithWTWithPeriodInvoice');
-DECLARE @CashTransferExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransferExchange');
-DECLARE @CashTransferLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransfer');
 DECLARE @CashExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashExchange');
+DECLARE @CashTransferLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransfer');
+DECLARE @CashToSalariesLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSalaries');
 DECLARE @CashToSupplierWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplierWithPointInvoice');
+DECLARE @CashToSupplierWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplierWithPeriodInvoice');
 DECLARE @CashToSupplierWithPointInvoiceWithWTLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplierWithPointInvoiceWithWT');
+DECLARE @CashToSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplier');
 DECLARE @SupplierWTLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'SupplierWT');
 DECLARE @PointExpenseFromInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PointExpenseFromInventory');
 DECLARE @PointExpenseFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PointExpenseFromSupplier');
+DECLARE @PeriodExpenseFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PeriodExpenseFromSupplier');
+DECLARE @ExpenseFromSupplierWithInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExpenseFromSupplierWithInvoice');
+DECLARE @SalaryTransportationOtherOvertimePensionLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'SalaryTransportationOtherOvertimePension');
+DECLARE @SalaryTransportationOvertimePenaltyPensionProvidentCostSharingLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'SalaryTransportationOvertimePenaltyPensionProvidentCostSharing');
+DECLARE @OvertimeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'Overtime');
+DECLARE @DepreciationPPELD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'DepreciationPPE');
+DECLARE @AnnualLeaveAllowanceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'AnnualLeaveAllowance');
+DECLARE @AnnualLeaveUsageLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'AnnualLeaveUsage');
+DECLARE @UnpaidLeaveLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'UnpaidLeave');
+DECLARE @TradeSettlementLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'TradeSettlement');
+
+
+
 
 /*
 DECLARE @TranslationsLD TABLE (

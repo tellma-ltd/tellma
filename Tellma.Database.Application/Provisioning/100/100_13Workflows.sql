@@ -53,16 +53,16 @@ FROM dbo.LineDefinitionStateReasons;
 
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
-(0,@CashTransferExchangeLD,+1),
-(1,@CashTransferExchangeLD,+2),
-(2,@CashTransferExchangeLD,+3),
-(3,@CashTransferExchangeLD,+4);
+(0,@CashTransferLD,+1),
+(1,@CashTransferLD,+2),
+(2,@CashTransferLD,+3),
+(3,@CashTransferLD,+4);
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,@CashTransferExchangeLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,@CashTransferExchangeLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,@CashTransferExchangeLD,N'ByCustodian',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(1,2,@CashTransferExchangeLD,N'ByCustodian',	NULL,				1,				@ComptrollerRL); -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,0,@CashTransferLD,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,@CashTransferLD,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,@CashTransferLD,N'ByCustodian',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(1,2,@CashTransferLD,N'ByCustodian',	NULL,				1,				@ComptrollerRL); -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 
 --INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 --[ToState]) Values
