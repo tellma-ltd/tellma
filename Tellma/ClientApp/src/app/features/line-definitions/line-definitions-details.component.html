@@ -226,9 +226,8 @@
                                 </th>
                                 <th>{{ 'LineDefinitionEntry_EntryType' | translate }}
                                 </th>
-                                <th style="width: 1px;">
-                                    <!-- More... -->
-                                </th>
+                                <th>{{ 'LineDefinitionEntry_CustodyDefinitions' | translate }}</th>
+                                <th>{{ 'LineDefinitionEntry_ResourceDefinitions' | translate }}</th>
                                 <th style="width: 1px;" *ngIf="isEdit">
                                     <!-- Delete -->
                                 </th>
@@ -288,9 +287,19 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
-                                        (click)="onLineDefinitionEntryMore(entry, isEdit, i)">{{ ('More' | translate) + '...' }}</button>
+                                        (click)="onLineDefinitionEntryCustodyDefinitions(entry, isEdit, i)">{{ entry.CustodyDefinitions?.length || 0 }}</button>
 
-                                    <span *ngIf="showMoreError(entry)"
+                                    <span *ngIf="showCustodyDefinitionsError(entry)"
+                                        class="text-danger t-light-danger t-vertical-align-middle">
+                                        &nbsp;<fa-icon icon="exclamation-triangle">
+                                        </fa-icon>
+                                    </span>
+                                </td>                                
+                                <td [class.p-0]="isEdit">
+                                    <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
+                                        (click)="onLineDefinitionEntryResourceDefinitions(entry, isEdit, i)">{{ entry.ResourceDefinitions?.length || 0 }}</button>
+
+                                    <span *ngIf="showResourceDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
                                         &nbsp;<fa-icon icon="exclamation-triangle">
                                         </fa-icon>

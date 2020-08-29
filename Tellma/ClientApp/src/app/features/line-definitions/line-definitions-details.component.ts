@@ -386,6 +386,16 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   public entryIndex: number;
   public modalIsEdit: boolean;
 
+  public onLineDefinitionEntryCustodyDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'custodyDefinitions';
+    this.onLineDefinitionEntryMore(entry, isEdit, index);
+  }
+
+  public onLineDefinitionEntryResourceDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'resourceDefinitions';
+    this.onLineDefinitionEntryMore(entry, isEdit, index);
+  }
+
   public onLineDefinitionEntryMore(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
     if (!!entry) {
       this.entryToEdit = entry;
@@ -448,7 +458,8 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
   public showEntriesError(model: LineDefinition): boolean {
-    return !!model.Entries && model.Entries.some(e => this.weakEntityErrors(e) || this.showMoreError(e));
+    return !!model.Entries && model.Entries.some(e => this.weakEntityErrors(e) ||
+      this.showCustodyDefinitionsError(e) || this.showResourceDefinitionsError(e));
   }
 
   public showCustodyDefinitionsError(entry: LineDefinitionEntry): boolean {
@@ -457,11 +468,6 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   public showResourceDefinitionsError(entry: LineDefinitionEntry): boolean {
     return !!entry.ResourceDefinitions && entry.ResourceDefinitions.some(e => this.weakEntityErrors(e));
-  }
-
-  public showMoreError(entry: LineDefinitionEntry): boolean {
-    return this.showCustodyDefinitionsError(entry) ||
-      this.showResourceDefinitionsError(entry);
   }
 
   public showPreprocessScriptError(model: LineDefinition): boolean {
