@@ -322,8 +322,10 @@ namespace Tellma.Entities
         public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
-            .Concat(EntryResourcePaths(nameof(Entry.Resource)))
+            .Concat(RelationPaths(nameof(Entry.Custodian)))
             .Concat(EntryCustodyPaths(nameof(Entry.Custody)))
+            .Concat(RelationPaths(nameof(Entry.Participant)))
+            .Concat(EntryResourcePaths(nameof(Entry.Resource)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(RelationPaths(nameof(Entry.NotedRelation)))
             .Concat(CenterPaths(nameof(Entry.Center)))
