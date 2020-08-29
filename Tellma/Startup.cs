@@ -12,13 +12,10 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
-using System.Threading.Tasks;
-using Tellma.Services.Sms;
 
 namespace Tellma
 {
