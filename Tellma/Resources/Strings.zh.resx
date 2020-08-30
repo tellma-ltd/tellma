@@ -1115,7 +1115,7 @@
     <value>帐户 '{0}' 在{1} {2}中。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
-    <value>帐户 '{0}' 在{1 {} 2}使用不相容条目类型 '{3}'。</value>
+    <value>帐户 '{0}' 在{1} {2}使用不相容条目类型 '{3}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与中心 '{3}' 中使用。</value>

@@ -339,6 +339,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
         { value: 'Decimal', name: () => this.translate.instant('Decimal') },
         { value: 'String', name: () => this.translate.instant('String') },
         { value: 'Center', name: () => this.translate.instant('Center') },
+        { value: 'Unit', name: () => this.translate.instant('Unit') },
         { value: 'Currency', name: () => this.translate.instant('Currency') },
         { value: 'Resource', name: () => this.translate.instant('Resource') },
         ...resourceDefinitions,
@@ -347,6 +348,18 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
         { value: 'Relation', name: () => this.translate.instant('Relation') },
         ...relationDefinitions,
       ];
+
+      this._dataTypeChoices.sort((a, b) => {
+        const aName = a.name();
+        const bName = b.name();
+        if (aName < bName) {
+          return -1;
+        } else if (aName > bName) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
 
       this._dataTypeDisplayCache = {};
       for (const choice of this._dataTypeChoices) {

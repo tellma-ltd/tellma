@@ -2811,8 +2811,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showLineErrors(lineDefId: number, model: Document) {
     return !!model && !!model.Lines &&
-      model.Lines.some(line => this.isManualLine(lineDefId) && (!!line.serverErrors ||
-        (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
+      model.Lines.some(line => !!line.serverErrors ||
+        (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors)));
   }
 
   public showAttachmentsErrors(model: Document) {

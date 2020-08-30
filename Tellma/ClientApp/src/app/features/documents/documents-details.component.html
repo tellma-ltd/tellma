@@ -1931,6 +1931,13 @@
                 <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
             </t-form-group>
 
+            <!-- Unit -->
+            <t-form-group *ngSwitchCase="'Unit'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-units-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
+                </t-units-picker>
+            </t-form-group>
+
             <!-- Currency -->
             <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
