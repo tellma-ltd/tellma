@@ -83,6 +83,7 @@ SET NOCOUNT ON;
 			N'ConstructionInProgress',
 			N'InvestmentPropertyUnderConstructionOrDevelopment',
 			N'WorkInProgress',
+			N'CurrentInventoriesInTransit',
 			N'ExpenseByNature'
 		)
 	),

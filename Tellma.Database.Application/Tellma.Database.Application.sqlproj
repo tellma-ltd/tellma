@@ -677,6 +677,8 @@
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

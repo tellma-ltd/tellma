@@ -1548,8 +1548,6 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Checks Dishonored -', N'ar', N'شيكات مرتجعة', N's'),('Accounts', N'Checks Dishonored -', N'am', N'ቼኮች ተዋርደዋል -', N's')
 
 -- Users
-
--- Users
 UPDATE dbo.Users
 SET
 	[Name]  = dbo.fn_TranslateFromEnglish(N'Users', [Name], @PrimaryLanguageId, 'n'),

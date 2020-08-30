@@ -100,6 +100,7 @@ SET NOCOUNT ON;
 	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId];
 
 	-- To do: cannot close a document with a control account having non zero balance
+	IF (SELECT [Code] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) Like N'%Voucher'
 	WITH ControlAccountTypes AS (
 		SELECT [Id]
 		FROM dbo.AccountTypes

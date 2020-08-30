@@ -7,6 +7,8 @@
 )
 RETURNS NVARCHAR (1024)
 AS BEGIN
+	IF @DestinationCultureId IS NULL
+		RETURN NULL;
 	IF NOT EXISTS(
 		SELECT * FROM dbo.Translations
 		WHERE [TableName] = @TableName
