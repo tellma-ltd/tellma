@@ -99,7 +99,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
       }, this.details.handleActionError);
     }
   }
-  public showInvite = (model: User) => !!model && !model.ExternalId;
+  public showInvite = (model: User) => !!model && !model.ExternalId && this.workspace.globalSettings.EmailEnabled;
 
   public canInvite = (model: User) => this.ws.canDo('users', 'ResendInvitationEmail', model.Id);
   public inviteTooltip = (model: User) => this.canInvite(model) ? '' :
@@ -139,7 +139,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   }
 
   public showInvitationInfo(model: UserForSave): boolean {
-    return !!model && !!model.Email && this.isNew;
+    return !!model && !!model.Email && this.isNew && this.workspace.globalSettings.EmailEnabled;
   }
 
   public get isNew(): boolean {

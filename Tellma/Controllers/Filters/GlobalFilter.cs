@@ -1,5 +1,4 @@
-﻿using Tellma.Services.GlobalSettings;
-using Tellma.Services.Utilities;
+﻿using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 
@@ -11,23 +10,21 @@ namespace Tellma.Controllers
     /// </summary>
     public class GlobalFilter : IResourceFilter
     {
-        private readonly IGlobalSettingsCache _globalSettings;
+        private readonly GlobalSettingsProvider _globalSettingsProvider;
 
-        public GlobalFilter(IGlobalSettingsCache globalSettings)
+        public GlobalFilter(GlobalSettingsProvider globalSettingsProvider)
         {
-            _globalSettings = globalSettings;
+            _globalSettingsProvider = globalSettingsProvider;
         }
 
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
-            // Global Settings
+            // Checks the client version of the Global Settings
+            var clientVersion = context.HttpContext.Request.Headers["X-Global-Settings-Version"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(clientVersion))
             {
-                var clientVersion = context.HttpContext.Request.Headers["X-Global-Settings-Version"].FirstOrDefault();
-                if (!string.IsNullOrWhiteSpace(clientVersion))
-                {
-                    context.HttpContext.Response.Headers.Add("x-global-settings-version",
-                         _globalSettings.IsFresh(clientVersion) ? Constants.Fresh : Constants.Stale);
-                }
+                bool isFresh = _globalSettingsProvider.IsFresh(clientVersion);
+                context.HttpContext.Response.Headers.Add("x-global-settings-version", isFresh ? Constants.Fresh : Constants.Stale);
             }
         }
 
@@ -35,5 +32,4 @@ namespace Tellma.Controllers
         {
         }
     }
-
 }

@@ -84,7 +84,6 @@ namespace Tellma
 
                 // More custom services
                 services.AddBlobService(_config);
-                services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources
                 services.AddLocalization(opt =>
