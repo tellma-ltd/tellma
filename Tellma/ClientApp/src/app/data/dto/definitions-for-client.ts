@@ -276,6 +276,7 @@ export interface LineDefinitionColumnForClient {
     Label: string;
     Label2: string;
     Label3: string;
+    Filter?: string;
     RequiredState?: PositiveLineState | 5;
     ReadOnlyState?: PositiveLineState | 5;
     InheritsFromHeader?: boolean;

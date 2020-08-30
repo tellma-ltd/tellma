@@ -77,16 +77,6 @@ AS
 	[map].[Currencies]() [C] 
 	WHERE [Id] IN (SELECT [CurrencyId] FROM @Entries)
 
-	-- Resource
-	SELECT 
-	[R].[Id], 
-	[R].[Name], 
-	[R].[Name2], 
-	[R].[Name3], 
-	[R].[DefinitionId] 
-	FROM [map].[Resources]() [R] 
-	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
-
 	-- Custody
 	SELECT 
 	[C].[Id], 
@@ -97,15 +87,27 @@ AS
 	FROM [map].[Custodies]() [C] 
 	WHERE [Id] IN (SELECT [CustodyId] FROM @Entries)
 
-	-- Relation
+	-- Resource
 	SELECT 
-	[C].[Id], 
-	[C].[Name],
-	[C].[Name2],
-	[C].[Name3],
-	[C].[DefinitionId]
-	FROM [map].[Relations]() [C] 
+	[R].[Id], 
+	[R].[Name], 
+	[R].[Name2], 
+	[R].[Name3], 
+	[R].[DefinitionId] 
+	FROM [map].[Resources]() [R] 
+	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
+
+	-- Relation (From 3 places)
+	SELECT 
+	[R].[Id], 
+	[R].[Name],
+	[R].[Name2],
+	[R].[Name3],
+	[R].[DefinitionId]
+	FROM [map].[Relations]() [R] 
 	WHERE [Id] IN (SELECT [NotedRelationId] FROM @Entries)
+		OR [Id] IN (SELECT [CustodianId] FROM @Entries)
+		OR [Id] IN  (SELECT [ParticipantId] FROM @Entries)
 
 	-- EntryType
 	SELECT 

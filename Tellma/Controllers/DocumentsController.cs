@@ -210,7 +210,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (lines, accounts, custodies, resources, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
+                var (lines, accounts, custodies, resources, relations, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
 
                 // Related entitiess
                 var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
@@ -218,6 +218,7 @@ namespace Tellma.Controllers
                     { GetCollectionName(typeof(Account)), accounts },
                     { GetCollectionName(typeof(Custody)), custodies },
                     { GetCollectionName(typeof(Resource)), resources },
+                    { GetCollectionName(typeof(Relation)), relations },
                     { GetCollectionName(typeof(EntryType)), entryTypes },
                     { GetCollectionName(typeof(Center)), centers },
                     { GetCollectionName(typeof(Currency)), currencies },
@@ -734,6 +735,7 @@ namespace Tellma.Controllers
             List<Account> accounts,
             List<Custody> custodies,
             List<Resource> resources,
+            List<Relation> relations,
             List<EntryType> entryTypes,
             List<Center> centers,
             List<Currency> currencies,

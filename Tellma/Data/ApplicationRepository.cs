@@ -5143,6 +5143,7 @@ namespace Tellma.Data
             List<Account> accounts,
             List<Custody> custodies,
             List<Resource> resources,
+            List<Relation> relations,
             List<EntryType> entryTypes,
             List<Center> centers,
             List<Currency> currencies,
@@ -5281,6 +5282,30 @@ namespace Tellma.Data
                 });
             }
 
+            // Custody
+            var list_Custody = new List<Custody>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Custody.Add(new Custody
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+                    DefinitionId = reader.Int32(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Custody.Name), FieldMetadata.Loaded },
+                        { nameof(Custody.Name2), FieldMetadata.Loaded },
+                        { nameof(Custody.Name3), FieldMetadata.Loaded },
+                        { nameof(Custody.DefinitionId), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
             // Resource
             var list_Resource = new List<Resource>();
             await reader.NextResultAsync(cancellation);
@@ -5305,13 +5330,13 @@ namespace Tellma.Data
                 });
             }
 
-            // Custody
-            var list_Custody = new List<Custody>();
+            // Relation
+            var list_Relation = new List<Relation>();
             await reader.NextResultAsync(cancellation);
             while (await reader.ReadAsync(cancellation))
             {
                 int i = 0;
-                list_Custody.Add(new Custody
+                list_Relation.Add(new Relation
                 {
                     Id = reader.GetInt32(i++),
                     Name = reader.String(i++),
@@ -5321,10 +5346,10 @@ namespace Tellma.Data
 
                     EntityMetadata = new EntityMetadata
                     {
-                        { nameof(Custody.Name), FieldMetadata.Loaded },
-                        { nameof(Custody.Name2), FieldMetadata.Loaded },
-                        { nameof(Custody.Name3), FieldMetadata.Loaded },
-                        { nameof(Custody.DefinitionId), FieldMetadata.Loaded },
+                        { nameof(Relation.Name), FieldMetadata.Loaded },
+                        { nameof(Relation.Name2), FieldMetadata.Loaded },
+                        { nameof(Relation.Name3), FieldMetadata.Loaded },
+                        { nameof(Relation.DefinitionId), FieldMetadata.Loaded },
                     }
                 });
             }
@@ -5396,7 +5421,7 @@ namespace Tellma.Data
                 });
             }
 
-            return (lines, list_Account, list_Custody, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
+            return (lines, list_Account, list_Custody, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         #endregion

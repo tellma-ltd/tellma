@@ -586,12 +586,14 @@
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-accounts-picker>
                             <t-currencies-picker *ngSwitchCase="'CurrencyId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)" additionalSelect="E"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
                             <t-relations-picker *ngSwitchCase="'CustodianId'"
@@ -599,6 +601,7 @@
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [definitionIds]="definitionIdsCustodian_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-relations-picker>
                             <t-custodies-picker *ngSwitchCase="'CustodyId'"
@@ -606,6 +609,7 @@
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [definitionIds]="definitionIdsCustody_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-custodies-picker>
                             <t-relations-picker *ngSwitchCase="'ParticipantId'"
@@ -613,6 +617,7 @@
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [definitionIds]="definitionIdsParticipant_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-relations-picker>
                             <t-resources-picker *ngSwitchCase="'ResourceId'"
@@ -620,12 +625,14 @@
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-resources-picker>
                             <t-centers-picker *ngSwitchCase="'CenterId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-centers-picker>
                             <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
@@ -657,6 +664,7 @@
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-units-picker>
                             <t-decimal-editor *ngSwitchCase="'Value'"
@@ -698,6 +706,7 @@
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [definitionIds]="definitionIdsNotedRelation_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                [filter]="getFilter(lineDefId, columnIndex)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-relations-picker>
                             <t-text-editor *ngSwitchCase="'NotedAgentName'"
@@ -1920,6 +1929,13 @@
             <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
+            </t-form-group>
+
+            <!-- Unit -->
+            <t-form-group *ngSwitchCase="'Unit'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-units-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
+                </t-units-picker>
             </t-form-group>
 
             <!-- Currency -->

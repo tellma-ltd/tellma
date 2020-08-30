@@ -526,6 +526,7 @@ namespace Tellma.Controllers
                     Label = c.Label,
                     Label2 = c.Label2,
                     Label3 = c.Label3,
+                    Filter = c.Filter,
                     ReadOnlyState = c.ReadOnlyState,
                     RequiredState = c.RequiredState,
                     InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader,
