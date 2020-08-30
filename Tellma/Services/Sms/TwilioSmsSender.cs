@@ -32,10 +32,11 @@ namespace Tellma.Services.Sms
             // Exponential backoff
             const int maxAttempts = 5;
             const int maxBackoff = 25000; // 25 Seconds
-            const int baseBackoff = 1000; // 1 Second
+            const int minBackoff = 1000; // 1 Second
+            const int deltaBackoff = 1000; // 1 Second
+
             int attemptsSoFar = 0;
-            int backoff = baseBackoff;
-            
+            int backoff = minBackoff;            
             while (!cancellation.IsCancellationRequested)
             {
                 try
@@ -58,7 +59,7 @@ namespace Tellma.Services.Sms
                     // As recommended here https://bit.ly/2CWYrjQ
                     if (attemptsSoFar < maxAttempts)
                     {
-                        var randomOffset = _rand.Next(0, 1000);
+                        var randomOffset = _rand.Next(0, deltaBackoff);
                         await Task.Delay(backoff + randomOffset, cancellation);
 
                         // Double the backoff for next attempt
@@ -66,8 +67,7 @@ namespace Tellma.Services.Sms
                     }
                     else
                     {
-                        _logger.LogError($"Twilio: 429 Too Many Requests even after {attemptsSoFar} attempts with exponential backoff.");
-
+                        _logger.LogError($"Twilio: {ex.Status} response after {attemptsSoFar} attempts with exponential backoff.");
                         throw ex; // Give up
                     }
                 }

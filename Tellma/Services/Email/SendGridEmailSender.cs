@@ -18,7 +18,8 @@ namespace Tellma.Services.Email
     {
         private readonly SendGridOptions _options;
         private readonly ILogger<SendGridEmailSender> _logger;
-        private readonly HttpClient _client = new HttpClient(); // Singleton HttpClient to avoid memroy leaks https://bit.ly/2EGUgte
+        private readonly HttpClient _httpClient = new HttpClient(); // Singleton HttpClient to avoid memroy leaks https://bit.ly/2EGUgte
+        private readonly Random _rand = new Random();
 
         public SendGridEmailSender(IOptions<SendGridOptions> options, ILogger<SendGridEmailSender> logger)
         {
@@ -32,7 +33,7 @@ namespace Tellma.Services.Email
             fromEmail ??= _options.DefaultFromEmail;
             string sendGridApiKey = _options.ApiKey;
 
-            var client = new SendGridClient(_client, sendGridApiKey);
+            var client = new SendGridClient(_httpClient, sendGridApiKey);
             var from = new EmailAddress(fromEmail, fromName);
             var toAddresses = tos.Select(e => new EmailAddress(e)).ToList();
 
@@ -65,40 +66,65 @@ namespace Tellma.Services.Email
             var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
 
             await SendEmailAsync(msg, default);
-
-            //await SendEmailBulkAsync(
-            //    tos: new List<string> { email },
-            //    subjects: new List<string> { subject },
-            //    htmlMessage: htmlMessage,
-            //    substitutions: new List<Dictionary<string, string>> { new Dictionary<string, string> { } },
-            //    fromEmail: fromEmail
-            //    );
         }
 
-        private async Task<string> SendEmailAsync(SendGridMessage msg, CancellationToken cancellation)
+        private async Task SendEmailAsync(SendGridMessage msg, CancellationToken cancellation)
         {
-            var options = new SendGridClientOptions
-            {
-                 ApiKey = _options.ApiKey,
-                 ReliabilitySettings = new ReliabilitySettings(
-                     maximumNumberOfRetries: 5, 
-                     minimumBackoff: TimeSpan.FromSeconds(1), 
-                     maximumBackOff: TimeSpan.FromSeconds(25),
-                     deltaBackOff: TimeSpan.FromSeconds(1))
-            };
+            var client = new SendGridClient(_httpClient, _options.ApiKey); // Reuse the HttpClient to avoid a memory leak
 
-            var client = new SendGridClient(_client, options);
-            Response response = await client.SendEmailAsync(msg, cancellation);
+            // Exponential backoff (There is a built-in implementation in SG library but it doesn't handle 429)
+            const int maxAttempts = 5;
+            const int maxBackoff = 25000; // 25 Seconds
+            const int minBackoff = 1000; // 1 Second
+            const int deltaBackoff = 1000; // 1 Second
 
-            if (cancellation.IsCancellationRequested)
+            int attemptsSoFar = 0;
+            int backoff = minBackoff;
+
+            while (true)
             {
-                // Doesn't matter since the request was cancelled
-                return "";
+                Response response = await client.SendEmailAsync(msg, cancellation);
+                if (response.StatusCode == HttpStatusCode.TooManyRequests || response.StatusCode >= HttpStatusCode.InternalServerError)
+                {
+                    // Here we implement exponential backoff attempts to retry the call few more times before giving up
+                    // In the case of errors, as recommended here https://bit.ly/2CWYrjQ
+                    if (attemptsSoFar < maxAttempts)
+                    {
+                        var randomOffset = _rand.Next(0, deltaBackoff);
+                        await Task.Delay(backoff + randomOffset, cancellation);
+
+                        // Double the backoff for next attempt
+                        backoff = Math.Min(backoff * 2, maxBackoff);
+                    }
+                    else
+                    {
+                        // Log and throw exception
+                        string body = await response.Body.ReadAsStringAsync();
+                        _logger.LogError($"SendGrid: {response.StatusCode} response after {attemptsSoFar} attempts with exponential backoff: {body}");
+                        
+                        throw new EmailApiException($"Failed to send email(s) with status code {response.StatusCode}"); // Give up
+                    }
+                }
             }
-            else
-            {
-                return response.Headers.GetValues("X-Message-Id").FirstOrDefault();
-            }
+            //try
+            //{
+            //    Response response = await client.SendEmailAsync(msg, cancellation);
+
+            //    if (response.StatusCode == HttpStatusCode.TooManyRequests || response.StatusCode >= HttpStatusCode.InternalServerError)
+            //    {
+
+            //    }
+                
+            //    if (cancellation.IsCancellationRequested)
+            //    {
+            //        // Doesn't matter since the request was cancelled
+            //        return "";
+            //    }
+            //    else
+            //    {
+            //        return response.Headers.GetValues("X-Message-Id").FirstOrDefault();
+            //    }
+            //} 
         }
     }
 }
