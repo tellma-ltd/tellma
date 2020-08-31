@@ -19,6 +19,7 @@
 (1270, N'RevenueFromInventory', N'Issuing inventory to customer, invoiced separately', N'Inventory (Sale)', N'Inventories (Sale)', 0, 0),
 (1290, N'RevenueFromPeriodService', N'Rendering period services to customer, invoiced separately', N'Lease Out', N'Leases Out', 0, 1),
 (1300, N'RevenueFromInventoryWithPointInvoice', N'Issuing inventory to customer + point invoice', N'Inventory (Sale) + Invoice', N'Inventories (Sale) + Invoices', 0, 0),
+(1301, N'RevenueFromInventoryWithPointInvoiceFromTemplate', N'Issuing inventory to customer + point invoice (Price List)', N'Inventory (Sale) + Invoice (PL)', N'Inventories (Sale) + Invoices (PL)', 0, 0),
 (1310, N'RevenueFromPointServiceWithPointInvoice', N'Rendering point services to customer + point invoice', N'Service (Sale) + Invoice (Point)', N'Services (Sale) + Invoices (Point)', 0, 1),
 (1320, N'RevenueFromPeriodServiceWithPeriodInvoice', N'Rendering period services to customer + period invoice', N'Service (Sale) + Invoice (Period)', N'Services (Sale) + Invoices (Period)', 0, 1),
 (1350, N'CashFromCustomer', N'Collecting cash from customer/lessee, Invoiced separately', N'Cash Receipt (Sale)', N'Cash Receipts (Sale)', 0, 1),
@@ -378,9 +379,10 @@ UPDATE PWL
 		[MonetaryValue2]	= ISNULL([MonetaryValue4],0) * ( 1 + R.[VatRate]), -- Total Due
 		[MonetaryValue3]	= ISNULL([MonetaryValue4],0) * R.[VatRate], -- VAT
 		[NotedAmount3]		= ISNULL([MonetaryValue4],0), -- Revenues, Taxable Amount
-		[NotedRelationId0]	= [ParticipantId2],
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2]),
-		[NotedRelationId3]	= [ParticipantId2]
+		[NotedRelationId0]	= [NotedRelationId4],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = PWL.[NotedRelationId4]),
+		[ParticipantId2]	= [NotedRelationId4],
+		[NotedRelationId3]	= [NotedRelationId4]
 	FROM @ProcessedWideLines PWL
 	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
@@ -418,7 +420,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1300,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1300,	N'ParticipantId',		2,	N'Customer',		3,4,1,NULL),
+(1,1300,	N'NotedRelationId',		4,	N'Customer',		3,4,1,NULL),
 (2,1300,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL),
 (3,1300,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
 (4,1300,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
@@ -430,16 +432,134 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (10,1300,	N'ExternalReference',	2,	N'Invoice #',		1,4,0,NULL),
 (11,1300,	N'PostingDate',			1,	N'Sale Date',		1,4,1,NULL),
 (13,1300,	N'CenterId',			2,	N'Business Unit',	1,4,1,N'CenterType=''BusinessUnit''');
+--1301:RevenueFromInventoryWithPointInvoiceFromTemplate
+UPDATE @LineDefinitions
+SET [PreprocessScript] = N'
+DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N''RevenueFromInventoryWithPointInvoiceTemplate'');
+WITH Prices AS (
+	SELECT
+	L.PostingDate AS ValidFrom,
+	E.ResourceId,
+	--@Quantity / E.Quantity * [bll].[fn_ConvertUnits](@UnitId, E.[UnitId]) AS Multiplier,
+	E.[MonetaryValue], -- VAT exclusive
+	E.[Quantity],
+	E.[UnitId],
+	E.[CurrencyId]
+	FROM dbo.Lines L
+	JOIN dbo.Entries E ON L.[Id] = E.[LineId]
+	WHERE L.[DefinitionId] = @LineDefinitionId
+	AND L.[State] > 0
+	AND E.[Index] = 0
+)
+UPDATE PWL
+	SET
+		[CustodyId0]		= PWL.[CustodyId1],
+		[CustodyId4]		= PWL.[CustodyId1],
+		[CurrencyId0]		= R.[CurrencyId],
+		[CurrencyId1]		= R.[CurrencyId],
+		[CurrencyId2]		= R.[CurrencyId],
+		[CurrencyId3]		= R.[CurrencyId],
+		[CurrencyId4]		= R.[CurrencyId],
+		[CenterId0]			= (
+								SELECT [Id]
+								FROM dbo.Centers
+								WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.Centers WHERE [Id] = PWL.[CenterId2])) = 1
+								AND CenterType IN (N''BusinessUnit'', N''CostOfSales'') AND [IsLeaf] = 1
+								),
+		[CenterId1]			= COALESCE(PWL.[CenterId1], PWL.[CenterId2]),
+		[CenterId3]			= PWL.[CenterId2],
+		[CenterId4]			= (
+								SELECT [Id]
+								FROM dbo.Centers
+								WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.Centers WHERE [Id] = PWL.[CenterId2])) = 1
+								AND CenterType IN (N''BusinessUnit'', N''CostOfSales'') AND [IsLeaf] = 1
+								),
+		[ResourceId0]		= PWL.[ResourceId1], [Quantity0] = PWL.[Quantity1], [UnitId0] = P.[UnitId],
+		[ResourceId4]		= PWL.[ResourceId1], [Quantity4] = PWL.[Quantity1], [UnitId4] = P.[UnitId],
+		[UnitId1]		= P.[UnitId],
+		[MonetaryValue0]	= IIF (
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetMonetaryValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+								),
+		-- Assuming that, for foreign currency, value is credit at same ratio as Monetary Value
+		[Value0]			= IIF (
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+								),
+		[MonetaryValue1]	= IIF (
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetMonetaryValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+								),
+		[Value1]			= IIF (
+								ISNULL(RC.[NetQuantity],0) = 0,
+								0,
+								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
+								),
+--		[MonetaryValue2]	= (P.[MonetaryValue] *  [bll].[fn_ConvertUnits](PWL.[UnitId1], P.[UnitId]) * [Quantity1] / P.Quantity) * ( 1 + R.[VatRate]), -- Total Due
+		[MonetaryValue2]	= (P.[MonetaryValue] * [Quantity1] / P.Quantity) * ( 1 + R.[VatRate]), -- Total Due
+		[MonetaryValue3]	= (P.[MonetaryValue] * [Quantity1] / P.Quantity) * R.[VatRate], -- VAT
+		[MonetaryValue4]	= (P.[MonetaryValue] * [Quantity1] / P.Quantity),
+		[NotedAmount3]		= (P.[MonetaryValue] * [Quantity1] / P.Quantity),
+		[NotedRelationId0]	= [NotedRelationId4],
+		[NotedRelationId3]	= [NotedRelationId4],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = PWL.[NotedRelationId4]),
+		[ParticipantId2]	= [NotedRelationId4]
+	FROM @ProcessedWideLines PWL
+	LEFT JOIN Prices P ON PWL.[ResourceId1] = P.[ResourceId]
+	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
+	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
+	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
+'
+WHERE [Index] = 1301;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
+(0,1301,+1,	@CostOfMerchandiseSold,								NULL),
+(1,1301,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
+(2,1301,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
+(3,1301,-1,	@CurrentValueAddedTaxPayables,						NULL),
+(4,1301,-1,	@Revenue,											NULL)
+INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[ResourceDefinitionId]) VALUES
+(0,1,1301,@MerchandiseRD),
+(1,1,1301,@CurrentFoodAndBeverageRD),
+(2,1,1301,@CurrentAgriculturalProduceRD),
+(3,1,1301,@FinishedGoodsRD),
+(4,1,1301,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
+INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[CustodyDefinitionId]) VALUES
+(0,1,1301,@WarehouseCD);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
+														[ReadOnlyState],
+														[InheritsFromHeader],[Filter]) VALUES
+(0,1301,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
+(1,1301,	N'NotedRelationId',		4,	N'Customer',		3,4,1,NULL),
+(2,1301,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL),
+(3,1301,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
+(4,1301,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
+(5,1301,	N'UnitId',				1,	N'Unit',			0,0,0,NULL),
+(6,1301,	N'CurrencyId',			2,	N'Currency',		0,0,1,NULL),
+(7,1301,	N'MonetaryValue',		4,	N'Price (VAT Excl.)',0,0,0,NULL),
+(8,1301,	N'MonetaryValue',		3,	N'VAT',				0,0,0,NULL),
+(9,1301,	N'MonetaryValue',		2,	N'Line Total',		0,0,0,NULL),
+(10,1301,	N'ExternalReference',	2,	N'Invoice #',		1,4,0,NULL),
+(11,1301,	N'PostingDate',			1,	N'Sale Date',		1,4,1,NULL),
+(12,1301,	N'CenterId',			2,	N'Business Unit',	1,4,1,N'CenterType=''BusinessUnit''');
 --1350:CashFromCustomer
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
-	UPDATE @ProcessedWideLines
+ UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId0]		= COALESCE([CurrencyId0], [CurrencyId1]),
 		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1]),
+		[ParticipantId1]	= [NotedRelationId0],
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
 WHERE [Index] = 1350;
@@ -455,7 +575,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1350,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (2,1350,	N'MonetaryValue',		1,	N'Amount',			1,2,0,NULL), 
 (3,1350,	N'CurrencyId',			1,	N'Currency',		1,2,1,NULL),
-(4,1350,	N'NotedRelationId',		1,	N'Customer',		1,4,1,NULL),
+(4,1350,	N'NotedRelationId',		0,	N'Customer',		1,4,1,NULL),
 (5,1350,	N'PostingDate',			1,	N'Received On',		1,4,1,NULL),
 (6,1350,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
 (7,1350,	N'CenterId',			1,	N'Business Unit',	1,4,1,N'CenterType=''BusinessUnit'''),

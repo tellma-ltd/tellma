@@ -101,34 +101,38 @@ BEGIN
 	-- TODO:  Remove labels, etc.
 
 --	Overwrite input with data specified in the template (or clause)
-	UPDATE E
-	SET
-		E.[Direction]		= COALESCE(ES.[Direction], E.[Direction]),
-		E.[AccountId]		= COALESCE(ES.[AccountId], E.[AccountId]),
-		E.[CurrencyId]		= COALESCE(ES.[CurrencyId], E.[CurrencyId]),
-		E.[CustodianId]		= COALESCE(ES.[CustodianId], E.[CustodianId]),
-		E.[CustodyId]		= COALESCE(ES.[CustodyId], E.[CustodyId]),
-		E.[ParticipantId]	= COALESCE(ES.[ParticipantId], E.[ParticipantId]),
-		E.[ResourceId]		= COALESCE(ES.[ResourceId], E.[ResourceId]),
-		E.[CenterId]		= COALESCE(ES.[CenterId], E.[CenterId]),
-		E.[EntryTypeId]		= COALESCE(ES.[EntryTypeId], E.[EntryTypeId]),
-		E.[MonetaryValue]	= COALESCE(L.[Multiplier] * ES.[MonetaryValue], E.[MonetaryValue]),
-		E.[Quantity]		= COALESCE(L.[Multiplier] * ES.[Quantity], E.[Quantity]),
-		E.[UnitId]			= COALESCE(ES.[UnitId], E.[UnitId]),
---		E.[Value]			= COALESCE(L.[Multiplier] * ES.[Value], E.[Value]),
-		E.[Time1]			= COALESCE(ES.[Time1], E.[Time1]),
-		E.[Time2]			= COALESCE(ES.[Time2], E.[Time2]),
-		E.[ExternalReference]= COALESCE(ES.[ExternalReference], E.[ExternalReference]),
-		E.[AdditionalReference]= COALESCE(ES.[AdditionalReference], E.[AdditionalReference]),
-		E.[NotedRelationId]	= COALESCE(ES.[NotedRelationId], E.[NotedRelationId]),
-		E.[NotedAgentName]	= COALESCE(ES.[NotedAgentName], E.[NotedAgentName]),
-		E.[NotedAmount]		= COALESCE(ES.[NotedAmount], E.[NotedAmount]),
-		E.[NotedDate]		= COALESCE(ES.[NotedDate], E.[NotedDate])
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Lines LS ON L.[TemplateLineId] = LS.[Id]
-	JOIN dbo.Entries ES ON ES.[LineId] = LS.[Id]
-	WHERE E.[Index] = ES.[Index];
+-- This logic was assuming that the template will store the same fields in the same locations. However, it was more
+-- efficient to just store them in one entry. So, no need for this code
+--	UPDATE E
+--	SET
+--		E.[Direction]		= COALESCE(ES.[Direction], E.[Direction]),
+--		E.[AccountId]		= COALESCE(ES.[AccountId], E.[AccountId]),
+--		E.[CurrencyId]		= COALESCE(ES.[CurrencyId], E.[CurrencyId]),
+--		E.[CustodianId]		= COALESCE(ES.[CustodianId], E.[CustodianId]),
+--		E.[CustodyId]		= COALESCE(ES.[CustodyId], E.[CustodyId]),
+--		E.[ParticipantId]	= COALESCE(ES.[ParticipantId], E.[ParticipantId]),
+--		E.[ResourceId]		= COALESCE(ES.[ResourceId], E.[ResourceId]),
+--		E.[CenterId]		= COALESCE(ES.[CenterId], E.[CenterId]),
+--		E.[EntryTypeId]		= COALESCE(ES.[EntryTypeId], E.[EntryTypeId]),
+--		E.[MonetaryValue]	= COALESCE(L.[Multiplier] * ES.[MonetaryValue], E.[MonetaryValue]),
+--		E.[Quantity]		= COALESCE(L.[Multiplier] * ES.[Quantity], E.[Quantity]),
+--		E.[UnitId]			= COALESCE(ES.[UnitId], E.[UnitId]),
+----		E.[Value]			= COALESCE(L.[Multiplier] * ES.[Value], E.[Value]),
+--		E.[Time1]			= COALESCE(ES.[Time1], E.[Time1]),
+--		E.[Time2]			= COALESCE(ES.[Time2], E.[Time2]),
+--		E.[ExternalReference]= COALESCE(ES.[ExternalReference], E.[ExternalReference]),
+--		E.[AdditionalReference]= COALESCE(ES.[AdditionalReference], E.[AdditionalReference]),
+--		E.[NotedRelationId]	= COALESCE(ES.[NotedRelationId], E.[NotedRelationId]),
+--		E.[NotedAgentName]	= COALESCE(ES.[NotedAgentName], E.[NotedAgentName]),
+--		E.[NotedAmount]		= COALESCE(ES.[NotedAmount], E.[NotedAmount]),
+--		E.[NotedDate]		= COALESCE(ES.[NotedDate], E.[NotedDate])
+--	FROM @E E
+--	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+--	JOIN dbo.Lines LS ON L.[TemplateLineId] = LS.[Id]
+--	JOIN dbo.Entries ES ON ES.[LineId] = LS.[Id]
+--	WHERE E.[Index] = ES.[Index];
+
+
 	-- Overwrite input with DB data that is read only
 	-- TODO : Overwrite readonly Memo
 	WITH CTE AS (

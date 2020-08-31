@@ -6,7 +6,7 @@
 	@UnitId			INT = NULL,
 	@PromotionCode	NVARCHAR (50) = NULL
 AS
-	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromMedicineWithPointInvoiceTemplate');
+	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventoryWithPointInvoiceTemplate');
 	
 	IF @UnitID IS NULL
 		SELECT @UnitId = [UnitId] FROM dbo.Resources WHERE [Id] = @ResourceId;
@@ -23,7 +23,7 @@ AS
 	SELECT 0,L.[DefinitionId], @PostingDate,	L.[Id],			@Quantity / E.Quantity * [bll].[fn_ConvertUnits](@UnitId, E.[UnitId])
 	FROM dbo.Lines L
 	JOIN dbo.Entries E ON L.[Id] = E.[LineId]
-	WHERE L.[DocumentId] = 374
+	WHERE L.[DefinitionId] = @LineDefinitionId
 	AND E.ResourceId = @ResourceId
 	AND E.[Index] = 1 AND E.[Quantity] <> 0
 	-- AND ValidOf is correct, and Line is Approved
