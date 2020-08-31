@@ -1188,8 +1188,6 @@ namespace Tellma.Controllers
             // At the end to map the keys that return from SQL before serving them to the client
             var errorKeyMap = new Dictionary<string, string>();
 
-            Action _throw = null;
-
             ///////// Document Validation
             for (int docIndex = 0; docIndex < docs.Count; docIndex++)
             {
@@ -1296,10 +1294,6 @@ namespace Tellma.Controllers
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
-                                else
-                                {
-                                    _throw = () => throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: Value is negative after preprocess");
-                                }
                             }
 
                             if (fieldLabel != null)
@@ -1323,10 +1317,6 @@ namespace Tellma.Controllers
                                 if (columnDef != null)
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
-                                }
-                                else
-                                {
-                                    _throw = () => throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: MonetaryValue is negative after preprocess");
                                 }
                             }
 
@@ -1352,10 +1342,6 @@ namespace Tellma.Controllers
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
-                                else
-                                {
-                                    _throw = () => throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: Quantity is negative after preprocess");
-                                }
                             }
 
                             if (fieldLabel != null)
@@ -1376,21 +1362,18 @@ namespace Tellma.Controllers
                             else
                             {
                                 var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId));
-                                if (columnDef != null)
+                                if (columnDef != null && !((columnDef.InheritsFromHeader ?? false) && (doc.CenterIsCommon ?? false)))
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
                                 else
                                 {
-                                    _throw = () => throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: CenterId is still NULL after preprocess");
+                                    throw new BadRequestException($"[Bug] Line index {lineIndex }, Entry Index {entryIndex}: CenterId is still NULL after preprocess");
                                 }
                             }
 
-                            if (fieldLabel != null)
-                            {
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)),
-                                    _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
-                            }
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
                         }
 
                         // Currency is required
@@ -1404,21 +1387,18 @@ namespace Tellma.Controllers
                             else
                             {
                                 var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId));
-                                if (columnDef != null)
+                                if (columnDef != null && !((columnDef.InheritsFromHeader ?? false) && (doc.CurrencyIsCommon ?? false)))
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
                                 else
                                 {
-                                    _throw = () => throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: CurrencyId is still NULL after preprocess");
+                                    throw new BadRequestException($"[Bug] Line index {lineIndex}, Entry Index {entryIndex}: CurrencyId is still NULL after preprocess");
                                 }
                             }
 
-                            if (fieldLabel != null)
-                            {
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId)),
-                                    _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
-                            }
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId)),
+                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
                         }
 
                         // If the currency is functional, value must equal monetary value
@@ -1659,11 +1639,6 @@ namespace Tellma.Controllers
                 {
                     break;
                 }
-            }
-
-            if (ModelState.IsValid && _throw != null)
-            {
-                _throw(); // Catastrophic error
             }
 
             // No need to invoke SQL if the model state is full of errors

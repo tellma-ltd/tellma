@@ -1342,9 +1342,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lineDef = this.lineDefinition(lineDefId);
     if (!!lineDef && !!lineDef.Entries) {
       const entryDef = lineDef.Entries[entryIndex];
-      if (!!entryDef && !!entryDef.AccountTypeId) {
+      if (!!entryDef && !!entryDef.ParentAccountTypeId) {
         // Account Type Id
-        let filter = `AccountType/Node descof ${entryDef.AccountTypeId}`;
+        let filter = `AccountType/Node descof ${entryDef.ParentAccountTypeId}`;
 
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;

@@ -260,7 +260,7 @@ export interface LineDefinitionForClient {
 
 export interface LineDefinitionEntryForClient {
     Direction: 1 | -1;
-    AccountTypeId?: number;
+    ParentAccountTypeId?: number;
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
     CustodianDefinitionIds: number[];
