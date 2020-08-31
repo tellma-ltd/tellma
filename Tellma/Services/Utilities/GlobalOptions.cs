@@ -1,4 +1,6 @@
-﻿namespace Tellma.Services.Utilities
+﻿using Tellma.Services.Sms;
+
+namespace Tellma.Services.Utilities
 {
     public class GlobalOptions
     {

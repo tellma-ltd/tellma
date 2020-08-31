@@ -91,7 +91,7 @@ namespace Tellma
                     opt.ResourcesPath = "Resources";
                 });
 
-                // Register MVC using the most up to date version
+                // Register MVC
                 services.AddControllersWithViews(opt =>
                 {
                     // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
@@ -148,8 +148,8 @@ namespace Tellma
                 // Add Email
                 services.AddEmail(GlobalOptions.EmailEnabled, _config);
 
-                //// Add SMS
-                //services.AddSms(GlobalOptions.SmsEnabled, _config);
+                // Add SMS
+                services.AddSms(GlobalOptions.SmsEnabled, _config);
 
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>
@@ -237,7 +237,6 @@ namespace Tellma
                 // Built-in instrumentation
                 app.UseInstrumentation();
 
-
                 // Regular Errors
                 if (_env.IsDevelopment())
                 {
@@ -256,6 +255,8 @@ namespace Tellma
                 app.UseHttpsRedirection();
                 app.UseMiddlewareInstrumentation("Https Redirection");
 
+                // Adds the SMS Callback from 
+                app.UseSmsCallback(_config);
 
                 // Localization
                 // Extract the culture from the request string and set it in the execution thread

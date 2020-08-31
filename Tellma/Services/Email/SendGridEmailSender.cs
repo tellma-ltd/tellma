@@ -83,7 +83,9 @@ namespace Tellma.Services.Email
 
             while (true)
             {
+                attemptsSoFar++;
                 Response response = await client.SendEmailAsync(msg, cancellation);
+
                 if (response.StatusCode == HttpStatusCode.TooManyRequests || response.StatusCode >= HttpStatusCode.InternalServerError)
                 {
                     // Here we implement exponential backoff attempts to retry the call few more times before giving up
