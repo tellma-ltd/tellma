@@ -1003,7 +1003,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     this.globalState.delete(ids, this.workspace.current[this.globalState.collectionName]);
 
     // after a successful delete navigate back to the master
-    this.router.navigate(['..'], { relativeTo: this.route });
+    this.router.navigate(['..'], { relativeTo: this.route, replaceUrl: true });
   }
 
   get canDeletePermissions(): boolean {
@@ -1260,7 +1260,7 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
     for (const item of entity) {
       clearServerErrors(item);
     }
-  } else if (!!entity.Id || entity.Id === null) { // TODO: Review this
+  } else if (!!entity.Id || entity.Id === 0 || entity.Id === null) { // TODO: Review this
     // if the property is a DTO loop over the navigation properties and recursively clear their errors
     const props = Object.keys(entity);
     for (const prop of props) {

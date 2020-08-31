@@ -96,7 +96,7 @@ export class TableComponent implements OnInit, OnChanges {
   private addPlaceholder(updateArrayRef: boolean): void {
 
     if (!!this._dataSourceCopy) {
-      let placeholder: EntityForSave = {};
+      let placeholder: EntityForSave = { Id: 0 };
       placeholder[this.PH] = true;
       if (this.onNewItem) {
         placeholder = this.onNewItem(placeholder);

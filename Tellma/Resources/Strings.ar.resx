@@ -1237,6 +1237,9 @@
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
   </data>
+  <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
+    <value>الحقل {0} لا يمكن أن يكون أقل من صفر.</value>
+  </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>قيمة الحقل {0} غير متنسابة مع طبيعة الحساب.</value>
   </data>
