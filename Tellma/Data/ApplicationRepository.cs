@@ -17,6 +17,8 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using System.Runtime.InteropServices.ComTypes;
+using Microsoft.Extensions.DependencyInjection;
+using DocumentFormat.OpenXml.Office.CoverPageProps;
 
 namespace Tellma.Data
 {
@@ -29,12 +31,6 @@ namespace Tellma.Data
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class ApplicationRepository : IDisposable, IRepository
     {
-        private readonly IShardResolver _shardResolver;
-        private readonly IExternalUserAccessor _externalUserAccessor;
-        private readonly IClientInfoAccessor _clientInfoAccessor;
-        private readonly IStringLocalizer _localizer;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IInstrumentationService _instrumentation;
         private SqlConnection _conn;
         private UserInfo _userInfo;
 
@@ -42,18 +38,35 @@ namespace Tellma.Data
         private TenantInfo _tenantInfo;
         private Transaction _transactionOverride;
 
+        #region Dependencies
+
+        private readonly IServiceProvider _serviceProvider;
+
+        private IShardResolver _shardResolver;
+        private IShardResolver ShardResolver => _shardResolver ??= _serviceProvider.GetRequiredService<IShardResolver>();
+
+        private IExternalUserAccessor _externalUserAccessor;
+        private IExternalUserAccessor ExternalUserAccessor => _externalUserAccessor ??= _serviceProvider.GetRequiredService<IExternalUserAccessor>();
+
+        private IClientInfoAccessor _clientInfoAccessor;
+        private IClientInfoAccessor ClientInfoAccessor => _clientInfoAccessor ??= _serviceProvider.GetRequiredService<IClientInfoAccessor>();
+
+        private IStringLocalizer _localizer;
+        private IStringLocalizer Localizer => _localizer ??= _serviceProvider.GetRequiredService<IStringLocalizer>();
+
+        private ITenantIdAccessor _tenantIdAccessor;
+        private ITenantIdAccessor TenantIdAccessor => _tenantIdAccessor ??= _serviceProvider.GetRequiredService<ITenantIdAccessor>();
+
+        private IInstrumentationService _instrumentation;
+        private IInstrumentationService Instrumentation => _instrumentation ??= _serviceProvider.GetRequiredService<IInstrumentationService>();
+
+        #endregion
+
         #region Lifecycle
 
-        public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor,
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer,
-            ITenantIdAccessor tenantIdAccessor, IInstrumentationService instrumentation)
+        public ApplicationRepository(IServiceProvider serviceProvider)
         {
-            _shardResolver = shardResolver;
-            _externalUserAccessor = externalUserAccessor;
-            _clientInfoAccessor = clientInfoAccessor;
-            _localizer = localizer;
-            _tenantIdAccessor = tenantIdAccessor;
-            _instrumentation = instrumentation;
+            _serviceProvider = serviceProvider;
         }
 
         public void Dispose()
@@ -77,21 +90,21 @@ namespace Tellma.Data
         /// </summary>
         public async Task InitConnectionAsync(int databaseId, bool setLastActive, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(InitConnectionAsync));
+            using var _ = Instrumentation.Block("Repo." + nameof(InitConnectionAsync));
             if (_conn != null)
             {
                 throw new InvalidOperationException("The connection is already initialized");
             }
 
-            string connectionString = await _shardResolver.GetConnectionString(databaseId, cancellation);
+            string connectionString = await ShardResolver.GetConnectionString(databaseId, cancellation);
             _conn = new SqlConnection(connectionString);
 
             // Open the SQL connection
             await _conn.OpenAsync();
 
             // Always call OnConnect SP as soon as you create the connection
-            var externalUserId = _externalUserAccessor.GetUserId();
-            var externalEmail = _externalUserAccessor.GetUserEmail();
+            var externalUserId = ExternalUserAccessor.GetUserId();
+            var externalEmail = ExternalUserAccessor.GetUserEmail();
             var culture = CultureInfo.CurrentUICulture.Name;
             var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
 
@@ -107,7 +120,7 @@ namespace Tellma.Data
         {
             if (_conn == null)
             {
-                int databaseId = _tenantIdAccessor.GetTenantId();
+                int databaseId = TenantIdAccessor.GetTenantId();
                 await InitConnectionAsync(databaseId, setLastActive: true, cancellation);
             }
 
@@ -216,9 +229,9 @@ namespace Tellma.Data
             var tenantInfo = await GetTenantInfoAsync(cancellation);
             var userInfo = await GetUserInfoAsync(cancellation);
             var userId = userInfo.UserId ?? 0;
-            var userToday = _clientInfoAccessor.GetInfo().Today;
+            var userToday = ClientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, userId, userToday, _localizer, _instrumentation);
+            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation);
         }
 
         /// <summary>
@@ -303,7 +316,7 @@ namespace Tellma.Data
 
         private async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, bool setLastActive, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(OnConnect));
+            using var _ = Instrumentation.Block("Repo." + nameof(OnConnect));
 
             UserInfo userInfo = null;
             TenantInfo tenantInfo = null;
@@ -367,7 +380,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> InboxCounts__Load(IEnumerable<int> userIds, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(InboxCounts__Load));
+            using var _ = Instrumentation.Block("Repo." + nameof(InboxCounts__Load));
 
             var result = new List<InboxNotificationInfo>(userIds.Count());
             if (userIds == null || !userIds.Any())
@@ -412,7 +425,7 @@ namespace Tellma.Data
 
         public async Task<(Guid, User, IEnumerable<(string Key, string Value)>)> UserSettings__Load(CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(UserSettings__Load));
+            using var _ = Instrumentation.Block("Repo." + nameof(UserSettings__Load));
 
             Guid version;
             var user = new User();
@@ -463,7 +476,7 @@ namespace Tellma.Data
 
         public async Task<(bool isMultiSegment, Settings settings)> Settings__Load(CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Settings__Load));
+            using var _ = Instrumentation.Block("Repo." + nameof(Settings__Load));
 
             // Returns 
             // (1) whether active leaf centers are multiple or single
@@ -541,7 +554,7 @@ namespace Tellma.Data
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Permissions__Load));
+            using var _ = Instrumentation.Block("Repo." + nameof(Permissions__Load));
 
             Guid version;
             var permissions = new List<AbstractPermission>();
@@ -598,7 +611,7 @@ namespace Tellma.Data
             Dictionary<int, List<int>>)>
             Definitions__Load(CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Definitions__Load));
+            using var _ = Instrumentation.Block("Repo." + nameof(Definitions__Load));
 
             Guid version;
             var lookupDefinitions = new List<LookupDefinition>();
@@ -1120,7 +1133,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Units_Validate__Save(List<UnitForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Units_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Units_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1145,7 +1158,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Units__Save(List<UnitForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Units__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Units__Save));
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -1195,7 +1208,7 @@ namespace Tellma.Data
 
         public async Task Units__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Units__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Units__Activate));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1219,7 +1232,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Units_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Units_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Units_Validate__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1243,7 +1256,7 @@ namespace Tellma.Data
 
         public async Task Units__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Units__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Units__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1277,7 +1290,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Custodies_Validate__Save(int definitionId, List<CustodyForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Custodies_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Custodies_Validate__Save));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -1303,7 +1316,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Custodies__Save(int definitionId, List<CustodyForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Custodies__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Save));
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -1365,7 +1378,7 @@ namespace Tellma.Data
 
         public async Task Custodies__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Custodies__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1395,7 +1408,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Custodies_Validate__Delete(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Custodies_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Custodies_Validate__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1420,7 +1433,7 @@ namespace Tellma.Data
 
         public async Task Custodies__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Custodies__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Activate));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1448,7 +1461,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> CustodyDefinitions_Validate__Save(List<CustodyDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1473,7 +1486,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> CustodyDefinitions__Save(List<CustodyDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(CustodyDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -1524,7 +1537,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> CustodyDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1549,7 +1562,7 @@ namespace Tellma.Data
 
         public async Task CustodyDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(CustodyDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1580,7 +1593,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> CustodyDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__UpdateState));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1607,7 +1620,7 @@ namespace Tellma.Data
 
         public async Task CustodyDefinitions__UpdateState(List<int> ids, string state)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(CustodyDefinitions__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions__UpdateState));
 
             var result = new List<int>();
 
@@ -1639,7 +1652,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Relations_Validate__Save(int definitionId, List<RelationForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Relations_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Relations_Validate__Save));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -1673,7 +1686,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Relations__Save(int definitionId, List<RelationForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Relations__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Relations__Save));
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -1743,7 +1756,7 @@ namespace Tellma.Data
 
         public async Task Relations__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Relations__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Relations__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1773,7 +1786,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Relations_Validate__Delete(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Relations_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Relations_Validate__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1798,7 +1811,7 @@ namespace Tellma.Data
 
         public async Task Relations__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Relations__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Relations__Activate));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -1826,7 +1839,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> RelationDefinitions_Validate__Save(List<RelationDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1851,7 +1864,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(RelationDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -1902,7 +1915,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> RelationDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1927,7 +1940,7 @@ namespace Tellma.Data
 
         public async Task RelationDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(RelationDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1958,7 +1971,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> RelationDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(RelationDefinitions_Validate__UpdateState));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1985,7 +1998,7 @@ namespace Tellma.Data
 
         public async Task RelationDefinitions__UpdateState(List<int> ids, string state)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(RelationDefinitions__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(RelationDefinitions__UpdateState));
 
             var result = new List<int>();
 
@@ -2017,7 +2030,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(List<AgentForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Agents_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Agents_Validate__Save));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2041,7 +2054,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Agents__Save(List<AgentForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Agents__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Agents__Save));
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -2091,7 +2104,7 @@ namespace Tellma.Data
 
         public async Task Agents__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Agents__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Agents__Activate));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2115,7 +2128,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Agents_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Agents_Validate__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2139,7 +2152,7 @@ namespace Tellma.Data
 
         public async Task Agents__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Agents__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Agents__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2173,7 +2186,7 @@ namespace Tellma.Data
 
         public async Task Users__SaveSettings(string key, string value)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users__SaveSettings));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SaveSettings));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2190,7 +2203,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users_Validate__Save));
             entities.ForEach(e =>
             {
                 e.Roles?.ForEach(r =>
@@ -2230,7 +2243,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Users__Save(List<UserForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__Save));
             entities.ForEach(e =>
             {
                 e.Roles?.ForEach(r =>
@@ -2300,7 +2313,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Users_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users_Validate__Delete));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2324,7 +2337,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<string>> Users__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__Delete));
             var deletedEmails = new List<string>(); // the result
 
             var conn = await GetConnectionAsync();
@@ -2365,7 +2378,7 @@ namespace Tellma.Data
 
         public async Task Users__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__Activate));
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
@@ -2390,7 +2403,7 @@ namespace Tellma.Data
         public async Task Users__SetExternalIdByUserId(int userId, string externalId)
         {
             // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
-            using var _ = _instrumentation.Block("Repo." + nameof(Users__SetExternalIdByUserId));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SetExternalIdByUserId));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2408,7 +2421,7 @@ namespace Tellma.Data
 
         public async Task Users__SetEmailByUserId(int userId, string externalEmail)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Users__SetEmailByUserId));
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SetEmailByUserId));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2431,7 +2444,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Roles__Save(List<RoleForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Roles__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Roles__Save));
 
             entities.ForEach(e =>
             {
@@ -2509,7 +2522,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Roles_Validate__Save(List<RoleForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Roles_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Roles_Validate__Save));
 
             entities.ForEach(e =>
             {
@@ -2558,7 +2571,7 @@ namespace Tellma.Data
 
         public async Task Roles__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Roles__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Roles__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2589,7 +2602,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Roles_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Roles_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Roles_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2614,7 +2627,7 @@ namespace Tellma.Data
 
         public async Task Roles__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Roles__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Roles__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2643,7 +2656,7 @@ namespace Tellma.Data
 
         public async Task Blobs__Delete(IEnumerable<string> blobNames)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Blobs__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Blobs__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2667,7 +2680,7 @@ namespace Tellma.Data
 
         public async Task Blobs__Save(string name, byte[] blob)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Blobs__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Blobs__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2685,7 +2698,7 @@ namespace Tellma.Data
 
         public async Task<byte[]> Blobs__Get(string name, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Blobs__Get));
+            using var _ = Instrumentation.Block("Repo." + nameof(Blobs__Get));
 
             byte[] result = null;
 
@@ -2716,7 +2729,7 @@ namespace Tellma.Data
 
         public async Task Settings__Save(SettingsForSave settingsForSave)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Settings__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Settings__Save));
 
             if (settingsForSave is null)
             {
@@ -2758,7 +2771,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(int definitionId, List<LookupForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lookups_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lookups_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2784,7 +2797,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lookups__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lookups__Save));
 
             var result = new List<IndexedId>();
 
@@ -2836,7 +2849,7 @@ namespace Tellma.Data
 
         public async Task Lookups__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lookups__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lookups__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2861,7 +2874,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lookups_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lookups_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2887,7 +2900,7 @@ namespace Tellma.Data
 
         public async Task Lookups__Delete(int definitionId, IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lookups__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lookups__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2923,7 +2936,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Currencies_Validate__Save(List<CurrencyForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Currencies_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2948,7 +2961,7 @@ namespace Tellma.Data
 
         public async Task Currencies__Save(List<CurrencyForSave> entities)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Currencies__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies__Save));
 
             var result = new List<IndexedId>();
 
@@ -2971,7 +2984,7 @@ namespace Tellma.Data
 
         public async Task Currencies__Activate(List<string> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Currencies__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2996,7 +3009,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Currencies_Validate__Delete(List<string> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Currencies_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3021,7 +3034,7 @@ namespace Tellma.Data
 
         public async Task Currencies__Delete(IEnumerable<string> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Currencies__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3056,7 +3069,7 @@ namespace Tellma.Data
 
         public async Task Resources__Preprocess(int definitionId, List<ResourceForSave> entities)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Resources__Preprocess));
+            using var _ = Instrumentation.Block("Repo." + nameof(Resources__Preprocess));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3098,7 +3111,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(int definitionId, List<ResourceForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Resources_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Resources_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3133,7 +3146,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Resources__Save(int definitionId, List<ResourceForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Resources__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Resources__Save));
 
             var result = new List<IndexedId>();
 
@@ -3201,7 +3214,7 @@ namespace Tellma.Data
 
         public async Task Resources__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Resources__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Resources__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3226,7 +3239,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Resources_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Resources_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3252,7 +3265,7 @@ namespace Tellma.Data
 
         public async Task Resources__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Resources__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Resources__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3287,7 +3300,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__Save(List<AccountClassificationForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3312,7 +3325,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications__Save));
 
             var result = new List<IndexedId>();
 
@@ -3363,7 +3376,7 @@ namespace Tellma.Data
 
         public async Task AccountClassifications__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3388,7 +3401,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3413,7 +3426,7 @@ namespace Tellma.Data
 
         public async Task AccountClassifications__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3444,7 +3457,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications_Validate__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications_Validate__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3469,7 +3482,7 @@ namespace Tellma.Data
 
         public async Task AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountClassifications__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountClassifications__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3504,7 +3517,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AccountTypes_Validate__Save(List<AccountTypeForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3546,7 +3559,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes__Save));
 
             var result = new List<IndexedId>();
 
@@ -3613,7 +3626,7 @@ namespace Tellma.Data
 
         public async Task AccountTypes__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3638,7 +3651,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AccountTypes_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3663,7 +3676,7 @@ namespace Tellma.Data
 
         public async Task AccountTypes__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3694,7 +3707,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> AccountTypes_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes_Validate__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes_Validate__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3719,7 +3732,7 @@ namespace Tellma.Data
 
         public async Task AccountTypes__DeleteWithDescendants(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(AccountTypes__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(AccountTypes__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3754,7 +3767,7 @@ namespace Tellma.Data
 
         public async Task Accounts__Preprocess(List<AccountForSave> entities)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts__Preprocess));
+            using var _ = Instrumentation.Block("Repo." + nameof(Accounts__Preprocess));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3792,7 +3805,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Accounts_Validate__Save(List<AccountForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Accounts_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3817,7 +3830,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Accounts__Save(List<AccountForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Accounts__Save));
 
             var result = new List<IndexedId>();
 
@@ -3868,7 +3881,7 @@ namespace Tellma.Data
 
         public async Task Accounts__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Accounts__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3895,7 +3908,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Accounts_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Accounts_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3920,7 +3933,7 @@ namespace Tellma.Data
 
         public async Task Accounts__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Accounts__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Accounts__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3955,7 +3968,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Centers_Validate__Save(List<CenterForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3980,7 +3993,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> Centers__Save(List<CenterForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers__Save));
 
             var result = new List<IndexedId>();
 
@@ -4038,7 +4051,7 @@ namespace Tellma.Data
 
         public async Task Centers__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4063,7 +4076,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Centers_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4088,7 +4101,7 @@ namespace Tellma.Data
 
         public async Task Centers__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4119,7 +4132,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Centers_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers_Validate__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers_Validate__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4144,7 +4157,7 @@ namespace Tellma.Data
 
         public async Task Centers__DeleteWithDescendants(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Centers__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(Centers__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4179,7 +4192,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> EntryTypes_Validate__Save(List<EntryTypeForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4204,7 +4217,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> EntryTypes__Save(List<EntryTypeForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes__Save));
 
             var result = new List<IndexedId>();
 
@@ -4255,7 +4268,7 @@ namespace Tellma.Data
 
         public async Task EntryTypes__Activate(List<int> ids, bool isActive)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes__Activate));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes__Activate));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4280,7 +4293,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> EntryTypes_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4305,7 +4318,7 @@ namespace Tellma.Data
 
         public async Task EntryTypes__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4336,7 +4349,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> EntryTypes_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes_Validate__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes_Validate__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4361,7 +4374,7 @@ namespace Tellma.Data
 
         public async Task EntryTypes__DeleteWithDescendants(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(EntryTypes__DeleteWithDescendants));
+            using var _ = Instrumentation.Block("Repo." + nameof(EntryTypes__DeleteWithDescendants));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4396,7 +4409,7 @@ namespace Tellma.Data
 
         public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> docs)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Preprocess));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Preprocess));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4496,7 +4509,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(int definitionId, List<DocumentForSave> documents, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4538,7 +4551,7 @@ namespace Tellma.Data
 
         public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(int definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__SaveAndRefresh));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__SaveAndRefresh));
 
             var deletedFileIds = new List<string>();
             var notificationInfos = new List<InboxNotificationInfo>();
@@ -4627,7 +4640,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? onBehalfOfUserId, string ruleType, int? roleId, short toState, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lines_Validate__Sign));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lines_Validate__Sign));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4657,7 +4670,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<int>> Lines__SignAndRefresh(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lines__SignAndRefresh));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lines__SignAndRefresh));
 
             var result = new List<int>();
 
@@ -4699,7 +4712,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> LineSignatures_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LineSignatures_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(LineSignatures_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4725,7 +4738,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<int>> LineSignatures__DeleteAndRefresh(IEnumerable<int> ids, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LineSignatures__DeleteAndRefresh));
+            using var _ = Instrumentation.Block("Repo." + nameof(LineSignatures__DeleteAndRefresh));
 
             var result = new List<int>();
 
@@ -4767,7 +4780,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Assign(IEnumerable<int> ids, int assigneeId, string comment, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Assign));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Assign));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4795,7 +4808,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool recordInHistory)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Assign));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Assign));
 
             var result = new List<InboxNotificationInfo>();
 
@@ -4826,7 +4839,7 @@ namespace Tellma.Data
 
         public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds)> Documents__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Delete));
 
             // Returns the new notifification counts of affected users, and the list of File Ids to be deleted
             var notificationInfos = new List<InboxNotificationInfo>();
@@ -4874,7 +4887,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4903,7 +4916,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Close(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Close));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Close));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4929,7 +4942,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Documents__Close(List<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Close));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Close));
 
             var result = new List<int>();
 
@@ -4957,7 +4970,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Open(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Open));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Open));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4983,7 +4996,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Documents__Open(List<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Open));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Open));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5009,7 +5022,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Cancel));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Cancel));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5035,7 +5048,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Documents__Cancel(List<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Cancel));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Cancel));
 
             var result = new List<int>();
 
@@ -5063,7 +5076,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(int definitionId, List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents_Validate__Uncancel));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Uncancel));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5089,7 +5102,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Documents__Uncancel(List<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Uncancel));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Uncancel));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5115,7 +5128,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Documents__Preview(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Documents__Preview));
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Preview));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5149,7 +5162,7 @@ namespace Tellma.Data
             List<Unit> units
             )> Lines__Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Lines__Generate));
+            using var _ = Instrumentation.Block("Repo." + nameof(Lines__Generate));
 
             List<LineForSave> lines = new List<LineForSave>();
 
@@ -5405,7 +5418,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Save(List<ReportDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ReportDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(ReportDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5471,7 +5484,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ReportDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(ReportDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -5569,7 +5582,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ReportDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(ReportDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5594,7 +5607,7 @@ namespace Tellma.Data
 
         public async Task ReportDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ReportDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(ReportDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5629,7 +5642,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ExchangeRates_Validate__Save(List<ExchangeRateForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ExchangeRates_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(ExchangeRates_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5655,7 +5668,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> ExchangeRates__Save(List<ExchangeRateForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ExchangeRates__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(ExchangeRates__Save));
 
             var result = new List<IndexedId>();
 
@@ -5706,7 +5719,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ExchangeRates_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ExchangeRates_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(ExchangeRates_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5731,7 +5744,7 @@ namespace Tellma.Data
 
         public async Task ExchangeRates__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ExchangeRates__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(ExchangeRates__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5762,7 +5775,7 @@ namespace Tellma.Data
 
         public async Task<decimal?> ConvertToFunctional(DateTime date, string currencyId, decimal amount, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ConvertToFunctional));
+            using var _ = Instrumentation.Block("Repo." + nameof(ConvertToFunctional));
 
             decimal? result = null;
             var conn = await GetConnectionAsync(cancellation);
@@ -5803,7 +5816,7 @@ namespace Tellma.Data
 
         public async Task<List<InboxNotificationInfo>> Inbox__Check(DateTimeOffset now)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Inbox__Check));
+            using var _ = Instrumentation.Block("Repo." + nameof(Inbox__Check));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5826,7 +5839,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> MarkupTemplates_Validate__Save(List<MarkupTemplateForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(MarkupTemplates_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(MarkupTemplates_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5852,7 +5865,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(MarkupTemplates__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(MarkupTemplates__Save));
 
             var result = new List<IndexedId>();
 
@@ -5903,7 +5916,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> MarkupTemplates_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(MarkupTemplates_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(MarkupTemplates_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5928,7 +5941,7 @@ namespace Tellma.Data
 
         public async Task MarkupTemplates__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(MarkupTemplates__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(MarkupTemplates__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5963,7 +5976,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ResourceDefinitions_Validate__Save(List<ResourceDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ResourceDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(ResourceDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -5988,7 +6001,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> ResourceDefinitions__Save(List<ResourceDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ResourceDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(ResourceDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -6039,7 +6052,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ResourceDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ResourceDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(ResourceDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6064,7 +6077,7 @@ namespace Tellma.Data
 
         public async Task ResourceDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ResourceDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(ResourceDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6095,7 +6108,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> ResourceDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ResourceDefinitions_Validate__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(ResourceDefinitions_Validate__UpdateState));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6122,7 +6135,7 @@ namespace Tellma.Data
 
         public async Task ResourceDefinitions__UpdateState(List<int> ids, string state)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(ResourceDefinitions__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(ResourceDefinitions__UpdateState));
 
             var result = new List<int>();
 
@@ -6154,7 +6167,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Save(List<LookupDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LookupDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(LookupDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6179,7 +6192,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> LookupDefinitions__Save(List<LookupDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LookupDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(LookupDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -6230,7 +6243,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LookupDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(LookupDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6255,7 +6268,7 @@ namespace Tellma.Data
 
         public async Task LookupDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LookupDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(LookupDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6286,7 +6299,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LookupDefinitions_Validate__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(LookupDefinitions_Validate__UpdateState));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6313,7 +6326,7 @@ namespace Tellma.Data
 
         public async Task LookupDefinitions__UpdateState(List<int> ids, string state)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LookupDefinitions__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(LookupDefinitions__UpdateState));
 
             var result = new List<int>();
 
@@ -6345,7 +6358,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> LineDefinitions_Validate__Save(List<LineDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(LineDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6432,7 +6445,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> LineDefinitions__Save(List<LineDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(LineDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -6546,7 +6559,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> LineDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(LineDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6571,7 +6584,7 @@ namespace Tellma.Data
 
         public async Task LineDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(LineDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(LineDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6606,7 +6619,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> DocumentDefinitions_Validate__Save(List<DocumentDefinitionForSave> entities, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__Save));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6647,7 +6660,7 @@ namespace Tellma.Data
 
         public async Task<List<int>> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(DocumentDefinitions__Save));
 
             var result = new List<IndexedId>();
 
@@ -6714,7 +6727,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> DocumentDefinitions_Validate__Delete(List<int> ids, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6739,7 +6752,7 @@ namespace Tellma.Data
 
         public async Task DocumentDefinitions__Delete(IEnumerable<int> ids)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions__Delete));
+            using var _ = Instrumentation.Block("Repo." + nameof(DocumentDefinitions__Delete));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6770,7 +6783,7 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> DocumentDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(DocumentDefinitions_Validate__UpdateState));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -6797,7 +6810,7 @@ namespace Tellma.Data
 
         public async Task DocumentDefinitions__UpdateState(List<int> ids, string state)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(DocumentDefinitions__UpdateState));
+            using var _ = Instrumentation.Block("Repo." + nameof(DocumentDefinitions__UpdateState));
 
             var result = new List<int>();
 

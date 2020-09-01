@@ -39,7 +39,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddApplicationRepository(this IServiceCollection services)
         {
-            return services.AddScoped<ApplicationRepository>();
+            return services.AddScoped<ApplicationRepository>()
+                .AddSingleton<ApplicationLiteRepository>();
         }
     }
 }

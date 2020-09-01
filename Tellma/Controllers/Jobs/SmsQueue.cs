@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Tellma.Controllers.Jobs
 {
-    public class NotificationsQueue : BackgroundQueue<IEnumerable<int>>
+    public class SmsQueue : BackgroundQueue<SmsQueueItem>
     {
     }
 }

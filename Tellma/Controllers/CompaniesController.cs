@@ -14,6 +14,7 @@ using Tellma.Services.Identity;
 using Tellma.Services.MultiTenancy;
 using Tellma.Services.Sharding;
 using Tellma.Services.Instrumentation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Tellma.Controllers
 {
@@ -60,21 +61,22 @@ namespace Tellma.Controllers
     {
         private readonly AdminRepository _repo;
         private readonly ILogger _logger;
-        private readonly IShardResolver _shardResolver;
         private readonly IExternalUserAccessor _externalUserAccessor;
-        private readonly IClientInfoAccessor _clientInfoAccessor;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CompaniesService(AdminRepository db, ILogger<CompaniesController> logger, IShardResolver shardResolver,
-            IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor,
-            ITenantIdAccessor tenantIdAccessor)
+        //private readonly IShardResolver _shardResolver;
+        //private readonly IClientInfoAccessor _clientInfoAccessor;
+        //private readonly ITenantIdAccessor _tenantIdAccessor;
+
+        public CompaniesService(AdminRepository db,
+            ILogger<CompaniesController> logger,
+            IExternalUserAccessor externalUserAccessor,
+            IServiceProvider serviceProvider)
         {
             _repo = db;
             _logger = logger;
-            _shardResolver = shardResolver;
             _externalUserAccessor = externalUserAccessor;
-            _clientInfoAccessor = clientInfoAccessor;
-            _tenantIdAccessor = tenantIdAccessor;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<CompaniesForClient> GetForClient(CancellationToken cancellation)
@@ -85,7 +87,7 @@ namespace Tellma.Controllers
             var externalEmail = _externalUserAccessor.GetUserEmail();
             var (databaseIds, isAdmin) = await _repo.GetAccessibleDatabaseIds(externalId, externalEmail, cancellation);
 
-            // Connect all the databases in parallel, ensure the user 
+            // Connect all the databases in parallel, ensure the user cann access them all
             var tasks = databaseIds.Select(databaseId => GetCompanyInfoAsync(databaseId, companies, cancellation));
             await Task.WhenAll(tasks);
 
@@ -111,7 +113,7 @@ namespace Tellma.Controllers
         {
             try
             {
-                using var appRepo = new ApplicationRepository(_shardResolver, _externalUserAccessor, _clientInfoAccessor, null, _tenantIdAccessor, new DoNothingService());
+                using var appRepo = new ApplicationRepository(_serviceProvider); // new ApplicationRepository(_shardResolver, _externalUserAccessor, _clientInfoAccessor, null, _tenantIdAccessor, new DoNothingService());
                 
                 await appRepo.InitConnectionAsync(databaseId, setLastActive: false, cancellation);
                 UserInfo userInfo = await appRepo.GetUserInfoAsync(cancellation);

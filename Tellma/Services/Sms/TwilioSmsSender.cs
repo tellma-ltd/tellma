@@ -13,6 +13,9 @@ namespace Tellma.Services.Sms
 {
     public class TwilioSmsSender : ISmsSender
     {
+        public const string MessageIdParamName = "message_id";
+        public const string TenantIdParamName = "tenant_id";
+
         private readonly SmsOptions _options;
         private readonly ILogger _logger;
         private readonly Random _rand = new Random();
@@ -23,20 +26,20 @@ namespace Tellma.Services.Sms
             _logger = logger;
         }
 
-        public async Task SendAsync(string toPhoneNumber, string sms, int? tenantId = null, int? notificationId = null, CancellationToken cancellation = default)
+        public async Task SendAsync(string toPhoneNumber, string sms, int? tenantId = null, int? messageId = null, CancellationToken cancellation = default)
         {
             var serviceSid = !string.IsNullOrWhiteSpace(_options.ServiceSid) ? _options.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
             var to = new PhoneNumber(toPhoneNumber);
 
-            // Calculate the callbackUri if required
+            // Calculate the callbackUri (if required)
             Uri callbackUri = null;
-            if (notificationId != null)
+            if (messageId != null)
             {
                 string hostname = "https://web.tellma.com".WithoutTrailingSlash();
-                string stringUri = $"{hostname}/api/sms-callback?notification_id={notificationId}";
+                string stringUri = $"{hostname}/api/sms-callback?{MessageIdParamName}={messageId}";
                 if (tenantId != null)
                 {
-                    stringUri += $"&tenant_id={tenantId}";
+                    stringUri += $"&{TenantIdParamName}={tenantId}";
                 }
 
                 callbackUri = new Uri(stringUri);
