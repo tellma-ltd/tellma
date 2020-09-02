@@ -1078,6 +1078,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path.</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>Readonly State cannot be before Required State.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Relation DefinitionId '{0}' could not be found.</value>
   </data>
