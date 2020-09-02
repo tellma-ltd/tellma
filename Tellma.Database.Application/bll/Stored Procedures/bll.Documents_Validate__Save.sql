@@ -12,7 +12,8 @@ SET NOCOUNT ON;
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
-
+	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;
+	
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -38,6 +39,17 @@ SET NOCOUNT ON;
 	--          Common Validation (JV + Smart)
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+    -- Non Null Ids must exist
+    INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentWasNotFound'
+    FROM @Documents
+    WHERE Id <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[Documents]);
+
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE
+
 	-- Verify Custom Validation Script
 	-- Get line definition which have script to validate
 	INSERT INTO @ScriptLineDefinitions
@@ -56,18 +68,22 @@ SET NOCOUNT ON;
 		BEGIN 
 			SELECT @Script =  @PreScript + ISNULL([ValidateScript],N'') + @PostScript
 			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
-
+			DELETE FROM @L; DELETE FROM @E;
+			INSERT INTO @L SELECT * FROM @Lines WHERE DefinitionId = @LineDefinitionId
+			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 			INSERT INTO @ValidationErrors
 			EXECUTE	sp_executesql @Script, N'
 				@DefinitionId INT,
 				@Documents [dbo].[DocumentList] READONLY,
 				@Lines [dbo].[LineList] READONLY, 
 				@Entries [dbo].EntryList READONLY,
-				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
+				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @L, @Entries = @E, @Top = @Top;
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
 	END
+
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 
 	-- Serial number must not be already in the back end
 	IF @IsOriginalDocument = 0
@@ -295,8 +311,6 @@ SET NOCOUNT ON;
 	--AND L.[DefinitionId] <> @ManualLineLD;
 
 	-- verify that all required fields are available
-	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;
-
 --	Apply to inserted lines	
 	DELETE FROM @L; DELETE FROM @E;
 	INSERT INTO @L SELECT * FROM @Lines WHERE [Id] = 0;
@@ -335,7 +349,7 @@ SET NOCOUNT ON;
 		)
 	END
 
-
+DONE:
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 
 	-- TODO

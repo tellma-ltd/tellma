@@ -7,6 +7,17 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @Lines LineList, @Entries EntryList;
 
+    -- Non Null Ids must exist
+    INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentWasNotFound'
+    FROM @Ids
+    WHERE Id <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[Documents]);
+
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE
+
 	-- Cannot unpost it if it is not posted
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -55,4 +66,5 @@ SET NOCOUNT ON;
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Lines = @Lines, @Entries = @Entries, @State = 0;
 
+DONE:
 	SELECT TOP (@Top) * FROM @ValidationErrors;
