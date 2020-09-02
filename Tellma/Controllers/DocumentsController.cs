@@ -1282,7 +1282,7 @@ namespace Tellma.Controllers
                         // Value must be positive
                         if (entry.Value < 0)
                         {
-                            string fieldLabel;
+                            string fieldLabel = null;
                             if (line.DefinitionId == manualLineDefId)
                             {
                                 fieldLabel = entry.Direction == -1 ? _localizer["Credit"] : _localizer["Debit"];
@@ -1294,20 +1294,19 @@ namespace Tellma.Controllers
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
-                                else
-                                {
-                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: Value is negative after preprocess");
-                                }
                             }
 
-                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
-                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                            if (fieldLabel != null)
+                            {
+                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
+                                    _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                            }
                         }
 
                         // MonetaryValue must be positive
                         if (entry.MonetaryValue < 0)
                         {
-                            string fieldLabel;
+                            string fieldLabel = null;
                             if (line.DefinitionId == manualLineDefId)
                             {
                                 fieldLabel = _localizer["Entry_MonetaryValue"];
@@ -1319,20 +1318,19 @@ namespace Tellma.Controllers
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
-                                else
-                                {
-                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: MonetaryValue is negative after preprocess");
-                                }
                             }
 
-                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
-                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                            if (fieldLabel != null)
+                            {
+                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                    _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                            }
                         }
 
                         // Quantity must be positive
                         if (entry.Quantity < 0)
                         {
-                            string fieldLabel;
+                            string fieldLabel = null;
                             if (line.DefinitionId == manualLineDefId)
                             {
                                 fieldLabel = _localizer["Entry_Quantity"];
@@ -1344,20 +1342,19 @@ namespace Tellma.Controllers
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
-                                else
-                                {
-                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: Quantity is negative after preprocess");
-                                }
                             }
 
-                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity)),
-                                _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                            if (fieldLabel != null)
+                            {
+                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity)),
+                                    _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                            }
                         }
 
                         // Center is required
                         if (entry.CenterId == null)
                         {
-                            string fieldLabel;
+                            string fieldLabel = null;
                             if (line.DefinitionId == manualLineDefId)
                             {
                                 fieldLabel = _localizer["Entry_Center"];
@@ -1365,13 +1362,13 @@ namespace Tellma.Controllers
                             else
                             {
                                 var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId));
-                                if (columnDef != null)
+                                if (columnDef != null && !((columnDef.InheritsFromHeader ?? false) && (doc.CenterIsCommon ?? false)))
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
                                 else
                                 {
-                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: CenterId is still NULL after preprocess");
+                                    throw new BadRequestException($"[Bug] Line index {lineIndex }, Entry Index {entryIndex}: CenterId is still NULL after preprocess");
                                 }
                             }
 
@@ -1382,7 +1379,7 @@ namespace Tellma.Controllers
                         // Currency is required
                         if (entry.CurrencyId == null)
                         {
-                            string fieldLabel;
+                            string fieldLabel = null;
                             if (line.DefinitionId == manualLineDefId)
                             {
                                 fieldLabel = _localizer["Entry_Currency"];
@@ -1390,13 +1387,13 @@ namespace Tellma.Controllers
                             else
                             {
                                 var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId));
-                                if (columnDef != null)
+                                if (columnDef != null && !((columnDef.InheritsFromHeader ?? false) && (doc.CurrencyIsCommon ?? false)))
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
                                 }
                                 else
                                 {
-                                    throw new BadRequestException($"[Bug] Line #{lineIndex + 1}, Entry Index {entryIndex}: CurrencyId is still NULL after preprocess");
+                                    throw new BadRequestException($"[Bug] Line index {lineIndex}, Entry Index {entryIndex}: CurrencyId is still NULL after preprocess");
                                 }
                             }
 

@@ -1342,9 +1342,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lineDef = this.lineDefinition(lineDefId);
     if (!!lineDef && !!lineDef.Entries) {
       const entryDef = lineDef.Entries[entryIndex];
-      if (!!entryDef && !!entryDef.AccountTypeId) {
+      if (!!entryDef && !!entryDef.ParentAccountTypeId) {
         // Account Type Id
-        let filter = `AccountType/Node descof ${entryDef.AccountTypeId}`;
+        let filter = `AccountType/Node descof ${entryDef.ParentAccountTypeId}`;
 
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
@@ -2763,6 +2763,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Set the entry
     pair.entry = {
+      Id: 0,
       Direction: 1
     };
 
@@ -2810,8 +2811,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public showLineErrors(lineDefId: number, model: Document) {
-    return !!model && !!model.Lines &&
-      model.Lines.some(line => !!line.serverErrors ||
+    const lines = this.lines(lineDefId, model);
+    return !!lines && lines.some(line => !!line.serverErrors ||
         (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors)));
   }
 
@@ -3074,7 +3075,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           if (lineDef.Entries) {
             for (let i = 0; i < lineDef.Entries.length; i++) {
               const entryDef = lineDef.Entries[i];
-              line.Entries[i] = { Direction: entryDef.Direction, Value: 0 };
+              line.Entries[i] = { Id: 0, Direction: entryDef.Direction, Value: 0 };
             }
           } else {
             console.error(`Line definition ${lineDefId} is missing its Entries`);

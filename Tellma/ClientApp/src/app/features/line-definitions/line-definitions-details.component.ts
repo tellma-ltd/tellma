@@ -372,6 +372,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   public createEntry(): LineDefinitionEntryForSave {
     return {
+      Id: 0,
       Direction: 1,
       CustodyDefinitions: [],
       ResourceDefinitions: [],
@@ -380,6 +381,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   public createStateReason(): LineDefinitionStateReason {
     return {
+      Id: 0,
       State: -2,
       IsActive: true
     };
@@ -387,6 +389,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   public createColumn(): LineDefinitionColumn {
     return {
+      Id: 0,
       EntryIndex: 0,
       InheritsFromHeader: false,
       VisibleState: 0,
@@ -432,7 +435,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
   public onInsertRow(collection: any[], create?: () => any) {
-    const item = !!create ? create() : {};
+    const item = !!create ? create() : { Id: 0 };
     collection.push(item);
   }
 

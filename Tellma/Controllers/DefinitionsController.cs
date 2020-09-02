@@ -486,7 +486,8 @@ namespace Tellma.Controllers
             Dictionary<int, List<int>> entryCustodianDefs,
             Dictionary<int, List<int>> entryCustodyDefs,
             Dictionary<int, List<int>> entryParticipantDefs,
-            Dictionary<int, List<int>> entryResourceDefs)
+            Dictionary<int, List<int>> entryResourceDefs,
+            Dictionary<int, List<int>> entryNotedRelationDefs)
         {
             var line = new LineDefinitionForClient
             {
@@ -517,6 +518,7 @@ namespace Tellma.Controllers
                     CustodyDefinitionIds = entryCustodyDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ParticipantDefinitionIds = entryParticipantDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    NotedRelationDefinitionIds = entryNotedRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -950,7 +952,19 @@ namespace Tellma.Controllers
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
-            var (version, lookupDefs, relationDefs, custodyDefs, resourceDefs, reportDefs, docDefs, lineDefs, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs) = await repo.Definitions__Load(cancellation);
+            var (version, 
+                lookupDefs, 
+                relationDefs, 
+                custodyDefs, 
+                resourceDefs, 
+                reportDefs, 
+                docDefs, 
+                lineDefs, 
+                entryCustodianDefs, 
+                entryCustodyDefs, 
+                entryParticipantDefs, 
+                entryResourceDefs, 
+                entryNotedRelationDefs) = await repo.Definitions__Load(cancellation);
 
             // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
@@ -960,7 +974,7 @@ namespace Tellma.Controllers
                 Custodies = custodyDefs.ToDictionary(def => def.Id, def => MapCustodyDefinition(def)),
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs))
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs, entryNotedRelationDefs))
             };
 
             // Map Lines and Documents (Special handling)
