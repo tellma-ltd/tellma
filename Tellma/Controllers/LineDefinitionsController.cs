@@ -94,6 +94,22 @@ namespace Tellma.Controllers
         {
             entities.ForEach(lineDefinition =>
             {
+                lineDefinition?.Columns?.ForEach(column =>
+                {
+                    // Those two are required in the sql table, so they cannot be null
+                    if (column.ColumnName == nameof(Entry.CenterId))
+                    {
+                        column.VisibleState = LineState.Draft;
+                        column.RequiredState = LineState.Draft;
+                    }
+
+                    if (column.ColumnName == nameof(Entry.CurrencyId))
+                    {
+                        column.VisibleState = LineState.Draft;
+                        column.RequiredState = LineState.Draft;
+                    }
+                });
+
                 lineDefinition?.Workflows?.ForEach(workflow =>
                 {
                     workflow?.Signatures?.ForEach(signature =>
@@ -154,6 +170,15 @@ namespace Tellma.Controllers
                     {
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.EntryIndex)}";
                         string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+
+                    // Required state should always be <= ReadOnlyState
+                    if (column.RequiredState > column.ReadOnlyState)
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.ReadOnlyState)}";
+                        string msg = _localizer["Error_ReadOnlyStateCannotBeBeforeRequiredState"]; ;
 
                         ModelState.AddModelError(path, msg);
                     }

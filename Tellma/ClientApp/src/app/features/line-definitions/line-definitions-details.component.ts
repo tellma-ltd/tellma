@@ -187,6 +187,10 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return this.translate.instant(key);
   }
 
+  public isRequiredColumn(column: LineDefinitionColumn) {
+    return column.ColumnName === 'CenterId' || column.ColumnName === 'CurrencyId';
+  }
+
   private _stateChoices: SelectorChoice[];
   public get stateChoices(): SelectorChoice[] {
     if (!this._stateChoices) {

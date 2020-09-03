@@ -1078,6 +1078,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>属性{0}上式{1}是一个集合，并且因此在一个{2}路径不允许的。</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>只读状态不能要求国家之前。</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
   </data>

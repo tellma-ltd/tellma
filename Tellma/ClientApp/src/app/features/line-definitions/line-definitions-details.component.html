@@ -294,7 +294,7 @@
                                         &nbsp;<fa-icon icon="exclamation-triangle">
                                         </fa-icon>
                                     </span>
-                                </td>                                
+                                </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
                                         (click)="onLineDefinitionEntryResourceDefinitions(entry, isEdit, i)">{{ entry.ResourceDefinitions?.length || 0 }}</button>
@@ -456,9 +456,11 @@
                                     </ng-template>
                                 </td>
 
-                                <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else visiblestatetemplate">{{ stateDisplay(column.VisibleState) }}</span>
+                                <td [class.p-0]="isEdit && !isRequiredColumn(column)">
+                                    <ng-container *ngIf="(!isEdit || isRequiredColumn(column)); else visiblestatetemplate">
+                                        <span *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.VisibleState) }}</span>
+                                        <span *ngIf="isRequiredColumn(column)">{{ stateDisplay(0) }}</span>
+                                    </ng-container>
                                     <ng-template #visiblestatetemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="column.VisibleState"
                                             #visiblestatemodel="ngModel">
@@ -471,9 +473,11 @@
                                     </ng-template>
                                 </td>
 
-                                <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else requiredstatetemplate">{{ stateDisplay(column.RequiredState) }}</span>
+                                <td [class.p-0]="isEdit && !isRequiredColumn(column)">
+                                    <ng-container *ngIf="(!isEdit || isRequiredColumn(column)); else requiredstatetemplate">
+                                        <span *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.RequiredState) }}</span>
+                                        <span *ngIf="isRequiredColumn(column)">{{ stateDisplay(0) }}</span>
+                                    </ng-container>
                                     <ng-template #requiredstatetemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="column.RequiredState"
                                             #requiredstatemodel="ngModel">

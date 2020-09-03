@@ -1078,6 +1078,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>አይነት {1} ላይ ንብረት {0} ስብስብ ነው, ስለዚህ ወደ {2} መንገድ ላይ አይፈቀድም.</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>Readonly ስቴት ያስፈልጋል ስቴት በፊት ሊሆን አይችልም.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ግንኙነት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>

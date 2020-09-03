@@ -1078,6 +1078,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>الحقل لا يمكن أن يفقد قابلية التعديل في حالة تسبق الحالة التي يكون فيها مطلوبا.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العلاقة ({0}).</value>
   </data>
