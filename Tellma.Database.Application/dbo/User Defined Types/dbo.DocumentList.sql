@@ -5,11 +5,7 @@
 	[PostingDate]					DATE,
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0,
-	[DocumentLookup1Id]				INT, -- e.g., cash machine serial in the case of a sale
-	[DocumentLookup2Id]				INT,
-	[DocumentLookup3Id]				INT,
-	[DocumentText1]					NVARCHAR (255),
-	[DocumentText2]					NVARCHAR (255),
+
 	[Memo]							NVARCHAR (255),	
 	[MemoIsCommon]					BIT				DEFAULT 0,
 

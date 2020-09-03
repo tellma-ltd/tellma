@@ -679,6 +679,7 @@
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
     <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
