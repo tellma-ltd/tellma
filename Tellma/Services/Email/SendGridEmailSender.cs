@@ -17,13 +17,14 @@ namespace Tellma.Services.Email
     public class SendGridEmailSender : IEmailSender
     {
         private readonly SendGridOptions _options;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<SendGridEmailSender> _logger;
-        private readonly HttpClient _httpClient = new HttpClient(); // Singleton HttpClient to avoid memroy leaks https://bit.ly/2EGUgte
         private readonly Random _rand = new Random();
 
-        public SendGridEmailSender(IOptions<SendGridOptions> options, ILogger<SendGridEmailSender> logger)
+        public SendGridEmailSender(IOptions<SendGridOptions> options, IHttpClientFactory httpClientFactory, ILogger<SendGridEmailSender> logger)
         {
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
         }
 
@@ -33,7 +34,8 @@ namespace Tellma.Services.Email
             fromEmail ??= _options.DefaultFromEmail;
             string sendGridApiKey = _options.ApiKey;
 
-            var client = new SendGridClient(_httpClient, sendGridApiKey);
+            var httpClient = _httpClientFactory.CreateClient();
+            var client = new SendGridClient(httpClient, sendGridApiKey);
             var from = new EmailAddress(fromEmail, fromName);
             var toAddresses = tos.Select(e => new EmailAddress(e)).ToList();
 
@@ -70,7 +72,8 @@ namespace Tellma.Services.Email
 
         private async Task SendEmailAsync(SendGridMessage msg, CancellationToken cancellation)
         {
-            var client = new SendGridClient(_httpClient, _options.ApiKey); // Reuse the HttpClient to avoid a memory leak
+            var httpClient = _httpClientFactory.CreateClient();
+            var client = new SendGridClient(httpClient, _options.ApiKey); // Reuse the HttpClient to avoid a memory leak
 
             // Exponential backoff (There is a built-in implementation in SG library but it doesn't handle 429)
             const int maxAttempts = 5;

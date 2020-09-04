@@ -23,6 +23,7 @@ using Tellma.Entities.Descriptors;
 using Tellma.Services.Utilities;
 using Tellma.Controllers.ImportExport;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Tellma.Controllers.Jobs;
 
 namespace Tellma.Controllers
 {
@@ -280,6 +281,7 @@ namespace Tellma.Controllers
         private readonly ISettingsCache _settingsCache;
         private readonly IClientInfoAccessor _clientInfo;
         private readonly ITenantInfoAccessor _tenantInfoAccessor;
+        private readonly NotificationsService _notificationsService;
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
@@ -291,7 +293,7 @@ namespace Tellma.Controllers
         public DocumentsService(TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp,
+            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, NotificationsService notificationsSerice,
             IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(sp)
         {
             _templateService = templateService;
@@ -303,6 +305,7 @@ namespace Tellma.Controllers
             _settingsCache = settingsCache;
             _clientInfo = clientInfo;
             _tenantInfoAccessor = tenantInfoAccessor;
+            _notificationsService = notificationsSerice;
             _hubContext = hubContext;
             _contextAccessor = contextAccessor;
         }
@@ -413,6 +416,14 @@ namespace Tellma.Controllers
 
             // Notify relevant parties
             await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+
+            // If assignee is not the same user, notify them by Email/SMS/Push
+            var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
+            if (userInfo.UserId != args.AssigneeId)
+            {
+                // TODO
+                await _notificationsService.Notify(null, null, null);
+            }
 
             trx.Complete();
             return (data, extras);

@@ -187,9 +187,11 @@ namespace Tellma
                 // Add service for generating markup from templates
                 services.AddMarkupTemplates();
 
+                // For better management of HttpClients
+                services.AddHttpClient();
+
                 // Add the business logic services (DocumentsService, ResourcesService, etc...)
                 services.AddBusinessServices(_config);
-
             }
             catch (Exception ex)
             {

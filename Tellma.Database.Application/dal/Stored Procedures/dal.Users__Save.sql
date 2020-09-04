@@ -27,7 +27,7 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Users] AS t
 		USING (
-			SELECT [Index], [Id], [Email], [Name], [Name2], [Name3], [PreferredLanguage]
+			SELECT [Index], [Id], [Email], [Name], [Name2], [Name3], [PreferredLanguage], [PreferredChannel], [EmailNewInboxItem], [SmsNewInboxItem], [PushNewInboxItem]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -39,13 +39,19 @@ SET NOCOUNT ON;
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
 				t.[PreferredLanguage]	= s.[PreferredLanguage],
+				t.[PreferredChannel]	= s.[PreferredChannel],
+				t.[EmailNewInboxItem]	= s.[EmailNewInboxItem],
+				t.[SmsNewInboxItem]		= s.[SmsNewInboxItem],
+				t.[PushNewInboxItem]	= s.[PushNewInboxItem],
+
+
 				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
 				t.[UserSettingsVersion] = NEWID(), -- To trigger clients to refresh cached user settings
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Name], [Name2], [Name3], [Email], [PreferredLanguage])
-			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Email], s.[PreferredLanguage])
+			INSERT ([Name], [Name2], [Name3], [Email], [PreferredLanguage], [PreferredChannel], [EmailNewInboxItem], [SmsNewInboxItem], [PushNewInboxItem])
+			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Email], s.[PreferredLanguage], s.[PreferredChannel], s.[EmailNewInboxItem], s.[SmsNewInboxItem], s.[PushNewInboxItem])
 		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x
 	OPTION (RECOMPILE);

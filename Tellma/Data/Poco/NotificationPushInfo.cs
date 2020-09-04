@@ -1,0 +1,84 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+
+namespace Tellma.Data
+{
+    public class NotificationPushInfo
+    {
+        public string Endpoint { get; set; }
+        public string P256dh { get; set; }
+        public string Auth { get; set; }
+        public AngularPushNotification Content { get; set; }
+        public int PushId { get; set; }
+        public int TenantId { get; set; }
+    }
+
+    public class AngularPushNotification
+    {
+        public AngularPushNotification(string title)
+        {
+            Title = title ?? throw new ArgumentNullException(nameof(title));
+        }
+
+        [JsonProperty("title")]
+        public string Title { get; }
+
+        [JsonProperty("badge")]
+        public string Badge { get; set; }
+
+        [JsonProperty("body")]
+        public string Body { get; set; }
+
+        [JsonProperty("data")]
+        public IDictionary<string, object> Data { get; set; }
+
+        [JsonProperty("dir")]
+        public string Dir { get; set; } // "auto"|"ltr"|"rtl"
+
+        [JsonProperty("icon")]
+        public string Icon { get; set; }
+
+        [JsonProperty("image")]
+        public string Image { get; set; }
+
+        [JsonProperty("lang")]
+        public string Lang { get; set; }
+
+        [JsonProperty("renotify")]
+        public bool? Renotify { get; set; }
+
+        [JsonProperty("requireInteraction")]
+        public bool? RequireInteraction { get; set; }
+
+        [JsonProperty("silent")]
+        public bool? Silent { get; set; }
+
+        [JsonProperty("tag")]
+        public string Tag { get; set; }
+
+        [JsonProperty("timestamp")]
+        public int Timestamp { get; set; }
+
+        [JsonProperty("vibrate")]
+        public IList<int> Vibrate { get; set; }
+
+        [JsonProperty("actions")]
+        public IList<NotificationAction> Actions { get; set; } = new List<NotificationAction>();
+
+        public class NotificationAction
+        {
+            [JsonProperty("action")]
+            public string Action { get; }
+
+            [JsonProperty("title")]
+            public string Title { get; }
+
+            public NotificationAction(string action, string title)
+            {
+                Action = action ?? throw new ArgumentNullException(nameof(action));
+                Title = title ?? throw new ArgumentNullException(nameof(title));
+            }
+        }
+    }
+}

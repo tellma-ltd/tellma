@@ -42,6 +42,20 @@ namespace Tellma.Entities
         [CultureChoiceList]
         public string PreferredLanguage { get; set; }
 
+        [Display(Name = "User_PreferredChannel")]
+        [ChoiceList(new object[] { "Email", "Sms", "Push" }, 
+            new string[] { "User_PreferredChannel_Email", "User_PreferredChannel_Sms", "User_PreferredChannel_Push" })]
+        public string PreferredChannel { get; set; }
+
+        [Display(Name = "User_EmailNewInboxItem")]
+        public bool EmailNewInboxItem { get; set; }
+
+        [Display(Name = "User_SmsNewInboxItem")]
+        public bool SmsNewInboxItem { get; set; }
+
+        [Display(Name = "User_PushNewInboxItem")]
+        public bool PushNewInboxItem { get; set; }
+
         [Display(Name = "User_Roles")]
         [ForeignKey(nameof(RoleMembership.UserId))]
         public List<TRoleMembership> Roles { get; set; }
@@ -54,6 +68,12 @@ namespace Tellma.Entities
         public string ImageId { get; set; }
 
         public string ExternalId { get; set; }
+
+        [Display(Name = "User_ContactEmail")]
+        public string ContactEmail { get; set; }
+
+        [Display(Name = "User_ContactMobile")]
+        public string ContactMobile { get; set; }
 
         [Display(Name = "State")]
         [ChoiceList(new object[] { "Invited", "Member" }, 
