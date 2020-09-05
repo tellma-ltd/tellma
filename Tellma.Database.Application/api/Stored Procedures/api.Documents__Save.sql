@@ -76,7 +76,6 @@ BEGIN
 		FOR JSON PATH
 	);
 
-
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 	

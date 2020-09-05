@@ -22,8 +22,10 @@ BEGIN
 	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
 	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
 	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
-	DECLARE @PreprocessedDocuments [dbo].[DocumentList], @PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
-	DECLARE @D [dbo].[DocumentList], @L [dbo].[LineList], @E [dbo].[EntryList];
+	DECLARE @PreprocessedDocuments [dbo].[DocumentList],@PreprocessedDocumentLineDefinitionEntries dbo.[DocumentLineDefinitionEntryList], 
+			@PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
+	DECLARE @D [dbo].[DocumentList], @DLDE dbo.[DocumentLineDefinitionEntryList],
+			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
@@ -44,6 +46,7 @@ BEGIN
 	SELECT * FROM @ProcessedWideLines;
 	';
 	INSERT INTO @D SELECT * FROM @Documents;
+	INSERT INTO @DLDE SELECT * FROM @DocumentLineDefinitionEntries;
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 
@@ -53,21 +56,6 @@ BEGIN
 		UPDATE @D SET [SegmentId] = @SegmentId
 	END
 --	Remove Residuals
-	UPDATE E
-	SET E.ParticipantId = NULL
-	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.[ParticipantDefinitionId] IS NULL;
-
-	UPDATE E
-	SET E.[ResourceId] = NULL, E.Quantity = NULL, E.UnitId = NULL
-	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE  A.ResourceDefinitionId IS NULL;
-
 	UPDATE E
 	SET E.CustodianId = NULL
 	FROM @E E
@@ -84,6 +72,21 @@ BEGIN
 	WHERE A.[CustodyDefinitionId] IS NULL;
 
 	UPDATE E
+	SET E.ParticipantId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+	WHERE AC.[ParticipantDefinitionId] IS NULL;
+
+	UPDATE E
+	SET E.[ResourceId] = NULL, E.Quantity = NULL, E.UnitId = NULL
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	WHERE  A.ResourceDefinitionId IS NULL;
+	
+	UPDATE E
 	SET E.[EntryTypeId] = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
@@ -91,13 +94,14 @@ BEGIN
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
 	WHERE AC.EntryTypeParentId IS NULL;
 
-	UPDATE E
-	SET E.[NotedRelationId] = NULL
-	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
-	WHERE AC.NotedRelationDefinitionId IS NULL;
+	-- We might need to keep it for a trick
+	--UPDATE E
+	--SET E.[NotedRelationId] = NULL
+	--FROM @E E
+	--JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	--JOIN dbo.Accounts A ON E.AccountId = A.Id
+	--JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	--WHERE AC.NotedRelationDefinitionId IS NULL;
 
 	-- TODO:  Remove labels, etc.
 
@@ -277,7 +281,8 @@ BEGIN
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
 		RD.UnitCardinality IN (N'Single', N'None')
-	AND AC.[StandardAndPure] = 0
+--	AND AC.[StandardAndPure] = 0 -- Testing to see if relying on ResourceDefinitionType is a better approach. 
+	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill'));
 
 	UPDATE E
 	SET E.[Quantity] = 1
@@ -411,11 +416,12 @@ BEGIN
 
 	-- We're still assuming that preprocess only modifies, it doesn't insert nor deletes
 	SELECT * FROM @PreprocessedDocuments;
+	SELECT * FROM @PreprocessedDocumentLineDefinitionEntries;
 	SELECT * FROM @PreprocessedLines;
 	SELECT * FROM @PreprocessedEntries;
 END
 
-	--=-=-=-=-=-=- [C# Preprocessing after SQL]
+	--=-=-=-=-=-=- [C# Preprocessing after SQL], done in ap.Documents__Save
 	/* 
 	
 	 [✓] For Smart Lines: If CurrencyId == functional set Value = MonetaryValue
