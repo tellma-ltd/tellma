@@ -122,7 +122,8 @@ SET NOCOUNT ON;
 	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
 
-	-- Can only use units from resource units, except for 
+	-- Can only use units from resource units, except for
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + 
 			CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].UnitId',
@@ -135,8 +136,12 @@ SET NOCOUNT ON;
 	JOIN dbo.Units U ON E.UnitId = U.Id
 	JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 	JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
-	LEFT JOIN dbo.ResourceUnits RU ON E.ResourceId = RU.ResourceId AND E.UnitId = RU.UnitId
-	WHERE RU.Id IS NULL
+	LEFT JOIN (
+		SELECT ResourceId, UnitId FROM dbo.ResourceUnits
+		UNION
+		SELECT Id AS ResourceId, UnitId FROM dbo.Resources
+	) RU ON E.ResourceId = RU.ResourceId AND E.UnitId = RU.UnitId
+	WHERE RU.UnitId IS NULL
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill')
 			AND U.UnitType = N'Pure');
 
