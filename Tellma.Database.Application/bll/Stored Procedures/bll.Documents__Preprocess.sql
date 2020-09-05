@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Documents__Preprocess]
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
+	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@PreprocessedEntriesJson NVARCHAR (MAX) = NULL OUTPUT 

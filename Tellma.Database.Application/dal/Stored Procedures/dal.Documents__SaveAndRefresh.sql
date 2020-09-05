@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Documents__SaveAndRefresh]
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
+	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Attachments [dbo].[AttachmentList] READONLY,
@@ -21,35 +22,23 @@ BEGIN
 		USING (
 			SELECT 
 				[Index], [Id],
+				[SerialNumber] As ManualSerialNumber,
 				[PostingDate],
 				[PostingDateIsCommon],
 				[Clearance],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
-				[DebitResourceId],
-				[DebitResourceIsCommon],
-				[CreditResourceId],
-				[CreditResourceIsCommon],
-				[DebitCustodyId],
-				[DebitCustodyIsCommon],
-				[CreditCustodyId],
-				[CreditCustodyIsCommon],
-				[NotedRelationId],
-				[NotedRelationIsCommon],
 				[SegmentId],
 				[CenterId],
 				[CenterIsCommon],
-				[Time1],
-				[Time1IsCommon],
-				[Time2],
-				[Time2IsCommon],
-				[Quantity],
-				[QuantityIsCommon],
-				[UnitId],
-				[UnitIsCommon],
+				[NotedRelationId],
+				[NotedRelationIsCommon],
 				[CurrencyId],
 				[CurrencyIsCommon],
-				[SerialNumber] As ManualSerialNumber,
+				[ExternalReference],
+				[ExternalReferenceIsCommon],
+				[AdditionalReference],
+				[AdditionalReferenceIsCommon],
 				ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
@@ -58,39 +47,27 @@ BEGIN
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[SerialNumber]			= IIF(@IsOriginalDocument = 1, 
-												t.[SerialNumber],
-												s.[ManualSerialNumber]),
-				t.[PostingDate]				= s.[PostingDate],
-				t.[PostingDateIsCommon]		= s.[PostingDateIsCommon],
-				t.[Clearance]				= s.[Clearance],
-				t.[Memo]					= s.[Memo],
-				t.[MemoIsCommon]			= s.[MemoIsCommon],
-				t.[DebitResourceId]			= s.[DebitResourceId],
-				t.[DebitResourceIsCommon]	= s.[DebitResourceIsCommon],
-				t.[CreditResourceId]		= s.[CreditResourceId],
-				t.[CreditResourceIsCommon]	= s.[CreditResourceIsCommon],
-				t.[DebitCustodyId]			= s.[DebitCustodyId],
-				t.[DebitCustodyIsCommon]	= s.[DebitCustodyIsCommon],
-				t.[CreditCustodyId]			= s.[CreditCustodyId],
-				t.[CreditCustodyIsCommon]	= s.[CreditCustodyIsCommon],
-				t.[NotedRelationId]			= s.[NotedRelationId],
-				t.[NotedRelationIsCommon]	= s.[NotedRelationIsCommon],
-				t.[SegmentId]				= s.[SegmentId],
-				t.[CenterId]				= s.[CenterId],
-				t.[CenterIsCommon]			= s.[CenterIsCommon],
-				t.[Time1]					= s.[Time1],
-				t.[Time1IsCommon]			= s.[Time1IsCommon],
-				t.[Time2]					= s.[Time2],
-				t.[Time2IsCommon]			= s.[Time2IsCommon],
-				t.[Quantity]				= s.[Quantity],
-				t.[QuantityIsCommon]		= s.[QuantityIsCommon],
-				t.[UnitId]					= s.[UnitId],
-				t.[UnitIsCommon]			= s.[UnitIsCommon],
-				t.[CurrencyId]				= s.[CurrencyId],
-				t.[CurrencyIsCommon]		= s.[CurrencyIsCommon],
-				t.[ModifiedAt]				= @Now,
-				t.[ModifiedById]			= @UserId
+				t.[SerialNumber]				= IIF(@IsOriginalDocument = 1, 
+													t.[SerialNumber],
+													s.[ManualSerialNumber]),
+				t.[PostingDate]					= s.[PostingDate],
+				t.[PostingDateIsCommon]			= s.[PostingDateIsCommon],
+				t.[Clearance]					= s.[Clearance],
+				t.[Memo]						= s.[Memo],
+				t.[MemoIsCommon]				= s.[MemoIsCommon],
+				t.[SegmentId]					= s.[SegmentId],
+				t.[CenterId]					= s.[CenterId],
+				t.[CenterIsCommon]				= s.[CenterIsCommon],
+				t.[NotedRelationId]				= s.[NotedRelationId],
+				t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+				t.[CurrencyId]					= s.[CurrencyId],
+				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
+				t.[ExternalReference]			= s.[ExternalReference],
+				t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
+				t.[AdditionalReference]			= s.[AdditionalReference],
+				t.[AdditionalReferenceIsCommon]	= s.[AdditionalReferenceIsCommon],
+				t.[ModifiedAt]					= @Now,
+				t.[ModifiedById]				= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[DefinitionId],
@@ -100,29 +77,17 @@ BEGIN
 				[Clearance],
 				[Memo],
 				[MemoIsCommon],
-				[DebitResourceId],
-				[DebitResourceIsCommon],
-				[CreditResourceId],
-				[CreditResourceIsCommon],
-				[DebitCustodyId],
-				[DebitCustodyIsCommon],
-				[CreditCustodyId],
-				[CreditCustodyIsCommon],
-				[NotedRelationId],
-				[NotedRelationIsCommon],
 				[SegmentId],
 				[CenterId],
 				[CenterIsCommon],
-				[Time1],
-				[Time1IsCommon],
-				[Time2],
-				[Time2IsCommon],
-				[Quantity],
-				[QuantityIsCommon],
-				[UnitId],
-				[UnitIsCommon],
+				[NotedRelationId],
+				[NotedRelationIsCommon],
 				[CurrencyId],
-				[CurrencyIsCommon]
+				[CurrencyIsCommon],
+				[ExternalReference],
+				[ExternalReferenceIsCommon],
+				[AdditionalReference],
+				[AdditionalReferenceIsCommon]
 			)
 			VALUES (
 				@DefinitionId,
@@ -132,33 +97,190 @@ BEGIN
 				s.[Clearance],
 				s.[Memo],
 				s.[MemoIsCommon],
-				s.[DebitResourceId],
-				s.[DebitResourceIsCommon],
-				s.[CreditResourceId],
-				s.[CreditResourceIsCommon],
-				s.[DebitCustodyId],
-				s.[DebitCustodyIsCommon],
-				s.[CreditCustodyId],
-				s.[CreditCustodyIsCommon],
-				s.[NotedRelationId],
-				s.[NotedRelationIsCommon],
 				s.[SegmentId],
 				s.[CenterId],
 				s.[CenterIsCommon],
-				s.[Time1],
-				s.[Time1IsCommon],
-				s.[Time2],
-				s.[Time2IsCommon],
-				s.[Quantity],
-				s.[QuantityIsCommon],
-				s.[UnitId],
-				s.[UnitIsCommon],
+				s.[NotedRelationId],
+				s.[NotedRelationIsCommon],		
 				s.[CurrencyId],
-				s.[CurrencyIsCommon]
+				s.[CurrencyIsCommon],
+				s.[ExternalReference],
+				s.[ExternalReferenceIsCommon],
+				s.[AdditionalReference],
+				s.[AdditionalReferenceIsCommon]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
+
+	WITH BDLDE AS (
+		SELECT * FROM dbo.[DocumentLineDefinitionEntries]
+		WHERE DocumentId IN (SELECT [Id] FROM @DocumentsIndexedIds)
+	)
+	MERGE INTO BDLDE AS t
+	USING (
+		SELECT
+			LDE.[Id],
+			DI.Id AS DocumentId,
+			LDE.[LineDefinitionId],
+
+			LDE.[EntryIndex],
+			LDE.[PostingDate], 
+			LDE.[PostingDateIsCommon],
+			LDE.[Memo],
+			LDE.[MemoIsCommon],
 	
+			LDE.[NotedRelationId],
+			LDE.[NotedRelationIsCommon],
+
+			LDE.[CenterId],
+			LDE.[CenterIsCommon],
+			LDE.[CurrencyId],
+			LDE.[CurrencyIsCommon],
+
+			LDE.[CustodyId],
+			LDE.[CustodyIsCommon],
+			LDE.[ResourceId],
+			LDE.[ResourceIsCommon],
+			LDE.[Quantity],
+			LDE.[QuantityIsCommon],
+			LDE.[UnitId],
+			LDE.[UnitIsCommon],
+
+			LDE.[Time1],
+			LDE.[Time1IsCommon],
+			LDE.[Time2],
+			LDE.[Time2IsCommon],
+
+			LDE.[ExternalReference],
+			LDE.[ExternalReferenceIsCommon],
+
+			LDE.[AdditionalReference],
+			LDE.[AdditionalReferenceIsCommon]
+		FROM @DocumentLineDefinitionEntries LDE
+		JOIN @DocumentsIndexedIds DI ON LDE.[DocumentIndex] = DI.[Index]
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[LineDefinitionId]			= s.[LineDefinitionId],
+
+			t.[EntryIndex]					= s.[EntryIndex],
+			t.[PostingDate]					= s.[PostingDate], 
+			t.[PostingDateIsCommon]			= s.[PostingDateIsCommon],
+			t.[Memo]						= s.[Memo],
+			t.[MemoIsCommon]				= s.[MemoIsCommon],
+	
+			t.[NotedRelationId]				= s.[NotedRelationId],
+			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+
+			t.[CurrencyId]					= s.[CurrencyId],
+			t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
+
+			t.[CustodyId]					= s.[CustodyId],
+			t.[CustodyIsCommon]				= s.[CustodyIsCommon],
+			t.[ResourceId]					= s.[ResourceId],
+			t.[ResourceIsCommon]			= s.[ResourceIsCommon],
+			t.[Quantity]					= s.[Quantity],
+			t.[QuantityIsCommon]			= s.[QuantityIsCommon],
+			t.[UnitId]						= s.[UnitId],
+			t.[UnitIsCommon]				= s.[UnitIsCommon],
+
+			t.[CenterId]					= s.[CenterId],
+			t.[CenterIsCommon]				= s.[CenterIsCommon],
+
+			t.[Time1]						= s.[Time1],
+			t.[Time1IsCommon]				= s.[Time1IsCommon],
+			t.[Time2]						= s.[Time2],
+			t.[Time2IsCommon]				= s.[Time2IsCommon],
+
+			t.[ExternalReference]			= s.[ExternalReference],
+			t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
+
+			t.[AdditionalReference]			= s.[AdditionalReference],
+			t.[AdditionalReferenceIsCommon] = s.[AdditionalReferenceIsCommon],
+			t.[ModifiedAt]					= @Now,
+			t.[ModifiedById]				= @UserId
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[Id],
+			[LineDefinitionId],
+
+			[EntryIndex],
+			[PostingDate], 
+			[PostingDateIsCommon],
+			[Memo],
+			[MemoIsCommon],
+	
+			[NotedRelationId],
+			[NotedRelationIsCommon],
+
+			[CurrencyId],
+			[CurrencyIsCommon],
+
+			[CustodyId],
+			[CustodyIsCommon],
+			[ResourceId],
+			[ResourceIsCommon],
+			[Quantity],
+			[QuantityIsCommon],
+			[UnitId],
+			[UnitIsCommon],
+
+			[CenterId],
+			[CenterIsCommon],
+
+			[Time1],
+			[Time1IsCommon],
+			[Time2],
+			[Time2IsCommon],
+
+			[ExternalReference],
+			[ExternalReferenceIsCommon],
+
+			[AdditionalReference],
+			[AdditionalReferenceIsCommon]
+		)
+		VALUES (
+			s.[Id],
+			s.[LineDefinitionId],
+
+			s.[EntryIndex],
+			s.[PostingDate], 
+			s.[PostingDateIsCommon],
+			s.[Memo],
+			s.[MemoIsCommon],
+	
+			s.[NotedRelationId],
+			s.[NotedRelationIsCommon],
+
+			s.[CurrencyId],
+			s.[CurrencyIsCommon],
+
+			s.[CustodyId],
+			s.[CustodyIsCommon],
+			s.[ResourceId],
+			s.[ResourceIsCommon],
+			s.[Quantity],
+			s.[QuantityIsCommon],
+			s.[UnitId],
+			s.[UnitIsCommon],
+
+			s.[CenterId],
+			s.[CenterIsCommon],
+
+			s.[Time1],
+			s.[Time1IsCommon],
+			s.[Time2],
+			s.[Time2IsCommon],
+
+			s.[ExternalReference],
+			s.[ExternalReferenceIsCommon],
+
+			s.[AdditionalReference],
+			s.[AdditionalReferenceIsCommon]
+		)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
 	WITH BL AS (
 		SELECT * FROM dbo.[Lines]
 		WHERE DocumentId IN (SELECT [Id] FROM @DocumentsIndexedIds)

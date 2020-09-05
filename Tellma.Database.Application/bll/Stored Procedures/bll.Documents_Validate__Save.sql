@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Save]
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
+	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
 	@Top INT = 10
@@ -120,6 +121,24 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Lines] BL ON FE.[Id] = BL.[DocumentId]
 	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
+
+	-- Can only use units from resource units, except for 
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + 
+			CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].UnitId',
+		N'Error_Unit0IsNotCompatibleWithResource1',
+		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Units U ON E.UnitId = U.Id
+	JOIN dbo.Resources R ON E.ResourceId = R.[Id]
+	JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
+	LEFT JOIN dbo.ResourceUnits RU ON E.ResourceId = RU.ResourceId AND E.UnitId = RU.UnitId
+	WHERE RU.Id IS NULL
+	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill')
+			AND U.UnitType = N'Pure');
 
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
 	-- Similar logic in bll.Accounts_Validate__Save

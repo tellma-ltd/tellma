@@ -1,4 +1,7 @@
-﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
+﻿-- To sync with Production:
+-- Posting Date, Memo must have Entry Index 0, and Always Inherists from Document Header
+-- Noted Relation, Business Unit, Currency, External Reference, Additional Reference possibly inherits from Document Header, 
+INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (1000, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
 (1020, N'PPEFromIPC', N'Reclassifying investment property as property for use', N'IPC => PPE', N'IPC => PPE', 0, 0),
 (1030, N'PPEFromInventory', N'Reclassifying Inventory as property, plant and equipment', N'Inventory => PPE', N'Inventories => PPE', 0, 1),
@@ -58,7 +61,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,1000,	N'AccountId',	0,			N'Account',		4,4,0), -- together with properties
 (1,1000,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,1000,	N'Value',		0,			N'Credit',		4,4,0),
-(3,1000,	N'Memo',		0,			N'Memo',		4,4,1);
+(3,1000,	N'Memo',		0,			N'Memo',		4,4,2);
 --1040: PPEFromSupplier, appears in Purchase vouchers, with purchases of inventory, Investment property, and C/S 
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -92,8 +95,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader], [Filter]) VALUES
-(0,1040,	N'Memo',				1,	N'Memo',			1,4,1,NULL), -- Document Header
-(1,1040,	N'ParticipantId',		2,	N'Supplier',		3,4,1,NULL), -- Document Header. TODO: Participant Id Is Common
+(0,1040,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
+(1,1040,	N'ParticipantId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header. TODO: Participant Id Is Common
 (2,1040,	N'CustodianId',			0,	N'Custodian',		5,5,0,NULL), -- TODO: No CustodyDefinitions for PPEs. Just Custodian Definition
 (3,1040,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0,NULL),
 (4,1040,	N'Quantity',			1,	N'Life/Usage',		2,4,0,NULL),
@@ -101,7 +104,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,1040,	N'CurrencyId',			2,	N'Currency',		0,2,1,NULL), -- Document Header, Supplier's currency
 (7,1040,	N'MonetaryValue',		2,	N'Cost (VAT Excl.)',1,2,0,NULL), -- In Supplier's currency
 (8,1040,	N'NotedAmount',			0,	N'Residual Value',	1,2,0,NULL), -- In Supplier's currency
-(10,1040,	N'PostingDate',			1,	N'Purchase Date',0,4,1,NULL), -- Document Header, shared with other purchases
+(10,1040,	N'PostingDate',			0,	N'Purchase Date',	0,4,2,NULL), -- Document Header, shared with other purchases
 (11,1040,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''); -- Document Heade
 --1140:InventoryTransfer, appears in SIV, with issue to expenditure, (to sale is either in CSV or CRSV)
 UPDATE @LineDefinitions
