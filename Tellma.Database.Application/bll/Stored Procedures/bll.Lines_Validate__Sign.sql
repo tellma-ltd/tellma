@@ -146,7 +146,17 @@ SET NOCOUNT ON;
 		RETURN
 	END;
 
-	DECLARE @Lines LineList, @Entries EntryList;
+	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
+
+	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[SegmentId], [CenterId], [CenterIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+	)
+	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[SegmentId], [CenterId], [CenterIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+	FROM dbo.Documents
+	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo])
@@ -171,4 +181,4 @@ SET NOCOUNT ON;
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Lines = @Lines, @Entries = @Entries, @State = @ToState;
+		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = @ToState;

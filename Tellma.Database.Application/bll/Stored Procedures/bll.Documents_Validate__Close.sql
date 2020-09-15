@@ -5,8 +5,7 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	--DECLARE @WflessLines LineList, @WflessEntries EntryList;
-	DECLARE @Lines LineList, @Entries EntryList;
+	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
 	
 	-- Cannot close it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -123,6 +122,16 @@ SET NOCOUNT ON;
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 
 	-- Verify that workflow-less lines in Events can be in state posted
+	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[SegmentId], [CenterId], [CenterIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+	)
+	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[SegmentId], [CenterId], [CenterIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+	FROM dbo.Documents
+	WHERE [Id] IN (SELECT [Id] FROM @Ids)
+
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],		[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
@@ -133,23 +142,23 @@ SET NOCOUNT ON;
 	AND L.[DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
 	
 	INSERT INTO @Entries (
-	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [CustodianId], [CustodyId], [ParticipantId], [ResourceId], [CenterId],
-	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [AdditionalReference], [NotedRelationId], [NotedAgentName],
-	[NotedAmount], [NotedDate])
+		[Index], [LineIndex], [DocumentIndex], [Id],
+		[Direction], [AccountId], [CurrencyId], [CustodianId], [CustodyId], [ParticipantId], [ResourceId], [CenterId],
+		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
+		[Time2], [ExternalReference], [AdditionalReference], [NotedRelationId], [NotedAgentName],
+		[NotedAmount], [NotedDate])
 	SELECT
-	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId], E.[CustodianId], E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
-	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
-	E.[NotedAmount],E.[NotedDate]
+		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
+		E.[Direction],E.[AccountId],E.[CurrencyId], E.[CustodianId], E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
+		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
+		E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
+		E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Lines = @Lines, @Entries = @Entries, @State = 4;
+		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = 4;
 
 -- Verify that workflow-less lines in Events can be in state authorized
 	DELETE FROM @Lines; DELETE FROM @Entries;
@@ -179,7 +188,7 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Lines = @Lines, @Entries = @Entries, @State = 2;
+		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = 2;
 
 	IF EXISTS(SELECT * FROM @ValidationErrors)
 	BEGIN

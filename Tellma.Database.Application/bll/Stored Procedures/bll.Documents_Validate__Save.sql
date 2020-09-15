@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
-	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;
+	DECLARE @LineState SMALLINT, @D DocumentList, @L LineList, @E EntryList;
 	
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -341,7 +341,7 @@ SET NOCOUNT ON;
 	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-	-- @Documents = @D, 
+	@Documents = @Documents, 
 	@Lines = @L, 
 	@Entries = @E, 
 	@State = 0;
@@ -360,7 +360,7 @@ SET NOCOUNT ON;
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Data]
-		-- @Documents = @D, 
+		@Documents = @Documents, 
 		@Lines = @L, 
 		@Entries = @E, 
 		@State = @LineState;
