@@ -245,10 +245,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       // Not needed for preview
       result.MarkupTemplates = [];
 
-      result.CreditResourceDefinitionIds = [];
-      result.DebitResourceDefinitionIds = [];
-      result.CreditCustodyDefinitionIds = [];
-      result.DebitCustodyDefinitionIds = [];
       result.NotedRelationDefinitionIds = [];
 
       // The rest looks identical to the C# code
@@ -256,25 +252,30 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         .map(e => defs.Lines[e.LineDefinitionId])
         .filter(e => !!e && !!e.Columns);
 
+      // Hash tables to accumulate some values
+      let notedRelationDefIds: { [id: number]: true } = {};
+      let notedRelationFilters: { [filter: string]: true } = {};
+      let centerFilters: { [filter: string]: true } = {};
+      let currencyFilters: { [filter: string]: true } = {};
+
       for (const lineDef of documentLineDefinitions) {
         for (const colDef of lineDef.Columns.filter(c => !!c.InheritsFromHeader)) {
-          // Memo
           if (colDef.ColumnName === 'Memo') {
             result.MemoIsCommonVisibility = true;
+            result.MemoVisibility = result.MemoVisibility || 'Optional';
             if (!result.MemoLabel) {
               result.MemoLabel = colDef.Label;
               result.MemoLabel2 = colDef.Label2;
               result.MemoLabel3 = colDef.Label3;
             }
-            if (colDef.RequiredState < (result.MemoRequiredState ?? 5)) {
+            if (colDef.RequiredState > (result.MemoRequiredState ?? 0)) {
               result.MemoRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState < (result.MemoReadOnlyState ?? 5)) {
+            if (colDef.ReadOnlyState > (result.MemoReadOnlyState ?? 0)) {
               result.MemoReadOnlyState = colDef.ReadOnlyState;
             }
 
-            // Posting Date
           } else if (colDef.ColumnName === 'PostingDate') {
             result.PostingDateVisibility = true;
             if (!result.PostingDateLabel) {
@@ -282,222 +283,129 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               result.PostingDateLabel2 = colDef.Label2;
               result.PostingDateLabel3 = colDef.Label3;
             }
-            if (colDef.RequiredState < (result.PostingDateRequiredState ?? 5)) {
+            if (colDef.RequiredState > (result.PostingDateRequiredState ?? 0)) {
               result.PostingDateRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState < (result.PostingDateReadOnlyState ?? 5)) {
+            if (colDef.ReadOnlyState > (result.PostingDateReadOnlyState ?? 0)) {
               result.PostingDateReadOnlyState = colDef.ReadOnlyState;
             }
 
             // Relations
-          } else if (colDef.EntryIndex < lineDef.Entries.length) {
-            const entryDef = lineDef.Entries[colDef.EntryIndex];
+          } else if (colDef.ColumnName === 'NotedRelationId') {
 
-            // DebitResource
-            if (colDef.ColumnName === 'ResourceId' && entryDef.Direction === 1) {
-              result.DebitResourceVisibility = true;
-              if (!result.DebitResourceLabel) {
-                result.DebitResourceLabel = result.DebitResourceLabel || colDef.Label;
-                result.DebitResourceLabel2 = result.DebitResourceLabel2 || colDef.Label2;
-                result.DebitResourceLabel3 = result.DebitResourceLabel3 || colDef.Label3;
+            result.NotedRelationVisibility = true;
+            if (!result.NotedRelationLabel) {
+              result.NotedRelationLabel = colDef.Label;
+              result.NotedRelationLabel2 = colDef.Label2;
+              result.NotedRelationLabel3 = colDef.Label3;
+            }
 
-                result.DebitResourceDefinitionIds = entryDef.ResourceDefinitionIds;
-              }
+            if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0)) {
+              result.NotedRelationRequiredState = colDef.RequiredState;
+            }
 
-              if (colDef.RequiredState < (result.DebitResourceRequiredState ?? 5)) {
-                result.DebitResourceRequiredState = colDef.RequiredState;
-              }
+            if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0)) {
+              result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+            }
 
-              if (colDef.ReadOnlyState < (result.DebitResourceReadOnlyState ?? 5)) {
-                result.DebitResourceReadOnlyState = colDef.ReadOnlyState;
+            if (colDef.EntryIndex < lineDef.Entries.length) {
+              const entryDef = lineDef.Entries[colDef.EntryIndex];
+              if (!entryDef.NotedRelationDefinitionIds || entryDef.NotedRelationDefinitionIds.length === 0) {
+                notedRelationDefIds = null; // Means no definitionIds will be added
+              } else if (!!notedRelationDefIds) {
+                for (const defId of entryDef.NotedRelationDefinitionIds) {
+                  notedRelationDefIds[defId] = true;
+                }
               }
             }
 
-            // CreditResource
-            if (colDef.ColumnName === 'ResourceId' && entryDef.Direction === -1) {
-              result.CreditResourceVisibility = true;
-              if (!result.CreditResourceLabel) {
-                result.CreditResourceLabel = result.CreditResourceLabel || colDef.Label;
-                result.CreditResourceLabel2 = result.CreditResourceLabel2 || colDef.Label2;
-                result.CreditResourceLabel3 = result.CreditResourceLabel3 || colDef.Label3;
-
-                result.CreditResourceDefinitionIds = entryDef.ResourceDefinitionIds;
-              }
-
-              if (colDef.RequiredState < (result.CreditResourceRequiredState ?? 5)) {
-                result.CreditResourceRequiredState = colDef.RequiredState;
-              }
-
-              if (colDef.ReadOnlyState < (result.CreditResourceReadOnlyState ?? 5)) {
-                result.CreditResourceReadOnlyState = colDef.ReadOnlyState;
-              }
+            if (!colDef.Filter) {
+              notedRelationFilters = null;
+            } else if (!!notedRelationFilters) {
+              notedRelationFilters[colDef.Filter] = true;
             }
 
-            // DebitCustody
-            if (colDef.ColumnName === 'CustodyId' && entryDef.Direction === 1) {
-              result.DebitCustodyVisibility = true;
-              if (!result.DebitCustodyLabel) {
-                result.DebitCustodyLabel = result.DebitCustodyLabel || colDef.Label;
-                result.DebitCustodyLabel2 = result.DebitCustodyLabel2 || colDef.Label2;
-                result.DebitCustodyLabel3 = result.DebitCustodyLabel3 || colDef.Label3;
-
-                result.DebitCustodyDefinitionIds = entryDef.CustodyDefinitionIds;
-              }
-
-              if (colDef.RequiredState < (result.DebitCustodyRequiredState ?? 5)) {
-                result.DebitCustodyRequiredState = colDef.RequiredState;
-              }
-
-              if (colDef.ReadOnlyState < (result.DebitCustodyReadOnlyState ?? 5)) {
-                result.DebitCustodyReadOnlyState = colDef.ReadOnlyState;
-              }
-            }
-
-            // CreditCustody
-            if (colDef.ColumnName === 'CustodyId' && entryDef.Direction === -1) {
-              result.CreditCustodyVisibility = true;
-              if (!result.CreditCustodyLabel) {
-                result.CreditCustodyLabel = result.CreditCustodyLabel || colDef.Label;
-                result.CreditCustodyLabel2 = result.CreditCustodyLabel2 || colDef.Label2;
-                result.CreditCustodyLabel3 = result.CreditCustodyLabel3 || colDef.Label3;
-
-                result.CreditCustodyDefinitionIds = entryDef.CustodyDefinitionIds;
-              }
-
-              if (colDef.RequiredState < (result.CreditCustodyRequiredState ?? 5)) {
-                result.CreditCustodyRequiredState = colDef.RequiredState;
-              }
-
-              if (colDef.ReadOnlyState < (result.CreditCustodyReadOnlyState ?? 5)) {
-                result.CreditCustodyReadOnlyState = colDef.ReadOnlyState;
-              }
-            }
-
-            // NotedRelation
-            if (colDef.ColumnName === 'NotedRelationId') {
-              result.NotedRelationVisibility = true;
-              if (!result.NotedRelationLabel) {
-                result.NotedRelationLabel = colDef.Label;
-                result.NotedRelationLabel2 = colDef.Label2;
-                result.NotedRelationLabel3 = colDef.Label3;
-
-                result.NotedRelationDefinitionIds = entryDef.NotedRelationDefinitionIds;
-              }
-
-              if (colDef.RequiredState < (result.NotedRelationRequiredState ?? 5)) {
-                result.NotedRelationRequiredState = colDef.RequiredState;
-              }
-
-              if (colDef.ReadOnlyState < (result.NotedRelationReadOnlyState ?? 5)) {
-                result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
-              }
-            }
-          }
-
-          // Center
-          if (colDef.ColumnName === 'CenterId') {
+          } else if (colDef.ColumnName === 'CenterId') {
             result.CenterVisibility = true;
             if (!(result.CenterLabel)) {
               result.CenterLabel = colDef.Label;
               result.CenterLabel2 = colDef.Label2;
               result.CenterLabel3 = colDef.Label3;
             }
-            if (colDef.RequiredState < (result.CenterRequiredState ?? 5)) {
+            if (colDef.RequiredState > (result.CenterRequiredState ?? 0)) {
               result.CenterRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState < (result.CenterReadOnlyState ?? 5)) {
+            if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0)) {
               result.CenterReadOnlyState = colDef.ReadOnlyState;
             }
-          }
 
-          // Time1
-          if (colDef.ColumnName === 'Time1') {
-            result.Time1Visibility = true;
-            if (!(result.Time1Label)) {
-              result.Time1Label = colDef.Label;
-              result.Time1Label2 = colDef.Label2;
-              result.Time1Label3 = colDef.Label3;
-            }
-            if (colDef.RequiredState < (result.Time1RequiredState ?? 5)) {
-              result.Time1RequiredState = colDef.RequiredState;
+            // Accumulate all the filter atoms in the hash set
+            if (!colDef.Filter) {
+              centerFilters = null; // It means no filters will be added
+            } else if (centerFilters != null) {
+              centerFilters[colDef.Filter] = true;
             }
 
-            if (colDef.ReadOnlyState < (result.Time1ReadOnlyState ?? 5)) {
-              result.Time1ReadOnlyState = colDef.ReadOnlyState;
-            }
-          }
-
-          // Time2
-          if (colDef.ColumnName === 'Time2') {
-            result.Time2Visibility = true;
-            if (!(result.Time2Label)) {
-              result.Time2Label = colDef.Label;
-              result.Time2Label2 = colDef.Label2;
-              result.Time2Label3 = colDef.Label3;
-            }
-            if (colDef.RequiredState < (result.Time2RequiredState ?? 5)) {
-              result.Time2RequiredState = colDef.RequiredState;
-            }
-
-            if (colDef.ReadOnlyState < (result.Time2ReadOnlyState ?? 5)) {
-              result.Time2ReadOnlyState = colDef.ReadOnlyState;
-            }
-          }
-
-          // Quantity
-          if (colDef.ColumnName === 'Quantity') {
-            result.QuantityVisibility = true;
-            if (!(result.QuantityLabel)) {
-              result.QuantityLabel = colDef.Label;
-              result.QuantityLabel2 = colDef.Label2;
-              result.QuantityLabel3 = colDef.Label3;
-            }
-            if (colDef.RequiredState < (result.QuantityRequiredState ?? 5)) {
-              result.QuantityRequiredState = colDef.RequiredState;
-            }
-
-            if (colDef.ReadOnlyState < (result.QuantityReadOnlyState ?? 5)) {
-              result.QuantityReadOnlyState = colDef.ReadOnlyState;
-            }
-          }
-
-          // Unit
-          if (colDef.ColumnName === 'UnitId') {
-            result.UnitVisibility = true;
-            if (!(result.UnitLabel)) {
-              result.UnitLabel = colDef.Label;
-              result.UnitLabel2 = colDef.Label2;
-              result.UnitLabel3 = colDef.Label3;
-            }
-            if (colDef.RequiredState < (result.UnitRequiredState ?? 5)) {
-              result.UnitRequiredState = colDef.RequiredState;
-            }
-
-            if (colDef.ReadOnlyState < (result.UnitReadOnlyState ?? 5)) {
-              result.UnitReadOnlyState = colDef.ReadOnlyState;
-            }
-          }
-
-          // Currency
-          if (colDef.ColumnName === 'CurrencyId') {
+          } else if (colDef.ColumnName === 'CurrencyId') {
             result.CurrencyVisibility = true;
             if (!(result.CurrencyLabel)) {
               result.CurrencyLabel = colDef.Label;
               result.CurrencyLabel2 = colDef.Label2;
               result.CurrencyLabel3 = colDef.Label3;
             }
-            if (colDef.RequiredState < (result.CurrencyRequiredState ?? 5)) {
+            if (colDef.RequiredState > (result.CurrencyRequiredState ?? 0)) {
               result.CurrencyRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState < (result.CurrencyReadOnlyState ?? 5)) {
+            if (colDef.ReadOnlyState > (result.CurrencyReadOnlyState ?? 0)) {
               result.CurrencyReadOnlyState = colDef.ReadOnlyState;
+            }
+
+            // Accumulate all the filter atoms in the hash set
+            if (!colDef.Filter) {
+              currencyFilters = null; // It means no filters will be added
+            } else if (currencyFilters != null) {
+              currencyFilters[colDef.Filter] = true;
+            }
+          } else if (colDef.ColumnName === 'ExternalReference') {
+            result.ExternalReferenceVisibility = true;
+            if (!result.ExternalReferenceLabel) {
+              result.ExternalReferenceLabel = colDef.Label;
+              result.ExternalReferenceLabel2 = colDef.Label2;
+              result.ExternalReferenceLabel3 = colDef.Label3;
+            }
+            if (colDef.RequiredState > (result.ExternalReferenceRequiredState ?? 0)) {
+              result.ExternalReferenceRequiredState = colDef.RequiredState;
+            }
+
+            if (colDef.ReadOnlyState > (result.ExternalReferenceReadOnlyState ?? 0)) {
+              result.ExternalReferenceReadOnlyState = colDef.ReadOnlyState;
+            }
+
+          } else if (colDef.ColumnName === 'AdditionalReference') {
+            result.AdditionalReferenceVisibility = true;
+            if (!result.AdditionalReferenceLabel) {
+              result.AdditionalReferenceLabel = colDef.Label;
+              result.AdditionalReferenceLabel2 = colDef.Label2;
+              result.AdditionalReferenceLabel3 = colDef.Label3;
+            }
+            if (colDef.RequiredState > (result.AdditionalReferenceRequiredState ?? 0)) {
+              result.AdditionalReferenceRequiredState = colDef.RequiredState;
+            }
+
+            if (colDef.ReadOnlyState > (result.AdditionalReferenceReadOnlyState ?? 0)) {
+              result.AdditionalReferenceReadOnlyState = colDef.ReadOnlyState;
             }
           }
         }
       }
+      // Calculate the definitionIds and filters
+      result.NotedRelationDefinitionIds = Object.keys(notedRelationDefIds ?? {}).map(e => +e);
+      result.NotedRelationFilter = disjunction(notedRelationFilters);
+      result.CenterFilter = disjunction(centerFilters);
+      result.CurrencyFilter = disjunction(currencyFilters);
 
       this._getForClientResult = result;
     }
@@ -652,4 +560,17 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     model.MarkupTemplates.splice(index, 1);
     this.onDefinitionChange(model);
   }
+}
+
+function disjunction(filtersHash: { [key: string]: true }): string {
+  if (!!filtersHash) {
+    const filters = Object.keys(filtersHash);
+    if (filters.length === 1) {
+      return filters[0];
+    } else if (filters.length > 1) {
+      return filters.map(e => `(${e})`)?.reduce((e1, e2) => `${e1} or ${e2}`);
+    }
+  }
+
+  return null;
 }

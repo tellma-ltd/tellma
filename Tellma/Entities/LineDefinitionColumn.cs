@@ -46,7 +46,9 @@ namespace Tellma.Entities
         public string Filter { get; set; }
 
         [Display(Name = "LineDefinitionColumn_InheritsFromHeader")]
-        public bool? InheritsFromHeader { get; set; }
+        [ChoiceList(new object[] { InheritsFrom.None, InheritsFrom.TabHeader, InheritsFrom.DocumentHeader },
+            new string[] { "InheritsFrom_0", "InheritsFrom_1", "InheritsFrom_2" })]
+        public byte? InheritsFromHeader { get; set; }
 
         [Display(Name = "LineDefinitionColumn_VisibleState")]
         [ChoiceList(new object[] {
@@ -122,5 +124,12 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
+    }
+
+    public static class InheritsFrom
+    {
+        public const byte None = 0;
+        public const byte TabHeader = 0;
+        public const byte DocumentHeader = 0;
     }
 }

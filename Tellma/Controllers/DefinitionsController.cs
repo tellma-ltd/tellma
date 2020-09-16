@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.Extensions.Azure;
 
 namespace Tellma.Controllers
 {
@@ -53,8 +54,8 @@ namespace Tellma.Controllers
 
     public class DefinitionsService : ServiceBase
     {
-        private static string ManualLine => nameof(ManualLine);
-        private static string ManualJournalVoucher => nameof(ManualJournalVoucher);
+        private const string ManualLine = nameof(ManualLine);
+        private const string ManualJournalVoucher = nameof(ManualJournalVoucher);
 
         private static string MapVisibility(string visibility)
         {
@@ -482,7 +483,7 @@ namespace Tellma.Controllers
             };
         }
 
-        private static LineDefinitionForClient MapLineDefinition(LineDefinition def, 
+        private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
             Dictionary<int, List<int>> entryCustodianDefs,
             Dictionary<int, List<int>> entryCustodyDefs,
             Dictionary<int, List<int>> entryParticipantDefs,
@@ -531,7 +532,7 @@ namespace Tellma.Controllers
                     Filter = c.Filter,
                     ReadOnlyState = c.ReadOnlyState,
                     RequiredState = c.RequiredState,
-                    InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader,
+                    InheritsFromHeader = c.InheritsFromHeader == 0 ? null : c.InheritsFromHeader,
                 })?.ToList() ?? new List<LineDefinitionColumnForClient>(),
 
                 StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient
@@ -562,6 +563,14 @@ namespace Tellma.Controllers
                 line.Entries.Clear();
                 line.Columns.Clear();
             }
+
+            line.Columns.ForEach(col =>
+            {
+                if (col.ColumnName == nameof(Entry.CurrencyId) || col.ColumnName == nameof(Entry.CustodyId))
+                {
+                    col.RequiredState = LineState.Draft; // Those are required in the table => hard code as required
+                }
+            });
 
             return line;
         }
@@ -615,10 +624,6 @@ namespace Tellma.Controllers
                 MainMenuSection = def.MainMenuSection,
 
                 // These should not be null
-                CreditResourceDefinitionIds = new List<int>(),
-                DebitResourceDefinitionIds = new List<int>(),
-                CreditCustodyDefinitionIds = new List<int>(),
-                DebitCustodyDefinitionIds = new List<int>(),
                 NotedRelationDefinitionIds = new List<int>(),
             };
 
@@ -628,9 +633,14 @@ namespace Tellma.Controllers
                 .Where(e => e != null && e.Columns != null);
 
             // Lines
+            var notedRelationDefIds = new HashSet<int>();
+            var notedRelationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var lineDef in documentLineDefinitions)
             {
-                foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
+                foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader == InheritsFrom.DocumentHeader))
                 {
                     // Memo
                     if (colDef.ColumnName == nameof(Line.Memo))
@@ -643,12 +653,12 @@ namespace Tellma.Controllers
                             result.MemoLabel2 = colDef.Label2;
                             result.MemoLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState < (result.MemoRequiredState ?? 5))
+                        if (colDef.RequiredState > (result.MemoRequiredState ?? 0))
                         {
                             result.MemoRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState < (result.MemoReadOnlyState ?? 5))
+                        if (colDef.ReadOnlyState > (result.MemoReadOnlyState ?? 0))
                         {
                             result.MemoReadOnlyState = colDef.ReadOnlyState;
                         }
@@ -664,145 +674,65 @@ namespace Tellma.Controllers
                             result.PostingDateLabel2 = colDef.Label2;
                             result.PostingDateLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState < (result.PostingDateRequiredState ?? 5))
+                        if (colDef.RequiredState > (result.PostingDateRequiredState ?? 0))
                         {
                             result.PostingDateRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState < (result.PostingDateReadOnlyState ?? 5))
+                        if (colDef.ReadOnlyState > (result.PostingDateReadOnlyState ?? 0))
                         {
                             result.PostingDateReadOnlyState = colDef.ReadOnlyState;
                         }
                     }
 
-                    // Relations
-                    else if (colDef.EntryIndex < lineDef.Entries.Count)
+                    // Noted Relation
+                    else if (colDef.ColumnName == nameof(Entry.NotedRelationId))
                     {
-                        var entryDef = lineDef.Entries[colDef.EntryIndex];
-
-                        // DebitResource
-                        if (colDef.ColumnName == nameof(Entry.ResourceId) && entryDef.Direction == 1)
+                        result.NotedRelationVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.NotedRelationLabel))
                         {
-                            result.DebitResourceVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.DebitResourceLabel))
-                            {
-                                result.DebitResourceLabel ??= colDef.Label;
-                                result.DebitResourceLabel2 ??= colDef.Label2;
-                                result.DebitResourceLabel3 ??= colDef.Label3;
+                            result.NotedRelationLabel = colDef.Label;
+                            result.NotedRelationLabel2 = colDef.Label2;
+                            result.NotedRelationLabel3 = colDef.Label3;
+                        }
 
-                                result.DebitResourceDefinitionIds = entryDef.ResourceDefinitionIds;
+                        if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0))
+                        {
+                            result.NotedRelationRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0))
+                        {
+                            result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+                        }
+
+                        // Accumulate all the noted relation definition IDs in the hash set
+                        if (colDef.EntryIndex < lineDef.Entries.Count)
+                        {
+                            var entryDef = lineDef.Entries[colDef.EntryIndex];
+                            if (entryDef.NotedRelationDefinitionIds == null || entryDef.NotedRelationDefinitionIds.Count == 0)
+                            {
+                                notedRelationDefIds = null; // Means no definitionIds will be added
                             }
-
-                            if (colDef.RequiredState < (result.DebitResourceRequiredState ?? 5))
+                            else if (notedRelationDefIds != null)
                             {
-                                result.DebitResourceRequiredState = colDef.RequiredState;
-                            }
-
-                            if (colDef.ReadOnlyState < (result.DebitResourceReadOnlyState ?? 5))
-                            {
-                                result.DebitResourceReadOnlyState = colDef.ReadOnlyState;
+                                entryDef.NotedRelationDefinitionIds.ForEach(defId => notedRelationDefIds.Add(defId));
                             }
                         }
 
-                        // CreditResource
-                        if (colDef.ColumnName == nameof(Entry.ResourceId) && entryDef.Direction == -1)
+                        // Accumulate all the filter atoms in the hash set
+                        if (string.IsNullOrWhiteSpace(colDef.Filter))
                         {
-                            result.CreditResourceVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.CreditResourceLabel))
-                            {
-                                result.CreditResourceLabel = colDef.Label;
-                                result.CreditResourceLabel2 = colDef.Label2;
-                                result.CreditResourceLabel3 = colDef.Label3;
-
-                                result.CreditResourceDefinitionIds = entryDef.ResourceDefinitionIds;
-                            }
-
-                            if (colDef.RequiredState < (result.CreditResourceRequiredState ?? 5))
-                            {
-                                result.CreditResourceRequiredState = colDef.RequiredState;
-                            }
-
-                            if (colDef.ReadOnlyState < (result.CreditResourceReadOnlyState ?? 5))
-                            {
-                                result.CreditResourceReadOnlyState = colDef.ReadOnlyState;
-                            }
+                            notedRelationFilters = null; // It means no filters will be added
                         }
-
-                        // DebitCustody
-                        if (colDef.ColumnName == nameof(Entry.CustodyId) && entryDef.Direction == 1)
+                        else if (notedRelationFilters != null)
                         {
-                            result.DebitCustodyVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.DebitCustodyLabel))
-                            {
-                                result.DebitCustodyLabel ??= colDef.Label;
-                                result.DebitCustodyLabel2 ??= colDef.Label2;
-                                result.DebitCustodyLabel3 ??= colDef.Label3;
-
-                                result.DebitCustodyDefinitionIds = entryDef.CustodyDefinitionIds;
-                            }
-
-                            if (colDef.RequiredState < (result.DebitCustodyRequiredState ?? 5))
-                            {
-                                result.DebitCustodyRequiredState = colDef.RequiredState;
-                            }
-
-                            if (colDef.ReadOnlyState < (result.DebitCustodyReadOnlyState ?? 5))
-                            {
-                                result.DebitCustodyReadOnlyState = colDef.ReadOnlyState;
-                            }
-                        }
-
-                        // CreditCustody
-                        if (colDef.ColumnName == nameof(Entry.CustodyId) && entryDef.Direction == -1)
-                        {
-                            result.CreditCustodyVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.CreditCustodyLabel))
-                            {
-                                result.CreditCustodyLabel = colDef.Label;
-                                result.CreditCustodyLabel2 = colDef.Label2;
-                                result.CreditCustodyLabel3 = colDef.Label3;
-
-                                result.CreditCustodyDefinitionIds = entryDef.CustodyDefinitionIds;
-                            }
-
-                            if (colDef.RequiredState < (result.CreditCustodyRequiredState ?? 5))
-                            {
-                                result.CreditCustodyRequiredState = colDef.RequiredState;
-                            }
-
-                            if (colDef.ReadOnlyState < (result.CreditCustodyReadOnlyState ?? 5))
-                            {
-                                result.CreditCustodyReadOnlyState = colDef.ReadOnlyState;
-                            }
-                        }
-
-                        // NotedRelation
-                        if (colDef.ColumnName == nameof(Entry.NotedRelationId))
-                        {
-                            result.NotedRelationVisibility = true;
-                            if (string.IsNullOrWhiteSpace(result.NotedRelationLabel))
-                            {
-                                result.NotedRelationLabel = colDef.Label;
-                                result.NotedRelationLabel2 = colDef.Label2;
-                                result.NotedRelationLabel3 = colDef.Label3;
-
-                                result.NotedRelationDefinitionIds = entryDef.NotedRelationDefinitionIds;
-                            }
-
-                            if (colDef.RequiredState < (result.NotedRelationRequiredState ?? 5))
-                            {
-                                result.NotedRelationRequiredState = colDef.RequiredState;
-                            }
-
-                            if (colDef.ReadOnlyState < (result.NotedRelationReadOnlyState ?? 5))
-                            {
-                                result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
-                            }
+                            notedRelationFilters.Add(colDef.Filter);
                         }
                     }
 
                     // Center
-                    if (colDef.ColumnName == nameof(Entry.CenterId))
+                    else if (colDef.ColumnName == nameof(Entry.CenterId))
                     {
                         result.CenterVisibility = true;
                         if (string.IsNullOrWhiteSpace(result.CenterLabel))
@@ -811,103 +741,29 @@ namespace Tellma.Controllers
                             result.CenterLabel2 = colDef.Label2;
                             result.CenterLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState < (result.CenterRequiredState ?? 5))
+                        if (colDef.RequiredState > (result.CenterRequiredState ?? 0))
                         {
                             result.CenterRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState < (result.CenterReadOnlyState ?? 5))
+                        if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0))
                         {
                             result.CenterReadOnlyState = colDef.ReadOnlyState;
                         }
-                    }
 
-                    // Time1
-                    if (colDef.ColumnName == nameof(Entry.Time1))
-                    {
-                        result.Time1Visibility = true;
-                        if (string.IsNullOrWhiteSpace(result.Time1Label))
+                        // Accumulate all the filter atoms in the hash set
+                        if (string.IsNullOrWhiteSpace(colDef.Filter))
                         {
-                            result.Time1Label = colDef.Label;
-                            result.Time1Label2 = colDef.Label2;
-                            result.Time1Label3 = colDef.Label3;
+                            centerFilters = null; // It means no filters will be added
                         }
-                        if (colDef.RequiredState < (result.Time1RequiredState ?? 5))
+                        else if (centerFilters != null)
                         {
-                            result.Time1RequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState < (result.Time1ReadOnlyState ?? 5))
-                        {
-                            result.Time1ReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
-
-                    // Time2
-                    if (colDef.ColumnName == nameof(Entry.Time2))
-                    {
-                        result.Time2Visibility = true;
-                        if (string.IsNullOrWhiteSpace(result.Time2Label))
-                        {
-                            result.Time2Label = colDef.Label;
-                            result.Time2Label2 = colDef.Label2;
-                            result.Time2Label3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState < (result.Time2RequiredState ?? 5))
-                        {
-                            result.Time2RequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState < (result.Time2ReadOnlyState ?? 5))
-                        {
-                            result.Time2ReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
-
-                    // Quantity
-                    if (colDef.ColumnName == nameof(Entry.Quantity))
-                    {
-                        result.QuantityVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.QuantityLabel))
-                        {
-                            result.QuantityLabel = colDef.Label;
-                            result.QuantityLabel2 = colDef.Label2;
-                            result.QuantityLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState < (result.QuantityRequiredState ?? 5))
-                        {
-                            result.QuantityRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState < (result.QuantityReadOnlyState ?? 5))
-                        {
-                            result.QuantityReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
-
-                    // Unit
-                    if (colDef.ColumnName == nameof(Entry.UnitId))
-                    {
-                        result.UnitVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.UnitLabel))
-                        {
-                            result.UnitLabel = colDef.Label;
-                            result.UnitLabel2 = colDef.Label2;
-                            result.UnitLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState < (result.UnitRequiredState ?? 5))
-                        {
-                            result.UnitRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState < (result.UnitReadOnlyState ?? 5))
-                        {
-                            result.UnitReadOnlyState = colDef.ReadOnlyState;
+                            centerFilters.Add(colDef.Filter);
                         }
                     }
 
                     // Currency
-                    if (colDef.ColumnName == nameof(Entry.CurrencyId))
+                    else if (colDef.ColumnName == nameof(Entry.CurrencyId))
                     {
                         result.CurrencyVisibility = true;
                         if (string.IsNullOrWhiteSpace(result.CurrencyLabel))
@@ -916,18 +772,78 @@ namespace Tellma.Controllers
                             result.CurrencyLabel2 = colDef.Label2;
                             result.CurrencyLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState < (result.CurrencyRequiredState ?? 5))
+                        if (colDef.RequiredState > (result.CurrencyRequiredState ?? 0))
                         {
                             result.CurrencyRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState < (result.CurrencyReadOnlyState ?? 5))
+                        if (colDef.ReadOnlyState > (result.CurrencyReadOnlyState ?? 0))
                         {
                             result.CurrencyReadOnlyState = colDef.ReadOnlyState;
+                        }
+
+                        // Accumulate all the filter atoms in the hash set
+                        if (string.IsNullOrWhiteSpace(colDef.Filter))
+                        {
+                            currencyFilters = null; // It means no filters will be added
+                        }
+                        else if (currencyFilters != null)
+                        {
+                            currencyFilters.Add(colDef.Filter);
+                        }
+                    }
+
+                    // External Reference
+                    else if (colDef.ColumnName == nameof(Entry.ExternalReference))
+                    {
+                        result.ExternalReferenceVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.ExternalReferenceLabel))
+                        {
+                            result.ExternalReferenceLabel = colDef.Label;
+                            result.ExternalReferenceLabel2 = colDef.Label2;
+                            result.ExternalReferenceLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState > (result.ExternalReferenceRequiredState ?? 0))
+                        {
+                            result.ExternalReferenceRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState > (result.ExternalReferenceReadOnlyState ?? 0))
+                        {
+                            result.ExternalReferenceReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Additional Reference
+                    else if (colDef.ColumnName == nameof(Entry.AdditionalReference))
+                    {
+                        result.AdditionalReferenceVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.AdditionalReferenceLabel))
+                        {
+                            result.AdditionalReferenceLabel = colDef.Label;
+                            result.AdditionalReferenceLabel2 = colDef.Label2;
+                            result.AdditionalReferenceLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState > (result.AdditionalReferenceRequiredState ?? 0))
+                        {
+                            result.AdditionalReferenceRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState > (result.AdditionalReferenceReadOnlyState ?? 0))
+                        {
+                            result.AdditionalReferenceReadOnlyState = colDef.ReadOnlyState;
                         }
                     }
                 }
             }
+
+            // Calculate the definitionIds and filters
+            result.NotedRelationDefinitionIds = notedRelationDefIds?.ToList() ?? new List<int>();
+            result.NotedRelationFilter = Disjunction(notedRelationFilters);
+            result.CenterFilter = Disjunction(centerFilters);
+            result.CurrencyFilter = Disjunction(currencyFilters);
+
+            #region Manual JV
 
             // JV has some hard coded values:
             if (def.Code == ManualJournalVoucher)
@@ -944,26 +860,35 @@ namespace Tellma.Controllers
                 result.MemoLabel = null;
                 result.MemoLabel2 = null;
                 result.MemoLabel3 = null;
+
+                result.NotedRelationVisibility = false;
+                result.AdditionalReferenceVisibility = false;
+                result.ExternalReferenceVisibility = false;
+                result.CurrencyVisibility = false;
+                result.CenterVisibility = false;
             }
 
+            #endregion
+
+            // Return result
             return result;
         }
 
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
-            var (version, 
-                lookupDefs, 
-                relationDefs, 
-                custodyDefs, 
-                resourceDefs, 
-                reportDefs, 
-                docDefs, 
-                lineDefs, 
-                entryCustodianDefs, 
-                entryCustodyDefs, 
-                entryParticipantDefs, 
-                entryResourceDefs, 
+            var (version,
+                lookupDefs,
+                relationDefs,
+                custodyDefs,
+                resourceDefs,
+                reportDefs,
+                docDefs,
+                lineDefs,
+                entryCustodianDefs,
+                entryCustodyDefs,
+                entryParticipantDefs,
+                entryResourceDefs,
                 entryNotedRelationDefs) = await repo.Definitions__Load(cancellation);
 
             // Map Lookups, Relations, Resources, Reports (Straight forward)
@@ -999,6 +924,26 @@ namespace Tellma.Controllers
                 data: result,
                 version: version.ToString()
             );
+        }
+
+        /// <summary>
+        /// Helper method that ORs together a bunch of filter strings
+        /// </summary>
+        private static string Disjunction(HashSet<string> filters)
+        {
+            if (filters != null)
+            {
+                if (filters.Count == 1)
+                {
+                    return filters.Single();
+                }
+                else if (filters.Count > 1)
+                {
+                    return filters.Select(e => $"({e})")?.Aggregate((e1, e2) => $"{e1} or {e2}");
+                }
+            }
+
+            return null;
         }
     }
 }

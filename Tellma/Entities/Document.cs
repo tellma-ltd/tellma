@@ -10,44 +10,23 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Document", Plural = "Documents")]
-    public class DocumentForSave<TDocumentLine, TAttachment> : EntityWithKey<int>
+    public class DocumentForSave<TDocumentLine, TLineDefinitionEntry, TAttachment> : EntityWithKey<int>
     {
         [Display(Name = "Document_SerialNumber")]
         [AlwaysAccessible]
         [UserKey]
         public int? SerialNumber { get; set; }
 
-        [Display(Name = "Document_PostingDate")]
-        public DateTime? PostingDate { get; set; }
-
-        [IsCommonDisplay(Name = "Document_PostingDate")]
-        public bool? PostingDateIsCommon { get; set; }
-
         [Display(Name = "Document_Clearance")]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
         public byte? Clearance { get; set; }
 
-        // HIDDEN
+        [Display(Name = "Document_PostingDate")]
+        public DateTime? PostingDate { get; set; }
 
-        [Display(Name = "Document_DocumentLookup1")]
-        public int? DocumentLookup1Id { get; set; }
-
-        [Display(Name = "Document_DocumentLookup2")]
-        public int? DocumentLookup2Id { get; set; }
-
-        [Display(Name = "Document_DocumentLookup3")]
-        public int? DocumentLookup3Id { get; set; }
-
-        [Display(Name = "Document_DocumentText1")]
-        [StringLength(255)]
-        public string DocumentText1 { get; set; }
-
-        [Display(Name = "Document_DocumentText2")]
-        [StringLength(255)]
-        public string DocumentText2 { get; set; }
-
-        // END HIDDEN
+        [IsCommonDisplay(Name = "Document_PostingDate")]
+        public bool? PostingDateIsCommon { get; set; }
 
         [Display(Name = "Memo")]
         [StringLength(255)]
@@ -56,36 +35,6 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Memo")]
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
-
-        [Display(Name = "Document_DebitResource")]
-        public int? DebitResourceId { get; set; }
-
-        [IsCommonDisplay(Name = "Document_DebitResource")]
-        public bool? DebitResourceIsCommon { get; set; }
-
-        [Display(Name = "Document_CreditResource")]
-        public int? CreditResourceId { get; set; }
-
-        [IsCommonDisplay(Name = "Document_CreditResource")]
-        public bool? CreditResourceIsCommon { get; set; }
-
-        [Display(Name = "Document_DebitCustody")]
-        public int? DebitCustodyId { get; set; }
-
-        [IsCommonDisplay(Name = "Document_DebitCustody")]
-        public bool? DebitCustodyIsCommon { get; set; }
-
-        [Display(Name = "Document_CreditCustody")]
-        public int? CreditCustodyId { get; set; }
-
-        [IsCommonDisplay(Name = "Document_CreditCustody")]
-        public bool? CreditCustodyIsCommon { get; set; }
-
-        [Display(Name = "Document_NotedRelation")]
-        public int? NotedRelationId { get; set; }
-
-        [IsCommonDisplay(Name = "Document_NotedRelation")]
-        public bool? NotedRelationIsCommon { get; set; }
 
         [Display(Name = "Document_Segment")]
         public int? SegmentId { get; set; }
@@ -96,29 +45,11 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Document_Center")]
         public bool? CenterIsCommon { get; set; }
 
-        [Display(Name = "Document_Time1")]
-        public DateTime? Time1 { get; set; }
+        [Display(Name = "Document_NotedRelation")]
+        public int? NotedRelationId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_Time1")]
-        public bool? Time1IsCommon { get; set; }
-
-        [Display(Name = "Document_Time2")]
-        public DateTime? Time2 { get; set; }
-
-        [IsCommonDisplay(Name = "Document_Time2")]
-        public bool? Time2IsCommon { get; set; }
-
-        [Display(Name = "Document_Quantity")]
-        public decimal? Quantity { get; set; }
-
-        [IsCommonDisplay(Name = "Document_Quantity")]
-        public bool? QuantityIsCommon { get; set; }
-
-        [Display(Name = "Document_Unit")]
-        public int? UnitId { get; set; }
-
-        [IsCommonDisplay(Name = "Document_Unit")]
-        public bool? UnitIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_NotedRelation")]
+        public bool? NotedRelationIsCommon { get; set; }
 
         [Display(Name = "Document_Currency")]
         [StringLength(3)]
@@ -127,20 +58,37 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Document_Currency")]
         public bool? CurrencyIsCommon { get; set; }
 
+        [Display(Name = "Document_ExternalReference")]
+        [StringLength(50)]
+        public string ExternalReference { get; set; }
+
+        [IsCommonDisplay(Name = "Document_ExternalReference")]
+        public bool? ExternalReferenceIsCommon { get; set; }
+
+        [Display(Name = "Document_AdditionalReference")]
+        [StringLength(50)]
+        public string AdditionalReference { get; set; }
+
+        [IsCommonDisplay(Name = "Document_AdditionalReference")]
+        public bool? AdditionalReferenceIsCommon { get; set; }
+
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
+
+        [ForeignKey(nameof(DocumentLineDefinitionEntry.DocumentId))]
+        public List<TLineDefinitionEntry> LineDefinitionEntries { get; set; }
 
         [Display(Name = "Document_Attachments")]
         [ForeignKey(nameof(Attachment.DocumentId))]
         public List<TAttachment> Attachments { get; set; }
     }
 
-    public class DocumentForSave : DocumentForSave<LineForSave, AttachmentForSave>
+    public class DocumentForSave : DocumentForSave<LineForSave, DocumentLineDefinitionEntryForSave, AttachmentForSave>
     {
 
     }
 
-    public class Document : DocumentForSave<Line, Attachment>
+    public class Document : DocumentForSave<Line, DocumentLineDefinitionEntry, Attachment>
     {
         [Display(Name = "Definition")]
         public int? DefinitionId { get; set; }
@@ -194,21 +142,6 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-        [Display(Name = "Document_DebitResource")]
-        [ForeignKey(nameof(DebitResourceId))]
-        public Resource DebitResource { get; set; }
-
-        [Display(Name = "Document_CreditResource")]
-        [ForeignKey(nameof(CreditResourceId))]
-        public Resource CreditResource { get; set; }
-
-        [Display(Name = "Document_DebitCustody")]
-        [ForeignKey(nameof(DebitCustodyId))]
-        public Custody DebitCustody { get; set; }
-
-        [Display(Name = "Document_CreditCustody")]
-        [ForeignKey(nameof(CreditCustodyId))]
-        public Custody CreditCustody { get; set; }
 
         [Display(Name = "Document_NotedRelation")]
         [ForeignKey(nameof(NotedRelationId))]
@@ -221,10 +154,6 @@ namespace Tellma.Entities
         [Display(Name = "Document_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
-
-        [Display(Name = "Document_Unit")]
-        [ForeignKey(nameof(UnitId))]
-        public Unit Unit { get; set; }
 
         [Display(Name = "Document_Currency")]
         [ForeignKey(nameof(CurrencyId))]
@@ -257,22 +186,6 @@ namespace Tellma.Entities
         [Display(Name = "Definition")]
         [ForeignKey(nameof(DefinitionId))]
         public DocumentDefinition Definition { get; set; }
-
-        // HIDDEN
-
-        [Display(Name = "Document_DocumentLookup1")]
-        [ForeignKey(nameof(DocumentLookup1Id))]
-        public Lookup DocumentLookup1 { get; set; }
-
-        [Display(Name = "Document_DocumentLookup2")]
-        [ForeignKey(nameof(DocumentLookup2Id))]
-        public Lookup DocumentLookup2 { get; set; }
-
-        [Display(Name = "Document_DocumentLookup3")]
-        [ForeignKey(nameof(DocumentLookup3Id))]
-        public Lookup DocumentLookup3 { get; set; }
-
-        // END HIDDEN
     }
 
     public static class DocState
@@ -302,17 +215,9 @@ namespace Tellma.Entities
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
-            .Concat(DocumentResourcePaths(nameof(Document.DebitResource)))
-            .Concat(DocumentResourcePaths(nameof(Document.CreditResource)))
-            .Concat(CustodyPaths(nameof(Document.DebitCustody)))
-            .Concat(CustodyPaths(nameof(Document.CreditCustody)))
             .Concat(RelationPaths(nameof(Document.NotedRelation)))
             .Concat(CenterPaths(nameof(Document.Segment)))
-            .Concat(UnitPaths(nameof(Document.Unit)))
             .Concat(CurrencyPaths(nameof(Document.Currency)))
-            .Concat(LookupPaths(nameof(Document.DocumentLookup1)))
-            .Concat(LookupPaths(nameof(Document.DocumentLookup2)))
-            .Concat(LookupPaths(nameof(Document.DocumentLookup3)))
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))
             .Concat(UserPaths(nameof(Document.Assignee)));
@@ -358,9 +263,6 @@ namespace Tellma.Entities
             ).Concat(
                 CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}")
             );
-        public static IEnumerable<string> DocumentResourcePaths(string path) => ResourceProps
-            // Used in Document Header, no need for bells and whistles
-            .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             // This is used in account, it does not need currency or center, since they already come with the account
             .Concat(UnitPaths(nameof(Resource.Unit)))
@@ -377,8 +279,8 @@ namespace Tellma.Entities
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> UserPaths(string path = null) => UserProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+        //public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
+        //    .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryTypeParentPaths(string path = null) => EntryTypeParentProps
@@ -410,7 +312,7 @@ namespace Tellma.Entities
         public static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
         public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         public static IEnumerable<string> ResourceUnitsProps => Enum();
-        public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
+        //public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
         public static IEnumerable<string> CustodyProps => Enum(nameof(Custody.Name), nameof(Custody.Name2), nameof(Custody.Name3), nameof(Custody.DefinitionId));
         public static IEnumerable<string> RelationProps => Enum(nameof(Relation.Name), nameof(Relation.Name2), nameof(Relation.Name3), nameof(Relation.DefinitionId));
         public static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
