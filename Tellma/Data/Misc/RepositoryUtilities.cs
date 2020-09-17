@@ -180,6 +180,9 @@ namespace Tellma.Data
                             var lineDefinitionEntriesPropValue = lineDefinitionEntryProp.GetValue(lineDefinitionEntry);
                             lineDefinitionEntriesRow[lineDefinitionEntryProp.Name] = lineDefinitionEntriesPropValue ?? DBNull.Value;
                         }
+
+                        lineDefinitionEntriesTable.Rows.Add(lineDefinitionEntriesRow);
+                        lineDefinitionEntryIndex++;
                     });
                 }
 

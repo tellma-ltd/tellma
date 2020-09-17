@@ -510,7 +510,7 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
+                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader === 2 ? 'InheritsFrom_2' : column.InheritsFromHeader === 1 ? 'InheritsFrom_1' : 'InheritsFrom_0') | translate }}</span>
                                     <ng-template #inheritsfromheadertemplate>
                                         <select class="form-control t-studio-input"
                                             [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">

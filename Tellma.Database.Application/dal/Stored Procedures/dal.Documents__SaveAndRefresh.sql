@@ -161,6 +161,7 @@ BEGIN
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
+			t.[DocumentId]					= s.[DocumentId],
 			t.[LineDefinitionId]			= s.[LineDefinitionId],
 
 			t.[EntryIndex]					= s.[EntryIndex],
@@ -201,6 +202,7 @@ BEGIN
 			t.[ModifiedById]				= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
+			[DocumentId],
 			[LineDefinitionId],
 
 			[EntryIndex],
@@ -239,6 +241,7 @@ BEGIN
 			[AdditionalReferenceIsCommon]
 		)
 		VALUES (
+			s.[DocumentId],
 			s.[LineDefinitionId],
 
 			s.[EntryIndex],

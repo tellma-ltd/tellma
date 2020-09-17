@@ -681,6 +681,7 @@
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineDefinitionEntryList.sql" />
+    <Build Include="map\map.DocumentLineDefinitionEntries.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

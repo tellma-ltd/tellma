@@ -211,6 +211,7 @@ namespace Tellma.Entities
         // ------------------------------------------------
 
         public static IEnumerable<string> DocumentPaths() => DocumentProps
+            .Concat(LineDefinitionEntryPaths(nameof(Document.LineDefinitionEntries)))
             .Concat(LinePaths(nameof(Document.Lines)))
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
@@ -221,6 +222,16 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))
             .Concat(UserPaths(nameof(Document.Assignee)));
+
+        public static IEnumerable<string> LineDefinitionEntryPaths(string path = null) => LineDefinitionEntryProps
+            .Concat(CurrencyPaths(nameof(DocumentLineDefinitionEntry.Currency)))
+            .Concat(CustodyPaths(nameof(DocumentLineDefinitionEntry.Custody)))
+            .Concat(TabEntryResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.NotedRelation)))
+            .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
+            .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+
         public static IEnumerable<string> LinePaths(string path = null) => LineProps
             .Concat(EntryPaths(nameof(Line.Entries)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -268,6 +279,9 @@ namespace Tellma.Entities
             .Concat(UnitPaths(nameof(Resource.Unit)))
             .Concat(ResourceUnitPaths(nameof(Resource.Units)))
             .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> TabEntryResourcePaths(string path = null) => ResourceProps
+            // This one is for the tab header which does not require the units and resource units
+            .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
             .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -302,6 +316,7 @@ namespace Tellma.Entities
         // -------------------------------------------------------------
 
         public static IEnumerable<string> DocumentProps => D.TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> LineDefinitionEntryProps => D.TypeDescriptor.Get<DocumentLineDefinitionEntry>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> LineProps => D.TypeDescriptor.Get<Line>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> EntryProps => D.TypeDescriptor.Get<Entry>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> AttachmentProps => D.TypeDescriptor.Get<Attachment>().SimpleProperties.Select(p => p.Name);

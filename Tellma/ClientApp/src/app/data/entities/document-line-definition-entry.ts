@@ -32,6 +32,7 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
 }
 
 export interface DocumentLineDefinitionEntry extends DocumentLineDefinitionEntryForSave {
+    DocumentId?: number;
     CreatedAt?: string;
     CreatedById?: number;
     ModifiedAt?: string;

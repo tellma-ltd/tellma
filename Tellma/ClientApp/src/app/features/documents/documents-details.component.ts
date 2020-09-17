@@ -37,7 +37,7 @@ import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
-import { DocumentLineDefinitionEntryForSave } from '~/app/data/entities/document-line-definition-entry';
+import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -282,6 +282,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const result: DocumentForSave = {
       // PostingDate: toLocalDateISOString(new Date()),
       Clearance: 0,
+      LineDefinitionEntries: [],
       Lines: [],
       Attachments: []
     };
@@ -347,6 +348,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       delete clone.ModifiedById;
       clone.AssignmentsHistory = [];
       clone.StatesHistory = [];
+
+      if (!!clone.LineDefinitionEntries) {
+        clone.LineDefinitionEntries.forEach(tabEntry => {
+          // Standard
+          tabEntry.Id = null;
+          delete tabEntry.EntityMetadata;
+          delete tabEntry.serverErrors;
+
+          // Non savable
+          delete tabEntry.DocumentId;
+          delete tabEntry.CreatedAt;
+          delete tabEntry.CreatedById;
+          delete tabEntry.ModifiedAt;
+          delete tabEntry.ModifiedById;
+        });
+      }
 
       if (!!clone.Lines) {
         clone.Lines.forEach(line => {
@@ -2493,10 +2510,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._manualEntries;
   }
 
-  public showLineErrors(lineDefId: number, model: Document) {
+  private tabEntries(lineDefId: number, model: Document): DocumentLineDefinitionEntry[] {
+    if (!model || !model.LineDefinitionEntries) {
+      return null;
+    } else {
+      return model.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId);
+    }
+  }
+
+  public showTabErrors(lineDefId: number, model: Document) {
+    // Get the relevant tab entries
+    const tabEntries = this.tabEntries(lineDefId, model);
     const lines = this.lines(lineDefId, model);
-    return !!lines && lines.some(line => !!line.serverErrors ||
-      (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors)));
+    return (!!tabEntries && tabEntries.some(tabEntry => !!tabEntry.serverErrors)) ||
+      (!!lines && lines.some(line => !!line.serverErrors || (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
   }
 
   public showAttachmentsErrors(model: Document) {
@@ -2523,7 +2550,61 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return paths;
   }
 
-  private _defaultTab: DocumentLineDefinitionEntryForSave = {
+  public smartTabHeaderColumnPaths(lineDefId: number, doc: Document): number[] {
+    // It is named smartTabHeaderColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+
+    // All line definitions other than 'ManualLine'
+    const lineDef = this.lineDefinition(lineDefId);
+    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
+    if (!!doc.LineDefinitionEntries) {
+      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
+        tabEntries[tabEntry.EntryIndex] = tabEntry;
+      }
+    }
+
+    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+      .map((column, index) => ({ column, index })) // Capture the index first thing
+      .filter(e => {
+        const col = e.column;
+
+        if (col.InheritsFromHeader >= 2 && (
+          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+          (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
+          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+        )) {
+          // This column inherits from document header, hide it from the grid
+          return false;
+        } else if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1) {
+          switch (col.ColumnName) {
+            case 'Memo':
+            case 'PostingDate':
+            case 'NotedRelationId':
+            case 'CurrencyId':
+            case 'CustodyId':
+            case 'ResourceId':
+            case 'Quantity':
+            case 'UnitId':
+            case 'CenterId':
+            case 'Time1':
+            case 'Time2':
+            case 'ExternalReference':
+            case 'AdditionalReference':
+              return true;
+          }
+        }
+
+        return false;
+      })
+      .map(e => e.index) : [];
+
+    return result;
+  }
+
+  private _defaultTabEntry: DocumentLineDefinitionEntryForSave = {
     PostingDateIsCommon: true,
     MemoIsCommon: true,
     NotedRelationIsCommon: true,
@@ -2539,12 +2620,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     AdditionalReferenceIsCommon: true,
   };
 
-  public smartColumnPaths(lineDefId: number, doc: Document, section: 'table' | 'form' | 'tab'): string[] {
-    // Section descriptions
-    // table: the columns of the table
-    // form: the fields in the form
-    // tab: the fields in the tab header (DocumentLineDefinitionEntries)
-
+  public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
     // It is named smartColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
 
     // All line definitions other than 'ManualLine'
@@ -2573,7 +2649,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           // This column inherits from document header, hide it from the grid
           return false;
         } else {
-          const tab = tabEntries[col.EntryIndex] || this._defaultTab;
+          const tabEntryIndex = this.tabEntryIndex(col);
+          const tab = tabEntries[tabEntryIndex] || this._defaultTabEntry;
           if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
             (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
             (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
@@ -2589,15 +2666,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
             (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
           )) {
-            return section === 'tab';
+            return false;
           }
         }
 
-        return section !== 'tab';
+        return true;
       })
       .map(e => e.index + '') : [];
 
-    if (section === 'form') {
+    if (!isForm) {
       result.push('Commands');
     }
 
@@ -2685,17 +2762,36 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (def.ColumnName === 'Memo' || def.ColumnName === 'PostingDate') {
         entity = line;
       } else {
-        entity = !!line.Entries ? line.Entries[def.EntryIndex] : null;
+        entity = !!line && !!line.Entries ? line.Entries[def.EntryIndex] : null;
       }
     }
 
     return entity;
   }
 
+  /**
+   * Returns a hard-coded 0 for Memo and PostingDate and the actual entry index otherwise
+   */
+  private tabEntryIndex(colDef: LineDefinitionColumnForClient): number {
+    return colDef.ColumnName === 'Memo' || colDef.ColumnName === 'PostingDate' ? 0 : colDef.EntryIndex;
+  }
+
+  /**
+   * Returns the DocumentLineDefinitionEntry that matches the lineDefId and colDef
+   */
+  private tabEntry(lineDefId: number, colDef: LineDefinitionColumnForClient, doc: DocumentForSave): DocumentLineDefinitionEntryForSave {
+    if (!doc.LineDefinitionEntries) {
+      return undefined;
+    }
+
+    const entryIndex = this.tabEntryIndex(colDef);
+    return doc.LineDefinitionEntries.find(e => e.LineDefinitionId === lineDefId && e.EntryIndex === entryIndex);
+  }
+
   public entry(lineDefId: number, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     if (!!colDef && colDef.ColumnName !== 'Memo' && colDef.ColumnName !== 'PostingDate') {
-      return !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
+      return !!line && !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 
     return null;
@@ -2750,43 +2846,123 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public serverErrors(lineDefId: number, columnIndex: number, line: LineForSave): string[] {
+  public serverErrors(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave): string[] {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const entity = this.entity(colDef, line);
+    let entity: LineForSave | EntryForSave | DocumentLineDefinitionEntryForSave;
+    if (!!line) {
+      entity = this.entity(colDef, line);
+    } else {
+      entity = this.tabEntry(lineDefId, colDef, doc);
+    }
     return !!entity && !!entity.serverErrors ? entity.serverErrors[colDef.ColumnName] : null;
   }
 
-  public entityMetadata(lineDefId: number, columnIndex: number, line: LineForSave): 0 | 1 | 2 {
+  public getFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave): any {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const entity = this.entity(colDef, line);
-    return !!entity && !!entity.EntityMetadata ? entity.EntityMetadata[colDef.ColumnName] : null;
-  }
+    if (!!line) {
+      // Get the value from the line or the entry
+      const entity = this.entity(colDef, line);
+      return !!entity ? entity[colDef.ColumnName] : null;
+    } else {
+      // Get the value from the tab header
+      let tabEntry = this.tabEntry(lineDefId, colDef, doc);
+      if (!tabEntry) {
+        tabEntry = this._defaultTabEntry;
+      }
 
-  public getFieldValue(lineDefId: number, columnIndex: number, doc: DocumentForSave, rowIndex: number): any {
-    const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const line = this.lines(lineDefId, doc)[rowIndex];
-    const entity = this.entity(colDef, line);
-    return !!entity ? entity[colDef.ColumnName] : null;
-  }
-
-  public setFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, value: any): void {
-    const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const entity = this.entity(colDef, line);
-    if (!!entity) {
-      entity[colDef.ColumnName] = value;
+      return tabEntry[colDef.ColumnName];
     }
   }
 
-  public isReadOnly(lineDefId: number, columnIndex: number, line: Line) {
-    // return false;
-    const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const state = line.State || 0;
-    return state < 0 || state >= colDef.ReadOnlyState;
+  /**
+   * Creates a new DocumentLineDefinitionEntry from defaults and adds it to the document
+   */
+  private addNewTabEntry(lineDefId: number, colDef: LineDefinitionColumnForClient, doc: DocumentForSave): DocumentLineDefinitionEntry {
+    const tabEntry = {
+      EntryIndex: this.tabEntryIndex(colDef),
+      LineDefinitionId: lineDefId,
+      ... this._defaultTabEntry
+    };
+
+    doc.LineDefinitionEntries.push(tabEntry);
+
+    return tabEntry;
   }
 
-  public isRequired(lineDefId: number, columnIndex: number, line: Line) {
+  private isCommonPropertyName(prop: string) {
+    if (!prop) {
+      return undefined;
+    }
+    if (prop.endsWith('Id')) {
+      return prop.slice(0, -2) + 'IsCommon';
+    } else {
+      return prop + 'IsCommon';
+    }
+  }
+
+  public setFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave, value: any): void {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return (line.State || 0) >= colDef.RequiredState;
+    if (!!line) {
+      const entity = this.entity(colDef, line);
+      if (!!entity) {
+        entity[colDef.ColumnName] = value;
+      }
+    } else {
+      const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this.addNewTabEntry(lineDefId, colDef, doc);
+      tabEntry[colDef.ColumnName] = value;
+    }
+  }
+
+  public onToggleTabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): void {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this.addNewTabEntry(lineDefId, colDef, doc);
+
+    const isCommonPropName = this.isCommonPropertyName(colDef.ColumnName);
+
+    tabEntry[isCommonPropName] = !tabEntry[isCommonPropName];
+  }
+
+  public tabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): boolean {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this._defaultTabEntry;
+
+    const isCommonPropName = this.isCommonPropertyName(colDef.ColumnName);
+    return tabEntry[isCommonPropName];
+  }
+
+  public isReadOnly(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave) {
+    // return false;
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const lines = this.lines(lineDefId, doc);
+
+    // inline function
+    const isReadOnlyInner = (e: Line) => {
+      const state = e.State || 0;
+      return state < 0 || state >= colDef.ReadOnlyState;
+    };
+
+    if (!!line) {
+      return isReadOnlyInner(line);
+    } else {
+      return lines.some(isReadOnlyInner); // One read-only line, makes the header read-only
+    }
+  }
+
+  public isRequired(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const lines = this.lines(lineDefId, doc);
+
+    // inline function
+    const isRequiredInner = (e: Line) => {
+      const state = e.State || 0;
+      return state >= colDef.RequiredState;
+    };
+
+    if (!!line) {
+      return isRequiredInner(line);
+    } else {
+      return lines.some(isRequiredInner); // One required line, makes the header required
+    }
   }
 
   private _onNewLineFactoryLineDefId: number;
@@ -2851,6 +3027,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     } else {
       return this.defaultsToForm(lineDefId);
     }
+  }
+
+  public showTabHeader(lineDefId: number, doc: DocumentForSave) {
+    // TODO Optimize
+    const paths = this.smartTabHeaderColumnPaths(lineDefId, doc);
+    return paths.length > 0;
   }
 
   public dummyUpdate = () => { };
@@ -3128,15 +3310,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public setModified(line: LineForSave, doc: DocumentForSave): void {
-    // if (!line) {
-    //   return;
-    // }
     this.flags(line, doc, true).isModified = true;
   }
 
   public onSmartLineUpdated(update: (item: LineForSave) => void, line: LineForSave, doc: DocumentForSave) {
-    this.setModified(line, doc); // Flags the line as modified
-    update(line);
+    if (!!line) {
+      this.setModified(line, doc); // Flags the line as modified
+      update(line);
+    }
   }
 
   private _highlightPairFactoryModel: DocumentForSave;
@@ -3199,6 +3380,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public smartTabColor(lineDefId: number, doc: DocumentForSave): string {
     return this.highlightSmartTab(lineDefId, doc) ? '#eeff44' : null;
   }
+
   public highlightBookkeepingTab(doc: Document): boolean {
     const isHighlightedLine = this.highlightLineFactory(doc);
     return !!doc && !!doc.Lines && doc.Lines.some(e => (e.State || 0) >= 0 && isHighlightedLine(e));

@@ -259,6 +259,7 @@ namespace Tellma.Data
                 nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
                 nameof(DocumentDefinitionMarkupTemplate) => "[map].[DocumentDefinitionMarkupTemplates]()",
                 nameof(Document) => "[map].[Documents]()",
+                nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
                 nameof(Line) => "[map].[Lines]()",
                 nameof(LineForQuery) => "[map].[Lines]()",
                 nameof(Entry) => "[map].[Entries]()",
