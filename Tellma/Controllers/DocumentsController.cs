@@ -899,6 +899,9 @@ namespace Tellma.Controllers
 
             var lineDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
 
+            // Maps every line definition Id to a bunch of delegates that check 
+            var checks = new Dictionary<int, IEnumerable<Action<LineForSave>>>();
+
             // Set common header values on the lines
             docs.ForEach(doc =>
             {
@@ -973,19 +976,8 @@ namespace Tellma.Controllers
 
                         #region IsCommon Behavior
 
-                        // Helper function 1
-                        static bool CopyFromDocument(LineDefinitionColumnForClient colDef, bool? docIsCommon)
-                        {
-                            return colDef.InheritsFromHeader >= InheritsFrom.DocumentHeader && (docIsCommon ?? false);
-                        }
-
-                        // Helper function 2 (Works in conjunction with helper func 1)
-                        static bool CopyFromTab(LineDefinitionColumnForClient colDef, bool? tabIsCommon, bool isForm)
-                        {
-                            return !isForm && colDef.InheritsFromHeader >= InheritsFrom.TabHeader && (tabIsCommon ?? false);
-                        }
-
                         // Copy common values from the headers if they are marked inherits from header
+                        // IMPORTANT: Keep in sync with after the SQL preprocess
                         foreach (var colDef in lineDef.Columns)
                         {
                             if (colDef.ColumnName == nameof(Line.Memo))
@@ -1202,7 +1194,267 @@ namespace Tellma.Controllers
                 }
             });
 
+            #region IsCommon Double Check
+
+            // Ensure IsCommon is still honored
+            // IMPORTANT: Keep in sync with part before the SQL preprocess
+            docs.ForEach(doc =>
+            {
+                // All fields that are marked as common, copy the common value across to the 
+                // lines and entries, we deal with the lines one definitionId at a time
+                foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId.Value))
+                {
+                    if (!lineDefinitions.TryGetValue(linesGroup.Key, out LineDefinitionForClient lineDef))
+                    {
+                        // Validation takes care of this later on
+                        continue;
+                    }
+
+                    var isForm = lineDef.ViewDefaultsToForm;
+                    var tabEntries = new DocumentLineDefinitionEntryForSave[lineDef.Entries.Count];
+                    foreach (var tabEntry in doc.LineDefinitionEntries.Where(e => e.LineDefinitionId == linesGroup.Key))
+                    {
+                        if (tabEntry.EntryIndex < 0)
+                        {
+                            continue; // Validation takes care of this later
+                        }
+
+                        if (tabEntries[tabEntry.EntryIndex.Value] != null)
+                        {
+                            continue; // Validation takes care of this later
+                        }
+
+                        tabEntries[tabEntry.EntryIndex.Value] = tabEntry;
+                    }
+
+                    foreach (var line in linesGroup)
+                    {
+                        // Copy common values from the headers if they are marked inherits from header
+                        foreach (var colDef in lineDef.Columns)
+                        {
+                            if (colDef.ColumnName == nameof(Line.Memo))
+                            {
+                                if (CopyFromDocument(colDef, doc.MemoIsCommon))
+                                {
+                                    if (line.Memo != doc.Memo)
+                                    {
+                                        throw new InvalidOperationException($"[Bug] {nameof(doc.MemoIsCommon)}=true, but {nameof(line.Memo)} of line of type {lineDef.TitleSingular} was changed in preprocess from '{doc.Memo}' to '{line.Memo}'");
+                                    }
+                                }
+                                else
+                                {
+                                    var tabEntry = tabEntries.FirstOrDefault();
+                                    if (CopyFromTab(colDef, tabEntry.MemoIsCommon, isForm))
+                                    {
+                                        if (line.Memo != tabEntry.Memo)
+                                        {
+                                            throw new InvalidOperationException($"[Bug] {nameof(tabEntry.MemoIsCommon)}=true, but {nameof(line.Memo)} of line of type {lineDef.TitleSingular} was changed in preprocess from '{tabEntry.Memo}' to '{line.Memo}'");
+                                        }
+                                    }
+                                }
+                            }
+                            else if (colDef.ColumnName == nameof(Line.PostingDate))
+                            {
+                                if (CopyFromDocument(colDef, doc.PostingDateIsCommon))
+                                {
+                                    line.PostingDate = doc.PostingDate;
+                                    if (line.PostingDate != doc.PostingDate)
+                                    {
+                                        throw new InvalidOperationException($"[Bug] {nameof(doc.PostingDateIsCommon)}=true, but {nameof(line.PostingDate)} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.PostingDate:yyyy-MM-dd} to '{line.PostingDate:yyyy-MM-dd}'");
+                                    }
+                                }
+                                else
+                                {
+                                    var tabEntry = tabEntries.FirstOrDefault();
+                                    if (CopyFromTab(colDef, tabEntry.PostingDateIsCommon, isForm))
+                                    {
+                                        if (line.PostingDate != tabEntry.PostingDate)
+                                        {
+                                            throw new InvalidOperationException($"[Bug] {nameof(tabEntry.PostingDateIsCommon)}=true, but {nameof(line.PostingDate)} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.PostingDate:yyyy-MM-dd} to '{line.PostingDate:yyyy-MM-dd}'");
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (colDef.EntryIndex >= line.Entries.Count ||
+                                    colDef.EntryIndex >= lineDef.Entries.Count ||
+                                    colDef.EntryIndex < 0)
+                                {
+                                    // To avoid index out of bounds exception
+                                    continue;
+                                }
+
+                                // Copy the common values
+                                var entry = line.Entries[colDef.EntryIndex];
+                                var tabEntry = tabEntries[colDef.EntryIndex];
+
+                                switch (colDef.ColumnName)
+                                {
+                                    case nameof(Entry.NotedRelationId):
+                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                        {
+                                            if (entry.NotedRelationId != doc.NotedRelationId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedRelationId} to {entry.NotedRelationId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, isForm))
+                                        {
+                                            if (entry.NotedRelationId != tabEntry.NotedRelationId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedRelationId} to {entry.NotedRelationId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.CurrencyId):
+                                        if (CopyFromDocument(colDef, doc.CurrencyIsCommon))
+                                        {
+                                            if (entry.CurrencyId != doc.CurrencyId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CurrencyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CurrencyId} to {entry.CurrencyId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.CurrencyIsCommon, isForm))
+                                        {
+                                            if (entry.CurrencyId != tabEntry.CurrencyId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CurrencyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.CurrencyId} to {entry.CurrencyId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.CustodyId):
+                                        if (CopyFromTab(colDef, tabEntry.CustodyIsCommon, isForm))
+                                        {
+                                            entry.CustodyId = tabEntry.CustodyId;
+                                        }
+                                        break;
+
+                                    case nameof(Entry.ResourceId):
+                                        if (CopyFromTab(colDef, tabEntry.ResourceIsCommon, isForm))
+                                        {
+                                            entry.ResourceId = tabEntry.ResourceId;
+                                            if (entry.ResourceId != tabEntry.ResourceId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ResourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ResourceId} to {entry.ResourceId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.Quantity):
+                                        if (CopyFromTab(colDef, tabEntry.QuantityIsCommon, isForm))
+                                        {
+                                            if (tabEntry.Quantity != entry.Quantity)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Quantity)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.Quantity} to {entry.Quantity}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.UnitId):
+                                        if (CopyFromTab(colDef, tabEntry.UnitIsCommon, isForm))
+                                        {
+                                            if (tabEntry.UnitId != entry.UnitId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.UnitId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.UnitId} to {entry.UnitId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.CenterId):
+                                        if (CopyFromDocument(colDef, doc.CenterIsCommon))
+                                        {
+                                            if (entry.CenterId != doc.CenterId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CenterId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CenterId} to {entry.CenterId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.CenterIsCommon, isForm))
+                                        {
+                                            if (entry.CenterId != tabEntry.CenterId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CenterId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.CenterId} to {entry.CenterId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.Time1):
+                                        if (CopyFromTab(colDef, tabEntry.Time1IsCommon, isForm))
+                                        {
+                                            if (entry.Time1 != tabEntry.Time1)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Time1)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.Time1} to {entry.Time1}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.Time2):
+                                        if (CopyFromTab(colDef, tabEntry.Time2IsCommon, isForm))
+                                        {
+                                            if (entry.Time2 != tabEntry.Time2)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Time2)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.Time2} to {entry.Time2}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.ExternalReference):
+                                        if (CopyFromDocument(colDef, doc.ExternalReferenceIsCommon))
+                                        {
+                                            if (entry.ExternalReference != doc.ExternalReference)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ExternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ExternalReference} to {entry.ExternalReference}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.ExternalReferenceIsCommon, isForm))
+                                        {
+                                            if (entry.ExternalReference != tabEntry.ExternalReference)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ExternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ExternalReference} to {entry.ExternalReference}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.AdditionalReference):
+                                        if (CopyFromDocument(colDef, doc.AdditionalReferenceIsCommon))
+                                        {
+                                            if (entry.AdditionalReference != doc.AdditionalReference)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AdditionalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.AdditionalReference} to {entry.AdditionalReference}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.AdditionalReferenceIsCommon, isForm))
+                                        {
+                                            if (entry.AdditionalReference != tabEntry.AdditionalReference)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AdditionalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.AdditionalReference} to {entry.AdditionalReference}");
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            #endregion
+
             return docs;
+        }
+
+        // Helper function #1
+        private static bool CopyFromDocument(LineDefinitionColumnForClient colDef, bool? docIsCommon)
+        {
+            return colDef.InheritsFromHeader >= InheritsFrom.DocumentHeader && (docIsCommon ?? false);
+        }
+
+        // Helper function #2 (Works in conjunction with helper func #1)
+        static bool CopyFromTab(LineDefinitionColumnForClient colDef, bool? tabIsCommon, bool isForm)
+        {
+            return !isForm && colDef.InheritsFromHeader >= InheritsFrom.TabHeader && (tabIsCommon ?? false);
         }
 
         protected override async Task SaveValidateAsync(List<DocumentForSave> docs)
@@ -1640,7 +1892,6 @@ namespace Tellma.Controllers
             }
             catch (ForeignKeyViolationException)
             {
-                // TODO: test
                 var definition = Definition();
                 var tenantInfo = await _repo.GetTenantInfoAsync(cancellation: default);
                 var titleSingular = tenantInfo.Localize(definition.TitleSingular, definition.TitleSingular2, definition.TitleSingular3);

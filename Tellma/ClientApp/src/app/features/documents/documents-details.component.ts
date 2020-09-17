@@ -308,13 +308,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       // Is Common
-      result.PostingDateIsCommon = !!def.PostingDateVisibility;
-      result.MemoIsCommon = !!def.MemoIsCommonVisibility;
-      result.NotedRelationIsCommon = !!def.NotedRelationVisibility;
-      result.CenterIsCommon = !!def.CenterVisibility;
-      result.CurrencyIsCommon = !!def.CurrencyVisibility;
-      result.ExternalReferenceIsCommon = !!def.ExternalReferenceVisibility;
-      result.AdditionalReferenceIsCommon = !!def.AdditionalReferenceVisibility;
+      result.PostingDateIsCommon = true;
+      result.MemoIsCommon = true;
+      result.NotedRelationIsCommon = true;
+      result.CenterIsCommon = true;
+      result.CurrencyIsCommon = true;
+      result.ExternalReferenceIsCommon = true;
+      result.AdditionalReferenceIsCommon = true;
     }
 
     return result;
@@ -2523,12 +2523,37 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return paths;
   }
 
-  public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
+  private _defaultTab: DocumentLineDefinitionEntryForSave = {
+    PostingDateIsCommon: true,
+    MemoIsCommon: true,
+    NotedRelationIsCommon: true,
+    CurrencyIsCommon: true,
+    CustodyIsCommon: true,
+    ResourceIsCommon: true,
+    QuantityIsCommon: true,
+    UnitIsCommon: true,
+    CenterIsCommon: true,
+    Time1IsCommon: true,
+    Time2IsCommon: true,
+    ExternalReferenceIsCommon: true,
+    AdditionalReferenceIsCommon: true,
+  };
+
+  public smartColumnPaths(lineDefId: number, doc: Document, section: 'table' | 'form' | 'tab'): string[] {
+    // Section descriptions
+    // table: the columns of the table
+    // form: the fields in the form
+    // tab: the fields in the tab header (DocumentLineDefinitionEntries)
+
+    // It is named smartColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+
     // All line definitions other than 'ManualLine'
     const lineDef = this.lineDefinition(lineDefId);
     const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
-    for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
-      tabEntries[tabEntry.EntryIndex] = tabEntry;
+    if (!!doc.LineDefinitionEntries) {
+      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
+        tabEntries[tabEntry.EntryIndex] = tabEntry;
+      }
     }
 
     const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
@@ -2548,7 +2573,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           // This column inherits from document header, hide it from the grid
           return false;
         } else {
-          const tab = tabEntries[col.EntryIndex];
+          const tab = tabEntries[col.EntryIndex] || this._defaultTab;
           if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
             (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
             (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
@@ -2564,15 +2589,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
             (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
           )) {
-            return false;
+            return section === 'tab';
           }
         }
 
-        return true;
+        return section !== 'tab';
       })
       .map(e => e.index + '') : [];
 
-    if (!isForm) {
+    if (section === 'form') {
       result.push('Commands');
     }
 
@@ -2737,8 +2762,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!entity && !!entity.EntityMetadata ? entity.EntityMetadata[colDef.ColumnName] : null;
   }
 
-  public getFieldValue(lineDefId: number, columnIndex: number, line: LineForSave): any {
+  public getFieldValue(lineDefId: number, columnIndex: number, doc: DocumentForSave, rowIndex: number): any {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const line = this.lines(lineDefId, doc)[rowIndex];
     const entity = this.entity(colDef, line);
     return !!entity ? entity[colDef.ColumnName] : null;
   }
@@ -2813,13 +2839,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public defaultsToForm(lineDefId: number) {
+    const lineDef = this.lineDefinition(lineDefId);
+    return !!lineDef ? lineDef.ViewDefaultsToForm : false;
+  }
+
   public showAsForm(lineDefId: number, model: DocumentForSave) {
     const count = this.lines(lineDefId, model).length;
     if (count > 1) {
       return false;
     } else {
-      const lineDef = this.lineDefinition(lineDefId);
-      return !!lineDef ? lineDef.ViewDefaultsToForm : false;
+      return this.defaultsToForm(lineDefId);
     }
   }
 

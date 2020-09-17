@@ -129,7 +129,7 @@ namespace Tellma.Entities
     public static class InheritsFrom
     {
         public const byte None = 0;
-        public const byte TabHeader = 0;
-        public const byte DocumentHeader = 0;
+        public const byte TabHeader = 1;
+        public const byte DocumentHeader = 2;
     }
 }

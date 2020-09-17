@@ -135,7 +135,7 @@ namespace Tellma.Data
             DataTable lineDefinitionEntriesTable = new DataTable();
             lineDefinitionEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
             lineDefinitionEntriesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
-            var lineDefinitionEntriesProps = AddColumnsFromProperties<LineForSave>(lineDefinitionEntriesTable);
+            var lineDefinitionEntriesProps = AddColumnsFromProperties<DocumentLineDefinitionEntryForSave>(lineDefinitionEntriesTable);
 
             // Prepare the lines table skeleton
             DataTable linesTable = new DataTable();

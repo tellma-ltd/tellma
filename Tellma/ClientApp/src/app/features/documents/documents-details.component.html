@@ -144,6 +144,8 @@
 
     <!-- Posting Date -->
     <t-form-group class="t-form-group" [label]="labelDocumentPostingDate(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="PostingDateIsCommon"
+        [disableLabelMenu]="!isEdit && showDocumentPostingDateIsCommon(model)"
         [serverErrors]="model?.serverErrors?.PostingDate" *ngIf="showDocumentPostingDate(model)">
         <ng-container *ngIf="model?.PostingDateIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
@@ -153,9 +155,6 @@
                 [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
                 [ngModelOptions]="{ updateOn: 'blur' }">
             </t-date-picker>
-        </ng-container>
-        <ng-container *ngIf="showDocumentPostingDateIsCommon(model)">
-            <ng-container *ngTemplateOutlet="lock; context:{ prop: 'PostingDateIsCommon' }"></ng-container>
         </ng-container>
     </t-form-group>
 
@@ -171,6 +170,7 @@
 
     <!-- Noted Relation -->
     <t-form-group class="t-form-group" [label]="labelDocumentNotedRelation(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="NotedRelationIsCommon" [disableLabelMenu]="!isEdit"
         [serverErrors]="model?.serverErrors?.NotedRelationId" *ngIf="showDocumentNotedRelation(model)">
         <ng-container *ngIf="model?.NotedRelationIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedRelationId">
@@ -184,7 +184,6 @@
                 [required]="requireDocumentNotedRelation(model)" [disabled]="readonlyDocumentNotedRelation(model)">
             </t-relations-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedRelationIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Segment -->
@@ -201,8 +200,9 @@
     </t-form-group>
 
     <!-- Center -->
-    <t-form-group class="t-form-group" [label]="labelDocumentCenter(model)"
-        [serverErrors]="model?.serverErrors?.CenterId" *ngIf="showDocumentCenter(model)">
+    <t-form-group class="t-form-group" [label]="labelDocumentCenter(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="CenterIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CenterId"
+        *ngIf="showDocumentCenter(model)">
         <ng-container *ngIf="model?.CenterIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CenterId">
                 <t-view-link link="../../../centers" [itemId]="model?.CenterId">
@@ -213,12 +213,12 @@
                 [disabled]="readonlyDocumentCenter(model)">
             </t-centers-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CenterIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Currency -->
-    <t-form-group class="t-form-group" [label]="labelDocumentCurrency(model)"
-        [serverErrors]="model?.serverErrors?.CurrencyId" *ngIf="showDocumentCurrency(model)">
+    <t-form-group class="t-form-group" [label]="labelDocumentCurrency(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="CurrencyIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CurrencyId"
+        *ngIf="showDocumentCurrency(model)">
         <ng-container *ngIf="model?.CurrencyIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CurrencyId">
                 <t-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
@@ -229,38 +229,66 @@
                 [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)">
             </t-currencies-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CurrencyIsCommon' }"></ng-container>
+    </t-form-group>
+
+    <!-- ExternalReference -->
+    <t-form-group class="t-form-group" [label]="labelDocumentExternalReference(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="ExternalReferenceIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.ExternalReference" *ngIf="showDocumentExternalReference(model)">
+        <ng-container *ngIf="model?.ExternalReferenceIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExternalReference">
+                {{ model?.ExternalReference }}
+            </t-restricted>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReference"
+                [required]="requireDocumentExternalReference" [disabled]="readonlyDocumentExternalReference(model)">
+            </t-text-editor>
+        </ng-container>
+    </t-form-group>
+
+    <!-- AdditionalReference -->
+    <t-form-group class="t-form-group" [label]="labelDocumentAdditionalReference(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="AdditionalReferenceIsCommon"
+        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.AdditionalReference"
+        *ngIf="showDocumentAdditionalReference(model)">
+        <ng-container *ngIf="model?.AdditionalReferenceIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AdditionalReference">
+                {{ model?.AdditionalReference }}
+            </t-restricted>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReference"
+                [required]="requireDocumentAdditionalReference" [disabled]="readonlyDocumentAdditionalReference(model)">
+            </t-text-editor>
+        </ng-container>
     </t-form-group>
 
     <!-- Document Memo -->
     <t-form-group *ngIf="showDocumentMemo(model)" class="t-form-group" [label]="'Memo' | translate"
-        [serverErrors]="model?.serverErrors?.Memo">
+        [labelContextMenu]="documentIsCommonMenu" labelContext="MemoIsCommon"
+        [disableLabelMenu]="!isEdit && showDocumentMemoIsCommon(model)" [serverErrors]="model?.serverErrors?.Memo">
         <div *ngIf="!isEdit">{{ model?.Memo }}</div>
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="requireDocumentMemo(model)" [disabled]="readonlyDocumentMemo(model)">
         </t-text-editor>
-        <ng-container *ngIf="showDocumentMemoIsCommon(model)">
-            <ng-container *ngTemplateOutlet="lock; context:{ prop: 'MemoIsCommon' }"></ng-container>
-        </ng-container>
     </t-form-group>
 
     <ng-template #perLine>
         <div class="flex-grow-1" [class.t-disabled-background]="isEdit" [class.border-bottom]="isEdit">
-            <span class="font-italic text-muted">{{ '(' + ('SpecifiedPerLine' | translate) + ')' }}</span>
+            <span class="font-italic text-muted">{{ '(' + ('SpecifiedPerTab' | translate) + ')' }}</span>
         </div>
     </ng-template>
 
-    <ng-template #lock let-prop="prop">
-        <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
-            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-2 h-100 t-no-arrow align-baseline"
-                style="width:22.6px;" ngbDropdownToggle tabindex="-1">
-                <fa-icon icon="ellipsis-v"></fa-icon>
-            </button>
-            <div ngbDropdownMenu>
-                <button ngbDropdownItem class="t-transparent-background" (click)="model[prop] = !model[prop]">
-                    {{ (model[prop] ? 'SpecifyPerLine' : 'SpecifyForAllLines') | translate }}
-                </button>
-            </div>
+    <!-- Context menu for results -->
+    <ng-template #documentIsCommonMenu let-prop let-close="close">
+        <div class="dropdown">
+            <ul class="dropdown-menu show shadow-sm">
+                <li class="dropdown-item px-0 py-1" (click)="model[prop] = !model[prop]; close();">
+                    <div class="t-menu-icon">
+                        <fa-icon [icon]="model[prop] ? 'expand' : 'compress'"></fa-icon>
+                    </div>
+                    <div class="t-menu-text">
+                        {{ (model[prop] ? 'SpecifyPerTab' : 'SpecifyForAllTabs') | translate }}
+                    </div>
+                </li>
+            </ul>
         </div>
     </ng-template>
 
@@ -283,10 +311,27 @@
 
                     <!-- Smart Tab -->
                     <ng-container *ngIf="!isManualLine(lineDefId)">
+                        <!-- Tab Header -->
+                        <!-- <ng-container *ngIf="!defaultsToForm(lineDefId)">
+                            <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, model, 'tab')">
+                                <div class="row m-0 pt-2 t-form" *ngIf="smartColumnPaths(lineDefId, model, 'tab')[0]">
+                                    {{ colPath }}
+                                    
+                                </div>
+
+                                <ng-container *ngTemplateOutlet="smartRow; context: { 
+                                            item: lines(lineDefId, model)[0], 
+                                            argument: colPath, 
+                                            index: 0, 
+                                            update: dummyUpdate, 
+                                            isForm: true }">
+                                </ng-container>
+                            </ng-container>
+                        </ng-container> -->
 
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
-                            [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
+                            [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, 'table')"
                             [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartHeaderCommands, smartCommands)"
                             [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
                             (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
@@ -320,7 +365,7 @@
                                             </button>
                                         </ng-container>
                                     </div>
-                                    <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, model, true)">
+                                    <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, model, 'form')">
                                         <ng-container *ngTemplateOutlet="smartRow; context: { 
                                                     item: lines(lineDefId, model)[0], 
                                                     argument: colPath, 
@@ -383,7 +428,7 @@
                             <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>                            
+                            </t-view-link>
                             <t-view-link *ngSwitchCase="'CustodianId'"
                                 [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
@@ -703,10 +748,10 @@
                                 </div>
                                 <div *ngIf="!signature.CanSign && !!signature.OnBehalfOfUserId">
                                     <span>
-                                    {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
-                                        [itemId]="signature.OnBehalfOfUserId">
-                                        {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
-                                    </t-view-link></span>
+                                        {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
+                                            [itemId]="signature.OnBehalfOfUserId">
+                                            {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
+                                        </t-view-link></span>
                                 </div>
                             </ng-container>
 
@@ -1106,7 +1151,8 @@
                     [serverErrors]="entry.serverErrors?.CustodianId">
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CustodianId">
-                        <t-view-link [link]="'../../../relations/' + ws.get('Relation', entry.CustodianId)?.DefinitionId"
+                        <t-view-link
+                            [link]="'../../../relations/' + ws.get('Relation', entry.CustodianId)?.DefinitionId"
                             [itemId]="entry.CustodianId">
                             {{ ws.getMultilingualValue('Relation', entry.CustodianId, 'Name') }}
                         </t-view-link>
@@ -1158,7 +1204,8 @@
                     [serverErrors]="entry.serverErrors?.ParticipantId">
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ParticipantId">
-                        <t-view-link [link]="'../../../relations/' + ws.get('Relation', entry.ParticipantId)?.DefinitionId"
+                        <t-view-link
+                            [link]="'../../../relations/' + ws.get('Relation', entry.ParticipantId)?.DefinitionId"
                             [itemId]="entry.ParticipantId">
                             {{ ws.getMultilingualValue('Relation', entry.ParticipantId, 'Name') }}
                         </t-view-link>

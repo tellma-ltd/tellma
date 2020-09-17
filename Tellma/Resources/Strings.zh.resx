@@ -1247,7 +1247,7 @@
     <value>中心“{0}”不能有后代。</value>
   </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
-    <value>父中心“{0}”不活跃。</value>
+    <value>母体中心“{0}”不活跃。</value>
   </data>
   <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
     <value>在{0} '{1}' 是不活动的。</value>

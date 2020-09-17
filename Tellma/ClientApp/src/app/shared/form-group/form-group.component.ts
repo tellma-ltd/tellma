@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 import { FormGroupBaseComponent } from '../form-group-base/form-group-base.component';
 
 
@@ -8,4 +8,12 @@ import { FormGroupBaseComponent } from '../form-group-base/form-group-base.compo
 })
 export class FormGroupComponent extends FormGroupBaseComponent {
 
+  @Input()
+  labelContextMenu: TemplateRef<any>;
+
+  @Input()
+  labelContext: any;
+
+  @Input()
+  disableLabelMenu: boolean;
 }

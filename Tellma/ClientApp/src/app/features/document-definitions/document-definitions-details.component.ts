@@ -259,7 +259,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       let currencyFilters: { [filter: string]: true } = {};
 
       for (const lineDef of documentLineDefinitions) {
-        for (const colDef of lineDef.Columns.filter(c => !!c.InheritsFromHeader)) {
+        for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader === 2)) {
           if (colDef.ColumnName === 'Memo') {
             result.MemoIsCommonVisibility = true;
             result.MemoVisibility = result.MemoVisibility || 'Optional';

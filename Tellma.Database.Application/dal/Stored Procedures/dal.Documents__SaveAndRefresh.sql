@@ -201,7 +201,6 @@ BEGIN
 			t.[ModifiedById]				= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
-			[Id],
 			[LineDefinitionId],
 
 			[EntryIndex],
@@ -240,7 +239,6 @@ BEGIN
 			[AdditionalReferenceIsCommon]
 		)
 		VALUES (
-			s.[Id],
 			s.[LineDefinitionId],
 
 			s.[EntryIndex],
