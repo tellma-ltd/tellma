@@ -287,6 +287,51 @@ namespace Tellma.Controllers
         private List<InboxNotificationInfo> _notificationInfos;
         private List<string> _fileIdsToDelete;
 
+        /// <summary>
+        /// This is used in preprocessing and validation when a tab entry is null
+        /// </summary>
+        private static readonly DocumentLineDefinitionEntryForSave DefaultTabEntry = new DocumentLineDefinitionEntryForSave
+        {
+            PostingDateIsCommon = true,
+            MemoIsCommon = true,
+            NotedRelationIsCommon = true,
+            CurrencyIsCommon = true,
+            CustodyIsCommon = true,
+            ResourceIsCommon = true,
+            QuantityIsCommon = true,
+            UnitIsCommon = true,
+            CenterIsCommon = true,
+            Time1IsCommon = true,
+            Time2IsCommon = true,
+            ExternalReferenceIsCommon = true,
+            AdditionalReferenceIsCommon = true
+        };
+
+        /// <summary>
+        /// Checks if the supplied DocumentLineDefinitionEntryForSave is equivalent to the default one (ignoring Id, LineDefinitionId and EntryIndex properties)
+        /// </summary>
+        private static bool EqualsDefaultTabEntry(DocumentLineDefinitionEntryForSave tabEntry)
+        {
+            var desc = Entities.Descriptors.TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
+            return desc.Properties.All(p =>
+            {
+                switch (p.Name)
+                {
+                    case nameof(DocumentLineDefinitionEntryForSave.Id):
+                    case nameof(DocumentLineDefinitionEntryForSave.LineDefinitionId):
+                    case nameof(DocumentLineDefinitionEntryForSave.EntryIndex):
+                        return true; // Those properties don't matter for the comparison
+                    default:
+                        // Everything else must match
+                        var expected = p.GetValue(DefaultTabEntry);
+                        var actual = p.GetValue(tabEntry);
+
+                        return (expected == null && actual == null) ||
+                            (expected != null && actual != null && expected.Equals(actual));
+                }
+            });
+        }
+
         public DocumentsService(TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
@@ -988,7 +1033,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault();
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
                                     if (CopyFromTab(colDef, tabEntry.MemoIsCommon, isForm))
                                     {
                                         line.Memo = tabEntry.Memo;
@@ -1003,7 +1048,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault();
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
                                     if (CopyFromTab(colDef, tabEntry.PostingDateIsCommon, isForm))
                                     {
                                         line.PostingDate = tabEntry.PostingDate;
@@ -1022,7 +1067,7 @@ namespace Tellma.Controllers
 
                                 // Copy the common values
                                 var entry = line.Entries[colDef.EntryIndex];
-                                var tabEntry = tabEntries[colDef.EntryIndex];
+                                var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntry;
 
                                 switch (colDef.ColumnName)
                                 {
@@ -1134,9 +1179,15 @@ namespace Tellma.Controllers
             // SQL server preprocessing
             await _repo.Documents__Preprocess(DefinitionId.Value, docs);
 
+            var tabEntryDesc = Entities.Descriptors.TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
+
             // C# Processing after SQL
             docs.ForEach(doc =>
             {
+                // Remove empty tab entries
+                doc.LineDefinitionEntries?.RemoveAll(EqualsDefaultTabEntry);
+
+                // Lines preprocessing
                 doc.Lines.ForEach(line =>
                 {
                     line.Entries.ForEach(entry =>
@@ -1243,7 +1294,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault();
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
                                     if (CopyFromTab(colDef, tabEntry.MemoIsCommon, isForm))
                                     {
                                         if (line.Memo != tabEntry.Memo)
@@ -1265,7 +1316,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault();
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
                                     if (CopyFromTab(colDef, tabEntry.PostingDateIsCommon, isForm))
                                     {
                                         if (line.PostingDate != tabEntry.PostingDate)
@@ -1287,7 +1338,7 @@ namespace Tellma.Controllers
 
                                 // Copy the common values
                                 var entry = line.Entries[colDef.EntryIndex];
-                                var tabEntry = tabEntries[colDef.EntryIndex];
+                                var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntry;
 
                                 switch (colDef.ColumnName)
                                 {

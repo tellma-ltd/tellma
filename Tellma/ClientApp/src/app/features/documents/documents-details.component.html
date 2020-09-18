@@ -4,7 +4,7 @@
     [documentHeaderTemplate]="documentHeader" [actions]="[
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
     [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
-    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select">
+    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select" [savePreprocessing]="savePreprocessing">
 
 </t-details>
 
@@ -322,7 +322,7 @@
                             <ng-container *ngFor="let columnIndex of smartTabHeaderColumnPaths(lineDefId, model)">
                                 <t-form-group class="t-form-group" [labelContextMenu]="tabIsCommonMenu"
                                     [labelContext]="columnIndex" [disableLabelMenu]="!isEdit"
-                                    [serverErrors]="serverErrors(lineDefId, columnIndex, null, model)"
+                                    [serverErrors]="tabHeaderServerErrors(lineDefId, columnIndex, model)"
                                     [label]="columnLabel(lineDefId, columnIndex)">
                                     <ng-container *ngIf="tabIsCommon(lineDefId, columnIndex, model); else perLine">
                                         <ng-container
@@ -415,13 +415,13 @@
                     let-isForm="isForm">
 
                     <t-form-group-cell *ngIf="!isForm" class="t-form-group"
-                        [serverErrors]="serverErrors(lineDefId, columnIndex, line, model)">
+                        [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)">
                         <ng-container
                             *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, line: line, update: update, isForm: isForm }">
                         </ng-container>
                     </t-form-group-cell>
                     <t-form-group *ngIf="isForm" class="t-form-group"
-                        [serverErrors]="serverErrors(lineDefId, columnIndex, line, model)"
+                        [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)"
                         [label]="columnLabel(lineDefId, columnIndex)">
                         <ng-container
                             *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, line: line, update: update, isForm: isForm }">

@@ -208,7 +208,7 @@
             </div>
             <!-- Details -->
             <ng-container
-              *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+              *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit, serverErrors: serverErrors }">
             </ng-container>
           </div>
         </div>
@@ -217,7 +217,7 @@
       <!-- Full screen content -->
       <ng-container *ngIf="showDocument && fullScreenLayout">
         <ng-container
-          *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+          *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit, serverErrors: serverErrors }">
         </ng-container>
       </ng-container>
 

@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  DefinitionsForClient, LineDefinitionForClient, LineDefinitionGenerateParameterForClient
+  DefinitionsForClient, LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -2390,6 +2390,39 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._lines[lineDefId];
   }
 
+  private _tabEntries: { [defId: number]: LineForSave[] };
+  private _tabEntriesModel: DocumentForSave;
+
+  /**
+   * Returns the array of DocumentLineDefinitionEntries indexed by EntryIndex (may contain gaps)
+   */
+  public tabEntries(lineDefId: number, model: Document): DocumentLineDefinitionEntry[] {
+    if (!model) {
+      return [];
+    }
+
+    if (this._tabEntriesModel !== model) {
+      this._tabEntriesModel = model;
+      this._tabEntries = {};
+
+      if (!!model.LineDefinitionEntries) {
+        for (const tabEntry of model.LineDefinitionEntries) {
+          if (!this._tabEntries[tabEntry.LineDefinitionId]) {
+            this._tabEntries[tabEntry.LineDefinitionId] = [];
+          }
+
+          this._tabEntries[tabEntry.LineDefinitionId][tabEntry.EntryIndex] = tabEntry;
+        }
+      }
+    }
+
+    if (!this._tabEntries[lineDefId]) {
+      this._tabEntries[lineDefId] = [];
+    }
+
+    return this._tabEntries[lineDefId];
+  }
+
   private _manualLineModel: Document;
   private _manualLineResult: LineForSave;
 
@@ -2508,14 +2541,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public manualEntries(model: Document): LineEntryPair[] {
     this.computeEntries(model);
     return this._manualEntries;
-  }
-
-  private tabEntries(lineDefId: number, model: Document): DocumentLineDefinitionEntry[] {
-    if (!model || !model.LineDefinitionEntries) {
-      return null;
-    } else {
-      return model.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId);
-    }
   }
 
   public showTabErrors(lineDefId: number, model: Document) {
@@ -2773,7 +2798,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
    * Returns a hard-coded 0 for Memo and PostingDate and the actual entry index otherwise
    */
   private tabEntryIndex(colDef: LineDefinitionColumnForClient): number {
-    return colDef.ColumnName === 'Memo' || colDef.ColumnName === 'PostingDate' ? 0 : colDef.EntryIndex;
+    switch (colDef.ColumnName) {
+      case 'Memo':
+      case 'PostingDate':
+        return 0;
+      default:
+        return colDef.EntryIndex;
+    }
   }
 
   /**
@@ -2785,7 +2816,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const entryIndex = this.tabEntryIndex(colDef);
-    return doc.LineDefinitionEntries.find(e => e.LineDefinitionId === lineDefId && e.EntryIndex === entryIndex);
+    return this.tabEntries(lineDefId, doc)[entryIndex];
   }
 
   public entry(lineDefId: number, columnIndex: number, line: LineForSave): EntryForSave {
@@ -2846,15 +2877,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public serverErrors(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave): string[] {
+  public lineEntryServerErrors(lineDefId: number, columnIndex: number, line: LineForSave): string[] {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    let entity: LineForSave | EntryForSave | DocumentLineDefinitionEntryForSave;
-    if (!!line) {
-      entity = this.entity(colDef, line);
-    } else {
-      entity = this.tabEntry(lineDefId, colDef, doc);
-    }
+    const entity = this.entity(colDef, line);
     return !!entity && !!entity.serverErrors ? entity.serverErrors[colDef.ColumnName] : null;
+  }
+
+  public tabHeaderServerErrors(lineDefId: number, columnIndex: number, doc: DocumentForSave) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const tabEntry = this.tabEntry(lineDefId, colDef, doc);
+    return !!tabEntry && !!tabEntry.serverErrors ? tabEntry.serverErrors[colDef.ColumnName] : null;
+  }
+
+  public savePreprocessing = (doc: DocumentForSave): void => {
+    // Add all missing DocumentLineDefinitionEntries (the tab entries)
+    // This is so that the server is able to report errors on any
+    // tab entry slot even if the tab entry was not created by that user
+    // The server removes excess tab entries anyways in DocumentsController.SavePreprocessAsync
+    const def = this.definition;
+    const lineDefIds = def.LineDefinitions.map(e => e.LineDefinitionId);
+    for (const lineDefId of lineDefIds) {
+      const lineDef = this.lineDefinition(lineDefId);
+      for (const colDef of lineDef.Columns) {
+        const tabEntry = this.tabEntry(lineDefId, colDef, doc);
+        if (!tabEntry) {
+          this.addNewTabEntry(lineDefId, colDef, doc);
+        }
+      }
+    }
   }
 
   public getFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave): any {
@@ -2885,18 +2935,31 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     };
 
     doc.LineDefinitionEntries.push(tabEntry);
+    this.tabEntries(lineDefId, doc)[tabEntry.EntryIndex] = tabEntry;
 
     return tabEntry;
   }
 
-  private isCommonPropertyName(prop: string) {
-    if (!prop) {
-      return undefined;
-    }
-    if (prop.endsWith('Id')) {
-      return prop.slice(0, -2) + 'IsCommon';
-    } else {
-      return prop + 'IsCommon';
+  private isCommonPropertyName(prop: EntryColumnName): string {
+
+    switch (prop) {
+      case 'PostingDate': return 'PostingDateIsCommon';
+      case 'Memo': return 'MemoIsCommon';
+      case 'NotedRelationId': return 'NotedRelationIsCommon';
+      case 'CurrencyId': return 'CurrencyIsCommon';
+      case 'CustodyId': return 'CustodyIsCommon';
+      case 'ResourceId': return 'ResourceIsCommon';
+      case 'Quantity': return 'QuantityIsCommon';
+      case 'UnitId': return 'UnitIsCommon';
+      case 'CenterId': return 'CenterIsCommon';
+      case 'Time1': return 'Time1IsCommon';
+      case 'Time2': return 'Time2IsCommon';
+      case 'ExternalReference': return 'ExternalReferenceIsCommon';
+      case 'AdditionalReference': return 'AdditionalReferenceIsCommon';
+      default: {
+        console.error(`Could not determine IsCommon version of column name ${prop}`);
+        return '';
+      }
     }
   }
 
