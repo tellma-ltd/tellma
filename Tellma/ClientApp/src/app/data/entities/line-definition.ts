@@ -47,8 +47,8 @@ export interface LineDefinition extends LineDefinitionForSave<
     LineDefinitionColumn,
     LineDefinitionStateReason,
     LineDefinitionGenerateParameter,
-    Workflow
-> {
+    Workflow> {
+    NotedRelationDefinitionId?: number;
     SavedById?: number;
 }
 
@@ -91,6 +91,8 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 GenerateScript: { control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
                 PreprocessScript: { control: 'text', label: () => trx.instant('LineDefinition_PreprocessScript') },
                 ValidateScript: { control: 'text', label: () => trx.instant('LineDefinition_ValidateScript') },
+                NotedRelationDefinitionId: { control: 'number', label: () => `${trx.instant('LineDefinition_NotedRelationDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedRelationDefinition: { control: 'navigation', label: () => trx.instant('LineDefinition_NotedRelationDefinition'), type: 'Relation', foreignKeyName: 'NotedRelationDefinitionId' },
                 SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }
             }

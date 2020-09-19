@@ -5,9 +5,9 @@
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]					INT		DEFAULT 0,
 	[LineDefinitionId]		INT,
-	UNIQUE ([DocumentIndex], [LineDefinitionId]),
+	[EntryIndex]			INT,
+	UNIQUE ([DocumentIndex], [LineDefinitionId], [EntryIndex]),
 
-	[EntryIndex]					INT,
 	[PostingDate]					DATE, 
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Memo]							NVARCHAR (255),

@@ -168,42 +168,6 @@ namespace Tellma.Controllers.Dto
         public string PostingDateLabel2 { get; set; }
         public string PostingDateLabel3 { get; set; }
 
-        // Debit Resource
-        public bool DebitResourceVisibility { get; set; }
-        public short? DebitResourceRequiredState { get; set; }
-        public short? DebitResourceReadOnlyState { get; set; }
-        public List<int> DebitResourceDefinitionIds { get; set; }
-        public string DebitResourceLabel { get; set; }
-        public string DebitResourceLabel2 { get; set; }
-        public string DebitResourceLabel3 { get; set; }
-
-        // Credit Resource
-        public bool CreditResourceVisibility { get; set; }
-        public short? CreditResourceRequiredState { get; set; }
-        public short? CreditResourceReadOnlyState { get; set; }
-        public List<int> CreditResourceDefinitionIds { get; set; }
-        public string CreditResourceLabel { get; set; }
-        public string CreditResourceLabel2 { get; set; }
-        public string CreditResourceLabel3 { get; set; }
-
-        // Debit Custody
-        public bool DebitCustodyVisibility { get; set; }
-        public short? DebitCustodyRequiredState { get; set; }
-        public short? DebitCustodyReadOnlyState { get; set; }
-        public List<int> DebitCustodyDefinitionIds { get; set; }
-        public string DebitCustodyLabel { get; set; }
-        public string DebitCustodyLabel2 { get; set; }
-        public string DebitCustodyLabel3 { get; set; }
-
-        // Credit Custody
-        public bool CreditCustodyVisibility { get; set; }
-        public short? CreditCustodyRequiredState { get; set; }
-        public short? CreditCustodyReadOnlyState { get; set; }
-        public List<int> CreditCustodyDefinitionIds { get; set; }
-        public string CreditCustodyLabel { get; set; }
-        public string CreditCustodyLabel2 { get; set; }
-        public string CreditCustodyLabel3 { get; set; }
-
         // Noted Relation
         public bool NotedRelationVisibility { get; set; }
         public short? NotedRelationRequiredState { get; set; }
@@ -212,6 +176,7 @@ namespace Tellma.Controllers.Dto
         public string NotedRelationLabel { get; set; }
         public string NotedRelationLabel2 { get; set; }
         public string NotedRelationLabel3 { get; set; }
+        public string NotedRelationFilter { get; set; }
 
         // Center
         public bool CenterVisibility { get; set; }
@@ -220,41 +185,10 @@ namespace Tellma.Controllers.Dto
         public string CenterLabel { get; set; }
         public string CenterLabel2 { get; set; }
         public string CenterLabel3 { get; set; }
+        public string CenterFilter { get; set; }
 
         // Clearance
         public string ClearanceVisibility { get; set; }
-
-        // Time 1
-        public bool Time1Visibility { get; set; }
-        public short? Time1RequiredState { get; set; }
-        public short? Time1ReadOnlyState { get; set; }
-        public string Time1Label { get; set; }
-        public string Time1Label2 { get; set; }
-        public string Time1Label3 { get; set; }
-
-        // Time 2
-        public bool Time2Visibility { get; set; }
-        public short? Time2RequiredState { get; set; }
-        public short? Time2ReadOnlyState { get; set; }
-        public string Time2Label { get; set; }
-        public string Time2Label2 { get; set; }
-        public string Time2Label3 { get; set; }
-
-        // Quantity
-        public bool QuantityVisibility { get; set; }
-        public short? QuantityRequiredState { get; set; }
-        public short? QuantityReadOnlyState { get; set; }
-        public string QuantityLabel { get; set; }
-        public string QuantityLabel2 { get; set; }
-        public string QuantityLabel3 { get; set; }
-
-        // Unit
-        public bool UnitVisibility { get; set; }
-        public short? UnitRequiredState { get; set; }
-        public short? UnitReadOnlyState { get; set; }
-        public string UnitLabel { get; set; }
-        public string UnitLabel2 { get; set; }
-        public string UnitLabel3 { get; set; }
 
         // Currency
         public bool CurrencyVisibility { get; set; }
@@ -263,7 +197,23 @@ namespace Tellma.Controllers.Dto
         public string CurrencyLabel { get; set; }
         public string CurrencyLabel2 { get; set; }
         public string CurrencyLabel3 { get; set; }
+        public string CurrencyFilter { get; set; }
 
+        // ExternalReference
+        public bool ExternalReferenceVisibility { get; set; }
+        public short? ExternalReferenceRequiredState { get; set; }
+        public short? ExternalReferenceReadOnlyState { get; set; }
+        public string ExternalReferenceLabel { get; set; }
+        public string ExternalReferenceLabel2 { get; set; }
+        public string ExternalReferenceLabel3 { get; set; }
+
+        // AdditionalReference
+        public bool AdditionalReferenceVisibility { get; set; }
+        public short? AdditionalReferenceRequiredState { get; set; }
+        public short? AdditionalReferenceReadOnlyState { get; set; }
+        public string AdditionalReferenceLabel { get; set; }
+        public string AdditionalReferenceLabel2 { get; set; }
+        public string AdditionalReferenceLabel3 { get; set; }
 
         public bool CanReachState1 { get; set; }
         public bool CanReachState2 { get; set; }
@@ -337,7 +287,7 @@ namespace Tellma.Controllers.Dto
         public string Filter { get; set; }
         public short? RequiredState { get; set; }
         public short? ReadOnlyState { get; set; }
-        public bool? InheritsFromHeader { get; set; }
+        public byte? InheritsFromHeader { get; set; }
     }
 
     public class LineDefinitionStateReasonForClient

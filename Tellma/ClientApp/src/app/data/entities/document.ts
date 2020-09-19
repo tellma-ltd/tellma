@@ -5,51 +5,41 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor, NavigationPropDescriptor, BooleanPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { LineForSave, Line, LineState } from './line';
+import { LineForSave, Line } from './line';
 import { DocumentAssignment } from './document-assignment';
 import { AttachmentForSave, Attachment } from './attachment';
 import { EntityForSave } from './base/entity-for-save';
 import { DocumentStateChange } from './document-state-change';
+import { DocumentLineDefinitionEntry, DocumentLineDefinitionEntryForSave } from './document-line-definition-entry';
 
 export type DocumentState = 0 | 1 | -1;
 export type DocumentClearance = 0 | 1 | 2;
 
-export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
+export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = DocumentLineDefinitionEntryForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     SerialNumber?: number;
+    Clearance?: DocumentClearance;
     PostingDate?: string;
     PostingDateIsCommon?: boolean;
-    Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
-    DebitResourceId?: number;
-    DebitResourceIsCommon?: boolean;
-    CreditResourceId?: number;
-    CreditResourceIsCommon?: boolean;
-    DebitCustodyId?: number;
-    DebitCustodyIsCommon?: boolean;
-    CreditCustodyId?: number;
-    CreditCustodyIsCommon?: boolean;
-    NotedRelationId?: number;
-    NotedRelationIsCommon?: boolean;
     SegmentId?: number;
     CenterId?: number;
     CenterIsCommon?: boolean;
-    Time1?: string;
-    Time1IsCommon?: boolean;
-    Time2?: string;
-    Time2IsCommon?: boolean;
-    Quantity?: number;
-    QuantityIsCommon?: boolean;
-    UnitId?: number;
-    UnitIsCommon?: boolean;
+    NotedRelationId?: number;
+    NotedRelationIsCommon?: boolean;
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
+    ExternalReference?: string;
+    ExternalReferenceIsCommon?: boolean;
+    AdditionalReference?: string;
+    AdditionalReferenceIsCommon?: boolean;
 
     Lines?: TLine[];
+    LineDefinitionEntries?: TLineDefinitionEntry[];
     Attachments?: TAttachment[];
 }
 
-export interface Document extends DocumentForSave<Line, Attachment> {
+export interface Document extends DocumentForSave<Line, DocumentLineDefinitionEntry, Attachment> {
     DefinitionId?: number;
     Code?: string;
     State?: DocumentState;
@@ -118,18 +108,6 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
-                DebitResourceId: { control: 'number', label: () => `${trx.instant('Document_DebitResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DebitResource: { control: 'navigation', label: () => trx.instant('Document_DebitResource'), type: 'Resource', foreignKeyName: 'DebitResourceId' },
-                DebitResourceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitResource') }) },
-                CreditResourceId: { control: 'number', label: () => `${trx.instant('Document_CreditResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CreditResource: { control: 'navigation', label: () => trx.instant('Document_CreditResource'), type: 'Resource', foreignKeyName: 'CreditResourceId' },
-                CreditResourceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_CreditResource') }) },
-                DebitCustodyId: { control: 'number', label: () => `${trx.instant('Document_DebitCustody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DebitCustody: { control: 'navigation', label: () => trx.instant('Document_DebitCustody'), type: 'Custody', foreignKeyName: 'DebitCustodyId' },
-                DebitCustodyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_DebitCustody') }) },
-                CreditCustodyId: { control: 'number', label: () => `${trx.instant('Document_CreditCustody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CreditCustody: { control: 'navigation', label: () => trx.instant('Document_CreditCustody'), type: 'Custody', foreignKeyName: 'CreditCustodyId' },
-                CreditCustodyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_CreditCustody') }) },
                 NotedRelationId: { control: 'number', label: () => `${trx.instant('Document_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 NotedRelation: { control: 'navigation', label: () => trx.instant('Document_NotedRelation'), type: 'Relation', foreignKeyName: 'NotedRelationId' },
                 NotedRelationIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_NotedRelation') }) },
@@ -138,18 +116,15 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 CenterId: { control: 'number', label: () => `${trx.instant('Document_Cemter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { control: 'navigation', label: () => trx.instant('Document_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 CenterIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
-                Time1: { control: 'date', label: () => trx.instant('Document_Time1') },
-                Time1IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Time1') }) },
-                Time2: { control: 'date', label: () => trx.instant('Document_Time2') },
-                Time2IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Time2') }) },
-                Quantity: { control: 'number', label: () => trx.instant('Document_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Quantity') }) },
-                UnitId: { control: 'number', label: () => `${trx.instant('Document_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Unit: { control: 'navigation', label: () => trx.instant('Document_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
-                UnitIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Unit') }) },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Document_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Document_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Currency') }) },
+                ExternalReference: { control: 'text', label: () => trx.instant('Document_ExternalReference') },
+                ExternalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_ExternalReference') }) },
+                AdditionalReference: { control: 'text', label: () => trx.instant('Document_AdditionalReference') },
+                AdditionalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_AdditionalReference') }) },
+
+
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => formatSerial(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
@@ -210,7 +185,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete props.Definition;
 
             // Simple properties whose label and visibility are overriden by the definition
-            for (const propName of ['Time1', 'Time2', 'Quantity', 'Memo']) {
+            for (const propName of ['Memo', 'PostingDate', 'AdditionalReference', 'ExternalReference']) {
                 if (!definition[propName + 'Visibility']) {
                     delete props[propName];
                     delete props[propName + 'IsCommon'];
@@ -233,7 +208,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['DebitCustody', 'CreditCustody', 'DebitResource', 'CreditResource', 'NotedRelation', 'Center', 'Unit', 'Currency']) {
+            for (const propName of ['NotedRelation', 'Center', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

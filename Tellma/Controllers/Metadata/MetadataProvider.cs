@@ -1323,38 +1323,6 @@ namespace Tellma.Controllers
                 case nameof(Document.PostingDateIsCommon):
                     display = PropertyDisplay(def.PostingDateVisibility, display);
                     break;
-                case nameof(Document.DebitResourceId):
-                case nameof(Document.DebitResource):
-                    display = PropertyDisplay(settings, def.DebitResourceVisibility, def.DebitResourceLabel, def.DebitResourceLabel2, def.DebitResourceLabel3, display);
-                    isRequired = def.DebitResourceRequiredState == 0;
-                    break;
-                case nameof(Document.DebitResourceIsCommon):
-                    display = PropertyDisplay(def.DebitResourceVisibility, display);
-                    break;
-                case nameof(Document.CreditResourceId):
-                case nameof(Document.CreditResource):
-                    display = PropertyDisplay(settings, def.CreditResourceVisibility, def.CreditResourceLabel, def.CreditResourceLabel2, def.CreditResourceLabel3, display);
-                    isRequired = def.CreditResourceRequiredState == 0;
-                    break;
-                case nameof(Document.CreditResourceIsCommon):
-                    display = PropertyDisplay(def.CreditResourceVisibility, display);
-                    break;
-                case nameof(Document.DebitCustodyId):
-                case nameof(Document.DebitCustody):
-                    display = PropertyDisplay(settings, def.DebitCustodyVisibility, def.DebitCustodyLabel, def.DebitCustodyLabel2, def.DebitCustodyLabel3, display);
-                    isRequired = def.DebitCustodyRequiredState == 0;
-                    break;
-                case nameof(Document.DebitCustodyIsCommon):
-                    display = PropertyDisplay(def.DebitCustodyVisibility, display);
-                    break;
-                case nameof(Document.CreditCustodyId):
-                case nameof(Document.CreditCustody):
-                    display = PropertyDisplay(settings, def.CreditCustodyVisibility, def.CreditCustodyLabel, def.CreditCustodyLabel2, def.CreditCustodyLabel3, display);
-                    isRequired = def.CreditCustodyRequiredState == 0;
-                    break;
-                case nameof(Document.CreditCustodyIsCommon):
-                    display = PropertyDisplay(def.CreditCustodyVisibility, display);
-                    break;
                 case nameof(Document.NotedRelationId):
                 case nameof(Document.NotedRelation):
                     display = PropertyDisplay(settings, def.NotedRelationVisibility, def.NotedRelationLabel, def.NotedRelationLabel2, def.NotedRelationLabel3, display);
@@ -1371,35 +1339,6 @@ namespace Tellma.Controllers
                 case nameof(Document.CenterIsCommon):
                     display = PropertyDisplay(def.CenterVisibility, display);
                     break;
-                case nameof(Document.Time1):
-                    display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
-                    isRequired = def.Time1RequiredState == 0;
-                    break;
-                case nameof(Document.Time1IsCommon):
-                    display = PropertyDisplay(def.Time1Visibility, display);
-                    break;
-                case nameof(Document.Time2):
-                    display = PropertyDisplay(settings, def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
-                    isRequired = def.Time2RequiredState == 0;
-                    break;
-                case nameof(Document.Time2IsCommon):
-                    display = PropertyDisplay(def.Time2Visibility, display);
-                    break;
-                case nameof(Document.Quantity):
-                    display = PropertyDisplay(settings, def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
-                    isRequired = def.QuantityRequiredState == 0;
-                    break;
-                case nameof(Document.QuantityIsCommon):
-                    display = PropertyDisplay(def.QuantityVisibility, display);
-                    break;
-                case nameof(Document.UnitId):
-                case nameof(Document.Unit):
-                    display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
-                    isRequired = def.UnitRequiredState == 0;
-                    break;
-                case nameof(Document.UnitIsCommon):
-                    display = PropertyDisplay(def.UnitVisibility, display);
-                    break;
                 case nameof(Document.CurrencyId):
                 case nameof(Document.Currency):
                     display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
@@ -1412,27 +1351,24 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.ClearanceVisibility, display);
                     isRequired = def.ClearanceVisibility == Visibility.Required;
                     break;
-
-                // TODO: Include those in the definition
-                case nameof(Document.DocumentText1):
-                case nameof(Document.DocumentText2):
-                case nameof(Document.DocumentLookup1):
-                case nameof(Document.DocumentLookup1Id):
-                case nameof(Document.DocumentLookup2):
-                case nameof(Document.DocumentLookup2Id):
-                case nameof(Document.DocumentLookup3):
-                case nameof(Document.DocumentLookup3Id):
-                    display = null;
-                    isRequired = false;
+                case nameof(Document.ExternalReference):
+                    display = PropertyDisplay(settings, def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
+                    isRequired = def.ExternalReferenceRequiredState == 0;
+                    break;
+                case nameof(Document.ExternalReferenceIsCommon):
+                    display = PropertyDisplay(def.ExternalReferenceVisibility, display);
+                    break;
+                case nameof(Document.AdditionalReference):
+                    display = PropertyDisplay(settings, def.AdditionalReferenceVisibility, def.AdditionalReferenceLabel, def.AdditionalReferenceLabel2, def.AdditionalReferenceLabel3, display);
+                    isRequired = def.AdditionalReferenceRequiredState == 0;
+                    break;
+                case nameof(Document.AdditionalReferenceIsCommon):
+                    display = PropertyDisplay(def.AdditionalReferenceVisibility, display);
                     break;
             }
 
             int? targetDefId = propInfo.Name switch
             {
-                nameof(Document.DebitResource) => def.DebitResourceDefinitionIds.Count == 1 ? (int?)def.DebitResourceDefinitionIds[0] : null,
-                nameof(Document.CreditResource) => def.CreditResourceDefinitionIds.Count == 1 ? (int?)def.CreditResourceDefinitionIds[0] : null,
-                nameof(Document.DebitCustody) => def.DebitCustodyDefinitionIds.Count == 1 ? (int?)def.DebitCustodyDefinitionIds[0] : null,
-                nameof(Document.CreditCustody) => def.CreditCustodyDefinitionIds.Count == 1 ? (int?)def.CreditCustodyDefinitionIds[0] : null,
                 nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,
                 _ => null,
             };

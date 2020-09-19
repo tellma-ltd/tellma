@@ -197,15 +197,6 @@ export class RootComponent {
     // Prevents the browser context menu
     $event.preventDefault();
 
-    // const positions: ConnectedPosition[] = [
-    //   {
-    //     originX: 'start',
-    //     originY: 'top',
-    //     overlayX: 'end',
-    //     overlayY: 'bottom',
-    //   }
-    // ];
-
     const positions: ConnectedPosition[] = [
       {
         originX: 'start',

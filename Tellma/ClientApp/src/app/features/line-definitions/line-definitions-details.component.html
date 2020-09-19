@@ -457,8 +457,10 @@
                                 </td>
 
                                 <td [class.p-0]="isEdit && !isRequiredColumn(column)">
-                                    <ng-container *ngIf="(!isEdit || isRequiredColumn(column)); else visiblestatetemplate">
-                                        <span *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.VisibleState) }}</span>
+                                    <ng-container
+                                        *ngIf="(!isEdit || isRequiredColumn(column)); else visiblestatetemplate">
+                                        <span
+                                            *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.VisibleState) }}</span>
                                         <span *ngIf="isRequiredColumn(column)">{{ stateDisplay(0) }}</span>
                                     </ng-container>
                                     <ng-template #visiblestatetemplate>
@@ -474,8 +476,10 @@
                                 </td>
 
                                 <td [class.p-0]="isEdit && !isRequiredColumn(column)">
-                                    <ng-container *ngIf="(!isEdit || isRequiredColumn(column)); else requiredstatetemplate">
-                                        <span *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.RequiredState) }}</span>
+                                    <ng-container
+                                        *ngIf="(!isEdit || isRequiredColumn(column)); else requiredstatetemplate">
+                                        <span
+                                            *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.RequiredState) }}</span>
                                         <span *ngIf="isRequiredColumn(column)">{{ stateDisplay(0) }}</span>
                                     </ng-container>
                                     <ng-template #requiredstatetemplate>
@@ -506,14 +510,16 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader ? 'Yes' : 'No') | translate }}</span>
+                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader === 2 ? 'InheritsFrom_2' : column.InheritsFromHeader === 1 ? 'InheritsFrom_1' : 'InheritsFrom_0') | translate }}</span>
                                     <ng-template #inheritsfromheadertemplate>
                                         <select class="form-control t-studio-input"
                                             [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
-                                            <option value="true">
-                                                {{ 'Yes' | translate }}</option>
-                                            <option value="false">
-                                                {{ 'No' | translate }}</option>
+                                            <option value="0">
+                                                {{ 'InheritsFrom_0' | translate }}</option>
+                                            <option value="1">
+                                                {{ 'InheritsFrom_1' | translate }}</option>
+                                            <option value="2">
+                                                {{ 'InheritsFrom_2' | translate }}</option>
                                         </select>
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">

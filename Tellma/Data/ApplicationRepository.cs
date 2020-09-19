@@ -259,6 +259,7 @@ namespace Tellma.Data
                 nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
                 nameof(DocumentDefinitionMarkupTemplate) => "[map].[DocumentDefinitionMarkupTemplates]()",
                 nameof(Document) => "[map].[Documents]()",
+                nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
                 nameof(Line) => "[map].[Lines]()",
                 nameof(LineForQuery) => "[map].[Lines]()",
                 nameof(Entry) => "[map].[Entries]()",
@@ -4421,11 +4422,17 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(docs);
+            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(docs);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
                 TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -4443,6 +4450,7 @@ namespace Tellma.Data
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(docsTvp);
+            cmd.Parameters.Add(lineDefinitionEntriesTvp);
             cmd.Parameters.Add(linesTvp);
             cmd.Parameters.Add(entriesTvp);
 
@@ -4468,6 +4476,25 @@ namespace Tellma.Data
                     propValue = propValue == DBNull.Value ? null : propValue;
 
                     prop.SetValue(doc, propValue);
+                }
+            }
+
+            // DocumentLineDefinitionEntries
+            await reader.NextResultAsync();
+            var lineDefEntriesProps = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>().SimpleProperties;
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var docIndex = reader.GetInt32(1);
+
+                var lineDefinitionEntry = docs[docIndex].LineDefinitionEntries[index];
+
+                foreach (var prop in lineDefEntriesProps)
+                {
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(lineDefinitionEntry, propValue);
                 }
             }
 
@@ -4521,11 +4548,17 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
                 TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -4543,6 +4576,7 @@ namespace Tellma.Data
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(docsTvp);
+            cmd.Parameters.Add(lineDefinitionEntriesTvp);
             cmd.Parameters.Add(linesTvp);
             cmd.Parameters.Add(entriesTvp);
             cmd.Parameters.Add("@Top", top);
@@ -4567,11 +4601,17 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
                     TypeName = $"[dbo].[{nameof(Document)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -4596,6 +4636,7 @@ namespace Tellma.Data
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add(entriesTvp);
                 cmd.Parameters.Add(attachmentsTvp);

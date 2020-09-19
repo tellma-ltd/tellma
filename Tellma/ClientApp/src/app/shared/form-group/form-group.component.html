@@ -2,13 +2,14 @@
   A basic form group, it would typically have a label and content, on wide screens both will appears side by side,
   with the label occupying a fixed minimum width and the content occupying the rest, on narrow screens they will
   appear stacked label above the content, so that both are occupying 100% of the available width, any input in the
-  content will be typically have a bottom border which turns teal when focused and turns red when invalid
+  content will typically have a bottom border which turns teal when focused and turns red when invalid
 -->
 <div class="d-flex flex-wrap flex-lg-nowrap" [ngbPopover]="invalid ? errorsPopover : null"
   popoverClass="t-error-popover" container="body" [placement]="popoverPlacement" triggers="mouseenter:mouseleave">
   <!-- Label -->
   <div class="font-weight-bold small t-form-group-label" style="overflow-wrap: anywhere;" [class.pr-2]="!isRtl"
-    [class.pl-2]="isRtl" *ngIf="showLabel">
+    [class.pl-2]="isRtl" *ngIf="showLabel" [tContextMenu]="labelContextMenu" [tContext]="labelContext"
+    [tDisableMenu]="!labelContextMenu || disableLabelMenu">
     <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
   </div>
   <!-- Content -->

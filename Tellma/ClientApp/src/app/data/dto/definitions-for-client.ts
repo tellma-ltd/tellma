@@ -2,6 +2,7 @@ import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } fr
 import { LineState, PositiveLineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
+import { InheritsFrom } from '../entities/line-definition-column';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -117,42 +118,6 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     PostingDateLabel2?: string;
     PostingDateLabel3?: string;
 
-    // Debit Resource
-    DebitResourceVisibility?: boolean;
-    DebitResourceRequiredState?: PositiveLineState | 5;
-    DebitResourceReadOnlyState?: PositiveLineState | 5;
-    DebitResourceDefinitionIds?: number[];
-    DebitResourceLabel?: string;
-    DebitResourceLabel2?: string;
-    DebitResourceLabel3?: string;
-
-    // Credit Resource
-    CreditResourceVisibility?: boolean;
-    CreditResourceRequiredState?: PositiveLineState | 5;
-    CreditResourceReadOnlyState?: PositiveLineState | 5;
-    CreditResourceDefinitionIds?: number[];
-    CreditResourceLabel?: string;
-    CreditResourceLabel2?: string;
-    CreditResourceLabel3?: string;
-
-    // Debit Custody
-    DebitCustodyVisibility?: boolean;
-    DebitCustodyRequiredState?: PositiveLineState | 5;
-    DebitCustodyReadOnlyState?: PositiveLineState | 5;
-    DebitCustodyDefinitionIds?: number[];
-    DebitCustodyLabel?: string;
-    DebitCustodyLabel2?: string;
-    DebitCustodyLabel3?: string;
-
-    // Credit Custody
-    CreditCustodyVisibility?: boolean;
-    CreditCustodyRequiredState?: PositiveLineState | 5;
-    CreditCustodyReadOnlyState?: PositiveLineState | 5;
-    CreditCustodyDefinitionIds?: number[];
-    CreditCustodyLabel?: string;
-    CreditCustodyLabel2?: string;
-    CreditCustodyLabel3?: string;
-
     // Noted Relation
     NotedRelationVisibility?: boolean;
     NotedRelationRequiredState?: PositiveLineState | 5;
@@ -161,50 +126,19 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     NotedRelationLabel?: string;
     NotedRelationLabel2?: string;
     NotedRelationLabel3?: string;
+    NotedRelationFilter?: string;
 
     // Center
     CenterVisibility?: boolean;
     CenterRequiredState?: PositiveLineState | 5;
     CenterReadOnlyState?: PositiveLineState | 5;
-    CenterDefinitionIds?: number[];
     CenterLabel?: string;
     CenterLabel2?: string;
     CenterLabel3?: string;
+    CenterFilter?: string;
 
     // Clearance
     ClearanceVisibility?: Visibility;
-
-    // Time1
-    Time1Visibility?: boolean;
-    Time1RequiredState?: PositiveLineState | 5;
-    Time1ReadOnlyState?: PositiveLineState | 5;
-    Time1Label?: string;
-    Time1Label2?: string;
-    Time1Label3?: string;
-
-    // Time2
-    Time2Visibility?: boolean;
-    Time2RequiredState?: PositiveLineState | 5;
-    Time2ReadOnlyState?: PositiveLineState | 5;
-    Time2Label?: string;
-    Time2Label2?: string;
-    Time2Label3?: string;
-
-    // Quantity
-    QuantityVisibility?: boolean;
-    QuantityRequiredState?: PositiveLineState | 5;
-    QuantityReadOnlyState?: PositiveLineState | 5;
-    QuantityLabel?: string;
-    QuantityLabel2?: string;
-    QuantityLabel3?: string;
-
-    // Unit
-    UnitVisibility?: boolean;
-    UnitRequiredState?: PositiveLineState | 5;
-    UnitReadOnlyState?: PositiveLineState | 5;
-    UnitLabel?: string;
-    UnitLabel2?: string;
-    UnitLabel3?: string;
 
     // Currency
     CurrencyVisibility?: boolean;
@@ -213,6 +147,23 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CurrencyLabel?: string;
     CurrencyLabel2?: string;
     CurrencyLabel3?: string;
+    CurrencyFilter?: string;
+
+    // ExternalReference
+    ExternalReferenceVisibility?: boolean;
+    ExternalReferenceRequiredState?: PositiveLineState | 5;
+    ExternalReferenceReadOnlyState?: PositiveLineState | 5;
+    ExternalReferenceLabel?: string;
+    ExternalReferenceLabel2?: string;
+    ExternalReferenceLabel3?: string;
+
+    // AdditionalReference
+    AdditionalReferenceVisibility?: boolean;
+    AdditionalReferenceRequiredState?: PositiveLineState | 5;
+    AdditionalReferenceReadOnlyState?: PositiveLineState | 5;
+    AdditionalReferenceLabel?: string;
+    AdditionalReferenceLabel2?: string;
+    AdditionalReferenceLabel3?: string;
 
     CanReachState1?: boolean;
     CanReachState2?: boolean;
@@ -279,7 +230,7 @@ export interface LineDefinitionColumnForClient {
     Filter?: string;
     RequiredState?: PositiveLineState | 5;
     ReadOnlyState?: PositiveLineState | 5;
-    InheritsFromHeader?: boolean;
+    InheritsFromHeader?: InheritsFrom;
 }
 
 export interface LineDefinitionStateReasonForClient {

@@ -395,7 +395,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return {
       Id: 0,
       EntryIndex: 0,
-      InheritsFromHeader: false,
+      InheritsFromHeader: 0,
       VisibleState: 0,
       RequiredState: 0,
       ReadOnlyState: 5,

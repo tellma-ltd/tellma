@@ -146,6 +146,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   private _modalErrorMessage: string; // in the modal
   private _modalSuccessMessage: string; // in the modal
   private _unboundServerErrors: string[]; // in the modal
+  private _serverErrors: { [path: string]: string[] }; // all server errors
   private _pristineModelJson: string;
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
@@ -226,6 +227,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     this._modalErrorMessage = null;
     this._modalSuccessMessage = null;
     this._unboundServerErrors = [];
+    this._serverErrors = null;
     this.registerPristineFunc(null);
 
     const handleFreshStateFromUrl = (params: ParamMap, firstTime = false) => {
@@ -496,6 +498,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     this._errorMessage = null;
     this._modalErrorMessage = null;
     this._unboundServerErrors = [];
+    this._serverErrors = null;
   }
 
   public get state(): MasterDetailsStore {
@@ -656,6 +659,10 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
   get unboundServerErrors(): string[] {
     return this._unboundServerErrors;
+  }
+
+  get serverErrors(): { [path: string]: string[] } {
+    return this._serverErrors;
   }
 
   get activeModel(): EntityForSave {
@@ -941,6 +948,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           if (friendlyError.status === 422) {
             // This handles 422 ModelState errors
             this.apply422ErrorsToModel(friendlyError.error);
+            this._serverErrors = friendlyError.error;
           } else {
             this.displayModalError(friendlyError.error);
           }

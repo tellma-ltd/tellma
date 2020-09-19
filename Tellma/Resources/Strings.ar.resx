@@ -502,6 +502,9 @@
   <data name="Document" xml:space="preserve">
     <value>مستند</value>
   </data>
+  <data name="Document_AdditionalReference" xml:space="preserve">
+    <value>المرجع الإضافي</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>زمن الإرسال</value>
   </data>
@@ -535,35 +538,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
-  <data name="Document_CreditCustody" xml:space="preserve">
-    <value>العهدة الدائنة</value>
-  </data>
-  <data name="Document_CreditResource" xml:space="preserve">
-    <value>المورد الدائن</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Document_DebitCustody" xml:space="preserve">
-    <value>العهدة المدينة</value>
-  </data>
-  <data name="Document_DebitResource" xml:space="preserve">
-    <value>المورد المدين</value>
-  </data>
-  <data name="Document_DocumentLookup1" xml:space="preserve">
-    <value>الصفة 1</value>
-  </data>
-  <data name="Document_DocumentLookup2" xml:space="preserve">
-    <value>الصفة 2</value>
-  </data>
-  <data name="Document_DocumentLookup3" xml:space="preserve">
-    <value>الصفة 3</value>
-  </data>
-  <data name="Document_DocumentText1" xml:space="preserve">
-    <value>الصفة النصية 1</value>
-  </data>
-  <data name="Document_DocumentText2" xml:space="preserve">
-    <value>الصفة النصية 2</value>
+  <data name="Document_ExternalReference" xml:space="preserve">
+    <value>المرجع الخارجي</value>
   </data>
   <data name="Document_NotedRelation" xml:space="preserve">
     <value>العلاقة المعنية</value>
@@ -573,9 +552,6 @@
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
-  </data>
-  <data name="Document_Quantity" xml:space="preserve">
-    <value>الكمية</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>القطاع</value>
@@ -600,15 +576,6 @@
   </data>
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>تاريخ الأِحوال</value>
-  </data>
-  <data name="Document_Time1" xml:space="preserve">
-    <value>الزمن 1</value>
-  </data>
-  <data name="Document_Time2" xml:space="preserve">
-    <value>الزمن 2</value>
-  </data>
-  <data name="Document_Unit" xml:space="preserve">
-    <value>وحدة القياس</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>تعهيد مستند</value>
@@ -1507,6 +1474,15 @@
   <data name="InboxRecords" xml:space="preserve">
     <value>بيانات صندوق الوارد</value>
   </data>
+  <data name="InheritsFrom_0" xml:space="preserve">
+    <value>لا شيء</value>
+  </data>
+  <data name="InheritsFrom_1" xml:space="preserve">
+    <value>رأس علامة التبويب</value>
+  </data>
+  <data name="InheritsFrom_2" xml:space="preserve">
+    <value>رأس المستند</value>
+  </data>
   <data name="Integer" xml:space="preserve">
     <value>عدد صحيح</value>
   </data>
@@ -1658,7 +1634,7 @@
     <value>المصفاة</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
-    <value>تأخذ القيمة من المستند</value>
+    <value>تأخذ القيمة من</value>
   </data>
   <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
     <value>تعريف السطر</value>
@@ -2797,8 +2773,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>الشركات</value>
   </data>
+  <data name="User_ContactEmail" xml:space="preserve">
+    <value>البريد الإلكتروني للتواصل</value>
+  </data>
+  <data name="User_ContactMobile" xml:space="preserve">
+    <value>رقم الهاتف المحمول</value>
+  </data>
   <data name="User_Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
+  </data>
+  <data name="User_EmailNewInboxItem" xml:space="preserve">
+    <value>إشعارات صندوق الوارد بالبريد الإلكتروني</value>
   </data>
   <data name="User_Invited" xml:space="preserve">
     <value>مدعو</value>
@@ -2812,11 +2797,29 @@
   <data name="User_Permissions" xml:space="preserve">
     <value>الأذونات</value>
   </data>
+  <data name="User_PreferredChannel" xml:space="preserve">
+    <value>وسيلة الاتصال المفضلة</value>
+  </data>
+  <data name="User_PreferredChannel_Email" xml:space="preserve">
+    <value>بريد الإلكتروني</value>
+  </data>
+  <data name="User_PreferredChannel_Push" xml:space="preserve">
+    <value>إشعارات (Web Push)</value>
+  </data>
+  <data name="User_PreferredChannel_Sms" xml:space="preserve">
+    <value>رسائل قصيرة (SMS)</value>
+  </data>
   <data name="User_PreferredLanguage" xml:space="preserve">
     <value>اللغة المفضلة</value>
   </data>
+  <data name="User_PushNewInboxItem" xml:space="preserve">
+    <value>إشعارات صندوق الوارد بالـ(Web Push)</value>
+  </data>
   <data name="User_Roles" xml:space="preserve">
     <value>الأدوار</value>
+  </data>
+  <data name="User_SmsNewInboxItem" xml:space="preserve">
+    <value>إشعارات صندوق الوارد بالرسائل القصيرة (SMS)</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>المستخدم لديه كلمة مرور.</value>
