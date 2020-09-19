@@ -895,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>定义“{0}”已包含数据。</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>定义 '{0}' 帐户 '{1}' 中使用。</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>定义“{0}”中的帐户类型“{1}”中使用。</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>该定义已被使用，并且不能被隐藏</value>
   </data>
@@ -968,7 +974,7 @@
     <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后，例如：“雇员 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
-    <value>标签“{0}”不上式{1}匹配的集合。</value>
+    <value>标记“{0}”不上式{1}匹配的集合。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
     <value>标签“{0}”不匹配类型的任何集合{1}，你的意思是“{2}”？</value>
@@ -1074,6 +1080,9 @@
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>'{1}' 中的帐户中使用{0} '{2}'</value>
+  </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>在{0} '{1}' 是{2} '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>帐户“{0}”具有非余额为零。</value>
@@ -1198,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>该文件是封闭的。请首先打开它。</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>ID为{0}的文件没有被发现。</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>
   </data>
@@ -1247,7 +1259,7 @@
     <value>中心“{0}”不能有后代。</value>
   </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
-    <value>母体中心“{0}”不活跃。</value>
+    <value>父中心“{0}”不活跃。</value>
   </data>
   <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
     <value>在{0} '{1}' 是不活动的。</value>
@@ -1257,6 +1269,9 @@
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>目的字段是必需的，因为该帐户类型是“{0}”。</value>
+  </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>删除将创建序列号缺口，请先删除所有后续文件。</value>
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
@@ -1294,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>单位“{0}”具有不兼容的类型，应该是类型{1}</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>单位 '{0}' 在{1} '{2}' 中使用。</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>有效截止日期不能在未来。</value>
   </data>
@@ -1311,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>单位 '{0}' 不是与{1} '{2}' 兼容。</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>未知导入模式 '{0}'，允许值是：{1}</value>

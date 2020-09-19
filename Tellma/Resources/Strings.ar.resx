@@ -895,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>التعريف ({0}) يحنوي حاليا على بيانات.</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>التعريف ({0}) مستخدم في الحساب ({1}).</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>التعريف ({0}) مستخدم في نوع الحساب ({1}).</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>هذا التعريف مستخدم حاليا ولا يمكن إخفاءه</value>
   </data>
@@ -1075,6 +1081,9 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>
   </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>البيان {1} من نوع {0} مستخدم في المستند ({3}) من نوع {2}.</value>
+  </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>الحساب ({0}) فيه رصيد.</value>
   </data>
@@ -1198,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>هذا المستند مقفل، قم بفتحه أولا.</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستند ذي المفتاح {0}.</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>البريد الإلكتروني ({0}) مكرر</value>
   </data>
@@ -1258,6 +1270,9 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>حقل السبب مطلوب لأن نوع الحساب هو ({0}).</value>
   </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>الحذف سيؤدي إلى فراغات في الرقم المستسلسل، قم بحذف كل المستندات اللاحقة أولا.</value>
+  </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
   </data>
@@ -1294,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>وحدة القياس ({0}) نوعها غير مناسب، ينبغي أن يكون نوعها {1}.</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>الوحدة ({0}) مستخدمة في البيان ({2}) من نوع {1}.</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>تاريخ صالح ابتداء من لا يمكن أن يكون في المستقبل.</value>
   </data>
@@ -1311,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>الوحدة ({0}) لا تتناسب مع البيان ({2}) من نوع {1}.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>طريقة الاستيراد ({0}) غير معروفة، القيم المعروفة هي: {1}</value>

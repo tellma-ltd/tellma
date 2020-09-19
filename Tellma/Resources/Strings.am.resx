@@ -895,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>በ ትርጉም «{0}» አስቀድሞ ውሂብ ይዟል.</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>በ ትርጉም «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>በ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
   </data>
@@ -1075,6 +1081,9 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>በ {0} «{1}» መለያ ላይ ውሏል «{2}»</value>
   </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>በ {0} «{1}« {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>መለያ »{0}» ያልሆነ ዜሮ ሚዛን አለው.</value>
   </data>
@@ -1198,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>ሰነዱ ዝግ ነው. መጀመሪያ መክፈት እባክህ.</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>መታወቂያ {0} ጋር ያለው ሰነድ አልተገኘም.</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>በ ኢሜይል «{0}» የተባዙ ነው.</value>
   </data>
@@ -1258,6 +1270,9 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>የመለያ አይነት ነው ምክንያቱም ዓላማ መስክ «{0}» ያስፈልጋል.</value>
   </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>መለያ ቁጥር ክፍተት ይፈጥራል ስረዛ, በመጀመሪያ ሁሉንም በቀጣይ ሰነዶችን መሰረዝ እባክህ.</value>
+  </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
   </data>
@@ -1294,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>ክፍሉም «{0}» ያልተጣጣመ አይነት አለው, ይህ አይነት መሆን አለበት {1}</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>ክፍሉም «{0}« {1} «{2}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>ልክ የሚሰራው ለወደፊቱ ሊሆን አይችልም</value>
   </data>
@@ -1311,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>አንድ ያልታወቀ ስህተት ውጫዊ አቅራቢ በመጠቀም ውስጥ ለመግባት ሲሞከር ተከስቷል.</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>ክፍሉም «{0}« {1} «{2}» ጋር ተኳሃኝ አይደለም.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>ያልታወቀ ማስመጣት ሁነታ «{0}», የሚፈቀደው እሴቶች ናቸው: {1}</value>

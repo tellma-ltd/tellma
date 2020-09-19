@@ -8,10 +8,11 @@ SET NOCOUNT ON;
 	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
 
     -- Non Null Ids must exist
-    INSERT INTO @ValidationErrors([Key], [ErrorName])
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentWasNotFound'
+		N'Error_TheDocumentWithId0WasNotFound',
+		CAST([Id] AS NVARCHAR (255))
     FROM @Ids
     WHERE Id <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Documents]);

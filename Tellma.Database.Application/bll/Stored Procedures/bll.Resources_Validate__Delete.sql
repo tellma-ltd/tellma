@@ -18,12 +18,13 @@ SET NOCOUNT ON;
 	JOIN @Ids FE ON FE.[Id] = R.[Id]
 	JOIN dbo.Accounts A ON A.ResourceId = R.Id;
 
-	INSERT INTO @ValidationErrors ([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	INSERT INTO @ValidationErrors ([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_The01IsUsedInDocument2',
+		N'Error_The01IsUsedInDocument23',
 		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinitionTitleSingular,
 		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
+		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinitionTitleSingular,
 		D.Code
 	FROM [dbo].[Resources] R 
 	JOIN [dbo].[ResourceDefinitions] RD ON R.[DefinitionId] = RD.[Id]
@@ -31,5 +32,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Entries E ON E.ResourceId = R.Id
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN map.Documents() D ON L.[DocumentId] = D.[Id]
+	JOIN map.DocumentDefinitions() DD ON D.[DefinitionId] = DD.[Id]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

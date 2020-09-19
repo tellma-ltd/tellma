@@ -895,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>The definition '{0}' already contains data.</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>The definition '{0}' is used in account '{1}'.</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>The definition '{0}' is used in account type '{1}'.</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>The definition is already used and cannot be hidden</value>
   </data>
@@ -1075,6 +1081,9 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>
   </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>The {0} '{1}' is used in {2} '{3}'.</value>
+  </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>Account '{0}' has a non-zero balance.</value>
   </data>
@@ -1198,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>The document is closed. Please open it first.</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>The document with Id {0} was not found.</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>The email '{0}' is duplicated.</value>
   </data>
@@ -1258,6 +1270,9 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>The Purpose field is required because the account type is '{0}'.</value>
   </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>Deletion will create serial number gaps, please delete all subsequent documents first.</value>
+  </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
   </data>
@@ -1294,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>The unit '{0}' has an incompatible type, it should be of type {1}</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>The unit '{0}' is used in {1} '{2}'.</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>The Valid As Of date cannot be in the future.</value>
   </data>
@@ -1311,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>An unknown error occurred while trying to sign you in using the external provider.</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>The unit '{0}' is not compatible with {1} '{2}'.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>Unknown import mode '{0}', allowed values are: {1}</value>

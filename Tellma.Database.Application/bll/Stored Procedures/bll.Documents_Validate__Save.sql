@@ -41,10 +41,11 @@ SET NOCOUNT ON;
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
     -- Non Null Ids must exist
-    INSERT INTO @ValidationErrors([Key], [ErrorName])
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentWasNotFound'
+		N'Error_TheDocumentWithId0WasNotFound',
+		CAST([Id] AS NVARCHAR (255))
     FROM @Documents
     WHERE Id <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Documents]);
@@ -123,12 +124,13 @@ SET NOCOUNT ON;
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
 
 	-- Can only use units from resource units, except for
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + 
 			CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].UnitId',
-		N'Error_Unit0IsNotCompatibleWithResource1',
+		N'Error_Unit0IsNotCompatibleWithResource12',
 		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
+		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceName],
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
