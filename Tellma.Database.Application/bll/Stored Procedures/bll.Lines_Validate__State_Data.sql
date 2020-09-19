@@ -23,7 +23,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 			) THEN
 				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
-				FL.Id = N'NotedRelationId' AND DLDE.[NotedRelationIsCommon] = 1 OR
+				FL.Id = N'NotedRelationId' AND DLDE.[NotedRelationIsCommon] = 1 OR -- AND (DLDE.[NotedRelationIsCommon] IS NULL OR DLDE.[NotedRelationIsCommon] = 1)
 				FL.Id = N'CurrencyId' AND DLDE.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'CustodyId' AND DLDE.[CustodyIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
@@ -369,7 +369,7 @@ BEGIN
 			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
 			BD.Code
 		FROM (
-			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex]
+			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
 			FROM @Lines LFE
 			JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
 			WHERE LBE.[State] = 4
@@ -384,7 +384,7 @@ BEGIN
 		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
 		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
 		WHERE BL.[State] = 4
-		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id)
+		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND BL.DocumentId <> L.[DocumentId])
 END
 -- must post (1,2,3=>4) in historical order
 IF @State = 4

@@ -29,6 +29,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
 	JOIN dbo.[Documents] DO ON D.DefinitionId = DO.DefinitionId
 	WHERE D.SerialNumber < DO.SerialNumber
+	AND DO.[Id] NOT IN (SELECT [Id] FROM @Ids)
 
 	-- Cannot delete If there are completed lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
