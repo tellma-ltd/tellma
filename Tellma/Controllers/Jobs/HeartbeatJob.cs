@@ -41,7 +41,7 @@ namespace Tellma.Controllers.Jobs
                 } 
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error executing {nameof(HeartbeatJob)} at {DateTimeOffset.Now}: {ex.Message}");
+                    _logger.LogError(ex, $"Error executing {nameof(HeartbeatJob)} at {DateTimeOffset.Now}: {ex.Message}");
                 }
 
                 await Task.Delay(_options.InstanceHeartRateInSeconds * 1000, stoppingToken);
