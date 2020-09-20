@@ -11,11 +11,13 @@ import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { DocumentDefinitionLineDefinitionForSave, DocumentDefinitionLineDefinition } from './document-definition-line-definition';
 import { DocumentDefinitionMarkupTemplateForSave, DocumentDefinitionMarkupTemplate } from './document-definition-markup-template';
 
+export type DefinitionDocumentType = 0 | 1 | 2;
+
 export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionLineDefinitionForSave,
     TMarkupTemplate = DocumentDefinitionMarkupTemplateForSave> extends EntityForSave {
     Code?: string;
     IsOriginalDocument?: boolean;
-    DocumentType?: number;
+    DocumentType?: DefinitionDocumentType;
     Description?: string;
     Description2?: string;
     Description3?: string;

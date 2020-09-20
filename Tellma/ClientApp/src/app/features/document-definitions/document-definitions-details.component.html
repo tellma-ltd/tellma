@@ -58,11 +58,12 @@
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('General')">
                     <!-- Code -->
-                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)" *ngIf="!isSystem(model)">
+                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)"
+                        *ngIf="!isSystem(model)">
                         <label class="small" for="code">{{ 'Code' | translate }}</label>
                         <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
                             #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: code, serverErrors: model.serverErrors?.Code }">
                         </ng-container>
@@ -76,7 +77,8 @@
                         <input class="form-control t-studio-input" id="titlesingular" type="text"
                             [(ngModel)]="model.TitleSingular"
                             (ngModelChange)="onDefinitionChange(model, 'TitleSingular')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel"
+                            required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular, serverErrors: model.serverErrors?.TitleSingular }">
                         </ng-container>
@@ -118,7 +120,8 @@
                             for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="titleplural" type="text"
                             [(ngModel)]="model.TitlePlural" (ngModelChange)="onDefinitionChange(model, 'TitlePlural')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel"
+                            required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titleplural, serverErrors: model.serverErrors?.TitlePlural }">
                         </ng-container>
@@ -155,7 +158,7 @@
                         <label class="small" for="desc">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc" type="text"
                             [(ngModel)]="model.Description" (ngModelChange)="onDefinitionChange(model, 'Description')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" #description="ngModel"></textarea>
+                            [ngModelOptions]="{ updateOn: 'blur' }" #description="ngModel" required></textarea>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: description, serverErrors: model.serverErrors?.Description }">
                         </ng-container>
@@ -199,6 +202,22 @@
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Definition')">
+
+                    <!-- Document Type -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(documenttypecontrol, model?.serverErrors?.DocumentType)">
+                        <label class="small"
+                            for="documenttype">{{ 'DocumentDefinition_DocumentType' | translate }}</label>
+                        <select class="form-control t-studio-input" id="documenttype"
+                            [(ngModel)]="model.DocumentType" (ngModelChange)="onDefinitionChange(model)"
+                            #documenttypecontrol="ngModel">
+                            <option *ngFor="let c of documentTypeChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: documenttypecontrol, serverErrors: model?.serverErrors?.DocumentType }">
+                        </ng-container>
+                    </div>
 
                     <!-- Line Definitions -->
                     <div class="form-group" *ngIf="!isSystem(model)">
@@ -292,7 +311,7 @@
                         <label class="small" for="prefix">{{ 'DocumentDefinition_Prefix' | translate }}</label>
                         <input class="form-control t-studio-input" id="prefix" type="text" [(ngModel)]="model.Prefix"
                             #prefixmodel="ngModel" (ngModelChange)="onDefinitionChange(model)"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: prefixmodel, serverErrors: model.serverErrors?.Prefix }">
                         </ng-container>
