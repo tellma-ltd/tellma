@@ -502,6 +502,9 @@
   <data name="Document" xml:space="preserve">
     <value>文献</value>
   </data>
+  <data name="Document_AdditionalReference" xml:space="preserve">
+    <value>其他参考</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>在分配</value>
   </data>
@@ -535,35 +538,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
-  <data name="Document_CreditCustody" xml:space="preserve">
-    <value>信用保管</value>
-  </data>
-  <data name="Document_CreditResource" xml:space="preserve">
-    <value>信贷资源</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Document_DebitCustody" xml:space="preserve">
-    <value>借记卡保管</value>
-  </data>
-  <data name="Document_DebitResource" xml:space="preserve">
-    <value>借记资源</value>
-  </data>
-  <data name="Document_DocumentLookup1" xml:space="preserve">
-    <value>属性1</value>
-  </data>
-  <data name="Document_DocumentLookup2" xml:space="preserve">
-    <value>属性2</value>
-  </data>
-  <data name="Document_DocumentLookup3" xml:space="preserve">
-    <value>属性3</value>
-  </data>
-  <data name="Document_DocumentText1" xml:space="preserve">
-    <value>文本属性1</value>
-  </data>
-  <data name="Document_DocumentText2" xml:space="preserve">
-    <value>文本属性2</value>
+  <data name="Document_ExternalReference" xml:space="preserve">
+    <value>外部参考</value>
   </data>
   <data name="Document_NotedRelation" xml:space="preserve">
     <value>注意到关系</value>
@@ -573,9 +552,6 @@
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>
-  </data>
-  <data name="Document_Quantity" xml:space="preserve">
-    <value>数量</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>分割</value>
@@ -600,15 +576,6 @@
   </data>
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>美国历史</value>
-  </data>
-  <data name="Document_Time1" xml:space="preserve">
-    <value>时间1</value>
-  </data>
-  <data name="Document_Time2" xml:space="preserve">
-    <value>时间2</value>
-  </data>
-  <data name="Document_Unit" xml:space="preserve">
-    <value>单元</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>文件分配</value>
@@ -928,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>定义“{0}”已包含数据。</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>定义 '{0}' 帐户 '{1}' 中使用。</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>定义“{0}”中的帐户类型“{1}”中使用。</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>该定义已被使用，并且不能被隐藏</value>
   </data>
@@ -1001,7 +974,7 @@
     <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后，例如：“雇员 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
-    <value>标签“{0}”不上式{1}匹配的集合。</value>
+    <value>标记“{0}”不上式{1}匹配的集合。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
     <value>标签“{0}”不匹配类型的任何集合{1}，你的意思是“{2}”？</value>
@@ -1078,6 +1051,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>属性{0}上式{1}是一个集合，并且因此在一个{2}路径不允许的。</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>只读状态不能要求国家之前。</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
   </data>
@@ -1104,6 +1080,9 @@
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>'{1}' 中的帐户中使用{0} '{2}'</value>
+  </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>在{0} '{1}' 是{2} '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>帐户“{0}”具有非余额为零。</value>
@@ -1228,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>该文件是封闭的。请首先打开它。</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>ID为{0}的文件没有被发现。</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>
   </data>
@@ -1236,6 +1218,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>与ID的实体“{0}”被指定多次。</value>
+  </data>
+  <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
+    <value>字段{0}不应该是否定的。</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>的{0}的值是与该帐户不兼容。</value>
@@ -1285,6 +1270,9 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>目的字段是必需的，因为该帐户类型是“{0}”。</value>
   </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>删除将创建序列号缺口，请先删除所有后续文件。</value>
+  </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
   </data>
@@ -1321,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>单位“{0}”具有不兼容的类型，应该是类型{1}</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>单位 '{0}' 在{1} '{2}' 中使用。</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>有效截止日期不能在未来。</value>
   </data>
@@ -1338,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>单位 '{0}' 不是与{1} '{2}' 兼容。</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>未知导入模式 '{0}'，允许值是：{1}</value>
@@ -1501,6 +1495,15 @@
   <data name="InboxRecords" xml:space="preserve">
     <value>收件箱记录</value>
   </data>
+  <data name="InheritsFrom_0" xml:space="preserve">
+    <value>没有</value>
+  </data>
+  <data name="InheritsFrom_1" xml:space="preserve">
+    <value>选项卡标题</value>
+  </data>
+  <data name="InheritsFrom_2" xml:space="preserve">
+    <value>文件头</value>
+  </data>
   <data name="Integer" xml:space="preserve">
     <value>整数</value>
   </data>
@@ -1652,7 +1655,7 @@
     <value>过滤</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
-    <value>继承了头</value>
+    <value>继承</value>
   </data>
   <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2791,8 +2794,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>公司</value>
   </data>
+  <data name="User_ContactEmail" xml:space="preserve">
+    <value>联系电子邮件</value>
+  </data>
+  <data name="User_ContactMobile" xml:space="preserve">
+    <value>联系手机</value>
+  </data>
   <data name="User_Email" xml:space="preserve">
     <value>电子邮件</value>
+  </data>
+  <data name="User_EmailNewInboxItem" xml:space="preserve">
+    <value>收件箱中的电子邮件通知</value>
   </data>
   <data name="User_Invited" xml:space="preserve">
     <value>邀请</value>
@@ -2806,11 +2818,29 @@
   <data name="User_Permissions" xml:space="preserve">
     <value>权限</value>
   </data>
+  <data name="User_PreferredChannel" xml:space="preserve">
+    <value>首选渠道</value>
+  </data>
+  <data name="User_PreferredChannel_Email" xml:space="preserve">
+    <value>电子邮件</value>
+  </data>
+  <data name="User_PreferredChannel_Push" xml:space="preserve">
+    <value>推</value>
+  </data>
+  <data name="User_PreferredChannel_Sms" xml:space="preserve">
+    <value>短信</value>
+  </data>
   <data name="User_PreferredLanguage" xml:space="preserve">
     <value>首选语言</value>
   </data>
+  <data name="User_PushNewInboxItem" xml:space="preserve">
+    <value>收件箱推送通知</value>
+  </data>
   <data name="User_Roles" xml:space="preserve">
     <value>角色</value>
+  </data>
+  <data name="User_SmsNewInboxItem" xml:space="preserve">
+    <value>收件箱中短信通知</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>用户已经设置密码。</value>

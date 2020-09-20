@@ -62,7 +62,7 @@
                         <label class="small" for="code">{{ 'Code' | translate }}</label>
                         <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
                             #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" required/>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: code, serverErrors: model.serverErrors?.Code }">
                         </ng-container>
@@ -76,7 +76,7 @@
                         <input class="form-control t-studio-input" id="titlesingular" type="text"
                             [(ngModel)]="model.TitleSingular"
                             (ngModelChange)="onDefinitionChange(model, 'TitleSingular')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel" required/>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular, serverErrors: model.serverErrors?.TitleSingular }">
                         </ng-container>
@@ -118,7 +118,7 @@
                             for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="titleplural" type="text"
                             [(ngModel)]="model.TitlePlural" (ngModelChange)="onDefinitionChange(model, 'TitlePlural')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel" required/>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titleplural, serverErrors: model.serverErrors?.TitlePlural }">
                         </ng-container>

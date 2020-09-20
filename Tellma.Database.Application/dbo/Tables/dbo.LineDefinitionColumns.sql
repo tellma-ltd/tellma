@@ -12,12 +12,15 @@
 	[Label2]				NVARCHAR (50),
 	[Label3]				NVARCHAR (50),
 	[Filter]				NVARCHAR (255),
-	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0,
+	[InheritsFromHeader]	TINYINT			NOT NULL DEFAULT 0,
 	[VisibleState]			SMALLINT		NOT NULL DEFAULT 0,
 	[RequiredState]			SMALLINT		NOT NULL DEFAULT 4,
 	[ReadOnlyState]			SMALLINT		NOT NULL DEFAULT 4,
 	CONSTRAINT [CK_LineDefinitionColumns__VisibleState_ReadOnlyState_RequiredState] CHECK (
 			[VisibleState] <= [RequiredState] AND [RequiredState] <= [ReadOnlyState]
+		),
+	CONSTRAINT [CK_LineDefinitionColumns__ColumnName_RequiredState] CHECK (
+			[ColumnName] NOT IN (N'CurrencyId', N'CenterId') OR [RequiredState] = 0
 		),
 	[SavedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionColumns__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]				DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,

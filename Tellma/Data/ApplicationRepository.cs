@@ -272,6 +272,7 @@ namespace Tellma.Data
                 nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
                 nameof(DocumentDefinitionMarkupTemplate) => "[map].[DocumentDefinitionMarkupTemplates]()",
                 nameof(Document) => "[map].[Documents]()",
+                nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
                 nameof(Line) => "[map].[Lines]()",
                 nameof(LineForQuery) => "[map].[Lines]()",
                 nameof(Entry) => "[map].[Entries]()",
@@ -608,6 +609,7 @@ namespace Tellma.Data
             Dictionary<int, List<int>>,
             Dictionary<int, List<int>>,
             Dictionary<int, List<int>>,
+            Dictionary<int, List<int>>,
             Dictionary<int, List<int>>)>
             Definitions__Load(CancellationToken cancellation)
         {
@@ -626,6 +628,7 @@ namespace Tellma.Data
             Dictionary<int, List<int>> entryCustodyDefs = new Dictionary<int, List<int>>();
             Dictionary<int, List<int>> entryParticipantDefs = new Dictionary<int, List<int>>();
             Dictionary<int, List<int>> entryResourceDefs = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> notedRelationDefs = new Dictionary<int, List<int>>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -1122,9 +1125,26 @@ namespace Tellma.Data
 
                     defIds.Add(defId);
                 }
+
+                // Noted Relation Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
+
+                    if (!notedRelationDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        notedRelationDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
+                }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
+            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs, notedRelationDefs);
         }
 
         #endregion
@@ -4415,11 +4435,17 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(docs);
+            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(docs);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
                 TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -4437,6 +4463,7 @@ namespace Tellma.Data
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(docsTvp);
+            cmd.Parameters.Add(lineDefinitionEntriesTvp);
             cmd.Parameters.Add(linesTvp);
             cmd.Parameters.Add(entriesTvp);
 
@@ -4462,6 +4489,25 @@ namespace Tellma.Data
                     propValue = propValue == DBNull.Value ? null : propValue;
 
                     prop.SetValue(doc, propValue);
+                }
+            }
+
+            // DocumentLineDefinitionEntries
+            await reader.NextResultAsync();
+            var lineDefEntriesProps = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>().SimpleProperties;
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var docIndex = reader.GetInt32(1);
+
+                var lineDefinitionEntry = docs[docIndex].LineDefinitionEntries[index];
+
+                foreach (var prop in lineDefEntriesProps)
+                {
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(lineDefinitionEntry, propValue);
                 }
             }
 
@@ -4515,11 +4561,17 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
                 TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -4537,6 +4589,7 @@ namespace Tellma.Data
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(docsTvp);
+            cmd.Parameters.Add(lineDefinitionEntriesTvp);
             cmd.Parameters.Add(linesTvp);
             cmd.Parameters.Add(entriesTvp);
             cmd.Parameters.Add("@Top", top);
@@ -4561,11 +4614,17 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
                     TypeName = $"[dbo].[{nameof(Document)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -4590,6 +4649,7 @@ namespace Tellma.Data
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add(entriesTvp);
                 cmd.Parameters.Add(attachmentsTvp);
@@ -5156,6 +5216,7 @@ namespace Tellma.Data
             List<Account> accounts,
             List<Custody> custodies,
             List<Resource> resources,
+            List<Relation> relations,
             List<EntryType> entryTypes,
             List<Center> centers,
             List<Currency> currencies,
@@ -5294,6 +5355,30 @@ namespace Tellma.Data
                 });
             }
 
+            // Custody
+            var list_Custody = new List<Custody>();
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                list_Custody.Add(new Custody
+                {
+                    Id = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Name2 = reader.String(i++),
+                    Name3 = reader.String(i++),
+                    DefinitionId = reader.Int32(i++),
+
+                    EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Custody.Name), FieldMetadata.Loaded },
+                        { nameof(Custody.Name2), FieldMetadata.Loaded },
+                        { nameof(Custody.Name3), FieldMetadata.Loaded },
+                        { nameof(Custody.DefinitionId), FieldMetadata.Loaded },
+                    }
+                });
+            }
+
             // Resource
             var list_Resource = new List<Resource>();
             await reader.NextResultAsync(cancellation);
@@ -5318,13 +5403,13 @@ namespace Tellma.Data
                 });
             }
 
-            // Custody
-            var list_Custody = new List<Custody>();
+            // Relation
+            var list_Relation = new List<Relation>();
             await reader.NextResultAsync(cancellation);
             while (await reader.ReadAsync(cancellation))
             {
                 int i = 0;
-                list_Custody.Add(new Custody
+                list_Relation.Add(new Relation
                 {
                     Id = reader.GetInt32(i++),
                     Name = reader.String(i++),
@@ -5334,10 +5419,10 @@ namespace Tellma.Data
 
                     EntityMetadata = new EntityMetadata
                     {
-                        { nameof(Custody.Name), FieldMetadata.Loaded },
-                        { nameof(Custody.Name2), FieldMetadata.Loaded },
-                        { nameof(Custody.Name3), FieldMetadata.Loaded },
-                        { nameof(Custody.DefinitionId), FieldMetadata.Loaded },
+                        { nameof(Relation.Name), FieldMetadata.Loaded },
+                        { nameof(Relation.Name2), FieldMetadata.Loaded },
+                        { nameof(Relation.Name3), FieldMetadata.Loaded },
+                        { nameof(Relation.DefinitionId), FieldMetadata.Loaded },
                     }
                 });
             }
@@ -5409,7 +5494,7 @@ namespace Tellma.Data
                 });
             }
 
-            return (lines, list_Account, list_Custody, list_Resource, list_EntryType, list_Center, list_Currency, list_Unit);
+            return (lines, list_Account, list_Custody, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         #endregion

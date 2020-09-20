@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Data]
 -- @Lines and @Entries are read from the database just before calling.
-	-- @Documents DocumentList READONLY,
+	@Documents DocumentList READONLY,
+	@DocumentLineDefinitionEntries DocumentLineDefinitionEntryList READONLY, -- TODO: Add to signature everywhere
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
 	@State SMALLINT,
@@ -11,9 +12,34 @@ DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	-- The @Field is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].' + FL.[Id],
+	SELECT DISTINCT TOP (@Top)
+		CASE
+			WHEN LDC.InheritsFromHeader >= 2 AND (
+				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
+				FL.Id = N'NotedRelationId' AND D.[NotedRelationIsCommon] = 1 OR
+				FL.Id = N'CurrencyId' AND D.[CurrencyIsCommon] = 1 OR
+				FL.Id = N'ExternalReference' AND D.[ExternalReferenceIsCommon] = 1 OR
+				FL.Id = N'AdditionalReference' AND D.[AdditionalReferenceIsCommon] = 1
+			) THEN
+				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
+			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
+				FL.Id = N'NotedRelationId' AND DLDE.[NotedRelationIsCommon] = 1 OR -- AND (DLDE.[NotedRelationIsCommon] IS NULL OR DLDE.[NotedRelationIsCommon] = 1)
+				FL.Id = N'CurrencyId' AND DLDE.[CurrencyIsCommon] = 1 OR
+				FL.Id = N'CustodyId' AND DLDE.[CustodyIsCommon] = 1 OR
+				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
+				FL.Id = N'Quantity' AND DLDE.[QuantityIsCommon] = 1 OR
+				FL.Id = N'UnitId' AND DLDE.[UnitIsCommon] = 1 OR
+				FL.Id = N'CenterId' AND DLDE.[CenterIsCommon] = 1 OR
+				FL.Id = N'Time1' AND DLDE.[Time1IsCommon] = 1 OR
+				FL.Id = N'Time2' AND DLDE.[Time2IsCommon] = 1 OR
+				FL.Id = N'ExternalReference' AND DLDE.[ExternalReferenceIsCommon] = 1 OR
+				FL.Id = N'AdditionalReference' AND DLDE.[AdditionalReferenceIsCommon] = 1
+			) THEN
+				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].LineDefinitionEntries['  + CAST(DLDE.[Index] AS NVARCHAR (255)) + N'].' + FL.[Id]
+			ELSE
+				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+				CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].' + FL.[Id]
+			END,
 		N'Error_Field0IsRequired',
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
@@ -23,7 +49,10 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
+	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
+	JOIN dbo.LineDefinitions LD ON L.DefinitionId = LD.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
+	LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND E.[Index] = DLDE.[EntryIndex]
 	WHERE @State >= LDC.[RequiredState]
 	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
@@ -49,15 +78,30 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
-		N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + N'].' + FL.[Id],
+		CASE
+			WHEN LDC.InheritsFromHeader >= 2 AND (
+				FL.Id = N'PostingDate' AND D.[PostingDateIsCommon] = 1 OR
+				FL.Id = N'Memo' AND D.[MemoIsCommon] = 1
+			) THEN
+				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
+			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
+				FL.Id = N'PostingDate' AND DLDE.[PostingDateIsCommon] = 1 OR
+				FL.Id = N'Memo' AND DLDE.[MemoIsCommon] = 1
+			) THEN
+				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].LineDefinitionEntries[0].' + FL.[Id]
+			ELSE
+				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' + CAST(L.[Index] AS NVARCHAR (255)) + N'].' + FL.[Id]
+			END,
 		N'Error_Field0IsRequired',
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Lines L
 	CROSS JOIN (VALUES
 		(N'PostingDate'),(N'Memo')
 	) FL([Id])
+	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
+	JOIN dbo.LineDefinitions LD ON L.DefinitionId = LD.[Id]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = FL.[Id]
+	LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND DLDE.[EntryIndex] = 0
 	WHERE @State >= LDC.[RequiredState]
 	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
@@ -68,15 +112,29 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 IF @State = 4 -- posted
 BEGIN
 	DECLARE @ArchiveDate DATE;
-	-- Posting Date not null
+	---- Posting Date not null, moved up
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + ']',
+	SELECT DISTINCT TOP (@Top)
+	CASE
+		WHEN L.[DefinitionId] = @ManualLineLD THEN
+			N'[' + CAST(D.[Index] AS NVARCHAR (255)) + N'].PostingDate'
+		WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
+			DLDE.[PostingDateIsCommon] = 1
+		) THEN
+			N'[' + CAST(D.[Index] AS NVARCHAR (255)) + N'].LineDefinitionEntries[0].PostingDate'
+		ELSE
+			'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index] AS NVARCHAR (255)) + ']'
+		END,
 		N'Error_Field0IsRequired',		
 		N'localize:Line_PostingDate'
 	FROM @Lines L
+	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
+	JOIN dbo.LineDefinitions LD ON L.DefinitionId = LD.[Id]
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = N'PostingDate'
+	LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND DLDE.[EntryIndex] = 0
+
 	WHERE L.[PostingDate] IS NULL;
+
 	-- Null Values are not allowed
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -121,6 +179,7 @@ BEGIN
 
 	-- Depending on account, contract and/or resource and/or entry type might be required
 	-- NOTE: the conformance with resource definition and account definition is in [bll].[Documents_Validate__Save]
+	-- TODO: Check if I can add a filter that this applies to JVs only
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -310,7 +369,7 @@ BEGIN
 			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
 			BD.Code
 		FROM (
-			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex]
+			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
 			FROM @Lines LFE
 			JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
 			WHERE LBE.[State] = 4
@@ -325,7 +384,7 @@ BEGIN
 		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
 		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
 		WHERE BL.[State] = 4
-		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id)
+		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND BL.DocumentId <> L.[DocumentId])
 END
 -- must post (1,2,3=>4) in historical order
 IF @State = 4

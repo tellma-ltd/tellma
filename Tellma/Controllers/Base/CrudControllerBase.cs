@@ -280,7 +280,7 @@ namespace Tellma.Controllers
             catch (Exception ex)
             {
                 await OnSaveError(ex);
-                throw ex;
+                throw;
             }
         }
 

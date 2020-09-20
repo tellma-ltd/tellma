@@ -2465,4 +2465,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ParentAccountTypeId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="84728963-a37d-4566-89e9-76822fc4b4d6" ChangeDateTime="09/04/2020 02:50:12">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DocumentLineDefinitionEntriess]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f5a75114-c3a3-47de-bbbe-14ff6a367b1d" ChangeDateTime="09/04/2020 02:50:30">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntriess]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DocumentLineDefinitionEntries]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1f6021fd-4368-4c80-a883-8ed7b31e9f87" ChangeDateTime="09/04/2020 02:51:29">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DocumentLineDefinitionEntryList]" />
+  </Operation>
 </Operations>

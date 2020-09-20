@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [api].[Documents__Save]
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
+	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -13,6 +14,7 @@ BEGIN
 	EXEC bll.[Documents__Preprocess]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines,
 		@Entries = @Entries,
 		@PreprocessedEntriesJson = @PreprocessedEntriesJson OUTPUT;
@@ -63,6 +65,7 @@ BEGIN
 	EXEC [bll].[Documents_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
 		@Entries = @PreprocessedEntries;
 
@@ -73,13 +76,13 @@ BEGIN
 		FOR JSON PATH
 	);
 
-
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 	
 	EXEC [dal].[Documents__SaveAndRefresh]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
 		@Entries = @PreprocessedEntries,
 		@ReturnIds = 0;

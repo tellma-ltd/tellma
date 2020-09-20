@@ -56,7 +56,7 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"{ListCandidate.ToString()}#{Index}";
+            return $"{ListCandidate}#{Index}";
         }
     }
 }

@@ -67,7 +67,7 @@ SET NOCOUNT ON;
 				t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
 				t.[ParticipantDefinitionId]	= s.[ParticipantDefinitionId],
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
-				t.[NotedRelationDefinitionId]=IIF(t.[IsSystem]=0,s.[NotedRelationDefinitionId],t.[NotedRelationDefinitionId]),
+				t.[NotedRelationDefinitionId]=s.[NotedRelationDefinitionId],
 				t.[Time1Label]				= s.[Time1Label],
 				t.[Time1Label2]				= s.[Time1Label2],
 				t.[Time1Label3]				= s.[Time1Label3],

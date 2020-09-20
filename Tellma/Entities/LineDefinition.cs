@@ -112,10 +112,15 @@ namespace Tellma.Entities
 
     public class LineDefinition : LineDefinitionForSave<LineDefinitionEntry, LineDefinitionColumn, LineDefinitionStateReason, LineDefinitionGenerateParameter, Workflow>
     {
+        public int? NotedRelationDefinitionId { get; set; }
+
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 
         // For Query
+
+        [ForeignKey(nameof(NotedRelationDefinitionId))]
+        public RelationDefinition NotedRelationDefinition { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

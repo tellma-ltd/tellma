@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Save]
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
+	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
 	@Top INT = 10
@@ -12,7 +13,8 @@ SET NOCOUNT ON;
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
-
+	DECLARE @LineState SMALLINT, @D DocumentList, @L LineList, @E EntryList;
+	
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -37,7 +39,54 @@ SET NOCOUNT ON;
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--          Common Validation (JV + Smart)
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
+
+    -- Non Null Ids must exist
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentWithId0WasNotFound',
+		CAST([Id] AS NVARCHAR (255))
+    FROM @Documents
+    WHERE Id <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[Documents]);
+
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE
+
+	-- Verify Custom Validation Script
+	-- Get line definition which have script to validate
+	INSERT INTO @ScriptLineDefinitions
+	SELECT DISTINCT DefinitionId FROM @Lines
+	WHERE DefinitionId IN (
+		SELECT [Id] FROM dbo.LineDefinitions
+		WHERE [ValidateScript] IS NOT NULL
+	);
+	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
+	BEGIN
+		-- run script to validate information
+		DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions;  
+		OPEN LineDefinition_Cursor  
+		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
+		WHILE @@FETCH_STATUS = 0  
+		BEGIN 
+			SELECT @Script =  @PreScript + ISNULL([ValidateScript],N'') + @PostScript
+			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+			DELETE FROM @L; DELETE FROM @E;
+			INSERT INTO @L SELECT * FROM @Lines WHERE DefinitionId = @LineDefinitionId
+			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+			INSERT INTO @ValidationErrors
+			EXECUTE	sp_executesql @Script, N'
+				@DefinitionId INT,
+				@Documents [dbo].[DocumentList] READONLY,
+				@Lines [dbo].[LineList] READONLY, 
+				@Entries [dbo].EntryList READONLY,
+				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @L, @Entries = @E, @Top = @Top;
+			
+			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
+		END
+	END
+
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
+
 	-- Serial number must not be already in the back end
 	IF @IsOriginalDocument = 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -74,6 +123,30 @@ SET NOCOUNT ON;
 	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
 	WHERE BL.[State] <> 0 AND L.Id IS NULL;
 
+	-- Can only use units from resource units, except for
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + 
+			CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].UnitId',
+		N'Error_Unit0IsNotCompatibleWithResource12',
+		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
+		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceName],
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Units U ON E.UnitId = U.Id
+	JOIN dbo.Resources R ON E.ResourceId = R.[Id]
+	JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
+	LEFT JOIN (
+		SELECT ResourceId, UnitId FROM dbo.ResourceUnits
+		UNION
+		SELECT Id AS ResourceId, UnitId FROM dbo.Resources
+	) RU ON E.ResourceId = RU.ResourceId AND E.UnitId = RU.UnitId
+	WHERE RU.UnitId IS NULL
+	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill')
+			AND U.UnitType = N'Pure');
+
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
 	-- Similar logic in bll.Accounts_Validate__Save
 	WITH ExpendituresParentAccountTypes AS (
@@ -83,6 +156,7 @@ SET NOCOUNT ON;
 			N'ConstructionInProgress',
 			N'InvestmentPropertyUnderConstructionOrDevelopment',
 			N'WorkInProgress',
+			N'CurrentInventoriesInTransit',
 			N'ExpenseByNature'
 		)
 	),
@@ -263,15 +337,13 @@ SET NOCOUNT ON;
 	--AND L.[DefinitionId] <> @ManualLineLD;
 
 	-- verify that all required fields are available
-	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;
-
 --	Apply to inserted lines	
 	DELETE FROM @L; DELETE FROM @E;
 	INSERT INTO @L SELECT * FROM @Lines WHERE [Id] = 0;
 	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-	-- @Documents = @D, 
+	@Documents = @Documents, 
 	@Lines = @L, 
 	@Entries = @E, 
 	@State = 0;
@@ -290,7 +362,7 @@ SET NOCOUNT ON;
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Data]
-		-- @Documents = @D, 
+		@Documents = @Documents, 
 		@Lines = @L, 
 		@Entries = @E, 
 		@State = @LineState;
@@ -302,38 +374,8 @@ SET NOCOUNT ON;
 			AND [Id] IN (SELECT [Id] FROM @Lines)
 		)
 	END
-	-- Verify Custom Validation Script
-	-- Get line definition which have script to validate
-	INSERT INTO @ScriptLineDefinitions
-	SELECT DISTINCT DefinitionId FROM @L
-	WHERE DefinitionId IN (
-		SELECT [Id] FROM dbo.LineDefinitions
-		WHERE [ValidateScript] IS NOT NULL
-	);
-	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
-	BEGIN
-		-- run script to validate information
-		DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions;  
-		OPEN LineDefinition_Cursor  
-		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
-		WHILE @@FETCH_STATUS = 0  
-		BEGIN 
-			SELECT @Script =  @PreScript + ISNULL([ValidateScript],N'') + @PostScript
-			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
-			INSERT INTO @ValidationErrors
-			EXECUTE	sp_executesql @Script, N'
-				@DefinitionId INT,
-				@Documents [dbo].[DocumentList] READONLY,
-				@Lines [dbo].[LineList] READONLY, 
-				@Entries [dbo].EntryList READONLY,
-				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
-			
-			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
-		END
-	END
-	
-
+DONE:
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 
 	-- TODO

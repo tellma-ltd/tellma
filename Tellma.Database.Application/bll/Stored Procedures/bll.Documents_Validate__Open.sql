@@ -5,7 +5,19 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @Lines LineList, @Entries EntryList;
+	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
+
+    -- Non Null Ids must exist
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentWithId0WasNotFound',
+		CAST([Id] AS NVARCHAR (255))
+    FROM @Ids
+    WHERE Id <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[Documents]);
+
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE
 
 	-- Cannot unpost it if it is not posted
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -25,6 +37,16 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[PostingDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
+
+	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[SegmentId], [CenterId], [CenterIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+	)
+	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[SegmentId], [CenterId], [CenterIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+	FROM dbo.Documents
+	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 
 	-- Verify that workflow-less lines in Events can be in state draft
 	INSERT INTO @Lines(
@@ -53,6 +75,7 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Lines = @Lines, @Entries = @Entries, @State = 0;
+		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = 0;
 
+DONE:
 	SELECT TOP (@Top) * FROM @ValidationErrors;

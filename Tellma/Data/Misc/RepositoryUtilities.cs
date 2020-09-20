@@ -124,12 +124,18 @@ namespace Tellma.Data
             return table;
         }
 
-        public static (DataTable Documents, DataTable Lines, DataTable Entries) DataTableFromDocuments(IEnumerable<DocumentForSave> documents)
+        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries) DataTableFromDocuments(IEnumerable<DocumentForSave> documents)
         {
             // Prepare the documents table skeleton
             DataTable docsTable = new DataTable();
             docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
             var docsProps = AddColumnsFromProperties<DocumentForSave>(docsTable);
+
+            // Prepare the line definition entries table skeleton
+            DataTable lineDefinitionEntriesTable = new DataTable();
+            lineDefinitionEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntriesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var lineDefinitionEntriesProps = AddColumnsFromProperties<DocumentLineDefinitionEntryForSave>(lineDefinitionEntriesTable);
 
             // Prepare the lines table skeleton
             DataTable linesTable = new DataTable();
@@ -156,6 +162,28 @@ namespace Tellma.Data
                 {
                     var docsPropValue = docsProp.GetValue(doc);
                     docsRow[docsProp.Name] = docsPropValue ?? DBNull.Value;
+                }
+
+                // Add line definition entries if any
+                if (doc.LineDefinitionEntries != null)
+                {
+                    int lineDefinitionEntryIndex = 0;
+                    doc.LineDefinitionEntries.ForEach(lineDefinitionEntry =>
+                    {
+                        DataRow lineDefinitionEntriesRow = lineDefinitionEntriesTable.NewRow();
+
+                        lineDefinitionEntriesRow["Index"] = lineDefinitionEntryIndex;
+                        lineDefinitionEntriesRow["DocumentIndex"] = docsIndex;
+
+                        foreach (var lineDefinitionEntryProp in lineDefinitionEntriesProps)
+                        {
+                            var lineDefinitionEntriesPropValue = lineDefinitionEntryProp.GetValue(lineDefinitionEntry);
+                            lineDefinitionEntriesRow[lineDefinitionEntryProp.Name] = lineDefinitionEntriesPropValue ?? DBNull.Value;
+                        }
+
+                        lineDefinitionEntriesTable.Rows.Add(lineDefinitionEntriesRow);
+                        lineDefinitionEntryIndex++;
+                    });
                 }
 
                 // Add the lines if any
@@ -206,7 +234,7 @@ namespace Tellma.Data
                 docsIndex++;
             }
 
-            return (docsTable, linesTable, entriesTable);
+            return (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable);
         }
 
         public static (

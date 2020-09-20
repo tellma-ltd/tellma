@@ -502,6 +502,9 @@
   <data name="Document" xml:space="preserve">
     <value>مستند</value>
   </data>
+  <data name="Document_AdditionalReference" xml:space="preserve">
+    <value>المرجع الإضافي</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>زمن الإرسال</value>
   </data>
@@ -535,35 +538,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
-  <data name="Document_CreditCustody" xml:space="preserve">
-    <value>العهدة الدائنة</value>
-  </data>
-  <data name="Document_CreditResource" xml:space="preserve">
-    <value>المورد الدائن</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Document_DebitCustody" xml:space="preserve">
-    <value>العهدة المدينة</value>
-  </data>
-  <data name="Document_DebitResource" xml:space="preserve">
-    <value>المورد المدين</value>
-  </data>
-  <data name="Document_DocumentLookup1" xml:space="preserve">
-    <value>الصفة 1</value>
-  </data>
-  <data name="Document_DocumentLookup2" xml:space="preserve">
-    <value>الصفة 2</value>
-  </data>
-  <data name="Document_DocumentLookup3" xml:space="preserve">
-    <value>الصفة 3</value>
-  </data>
-  <data name="Document_DocumentText1" xml:space="preserve">
-    <value>الصفة النصية 1</value>
-  </data>
-  <data name="Document_DocumentText2" xml:space="preserve">
-    <value>الصفة النصية 2</value>
+  <data name="Document_ExternalReference" xml:space="preserve">
+    <value>المرجع الخارجي</value>
   </data>
   <data name="Document_NotedRelation" xml:space="preserve">
     <value>العلاقة المعنية</value>
@@ -573,9 +552,6 @@
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
-  </data>
-  <data name="Document_Quantity" xml:space="preserve">
-    <value>الكمية</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>القطاع</value>
@@ -600,15 +576,6 @@
   </data>
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>تاريخ الأِحوال</value>
-  </data>
-  <data name="Document_Time1" xml:space="preserve">
-    <value>الزمن 1</value>
-  </data>
-  <data name="Document_Time2" xml:space="preserve">
-    <value>الزمن 2</value>
-  </data>
-  <data name="Document_Unit" xml:space="preserve">
-    <value>وحدة القياس</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>تعهيد مستند</value>
@@ -928,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>التعريف ({0}) يحنوي حاليا على بيانات.</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>التعريف ({0}) مستخدم في الحساب ({1}).</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>التعريف ({0}) مستخدم في نوع الحساب ({1}).</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>هذا التعريف مستخدم حاليا ولا يمكن إخفاءه</value>
   </data>
@@ -1078,6 +1051,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>الحقل لا يمكن أن يفقد قابلية التعديل في حالة تسبق الحالة التي يكون فيها مطلوبا.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العلاقة ({0}).</value>
   </data>
@@ -1104,6 +1080,9 @@
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>
+  </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>البيان {1} من نوع {0} مستخدم في المستند ({3}) من نوع {2}.</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>الحساب ({0}) فيه رصيد.</value>
@@ -1228,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>هذا المستند مقفل، قم بفتحه أولا.</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستند ذي المفتاح {0}.</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>البريد الإلكتروني ({0}) مكرر</value>
   </data>
@@ -1236,6 +1218,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
+  </data>
+  <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
+    <value>الحقل {0} لا يمكن أن يكون أقل من صفر.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>قيمة الحقل {0} غير متنسابة مع طبيعة الحساب.</value>
@@ -1285,6 +1270,9 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>حقل السبب مطلوب لأن نوع الحساب هو ({0}).</value>
   </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>الحذف سيؤدي إلى فراغات في الرقم المستسلسل، قم بحذف كل المستندات اللاحقة أولا.</value>
+  </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
   </data>
@@ -1321,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>وحدة القياس ({0}) نوعها غير مناسب، ينبغي أن يكون نوعها {1}.</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>الوحدة ({0}) مستخدمة في البيان ({2}) من نوع {1}.</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>تاريخ صالح ابتداء من لا يمكن أن يكون في المستقبل.</value>
   </data>
@@ -1338,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>الوحدة ({0}) لا تتناسب مع البيان ({2}) من نوع {1}.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>طريقة الاستيراد ({0}) غير معروفة، القيم المعروفة هي: {1}</value>
@@ -1501,6 +1495,15 @@
   <data name="InboxRecords" xml:space="preserve">
     <value>بيانات صندوق الوارد</value>
   </data>
+  <data name="InheritsFrom_0" xml:space="preserve">
+    <value>لا شيء</value>
+  </data>
+  <data name="InheritsFrom_1" xml:space="preserve">
+    <value>رأس علامة التبويب</value>
+  </data>
+  <data name="InheritsFrom_2" xml:space="preserve">
+    <value>رأس المستند</value>
+  </data>
   <data name="Integer" xml:space="preserve">
     <value>عدد صحيح</value>
   </data>
@@ -1652,7 +1655,7 @@
     <value>المصفاة</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
-    <value>تأخذ القيمة من المستند</value>
+    <value>تأخذ القيمة من</value>
   </data>
   <data name="LineDefinitionColumn_LineDefinition" xml:space="preserve">
     <value>تعريف السطر</value>
@@ -2791,8 +2794,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>الشركات</value>
   </data>
+  <data name="User_ContactEmail" xml:space="preserve">
+    <value>البريد الإلكتروني للتواصل</value>
+  </data>
+  <data name="User_ContactMobile" xml:space="preserve">
+    <value>رقم الهاتف المحمول</value>
+  </data>
   <data name="User_Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
+  </data>
+  <data name="User_EmailNewInboxItem" xml:space="preserve">
+    <value>إشعارات صندوق الوارد بالبريد الإلكتروني</value>
   </data>
   <data name="User_Invited" xml:space="preserve">
     <value>مدعو</value>
@@ -2806,11 +2818,29 @@
   <data name="User_Permissions" xml:space="preserve">
     <value>الأذونات</value>
   </data>
+  <data name="User_PreferredChannel" xml:space="preserve">
+    <value>وسيلة الاتصال المفضلة</value>
+  </data>
+  <data name="User_PreferredChannel_Email" xml:space="preserve">
+    <value>بريد الإلكتروني</value>
+  </data>
+  <data name="User_PreferredChannel_Push" xml:space="preserve">
+    <value>إشعارات (Web Push)</value>
+  </data>
+  <data name="User_PreferredChannel_Sms" xml:space="preserve">
+    <value>رسائل قصيرة (SMS)</value>
+  </data>
   <data name="User_PreferredLanguage" xml:space="preserve">
     <value>اللغة المفضلة</value>
   </data>
+  <data name="User_PushNewInboxItem" xml:space="preserve">
+    <value>إشعارات صندوق الوارد بالـ(Web Push)</value>
+  </data>
   <data name="User_Roles" xml:space="preserve">
     <value>الأدوار</value>
+  </data>
+  <data name="User_SmsNewInboxItem" xml:space="preserve">
+    <value>إشعارات صندوق الوارد بالرسائل القصيرة (SMS)</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>المستخدم لديه كلمة مرور.</value>

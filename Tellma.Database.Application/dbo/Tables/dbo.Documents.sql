@@ -8,44 +8,31 @@
 	CONSTRAINT [IX_Documents__DocumentDefinitionId_SerialNumber] UNIQUE ([DefinitionId], [SerialNumber]),
 	[State]							SMALLINT		NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__State] CHECK ([State] BETWEEN -1 AND +1),
 	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[Clearance]						TINYINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__Clearance] CHECK ([Clearance] BETWEEN 0 AND 2),
+	-- Additional properties to simplify data entry. No report should be based on them!!!
+
 	[PostingDate]					DATE			CONSTRAINT [CK_Documents__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
-	[Clearance]						TINYINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__Clearance] CHECK ([Clearance] BETWEEN 0 AND 2),
-	-- Dynamic properties defined by document type specification..  -- e.g., cash machine serial in the case of a sale
-	[DocumentLookup1Id]				INT				CONSTRAINT [FKDocuments__DocumentLookup1Id] REFERENCES dbo.Lookups([Id]),
-	[DocumentLookup2Id]				INT				CONSTRAINT [FKDocuments__DocumentLookup2Id] REFERENCES dbo.Lookups([Id]),
-	[DocumentLookup3Id]				INT				CONSTRAINT [FKDocuments__DocumentLookup3Id] REFERENCES dbo.Lookups([Id]),
-	[DocumentText1]					NVARCHAR (255),
-	[DocumentText2]					NVARCHAR (255),
-	-- Additional properties to simplify data entry. No report should be based on them!!!
+
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 
-	[DebitResourceId]				INT	CONSTRAINT [FK_Documents__DebitResourceId] REFERENCES dbo.[Resources]([Id]), 
-	[DebitResourceIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[CreditResourceId]				INT	CONSTRAINT [FK_Documents__CreditResourceId] REFERENCES dbo.[Resources]([Id]), 
-	[CreditResourceIsCommon]		BIT				NOT NULL DEFAULT 0,	
-
-	[DebitCustodyId]				INT	CONSTRAINT [FK_Documents__DebitCustodyId] REFERENCES dbo.[Custodies]([Id]), 
-	[DebitCustodyIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[CreditCustodyId]				INT	CONSTRAINT [FK_Documents__CreditCustodyId] REFERENCES dbo.[Custodies]([Id]), 
-	[CreditCustodyIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[SegmentId]						INT	CONSTRAINT [FK_Documents__SegmentId] REFERENCES dbo.[Centers]([Id]), --
+	[CenterId]						INT	CONSTRAINT [FK_Documents__CenterId] REFERENCES dbo.[Centers]([Id]), -- Only business units allowed here
+	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
 
 	[NotedRelationId]				INT	CONSTRAINT [FK_Documents__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
 	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[SegmentId]						INT	CONSTRAINT [FK_Documents__SegmentId] REFERENCES dbo.[Centers]([Id]), 
-	[CenterId]						INT	CONSTRAINT [FK_Documents__CenterId] REFERENCES dbo.[Centers]([Id]), 
-	[CenterIsCommon]					BIT				NOT NULL DEFAULT 0,
-	[Time1]							DATETIME2 (2),
-	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
-	[Time2]							DATETIME2 (2),
-	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
-	[Quantity]						DECIMAL (19,4)	NULL,
-	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[UnitId]						INT CONSTRAINT [FK_Documents__UnitId] REFERENCES dbo.[Units]([Id]),
-	[UnitIsCommon]					BIT				NOT NULL DEFAULT 0,
+
 	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_Documents__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,
+
+	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
+	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
+
+	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number
+	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0,
+
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]					INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__CreatedById] REFERENCES [dbo].[Users] ([Id]),

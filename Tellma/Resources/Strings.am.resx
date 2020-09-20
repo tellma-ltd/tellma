@@ -502,6 +502,9 @@
   <data name="Document" xml:space="preserve">
     <value>የሰነድ</value>
   </data>
+  <data name="Document_AdditionalReference" xml:space="preserve">
+    <value>ተጨማሪ ማጣቀሻ</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>በ የተመደበ</value>
   </data>
@@ -535,35 +538,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>አስተያየት</value>
   </data>
-  <data name="Document_CreditCustody" xml:space="preserve">
-    <value>የብድር የጥበቃ</value>
-  </data>
-  <data name="Document_CreditResource" xml:space="preserve">
-    <value>የሥዕል ሃብት</value>
-  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Document_DebitCustody" xml:space="preserve">
-    <value>ዴቢት የጥበቃ</value>
-  </data>
-  <data name="Document_DebitResource" xml:space="preserve">
-    <value>ዴቢት ሃብት</value>
-  </data>
-  <data name="Document_DocumentLookup1" xml:space="preserve">
-    <value>ባህርይ 1</value>
-  </data>
-  <data name="Document_DocumentLookup2" xml:space="preserve">
-    <value>ባህርይ 2</value>
-  </data>
-  <data name="Document_DocumentLookup3" xml:space="preserve">
-    <value>ባህርይ 3</value>
-  </data>
-  <data name="Document_DocumentText1" xml:space="preserve">
-    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
-  </data>
-  <data name="Document_DocumentText2" xml:space="preserve">
-    <value>የጽሑፍ መገለጫ ባህሪ 2</value>
+  <data name="Document_ExternalReference" xml:space="preserve">
+    <value>የውጭ ማጣቀሻ</value>
   </data>
   <data name="Document_NotedRelation" xml:space="preserve">
     <value>እንደተጠቀሰው ግንኙነት</value>
@@ -573,9 +552,6 @@
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>ቀን</value>
-  </data>
-  <data name="Document_Quantity" xml:space="preserve">
-    <value>ብዛት</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
     <value>ክፍል</value>
@@ -600,15 +576,6 @@
   </data>
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>የገለፃ ታሪክ</value>
-  </data>
-  <data name="Document_Time1" xml:space="preserve">
-    <value>የጊዜ 1</value>
-  </data>
-  <data name="Document_Time2" xml:space="preserve">
-    <value>የጊዜ 2</value>
-  </data>
-  <data name="Document_Unit" xml:space="preserve">
-    <value>መለኪያ</value>
   </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>የሰነድ ምደባ</value>
@@ -928,6 +895,12 @@
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
     <value>በ ትርጉም «{0}» አስቀድሞ ውሂብ ይዟል.</value>
   </data>
+  <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
+    <value>በ ትርጉም «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
+  <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
+    <value>በ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
   </data>
@@ -1078,6 +1051,9 @@
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>አይነት {1} ላይ ንብረት {0} ስብስብ ነው, ስለዚህ ወደ {2} መንገድ ላይ አይፈቀድም.</value>
   </data>
+  <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
+    <value>Readonly ስቴት ያስፈልጋል ስቴት በፊት ሊሆን አይችልም.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ግንኙነት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
@@ -1104,6 +1080,9 @@
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>በ {0} «{1}» መለያ ላይ ውሏል «{2}»</value>
+  </data>
+  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
+    <value>በ {0} «{1}« {2} «{3}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>መለያ »{0}» ያልሆነ ዜሮ ሚዛን አለው.</value>
@@ -1228,6 +1207,9 @@
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>ሰነዱ ዝግ ነው. መጀመሪያ መክፈት እባክህ.</value>
   </data>
+  <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
+    <value>መታወቂያ {0} ጋር ያለው ሰነድ አልተገኘም.</value>
+  </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>በ ኢሜይል «{0}» የተባዙ ነው.</value>
   </data>
@@ -1236,6 +1218,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
+  </data>
+  <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
+    <value>መስኩ {0} አሉታዊ መሆን የለበትም.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>{0} ዋጋ መለያ ጋር አይጣጣምም.</value>
@@ -1285,6 +1270,9 @@
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>የመለያ አይነት ነው ምክንያቱም ዓላማ መስክ «{0}» ያስፈልጋል.</value>
   </data>
+  <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
+    <value>መለያ ቁጥር ክፍተት ይፈጥራል ስረዛ, በመጀመሪያ ሁሉንም በቀጣይ ሰነዶችን መሰረዝ እባክህ.</value>
+  </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>በ {0} «{1}» የተገለጸ ምንም ተጠቃሚዎች አሉት.</value>
   </data>
@@ -1321,6 +1309,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>ክፍሉም «{0}» ያልተጣጣመ አይነት አለው, ይህ አይነት መሆን አለበት {1}</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
+    <value>ክፍሉም «{0}« {1} «{2}» ላይ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
     <value>ልክ የሚሰራው ለወደፊቱ ሊሆን አይችልም</value>
   </data>
@@ -1338,6 +1329,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>አንድ ያልታወቀ ስህተት ውጫዊ አቅራቢ በመጠቀም ውስጥ ለመግባት ሲሞከር ተከስቷል.</value>
+  </data>
+  <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
+    <value>ክፍሉም «{0}« {1} «{2}» ጋር ተኳሃኝ አይደለም.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>ያልታወቀ ማስመጣት ሁነታ «{0}», የሚፈቀደው እሴቶች ናቸው: {1}</value>
@@ -1500,6 +1494,15 @@
   </data>
   <data name="InboxRecords" xml:space="preserve">
     <value>የገቢ መልዕክት መዛግብት</value>
+  </data>
+  <data name="InheritsFrom_0" xml:space="preserve">
+    <value>አንድም</value>
+  </data>
+  <data name="InheritsFrom_1" xml:space="preserve">
+    <value>የትር ርእስ</value>
+  </data>
+  <data name="InheritsFrom_2" xml:space="preserve">
+    <value>የሰነድ ርእስ</value>
   </data>
   <data name="Integer" xml:space="preserve">
     <value>ኢንቲጀር</value>
@@ -2791,8 +2794,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>ኩባንያዎች</value>
   </data>
+  <data name="User_ContactEmail" xml:space="preserve">
+    <value>የዕውቂያ ኢሜይል</value>
+  </data>
+  <data name="User_ContactMobile" xml:space="preserve">
+    <value>የእውቂያ ሞባይል</value>
+  </data>
   <data name="User_Email" xml:space="preserve">
     <value>ኢሜይል</value>
+  </data>
+  <data name="User_EmailNewInboxItem" xml:space="preserve">
+    <value>የገቢ መልዕክት የኢሜይል ማሳወቂያዎች</value>
   </data>
   <data name="User_Invited" xml:space="preserve">
     <value>የተጋበዙ</value>
@@ -2806,11 +2818,29 @@
   <data name="User_Permissions" xml:space="preserve">
     <value>ፍቃዶች</value>
   </data>
+  <data name="User_PreferredChannel" xml:space="preserve">
+    <value>የተመረጠ ሰርጥ</value>
+  </data>
+  <data name="User_PreferredChannel_Email" xml:space="preserve">
+    <value>ኢሜይል</value>
+  </data>
+  <data name="User_PreferredChannel_Push" xml:space="preserve">
+    <value>ገፉ</value>
+  </data>
+  <data name="User_PreferredChannel_Sms" xml:space="preserve">
+    <value>ኤስኤምኤስ</value>
+  </data>
   <data name="User_PreferredLanguage" xml:space="preserve">
     <value>የተመረጠ ቋንቋ</value>
   </data>
+  <data name="User_PushNewInboxItem" xml:space="preserve">
+    <value>የገቢ መልዕክት ግፋ ማሳወቂያዎች</value>
+  </data>
   <data name="User_Roles" xml:space="preserve">
     <value>ሚናዎች</value>
+  </data>
+  <data name="User_SmsNewInboxItem" xml:space="preserve">
+    <value>የገቢ መልዕክት ሳጥን ኤስ ኤም ኤስ ማሳወቂያዎች</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>ተጠቃሚ አስቀድሞ የይለፍ ቃል ስብስብ አለው.</value>

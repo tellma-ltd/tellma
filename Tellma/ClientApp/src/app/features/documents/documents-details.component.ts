@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  DefinitionsForClient, LineDefinitionForClient, LineDefinitionGenerateParameterForClient
+  DefinitionsForClient, LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -37,6 +37,7 @@ import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
+import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -281,6 +282,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const result: DocumentForSave = {
       // PostingDate: toLocalDateISOString(new Date()),
       Clearance: 0,
+      LineDefinitionEntries: [],
       Lines: [],
       Attachments: []
     };
@@ -293,16 +295,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
-      result.DebitResourceIsCommon = false;
-      result.CreditResourceIsCommon = false;
-      result.DebitCustodyIsCommon = false;
-      result.CreditCustodyIsCommon = false;
       result.NotedRelationIsCommon = false;
-      result.Time1IsCommon = false;
-      result.Time2IsCommon = false;
-      result.QuantityIsCommon = false;
-      result.UnitIsCommon = false;
       result.CurrencyIsCommon = false;
+      result.CenterIsCommon = false;
+      result.ExternalReferenceIsCommon = false;
+      result.AdditionalReferenceIsCommon = false;
     } else {
       const def = this.definition;
 
@@ -312,20 +309,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       // Is Common
-
-      result.PostingDateIsCommon = !!def.PostingDateVisibility;
-      result.MemoIsCommon = !!def.MemoIsCommonVisibility;
-      result.DebitResourceIsCommon = !!def.DebitResourceVisibility;
-      result.CreditResourceIsCommon = !!def.CreditResourceVisibility;
-      result.DebitCustodyIsCommon = !!def.DebitCustodyVisibility;
-      result.CreditCustodyIsCommon = !!def.CreditCustodyVisibility;
-      result.NotedRelationIsCommon = !!def.NotedRelationVisibility;
-      result.CenterIsCommon = !!def.CenterVisibility;
-      result.Time1IsCommon = !!def.Time1Visibility;
-      result.Time2IsCommon = !!def.Time2Visibility;
-      result.QuantityIsCommon = !!def.QuantityVisibility;
-      result.UnitIsCommon = !!def.UnitVisibility;
-      result.CurrencyIsCommon = !!def.CurrencyVisibility;
+      result.PostingDateIsCommon = true;
+      result.MemoIsCommon = true;
+      result.NotedRelationIsCommon = true;
+      result.CenterIsCommon = true;
+      result.CurrencyIsCommon = true;
+      result.ExternalReferenceIsCommon = true;
+      result.AdditionalReferenceIsCommon = true;
     }
 
     return result;
@@ -358,6 +348,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       delete clone.ModifiedById;
       clone.AssignmentsHistory = [];
       clone.StatesHistory = [];
+
+      if (!!clone.LineDefinitionEntries) {
+        clone.LineDefinitionEntries.forEach(tabEntry => {
+          // Standard
+          tabEntry.Id = null;
+          delete tabEntry.EntityMetadata;
+          delete tabEntry.serverErrors;
+
+          // Non savable
+          delete tabEntry.DocumentId;
+          delete tabEntry.CreatedAt;
+          delete tabEntry.CreatedById;
+          delete tabEntry.ModifiedAt;
+          delete tabEntry.ModifiedById;
+        });
+      }
 
       if (!!clone.Lines) {
         clone.Lines.forEach(line => {
@@ -682,180 +688,46 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_PostingDate');
   }
 
-  // DebitResource
+  // External Reference
 
-  public showDocumentDebitResource(_: DocumentForSave): boolean {
-    return this.definition.DebitResourceVisibility;
+  public showDocumentExternalReference(_: DocumentForSave) {
+    return this.definition.ExternalReferenceVisibility;
   }
 
-  public requireDocumentDebitResource(doc: Document): boolean {
+  public requireDocumentExternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDebitResource;
+    return this._requireDocumentExternalReference;
   }
 
-  public readonlyDocumentDebitResource(doc: Document): boolean {
+  public readonlyDocumentExternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDebitResource;
+    return this._readonlyDocumentExternalReference;
   }
 
-  public labelDocumentDebitResource(_: DocumentForSave): string {
-    // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitResourceLabel');
-    if (!!label) {
-      return label;
-    }
-
-    // Second try the resource definition
-    if (this.definition.DebitResourceDefinitionIds.length === 1) {
-      const resourceDefId = this.definition.DebitResourceDefinitionIds[0];
-      const resourceDef = this.ws.definitions.Resources[resourceDefId];
-      if (!!resourceDef) {
-        label = this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular');
-      }
-    }
-
-    // Last resort: generic label
-    if (!label) {
-      label = this.translate.instant('Document_DebitResource');
-    }
-
-    return label;
+  public labelDocumentExternalReference(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'ExternalReferenceLabel') ||
+      this.translate.instant('Document_ExternalReference');
   }
 
-  public documentDebitResourceDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.DebitResourceDefinitionIds;
+  // Additional Reference
+
+  public showDocumentAdditionalReference(_: DocumentForSave) {
+    return this.definition.AdditionalReferenceVisibility;
   }
 
-  // CreditResource
-
-  public showDocumentCreditResource(_: DocumentForSave): boolean {
-    return this.definition.CreditResourceVisibility;
-  }
-
-  public requireDocumentCreditResource(doc: Document): boolean {
+  public requireDocumentAdditionalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireCreditResource;
+    return this._requireDocumentAdditionalReference;
   }
 
-  public readonlyDocumentCreditResource(doc: Document): boolean {
+  public readonlyDocumentAdditionalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyCreditResource;
+    return this._readonlyDocumentAdditionalReference;
   }
 
-  public labelDocumentCreditResource(_: DocumentForSave): string {
-    // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditResourceLabel');
-    if (!!label) {
-      return label;
-    }
-
-    // Second try the resource definition
-    if (this.definition.CreditResourceDefinitionIds.length === 1) {
-      const resourceDefId = this.definition.CreditResourceDefinitionIds[0];
-      const resourceDef = this.ws.definitions.Resources[resourceDefId];
-      if (!!resourceDef) {
-        label = this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular');
-      }
-    }
-
-    // Last resort: generic label
-    if (!label) {
-      label = this.translate.instant('Document_CreditResource');
-    }
-
-    return label;
-  }
-
-  public documentCreditResourceDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.CreditResourceDefinitionIds;
-  }
-
-  // DebitCustody
-
-  public showDocumentDebitCustody(_: DocumentForSave): boolean {
-    return this.definition.DebitCustodyVisibility;
-  }
-
-  public requireDocumentDebitCustody(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDebitCustody;
-  }
-
-  public readonlyDocumentDebitCustody(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDebitCustody;
-  }
-
-  public labelDocumentDebitCustody(_: DocumentForSave): string {
-    // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitCustodyLabel');
-    if (!!label) {
-      return label;
-    }
-
-    // Second try the custody definition
-    if (this.definition.DebitCustodyDefinitionIds.length === 1) {
-      const custodyDefId = this.definition.DebitCustodyDefinitionIds[0];
-      const custodyDef = this.ws.definitions.Custodies[custodyDefId];
-      if (!!custodyDef) {
-        label = this.ws.getMultilingualValueImmediate(custodyDef, 'TitleSingular');
-      }
-    }
-
-    // Last resort: generic label
-    if (!label) {
-      label = this.translate.instant('Document_DebitCustody');
-    }
-
-    return label;
-  }
-
-  public documentDebitCustodyDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.DebitCustodyDefinitionIds;
-  }
-
-  // CreditCustody
-
-  public showDocumentCreditCustody(_: DocumentForSave): boolean {
-    return this.definition.CreditCustodyVisibility;
-  }
-
-  public requireDocumentCreditCustody(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireCreditCustody;
-  }
-
-  public readonlyDocumentCreditCustody(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyCreditCustody;
-  }
-
-  public labelDocumentCreditCustody(_: DocumentForSave): string {
-    // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditCustodyLabel');
-    if (!!label) {
-      return label;
-    }
-
-    // Second try the custody definition
-    if (this.definition.CreditCustodyDefinitionIds.length === 1) {
-      const custodyDefId = this.definition.CreditCustodyDefinitionIds[0];
-      const custodyDef = this.ws.definitions.Custodies[custodyDefId];
-      if (!!custodyDef) {
-        label = this.ws.getMultilingualValueImmediate(custodyDef, 'TitleSingular');
-      }
-    }
-
-    // Last resort: generic label
-    if (!label) {
-      label = this.translate.instant('Document_CreditCustody');
-    }
-
-    return label;
-  }
-
-  public documentCreditCustodyDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.CreditCustodyDefinitionIds;
+  public labelDocumentAdditionalReference(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'AdditionalReferenceLabel') ||
+      this.translate.instant('Document_AdditionalReference');
   }
 
   // NotedRelation
@@ -939,90 +811,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_Center');
   }
 
-  // Time 1
-
-  public showDocumentTime1(_: DocumentForSave) {
-    return this.definition.Time1Visibility;
-  }
-
-  public requireDocumentTime1(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentTime1;
-  }
-
-  public readonlyDocumentTime1(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentTime1;
-  }
-
-  public labelDocumentTime1(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'Time1Label') ||
-      this.translate.instant('Document_Time1');
-  }
-
-  // Time2
-
-  public showDocumentTime2(_: DocumentForSave) {
-    return this.definition.Time2Visibility;
-  }
-
-  public requireDocumentTime2(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentTime2;
-  }
-
-  public readonlyDocumentTime2(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentTime2;
-  }
-
-  public labelDocumentTime2(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'Time2Label') ||
-      this.translate.instant('Document_Time2');
-  }
-
-  // Quantity
-
-  public showDocumentQuantity(_: DocumentForSave) {
-    return this.definition.QuantityVisibility;
-  }
-
-  public requireDocumentQuantity(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentQuantity;
-  }
-
-  public readonlyDocumentQuantity(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentQuantity;
-  }
-
-  public labelDocumentQuantity(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'QuantityLabel') ||
-      this.translate.instant('Document_Quantity');
-  }
-
-  // Unit
-
-  public showDocumentUnit(_: DocumentForSave) {
-    return this.definition.UnitVisibility;
-  }
-
-  public requireDocumentUnit(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentUnit;
-  }
-
-  public readonlyDocumentUnit(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentUnit;
-  }
-
-  public labelDocumentUnit(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'UnitLabel') ||
-      this.translate.instant('Document_Unit');
-  }
-
   // Currency
 
   public showDocumentCurrency(_: DocumentForSave) {
@@ -1044,63 +832,39 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_Currency');
   }
 
-  // Time1
   private _computeDocumentSettingsDoc: Document;
   private _computeDocumentSettingsDef: DocumentDefinitionForClient;
   private _requireDocumentMemo: boolean;
   private _readonlyDocumentMemo: boolean;
   private _requireDocumentPostingDate: boolean;
   private _readonlyDocumentPostingDate: boolean;
-  private _requireDebitResource: boolean;
-  private _readonlyDebitResource: boolean;
-  private _requireCreditResource: boolean;
-  private _readonlyCreditResource: boolean;
-  private _requireDebitCustody: boolean;
-  private _readonlyDebitCustody: boolean;
-  private _requireCreditCustody: boolean;
-  private _readonlyCreditCustody: boolean;
   private _requireNotedRelation: boolean;
   private _readonlyNotedRelation: boolean;
   private _requireDocumentCenter: boolean;
   private _readonlyDocumentCenter: boolean;
-  private _requireDocumentTime1: boolean;
-  private _readonlyDocumentTime1: boolean;
-  private _requireDocumentTime2: boolean;
-  private _readonlyDocumentTime2: boolean;
-  private _requireDocumentQuantity: boolean;
-  private _readonlyDocumentQuantity: boolean;
-  private _requireDocumentUnit: boolean;
-  private _readonlyDocumentUnit: boolean;
   private _requireDocumentCurrency: boolean;
   private _readonlyDocumentCurrency: boolean;
+  private _requireDocumentExternalReference: boolean;
+  private _readonlyDocumentExternalReference: boolean;
+  private _requireDocumentAdditionalReference: boolean;
+  private _readonlyDocumentAdditionalReference: boolean;
+
   private computeDocumentSettings(doc: Document): void {
     if (!doc || !doc.Lines) {
       this._requireDocumentMemo = false;
       this._readonlyDocumentMemo = false;
       this._requireDocumentPostingDate = false;
       this._readonlyDocumentPostingDate = false;
-      this._requireDebitResource = false;
-      this._readonlyDebitResource = false;
-      this._requireCreditResource = false;
-      this._readonlyCreditResource = false;
-      this._requireDebitCustody = false;
-      this._readonlyDebitCustody = false;
-      this._requireCreditCustody = false;
-      this._readonlyCreditCustody = false;
       this._requireNotedRelation = false;
       this._readonlyNotedRelation = false;
       this._requireDocumentCenter = false;
       this._readonlyDocumentCenter = false;
-      this._requireDocumentTime1 = false;
-      this._readonlyDocumentTime1 = false;
-      this._requireDocumentTime2 = false;
-      this._readonlyDocumentTime2 = false;
-      this._requireDocumentQuantity = false;
-      this._readonlyDocumentQuantity = false;
-      this._requireDocumentUnit = false;
-      this._readonlyDocumentUnit = false;
       this._requireDocumentCurrency = false;
       this._readonlyDocumentCurrency = false;
+      this._requireDocumentExternalReference = false;
+      this._readonlyDocumentExternalReference = false;
+      this._requireDocumentAdditionalReference = false;
+      this._readonlyDocumentAdditionalReference = false;
 
       return;
     }
@@ -1115,32 +879,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
       this._requireDocumentPostingDate = def.PostingDateRequiredState === 0;
       this._readonlyDocumentPostingDate = def.PostingDateReadOnlyState === 0;
-      this._requireDebitResource = def.DebitResourceRequiredState === 0;
-      this._readonlyDebitResource = def.DebitResourceReadOnlyState === 0;
-      this._requireCreditResource = def.CreditResourceRequiredState === 0;
-      this._readonlyCreditResource = def.CreditResourceReadOnlyState === 0;
-      this._requireDebitCustody = def.DebitCustodyRequiredState === 0;
-      this._readonlyDebitCustody = def.DebitCustodyReadOnlyState === 0;
-      this._requireCreditCustody = def.CreditCustodyRequiredState === 0;
-      this._readonlyCreditCustody = def.CreditCustodyReadOnlyState === 0;
       this._requireNotedRelation = def.NotedRelationRequiredState === 0;
       this._readonlyNotedRelation = def.NotedRelationReadOnlyState === 0;
       this._requireDocumentCenter = def.CenterRequiredState === 0;
       this._readonlyDocumentCenter = def.CenterReadOnlyState === 0;
-      this._requireDocumentTime1 = def.Time1RequiredState === 0;
-      this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0;
-      this._requireDocumentTime2 = def.Time2RequiredState === 0;
-      this._readonlyDocumentTime2 = def.Time2ReadOnlyState === 0;
-      this._requireDocumentQuantity = def.QuantityRequiredState === 0;
-      this._readonlyDocumentQuantity = def.QuantityReadOnlyState === 0;
-      this._requireDocumentUnit = def.UnitRequiredState === 0;
-      this._readonlyDocumentUnit = def.UnitReadOnlyState === 0;
       this._requireDocumentCurrency = def.CurrencyRequiredState === 0;
       this._readonlyDocumentCurrency = def.CurrencyReadOnlyState === 0;
+      this._requireDocumentAdditionalReference = def.AdditionalReferenceRequiredState === 0;
+      this._readonlyDocumentAdditionalReference = def.AdditionalReferenceReadOnlyState === 0;
+      this._requireDocumentExternalReference = def.ExternalReferenceRequiredState === 0;
+      this._readonlyDocumentExternalReference = def.ExternalReferenceReadOnlyState === 0;
 
       for (const lineDefId of def.LineDefinitions.map(e => e.LineDefinitionId)) {
         const lineDef = this.lineDefinition(lineDefId);
-        for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader)) {
+        for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader === 2)) {
 
           switch (colDef.ColumnName) {
             case 'Memo':
@@ -1161,44 +913,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentPostingDate &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentPostingDate = true;
-              }
-              break;
-            case 'ResourceId':
-              if (!this._requireDebitResource && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDebitResource = true;
-              }
-              if (!this._requireCreditResource && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireCreditResource = true;
-              }
-
-              if (!this._readonlyDebitResource && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDebitResource = true;
-              }
-              if (!this._readonlyCreditResource && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyCreditResource = true;
-              }
-              break;
-            case 'CustodyId':
-              if (!this._requireDebitCustody && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDebitCustody = true;
-              }
-              if (!this._requireCreditCustody && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireCreditCustody = true;
-              }
-
-              if (!this._readonlyDebitCustody && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDebitCustody = true;
-              }
-              if (!this._readonlyCreditCustody && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyCreditCustody = true;
               }
               break;
 
@@ -1224,50 +938,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               }
               break;
 
-            case 'Time1':
-              if (!this._requireDocumentTime1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentTime1 = true;
-              }
-              if (!this._readonlyDocumentTime1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentTime1 = true;
-              }
-              break;
-
-            case 'Time2':
-              if (!this._requireDocumentTime2 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentTime2 = true;
-              }
-              if (!this._readonlyDocumentTime2 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentTime2 = true;
-              }
-              break;
-
-            case 'Quantity':
-              if (!this._requireDocumentQuantity &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentQuantity = true;
-              }
-              if (!this._readonlyDocumentQuantity &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentQuantity = true;
-              }
-              break;
-
-            case 'UnitId':
-              if (!this._requireDocumentUnit &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentUnit = true;
-              }
-              if (!this._readonlyDocumentUnit &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentUnit = true;
-              }
-              break;
-
             case 'CurrencyId':
               if (!this._requireDocumentCurrency &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
@@ -1276,6 +946,28 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentCurrency &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentCurrency = true;
+              }
+              break;
+
+            case 'ExternalReference':
+              if (!this._requireDocumentExternalReference &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentExternalReference = true;
+              }
+              if (!this._readonlyDocumentExternalReference &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentExternalReference = true;
+              }
+              break;
+
+            case 'AdditionalReference':
+              if (!this._requireDocumentAdditionalReference &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentAdditionalReference = true;
+              }
+              if (!this._readonlyDocumentAdditionalReference &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentAdditionalReference = true;
               }
               break;
           }
@@ -1342,9 +1034,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lineDef = this.lineDefinition(lineDefId);
     if (!!lineDef && !!lineDef.Entries) {
       const entryDef = lineDef.Entries[entryIndex];
-      if (!!entryDef && !!entryDef.AccountTypeId) {
+      if (!!entryDef && !!entryDef.ParentAccountTypeId) {
         // Account Type Id
-        let filter = `AccountType/Node descof ${entryDef.AccountTypeId}`;
+        let filter = `AccountType/Node descof ${entryDef.ParentAccountTypeId}`;
 
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
@@ -2690,6 +2382,39 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._lines[lineDefId];
   }
 
+  private _tabEntries: { [defId: number]: LineForSave[] };
+  private _tabEntriesModel: DocumentForSave;
+
+  /**
+   * Returns the array of DocumentLineDefinitionEntries indexed by EntryIndex (may contain gaps)
+   */
+  public tabEntries(lineDefId: number, model: Document): DocumentLineDefinitionEntry[] {
+    if (!model) {
+      return [];
+    }
+
+    if (this._tabEntriesModel !== model) {
+      this._tabEntriesModel = model;
+      this._tabEntries = {};
+
+      if (!!model.LineDefinitionEntries) {
+        for (const tabEntry of model.LineDefinitionEntries) {
+          if (!this._tabEntries[tabEntry.LineDefinitionId]) {
+            this._tabEntries[tabEntry.LineDefinitionId] = [];
+          }
+
+          this._tabEntries[tabEntry.LineDefinitionId][tabEntry.EntryIndex] = tabEntry;
+        }
+      }
+    }
+
+    if (!this._tabEntries[lineDefId]) {
+      this._tabEntries[lineDefId] = [];
+    }
+
+    return this._tabEntries[lineDefId];
+  }
+
   private _manualLineModel: Document;
   private _manualLineResult: LineForSave;
 
@@ -2763,6 +2488,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Set the entry
     pair.entry = {
+      Id: 0,
       Direction: 1
     };
 
@@ -2809,10 +2535,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._manualEntries;
   }
 
-  public showLineErrors(lineDefId: number, model: Document) {
-    return !!model && !!model.Lines &&
-      model.Lines.some(line => !!line.serverErrors ||
-        (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors)));
+  public showTabErrors(lineDefId: number, model: Document) {
+    // Get the relevant tab entries
+    const tabEntries = this.tabEntries(lineDefId, model);
+    const lines = this.lines(lineDefId, model);
+    return (!!tabEntries && tabEntries.some(tabEntry => !!tabEntry.serverErrors)) ||
+      (!!lines && lines.some(line => !!line.serverErrors || (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
   }
 
   public showAttachmentsErrors(model: Document) {
@@ -2839,30 +2567,127 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return paths;
   }
 
-  public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
+  public smartTabHeaderColumnPaths(lineDefId: number, doc: Document): number[] {
+    // It is named smartTabHeaderColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+
     // All line definitions other than 'ManualLine'
     const lineDef = this.lineDefinition(lineDefId);
+    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
+    if (!!doc.LineDefinitionEntries) {
+      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
+        tabEntries[tabEntry.EntryIndex] = tabEntry;
+      }
+    }
+
     const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
       .map((column, index) => ({ column, index })) // Capture the index first thing
       .filter(e => {
         const col = e.column;
-        // Only show columns that don't inherit from a document property marked IsCommon = true
-        return !col.InheritsFromHeader ||
-          !(
-            (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-            (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-            (doc.DebitResourceIsCommon && col.ColumnName === 'ResourceId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
-            (doc.CreditResourceIsCommon && col.ColumnName === 'ResourceId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
-            (doc.DebitCustodyIsCommon && col.ColumnName === 'CustodyId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
-            (doc.CreditCustodyIsCommon && col.ColumnName === 'CustodyId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
-            (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
-            (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-            (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
-            (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
-            (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
-            (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
-            (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId')
-          );
+
+        if (col.InheritsFromHeader >= 2 && (
+          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+          (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
+          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+        )) {
+          // This column inherits from document header, hide it from the grid
+          return false;
+        } else if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1) {
+          switch (col.ColumnName) {
+            case 'Memo':
+            case 'PostingDate':
+            case 'NotedRelationId':
+            case 'CurrencyId':
+            case 'CustodyId':
+            case 'ResourceId':
+            case 'Quantity':
+            case 'UnitId':
+            case 'CenterId':
+            case 'Time1':
+            case 'Time2':
+            case 'ExternalReference':
+            case 'AdditionalReference':
+              return true;
+          }
+        }
+
+        return false;
+      })
+      .map(e => e.index) : [];
+
+    return result;
+  }
+
+  private _defaultTabEntry: DocumentLineDefinitionEntryForSave = {
+    PostingDateIsCommon: true,
+    MemoIsCommon: true,
+    NotedRelationIsCommon: true,
+    CurrencyIsCommon: true,
+    CustodyIsCommon: true,
+    ResourceIsCommon: true,
+    QuantityIsCommon: true,
+    UnitIsCommon: true,
+    CenterIsCommon: true,
+    Time1IsCommon: true,
+    Time2IsCommon: true,
+    ExternalReferenceIsCommon: true,
+    AdditionalReferenceIsCommon: true,
+  };
+
+  public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
+    // It is named smartColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+
+    // All line definitions other than 'ManualLine'
+    const lineDef = this.lineDefinition(lineDefId);
+    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
+    if (!!doc.LineDefinitionEntries) {
+      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
+        tabEntries[tabEntry.EntryIndex] = tabEntry;
+      }
+    }
+
+    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+      .map((column, index) => ({ column, index })) // Capture the index first thing
+      .filter(e => {
+        const col = e.column;
+
+        if (col.InheritsFromHeader >= 2 && (
+          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+          (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
+          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+        )) {
+          // This column inherits from document header, hide it from the grid
+          return false;
+        } else {
+          const tabEntryIndex = this.tabEntryIndex(col);
+          const tab = tabEntries[tabEntryIndex] || this._defaultTabEntry;
+          if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
+            (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
+            (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (tab.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
+            (tab.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+            (tab.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
+            (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
+            (tab.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+            (tab.UnitIsCommon && col.ColumnName === 'UnitId') ||
+            (tab.CenterIsCommon && col.ColumnName === 'CenterId') ||
+            (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
+            (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
+            (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+            (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+          )) {
+            return false;
+          }
+        }
+
+        return true;
       })
       .map(e => e.index + '') : [];
 
@@ -2954,17 +2779,42 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (def.ColumnName === 'Memo' || def.ColumnName === 'PostingDate') {
         entity = line;
       } else {
-        entity = !!line.Entries ? line.Entries[def.EntryIndex] : null;
+        entity = !!line && !!line.Entries ? line.Entries[def.EntryIndex] : null;
       }
     }
 
     return entity;
   }
 
+  /**
+   * Returns a hard-coded 0 for Memo and PostingDate and the actual entry index otherwise
+   */
+  private tabEntryIndex(colDef: LineDefinitionColumnForClient): number {
+    switch (colDef.ColumnName) {
+      case 'Memo':
+      case 'PostingDate':
+        return 0;
+      default:
+        return colDef.EntryIndex;
+    }
+  }
+
+  /**
+   * Returns the DocumentLineDefinitionEntry that matches the lineDefId and colDef
+   */
+  private tabEntry(lineDefId: number, colDef: LineDefinitionColumnForClient, doc: DocumentForSave): DocumentLineDefinitionEntryForSave {
+    if (!doc.LineDefinitionEntries) {
+      return undefined;
+    }
+
+    const entryIndex = this.tabEntryIndex(colDef);
+    return this.tabEntries(lineDefId, doc)[entryIndex];
+  }
+
   public entry(lineDefId: number, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     if (!!colDef && colDef.ColumnName !== 'Memo' && colDef.ColumnName !== 'PostingDate') {
-      return !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
+      return !!line && !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 
     return null;
@@ -3019,42 +2869,155 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public serverErrors(lineDefId: number, columnIndex: number, line: LineForSave): string[] {
+  public lineEntryServerErrors(lineDefId: number, columnIndex: number, line: LineForSave): string[] {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     const entity = this.entity(colDef, line);
     return !!entity && !!entity.serverErrors ? entity.serverErrors[colDef.ColumnName] : null;
   }
 
-  public entityMetadata(lineDefId: number, columnIndex: number, line: LineForSave): 0 | 1 | 2 {
+  public tabHeaderServerErrors(lineDefId: number, columnIndex: number, doc: DocumentForSave) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const entity = this.entity(colDef, line);
-    return !!entity && !!entity.EntityMetadata ? entity.EntityMetadata[colDef.ColumnName] : null;
+    const tabEntry = this.tabEntry(lineDefId, colDef, doc);
+    return !!tabEntry && !!tabEntry.serverErrors ? tabEntry.serverErrors[colDef.ColumnName] : null;
   }
 
-  public getFieldValue(lineDefId: number, columnIndex: number, line: LineForSave): any {
-    const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const entity = this.entity(colDef, line);
-    return !!entity ? entity[colDef.ColumnName] : null;
-  }
-
-  public setFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, value: any): void {
-    const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const entity = this.entity(colDef, line);
-    if (!!entity) {
-      entity[colDef.ColumnName] = value;
+  public savePreprocessing = (doc: DocumentForSave): void => {
+    // Add all missing DocumentLineDefinitionEntries (the tab entries)
+    // This is so that the server is able to report errors on any
+    // tab entry slot even if the tab entry was not created by that user
+    // The server removes excess tab entries anyways in DocumentsController.SavePreprocessAsync
+    const def = this.definition;
+    const lineDefIds = def.LineDefinitions.map(e => e.LineDefinitionId);
+    for (const lineDefId of lineDefIds) {
+      const lineDef = this.lineDefinition(lineDefId);
+      for (const colDef of lineDef.Columns) {
+        const tabEntry = this.tabEntry(lineDefId, colDef, doc);
+        if (!tabEntry) {
+          this.addNewTabEntry(lineDefId, colDef, doc);
+        }
+      }
     }
   }
 
-  public isReadOnly(lineDefId: number, columnIndex: number, line: Line) {
-    // return false;
+  public getFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave): any {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    const state = line.State || 0;
-    return state < 0 || state >= colDef.ReadOnlyState;
+    if (!!line) {
+      // Get the value from the line or the entry
+      const entity = this.entity(colDef, line);
+      return !!entity ? entity[colDef.ColumnName] : null;
+    } else {
+      // Get the value from the tab header
+      let tabEntry = this.tabEntry(lineDefId, colDef, doc);
+      if (!tabEntry) {
+        tabEntry = this._defaultTabEntry;
+      }
+
+      return tabEntry[colDef.ColumnName];
+    }
   }
 
-  public isRequired(lineDefId: number, columnIndex: number, line: Line) {
+  /**
+   * Creates a new DocumentLineDefinitionEntry from defaults and adds it to the document
+   */
+  private addNewTabEntry(lineDefId: number, colDef: LineDefinitionColumnForClient, doc: DocumentForSave): DocumentLineDefinitionEntry {
+    const tabEntry = {
+      EntryIndex: this.tabEntryIndex(colDef),
+      LineDefinitionId: lineDefId,
+      ... this._defaultTabEntry
+    };
+
+    doc.LineDefinitionEntries.push(tabEntry);
+    this.tabEntries(lineDefId, doc)[tabEntry.EntryIndex] = tabEntry;
+
+    return tabEntry;
+  }
+
+  private isCommonPropertyName(prop: EntryColumnName): string {
+
+    switch (prop) {
+      case 'PostingDate': return 'PostingDateIsCommon';
+      case 'Memo': return 'MemoIsCommon';
+      case 'NotedRelationId': return 'NotedRelationIsCommon';
+      case 'CurrencyId': return 'CurrencyIsCommon';
+      case 'CustodyId': return 'CustodyIsCommon';
+      case 'ResourceId': return 'ResourceIsCommon';
+      case 'Quantity': return 'QuantityIsCommon';
+      case 'UnitId': return 'UnitIsCommon';
+      case 'CenterId': return 'CenterIsCommon';
+      case 'Time1': return 'Time1IsCommon';
+      case 'Time2': return 'Time2IsCommon';
+      case 'ExternalReference': return 'ExternalReferenceIsCommon';
+      case 'AdditionalReference': return 'AdditionalReferenceIsCommon';
+      default: {
+        console.error(`Could not determine IsCommon version of column name ${prop}`);
+        return '';
+      }
+    }
+  }
+
+  public setFieldValue(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave, value: any): void {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return (line.State || 0) >= colDef.RequiredState;
+    if (!!line) {
+      const entity = this.entity(colDef, line);
+      if (!!entity) {
+        entity[colDef.ColumnName] = value;
+      }
+    } else {
+      const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this.addNewTabEntry(lineDefId, colDef, doc);
+      tabEntry[colDef.ColumnName] = value;
+    }
+  }
+
+  public onToggleTabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): void {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this.addNewTabEntry(lineDefId, colDef, doc);
+
+    const isCommonPropName = this.isCommonPropertyName(colDef.ColumnName);
+
+    tabEntry[isCommonPropName] = !tabEntry[isCommonPropName];
+  }
+
+  public tabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): boolean {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this._defaultTabEntry;
+
+    const isCommonPropName = this.isCommonPropertyName(colDef.ColumnName);
+    return tabEntry[isCommonPropName];
+  }
+
+  public isReadOnly(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave) {
+    // return false;
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const lines = this.lines(lineDefId, doc);
+
+    // inline function
+    const isReadOnlyInner = (e: Line) => {
+      const state = e.State || 0;
+      return state < 0 || state >= colDef.ReadOnlyState;
+    };
+
+    if (!!line) {
+      return isReadOnlyInner(line);
+    } else {
+      return lines.some(isReadOnlyInner); // One read-only line, makes the header read-only
+    }
+  }
+
+  public isRequired(lineDefId: number, columnIndex: number, line: LineForSave, doc: DocumentForSave) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const lines = this.lines(lineDefId, doc);
+
+    // inline function
+    const isRequiredInner = (e: Line) => {
+      const state = e.State || 0;
+      return state >= colDef.RequiredState;
+    };
+
+    if (!!line) {
+      return isRequiredInner(line);
+    } else {
+      return lines.some(isRequiredInner); // One required line, makes the header required
+    }
   }
 
   private _onNewLineFactoryLineDefId: number;
@@ -3074,7 +3037,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           if (lineDef.Entries) {
             for (let i = 0; i < lineDef.Entries.length; i++) {
               const entryDef = lineDef.Entries[i];
-              line.Entries[i] = { Direction: entryDef.Direction, Value: 0 };
+              line.Entries[i] = { Id: 0, Direction: entryDef.Direction, Value: 0 };
             }
           } else {
             console.error(`Line definition ${lineDefId} is missing its Entries`);
@@ -3107,14 +3070,24 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public defaultsToForm(lineDefId: number) {
+    const lineDef = this.lineDefinition(lineDefId);
+    return !!lineDef ? lineDef.ViewDefaultsToForm : false;
+  }
+
   public showAsForm(lineDefId: number, model: DocumentForSave) {
     const count = this.lines(lineDefId, model).length;
     if (count > 1) {
       return false;
     } else {
-      const lineDef = this.lineDefinition(lineDefId);
-      return !!lineDef ? lineDef.ViewDefaultsToForm : false;
+      return this.defaultsToForm(lineDefId);
     }
+  }
+
+  public showTabHeader(lineDefId: number, doc: DocumentForSave) {
+    // TODO Optimize
+    const paths = this.smartTabHeaderColumnPaths(lineDefId, doc);
+    return paths.length > 0;
   }
 
   public dummyUpdate = () => { };
@@ -3392,15 +3365,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public setModified(line: LineForSave, doc: DocumentForSave): void {
-    // if (!line) {
-    //   return;
-    // }
     this.flags(line, doc, true).isModified = true;
   }
 
   public onSmartLineUpdated(update: (item: LineForSave) => void, line: LineForSave, doc: DocumentForSave) {
-    this.setModified(line, doc); // Flags the line as modified
-    update(line);
+    if (!!line) {
+      this.setModified(line, doc); // Flags the line as modified
+      update(line);
+    }
   }
 
   private _highlightPairFactoryModel: DocumentForSave;
@@ -3463,6 +3435,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public smartTabColor(lineDefId: number, doc: DocumentForSave): string {
     return this.highlightSmartTab(lineDefId, doc) ? '#eeff44' : null;
   }
+
   public highlightBookkeepingTab(doc: Document): boolean {
     const isHighlightedLine = this.highlightLineFactory(doc);
     return !!doc && !!doc.Lines && doc.Lines.some(e => (e.State || 0) >= 0 && isHighlightedLine(e));

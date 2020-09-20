@@ -156,7 +156,7 @@ namespace Tellma.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                _logger.LogError(ex, $"Error caught in {nameof(SettingsController)}.{nameof(SettingsForClient)}: {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }

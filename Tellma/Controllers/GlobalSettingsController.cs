@@ -34,7 +34,7 @@ namespace Tellma.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                _logger.LogError(ex, $"Error caught in {nameof(GlobalSettingsController)}.{nameof(GlobalSettingsForClient)}: {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }

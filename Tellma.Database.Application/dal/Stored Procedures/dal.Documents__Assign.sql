@@ -27,7 +27,7 @@ BEGIN
 		USING (
 			SELECT
 				[Id]
-			FROM @Ids 
+			FROM @Ids WHERE [Id] IN (SELECT [Id] FROM dbo.Documents) -- If trying to open a document that does not exist anymore.
 		) AS s ON (t.[DocumentId] = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
@@ -44,7 +44,7 @@ BEGIN
 			INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt])
 			SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt]
 			FROM dbo.DocumentAssignments
-			WHERE DocumentId IN (SELECT [Id] FROM @Ids)
+			WHERE DocumentId IN (SELECT [Id] FROM @Ids WHERE [Id] IN (SELECT [Id] FROM dbo.Documents))
 	END
 
 	-- Return Notification info

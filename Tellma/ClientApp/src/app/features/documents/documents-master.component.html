@@ -2,7 +2,7 @@
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="PostingDate,State,Assignee,AssignedAt,Memo" selectForTiles="PostingDate,State,Memo"
+  [selectDefault]="selectDefault" selectForTiles="PostingDate,State,Memo"
   [multiselectActions]="[
                 { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasStatePermission, actionTooltip: stateTooltip },

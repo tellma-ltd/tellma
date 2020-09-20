@@ -562,7 +562,7 @@
     <Build Include="dbo\User Defined Types\dbo.GenerateArgumentList.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines__Generate.sql" />
     <Build Include="dbo\User Defined Types\dbo.SN.sql" />
-    <Build Include="dbo\Tables\dbo.DocumentLineDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentLineDefinitionEntries.sql" />
     <None Include="Provisioning\000\r_AccountClassifications.sql" />
     <None Include="Provisioning\199\00_Script.sql" />
     <None Include="Provisioning\199\10_Users.sql" />
@@ -677,6 +677,11 @@
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentLineDefinitionEntryList.sql" />
+    <Build Include="map\map.DocumentLineDefinitionEntries.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
