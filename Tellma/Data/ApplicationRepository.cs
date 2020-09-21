@@ -52,7 +52,7 @@ namespace Tellma.Data
         private IClientInfoAccessor ClientInfoAccessor => _clientInfoAccessor ??= _serviceProvider.GetRequiredService<IClientInfoAccessor>();
 
         private IStringLocalizer _localizer;
-        private IStringLocalizer Localizer => _localizer ??= _serviceProvider.GetRequiredService<IStringLocalizer>();
+        private IStringLocalizer Localizer => _localizer ??= _serviceProvider.GetRequiredService<IStringLocalizer<Strings>>();
 
         private ITenantIdAccessor _tenantIdAccessor;
         private ITenantIdAccessor TenantIdAccessor => _tenantIdAccessor ??= _serviceProvider.GetRequiredService<ITenantIdAccessor>();

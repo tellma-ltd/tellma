@@ -10,10 +10,10 @@ namespace Tellma.Controllers.Jobs
         /// <summary>
         /// The phone number to send the SMS to
         /// </summary>
-        public string PhoneNumber { get; set; }
+        public string ToPhoneNumber { get; set; }
 
         /// <summary>
-        /// The contents of the SMS
+        /// The content of the SMS
         /// </summary>
         public string Message { get; set; }
         

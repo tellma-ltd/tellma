@@ -32,6 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // These are helper services that business services rely on
             services = services
                 .AddSingleton<GlobalSettingsProvider>()
+                .AddSingleton<NotificationsService>()
                 .AddSingleton<IDefinitionsCache, DefinitionsCache>()
                 .AddSingleton<ISettingsCache, SettingsCache>()
                 .AddScoped<MetadataProvider>()

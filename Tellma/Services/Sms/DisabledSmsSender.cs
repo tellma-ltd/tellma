@@ -9,7 +9,7 @@ namespace Tellma.Services.Sms
     /// </summary>
     public class DisabledSmsSender : ISmsSender
     {
-        public Task SendAsync(string toPhoneNumber, string sms, int? tenantId = null, int? notificationId = null, CancellationToken cancellation = default)
+        public Task SendAsync(SmsForSender sms, CancellationToken cancellation = default)
         {
             // This indicates a bug, all SMS sending code should check if SMS is enabled first before sending any
             throw new InvalidOperationException("SMS is disabled in this installation, to enable it set SmsEnabled to true in a configuration provider.");

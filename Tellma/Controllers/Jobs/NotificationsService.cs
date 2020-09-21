@@ -8,7 +8,7 @@ namespace Tellma.Controllers.Jobs
 {
     public class NotificationsService
     {
-        public async Task Notify(List<NotificationEmailInfo> emails = null, List<NotificationSmsInfo> smses = null, List<NotificationPushInfo> pushes = null)
+        public async Task Enqueue(List<EmailQueueItem> emails = null, List<SmsQueueItem> smses = null, List<PushNotificationQueueItem> pushes = null)
         {
             // TODO
         }

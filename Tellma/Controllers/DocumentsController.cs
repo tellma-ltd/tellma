@@ -21,6 +21,7 @@ using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
+using Tellma.Controllers.Jobs;
 
 namespace Tellma.Controllers
 {
@@ -465,7 +466,7 @@ namespace Tellma.Controllers
             if (userInfo.UserId != args.AssigneeId)
             {
                 // TODO
-                await _notificationsService.Notify(null, null, null);
+                await _notificationsService.Enqueue(null, null, null);
             }
 
             trx.Complete();

@@ -2,21 +2,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tellma.Data
+namespace Tellma.Controllers.Jobs
 {
-    public class NotificationPushInfo
+    /// <summary>
+    /// DTO that matches the structure of the standard web push notification as explained here https://mzl.la/3kCDpaD.
+    /// The DTO is designed to be convertable to JSON using the JSON.NET library
+    /// </summary>
+    public class PushNotificationInfo
     {
-        public string Endpoint { get; set; }
-        public string P256dh { get; set; }
-        public string Auth { get; set; }
-        public AngularPushNotification Content { get; set; }
-        public int PushId { get; set; }
-        public int TenantId { get; set; }
-    }
-
-    public class AngularPushNotification
-    {
-        public AngularPushNotification(string title)
+        public PushNotificationInfo(string title)
         {
             Title = title ?? throw new ArgumentNullException(nameof(title));
         }
@@ -31,7 +25,7 @@ namespace Tellma.Data
         public string Body { get; set; }
 
         [JsonProperty("data")]
-        public IDictionary<string, object> Data { get; set; }
+        public IDictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
 
         [JsonProperty("dir")]
         public string Dir { get; set; } // "auto"|"ltr"|"rtl"
@@ -68,17 +62,17 @@ namespace Tellma.Data
 
         public class NotificationAction
         {
-            [JsonProperty("action")]
-            public string Action { get; }
-
-            [JsonProperty("title")]
-            public string Title { get; }
-
             public NotificationAction(string action, string title)
             {
                 Action = action ?? throw new ArgumentNullException(nameof(action));
                 Title = title ?? throw new ArgumentNullException(nameof(title));
             }
+
+            [JsonProperty("action")]
+            public string Action { get; }
+
+            [JsonProperty("title")]
+            public string Title { get; }
         }
     }
 }

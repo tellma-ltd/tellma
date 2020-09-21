@@ -26,10 +26,15 @@ namespace Tellma.Services.Sms
             _logger = logger;
         }
 
-        public async Task SendAsync(string toPhoneNumber, string sms, int? tenantId = null, int? messageId = null, CancellationToken cancellation = default)
+        public async Task SendAsync(SmsForSender sms, CancellationToken cancellation = default)
         {
             var serviceSid = !string.IsNullOrWhiteSpace(_options.ServiceSid) ? _options.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
-            var to = new PhoneNumber(toPhoneNumber);
+
+            // Extract the values from the argument
+            var to = new PhoneNumber(sms.ToPhoneNumber);
+            var message = sms.Message;
+            var messageId = sms.MessageId;
+            var tenantId = sms.TenantId;
 
             // Calculate the callbackUri (if required)
             Uri callbackUri = null;
@@ -61,7 +66,7 @@ namespace Tellma.Services.Sms
 
                     // Send using Twilio's Messaging Service
                     await MessageResource.CreateAsync(
-                        body: sms,
+                        body: message,
                         messagingServiceSid: serviceSid,
                         to: to,
                         statusCallback: callbackUri

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Entities;
 using Tellma.Services.Sharding;
 
 namespace Tellma.Data
@@ -22,119 +23,119 @@ namespace Tellma.Data
             _shardResolver = shardResolver;
         }
 
-        /// <summary>
-        /// Adds the Emails and SMSes to the database queues in state PENDING 
-        /// IF the database queues do not have any NEW or stale PENDING items, return them new IDs immediately for processing.
-        /// If the database queues contain NEW or stale PENDING items, don't return anything
-        /// </summary>
-        /// <param name="tenantId"></param>
-        /// <param name="emails"></param>
-        /// <param name="smses"></param>
-        /// <param name="cancellation"></param>
-        /// <returns></returns>
-        public async Task<(IEnumerable<NotificationEmailInfo> emails, IEnumerable<NotificationSmsInfo> smses)> 
-            Notifications_Enqueu(int tenantId, List<NotificationEmailInfo> emails, List<NotificationSmsInfo> smses, CancellationToken cancellation)
-        {
-            List<NotificationEmailInfo> emailsReadyToSend = new List<NotificationEmailInfo>(emails.Count);
-            List<NotificationSmsInfo> smsesReadyToSend = new List<NotificationSmsInfo>(smses.Count);
+        ///// <summary>
+        ///// Adds the Emails and SMSes to the database queues in state PENDING 
+        ///// IF the database queues do not have any NEW or stale PENDING items, return the new IDs immediately for processing.
+        ///// If the database queues contain NEW or stale PENDING items, don't return anything
+        ///// </summary>
+        ///// <param name="tenantId"></param>
+        ///// <param name="emails"></param>
+        ///// <param name="smses"></param>
+        ///// <param name="cancellation"></param>
+        ///// <returns></returns>
+        //public async Task<(IEnumerable<Email> emails, IEnumerable<SmsMessage> smses, IEnumerable<PushNotification> pushes)> 
+        //    Notifications_Enqueu(int tenantId, List<Email> emails, List<SmsMessage> smses, List<PushNotification> pushes, CancellationToken cancellation)
+        //{
+        //    List<Email> emailsReadyToSend = new List<Email>(emails.Count);
+        //    List<SmsMessage> smsesReadyToSend = new List<SmsMessage>(smses.Count);
 
-            // TODO: Prepare the Email table
+        //    // TODO: Prepare the Email table
 
-            // Prepare the SMS Table
-            DataTable smsTable = new DataTable();
+        //    // Prepare the SMS Table
+        //    DataTable smsTable = new DataTable();
 
-            smsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-            smsTable.Columns.Add(new DataColumn(nameof(NotificationSmsInfo.PhoneNumber), typeof(string)) { MaxLength = 50 });
-            smsTable.Columns.Add(new DataColumn(nameof(NotificationSmsInfo.Message), typeof(string)) { MaxLength = 1024 });
+        //    smsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+        //    smsTable.Columns.Add(new DataColumn(nameof(SmsMessage.ToPhoneNumber), typeof(string)) { MaxLength = 50 });
+        //    smsTable.Columns.Add(new DataColumn(nameof(SmsMessage.Message), typeof(string)) { MaxLength = 1024 });
 
-            int smsIndex = 0;
-            foreach (var sms in smses)
-            {
-                DataRow row = smsTable.NewRow();
+        //    int smsIndex = 0;
+        //    foreach (var sms in smses)
+        //    {
+        //        DataRow row = smsTable.NewRow();
 
-                row["Index"] = smsIndex++;
-                row[nameof(sms.PhoneNumber)] = sms.PhoneNumber;
-                row[nameof(sms.Message)] = sms.Message;
+        //        row["Index"] = smsIndex++;
+        //        row[nameof(sms.ToPhoneNumber)] = sms.ToPhoneNumber;
+        //        row[nameof(sms.Message)] = sms.Message;
 
-                smsTable.Rows.Add(row);
-            }
+        //        smsTable.Rows.Add(row);
+        //    }
 
-            SqlParameter smsTvp = new SqlParameter("@Smses", smsTable)
-            {
-                TypeName = $"[dbo].[NotificationSmsList]",
-                SqlDbType = SqlDbType.Structured
-            };
+        //    SqlParameter smsTvp = new SqlParameter("@Smses", smsTable)
+        //    {
+        //        TypeName = $"[dbo].[NotificationSmsList]",
+        //        SqlDbType = SqlDbType.Structured
+        //    };
 
-            string connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
-            using var conn = new SqlConnection(connString);
-            using var cmd = new SqlCommand($"[dal].[{nameof(Notifications_Enqueu)}]", conn)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
+        //    string connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
+        //    using var conn = new SqlConnection(connString);
+        //    using var cmd = new SqlCommand($"[dal].[{nameof(Notifications_Enqueu)}]", conn)
+        //    {
+        //        CommandType = CommandType.StoredProcedure
+        //    };
 
-            // Add Email and SMS parameters
+        //    // Add Email and SMS parameters
 
-            // cmd.Parameters.Add(emailsTvp);
-            cmd.Parameters.Add(smsTvp);
+        //    // cmd.Parameters.Add(emailsTvp);
+        //    cmd.Parameters.Add(smsTvp);
             
-            // Execute the Query
+        //    // Execute the Query
 
-            await conn.OpenAsync(cancellation);
-            while (!cancellation.IsCancellationRequested)
-            {
-                // Exponential backoff
-                const int maxAttempts = 2;
-                const int maxBackoff = 4000; // 25 Seconds
-                const int minBackoff = 1000; // 1 Second
-                const int deltaBackoff = 1000; // 1 Second
+        //    await conn.OpenAsync(cancellation);
+        //    while (!cancellation.IsCancellationRequested)
+        //    {
+        //        // Exponential backoff
+        //        const int maxAttempts = 2;
+        //        const int maxBackoff = 4000; // 25 Seconds
+        //        const int minBackoff = 1000; // 1 Second
+        //        const int deltaBackoff = 1000; // 1 Second
 
-                int attemptsSoFar = 0;
-                int backoff = minBackoff;
-                try
-                {
-                    attemptsSoFar++;
+        //        int attemptsSoFar = 0;
+        //        int backoff = minBackoff;
+        //        try
+        //        {
+        //            attemptsSoFar++;
 
-                    // Load Email Ids
-                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        int i = 0;
-                        int index = reader.GetInt32(i++);
+        //            // Load Email Ids
+        //            using var reader = await cmd.ExecuteReaderAsync(cancellation);
+        //            while (await reader.ReadAsync(cancellation))
+        //            {
+        //                int i = 0;
+        //                int index = reader.GetInt32(i++);
 
-                        var email = emails[index];
-                        email.EmailId = reader.GetInt32(i++);
-                        emailsReadyToSend.Add(email);
-                    }
+        //                var email = emails[index];
+        //                email.EmailId = reader.GetInt32(i++);
+        //                emailsReadyToSend.Add(email);
+        //            }
 
-                    // Load SMS Ids
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        int i = 0;
-                        int index = reader.GetInt32(i++);
+        //            // Load SMS Ids
+        //            await reader.NextResultAsync(cancellation);
+        //            while (await reader.ReadAsync(cancellation))
+        //            {
+        //                int i = 0;
+        //                int index = reader.GetInt32(i++);
 
-                        var sms = smses[index];
-                        sms.MessageId = reader.GetInt32(i++);
-                        smsesReadyToSend.Add(sms);
-                    }
-                }
-                catch (SqlException ex) when (ex.Number == 1205)
-                {                    
-                    // Exponential backoff in case 
-                    if (attemptsSoFar < maxAttempts)
-                    {
-                        var randomOffset = _rand.Next(0, deltaBackoff);
-                        await Task.Delay(backoff + randomOffset, cancellation);
+        //                var sms = smses[index];
+        //                sms.MessageId = reader.GetInt32(i++);
+        //                smsesReadyToSend.Add(sms);
+        //            }
+        //        }
+        //        catch (SqlException ex) when (ex.Number == 1205)
+        //        {                    
+        //            // Exponential backoff in case 
+        //            if (attemptsSoFar < maxAttempts)
+        //            {
+        //                var randomOffset = _rand.Next(0, deltaBackoff);
+        //                await Task.Delay(backoff + randomOffset, cancellation);
 
-                        // Double the backoff for next attempt
-                        backoff = Math.Min(backoff * 2, maxBackoff);
-                    }
-                    else
-                    {
-                        throw ex; // Give up
-                    }
-                }
-            }
-        }
+        //                // Double the backoff for next attempt
+        //                backoff = Math.Min(backoff * 2, maxBackoff);
+        //            }
+        //            else
+        //            {
+        //                throw; // Give up
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
