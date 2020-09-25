@@ -71,6 +71,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   tileTemplate: TemplateRef<any>;
 
   @Input()
+  multiselectToolbarTemplate: TemplateRef<any>;
+
+  @Input()
   tableSummaryColumnTemplate: TemplateRef<any>;
 
   @Input()

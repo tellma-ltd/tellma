@@ -4,7 +4,8 @@
     [documentHeaderTemplate]="documentHeader" [actions]="[
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
     [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
-    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select" [savePreprocessing]="savePreprocessing">
+    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select"
+    [savePreprocessing]="savePreprocessing">
 
 </t-details>
 
@@ -25,7 +26,10 @@
     <div *ngIf="!isEdit && showPrint" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
         <button type="button" class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle"
             ngbDropdownToggle>
-            <fa-icon icon="print"></fa-icon>
+            <fa-icon *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
+            <ng-template #spinner>
+              <t-spinner></t-spinner>
+            </ng-template>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
         </button>
         <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
@@ -36,9 +40,7 @@
         </div>
     </div>
 
-    <div class="t-vertical-align-middle d-inline-block" style="min-width: 30px;">
-        <t-spinner *ngIf="isPrinting"></t-spinner>
-    </div>
+    <div class="mx-2 d-inline-block"></div>
 
     <!-- Open -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
@@ -134,7 +136,7 @@
 <ng-template #document let-model="model" let-extras="extras" let-isEdit="isEdit">
 
     <!-- Serial Number -->
-    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="model?.serverErrors?.SerialNumber">
         <h2 class="font-weight-normal" *ngIf="!isEdit || isOriginalDocument">{{ formatSerial(model?.SerialNumber) }}
         </h2>
         <t-serial-editor *ngIf="isEdit && !isOriginalDocument" [(ngModel)]="model.SerialNumber"

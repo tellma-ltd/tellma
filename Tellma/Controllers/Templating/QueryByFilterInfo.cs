@@ -64,7 +64,7 @@ namespace Tellma.Controllers.Templating
         protected override string Encode()
         {
             string idsString = string.Join(",", Ids.OrderBy(id => id));
-            return $"{Collection}/{DefinitionId}?filter={Filter}&orderby={OrderBy}&top={Top}&skip={Skip}";
+            return $"{Collection}/{DefinitionId}?filter={Filter}&orderby={OrderBy}&top={Top}&skip={Skip}&{idsString}";
         }
     }
 }
