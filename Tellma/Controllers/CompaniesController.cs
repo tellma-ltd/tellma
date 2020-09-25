@@ -50,7 +50,7 @@ namespace Tellma.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                _logger.LogError(ex, $"Error caught in {nameof(CompaniesController)}.{nameof(CompaniesForClient)}: {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }
@@ -129,7 +129,7 @@ namespace Tellma.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, User email: {_externalUserAccessor.GetUserEmail()}, {ex.GetType().Name}: {ex.Message}");
+                _logger.LogError(ex, $"Exception while loading user companies: DatabaseId: {databaseId}, User email: {_externalUserAccessor.GetUserEmail()}, {ex.GetType().Name}: {ex.Message}");
             }
         }
     }

@@ -288,6 +288,10 @@
           </div>
         </div>
 
+        <ng-container
+          *ngTemplateOutlet="multiselectToolbarTemplate">
+        </ng-container>
+
         <!-- Cancel -->
         <button class="btn btn-sm t-toolbar-button"
           [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"

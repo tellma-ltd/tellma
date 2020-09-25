@@ -68,7 +68,7 @@ namespace Tellma.Services.Sms
                     {
                         _logger.LogError($"Twilio: 429 Too Many Requests even after {attemptsSoFar} attempts with exponential backoff.");
 
-                        throw ex; // Give up
+                        throw; // Give up
                     }
                 }
             }

@@ -426,6 +426,13 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._visibilityChoices;
   }
 
+  // Document Type
+
+  public get documentTypeChoices(): SelectorChoice[] {
+    const desc = metadata_DocumentDefinition(this.workspace, this.translate).properties.DocumentType as ChoicePropDescriptor;
+    return getChoices(desc);
+  }
+
   // Menu stuff
 
   public get allMainMenuSections(): SelectorChoice[] {

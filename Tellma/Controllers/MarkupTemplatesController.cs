@@ -32,7 +32,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("preview-by-filter")]
-        public async Task<ActionResult<MarkupPreviewResponse>> PreviewByFilter([FromBody] MarkupPreviewTemplate entity, [FromQuery] GenerateMarkupByFilterArguments args, CancellationToken cancellation)
+        public async Task<ActionResult<MarkupPreviewResponse>> PreviewByFilter([FromBody] MarkupPreviewTemplate entity, [FromQuery] GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -125,7 +125,7 @@ namespace Tellma.Controllers
             return (body, downloadName);
         }
 
-        public async Task<(string Body, string DownloadName)> PreviewByFilter(MarkupPreviewTemplate entity, GenerateMarkupByFilterArguments args, CancellationToken cancellation)
+        public async Task<(string Body, string DownloadName)> PreviewByFilter(MarkupPreviewTemplate entity, GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
         {
             // Everything to input in the template service
             var inputVariables = new Dictionary<string, object>

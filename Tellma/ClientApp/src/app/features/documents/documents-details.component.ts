@@ -691,21 +691,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // External Reference
 
   public showDocumentExternalReference(_: DocumentForSave) {
-    return this.definition.ExternalReferenceVisibility || this.isJV;
-  }
-
-  public showDocumentExternalReferenceIsCommon(_: Document): boolean {
-    return !this.isJV;
+    return this.definition.ExternalReferenceVisibility;
   }
 
   public requireDocumentExternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentExternalReference || this.isJV;
+    return this._requireDocumentExternalReference;
   }
 
   public readonlyDocumentExternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentExternalReference && !this.isJV;
+    return this._readonlyDocumentExternalReference;
   }
 
   public labelDocumentExternalReference(_: Document): string {
@@ -713,24 +709,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_ExternalReference');
   }
 
-  // Posting Date
+  // Additional Reference
 
   public showDocumentAdditionalReference(_: DocumentForSave) {
-    return this.definition.AdditionalReferenceVisibility || this.isJV;
-  }
-
-  public showDocumentAdditionalReferenceIsCommon(_: Document): boolean {
-    return !this.isJV;
+    return this.definition.AdditionalReferenceVisibility;
   }
 
   public requireDocumentAdditionalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentAdditionalReference || this.isJV;
+    return this._requireDocumentAdditionalReference;
   }
 
   public readonlyDocumentAdditionalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentAdditionalReference && !this.isJV;
+    return this._readonlyDocumentAdditionalReference;
   }
 
   public labelDocumentAdditionalReference(_: Document): string {

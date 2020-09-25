@@ -40,7 +40,7 @@ namespace Tellma.Controllers.Jobs
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error executing {nameof(OrphanCareJob)} at {DateTimeOffset.Now}: {ex.Message}");
+                    _logger.LogError(ex, $"Error executing {nameof(OrphanCareJob)} at {DateTimeOffset.Now}: {ex.Message}");
                 }
 
                 await Task.Delay(_options.OrphanAdoptionFrequencyInSeconds * 1000, stoppingToken);

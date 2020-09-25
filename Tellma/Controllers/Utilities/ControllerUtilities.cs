@@ -69,7 +69,7 @@ namespace Tellma.Controllers.Utilities
             }
             catch (Exception ex)
             {
-                logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                logger.LogError(ex, $"Error caught in {nameof(InvokeActionImpl)}<{nameof(T)}>: {ex.Message}");
                 return new BadRequestObjectResult(ex.Message);
             }
         }
@@ -118,7 +118,7 @@ namespace Tellma.Controllers.Utilities
             }
             catch (Exception ex)
             {
-                logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                logger.LogError(ex, $"Error caught in {nameof(InvokeActionImpl)}: {ex.Message}");
                 return new BadRequestObjectResult(ex.Message);
             }
         }

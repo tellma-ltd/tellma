@@ -138,14 +138,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Retrieves the <see cref="IFactServiceBase"/> implementation associated with a certain <see cref="Entity"/> type
         /// </summary>
-        public static IFactWithIdService FactWithIdServiceByEntityType(this IServiceProvider sp, Type entityType, int? definitionId = null)
+        public static IFactWithIdService FactWithIdServiceByEntityType(this IServiceProvider sp, string collection, int? definitionId = null)
         {
-            if (entityType is null)
-            {
-                throw new ArgumentNullException(nameof(entityType));
-            }
-
-            return entityType.Name switch
+            return collection switch
             {
                 nameof(VoucherBooklet) => sp.GetRequiredService<VoucherBookletsService>(),
                 nameof(Account) => sp.GetRequiredService<AccountsService>(),
@@ -179,7 +174,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
 
-                _ => throw new UnknownCollectionException($"Bug: Entity type {entityType.Name} does not have a known {nameof(IFactWithIdService)} implementation")
+                _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactWithIdService)} implementation")
             };
         }
 
