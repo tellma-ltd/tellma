@@ -109,7 +109,7 @@
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.Lines.sql" />
-    <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
+    <Build Include="dbo\Tables\dbo.Reconciliations.sql" />
     <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
     <Build Include="dbo\Tables\dbo.DocumentDefinitions.sql" />
@@ -587,7 +587,7 @@
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Activate.sql" />
-    <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeCustodyDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.CustodyDefinitionList.sql" />
@@ -668,7 +668,6 @@
     <Build Include="map\map.LineDefinitionStateReasons.sql" />
     <Build Include="map\map.Workflows.sql" />
     <Build Include="map\map.WorkflowSignatures.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.LineDefinitions__Insert.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Code__Legacy.sql" />
     <Build Include="map\map.DocumentDefinitionLineDefinitions.sql" />
     <Build Include="map\map.DocumentDefinitionMarkupTemplates.sql" />
@@ -679,9 +678,15 @@
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
     <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
-    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineDefinitionEntryList.sql" />
     <Build Include="map\map.DocumentLineDefinitionEntries.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__Insert.sql" />
+    <Build Include="dbo\Tables\dbo.ReconciliationEntries.sql" />
+    <Build Include="dbo\Tables\dbo.ExternalEntries.sql" />
+    <Build Include="dbo\Tables\dbo.ReconciliationExternalEntries.sql" />
+    <Build Include="bll\Stored Procedures\bll.Reconciliations_Validate__Insert.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

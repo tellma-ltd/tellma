@@ -384,7 +384,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 100;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [ParentAccountTypeId]) VALUES
-(0,100,	+1, @CashPaymentsToOthersControlExtension),
+(0,100,	+1, @CashControlExtension),
 (1,100,	-1, @CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
@@ -597,7 +597,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 130;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId]) VALUES
-(0,130,+1,		@CashPaymentsToOthersControlExtension),
+(0,130,+1,		@CashControlExtension),
 (1,130,-1,		@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -685,7 +685,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction], [ParentAccountTypeId],[EntryTypeId]) VALUES
-(0,300,+1,	@CashPaymentsToSuppliersControlExtension, NULL),
+(0,300,+1,	@CashControlExtension, NULL),
 (1,300,-1,	@WT, NULL),
 (2,300,-1,	@CashAndCashEquivalents, @PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -717,7 +717,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],	[EntryTypeId]) VALUES
 (0,301,+1,		@GoodsAndServicesReceivedFromSuppliersControlExtension,NULL),
 (1,301,+1,		@VATReceivable,		NULL),
-(2,301,-1,		@CashPaymentsToSuppliersControlExtension, NULL); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
+(2,301,-1,		@CashControlExtension, NULL); -- Cash + WT = CashPmt Control = GSReceipt Control + VAT = G/S 
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],

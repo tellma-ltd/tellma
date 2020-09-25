@@ -444,7 +444,7 @@ BEGIN
 		AND L.[State] IN (3, 4)
 		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
 		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
-		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId],  E.[CenterId], E.[CenterId]
+		GROUP BY E.[AccountId], E.[CustodyId], E.[ResourceId], E.[CenterId]
 	),
 	CurrentBalances AS (
 		SELECT

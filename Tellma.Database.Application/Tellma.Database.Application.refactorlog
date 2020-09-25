@@ -2486,4 +2486,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[DocumentLineDefinitionEntryList]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f1f43307-d4b3-4630-8850-4727adf7d897" ChangeDateTime="09/25/2020 10:15:10">
+    <Property Name="ElementName" Value="[dbo].[Reconciliation]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Reconciliations]" />
+  </Operation>
 </Operations>

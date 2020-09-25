@@ -8,7 +8,7 @@
 AS
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventoryWithPointInvoiceTemplate');
 	
-	IF @UnitID IS NULL
+	IF @UnitId IS NULL
 		SELECT @UnitId = [UnitId] FROM dbo.Resources WHERE [Id] = @ResourceId;
 	
 	SELECT @Quantity = ISNULL(@Quantity, 1);

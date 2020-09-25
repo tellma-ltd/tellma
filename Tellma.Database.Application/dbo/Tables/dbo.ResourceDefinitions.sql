@@ -9,7 +9,7 @@
 	[TitlePlural2]						NVARCHAR (100),
 	[TitlePlural3]						NVARCHAR (100),
 	-- TODO Make NOT NULL
-	[ResourceDefinitionType]			NVARCHAR (255) NULL
+	[ResourceDefinitionType]			NVARCHAR (255) NOT NULL
 	CONSTRAINT [CK_ResourceDefinitions__ResourceDefinitionType] CHECK ([ResourceDefinitionType] IN (
 		N'PropertyPlantAndEquipment',
 		N'InvestmentProperty',

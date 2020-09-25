@@ -398,7 +398,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
 (0,1300,+1,	@CostOfMerchandiseSold,								NULL),
 (1,1300,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
-(2,1300,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
+(2,1300,+1,	@CashControlExtension,			NULL),
 (3,1300,-1,	@CurrentValueAddedTaxPayables,						NULL),
 (4,1300,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
@@ -533,7 +533,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
 (0,1301,+1,	@CostOfMerchandiseSold,								NULL),
 (1,1301,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
-(2,1301,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
+(2,1301,+1,	@CashControlExtension,			NULL),
 (3,1301,-1,	@CurrentValueAddedTaxPayables,						NULL),
 (4,1301,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
@@ -580,7 +580,7 @@ WHERE [Index] = 1350;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
 (0,1350,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,1350,-1,		@CashReceiptsFromCustomersControlExtension,	NULL);
+(1,1350,-1,		@CashControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -614,7 +614,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
 (0,1360,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
 (1,1360,+1,		@WithholdingTaxReceivablesExtension,		NULL),
-(2,1360,-1,		@CashReceiptsFromCustomersControlExtension,	NULL); 
+(2,1360,-1,		@CashControlExtension,	NULL); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -933,7 +933,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 1630;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
-(0,1630,+1,		@CashPaymentsToSuppliersControlExtension,	NULL),
+(0,1630,+1,		@CashControlExtension,	NULL),
 (1,1630,-1,		@CashAndCashEquivalents,					@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -962,7 +962,7 @@ SET [PreprocessScript] = N'
 WHERE [Index] = 1660;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1660,+1,	@CashPaymentsToSuppliersControlExtension,NULL),
+(0,1660,+1,	@CashControlExtension,NULL),
 (1,1660,-1,	@WithholdingTaxPayableExtension,NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -1101,7 +1101,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
 (0,1730,+1,	@ExpenseByNature,										NULL),
 (1,1730,+1,	@CurrentValueAddedTaxReceivables,						NULL),
-(2,1730,-1,	@CashPaymentsToSuppliersControlExtension,				NULL);
+(2,1730,-1,	@CashControlExtension,				NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],

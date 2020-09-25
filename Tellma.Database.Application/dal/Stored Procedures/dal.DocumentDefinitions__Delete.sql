@@ -3,6 +3,9 @@
 AS
 	IF EXISTS (SELECT * FROM @Ids I JOIN [dbo].[DocumentDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
 		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
-		
+	
+	DELETE dbo.DocumentDefinitionLineDefinitions
+	WHERE DocumentDefinitionId IN (SELECT [Id] FROM @Ids);
+	
 	DELETE [dbo].[DocumentDefinitions]
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
