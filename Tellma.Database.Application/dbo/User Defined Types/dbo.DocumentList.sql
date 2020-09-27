@@ -10,8 +10,8 @@
 	[SegmentId]						INT,
 	[CenterId]						INT,
 	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[NotedRelationId]				INT,
-	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[ParticipantId]					INT,
+	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[CurrencyId]					NCHAR (3), 
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number

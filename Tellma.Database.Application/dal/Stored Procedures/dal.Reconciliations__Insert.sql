@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__Insert]
+	--@Reconciliations 
 	@Entries IdList READONLY,
 	@ExternalEntries IdList READONLY
 AS

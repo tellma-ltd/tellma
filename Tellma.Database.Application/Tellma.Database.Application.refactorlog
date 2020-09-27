@@ -2493,4 +2493,18 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Reconciliations]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ce0a1be8-d05f-44c1-a298-af5ef47a8e0b" ChangeDateTime="09/27/2020 19:44:26">
+    <Property Name="ElementName" Value="[dbo].[Documents].[NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ParticipantId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="385a9f65-b351-46e7-913a-48383c95e47f" ChangeDateTime="09/27/2020 19:44:56">
+    <Property Name="ElementName" Value="[dbo].[Documents].[NotedRelationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ParticipantIsCommon]" />
+  </Operation>
 </Operations>

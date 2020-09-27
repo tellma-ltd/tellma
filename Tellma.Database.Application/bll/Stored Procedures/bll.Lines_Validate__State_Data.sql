@@ -16,7 +16,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		CASE
 			WHEN LDC.InheritsFromHeader >= 2 AND (
 				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
-				FL.Id = N'NotedRelationId' AND D.[NotedRelationIsCommon] = 1 OR
+				FL.Id = N'NotedRelationId' AND D.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND D.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND D.[ExternalReferenceIsCommon] = 1 OR
 				FL.Id = N'AdditionalReference' AND D.[AdditionalReferenceIsCommon] = 1

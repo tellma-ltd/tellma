@@ -687,6 +687,7 @@
     <Build Include="dbo\Tables\dbo.ReconciliationExternalEntries.sql" />
     <Build Include="bll\Stored Procedures\bll.Reconciliations_Validate__Insert.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__Delete.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__Capitalize.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

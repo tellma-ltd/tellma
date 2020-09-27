@@ -2,14 +2,14 @@
 RETURNS TABLE
 AS
 RETURN (
-	WITH LineDefinitionNotedRelations AS (
-		SELECT DISTINCT LD.[Id], ATC.[NotedRelationDefinitionId]
+	WITH LineDefinitionParticipants AS (
+		SELECT DISTINCT LD.[Id], ATC.[ParticipantDefinitionId]
 		FROM dbo.LineDefinitions LD
 		JOIN dbo.LineDefinitionEntries LDE ON LDE.[LineDefinitionId] = LD.[Id]
 		JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 		JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 		JOIN dbo.LineDefinitionColumns LDC ON LDC.LineDefinitionId = LD.[Id]
-		WHERE ATC.[NotedRelationDefinitionId] IS NOT NULL
+		WHERE ATC.[ParticipantDefinitionId] IS NOT NULL
 		AND LDC.ColumnName = N'NotedRelationId'
 		AND LDC.[InheritsFromHeader] = 2
 	),
@@ -40,10 +40,9 @@ RETURN (
 		LD.[SavedById],
 		LD.[ValidFrom],
 		LD.[ValidTo],
-		LDNR.[NotedRelationDefinitionId],
+		LDP.[ParticipantDefinitionId],
 		IIF(WLD.[LineDefinitionId] IS NULL, 0, 1) AS HasWorkflow
 	FROM [dbo].[LineDefinitions] LD
-	LEFT JOIN LineDefinitionNotedRelations LDNR ON LD.[Id] = LDNR.[Id]
+	LEFT JOIN LineDefinitionParticipants LDP ON LD.[Id] = LDP.[Id]
 	LEFT JOIN WorkflowLineDefinitions WLD ON WLD.LineDefinitionId = LD.[Id]
-
 );
