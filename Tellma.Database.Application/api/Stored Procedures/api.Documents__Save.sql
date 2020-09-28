@@ -45,7 +45,6 @@ BEGIN
 	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
 	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
 	[AdditionalReference]		NVARCHAR (50) '$.AdditionalReference',
-	[NotedRelationId]			INT '$.NotedRelationId',
 	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
 	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE '$.NotedDate'

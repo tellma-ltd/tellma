@@ -30,7 +30,6 @@ RETURN
 			[Memo]					NVARCHAR (255),
 			[Reference]				NVARCHAR (255),
 			[RelatedReference]		NVARCHAR (255),
-			[NotedRelationId]		INT,
 			[RelatedResourceId]		INT,
 			[RelatedAmount]			DECIMAL (19,4)
 		) c;

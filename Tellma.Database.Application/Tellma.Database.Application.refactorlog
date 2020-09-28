@@ -2507,4 +2507,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ParticipantIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="be7ae808-32e5-4801-ad03-b3aa1329f3cd" ChangeDateTime="09/28/2020 07:33:02">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ParticipantId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b38ac9ce-c83a-4c5b-b4dd-d6ed918cd3f5" ChangeDateTime="09/28/2020 07:33:21">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedRelationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ParticipantIsCommon]" />
+  </Operation>
 </Operations>

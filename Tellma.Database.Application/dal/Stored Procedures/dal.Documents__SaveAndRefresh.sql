@@ -129,8 +129,8 @@ BEGIN
 			LDE.[Memo],
 			LDE.[MemoIsCommon],
 	
-			LDE.[NotedRelationId],
-			LDE.[NotedRelationIsCommon],
+			LDE.[ParticipantId],
+			LDE.[ParticipantIsCommon],
 
 			LDE.[CenterId],
 			LDE.[CenterIsCommon],
@@ -170,8 +170,8 @@ BEGIN
 			t.[Memo]						= s.[Memo],
 			t.[MemoIsCommon]				= s.[MemoIsCommon],
 	
-			t.[NotedRelationId]				= s.[NotedRelationId],
-			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+			t.[ParticipantId]				= s.[ParticipantId],
+			t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
 
 			t.[CurrencyId]					= s.[CurrencyId],
 			t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
@@ -211,8 +211,8 @@ BEGIN
 			[Memo],
 			[MemoIsCommon],
 	
-			[NotedRelationId],
-			[NotedRelationIsCommon],
+			[ParticipantId],
+			[ParticipantIsCommon],
 
 			[CurrencyId],
 			[CurrencyIsCommon],
@@ -250,8 +250,8 @@ BEGIN
 			s.[Memo],
 			s.[MemoIsCommon],
 	
-			s.[NotedRelationId],
-			s.[NotedRelationIsCommon],
+			s.[ParticipantId],
+			s.[ParticipantIsCommon],
 
 			s.[CurrencyId],
 			s.[CurrencyIsCommon],
@@ -337,7 +337,6 @@ BEGIN
 			E.[Time1], E.[Time2],
 			E.[ExternalReference],
 			E.[AdditionalReference],
-			E.[NotedRelationId], 
 			E.[NotedAgentName], 
 			E.[NotedAmount], 
 			E.[NotedDate]
@@ -379,7 +378,6 @@ BEGIN
 			[Time1], [Time2],
 			[ExternalReference],
 			[AdditionalReference],
-			[NotedRelationId], 
 			[NotedAgentName], 
 			[NotedAmount], 
 			[NotedDate]
@@ -391,7 +389,6 @@ BEGIN
 			s.[Time1], s.[Time2],
 			s.[ExternalReference],
 			s.[AdditionalReference],
-			s.[NotedRelationId], 
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
 			s.[NotedDate]

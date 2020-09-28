@@ -11,8 +11,8 @@
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	-- With any entry Index
-	[NotedRelationId]				INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
-	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[ParticipantId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ParticipantId] REFERENCES dbo.[Relations]([Id]), 
+	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
 
 	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_DocumentLineDefinitionEntries__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,

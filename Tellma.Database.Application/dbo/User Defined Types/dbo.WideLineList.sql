@@ -27,7 +27,6 @@
 	[Time20]					DATETIME2 (2),	-- to time
 	[ExternalReference0]		NVARCHAR (50),
 	[AdditionalReference0]		NVARCHAR (50),
-	[NotedRelationId0]			INT,
 	[NotedAgentName0]			NVARCHAR (50),
 	[NotedAmount0]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate0]				DATE,
@@ -50,7 +49,6 @@
 	[Time21]					DATETIME2 (2),	-- to time
 	[ExternalReference1]		NVARCHAR (51),
 	[AdditionalReference1]		NVARCHAR (51),
-	[NotedRelationId1]			INT,
 	[NotedAgentName1]			NVARCHAR (51),
 	[NotedAmount1]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate1]				DATE,
@@ -74,7 +72,6 @@
 	[Time22]					DATETIME2 (2),	-- to time
 	[ExternalReference2]		NVARCHAR (52),
 	[AdditionalReference2]		NVARCHAR (52),
-	[NotedRelationId2]			INT,
 	[NotedAgentName2]			NVARCHAR (52),
 	[NotedAmount2]				DECIMAL (29,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate2]				DATE,
@@ -97,7 +94,6 @@
 	[Time23]					DATETIME2 (2),	-- to time
 	[ExternalReference3]		NVARCHAR (51),
 	[AdditionalReference3]		NVARCHAR (51),
-	[NotedRelationId3]			INT,
 	[NotedAgentName3]			NVARCHAR (51),
 	[NotedAmount3]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate3]				DATE,
@@ -120,7 +116,6 @@
 	[Time24]					DATETIME2 (2),	-- to time
 	[ExternalReference4]		NVARCHAR (51),
 	[AdditionalReference4]		NVARCHAR (51),
-	[NotedRelationId4]			INT,
 	[NotedAgentName4]			NVARCHAR (51),
 	[NotedAmount4]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate4]				DATE,
@@ -143,7 +138,6 @@
 	[Time25]					DATETIME2 (2),	-- to time
 	[ExternalReference5]		NVARCHAR (51),
 	[AdditionalReference5]		NVARCHAR (51),
-	[NotedRelationId5]			INT,
 	[NotedAgentName5]			NVARCHAR (51),
 	[NotedAmount5]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate5]				DATE,
@@ -166,7 +160,6 @@
 	[Time26]					DATETIME2 (2),	-- to time
 	[ExternalReference6]		NVARCHAR (61),
 	[AdditionalReference6]		NVARCHAR (61),
-	[NotedRelationId6]			INT,
 	[NotedAgentName6]			NVARCHAR (61),
 	[NotedAmount6]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate6]				DATE,
@@ -189,7 +182,6 @@
 	[Time27]					DATETIME2 (2),	-- to time
 	[ExternalReference7]		NVARCHAR (71),
 	[AdditionalReference7]		NVARCHAR (71),
-	[NotedRelationId7]			INT,
 	[NotedAgentName7]			NVARCHAR (71),
 	[NotedAmount7]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate7]				DATE

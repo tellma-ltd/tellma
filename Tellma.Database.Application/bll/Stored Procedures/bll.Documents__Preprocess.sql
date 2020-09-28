@@ -94,15 +94,6 @@ BEGIN
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
 	WHERE AC.EntryTypeParentId IS NULL;
 
-	-- We might need to keep it for a trick
-	--UPDATE E
-	--SET E.[NotedRelationId] = NULL
-	--FROM @E E
-	--JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	--JOIN dbo.Accounts A ON E.AccountId = A.Id
-	--JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
-	--WHERE AC.NotedRelationDefinitionId IS NULL;
-
 	-- TODO:  Remove labels, etc.
 
 	-- Overwrite input with DB data that is read only
@@ -111,7 +102,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodianId], E.[CustodyId],
 			E.[ParticipantId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
-			E.[ExternalReference], E.[AdditionalReference], E.[NotedRelationId],  E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
+			E.[ExternalReference], E.[AdditionalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
 		JOIN dbo.Entries BE ON E.Id = BE.Id
@@ -134,7 +125,6 @@ BEGIN
 		E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
 		E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
 		E.[AdditionalReference]	= IIF(CTE.[ColumnName] = N'AdditionalReference', CTE.[AdditionalReference], E.[AdditionalReference]),
-		E.[NotedRelationId]		= IIF(CTE.[ColumnName] = N'NotedRelationId', CTE.[NotedRelationId], E.[NotedRelationId]),
 		E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
 		E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
 		E.[NotedDate]			= IIF(CTE.[ColumnName] = N'NotedDate', CTE.[NotedDate], E.[NotedDate]),
@@ -223,8 +213,7 @@ BEGIN
 	SET
 		E.[CurrencyId]		= R.[CurrencyId],
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
-		--E.[ParticipantId]	= COALESCE(R.[ParticipantId], E.[ParticipantId]),
-		E.[NotedRelationId]	= COALESCE(R.[ParticipantId], E.[NotedRelationId])
+		E.[ParticipantId]	= COALESCE(R.[ParticipantId], E.[ParticipantId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;

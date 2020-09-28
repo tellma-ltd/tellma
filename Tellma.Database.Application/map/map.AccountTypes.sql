@@ -20,7 +20,6 @@ SELECT
     Q.[CustodianDefinitionId],
     Q.[ParticipantDefinitionId],
     Q.[EntryTypeParentId],
-    Q.[NotedRelationDefinitionId],
     Q.[Time1Label],
     Q.[Time1Label2],
     Q.[Time1Label3],

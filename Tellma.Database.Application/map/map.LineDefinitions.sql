@@ -10,7 +10,7 @@ RETURN (
 		JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 		JOIN dbo.LineDefinitionColumns LDC ON LDC.LineDefinitionId = LD.[Id]
 		WHERE ATC.[ParticipantDefinitionId] IS NOT NULL
-		AND LDC.ColumnName = N'NotedRelationId'
+		AND LDC.ColumnName = N'ParticipantId'
 		AND LDC.[InheritsFromHeader] = 2
 	),
 	WorkflowLineDefinitions AS (

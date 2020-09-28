@@ -38,7 +38,6 @@ AS
 	[E].[ParticipantId],
 	[E].[ResourceId],
 	[E].[EntryTypeId],
-	[E].[NotedRelationId],
 	[E].[CenterId],
 	[E].[UnitId],
 	[E].[IsSystem],
@@ -97,7 +96,7 @@ AS
 	FROM [map].[Resources]() [R] 
 	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
 
-	-- Relation (From 3 places)
+	-- Relation (From 2 places)
 	SELECT 
 	[R].[Id], 
 	[R].[Name],
@@ -105,8 +104,7 @@ AS
 	[R].[Name3],
 	[R].[DefinitionId]
 	FROM [map].[Relations]() [R] 
-	WHERE [Id] IN (SELECT [NotedRelationId] FROM @Entries)
-		OR [Id] IN (SELECT [CustodianId] FROM @Entries)
+	WHERE [Id] IN (SELECT [CustodianId] FROM @Entries)
 		OR [Id] IN  (SELECT [ParticipantId] FROM @Entries)
 
 	-- EntryType

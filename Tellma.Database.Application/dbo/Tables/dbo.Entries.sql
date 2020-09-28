@@ -30,7 +30,6 @@
 	-- Decimal1, Decimal2, Decimal3: VAT percent, WIP percent completion: DM, DL, O/H
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[NotedRelationId]			INT				CONSTRAINT [FK_Entries__NotedRelationId] REFERENCES dbo.[Relations]([Id]),
 	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax, or Control Quantity for poultry
 	[NotedDate]					DATE,

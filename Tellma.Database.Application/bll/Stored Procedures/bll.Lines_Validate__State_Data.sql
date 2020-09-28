@@ -16,14 +16,14 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		CASE
 			WHEN LDC.InheritsFromHeader >= 2 AND (
 				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
-				FL.Id = N'NotedRelationId' AND D.[ParticipantIsCommon] = 1 OR
+				FL.Id = N'ParticipantId' AND D.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND D.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND D.[ExternalReferenceIsCommon] = 1 OR
 				FL.Id = N'AdditionalReference' AND D.[AdditionalReferenceIsCommon] = 1
 			) THEN
 				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
-				FL.Id = N'NotedRelationId' AND DLDE.[NotedRelationIsCommon] = 1 OR -- AND (DLDE.[NotedRelationIsCommon] IS NULL OR DLDE.[NotedRelationIsCommon] = 1)
+				FL.Id = N'ParticipantId' AND DLDE.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND DLDE.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'CustodyId' AND DLDE.[CustodyIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
@@ -46,7 +46,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	CROSS JOIN (VALUES
 		(N'CurrencyId'),('CustodianId'),(N'CustodyId'),(N'ParticipantId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
 		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
-		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
+		(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
@@ -70,7 +70,6 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR
 		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
 		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
-		FL.Id = N'NotedRelationId'		AND E.[NotedRelationId] IS NULL OR
 		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
 		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
