@@ -25,8 +25,8 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     SegmentId?: number;
     CenterId?: number;
     CenterIsCommon?: boolean;
-    NotedRelationId?: number;
-    NotedRelationIsCommon?: boolean;
+    ParticipantId?: number;
+    ParticipantIsCommon?: boolean;
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
     ExternalReference?: string;
@@ -108,9 +108,9 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
-                NotedRelationId: { control: 'number', label: () => `${trx.instant('Document_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedRelation: { control: 'navigation', label: () => trx.instant('Document_NotedRelation'), type: 'Relation', foreignKeyName: 'NotedRelationId' },
-                NotedRelationIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_NotedRelation') }) },
+                ParticipantId: { control: 'number', label: () => `${trx.instant('Document_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { control: 'navigation', label: () => trx.instant('Document_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
+                ParticipantIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Participant') }) },
                 SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
                 CenterId: { control: 'number', label: () => `${trx.instant('Document_Cemter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -208,7 +208,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['NotedRelation', 'Center', 'Currency']) {
+            for (const propName of ['Participant', 'Center', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

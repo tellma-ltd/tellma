@@ -16,7 +16,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,NotedRelationDefinition,
+  public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,
 CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
 
   constructor(
@@ -118,10 +118,6 @@ CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
 
   // Entry Type Parent
   public showEntryTypeParent(_: AccountType): boolean {
-    return true;
-  }
-
-  public showNotedRelationDefinition(_: AccountType): boolean {
     return true;
   }
 

@@ -21,7 +21,6 @@ export interface EntryForSave extends EntityForSave {
     Time2?: string;
     ExternalReference?: string;
     AdditionalReference?: string;
-    NotedRelationId?: number;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;

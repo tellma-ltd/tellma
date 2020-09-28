@@ -305,7 +305,7 @@ namespace Tellma.Controllers
         {
             PostingDateIsCommon = true,
             MemoIsCommon = true,
-            NotedRelationIsCommon = true,
+            ParticipantIsCommon = true,
             CurrencyIsCommon = true,
             CustodyIsCommon = true,
             ResourceIsCommon = true,
@@ -1034,7 +1034,7 @@ namespace Tellma.Controllers
                 }
 
 
-                doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
+                doc.ParticipantIsCommon = docDef.ParticipantVisibility && (doc.ParticipantIsCommon ?? false);
                 doc.CenterIsCommon = docDef.CenterVisibility && (doc.CenterIsCommon ?? false);
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
@@ -1063,7 +1063,7 @@ namespace Tellma.Controllers
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
                 doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
-                doc.NotedRelationId = doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
+                doc.ParticipantId = doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
                 doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null;
                 doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
@@ -1181,14 +1181,14 @@ namespace Tellma.Controllers
 
                                 switch (colDef.ColumnName)
                                 {
-                                    case nameof(Entry.NotedRelationId):
-                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                    case nameof(Entry.ParticipantId):
+                                        if (CopyFromDocument(colDef, doc.ParticipantIsCommon))
                                         {
-                                            entry.NotedRelationId = doc.NotedRelationId;
+                                            entry.ParticipantId = doc.ParticipantId;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, isForm))
                                         {
-                                            entry.NotedRelationId = tabEntry.NotedRelationId;
+                                            entry.ParticipantId = tabEntry.ParticipantId;
                                         }
                                         break;
 
@@ -1452,19 +1452,19 @@ namespace Tellma.Controllers
 
                                 switch (colDef.ColumnName)
                                 {
-                                    case nameof(Entry.NotedRelationId):
-                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                    case nameof(Entry.ParticipantId):
+                                        if (CopyFromDocument(colDef, doc.ParticipantIsCommon))
                                         {
-                                            if (entry.NotedRelationId != doc.NotedRelationId)
+                                            if (entry.ParticipantId != doc.ParticipantId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedRelationId} to {entry.NotedRelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ParticipantId} to {entry.ParticipantId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, isForm))
                                         {
-                                            if (entry.NotedRelationId != tabEntry.NotedRelationId)
+                                            if (entry.ParticipantId != tabEntry.ParticipantId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedRelationId} to {entry.NotedRelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ParticipantId} to {entry.ParticipantId}");
                                             }
                                         }
                                         break;

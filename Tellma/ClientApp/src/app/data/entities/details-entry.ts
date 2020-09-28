@@ -1,4 +1,3 @@
-
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
 import { WorkspaceService } from '../workspace.service';
@@ -41,7 +40,6 @@ export interface DetailsEntry extends EntityWithKey {
     Time2?: string;
     ExternalReference?: string;
     AdditionalReference?: string;
-    NotedRelationId?: number;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
@@ -156,8 +154,6 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Time2: { control: 'datetime', label: () => trx.instant('Entry_Time2') },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                NotedRelationId: { control: 'number', label: () => `${trx.instant('Entry_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedRelation: { control: 'navigation', label: () => trx.instant('Entry_NotedRelation'), type: 'Relation', foreignKeyName: 'NotedRelationId' },
                 NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NotedDate: { control: 'date', label: () => trx.instant('Entry_NotedDate') },

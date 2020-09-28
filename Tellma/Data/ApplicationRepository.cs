@@ -596,7 +596,6 @@ namespace Tellma.Data
             Dictionary<int, List<int>>,
             Dictionary<int, List<int>>,
             Dictionary<int, List<int>>,
-            Dictionary<int, List<int>>,
             Dictionary<int, List<int>>)>
             Definitions__Load(CancellationToken cancellation)
         {
@@ -615,7 +614,6 @@ namespace Tellma.Data
             Dictionary<int, List<int>> entryCustodyDefs = new Dictionary<int, List<int>>();
             Dictionary<int, List<int>> entryParticipantDefs = new Dictionary<int, List<int>>();
             Dictionary<int, List<int>> entryResourceDefs = new Dictionary<int, List<int>>();
-            Dictionary<int, List<int>> notedRelationDefs = new Dictionary<int, List<int>>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -1112,26 +1110,9 @@ namespace Tellma.Data
 
                     defIds.Add(defId);
                 }
-
-                // Noted Relation Definitions
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    var entryId = reader.GetInt32(i++);
-                    var defId = reader.GetInt32(i++);
-
-                    if (!notedRelationDefs.TryGetValue(entryId, out List<int> defIds))
-                    {
-                        defIds = new List<int>();
-                        notedRelationDefs.Add(entryId, defIds);
-                    }
-
-                    defIds.Add(defId);
-                }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs, notedRelationDefs);
+            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
         }
 
         #endregion
@@ -5267,7 +5248,6 @@ namespace Tellma.Data
                     ParticipantId = reader.Int32(i++),
                     ResourceId = reader.Int32(i++),
                     EntryTypeId = reader.Int32(i++),
-                    NotedRelationId = reader.Int32(i++),
                     CenterId = reader.Int32(i++),
                     UnitId = reader.Int32(i++),
                     IsSystem = reader.Boolean(i++) ?? false,

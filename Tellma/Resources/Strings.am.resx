@@ -148,9 +148,6 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
   </data>
-  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
-  </data>
   <data name="AccountType_ParticipantDefinition" xml:space="preserve">
     <value>የተሳታፊ ፍቺ</value>
   </data>
@@ -544,11 +541,11 @@
   <data name="Document_ExternalReference" xml:space="preserve">
     <value>የውጭ ማጣቀሻ</value>
   </data>
-  <data name="Document_NotedRelation" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>ላይ የተከፈተው</value>
+  </data>
+  <data name="Document_Participant" xml:space="preserve">
+    <value>ተካፉይ</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>ቀን</value>
@@ -658,8 +655,26 @@
   <data name="Email" xml:space="preserve">
     <value>ኢሜይል</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>ኢሜይል</value>
+  </data>
+  <data name="Email_Body" xml:space="preserve">
+    <value>አካል</value>
+  </data>
+  <data name="Email_FromEmail" xml:space="preserve">
+    <value>የኢሜይል አድራሻ ከ</value>
+  </data>
+  <data name="Email_Subject" xml:space="preserve">
+    <value>ትምህርት</value>
+  </data>
+  <data name="Email_ToEmail" xml:space="preserve">
+    <value>አድራሻ ኢሜይል ወደ</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ እናመሰግናለን</value>
+  </data>
+  <data name="Emails" xml:space="preserve">
+    <value>ኢሜይሎች</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>የእርስዎን ኢሜይል ያስገቡ</value>
@@ -765,9 +780,6 @@
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን</value>
-  </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>እንደተጠቀሰው ወኪል</value>
   </data>
   <data name="Entry_Participant" xml:space="preserve">
     <value>ተካፉይ</value>
@@ -2583,6 +2595,18 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>እርስዎ {0} መውጣት መግባት ይፈልጋሉ?</value>
+  </data>
+  <data name="SmsMessage" xml:space="preserve">
+    <value>ኤስ ኤም ኤስ መልዕክት</value>
+  </data>
+  <data name="SmsMessage_Message" xml:space="preserve">
+    <value>መልእክት</value>
+  </data>
+  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
+    <value>ወደ ስልክ ቁጥር</value>
+  </data>
+  <data name="SmsMessages" xml:space="preserve">
+    <value>የ SMS መልዕክቶች</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>ደርድር ቁልፍ</value>

@@ -170,20 +170,20 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Noted Relation -->
-    <t-form-group class="t-form-group" [label]="labelDocumentNotedRelation(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="NotedRelationIsCommon" [disableLabelMenu]="!isEdit"
-        [serverErrors]="model?.serverErrors?.NotedRelationId" *ngIf="showDocumentNotedRelation(model)">
-        <ng-container *ngIf="model?.NotedRelationIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedRelationId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.NotedRelationId)?.DefinitionId"
-                    [itemId]="model?.NotedRelationId">
-                    {{ ws.getMultilingualValue('Relation', model?.NotedRelationId, 'Name') }}
+    <!-- Participant -->
+    <t-form-group class="t-form-group" [label]="labelDocumentParticipant(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="ParticipantIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.ParticipantId" *ngIf="showDocumentParticipant(model)">
+        <ng-container *ngIf="model?.ParticipantIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ParticipantId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.ParticipantId)?.DefinitionId"
+                    [itemId]="model?.ParticipantId">
+                    {{ ws.getMultilingualValue('Relation', model?.ParticipantId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.NotedRelationId"
-                [definitionIds]="documentNotedRelationDefinitionIds(model)"
-                [required]="requireDocumentNotedRelation(model)" [disabled]="readonlyDocumentNotedRelation(model)">
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantId"
+                [definitionIds]="documentParticipantDefinitionIds(model)"
+                [required]="requireDocumentParticipant(model)" [disabled]="readonlyDocumentParticipant(model)">
             </t-relations-picker>
         </ng-container>
     </t-form-group>
@@ -489,11 +489,6 @@
                             *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-                        <t-view-link *ngSwitchCase="'NotedRelationId'"
-                            [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
-                            [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
-                            {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
-                        </t-view-link>
                         <span
                             *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
@@ -628,14 +623,6 @@
                             (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </t-text-editor>
-                        <t-relations-picker *ngSwitchCase="'NotedRelationId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [definitionIds]="definitionIdsNotedRelation_Smart(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-relations-picker>
                         <t-text-editor *ngSwitchCase="'NotedAgentName'"
                             [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
                             [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
@@ -1402,27 +1389,6 @@
                     <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AdditionalReference"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
-            <!-- Noted Relation -->
-            <ng-container *ngIf="showNotedRelation_Manual(entry)">
-                <t-form-group-dynamic [label]="labelNotedRelation_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.NotedRelation">
-                    <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedRelationId">
-                        <t-view-link
-                            [link]="'../../../relations/' + ws.get('Relation', entry.NotedRelationId)?.DefinitionId"
-                            [itemId]="entry.NotedRelationId">
-                            {{ ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name') }}
-                        </t-view-link>
-                    </t-restricted>
-                    <!-- Edit -->
-                    <t-relations-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedRelationId"
-                        (ngModelChange)="update.call(null, pair);"
-                        [definitionIds]="definitionIdsNotedRelation_Manual(entry)">
-                    </t-relations-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>

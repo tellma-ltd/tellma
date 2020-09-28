@@ -7,8 +7,8 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     PostingDateIsCommon?: boolean;
     Memo?: string;
     MemoIsCommon?: boolean;
-    NotedRelationId?: number;
-    NotedRelationIsCommon?: boolean;
+    ParticipantId?: number;
+    ParticipantIsCommon?: boolean;
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
     CustodyId?: number;

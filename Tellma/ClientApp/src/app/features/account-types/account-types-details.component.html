@@ -113,17 +113,6 @@
     </t-entry-types-picker>
   </t-form-group>
 
-  <!-- Noted Relation Definition -->
-  <t-form-group class="t-form-group" *ngIf="showNotedRelationDefinition(model)"
-    [label]="'AccountType_NotedRelationDefinition' | translate" [serverErrors]="model?.serverErrors?.NotedRelationDefinitionId">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedRelationDefinition">
-      <t-view-link link="../../relation-definitions" [itemId]="model?.NotedRelationDefinitionId">{{
-        ws.getMultilingualValue('RelationDefinition', model?.NotedRelationDefinitionId, 'TitleSingular') }}</t-view-link>
-    </t-restricted>
-    <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="model.NotedRelationDefinitionId" filter="State ne 'Hidden'">
-    </t-relation-definitions-picker>
-  </t-form-group>
-
   <!-- IsAssignable -->
   <t-form-group class="t-form-group" [label]="'IsAssignable' | translate"
     [serverErrors]="model?.serverErrors?.IsAssignable">

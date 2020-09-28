@@ -148,9 +148,6 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>اسم التاريخ المعني</value>
   </data>
-  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
-    <value>تعريف العلاقة المعنية</value>
-  </data>
   <data name="AccountType_ParticipantDefinition" xml:space="preserve">
     <value>تعريف الطرف الثاني</value>
   </data>
@@ -544,11 +541,11 @@
   <data name="Document_ExternalReference" xml:space="preserve">
     <value>المرجع الخارجي</value>
   </data>
-  <data name="Document_NotedRelation" xml:space="preserve">
-    <value>العلاقة المعنية</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>زمن الاطلاع</value>
+  </data>
+  <data name="Document_Participant" xml:space="preserve">
+    <value>الطرف الثاني</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
@@ -658,8 +655,26 @@
   <data name="Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>بريد إلكتروني</value>
+  </data>
+  <data name="Email_Body" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
+  <data name="Email_FromEmail" xml:space="preserve">
+    <value>عنوان البريد المرسل</value>
+  </data>
+  <data name="Email_Subject" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="Email_ToEmail" xml:space="preserve">
+    <value>عنوان البريد المستقبل</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>شكرا على تأكيد عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Emails" xml:space="preserve">
+    <value>بريد إلكتروني</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>أدخل عنوان بريدك الإلكتروني</value>
@@ -765,9 +780,6 @@
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>التاريخ المعني</value>
-  </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>العلاقة المعنية</value>
   </data>
   <data name="Entry_Participant" xml:space="preserve">
     <value>الطرف الثاني</value>
@@ -2583,6 +2595,18 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>هل تود تسجيل خروجك من {0}؟</value>
+  </data>
+  <data name="SmsMessage" xml:space="preserve">
+    <value>رسالة قصيرة</value>
+  </data>
+  <data name="SmsMessage_Message" xml:space="preserve">
+    <value>الرسالة</value>
+  </data>
+  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
+    <value>الرقم المستقبل</value>
+  </data>
+  <data name="SmsMessages" xml:space="preserve">
+    <value>رسائل قصيرة</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>مفتاح الترتيب</value>

@@ -954,20 +954,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return [this.definitionId];
   }
 
-  // Noted Relation
-
-  public get showNotedRelation_Manual(): boolean {
-    const at = this.accountType();
-    return !!at && !!at.NotedRelationDefinitionId;
-  }
-
-  public get labelNotedRelation_Manual(): string {
-    const at = this.accountType();
-    const defId = !!at ? at.NotedRelationDefinitionId : null;
-
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
-  }
-
   // Participant
 
   public get participantId(): number {
@@ -1364,18 +1350,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           label: () => this.labelCustody_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Custody', entry.CustodyId, 'Name');
-          },
-          weight: 1
-        });
-      }
-
-      // NotedRelation
-      if (this.showNotedRelation_Manual) {
-        this._columns.push({
-          select: ['NotedRelation/Name,NotedRelation/Name2,NotedRelation/Name3'],
-          label: () => this.labelNotedRelation_Manual,
-          display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name');
           },
           weight: 1
         });

@@ -148,9 +148,6 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
   </data>
-  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
-    <value>注意到关系定义</value>
-  </data>
   <data name="AccountType_ParticipantDefinition" xml:space="preserve">
     <value>与会者定义</value>
   </data>
@@ -544,11 +541,11 @@
   <data name="Document_ExternalReference" xml:space="preserve">
     <value>外部参考</value>
   </data>
-  <data name="Document_NotedRelation" xml:space="preserve">
-    <value>注意到关系</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
+  </data>
+  <data name="Document_Participant" xml:space="preserve">
+    <value>参加者</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>
@@ -658,8 +655,26 @@
   <data name="Email" xml:space="preserve">
     <value>电子邮件</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>电子邮件</value>
+  </data>
+  <data name="Email_Body" xml:space="preserve">
+    <value>身体</value>
+  </data>
+  <data name="Email_FromEmail" xml:space="preserve">
+    <value>从电子邮件地址</value>
+  </data>
+  <data name="Email_Subject" xml:space="preserve">
+    <value>学科</value>
+  </data>
+  <data name="Email_ToEmail" xml:space="preserve">
+    <value>对方的电子邮件地址</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>感谢您确认您的电子邮件</value>
+  </data>
+  <data name="Emails" xml:space="preserve">
+    <value>电子邮件</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>输入你的电子邮箱</value>
@@ -765,9 +780,6 @@
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
-  </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>相关代理</value>
   </data>
   <data name="Entry_Participant" xml:space="preserve">
     <value>参加者</value>
@@ -974,7 +986,7 @@
     <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后，例如：“雇员 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
-    <value>标记“{0}”不上式{1}匹配的集合。</value>
+    <value>标签“{0}”不上式{1}匹配的集合。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
     <value>标签“{0}”不匹配类型的任何集合{1}，你的意思是“{2}”？</value>
@@ -2583,6 +2595,18 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>你想退出的{0}？</value>
+  </data>
+  <data name="SmsMessage" xml:space="preserve">
+    <value>短信留言</value>
+  </data>
+  <data name="SmsMessage_Message" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
+    <value>要电话号码</value>
+  </data>
+  <data name="SmsMessages" xml:space="preserve">
+    <value>短信</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>排序关键字</value>

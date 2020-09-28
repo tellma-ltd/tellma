@@ -45,11 +45,11 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Document_Center")]
         public bool? CenterIsCommon { get; set; }
 
-        [Display(Name = "Document_NotedRelation")]
-        public int? NotedRelationId { get; set; }
+        [Display(Name = "Document_Participant")]
+        public int? ParticipantId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_NotedRelation")]
-        public bool? NotedRelationIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Document_Participant")]
+        public bool? ParticipantIsCommon { get; set; }
 
         [Display(Name = "Document_Currency")]
         [StringLength(3)]
@@ -143,9 +143,9 @@ namespace Tellma.Entities
 
         // For Query
 
-        [Display(Name = "Document_NotedRelation")]
-        [ForeignKey(nameof(NotedRelationId))]
-        public Relation NotedRelation { get; set; }
+        [Display(Name = "Document_Participant")]
+        [ForeignKey(nameof(ParticipantId))]
+        public Relation Participant { get; set; }
 
         [Display(Name = "Document_Segment")]
         [ForeignKey(nameof(SegmentId))]
@@ -216,7 +216,7 @@ namespace Tellma.Entities
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
-            .Concat(RelationPaths(nameof(Document.NotedRelation)))
+            .Concat(RelationPaths(nameof(Document.Participant)))
             .Concat(CenterPaths(nameof(Document.Segment)))
             .Concat(CurrencyPaths(nameof(Document.Currency)))
             .Concat(UserPaths(nameof(Document.CreatedBy)))
@@ -227,7 +227,7 @@ namespace Tellma.Entities
             .Concat(CurrencyPaths(nameof(DocumentLineDefinitionEntry.Currency)))
             .Concat(CustodyPaths(nameof(DocumentLineDefinitionEntry.Custody)))
             .Concat(TabEntryResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.NotedRelation)))
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Participant)))
             .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -243,7 +243,6 @@ namespace Tellma.Entities
             .Concat(RelationPaths(nameof(Entry.Participant)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
-            .Concat(RelationPaths(nameof(Entry.NotedRelation)))
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -357,7 +356,6 @@ namespace Tellma.Entities
             // Definitions
             nameof(AccountType.CustodianDefinitionId),
             nameof(AccountType.ParticipantDefinitionId),
-            nameof(AccountType.NotedRelationDefinitionId),
             nameof(AccountType.CustodyDefinitionsCount),
             nameof(AccountType.ResourceDefinitionsCount),
 

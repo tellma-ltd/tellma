@@ -105,9 +105,6 @@ namespace Tellma.Entities
         [Display(Name = "Entry_AdditionalReference")]
         public string AdditionalReference { get; set; }
 
-        [Display(Name = "Entry_NotedRelation")]
-        public int? NotedRelationId { get; set; }
-
         [Display(Name = "Entry_NotedAgentName")]
         public string NotedAgentName { get; set; }
 
@@ -166,10 +163,6 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
-
-        [Display(Name = "Entry_NotedRelation")]
-        [ForeignKey(nameof(NotedRelationId))]
-        public Relation NotedRelation { get; set; }
 
         [Display(Name = "Entry_Unit")]
         [ForeignKey(nameof(UnitId))]

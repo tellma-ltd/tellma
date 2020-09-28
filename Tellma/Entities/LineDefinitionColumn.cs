@@ -11,13 +11,13 @@ namespace Tellma.Entities
             "Multiplier", "AccountId", "CurrencyId",
             "CustodianId", "CustodyId", "ParticipantId","ResourceId",  "CenterId", "EntryTypeId",
             "MonetaryValue", "Quantity", "UnitId", "Time1", "Time2", "Value",
-            "ExternalReference", "AdditionalReference", "NotedRelationId",
+            "ExternalReference", "AdditionalReference",
             "NotedAgentName", "NotedAmount", "NotedDate" }, 
             new string[] { "Memo", "Line_PostingDate", "Line_TemplateLine",
             "Line_Multiplier", "Entry_Account", "Entry_Currency",
             "Entry_Custodian", "Entry_Custody", "Entry_Participant", "Entry_Resource", "Entry_Center", "Entry_EntryType",
             "Entry_MonetaryValue", "Entry_Quantity", "Entry_Unit", "Entry_Time1", "Entry_Time2", "Entry_Value",
-            "Entry_ExternalReference", "Entry_AdditionalReference", "Entry_NotedRelation",
+            "Entry_ExternalReference", "Entry_AdditionalReference",
             "Entry_NotedAgentName", "Entry_NotedAmount", "Entry_NotedDate" })]
         [Required]
         public string ColumnName { get; set; }
