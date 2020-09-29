@@ -26,7 +26,7 @@ RETURN
 		[Volume1]				DECIMAL,
 		[Count1]				DECIMAL,
 		[Time1]					DECIMAL,
-		[Value1]				VTYPE,
+		[Value1]				DECIMAL (19,4),
 		[ExpectedClosingDate1]	DATETIMEOFFSET(7),
 		[Reference1]			NVARCHAR (255),
 		[Memo1]					NVARCHAR (255),
@@ -38,7 +38,7 @@ RETURN
 		[RelatedVolume1]		DECIMAL,
 		[RelatedCount1]			DECIMAL,
 		[RelatedTime1]			DECIMAL,
-		[RelatedValue1]			VTYPE,
+		[RelatedValue1]			DECIMAL (19,4),
 
 		[Direction2]			SMALLINT,
 		[AccountId2]			INT,
@@ -50,7 +50,7 @@ RETURN
 		[Volume2]				DECIMAL,
 		[Count2]				DECIMAL,
 		[Time2]					DECIMAL,
-		[Value2]				VTYPE,
+		[Value2]				DECIMAL (19,4),
 		[ExpectedClosingDate2]	DATETIMEOFFSET(7),
 		[Reference2]			NVARCHAR (255),
 		[Memo2]					NVARCHAR (255),
@@ -62,7 +62,7 @@ RETURN
 		[RelatedVolume2]		DECIMAL,
 		[RelatedCount2]			DECIMAL,
 		[RelatedTime2]			DECIMAL,
-		[RelatedValue2]			VTYPE,
+		[RelatedValue2]			DECIMAL (19,4),
 
 		[Direction3]			SMALLINT,
 		[AccountId3]			INT,
@@ -74,7 +74,7 @@ RETURN
 		[Volume3]				DECIMAL,
 		[Count3]				DECIMAL,
 		[Time3]					DECIMAL,
-		[Value3]				VTYPE,
+		[Value3]				DECIMAL (19,4),
 		[ExpectedClosingDate3]	DATETIMEOFFSET(7),
 		[Reference3]			NVARCHAR (255),
 		[Memo3]					NVARCHAR (255),
@@ -86,7 +86,7 @@ RETURN
 		[RelatedVolume3]		DECIMAL,
 		[RelatedCount3]			DECIMAL,
 		[RelatedTime3]			DECIMAL,
-		[RelatedValue3]			VTYPE,
+		[RelatedValue3]			DECIMAL (19,4),
 
 		[Direction4]			SMALLINT,
 		[AccountId4]			INT,
@@ -98,7 +98,7 @@ RETURN
 		[Volume4]				DECIMAL,
 		[Count4]				DECIMAL,
 		[Time4]					DECIMAL,
-		[Value4]				VTYPE,
+		[Value4]				DECIMAL (19,4),
 		[ExpectedClosingDate4]	DATETIMEOFFSET(7),
 		[Reference4]			NVARCHAR (255),
 		[Memo4]					NVARCHAR (255),
@@ -110,5 +110,5 @@ RETURN
 		[RelatedVolume4]		DECIMAL,
 		[RelatedCount4]			DECIMAL,
 		[RelatedTime4]			DECIMAL,
-		[RelatedValue4]			VTYPE
+		[RelatedValue4]			DECIMAL (19,4)
 	) c;
