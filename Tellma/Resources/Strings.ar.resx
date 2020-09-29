@@ -653,9 +653,6 @@
     <value>اسم المستخدم ({0}) محجوز.</value>
   </data>
   <data name="Email" xml:space="preserve">
-    <value>البريد الإلكتروني</value>
-  </data>
-  <data name="Email" xml:space="preserve">
     <value>بريد إلكتروني</value>
   </data>
   <data name="Email_Body" xml:space="preserve">

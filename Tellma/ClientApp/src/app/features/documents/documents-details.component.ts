@@ -3637,10 +3637,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public dataTypeDefinitionIds(dt: string): number[] {
+    const defId = this.dataTypeDefinitionId(dt);
+    if (!!defId) {
+      return [defId];
+    }
+
+    return null;
+  }
+
+  public dataTypeDefinitionId(dt: string): number {
     if (!!dt) {
       const defId = +dt.split('/')[1];
       if (!!defId) {
-        return [defId];
+        return defId;
       }
     }
 
