@@ -1872,6 +1872,13 @@
                     [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-custodies-picker>
             </t-form-group>
 
+            <!-- Lookup -->
+            <t-form-group *ngSwitchCase="'Lookup'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-lookups-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
+                    [definitionId]="dataTypeDefinitionId(param.DataType)"></t-lookups-picker>
+            </t-form-group>
+
             <!-- Resource -->
             <t-form-group *ngSwitchCase="'Resource'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">

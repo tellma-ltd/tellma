@@ -655,9 +655,6 @@
   <data name="Email" xml:space="preserve">
     <value>电子邮件</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>电子邮件</value>
-  </data>
   <data name="Email_Body" xml:space="preserve">
     <value>身体</value>
   </data>
