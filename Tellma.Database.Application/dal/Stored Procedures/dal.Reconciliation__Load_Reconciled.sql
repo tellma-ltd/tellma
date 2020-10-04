@@ -7,9 +7,24 @@
 	@ToAmount					DECIMAL (19, 4),
 	@ExternalReferenceContains	NVARCHAR (50),
 	@Top						INT, 
-	@Skip						INT
+	@Skip						INT,
+	@ReconciledCount			INT OUTPUT
 AS
 	DECLARE @ReconciliationIds IdList;
+
+	SELECT @ReconciledCount = COUNT(RE.[ReconciliationId])
+	FROM dbo.ReconciliationEntries RE
+	JOIN dbo.Entries E ON RE.[EntryId] = E.[Id]
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	WHERE E.[CustodyId] = @CustodyId
+	AND E.[AccountId] = @AccountId
+	AND L.[State] = 4
+	AND E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries)
+	AND (@ToDate IS NULL OR L.PostingDate >= @FromDate)
+	AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
+	AND (@FromAmount IS NULL OR E.[MonetaryValue] >= @FromAmount)
+	AND (@ToAmount IS NULL OR E.[MonetaryValue] <= @ToAmount)
+	AND (@ExternalReferenceContains IS NULL OR E.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
 
 	INSERT INTO @ReconciliationIds
 	SELECT RE.[ReconciliationId]

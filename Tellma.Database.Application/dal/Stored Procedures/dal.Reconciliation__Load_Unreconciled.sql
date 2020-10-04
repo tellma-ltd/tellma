@@ -6,10 +6,11 @@
 	@Skip			INT,
 	@TopExternal	INT, 
 	@SkipExternal	INT,
-	@EntriesBalance DECIMAL (19,4) OUTPUT,
-	@UnreconciledEntriesBalance	DECIMAL (19, 4) OUTPUT,
-	@UnreconciledExternalEntriesBalance	DECIMAL (19, 4) OUTPUT
-
+	@EntriesBalance						DECIMAL (19,4) OUTPUT,
+	@UnreconciledEntriesBalance			DECIMAL (19,4) OUTPUT,
+	@UnreconciledExternalEntriesBalance	DECIMAL (19,4) OUTPUT,
+	@UnreconciledEntriesCount			INT OUTPUT,
+	@UnreconciledExternalEntriesCount	INT OUTPUT
 AS
 	SELECT @EntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
@@ -19,7 +20,7 @@ AS
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate
 
-	SELECT @UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
+	SELECT @UnreconciledEntriesCount = COUNT(*), @UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	WHERE E.[CustodyId] = @CustodyId
@@ -28,7 +29,7 @@ AS
 	AND E.[Id] NOT IN (SELECT [EntryId] FROM dbo.ReconciliationEntries)
 	AND L.[PostingDate] <= @AsOfDate
 
-	SELECT @UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
+	SELECT @UnreconciledExternalEntriesCount = COUNT(*), @UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.ExternalEntries E
 	WHERE E.[CustodyId] = @CustodyId
 	AND E.[AccountId] = @AccountId
