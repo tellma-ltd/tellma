@@ -5,8 +5,36 @@
 	@Top			INT, 
 	@Skip			INT,
 	@TopExternal	INT, 
-	@SkipExternal	INT
+	@SkipExternal	INT,
+	@EntriesBalance DECIMAL (19,4) OUTPUT,
+	@UnreconciledEntriesBalance	DECIMAL (19, 4) OUTPUT,
+	@UnreconciledExternalEntriesBalance	DECIMAL (19, 4) OUTPUT
+
 AS
+	SELECT @EntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	WHERE E.[CustodyId] = @CustodyId
+	AND E.[AccountId] = @AccountId
+	AND L.[State] = 4
+	AND L.[PostingDate] <= @AsOfDate
+
+	SELECT @UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	WHERE E.[CustodyId] = @CustodyId
+	AND E.[AccountId] = @AccountId
+	AND L.[State] = 4
+	AND E.[Id] NOT IN (SELECT [EntryId] FROM dbo.ReconciliationEntries)
+	AND L.[PostingDate] <= @AsOfDate
+
+	SELECT @UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
+	FROM dbo.ExternalEntries E
+	WHERE E.[CustodyId] = @CustodyId
+	AND E.[AccountId] = @AccountId
+	AND E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
+	AND E.[PostingDate] <= @AsOfDate
+
 	SELECT *
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
@@ -14,6 +42,7 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND E.[Id] NOT IN (SELECT [EntryId] FROM dbo.ReconciliationEntries)
+	AND L.[PostingDate] <= @AsOfDate
 	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
 	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
 
@@ -22,5 +51,6 @@ AS
 	WHERE E.[CustodyId] = @CustodyId
 	AND E.[AccountId] = @AccountId
 	AND E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
+	AND E.[PostingDate] <= @AsOfDate
 	ORDER BY E.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
 	OFFSET (@SkipExternal) ROWS FETCH NEXT (@TopExternal) ROWS ONLY;
