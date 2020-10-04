@@ -59,7 +59,8 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name] AND FE.[Identifier] = BE.[Identifier]
+	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name]
+	AND (FE.[Identifier] IS NULL AND BE.[Identifier] IS NULL OR FE.[Identifier] = BE.[Identifier])
 	WHERE BE.DefinitionId = @DefinitionId AND  (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
@@ -69,7 +70,8 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2] AND FE.[Identifier] = BE.[Identifier]
+	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2]
+	AND (FE.[Identifier] IS NULL AND BE.[Identifier] IS NULL OR FE.[Identifier] = BE.[Identifier])
 	WHERE BE.[DefinitionId] = @DefinitionId AND (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
@@ -79,7 +81,8 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3] AND FE.[Identifier] = BE.[Identifier]
+	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3]
+	AND (FE.[Identifier] IS NULL AND BE.[Identifier] IS NULL OR FE.[Identifier] = BE.[Identifier])
 	WHERE BE.[DefinitionId] = @DefinitionId AND (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list

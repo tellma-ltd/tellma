@@ -684,13 +684,13 @@
     <Build Include="dbo\Tables\dbo.ReconciliationEntries.sql" />
     <Build Include="dbo\Tables\dbo.ExternalEntries.sql" />
     <Build Include="dbo\Tables\dbo.ReconciliationExternalEntries.sql" />
-    <Build Include="bll\Stored Procedures\bll.Reconciliations_Validate__Insert.sql" />
+    <Build Include="bll\Stored Procedures\bll.Reconciliations_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__Delete.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__Capitalize.sql" />
     <Build Include="dbo\User Defined Types\dbo.ExternalEntryList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReconciliationList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ReconciliationEntriesList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ReconciliationExternalEntriesList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReconciliationEntryList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReconciliationExternalEntryList.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
   </ItemGroup>

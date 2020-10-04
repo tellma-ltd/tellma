@@ -1,9 +1,11 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliation__Load_Unreconciled]
-	@AccountId	INT, 
-	@CustodyId	INT, 
-	@AsOfDate	DATE, 
-	@Top		INT, 
-	@Skip		INT
+	@AccountId		INT, 
+	@CustodyId		INT, 
+	@AsOfDate		DATE, 
+	@Top			INT, 
+	@Skip			INT,
+	@TopExternal	INT, 
+	@SkipExternal	INT
 AS
 	SELECT *
 	FROM dbo.Entries E
@@ -21,4 +23,4 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 	ORDER BY E.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
-	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
+	OFFSET (@SkipExternal) ROWS FETCH NEXT (@TopExternal) ROWS ONLY;

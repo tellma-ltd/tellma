@@ -30,13 +30,17 @@ AS
 				E.[CurrencyId], SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue], SUM(E.[Direction] * E.[Value])  AS [Value]
 		FROM Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 		JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-		WHERE L.[State] = 4
+		WHERE DD.DocumentType = 2 -- event
+		AND L.[State] = 4
 		AND C.[CenterType] = @CenterType
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND (@CenterId IS NULL OR E.[CenterId] = @CenterId)
 		GROUP BY E.[AccountId], E.[CenterId], E.[ResourceId], E.[ParticipantId],
 				E.[CurrencyId]
+		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	)
 	INSERT INTO @WideLines([Index], [DefinitionId],
 			[DocumentIndex],

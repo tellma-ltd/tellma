@@ -50,9 +50,6 @@
 	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name_Identifier]
-  ON [dbo].[Resources]([DefinitionId], [Name], [Identifier]);
-GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name2], [Identifier]) WHERE [Name2] IS NOT NULL;
 GO

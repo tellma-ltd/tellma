@@ -2521,4 +2521,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ParticipantIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3e6422a6-d44a-42b2-a815-e7d3a01d43a1" ChangeDateTime="09/29/2020 16:28:42">
+    <Property Name="ElementName" Value="[dbo].[ReconciliationEntriesList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="ReconciliationEntryList" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ba31f37-2408-41e3-9e92-343a29cb590f" ChangeDateTime="09/29/2020 16:29:10">
+    <Property Name="ElementName" Value="[dbo].[ReconciliationExternalEntriesList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="ReconciliationExternalEntryList" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f448b967-ba78-4ac2-afa8-104df18a5fe2" ChangeDateTime="09/29/2020 16:33:50">
+    <Property Name="ElementName" Value="[bll].[Reconciliations_Validate__Insert]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Reconciliations_Validate__Save]" />
+  </Operation>
 </Operations>

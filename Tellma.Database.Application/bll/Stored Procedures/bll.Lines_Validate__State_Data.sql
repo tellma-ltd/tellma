@@ -384,6 +384,8 @@ BEGIN
 		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
 		WHERE BL.[State] = 4
 		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND BL.DocumentId <> L.[DocumentId])
+		AND (BE.[MonetaryValue] / BE.Quantity <> E.MonetaryValue / E.Quantity)
+		AND (BL.[Id] NOT IN (SELECT [Id] FROM @Lines))
 END
 -- must post (1,2,3=>4) in historical order
 IF @State = 4

@@ -2,10 +2,10 @@
 -- table managed by Banan
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
 	[Id]						INT				CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY IDENTITY,
-	[Code]						NVARCHAR (50)	CONSTRAINT [UX_DocumentDefinitions__Code] UNIQUE,
+	[Code]						NVARCHAR (50)	CONSTRAINT [UX_DocumentDefinitions__Code] UNIQUE NOT NULL,
 	-- Is Original, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
-	[IsOriginalDocument]		BIT				DEFAULT 1,
-	[DocumentType]				TINYINT			NOT NULL DEFAULT 2, -- 0: Template, 1: Clause, 2: Event
+	[IsOriginalDocument]		BIT				DEFAULT 1 NOT NULL,
+	[DocumentType]				TINYINT			NOT NULL DEFAULT 2, -- 0: Template, 1: Clause, 2: Event, 3: Regulatory
 	[Description]				NVARCHAR (1024)	NOT NULL,
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),
@@ -18,7 +18,7 @@
 	-- UI Specs
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,
-	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
+	[CodeWidth]					TINYINT			DEFAULT 3 NOT NULL, -- For presentation purposes
 
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
