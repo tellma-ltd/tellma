@@ -2542,4 +2542,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Reconciliations_Validate__Save]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b93db82a-8996-4e31-9c37-5bcc0a9fd0cf" ChangeDateTime="10/05/2020 04:47:30">
+    <Property Name="ElementName" Value="[dal].[Reconciliations__Insert]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Reconciliations__Save]" />
+  </Operation>
 </Operations>

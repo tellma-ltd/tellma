@@ -29,7 +29,7 @@ SET NOCOUNT ON;
 			FROM @ExternalEntries FE
 			JOIN dbo.ExternalEntries E ON FE.[Id] = E.[Id]
 			GROUP BY E.[AccountId], E.[CustodyId]
-			HAVING SUM(E.[Direction] * [MonetaryValue]) <> 0
+			HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 		) EX ON E.[AccountId] = EX.[AccountId] AND E.[CustodyId] = EX.[CustodyId]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -63,11 +63,11 @@ SET NOCOUNT ON;
 		) E
 		JOIN
 		(
-			SELECT MIN(FE.[Index]) AS [Index], E.[AccountId], E.[CustodyId], SUM(E.[Direction] * [MonetaryValue]) AS NetAmount
+			SELECT MIN(FE.[Index]) AS [Index], E.[AccountId], E.[CustodyId], SUM(E.[Direction] * E.[MonetaryValue]) AS NetAmount
 			FROM @ExternalEntries FE
 			JOIN dbo.ExternalEntries E ON FE.[Id] = E.[Id]
 			GROUP BY E.[AccountId], E.[CustodyId]
-			HAVING SUM(E.[Direction] * [MonetaryValue]) <> 0
+			HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 		) EX ON E.[AccountId] = EX.[AccountId] AND E.[CustodyId] = EX.[CustodyId]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])

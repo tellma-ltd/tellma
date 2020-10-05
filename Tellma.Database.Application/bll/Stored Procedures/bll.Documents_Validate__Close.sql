@@ -37,7 +37,7 @@ SET NOCOUNT ON;
 
 	-- Cannot close a document which has lines with missing signatures
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHasLinesWithMissingSignatures'
 	FROM @Ids FE
