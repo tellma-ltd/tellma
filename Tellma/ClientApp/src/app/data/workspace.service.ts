@@ -336,6 +336,11 @@ export class TenantWorkspace extends SpecificWorkspace {
   mdState: { [key: string]: MasterDetailsStore };
 
   /**
+   * Keeps the state of the reconciliation screen
+   */
+  reconciliationState: ReconciliationStore;
+
+  /**
    * Master screens use this to remember the last opened master screen,
    * if it's not the same as the current screen, the current screen may
    * wish to refresh
@@ -1019,6 +1024,10 @@ export class MasterDetailsStore {
       return n;
     }
   }
+}
+
+export class ReconciliationStore {
+  arguments: ReportArguments = {};
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

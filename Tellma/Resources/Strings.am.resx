@@ -469,6 +469,9 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>መጠን Acc.</value>
   </data>
+  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
+    <value>መጠን በእያንዳንዱ ዩኒት</value>
+  </data>
   <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
     <value>አሉታዊ አልጀብራዊ የገንዘብ ዋጋ</value>
   </data>
@@ -483,6 +486,9 @@
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>ጊዜ</value>
+  </data>
+  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
+    <value>ዋጋ በእያንዳንዱ ዩኒት</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
     <value>ድምጽ</value>
@@ -597,6 +603,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>ድርጊት</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
+    <value>ደንብ</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>ኦርጅናል ሰነድ ነው</value>

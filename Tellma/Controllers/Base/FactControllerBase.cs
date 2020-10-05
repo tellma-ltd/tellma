@@ -497,7 +497,7 @@ namespace Tellma.Controllers
         protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
 
         /// <summary>
-        /// Retrieves the user permissions for the given action and parses them in the form of an <see cref="FilterExpression"/>
+        /// Retrieves the user permissions for the given action and parses them in the form of an <see cref="FilterExpression"/>, throws a <see cref="ForbiddenException"/> if none are found.
         /// </summary>        
         protected async Task<FilterExpression> UserPermissionsFilter(string action, CancellationToken cancellation)
         {

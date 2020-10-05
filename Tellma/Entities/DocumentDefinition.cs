@@ -19,8 +19,8 @@ namespace Tellma.Entities
 
         [Display(Name = "DocumentDefinition_DocumentType")]
         [Required]
-        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
-            new string[] { "DocumentDefinition_DocumentType_0", "DocumentDefinition_DocumentType_1", "DocumentDefinition_DocumentType_2" })]
+        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2, (byte)3 },
+            new string[] { "DocumentDefinition_DocumentType_0", "DocumentDefinition_DocumentType_1", "DocumentDefinition_DocumentType_2", "DocumentDefinition_DocumentType_3" })]
         public byte? DocumentType { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]

@@ -328,37 +328,6 @@
         </t-date-picker>
     </t-form-group>
 
-    <!-- Description -->
-    <t-form-group *ngIf="Description_isVisible" class="t-form-group"
-        [label]="('Description' | translate) + ws.primaryPostfix" [serverErrors]="model?.serverErrors?.Description">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description">
-            <div *ngIf="!isEdit">{{ model?.Description }}</div>
-        </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Description_isRequired">
-        </t-text-editor>
-    </t-form-group>
-
-    <!-- Description2 -->
-    <t-form-group *ngIf="Description_isVisible && ws.settings.SecondaryLanguageId" class="t-form-group"
-        [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description2">
-            <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
-        </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-    </t-form-group>
-
-    <!-- Description3 -->
-    <t-form-group *ngIf="Description_isVisible && ws.settings.TernaryLanguageId" class="t-form-group"
-        [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description3">
-            <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
-        </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-    </t-form-group>
-
     <!-- Identifier -->
     <t-form-group *ngIf="Identifier_isVisible" class="t-form-group" [label]="Identifier_label"
         [serverErrors]="model?.serverErrors?.Identifier">
@@ -403,6 +372,37 @@
             [ngModelOptions]="{ updateOn: 'blur' }" [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0"
             [maxDecimalPlaces]="4">
         </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Description -->
+    <t-form-group *ngIf="Description_isVisible" class="t-form-group"
+        [label]="('Description' | translate) + ws.primaryPostfix" [serverErrors]="model?.serverErrors?.Description">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description">
+            <div *ngIf="!isEdit">{{ model?.Description }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Description_isRequired">
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Description2 -->
+    <t-form-group *ngIf="Description_isVisible && ws.settings.SecondaryLanguageId" class="t-form-group"
+        [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description2">
+            <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Description3 -->
+    <t-form-group *ngIf="Description_isVisible && ws.settings.TernaryLanguageId" class="t-form-group"
+        [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description3">
+            <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
     </t-form-group>
 
     <!-- Is Active -->

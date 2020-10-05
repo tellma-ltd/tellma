@@ -241,4 +241,11 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('Update', false)
         ]
     },
+    'reconciliation': {
+        name: 'BankReconciliation',
+        actions: [
+            li('Read', false),
+            li('Update', false)
+        ]
+    },
 };

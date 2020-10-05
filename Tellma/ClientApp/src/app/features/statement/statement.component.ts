@@ -489,7 +489,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
     const columns = this.columns;
     const args = this.computeStatementArguments();
-    delete args.top; // we export everything
+    args.top = 2147483647; // we export everything
 
     this.showExportSpinner = true;
 
