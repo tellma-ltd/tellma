@@ -693,6 +693,8 @@
     <Build Include="dbo\User Defined Types\dbo.ReconciliationExternalEntryList.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
+    <Build Include="dbo\User Defined Types\dbo.InventoryEventList.sql" />
+    <Build Include="bll\Functions\bll.fi_InventoryAverageCosts2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

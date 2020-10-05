@@ -1,9 +1,9 @@
-﻿CREATE FUNCTION [bll].[fi_InventoryAverageCosts] (
+﻿CREATE FUNCTION [bll].[fi_InventoryAverageCosts2] (
 	@InventoryEntries dbo.[InventoryEntryList] READONLY
 )
 RETURNS TABLE AS RETURN (
 	WITH InventoryAccounts AS (
-		SELECT A.[Id], A.[AccountTypeId]
+		SELECT A.[Id]
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
