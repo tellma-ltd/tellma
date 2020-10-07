@@ -10,7 +10,7 @@ namespace Tellma.Controllers.Dto
         public int CustodyId { get; set; }
     }
 
-    public class ReconciliationLoadUnreconciledArguments : ReconciliationArgumentsBase
+    public class ReconciliationGetUnreconciledArguments : ReconciliationArgumentsBase
     {
         public DateTime AsOfDate { get; set; }
         public int EntriesTop { get; set; }
@@ -19,21 +19,8 @@ namespace Tellma.Controllers.Dto
         public int ExternalEntriesSkip { get; set; }
     }
 
-    public class ReconciliationLoadReconciledArguments : ReconciliationArgumentsBase
+    public class ReconciliationGetReconciledArguments : ReconciliationArgumentsBase
     {
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
-        public decimal? FromAmount { get; set; }
-        public decimal? ToAmount { get; set; }
-        public string ExternalReferenceContains { get; set; }
-        public int Top { get; set; }
-        public int Skip { get; set; }
-    }
-
-    public class ReconciliationSaveArguments : ReconciliationArgumentsBase
-    {
-        public bool ReturnReconciled { get; set; }
-        public DateTime? AsOfDate { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public decimal? FromAmount { get; set; }

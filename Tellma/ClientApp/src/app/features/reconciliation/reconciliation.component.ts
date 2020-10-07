@@ -1,12 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { WorkspaceService, ReconciliationStore } from '~/app/data/workspace.service';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { Subscription, Subject, Observable } from 'rxjs';
+import { WorkspaceService, ReconciliationStore, ReportStatus } from '~/app/data/workspace.service';
+import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
+import { Subscription, Subject, Observable, of } from 'rxjs';
 import { ApiService } from '~/app/data/api.service';
-import { switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
+import { TranslateService } from '@ngx-translate/core';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { Account } from '~/app/data/entities/account';
 
-type View = 'unreconciled' | 'reconciled' | 'report';
+type View = 'unreconciled' | 'reconciled';
 
 @Component({
   selector: 't-reconciliation',
@@ -15,14 +19,40 @@ type View = 'unreconciled' | 'reconciled' | 'report';
 })
 export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivate {
 
+  private argumentsKey = 'reconciliation/arguments';
   private _subscriptions: Subscription;
   private notifyFetch$ = new Subject<void>();
   private notifyDestruct$ = new Subject<void>();
   private api = this.apiService.reconciliationApi(this.notifyDestruct$); // Only for intellisense
 
+  public viewChoices: SelectorChoice[] = [
+    { value: 'reconciled', name: () => this.translate.instant('Reconciled') },
+    { value: 'unreconciled', name: () => this.translate.instant('Unreconciled') },
+  ];
+
+  private numericKeys: { [key: string]: any } = {
+    account_id: undefined,
+    custody_id: undefined,
+    entries_top: 200,
+    entries_skip: 0,
+    ex_entries_top: 200,
+    ex_entries_skip: 0,
+    top: 200,
+    skip: 0,
+    from_amount: undefined,
+    to_amount: undefined,
+  };
+
+  private stringKeys: { [key: string]: any } = {
+    view: 'unreconciled',
+    from_date: undefined,
+    to_date: undefined,
+    ex_ref_contains: undefined
+  };
+
   constructor(
-    private workspace: WorkspaceService, private router: Router,
-    private route: ActivatedRoute, private apiService: ApiService) { }
+    private workspace: WorkspaceService, private router: Router, private customUserSettings: CustomUserSettingsService,
+    private route: ActivatedRoute, private apiService: ApiService, private translate: TranslateService) { }
 
   ngOnInit(): void {
 
@@ -46,26 +76,21 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
       const s = this.state;
       const args = s.arguments;
 
-      const view: View = (params.get('view') || 'unreconciled') as View;
-      if (args.view !== view) {
-        args.view = view;
-        fetchIsNeeded = true;
+      for (const key of Object.keys(this.stringKeys)) {
+        const paramValue = params.get(key) || this.stringKeys[key];
+        if (args[key] !== paramValue) {
+          args[key] = paramValue;
+          fetchIsNeeded = true;
+        }
       }
 
-      const accountId = +params.get('account_id') || undefined;
-      if (args.account_id !== accountId) {
-        args.account_id = accountId;
-        fetchIsNeeded = true;
+      for (const key of Object.keys(this.numericKeys)) {
+        const paramValue = (+params.get(key)) || this.numericKeys[key];
+        if (args[key] !== paramValue) {
+          args[key] = paramValue;
+          fetchIsNeeded = true;
+        }
       }
-
-      const custodyId = +params.get('custody_id') || undefined;
-      if (args.custody_id !== custodyId) {
-        args.custody_id = custodyId;
-        fetchIsNeeded = true;
-      }
-
-      // Remaining params
-      // if ()
 
       if (fetchIsNeeded) {
         this.fetch();
@@ -76,6 +101,48 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   ngOnDestroy(): void {
     this.notifyDestruct$.next();
     this._subscriptions.unsubscribe();
+  }
+
+  private urlStateChanged(): void {
+    // We wish to store part of the page state in the URL
+    // This method is called whenever that part of the state has changed
+    // Below we capture the new URL state, and then navigate to the new URL
+
+    const s = this.state;
+    const args = s.arguments;
+    const params: Params = {};
+
+    // Add the string arguments
+    for (const key of Object.keys(this.stringKeys)) {
+      const value = args[key] || this.stringKeys[key];
+      if (!!value) {
+        params[key] = value;
+      }
+    }
+
+    // Add the numeric arguments
+    for (const key of Object.keys(this.numericKeys)) {
+      const value = args[key] || this.numericKeys[key];
+      if (!!value) {
+        params[key] = value;
+      }
+    }
+
+    // navigate to the new url
+    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+  }
+
+  private parametersChanged(): void {
+
+    // Update the URL
+    this.urlStateChanged();
+
+    // Save the arguments in user settings
+    const argsString = JSON.stringify(this.state.arguments);
+    this.customUserSettings.save(this.argumentsKey, argsString);
+
+    // Refresh the results
+    this.fetch();
   }
 
   public fetch() {
@@ -136,9 +203,34 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return null;
   }
 
+  private get requiredParametersAreSet(): boolean {
+    const args = this.state.arguments;
+    return !!args.account_id && !!args.custody_id;
+  }
+
+  private get loadingRequiredParameters(): boolean {
+    // Some times the account Id or resource Id from the Url refer to entities that are not loaded
+    // Given that computing the statement query requires knowledge of these entities (not just their Ids)
+    // We have to wait until the details pickers have loaded the entities for us, until then this
+    // property returns true, and the statement query is not executed
+    if (!!this.accountId && !this.account()) {
+      return true;
+    }
+
+    if (this.showCustodyParameter && !this.readonlyCustody_Manual && !!this.custodyId && !this.ws.get('Custody', this.custodyId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public get ws() {
+    return this.workspace.currentTenant;
+  }
+
   public get state(): ReconciliationStore {
 
-    const ws = this.workspace.currentTenant;
+    const ws = this.ws;
     return ws.reconciliationState = ws.reconciliationState || new ReconciliationStore();
   }
 
@@ -166,5 +258,67 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     //   // IF there are no unsaved changes, the navigation can happily proceed
     //   return true;
     // }
+  }
+
+  private account(id?: number): Account {
+    id = id || this.accountId;
+    return this.ws.get('Account', id);
+  }
+
+  // UI Bindings
+
+  public onParameterLoaded(): void {
+    if (this.state.reportStatus === ReportStatus.loading) {
+      this.fetch();
+    }
+  }
+
+  // view
+  public get view(): View {
+    return this.state.arguments.view;
+  }
+
+  public set view(v: View) {
+    const args = this.state.arguments;
+    if (args.view !== v) {
+      args.view = v;
+      this.parametersChanged();
+    }
+  }
+
+  // accountId
+  public get accountId(): number {
+    return this.state.arguments.account_id;
+  }
+
+  public set accountId(v: number) {
+    const args = this.state.arguments;
+    if (args.account_id !== v) {
+      args.account_id = v;
+      this.parametersChanged();
+    }
+  }
+
+  // custodyId
+  public get custodyId(): number {
+    return this.state.arguments.custody_id;
+  }
+
+  public set custodyId(v: number) {
+    const args = this.state.arguments;
+    if (args.custody_id !== v) {
+      args.custody_id = v;
+      this.parametersChanged();
+    }
+  }
+
+  public get showCustodyParameter(): boolean {
+    const account = this.account();
+    return !!account && !!account.CustodyDefinitionId;
+  }
+
+  public get readonlyCustody_Manual(): boolean {
+    const account = this.account();
+    return !!account && !!account.CustodyId;
   }
 }

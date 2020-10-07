@@ -8,22 +8,11 @@ export interface ReconciliationArgumentsBase {
     Skip: number;
 }
 
-
-export interface ReconciliationLoadUnreconciledArguments extends ReconciliationArgumentsBase {
+export interface ReconciliationGetUnreconciledArguments extends ReconciliationArgumentsBase {
     AsOfDate: string;
 }
 
-export interface ReconciliationLoadReconciledArguments extends ReconciliationArgumentsBase {
-    FromDate: string;
-    ToDate: string;
-    FromAmount: number;
-    ToAmount: number;
-    ExternalReferenceContains: string;
-}
-
-export interface ReconciliationSaveArguments extends ReconciliationArgumentsBase {
-    ReturnReconciled: boolean;
-    AsOfDate: string;
+export interface ReconciliationGetReconciledArguments extends ReconciliationArgumentsBase {
     FromDate: string;
     ToDate: string;
     FromAmount: number;

@@ -274,7 +274,7 @@ namespace Tellma.Controllers
                 entry.Accumulation = acc;
                 entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
 
-                accQuantity += (entry.Quantity ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
+                accQuantity += entry.AlgebraicQuantity ?? 0m; // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
                 entry.QuantityAccumulation = accQuantity;
                 entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
 

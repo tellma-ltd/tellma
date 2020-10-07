@@ -666,6 +666,13 @@ export interface MeasureCell {
   isTotal?: boolean;
 }
 
+export class ReconciliationStore {
+  arguments: ReportArguments = {};
+  reportStatus: ReportStatus;
+  errorMessage: string;
+  information: () => string;
+}
+
 export class ReportStore {
   definition: ReportDefinitionForClient;
   skip = 0;
@@ -1024,10 +1031,6 @@ export class MasterDetailsStore {
       return n;
     }
   }
-}
-
-export class ReconciliationStore {
-  arguments: ReportArguments = {};
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

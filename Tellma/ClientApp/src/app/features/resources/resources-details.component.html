@@ -84,7 +84,7 @@
 
     <!-- Unit (Cardinality Single) -->
     <t-form-group *ngIf="Unit_isVisible" class="t-form-group" [label]="'Resource_Unit' | translate"
-        [serverErrors]="model?.serverErrors?.Unit">
+        [serverErrors]="model?.serverErrors?.UnitId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Unit">
             <t-view-link link="../../../units" [itemId]="model?.UnitId">
                 {{ ws.getMultilingualValue('Unit', model?.UnitId, 'Name') }}
@@ -110,7 +110,7 @@
 
     <!-- UnitMassUnit -->
     <t-form-group *ngIf="UnitMass_isVisible" class="t-form-group" [label]="'Resource_UnitMassUnit' | translate"
-        [serverErrors]="model?.serverErrors?.UnitMassUnit">
+        [serverErrors]="model?.serverErrors?.UnitMassUnitId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.UnitMassUnit">
             <t-view-link link="../../../units" [itemId]="model?.UnitMassUnitId">
                 {{ ws.getMultilingualValue('Unit', model?.UnitMassUnitId, 'Name') }}

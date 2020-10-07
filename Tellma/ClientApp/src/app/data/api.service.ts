@@ -66,12 +66,11 @@ import { ServerNotificationSummary } from './dto/server-notification-summary';
 import { LineForSave } from './entities/line';
 import { Custody } from './entities/custody';
 import {
-  ReconciliationLoadUnreconciledArguments,
+  ReconciliationGetUnreconciledArguments,
   ReconciliationLoadUnreconciledResponse,
   ReconciliationLoadReconciledResponse,
-  ReconciliationLoadReconciledArguments,
-  ReconciliationSavePayload,
-  ReconciliationSaveArguments
+  ReconciliationGetReconciledArguments,
+  ReconciliationSavePayload
 } from './dto/reconciliation';
 
 
@@ -847,7 +846,7 @@ export class ApiService {
 
   public reconciliationApi(cancellationToken$: Observable<void>) {
     return {
-      getUnreconciled: (args: ReconciliationLoadUnreconciledArguments) => {
+      getUnreconciled: (args: ReconciliationGetUnreconciledArguments) => {
         const paramsArray: string[] = this.stringifyArguments(args);
 
         const params: string = paramsArray.join('&');
@@ -864,7 +863,7 @@ export class ApiService {
         return obs$;
       },
 
-      getReconciled: (args: ReconciliationLoadReconciledArguments) => {
+      getReconciled: (args: ReconciliationGetReconciledArguments) => {
         const paramsArray: string[] = this.stringifyArguments(args);
 
         const params: string = paramsArray.join('&');
@@ -881,7 +880,7 @@ export class ApiService {
         return obs$;
       },
 
-      saveAndGetUnreconciled: (payload: ReconciliationSavePayload, args: ReconciliationSaveArguments) => {
+      saveAndGetUnreconciled: (payload: ReconciliationSavePayload, args: ReconciliationGetUnreconciledArguments) => {
         this.showRotator = true;
         const paramsArray: string[] = this.stringifyArguments(args);
 
@@ -904,7 +903,7 @@ export class ApiService {
         return obs$;
       },
 
-      saveAndGetReconciled: (payload: ReconciliationSavePayload, args: ReconciliationSaveArguments) => {
+      saveAndGetReconciled: (payload: ReconciliationSavePayload, args: ReconciliationGetReconciledArguments) => {
         this.showRotator = true;
         const paramsArray: string[] = this.stringifyArguments(args);
 

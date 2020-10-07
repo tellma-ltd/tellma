@@ -124,7 +124,7 @@ CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
   public resourceDefinitionFilter(model: AccountType): string {
     let filter = `State ne 'Hidden'`;
     if (!!model && !!model.ParticipantDefinitionId) {
-      filter += ` and ParticipantDefinitionId eq ${model.ParticipantDefinitionId}`;
+      filter += ` and (ParticipantDefinitionId eq ${model.ParticipantDefinitionId} or ParticipantDefinitionId eq null)`;
     }
 
     return filter;
@@ -133,7 +133,7 @@ CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
   public custodyDefinitionFilter(model: AccountType): string {
     let filter = `State ne 'Hidden'`;
     if (!!model && !!model.CustodianDefinitionId) {
-      filter += ` and CustodianDefinitionId eq ${model.CustodianDefinitionId}`;
+      filter += ` and (CustodianDefinitionId eq ${model.CustodianDefinitionId} or CustodianDefinitionId eq null)`;
     }
 
     return filter;
