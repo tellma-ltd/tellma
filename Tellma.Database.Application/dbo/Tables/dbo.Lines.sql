@@ -23,3 +23,5 @@
 GO
 CREATE INDEX [IX_Lines__DocumentId] ON [dbo].[Lines]([DocumentId]);
 GO
+CREATE INDEX [IX_Lines__DefinitionId] ON [dbo].[Lines]([DefinitionId]);
+GO

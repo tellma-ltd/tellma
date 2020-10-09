@@ -54,5 +54,7 @@ CREATE INDEX [IX_Entries__UnitId] ON [dbo].[Entries]([UnitId]);
 GO
 CREATE INDEX [IX_Entries__CustodyId] ON [dbo].[Entries]([CustodyId]);
 GO
+CREATE INDEX [IX_Entries__ParticipantId] ON [dbo].[Entries]([ParticipantId]);
+GO
 CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO

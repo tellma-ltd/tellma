@@ -347,7 +347,7 @@ BEGIN
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
-			t.[IsSystem]				= s.[IsSystem], 
+			t.[IsSystem]				= ISNULL(s.[IsSystem], 0), 
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],

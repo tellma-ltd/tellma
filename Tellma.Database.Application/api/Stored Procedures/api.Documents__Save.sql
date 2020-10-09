@@ -4,6 +4,7 @@
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
+	@Attachments [dbo].[AttachmentList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -84,5 +85,6 @@ BEGIN
 		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
 		@Entries = @PreprocessedEntries,
+		@Attachments = @Attachments,
 		@ReturnIds = 0;
 END;

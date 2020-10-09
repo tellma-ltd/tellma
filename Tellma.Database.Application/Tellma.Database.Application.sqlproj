@@ -695,6 +695,11 @@
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
     <Build Include="dbo\User Defined Types\dbo.InventoryEventList.sql" />
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts2.sql" />
+    <Build Include="dal\Stored Procedures\dal.InventoryEntries_AVCO__Update.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data2.sql" />
+    <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
+    <Build Include="bll\Functions\bll.fn_IsLeap.sql" />
+    <Build Include="bll\Functions\bll.fn_BusinessUnit__CostCenter.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

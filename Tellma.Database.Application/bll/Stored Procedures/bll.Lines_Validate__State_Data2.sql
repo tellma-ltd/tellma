@@ -1,10 +1,11 @@
-﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Data]
+﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Data2]
 -- @Lines and @Entries are read from the database just before calling.
 	@Documents DocumentList READONLY,
 	@DocumentLineDefinitionEntries DocumentLineDefinitionEntryList READONLY, -- TODO: Add to signature everywhere
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
 	@State SMALLINT,
+	@DateModifier TINYINT,--0=DAY, 1=MONTH, 3=Quarter, 4=Year
 	@Top INT = 10--,
 	--@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -347,7 +348,7 @@ BEGIN
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 END
 -- cannot unpost (4=>1,2,3) iif it cause negative quantity
-IF @State < 4
+IF @State <= 2
 BEGIN
 	WITH InventoryAccounts AS (
 		SELECT A.[Id]
@@ -358,21 +359,23 @@ BEGIN
 	),
 	NegativeBalancesDocuments AS (
 	SELECT
-		L.[DocumentIndex], L.[Index] AS [LineIndex], E.[Index], BD.Code, E.ResourceId, E.CustodyId,
+		L.[DocumentIndex], L.[Index] AS [LineIndex], E.[Index], BL.[PostingDate], BD.Code, E.ResourceId, E.CustodyId,
 		SUM(BE.[Direction] * BE.[Quantity]) 
-			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY BL.[PostingDate], [LineId]) AS RunningTotal
+			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY BL.[PostingDate], BE.[Direction] DESC) AS RunningDailyTotal,
+		SUM(BE.[Direction] * BE.[Quantity]) 
+			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY MONTH(BL.[PostingDate]), BE.[Direction] DESC) AS RunningMonthlyTotal
 		FROM (
 			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
 			FROM @Lines LFE
 			JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
-			WHERE LBE.[State] = 4
+			WHERE LBE.[State] >= 3
 		) L -- focus on lines that were posted and now are being unposted
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
-		WHERE BL.[State] = 4
+		WHERE BL.[State] >= 3
 		AND (BL.[Id] NOT IN (SELECT [Id] FROM @Lines))
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
@@ -380,7 +383,12 @@ BEGIN
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Resource01AndCustody23AppearInLaterDocument4', -- cause negative quantity in document
+			N'Error_ActionCausesResourceBalance01AndCustody2InDocument3Shortage4In5' +
+			CASE
+				WHEN @DateModifier = 0 THEN CONVERT(NVARCHAR(50), E.PostingDate, 23)
+				WHEN @DateModifier = 1 THEN DATENAME(MONTH, E.PostingDate) + N' ' + DATENAME(YEAR, E.PostingDate)
+				WHEN @DateModifier = 2 THEN N'Q' + DATENAME(QUARTER, E.PostingDate) + N' ' + DATENAME(YEAR, E.PostingDate)
+			END, -- cause negative quantity in document
 			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
 			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
@@ -392,11 +400,12 @@ BEGIN
 		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
 		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
 		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
-		WHERE E.RunningTotal < 0
+		WHERE (@DateModifier = 0 AND E.RunningDailyTotal < 0)
+		OR (@DateModifier = 1 AND E.RunningMonthlyTotal < 0)
 
 END
 -- cannot post (1,2,3=>4) if it causes negative anywhere
-IF @State = 4
+IF @State >= 3
 BEGIN
 	WITH InventoryAccounts AS (
 		SELECT A.[Id]
@@ -409,21 +418,20 @@ BEGIN
 	SELECT
 		L.[DocumentIndex], L.[Index] AS LineIndex, E.[Index], BD.Code, E.ResourceId, E.CustodyId,
 		SUM(BE.[Direction] * BE.[Quantity]) 
-			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY MONTH(BL.[PostingDate]), BE.[Direction] DESC) AS RunningTotal
+			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY BL.[PostingDate], [LineId]) AS RunningTotal
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
-		WHERE BL.[State] = 4
+		WHERE BL.[State] >= 3
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-		--	N'Error_ResourceIssue01FromCustody2InDocument4',
 			N'Error_Resource01AndCustody23AppearInLaterDocument4', -- cause negative quantity in document
 			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
