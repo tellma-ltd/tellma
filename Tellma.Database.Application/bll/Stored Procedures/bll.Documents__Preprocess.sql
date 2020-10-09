@@ -313,82 +313,89 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	AND L.[DefinitionId] IN (SELECT [Id] FROM dbo.LineDefinitions WHERE [GenerateScript] IS NULL);
+	
+	DECLARE @LineEntries TABLE (
+				[Index] INT, 
+				[LineIndex] INT, 
+				[DocumentIndex] INT,  
+				[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
+				[CustodianId] INT, 
+				[CustodyDefinitionId] INT, 
+				[CustodyId] INT,
+				[ParticipantId] INT,
+				[ResourceDefinitionId] INT,
+				[ResourceId] INT,
+				[CenterId] INT,
+				[CurrencyId] NCHAR (3)
+			)
+	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId], [CustodianId], [CustodyDefinitionId], 
+					[CustodyId], [ParticipantId], [ResourceDefinitionId], [ResourceId], [CenterId], [CurrencyId])
+	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], 
+			E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId],
+			E.[ParticipantId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+			E.[CenterId], E.[CurrencyId]
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
+	JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
+	JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+	LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
+	LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
+	WHERE L.DefinitionId <> @ManualLineLD
+	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;
 
 	-- Set the Account based on provided info so far
-	With LineEntries AS (
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], 
-				E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId],
-				E.[ParticipantId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-				E.[CenterId], E.[CurrencyId]
-		FROM @PreprocessedEntries E
-		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-		JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
-		WHERE L.DefinitionId <> @ManualLineLD
-		AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1
-	),
-	ConformantAccounts AS (
-		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], MIN(A.Id) AS MINAccountId, MAX(A.[Id]) AS MAXAccountId
-		FROM dbo.Accounts A
-		JOIN LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
-		WHERE
-			(A.[IsActive] = 1)
-		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
-		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
-		AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
-		AND (A.[CustodyDefinitionId] IS NULL AND LE.[CustodyDefinitionId] IS NULL OR A.[CustodyDefinitionId] = LE.[CustodyDefinitionId])
-		AND (A.[CustodyId] IS NULL OR A.[CustodyId] = LE.[CustodyId])
-		AND (A.[ParticipantId] IS NULL OR A.[ParticipantId] = LE.[ParticipantId])
-		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
-		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-		GROUP BY LE.[Index], LE.[LineIndex], LE.[DocumentIndex]
-	)
-	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
-	SET E.AccountId = CA.MINAccountId
-	FROM @PreprocessedEntries E
-	JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex]
-	WHERE CA.MINAccountId = CA.MAXAccountId;
+	DECLARE @ConformantAccounts TABLE(
+		[Index] INT, 
+		[LineIndex] INT, 
+		[DocumentIndex] INT, 
+		[AccountId]		INT PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountId])
+	);
+	INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
+	SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
+	FROM dbo.Accounts A
+	JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
+	WHERE
+		(A.[IsActive] = 1)
+	AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+	AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+	AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
+	AND (A.[CustodyDefinitionId] IS NULL AND LE.[CustodyDefinitionId] IS NULL OR A.[CustodyDefinitionId] = LE.[CustodyDefinitionId])
+	AND (A.[CustodyId] IS NULL OR A.[CustodyId] = LE.[CustodyId])
+	AND (A.[ParticipantId] IS NULL OR A.[ParticipantId] = LE.[ParticipantId])
+	AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+	AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+	
+	DECLARE @ConformantAccountsSummary TABLE(
+		[Index] INT, 
+		[LineIndex] INT, 
+		[DocumentIndex] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex]),
+		[AccountId] INT INDEX [IX_ConformantAccounts_AccountId] NONCLUSTERED,
+		[AccountCount] INT
+	);
+	INSERT INTO @ConformantAccountsSummary([Index], [LineIndex], [DocumentIndex], [AccountId], [AccountCount])
+	SELECT [Index], [LineIndex], [DocumentIndex], MIN([AccountId]) AS AccountId, Count(*) AS AccountCount
+	FROM @ConformantAccounts
+	GROUP BY [Index], [LineIndex], [DocumentIndex]
 
-	With LineEntries2 AS (
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
-				E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId],
-				E.[ParticipantId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-				E.[CenterId], E.[CurrencyId]
-		FROM @PreprocessedEntries E
-		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-		JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
-		WHERE L.DefinitionId <> @ManualLineLD
-		AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1
-	),
-	ConformantAccounts2 AS (
-		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
-		FROM dbo.Accounts A
-		JOIN LineEntries2 LE ON LE.[AccountTypeId] = A.[AccountTypeId]
-		WHERE
-			(A.[IsActive] = 1)
-		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
-		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
-		AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
-		AND (A.[CustodyDefinitionId] IS NULL AND LE.[CustodyDefinitionId] IS NULL OR A.[CustodyDefinitionId] = LE.[CustodyDefinitionId])
-		AND (A.[CustodyId] IS NULL OR A.[CustodyId] = LE.[CustodyId])
-		AND (A.[ParticipantId] IS NULL OR A.[ParticipantId] = LE.[ParticipantId])
-		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
-		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-	)
-	UPDATE E -- Set account to null, if non conformant
+	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
+	SET E.AccountId = CAS.[AccountId]
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN @ConformantAccountsSummary CAS
+	ON E.[Index] = CAS.[Index] AND E.[LineIndex] = CAS.[LineIndex] AND E.[DocumentIndex] = CAS.[DocumentIndex]
+	WHERE L.DefinitionId  <> @ManualLineLD
+	AND CAS.AccountCount = 1
+--	AND E.AccountId <> CAS.[AccountId]
+
+	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
 	SET E.AccountId = NULL
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	LEFT JOIN ConformantAccounts2 CA
-	ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex] AND E.AccountId = CA.AccountId
+	LEFT JOIN @ConformantAccounts CA
+	ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex]
 	WHERE L.DefinitionId  <> @ManualLineLD
+	AND E.AccountId = CA.[AccountId]
 	AND E.AccountId IS NOT NULL AND CA.AccountId IS NULL;
 
 	-- Return the populated entries.
@@ -407,7 +414,7 @@ BEGIN
 	SELECT * FROM @PreprocessedEntries;
 END
 
-	--=-=-=-=-=-=- [C# Preprocessing after SQL], done in ap.Documents__Save
+	--=-=-=-=-=-=- [C# Preprocessing after SQL], done in api.Documents__Save
 	/* 
 	
 	 [✓] For Smart Lines: If CurrencyId == functional set Value = MonetaryValue

@@ -59,3 +59,5 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__ResourceDefinitionId_Code]
   ON [dbo].[Resources]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
 GO
+CREATE INDEX [IX_Resources__ResourceDefinitionId]   ON [dbo].[Resources]([DefinitionId]);
+GO

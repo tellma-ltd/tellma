@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	
 	-- Check that LookupId is not used in Resources
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP (@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheLookup0IsUsedInResource12',
 		dbo.fn_Localize(L.[Name], L.[Name2], L.[Name3]) AS [Lookup],

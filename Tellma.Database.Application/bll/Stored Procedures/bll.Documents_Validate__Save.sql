@@ -100,6 +100,7 @@ SET NOCOUNT ON;
 		FE.[SerialNumber] IS NOT NULL
 	AND BE.DefinitionId = @DefinitionId
 	AND FE.Id <> BE.Id;
+
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
 	
 	-- Must not edit a document that is already closed/canceled
