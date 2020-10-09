@@ -36,6 +36,8 @@ export interface DetailsEntry extends EntityWithKey {
     Value?: number;
     AlgebraicValue?: number;
     NegativeAlgebraicValue?: number;
+    MonetaryValuePerUnit?: number;
+    ValuePerUnit?: number;
     Time1?: string;
     Time2?: string;
     ExternalReference?: string;
@@ -146,6 +148,15 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 NegativeAlgebraicValue: {
                     control: 'number',
                     label: () => `${trx.instant('DetailsEntry_NegativeAlgebraicValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
+
+                MonetaryValuePerUnit: { control: 'number', label: () => trx.instant('DetailsEntry_MonetaryValuePerUnit'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                ValuePerUnit: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_ValuePerUnit')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     alignment: 'right'

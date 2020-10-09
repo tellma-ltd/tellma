@@ -425,7 +425,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       default:
         console.error(`Unknown report type ${this.type}`); // Future proofing
     }
-
   }
 
   public onParameterLoaded(): void {
@@ -489,7 +488,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
     const columns = this.columns;
     const args = this.computeStatementArguments();
-    delete args.top; // we export everything
+    args.top = 2147483647; // we export everything
 
     this.showExportSpinner = true;
 
@@ -1488,6 +1487,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const singleUnitDefined = !!resourceDef && resourceDef.UnitCardinality === 'Single' && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
         const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
+        const baseUnitDefined = !!resourceDef && !!resourceDef.UnitCardinality && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
+        const baseUnitId  = baseUnitDefined ? resource.UnitId : null;
+
         this._columns.push({
           select: ['Direction', 'Quantity'],
           label: () => {
@@ -1505,29 +1507,29 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           weight: 1
         });
 
-        if (singleUnitDefined) {
-
-          // Quantity Acc.
-          this._columns.push({
-            id: 'QuantityAccumulation',
-            select: ['Quantity', 'Direction'],
-            label: () => {
-              const unitId = singleUnitId;
-              return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', unitId, 'Name')})`;
-            },
-            display: (entry: DetailsEntry) => {
-              return formatAccounting(entry.QuantityAccumulation, '1.0-4');
-            },
-            isRightAligned: true,
-            weight: 1
-          });
-        }
-
+        // If a single unit is not defined, add a column to show the unit per row
         if (!singleUnitDefined) {
           this._columns.push({
             select: ['Unit/Name', 'Unit/Name2', 'Unit/Name3'],
             label: () => this.translate.instant('Entry_Unit'),
             display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.UnitId, 'Name'),
+            weight: 1
+          });
+        }
+
+        // Quantity Acc.
+        if (baseUnitDefined) {
+          this._columns.push({
+            id: 'QuantityAccumulation',
+            select: ['AlgebraicQuantity'], // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
+            label: () => {
+              // Algebraic Quantity is always in the base unit defined in the resource
+              return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', baseUnitId, 'Name')})`;
+            },
+            display: (entry: DetailsEntry) => {
+              return formatAccounting(entry.QuantityAccumulation, '1.0-4');
+            },
+            isRightAligned: true,
             weight: 1
           });
         }

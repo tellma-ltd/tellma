@@ -93,6 +93,12 @@ namespace Tellma.Entities
         [Display(Name = "Entry_NegativeAlgebraicValue")]
         public decimal? NegativeAlgebraicValue { get; set; }
 
+        [Display(Name = "DetailsEntry_MonetaryValuePerUnit")]
+        public decimal? MonetaryValuePerUnit { get; set; }
+
+        [Display(Name = "DetailsEntry_ValuePerUnit")]
+        public decimal? ValuePerUnit { get; set; }
+
         [Display(Name = "Entry_Time1")]
         public DateTime? Time1 { get; set; }
 

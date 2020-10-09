@@ -124,6 +124,7 @@ import {
   faSearchDollar,
   faSeedling,
   faShapes,
+  faShieldAlt,
   faShare,
   faShareSquare,
   faShip,
@@ -240,6 +241,7 @@ import { DocumentDefinitionsMasterComponent } from './document-definitions/docum
 import { DocumentDefinitionsDetailsComponent } from './document-definitions/document-definitions-details.component';
 import { DocumentDefinitionsPickerComponent } from './document-definitions/document-definitions-picker.component';
 import { MarkupTemplatesPickerComponent } from './markup-templates/markup-templates-picker.component';
+import { ReconciliationComponent } from './reconciliation/reconciliation.component';
 
 const routes: Routes = [
   {
@@ -614,6 +616,13 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
 
+      // Bank Reconciliation
+      {
+        path: 'reconciliation',
+        component: ReconciliationComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -725,6 +734,7 @@ const routes: Routes = [
     DocumentDefinitionsDetailsComponent,
     DocumentDefinitionsPickerComponent,
     MarkupTemplatesPickerComponent,
+    ReconciliationComponent,
   ],
   imports: [
     SharedModule,
@@ -854,6 +864,7 @@ export class ApplicationModule {
       faSearchDollar,
       faSeedling,
       faShapes,
+      faShieldAlt,
       faShare,
       faShareSquare,
       faShip,

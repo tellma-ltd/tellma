@@ -844,7 +844,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               orderby,
               select,
               filter,
-              countEntities: true
+              countEntities: true,
+              skip: 0,
+              top: 2147483647 // Everything
             }, extras).pipe(
               tap((response: GetResponse) => {
                 const data = composeEntitiesFromResponse(response, columns, collection, definitionId, this.workspace, this.translate);

@@ -336,6 +336,11 @@ export class TenantWorkspace extends SpecificWorkspace {
   mdState: { [key: string]: MasterDetailsStore };
 
   /**
+   * Keeps the state of the reconciliation screen
+   */
+  reconciliationState: ReconciliationStore;
+
+  /**
    * Master screens use this to remember the last opened master screen,
    * if it's not the same as the current screen, the current screen may
    * wish to refresh
@@ -659,6 +664,13 @@ export interface MeasureCell {
   counts: number[]; // for aggregating averages
   parent: DimensionCell; // column
   isTotal?: boolean;
+}
+
+export class ReconciliationStore {
+  arguments: ReportArguments = {};
+  reportStatus: ReportStatus;
+  errorMessage: string;
+  information: () => string;
 }
 
 export class ReportStore {

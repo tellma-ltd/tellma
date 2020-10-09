@@ -217,6 +217,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'shapes',
           'share-square',
           'share',
+          'shield-alt',
           'ship',
           'shopping-cart',
           'sign',

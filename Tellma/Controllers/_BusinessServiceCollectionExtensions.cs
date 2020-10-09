@@ -76,6 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ResourcesGenericService>()
                 .AddScoped<RolesService>()
                 .AddScoped<SettingsService>()
+                .AddScoped<ReconciliationService>()
                 .AddScoped<SummaryEntriesService>()
                 .AddScoped<UnitsService>()
                 .AddScoped<ResourceDefinitionsService>()

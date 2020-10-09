@@ -65,6 +65,13 @@ import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ServerNotificationSummary } from './dto/server-notification-summary';
 import { LineForSave } from './entities/line';
 import { Custody } from './entities/custody';
+import {
+  ReconciliationGetUnreconciledArguments,
+  ReconciliationLoadUnreconciledResponse,
+  ReconciliationLoadReconciledResponse,
+  ReconciliationGetReconciledArguments,
+  ReconciliationSavePayload
+} from './dto/reconciliation';
 
 
 @Injectable({
@@ -837,6 +844,90 @@ export class ApiService {
     };
   }
 
+  public reconciliationApi(cancellationToken$: Observable<void>) {
+    return {
+      getUnreconciled: (args: ReconciliationGetUnreconciledArguments) => {
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/unreconciled?${params}`;
+
+        const obs$ = this.http.get<ReconciliationLoadUnreconciledResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      getReconciled: (args: ReconciliationGetReconciledArguments) => {
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/reconciled?${params}`;
+
+        const obs$ = this.http.get<ReconciliationLoadReconciledResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      saveAndGetUnreconciled: (payload: ReconciliationSavePayload, args: ReconciliationGetUnreconciledArguments) => {
+        this.showRotator = true;
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/unreconciled?${params}`;
+
+        const obs$ = this.http.post<ReconciliationLoadUnreconciledResponse>(url, payload, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      saveAndGetReconciled: (payload: ReconciliationSavePayload, args: ReconciliationGetReconciledArguments) => {
+        this.showRotator = true;
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/reconciled?${params}`;
+
+        const obs$ = this.http.post<ReconciliationLoadReconciledResponse>(url, payload, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      }
+    };
+  }
+
   public settingsApi(cancellationToken$: Observable<void>) {
     return {
       get: (args: GetByIdArguments) => {
@@ -1499,7 +1590,7 @@ export class ApiService {
     return paramsArray;
   }
 
-  stringifyArguments(args: { [key: string]: any }) {
+  stringifyArguments(args: { [key: string]: any }): string[] {
     const paramsArray: string[] = [];
     const keys = Object.keys(args);
     for (const key of keys) {

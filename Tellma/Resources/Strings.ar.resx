@@ -469,6 +469,9 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>إجمالي المبلغ</value>
   </data>
+  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
+    <value>مبلغ الوحدة</value>
+  </data>
   <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
     <value>سالب المبلغ الجبري</value>
   </data>
@@ -483,6 +486,9 @@
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>الزمن</value>
+  </data>
+  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
+    <value>قيمة الوحدة</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
     <value>الحجم</value>
@@ -597,6 +603,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>حدث مالي</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
+    <value>نظامي</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>مستند أصلي؟</value>

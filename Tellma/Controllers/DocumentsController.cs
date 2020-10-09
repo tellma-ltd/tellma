@@ -1117,7 +1117,7 @@ namespace Tellma.Controllers
                         {
                             // If less, add the missing entries
                             var entryDef = lineDef.Entries[line.Entries.Count];
-                            line.Entries.Add(new EntryForSave());
+                            line.Entries.Add(new EntryForSave { IsSystem = false });
                         }
 
                         // Copy the direction from the definition
