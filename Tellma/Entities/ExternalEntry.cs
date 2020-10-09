@@ -14,12 +14,6 @@ namespace Tellma.Entities
         [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
         public byte Direction { get; set; }
 
-        [Display(Name = "Entry_Account")]
-        public int? AccountId { get; set; }
-
-        [Display(Name = "Entry_Custody")]
-        public int? CustodyId { get; set; }
-
         [Display(Name = "Entry_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
 
@@ -30,6 +24,13 @@ namespace Tellma.Entities
 
     public class ExternalEntry : ExternalEntryForSave
     {
+
+        [Display(Name = "Entry_Account")]
+        public int? AccountId { get; set; }
+
+        [Display(Name = "Entry_Custody")]
+        public int? CustodyId { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 

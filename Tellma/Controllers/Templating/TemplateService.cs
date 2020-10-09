@@ -20,8 +20,8 @@ namespace Tellma.Controllers.Templating
     public class TemplateService
     {
         private readonly IServiceProvider _provider;
-        private readonly ApplicationRepository _repo;        
-        
+        private readonly ApplicationRepository _repo;
+
         // Just the names of the standard query functions
         private string QueryByFilter => nameof(QueryByFilter);
         private string QueryById => nameof(QueryById);
@@ -142,12 +142,12 @@ namespace Tellma.Controllers.Templating
                             var service = _provider.FactWithIdServiceByEntityType(query.Collection, query.DefinitionId);
                             var (list, _) = await service.GetByIds(queryByFilter.Ids.ToList(), args, cancellation);
                             queryResults[query] = list;
-                        } 
+                        }
                         catch (UnknownCollectionException)
                         {
                             throw new TemplateException($"Unknown collection '{query.Collection}'");
                         }
-                    } 
+                    }
                     else
                     {
                         // Prepare the GetArguments
@@ -258,6 +258,7 @@ namespace Tellma.Controllers.Templating
                 [nameof(Localize)] = Localize(env),
                 [nameof(Format)] = Format(),
                 [nameof(If)] = If(),
+                [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight()
             };
@@ -778,7 +779,7 @@ namespace Tellma.Controllers.Templating
                     {
                         result.Add(childItem);
                     }
-                } 
+                }
                 else if (!(childListObj is null))
                 {
                     throw new TemplateException($"Selector '{selectorExpString}' must evaluate to a list value");
@@ -1018,7 +1019,7 @@ namespace Tellma.Controllers.Templating
             return toFormat.ToString(formatString, null);
         }
 
-        #endregion
+        #endregion,
 
         #region If
 
@@ -1070,6 +1071,73 @@ namespace Tellma.Controllers.Templating
             }
         }
 
+
+        #endregion
+
+        #region AmountInWords
+
+        private TemplateFunction AmountInWords(TemplateEnvironment env)
+        {
+            return new TemplateFunction(function: (object[] args, EvaluationContext ctx) => AmountInWordsImpl(args, ctx, env));
+        }
+
+        private object AmountInWordsImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        {
+            // Validation
+            int minArgCount = 1;
+            int maxArgCount = 3;
+            if (args.Length < minArgCount || args.Length > maxArgCount)
+            {
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
+            }
+
+            // Amount
+            object amountObj = args[0];
+            decimal amount;
+            try
+            {
+                amount = Convert.ToDecimal(amountObj);
+            }
+            catch
+            {
+                throw new TemplateException($"{nameof(AmountInWords)} expects a 1st parameter amount of a numeric type");
+            }
+
+            // Currency ISO
+            string currencyIso = null;
+            if (args.Length >= 2)
+            {
+                currencyIso = args[1]?.ToString();
+            }
+
+            // Decimals
+            int? decimals = null;
+            if (args.Length >= 3 && args[2] != null)
+            {
+                object decimalsObj = args[2]; 
+                try
+                {
+                    decimals = Convert.ToInt32(decimalsObj);
+                }
+                catch
+                {
+                    throw new TemplateException($"{nameof(AmountInWords)} expects a 3rd parameter decimals of type int");
+                }
+            }
+
+            // Validation
+            if (decimals != null)
+            {
+                var allowedValues = new List<int> { 0, 2, 3 };
+                if (!allowedValues.Contains(decimals.Value))
+                {
+                    throw new TemplateException($"{nameof(AmountInWords)} 3rd parameter can be one of the following: {string.Join(", ", allowedValues)}");
+                }
+            }
+
+            // TODO: Add more languages based on env.Culture
+            return AmountInWordsEn.ConvertAmount(amount, currencyIso, decimals);
+        }
 
         #endregion
 

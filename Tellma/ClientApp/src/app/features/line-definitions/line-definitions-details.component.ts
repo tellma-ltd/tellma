@@ -348,6 +348,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       this._dataTypeChoices = [
         { value: 'Date', name: () => this.translate.instant('DateTime') },
         { value: 'Decimal', name: () => this.translate.instant('Decimal') },
+        { value: 'Percentage', name: () => this.translate.instant('Percentage') },
         { value: 'String', name: () => this.translate.instant('String') },
         { value: 'Center', name: () => this.translate.instant('Center') },
         { value: 'Unit', name: () => this.translate.instant('Unit') },

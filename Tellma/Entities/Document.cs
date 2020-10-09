@@ -218,6 +218,7 @@ namespace Tellma.Entities
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
             .Concat(RelationPaths(nameof(Document.Participant)))
             .Concat(CenterPaths(nameof(Document.Segment)))
+            .Concat(CenterPaths(nameof(Document.Center)))
             .Concat(CurrencyPaths(nameof(Document.Currency)))
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))

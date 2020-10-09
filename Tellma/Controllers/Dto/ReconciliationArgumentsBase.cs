@@ -38,13 +38,13 @@ namespace Tellma.Controllers.Dto
         public List<int> DeletedReconciliationIds { get; set; }
     }
 
-    public class ReconciliationLoadUnreconciledResponse
+    public class ReconciliationGetUnreconciledResponse
     {
         public List<ExternalEntry> ExternalEntries { get; set; }
-        public List<Entry> Entries { get; set; }
+        public List<EntryForReconciliation> Entries { get; set; }
     }
 
-    public class ReconciliationLoadReconciledResponse : ReconciliationLoadUnreconciledResponse
+    public class ReconciliationGetReconciledResponse : ReconciliationGetUnreconciledResponse
     {
         public List<Reconciliation> Reconciliations { get; set; }
     }

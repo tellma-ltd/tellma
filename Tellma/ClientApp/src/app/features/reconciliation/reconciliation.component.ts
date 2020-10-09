@@ -1,14 +1,23 @@
+// tslint:disable:member-ordering
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WorkspaceService, ReconciliationStore, ReportStatus } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { ApiService } from '~/app/data/api.service';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Account } from '~/app/data/entities/account';
+import { FriendlyError } from '~/app/data/util';
+import {
+  ReconciliationGetReconciledArguments,
+  ReconciliationGetReconciledResponse,
+  ReconciliationGetUnreconciledArguments
+} from '~/app/data/dto/reconciliation';
+import { Entry } from '~/app/data/entities/entry';
+import { ExternalEntry } from '~/app/data/entities/external-entry';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -18,6 +27,8 @@ type View = 'unreconciled' | 'reconciled';
   styles: []
 })
 export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivate {
+
+  private DEFAULT_PAGE_SIZE = 200;
 
   private argumentsKey = 'reconciliation/arguments';
   private _subscriptions: Subscription;
@@ -152,58 +163,85 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   private doFetch(): Observable<void> {
     // For robustness grab a reference to the state object, in case it changes later
     const s = this.state;
+    const store = s.store;
 
-    // if (!this.requiredParametersAreSet) {
-    //   s.reportStatus = ReportStatus.information;
-    //   s.information = () => this.translate.instant('FillRequiredFields');
-    //   return of();
-    // } else if (this.loadingRequiredParameters) {
-    //   // Wait until required parameters have loaded
-    //   // They will call fetch again once they load
-    //   s.reportStatus = ReportStatus.loading;
-    //   s.result = [];
-    //   return of();
-    // } else {
-    //   s.reportStatus = ReportStatus.loading;
-    //   s.result = [];
+    if (!this.requiredParametersAreSet) {
+      store.reportStatus = ReportStatus.information;
+      store.information = () => this.translate.instant('FillRequiredFields');
+      return of();
+    } else if (this.loadingRequiredParameters) {
+      // Wait until required parameters have loaded
+      // They will call fetch again once they load
+      store.reportStatus = ReportStatus.loading;
+      delete s.reconciled_response;
+      delete s.unreconciled_response;
+      return of();
+    } else {
+      store.reportStatus = ReportStatus.loading;
+      let obs: Observable<void>;
+      if (this.view === 'unreconciled') {
+        delete s.unreconciled_response;
+        const args: ReconciliationGetUnreconciledArguments = {
+          accountId: this.accountId,
+          custodyId: this.custodyId,
+          asOfDate: this.toDate,
+          entriesTop: this.entriesTop,
+          entriesSkip: this.entriesSkip,
+          externalEntriesTop: this.externalEntriesTop,
+          externalEntriesSkip: this.externalEntriesSkip,
+        };
 
-    //   // Prepare the query params
-    //   const args = this.computeStatementArguments();
-    //   return this.api.statement(args).pipe(
-    //     tap(response => {
-    //       // Result is loaded
-    //       s.reportStatus = ReportStatus.loaded;
+        // Prepare the query params
+        obs = this.api.getUnreconciled(args).pipe(
+          tap(response => {
+            // Result is loaded
+            store.reportStatus = ReportStatus.loaded;
 
-    //       // Add the result to the state
-    //       s.result = response.Result;
-    //       s.top = response.Top;
-    //       s.skip = response.Skip;
-    //       s.total = response.TotalCount;
-    //       s.extras = {
-    //         opening: response.Opening,
-    //         openingQuantity: response.OpeningQuantity,
-    //         openingMonetaryValue: response.OpeningMonetaryValue,
-    //         closing: response.Closing,
-    //         closingQuantity: response.ClosingQuantity,
-    //         closingMonetaryValue: response.ClosingMonetaryValue
-    //       };
+            // Add the result to the state
+            s.unreconciled_response = response;
+          }),
+          catchError((friendlyError: FriendlyError) => {
+            store.reportStatus = ReportStatus.error;
+            store.errorMessage = friendlyError.error;
+            return of(null);
+          })
+        );
+      } else {
+        delete s.reconciled_response;
+        const args: ReconciliationGetReconciledArguments = {
+          accountId: this.accountId,
+          custodyId: this.custodyId,
+          fromDate: this.fromDate,
+          toDate: this.toDate,
+          fromAmount: this.fromAmount,
+          toAmount: this.toAmount,
+          externalReferenceContains: this.externalReferenceContains,
+          top: this.top,
+          skip: this.skip,
+        };
 
-    //       // Merge the related entities and Notify everyone
-    //       mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
-    //       this.workspace.notifyStateChanged();
-    //     }),
-    //     catchError((friendlyError: FriendlyError) => {
-    //       s.reportStatus = ReportStatus.error;
-    //       s.errorMessage = friendlyError.error;
-    //       return of(null);
-    //     })
-    //   );
-    // }
+        // Prepare the query params
+        obs = this.api.getReconciled(args).pipe(
+          tap(response => {
+            // Result is loaded
+            store.reportStatus = ReportStatus.loaded;
 
-    return null;
+            // Add the result to the state
+            s.reconciled_response = response;
+          }),
+          catchError((friendlyError: FriendlyError) => {
+            store.reportStatus = ReportStatus.error;
+            store.errorMessage = friendlyError.error;
+            return of(null);
+          })
+        );
+      }
+
+      return obs;
+    }
   }
 
-  private get requiredParametersAreSet(): boolean {
+  public get requiredParametersAreSet(): boolean {
     const args = this.state.arguments;
     return !!args.account_id && !!args.custody_id;
   }
@@ -260,6 +298,10 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     // }
   }
 
+  public get canExport() {
+    return this.isLoaded;
+  }
+
   private account(id?: number): Account {
     id = id || this.accountId;
     return this.ws.get('Account', id);
@@ -268,7 +310,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   // UI Bindings
 
   public onParameterLoaded(): void {
-    if (this.state.reportStatus === ReportStatus.loading) {
+    if (this.state.store.reportStatus === ReportStatus.loading) {
       this.fetch();
     }
   }
@@ -284,6 +326,43 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
       args.view = v;
       this.parametersChanged();
     }
+  }
+
+  /**
+   * Returns false if the unreconciled entries view is selected
+   */
+  public get isUnreconciled(): boolean {
+    return this.view === 'unreconciled';
+  }
+
+  /**
+   * Returns true if the reconciled entries view is selected
+   */
+  public get isReconciled(): boolean {
+    return this.view === 'reconciled';
+  }
+
+  // Error Message
+  public get showErrorMessage(): boolean {
+    return this.state.store.reportStatus === ReportStatus.error;
+  }
+
+  public get errorMessage(): string {
+    return this.state.store.errorMessage;
+  }
+
+  // Information
+  public get showInformation(): boolean {
+    return this.state.store.reportStatus === ReportStatus.information;
+  }
+
+  public information(): string {
+    return this.state.store.information();
+  }
+
+  // Spinner
+  public get showSpinner(): boolean {
+    return this.state.store.reportStatus === ReportStatus.loading;
   }
 
   // accountId
@@ -321,4 +400,282 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     const account = this.account();
     return !!account && !!account.CustodyId;
   }
+
+  // toDate
+  public get toDate(): string {
+    return this.state.arguments.to_date;
+  }
+
+  public set toDate(v: string) {
+    const args = this.state.arguments;
+    if (args.to_date !== v) {
+      args.to_date = v;
+      this.parametersChanged();
+    }
+  }
+
+  // fromDate
+  public get fromDate(): string {
+    return this.state.arguments.from_date;
+  }
+
+  public set fromDate(v: string) {
+    const args = this.state.arguments;
+    if (args.from_date !== v) {
+      args.from_date = v;
+      this.parametersChanged();
+    }
+  }
+
+  // top
+  public get top(): number {
+    return this.state.arguments.top;
+  }
+
+  public set top(v: number) {
+    const args = this.state.arguments;
+    if (args.top !== v) {
+      args.top = v;
+      this.parametersChanged();
+    }
+  }
+
+  // skip
+  public get skip(): number {
+    return this.state.arguments.skip;
+  }
+
+  public set skip(v: number) {
+    const args = this.state.arguments;
+    if (args.skip !== v) {
+      args.skip = v;
+      this.parametersChanged();
+    }
+  }
+
+  // entries top
+  public get entriesTop(): number {
+    return this.state.arguments.entries_top;
+  }
+
+  public set entriesTop(v: number) {
+    const args = this.state.arguments;
+    if (args.entries_top !== v) {
+      args.entries_top = v;
+      this.parametersChanged();
+    }
+  }
+
+  // entries skip
+  public get entriesSkip(): number {
+    return this.state.arguments.entries_skip;
+  }
+
+  public set entriesSkip(v: number) {
+    const args = this.state.arguments;
+    if (args.entries_skip !== v) {
+      args.entries_skip = v;
+      this.parametersChanged();
+    }
+  }
+
+  // external entries top
+  public get externalEntriesTop(): number {
+    return this.state.arguments.ex_entries_top;
+  }
+
+  public set externalEntriesTop(v: number) {
+    const args = this.state.arguments;
+    if (args.ex_entries_top !== v) {
+      args.ex_entries_top = v;
+      this.parametersChanged();
+    }
+  }
+
+  // external entries skip
+  public get externalEntriesSkip(): number {
+    return this.state.arguments.ex_entries_skip;
+  }
+
+  public set externalEntriesSkip(v: number) {
+    const args = this.state.arguments;
+    if (args.ex_entries_skip !== v) {
+      args.ex_entries_skip = v;
+      this.parametersChanged();
+    }
+  }
+
+  // from amount
+  public get fromAmount(): number {
+    return this.state.arguments.from_amount;
+  }
+
+  public set fromAmount(v: number) {
+    const args = this.state.arguments;
+    if (args.from_amount !== v) {
+      args.from_amount = v;
+      this.parametersChanged();
+    }
+  }
+
+  // to amount
+  public get toAmount(): number {
+    return this.state.arguments.to_amount;
+  }
+
+  public set toAmount(v: number) {
+    const args = this.state.arguments;
+    if (args.to_amount !== v) {
+      args.to_amount = v;
+      this.parametersChanged();
+    }
+  }
+
+  // external reference contains
+  public get externalReferenceContains(): string {
+    return this.state.arguments.ex_ref_contains;
+  }
+
+  public set externalReferenceContains(v: string) {
+    const args = this.state.arguments;
+    if (args.ex_ref_contains !== v) {
+      args.ex_ref_contains = v;
+      this.parametersChanged();
+    }
+  }
+
+  private get isLoaded(): boolean {
+    return this.state.store.reportStatus === ReportStatus.loaded;
+  }
+
+  public onExport() {
+    alert('TODO');
+  }
+
+  public get actionsDropdownPlacement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
+  }
+
+  public get flip() {
+    // this is to flip the UI icons in RTL
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  public get disableRefresh(): boolean {
+    return !this.requiredParametersAreSet;
+  }
+
+  public onRefresh(): void {
+    // The if statement to deal with incessant button clickers (Users who hit refresh repeatedly)
+    if (this.state.store.reportStatus !== ReportStatus.loading) {
+      this.fetch();
+    }
+  }
+
+  // Paging for reconciled entities
+
+  get from(): number {
+    const skip = this.state.arguments.skip;
+    return Math.min(skip + 1, this.total);
+  }
+
+  get to(): number {
+    return Math.min(this.state.arguments.skip + this.DEFAULT_PAGE_SIZE, this.total);
+  }
+
+  get total(): number {
+    return !!this.state.reconciled_response ?
+      this.state.reconciled_response.Reconciliations.length : 0;
+  }
+
+  onPreviousPage() {
+    const args = this.state.arguments;
+    args.skip = Math.max(args.skip - this.DEFAULT_PAGE_SIZE, 0);
+
+    this.urlStateChanged(); // to update the URL state
+    this.fetch();
+  }
+
+  get canPreviousPage(): boolean {
+    return this.state.arguments.skip > 0;
+  }
+
+  onNextPage() {
+    const s = this.state.arguments;
+    s.skip = s.skip + this.DEFAULT_PAGE_SIZE;
+
+    this.urlStateChanged(); // to update the URL state
+    this.fetch();
+  }
+
+  get canNextPage(): boolean {
+    return this.to < this.total;
+  }
+
+  // results
+
+  private _reconciled: ReconciledRow[];
+  private _reconciledResponse: ReconciliationGetReconciledResponse;
+
+  public get reconciled(): ReconciledRow[] {
+    const res = this.state.reconciled_response;
+    if (this._reconciledResponse !== res) {
+      this._reconciledResponse = res;
+
+      this._reconciled = [];
+      if (!!res) {
+        const entriesDic: { [id: number]: Entry } = {};
+        const exEntriesDic: { [id: number]: ExternalEntry } = {};
+
+        for (const entry of res.Entries) {
+          entriesDic[entry.Id] = entry;
+        }
+
+        for (const exEntry of res.ExternalEntries) {
+          exEntriesDic[exEntry.Id] = exEntry;
+        }
+
+        for (const reconciliation of res.Reconciliations) {
+          const length = Math.max(reconciliation.Entries.length, reconciliation.ExternalEntries.length);
+          for (let i = 0; i < length; i++) {
+            const row: ReconciledRow = { };
+
+            // The first row will have a middle cell extending to the entire reconciliation, with a button to unreconcile
+            if (i === 0) {
+              row.rowSpan = length;
+            }
+            // The last row will have a thick bottom border indicating that the reconciliation is done, and shows the next reconciliation
+            if (i === length - 1) {
+              row.lastOne = true;
+            }
+
+            // The entry
+            const reconciliationEntry = reconciliation.Entries[0];
+            if (!!reconciliationEntry && !!reconciliationEntry.EntryId) {
+              row.entry = entriesDic[reconciliationEntry.EntryId];
+            }
+
+            // The external entry
+            const reconciliationExEntry = reconciliation.ExternalEntries[0];
+            if (!!reconciliationExEntry && !!reconciliationExEntry.ExternalEntryId) {
+              row.exEntry = exEntriesDic[reconciliationExEntry.ExternalEntryId];
+            }
+          }
+        }
+      }
+    }
+
+    return this._reconciled;
+  }
+
+  public onSelectRow(row: ReconciledRow) {
+    alert('TODO');
+  }
+}
+
+interface ReconciledRow {
+  entry?: Entry;
+  exEntry?: ExternalEntry;
+  rowSpan?: number;
+  lastOne?: boolean;
 }

@@ -774,6 +774,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.ParticipantDefinitionIds;
   }
 
+  public filterDocumentParticipant(_: DocumentForSave): string {
+    return this.definition.ParticipantFilter;
+  }
+
   // Segment
 
   public showDocumentSegment(_: DocumentForSave) {
@@ -811,6 +815,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_Center');
   }
 
+  public filterDocumentCenter(_: DocumentForSave): string {
+    return this.definition.CenterFilter;
+  }
+
   // Currency
 
   public showDocumentCurrency(_: DocumentForSave) {
@@ -830,6 +838,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public labelDocumentCurrency(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') ||
       this.translate.instant('Document_Currency');
+  }
+
+  public filterDocumentCurrency(_: DocumentForSave): string {
+    return this.definition.CurrencyFilter;
   }
 
   private _computeDocumentSettingsDoc: Document;

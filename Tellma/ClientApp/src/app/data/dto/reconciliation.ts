@@ -1,23 +1,28 @@
+import { EntryForReconciliation } from '../entities/entry-for-reconciliation';
 import { ExternalEntry, ExternalEntryForSave } from '../entities/external-entry';
 import { ReconciliationForSave, Reconciliation } from '../entities/reconciliation';
 
 export interface ReconciliationArgumentsBase {
-    AccountId: number;
-    CustodyId: number;
-    Top: number;
-    Skip: number;
+    accountId: number;
+    custodyId: number;
 }
 
 export interface ReconciliationGetUnreconciledArguments extends ReconciliationArgumentsBase {
-    AsOfDate: string;
+    asOfDate: string;
+    entriesTop: number;
+    entriesSkip: number;
+    externalEntriesTop: number;
+    externalEntriesSkip: number;
 }
 
 export interface ReconciliationGetReconciledArguments extends ReconciliationArgumentsBase {
-    FromDate: string;
-    ToDate: string;
-    FromAmount: number;
-    ToAmount: number;
-    ExternalReferenceContains: string;
+    fromDate: string;
+    toDate: string;
+    fromAmount: number;
+    toAmount: number;
+    externalReferenceContains: string;
+    top: number;
+    skip: number;
 }
 
 export interface ReconciliationSavePayload {
@@ -27,15 +32,11 @@ export interface ReconciliationSavePayload {
     DeletedReconciliationIds: number[];
 }
 
-export interface ReconciliationLoadUnreconciledResponse {
+export interface ReconciliationGetUnreconciledResponse {
     ExternalEntries: ExternalEntry[];
-    Entries: number[];
+    Entries: EntryForReconciliation[];
 }
 
-export interface ReconciliationLoadReconciledResponse extends ReconciliationLoadUnreconciledResponse {
+export interface ReconciliationGetReconciledResponse extends ReconciliationGetUnreconciledResponse {
     Reconciliations: Reconciliation[];
-}
-
-export interface ReconciliationReportArguments extends ReconciliationArgumentsBase {
-    AsOfDate: string;
 }

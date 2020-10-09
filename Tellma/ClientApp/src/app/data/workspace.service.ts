@@ -47,6 +47,7 @@ import { Custody } from './entities/custody';
 import { EntitiesResponse } from './dto/entities-response';
 import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
+import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 
 enum WhichWorkspace {
   /**
@@ -350,7 +351,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   /**
    * Any misc. state that screens may wish to preserve across the session
    */
-  miscState: { [key: string]: any } = { };
+  miscState: { [key: string]: any } = {};
 
   /**
    * Keeps the state of every report widget
@@ -667,20 +668,28 @@ export interface MeasureCell {
 }
 
 export class ReconciliationStore {
-  arguments: ReportArguments = {};
+  arguments: ReportArguments = {}; // entries_top, ex_entries_skip, entries_total, account_id, etc...
+  unreconciled: ReportStoreBase = new ReportStoreBase(); // status, errorMessage, information
+  reconciled: ReportStoreBase = new ReportStoreBase(); // status, errorMessage, information
+  unreconciled_response: ReconciliationGetUnreconciledResponse;
+  reconciled_response: ReconciliationGetReconciledResponse;
+
+  get store(): ReportStoreBase {
+    return this.arguments.view === 'reconciled' ? this.reconciled : this.unreconciled;
+  }
+}
+
+export class ReportStoreBase {
   reportStatus: ReportStatus;
   errorMessage: string;
   information: () => string;
 }
 
-export class ReportStore {
+export class ReportStore extends ReportStoreBase {
   definition: ReportDefinitionForClient;
   skip = 0;
   top = 0;
   total = 0;
-  reportStatus: ReportStatus;
-  errorMessage: string;
-  information: () => string;
   arguments: ReportArguments = {};
   result: Entity[] = [];
   response: EntitiesResponse;
@@ -830,7 +839,7 @@ export class MasterDetailsStore {
       // in tree mode the total is never the entire table count, just the number of items displayed
       this.total = this.total + afterCount - beforeCount;
     } else {
-      const deletedIdsHash: {[id: string]: true} =  {};
+      const deletedIdsHash: { [id: string]: true } = {};
       for (const id of ids) {
         deletedIdsHash[id] = true;
       }
