@@ -57,7 +57,7 @@ interface DocumentDetailsState {
 interface ColumnTemplates {
   [index: string]: {
     headerTemplate?: TemplateRef<any>,
-    rowTemplate: TemplateRef<any>,
+    rowTemplate?: TemplateRef<any>,
     weight?: number,
     argument?: number
   };
@@ -2697,8 +2697,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public columnTemplates(
     lineDefId: number,
-    header: TemplateRef<any>,
-    row: TemplateRef<any>,
     headerCommandsTemplate: TemplateRef<any>,
     commandsTemplate: TemplateRef<any>): ColumnTemplates {
 
@@ -2719,8 +2717,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const columnCount = columns.length;
       for (let colIndex = 0; colIndex < columnCount; colIndex++) {
         templates[colIndex + ''] = {
-          headerTemplate: header,
-          rowTemplate: row,
           weight: 1,
           argument: colIndex
         };

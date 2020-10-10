@@ -338,7 +338,8 @@
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
                             [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
-                            [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartHeaderCommands, smartCommands)"
+                            [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
+                            [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
                             [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
                             (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
                         </t-table>
@@ -414,7 +415,7 @@
                 </ng-template>
 
                 <ng-template #smartRow let-line="item" let-columnIndex="argument" let-update="update"
-                    let-isForm="isForm">
+                    let-isForm="isForm" let-isEdit="isEdit">
 
                     <t-form-group-cell *ngIf="!isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)">
