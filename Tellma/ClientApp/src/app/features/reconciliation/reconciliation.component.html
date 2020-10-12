@@ -1,0 +1,219 @@
+<div class="h-100 d-flex flex-column">
+    <div class="row border-bottom bg-white">
+
+        <!-- Breadcrumb -->
+        <div class="col-12 p-1">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ 'Reconciliation' | translate }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Parameters -->
+        <div class="mx-auto mb-3 w-100" style="max-width: 700px">
+            <div class="w-100">
+                <div class="row m-0 px-0 px-lg-1 py-1">
+
+                    <!-- View -->
+                    <t-form-group class="t-form-group" [label]="'View'">
+                        <t-selector [(ngModel)]="view" [choices]="viewChoices" [ngModelOptions]="{ updateOn: 'blur' }">
+                        </t-selector>
+                    </t-form-group>
+
+                    <!-- Account -->
+                    <t-form-group class="t-form-group" [label]="'Entry_Account'">
+                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="CustodyDefinitionId"
+                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                        </t-accounts-picker>
+                    </t-form-group>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
+
+            <!-- Left Buttons -->
+            <div>
+
+                <!-- Export -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
+                    <fa-icon icon="download"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+                </button>
+
+                <!-- Data dropdown -->
+                <!-- <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+                    <button type="button"
+                        class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
+                        ngbDropdownToggle>
+                        {{ 'Data' | translate }}
+                    </button>
+                    <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+                        <button type="button" *ngIf="showEditDefinition" class="dropdown-item btn-light" ngbDropdownItem
+                            (click)="onEdit()">
+                            {{ 'EditDefinition' | translate }}
+                        </button>
+                    </div>
+                </div> -->
+<!-- 
+                <t-spinner class="t-vertical-align-middle mx-1" *ngIf="showExportSpinner">
+                </t-spinner> -->
+            </div>
+
+            <!-- Right Buttons -->
+            <div>
+                <!-- Refresh -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    [disabled]="disableRefresh" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+
+                <!-- Paging -->
+                <div class="d-inline">
+                    <div class="d-inline small mx-2">
+                        <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
+                            <span>{{ to | number }}</span>
+                        </span>
+                        <span class="t-vertical-align-middle"> / {{ total | number }}</span>
+                    </div>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="row t-rest-of-screen">
+        <div class="w-100 p-3 px-4" *ngIf="showInformation">
+            <fa-icon icon="info-circle"></fa-icon>
+            &nbsp;
+            {{ information() }}
+        </div>
+
+        <!-- No items found -->
+        <!-- <div class="w-100 pl-3 pr-3 mt-3" *ngIf="showNoItemsFound">
+            {{ 'NoItemsFound' | translate }}
+        </div> -->
+
+        <div class="table-responsive" *ngIf="!showInformation">
+            <!-- Details (Flat Table) -->
+            <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
+                <table
+                    class="table table-hover table-striped table-sm border-bottom bg-white t-master-table text-nowrap">
+                    <!-- Column Header -->
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th colSpan="3">GL Account Statement</th>
+                            <th></th>
+                            <th colSpan="3">External Statement</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th style="width:10px"></th>
+                            <th class="text-right">
+                                {{ 'LinePostingDate' | translate }}
+                            </th>
+                            <th>
+                                {{ 'Entry_ExternalReference' | translate }}
+                            </th>
+                            <th class="text-right">
+                                {{ 'Entry_MonetaryValue' | translate }}
+                            </th>
+                            <th>
+                                
+                            </th>
+                            <th class="text-right">
+                                {{ 'LinePostingDate' | translate }}
+                            </th>
+                            <th>
+                                {{ 'Entry_ExternalReference' | translate }}
+                            </th>
+                            <th class="text-right">
+                                {{ 'Entry_MonetaryValue' | translate }}
+                            </th>
+                            <th style="width:10px"></th>
+                        </tr>
+                    </thead>
+                    <!-- Rows -->
+                    <tbody>
+                        <!-- Transactions -->
+                        <tr class="t-pointer" *cdkVirtualFor="let row of reconciled" (click)="onSelectRow(row)">
+                            <td>&zwnj;</td>
+                            <td>
+                                {{ row.entry?.PostingDate }}
+                            </td>
+                            <td>
+                                {{ row.entry?.ExternalReference }}
+                            </td>
+                            <td>
+                                {{ row.entry?.MonetaryValue }}
+                            </td>
+                            <td *ngIf="!!row.rowSpan" [rowSpan]="row.rowSpan">
+                                X
+                            </td>                            
+                            <td>
+                                {{ row.exEntry?.PostingDate }}
+                            </td>
+                            <td>
+                                {{ row.exEntry?.ExternalReference }}
+                            </td>
+                            <td>
+                                {{ row.exEntry?.MonetaryValue }}
+                            </td>
+                            <td>&zwnj;</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Spinner -->
+                <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">
+                    <t-spinner [scale]="2"></t-spinner>
+                </div>
+
+                <!-- Error message -->
+                <div class="w-100 mt-3" *ngIf="showErrorMessage">
+                    <t-error-message>
+                        {{ errorMessage }}
+                    </t-error-message>
+                </div>
+            </cdk-virtual-scroll-viewport>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ errorMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>

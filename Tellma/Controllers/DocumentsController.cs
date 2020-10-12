@@ -1673,7 +1673,7 @@ namespace Tellma.Controllers
                     }
 
                     // Date cannot be before archive date
-                    if (doc.PostingDate <= settings.ArchiveDate)
+                    if (doc.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                     {
                         var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
@@ -1743,7 +1743,7 @@ namespace Tellma.Controllers
                         }
 
                         // Date cannot be before archive date
-                        if (line.PostingDate <= settings.ArchiveDate)
+                        if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                         {
                             var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
                             ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),

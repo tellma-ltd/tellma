@@ -57,7 +57,7 @@ interface DocumentDetailsState {
 interface ColumnTemplates {
   [index: string]: {
     headerTemplate?: TemplateRef<any>,
-    rowTemplate: TemplateRef<any>,
+    rowTemplate?: TemplateRef<any>,
     weight?: number,
     argument?: number
   };
@@ -774,6 +774,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.ParticipantDefinitionIds;
   }
 
+  public filterDocumentParticipant(_: DocumentForSave): string {
+    return this.definition.ParticipantFilter;
+  }
+
   // Segment
 
   public showDocumentSegment(_: DocumentForSave) {
@@ -811,6 +815,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_Center');
   }
 
+  public filterDocumentCenter(_: DocumentForSave): string {
+    return this.definition.CenterFilter;
+  }
+
   // Currency
 
   public showDocumentCurrency(_: DocumentForSave) {
@@ -830,6 +838,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public labelDocumentCurrency(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') ||
       this.translate.instant('Document_Currency');
+  }
+
+  public filterDocumentCurrency(_: DocumentForSave): string {
+    return this.definition.CurrencyFilter;
   }
 
   private _computeDocumentSettingsDoc: Document;
@@ -2685,8 +2697,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public columnTemplates(
     lineDefId: number,
-    header: TemplateRef<any>,
-    row: TemplateRef<any>,
     headerCommandsTemplate: TemplateRef<any>,
     commandsTemplate: TemplateRef<any>): ColumnTemplates {
 
@@ -2707,8 +2717,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const columnCount = columns.length;
       for (let colIndex = 0; colIndex < columnCount; colIndex++) {
         templates[colIndex + ''] = {
-          headerTemplate: header,
-          rowTemplate: row,
           weight: 1,
           argument: colIndex
         };

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tellma.Entities
 {
@@ -40,7 +38,7 @@ namespace Tellma.Entities
     public class ReconciliationEntry : ReconciliationEntryForSave
     {
         [ForeignKey(nameof(EntryId))]
-        public Entry Entry { get; set; }
+        public EntryForReconciliation Entry { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }

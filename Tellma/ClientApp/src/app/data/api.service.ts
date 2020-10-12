@@ -67,8 +67,8 @@ import { LineForSave } from './entities/line';
 import { Custody } from './entities/custody';
 import {
   ReconciliationGetUnreconciledArguments,
-  ReconciliationLoadUnreconciledResponse,
-  ReconciliationLoadReconciledResponse,
+  ReconciliationGetUnreconciledResponse,
+  ReconciliationGetReconciledResponse,
   ReconciliationGetReconciledArguments,
   ReconciliationSavePayload
 } from './dto/reconciliation';
@@ -852,7 +852,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/reconciliation/unreconciled?${params}`;
 
-        const obs$ = this.http.get<ReconciliationLoadUnreconciledResponse>(url).pipe(
+        const obs$ = this.http.get<ReconciliationGetUnreconciledResponse>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -869,7 +869,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/reconciliation/reconciled?${params}`;
 
-        const obs$ = this.http.get<ReconciliationLoadReconciledResponse>(url).pipe(
+        const obs$ = this.http.get<ReconciliationGetReconciledResponse>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -887,7 +887,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/reconciliation/unreconciled?${params}`;
 
-        const obs$ = this.http.post<ReconciliationLoadUnreconciledResponse>(url, payload, {
+        const obs$ = this.http.post<ReconciliationGetUnreconciledResponse>(url, payload, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),
@@ -910,7 +910,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/reconciliation/reconciled?${params}`;
 
-        const obs$ = this.http.post<ReconciliationLoadReconciledResponse>(url, payload, {
+        const obs$ = this.http.post<ReconciliationGetReconciledResponse>(url, payload, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),

@@ -164,10 +164,10 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     if (this._selectDefaultDefinition !== def) {
       this._selectDefaultDefinition = def;
       let result = 'State,Assignee,AssignedAt';
-      if (!!def.PostingDateVisibility) {
+      if (!!def && !!def.PostingDateVisibility) {
         result = 'PostingDate,' + result;
       }
-      if (!!def.MemoVisibility) {
+      if (!!def && !!def.MemoVisibility) {
         result += ',Memo';
       }
 

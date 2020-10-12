@@ -35,8 +35,8 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 	AND E.[PostingDate] <= @AsOfDate
-
-	SELECT *
+	
+	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	WHERE E.[CustodyId] = @CustodyId
@@ -46,8 +46,8 @@ AS
 	AND L.[PostingDate] <= @AsOfDate
 	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
 	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
-
-	SELECT *
+	
+	SELECT E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt]
 	FROM dbo.ExternalEntries E
 	WHERE E.[CustodyId] = @CustodyId
 	AND E.[AccountId] = @AccountId

@@ -7,7 +7,7 @@
         <th class="border-top-0 text-align-right text-muted t-line-number-th"> # </th>
         <th class="border-top-0" *ngFor="let path of columnPaths" [style.width]="colWith(path)">
           <ng-container
-            *ngTemplateOutlet="columnTemplates[path]?.headerTemplate; context: { argument: columnTemplates[path]?.argument }">
+            *ngTemplateOutlet="columnTemplates[path]?.headerTemplate || headerTemplate; context: { argument: columnTemplates[path]?.argument }">
           </ng-container>
         </th>
         <th class="border-top-0" style="width:1px" *ngIf="isEdit">
@@ -33,7 +33,7 @@
           <td *ngFor="let path of columnPaths" [class.table-bordered]="isEdit">
             <ng-container>
               <ng-container
-                *ngTemplateOutlet="columnTemplates[path]?.rowTemplate;context: { item: item, argument: columnTemplates[path]?.argument, index: i, update: onUpdateLine }">
+                *ngTemplateOutlet="columnTemplates[path]?.rowTemplate || rowTemplate;context: { item: item, argument: columnTemplates[path]?.argument, index: i, update: onUpdateLine, isEdit: isEdit }">
               </ng-container>
             </ng-container>
           </td>

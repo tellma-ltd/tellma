@@ -30,7 +30,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("unreconciled")]
-        public async Task<ActionResult<ReconciliationLoadUnreconciledResponse>> GetUnreconciled([FromQuery] ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
+        public async Task<ActionResult<ReconciliationGetUnreconciledResponse>> GetUnreconciled([FromQuery] ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -41,7 +41,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("reconciled")]
-        public async Task<ActionResult<ReconciliationLoadReconciledResponse>> GetReconciled([FromQuery] ReconciliationGetReconciledArguments args, CancellationToken cancellation)
+        public async Task<ActionResult<ReconciliationGetReconciledResponse>> GetReconciled([FromQuery] ReconciliationGetReconciledArguments args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -99,7 +99,7 @@ namespace Tellma.Controllers
             _localizer = localizer;
         }
 
-        public async Task<ReconciliationLoadUnreconciledResponse> GetUnreconciled(ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
+        public async Task<ReconciliationGetUnreconciledResponse> GetUnreconciled(ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
         {
             // Authorized access (Criteria are not supported here)
             var permissions = await _repo.PermissionsFromCache(VIEW, Constants.Read, cancellation);
@@ -113,7 +113,7 @@ namespace Tellma.Controllers
             return null;
         }
 
-        public async Task<ReconciliationLoadReconciledResponse> GetReconciled(ReconciliationGetReconciledArguments args, CancellationToken cancellation)
+        public async Task<ReconciliationGetReconciledResponse> GetReconciled(ReconciliationGetReconciledArguments args, CancellationToken cancellation)
         {
             // Authorized access (Criteria are not supported here)
             var permissions = await _repo.PermissionsFromCache(VIEW, Constants.Read, cancellation);
@@ -127,7 +127,7 @@ namespace Tellma.Controllers
             return null;
         }
 
-        public async Task<ReconciliationLoadUnreconciledResponse> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)
+        public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)
         {
             // Authorized access (Criteria are not supported here)
             var permissions = await _repo.PermissionsFromCache(VIEW, Constants.Update, default);
@@ -139,7 +139,7 @@ namespace Tellma.Controllers
             return null;
         }
 
-        public async Task<ReconciliationLoadUnreconciledResponse> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
+        public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
         {
             // Authorized access (Criteria are not supported here)
             var permissions = await _repo.PermissionsFromCache(VIEW, Constants.Update, default);

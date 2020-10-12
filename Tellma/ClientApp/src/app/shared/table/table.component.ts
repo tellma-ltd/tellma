@@ -49,6 +49,12 @@ export class TableComponent implements OnInit, OnChanges {
   } = {};
 
   @Input()
+  headerTemplate: TemplateRef<any>; // Used in smart screens when there are dynamic columns all sharing the same template
+
+  @Input()
+  rowTemplate: TemplateRef<any>; // Used in smart screens when there are dynamic columns all sharing the same template
+
+  @Input()
   visibleRows: number;
 
   @Input()

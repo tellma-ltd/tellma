@@ -52,7 +52,7 @@ AS
 		FROM dbo.ReconciliationEntries
 		WHERE [ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
 	)
-	SELECT *
+	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	WHERE E.[Id] IN (SELECT [EntryId] FROM RE);
@@ -62,6 +62,6 @@ AS
 		FROM dbo.ReconciliationExternalEntries
 		WHERE [ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
 	)
-	SELECT *
+	SELECT E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt]
 	FROM dbo.ExternalEntries E
 	WHERE [Id] IN (SELECT [ExternalEntryId] FROM RE);

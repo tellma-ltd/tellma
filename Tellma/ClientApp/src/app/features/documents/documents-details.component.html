@@ -182,7 +182,7 @@
                 </t-view-link>
             </t-restricted>
             <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantId"
-                [definitionIds]="documentParticipantDefinitionIds(model)"
+                [definitionIds]="documentParticipantDefinitionIds(model)" [filter]="filterDocumentParticipant(model)"
                 [required]="requireDocumentParticipant(model)" [disabled]="readonlyDocumentParticipant(model)">
             </t-relations-picker>
         </ng-container>
@@ -212,7 +212,7 @@
                 </t-view-link>
             </t-restricted>
             <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="requireDocumentCenter(model)"
-                [disabled]="readonlyDocumentCenter(model)">
+                [disabled]="readonlyDocumentCenter(model)" [filter]="filterDocumentCenter(model)">
             </t-centers-picker>
         </ng-container>
     </t-form-group>
@@ -227,7 +227,7 @@
                     {{ ws.getMultilingualValue('Currency', model?.CurrencyId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
+            <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [filter]="filterDocumentCurrency(model)"
                 [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)">
             </t-currencies-picker>
         </ng-container>
@@ -338,7 +338,8 @@
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
                             [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
-                            [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartHeaderCommands, smartCommands)"
+                            [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
+                            [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
                             [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
                             (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
                         </t-table>
@@ -414,7 +415,7 @@
                 </ng-template>
 
                 <ng-template #smartRow let-line="item" let-columnIndex="argument" let-update="update"
-                    let-isForm="isForm">
+                    let-isForm="isForm" let-isEdit="isEdit">
 
                     <t-form-group-cell *ngIf="!isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)">
@@ -1896,6 +1897,12 @@
             <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
+            </t-form-group>
+
+            <!-- Percentage -->
+            <t-form-group *ngSwitchCase="'Percentage'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]" [isPercentage]="true"></t-decimal-editor>
             </t-form-group>
 
             <!-- String -->
