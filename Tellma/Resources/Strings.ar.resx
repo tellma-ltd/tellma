@@ -841,11 +841,17 @@
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>رصيد العين في الحساب ({0}) سينزل تحت الصفر.</value>
   </data>
+  <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
+    <value>لم يتم العثور على الحساب.</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>نوع الحساب ({0}) مستخدم في الحساب ({1}).</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
+  </data>
+  <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
+    <value>مجموع مبالغ الأسطر الداخلية {0} لا يساوي مجموع مبالغ الأسطر الخارجية {1}.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
@@ -900,6 +906,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
+    <value>لم يتم العثور على العهدة.</value>
   </data>
   <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العهدة ({0}).</value>
@@ -1213,8 +1222,8 @@
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>المستند يحتوي على أسطر في حالة منفذ.</value>
   </data>
-  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
-    <value>صافي حساب التحكم ({0}) يساوي ({1})، ينبغي أن يكون صفرا.</value>
+  <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
+    <value>صافي حساب التحكم ({0}) التابع إلى ({1}) يساوي ({2})، ينبغي أن يكون صفرا.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>بعض الأسطر تتطلب مزيدا من التوقيعات.</value>

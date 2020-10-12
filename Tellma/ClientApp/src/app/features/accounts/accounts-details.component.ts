@@ -99,6 +99,10 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
 
     // The center becomes readonly if either the resource or the custody have a center
     const at = this.accountType(model);
+    if (!at) {
+      return true;
+    }
+
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
     const custody = this.ws.get('Custody', model.CustodyId) as Custody;
     if (at.IsBusinessUnit) {
@@ -114,6 +118,10 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
     }
 
     const at = this.accountType(model);
+    if (!at) {
+      return null;
+    }
+
     if (at.IsBusinessUnit) {
       if (!!model.ResourceId) {
         const resource = this.ws.get('Resource', model.ResourceId) as Resource;
@@ -467,7 +475,8 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
   }
 
   public get resourceAdditionalSelect(): string {
-    const defaultSelect = `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Center/Name,Center/Name2,Center/Name3`;
+    const defaultSelect = `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Center/Name,Center/Name2,Center/Name3,
+CostCenter/Name,CostCenter/Name2,CostCenter/Name3`;
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
       return '$DocumentDetails,' + defaultSelect;

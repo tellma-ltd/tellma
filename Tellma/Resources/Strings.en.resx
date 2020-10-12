@@ -841,11 +841,17 @@
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>The value balance for account '{0}' will become negative.</value>
   </data>
+  <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
+    <value>Account could not be found.</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>Account type '{0}' is used in account '{1}'.</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>Unexpected error occurred adding external login for user with email '{0}'.</value>
+  </data>
+  <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
+    <value>Total amount of internal entries {0} does not equal that of external entries {1}.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>A user with email '{0}' could not be found.</value>
@@ -900,6 +906,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
+  </data>
+  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
+    <value>Custody could not be found.</value>
   </data>
   <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Custody DefinitionId '{0}' could not be found.</value>
@@ -1213,8 +1222,8 @@
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>The document has completed lines.</value>
   </data>
-  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
-    <value>Control account '{0}' has a non-zero net balance of '{1}'.</value>
+  <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
+    <value>Control account '{0}' for '{1}' has a non-zero net balance of '{2}'.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>Some lines are missing required signatures.</value>
