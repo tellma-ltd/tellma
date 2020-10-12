@@ -1190,7 +1190,7 @@
     <value>የመለያ ማዕከል ያለው ሳለ የማሳደግ «{0} '' {1}» «{2} 'ማዕከል አለው.</value>
   </data>
   <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>መለያ ምንዛሬ ያለው ሳለ የማሳደግ «{0} '' {1}» «{2}» ምንዛሬ አለው.</value>
+    <value>መለያ ምንዛሬ ያለው ሳለ የማሳደግ «{0} '' {1} '' {2}» ምንዛሬ አለው.</value>
   </data>
   <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
     <value>ይህ {0} መዝገብ «{2} 'ማዕከል ጋር መለያ {1} ላይ ውሏል.</value>

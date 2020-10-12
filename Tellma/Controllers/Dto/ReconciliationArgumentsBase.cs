@@ -12,7 +12,7 @@ namespace Tellma.Controllers.Dto
 
     public class ReconciliationGetUnreconciledArguments : ReconciliationArgumentsBase
     {
-        public DateTime AsOfDate { get; set; }
+        public DateTime? AsOfDate { get; set; } = DateTime.Today;
         public int EntriesTop { get; set; }
         public int EntriesSkip { get; set; }
         public int ExternalEntriesTop { get; set; }
@@ -21,8 +21,8 @@ namespace Tellma.Controllers.Dto
 
     public class ReconciliationGetReconciledArguments : ReconciliationArgumentsBase
     {
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
+        public DateTime? FromDate { get; set; } = new DateTime(1800, 1, 1);
+        public DateTime? ToDate { get; set; } = DateTime.Today;
         public decimal? FromAmount { get; set; }
         public decimal? ToAmount { get; set; }
         public string ExternalReferenceContains { get; set; }
@@ -42,10 +42,16 @@ namespace Tellma.Controllers.Dto
     {
         public List<ExternalEntry> ExternalEntries { get; set; }
         public List<EntryForReconciliation> Entries { get; set; }
+        public decimal EntriesBalance { get; set; }
+        public decimal UnreconciledEntriesBalance { get; set; }
+        public decimal UnreconciledExternalEntriesBalance { get; set; }
+        public int UnreconciledEntriesCount { get; set; }
+        public int UnreconciledExternalEntriesCount { get; set; }
     }
 
-    public class ReconciliationGetReconciledResponse : ReconciliationGetUnreconciledResponse
+    public class ReconciliationGetReconciledResponse
     {
         public List<Reconciliation> Reconciliations { get; set; }
+        public int ReconciledCount { get; set; }
     }
 }

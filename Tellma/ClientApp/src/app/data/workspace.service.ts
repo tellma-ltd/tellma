@@ -667,22 +667,16 @@ export interface MeasureCell {
   isTotal?: boolean;
 }
 
-export class ReconciliationStore {
-  arguments: ReportArguments = {}; // entries_top, ex_entries_skip, entries_total, account_id, etc...
-  unreconciled: ReportStoreBase = new ReportStoreBase(); // status, errorMessage, information
-  reconciled: ReportStoreBase = new ReportStoreBase(); // status, errorMessage, information
-  unreconciled_response: ReconciliationGetUnreconciledResponse;
-  reconciled_response: ReconciliationGetReconciledResponse;
-
-  get store(): ReportStoreBase {
-    return this.arguments.view === 'reconciled' ? this.reconciled : this.unreconciled;
-  }
-}
-
 export class ReportStoreBase {
   reportStatus: ReportStatus;
   errorMessage: string;
   information: () => string;
+}
+
+export class ReconciliationStore extends ReportStoreBase {
+  arguments: ReportArguments = {}; // entries_top, ex_entries_skip, entries_total, account_id, etc...
+  unreconciled_response: ReconciliationGetUnreconciledResponse;
+  reconciled_response: ReconciliationGetReconciledResponse;
 }
 
 export class ReportStore extends ReportStoreBase {

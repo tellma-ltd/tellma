@@ -108,9 +108,33 @@ namespace Tellma.Controllers
                 throw new ForbiddenException();
             }
 
-            // TODO
+            var (
+                entriesBalance,
+                unreconciledEntriesBalance,
+                unreconciledExternalEntriesBalance,
+                unreconciledEntriesCount,
+                unreconciledExternalEntriesCount,
+                entries,
+                externalEntries
+            ) = await _repo.Reconciliation__Load_Unreconciled(
+                accountId: args.AccountId,
+                custodyId: args.CustodyId,
+                asOfDate: args.AsOfDate,
+                top: args.EntriesTop,
+                skip: args.EntriesSkip,
+                topExternal: args.ExternalEntriesTop,
+                skipExternal: args.ExternalEntriesSkip, cancellation);
 
-            return null;
+            return new ReconciliationGetUnreconciledResponse
+            {
+                EntriesBalance = entriesBalance,
+                UnreconciledEntriesBalance = unreconciledEntriesBalance,
+                UnreconciledExternalEntriesBalance = unreconciledExternalEntriesBalance,
+                UnreconciledEntriesCount = unreconciledEntriesCount,
+                UnreconciledExternalEntriesCount = unreconciledExternalEntriesCount,
+                Entries = entries,
+                ExternalEntries = externalEntries
+            };
         }
 
         public async Task<ReconciliationGetReconciledResponse> GetReconciled(ReconciliationGetReconciledArguments args, CancellationToken cancellation)
@@ -122,9 +146,26 @@ namespace Tellma.Controllers
                 throw new ForbiddenException();
             }
 
-            // TODO
+            var (
+                reconciledCount,
+                reconciliations
+            ) = await _repo.Reconciliation__Load_Reconciled(
+                accountId: args.AccountId,
+                custodyId: args.CustodyId,
+                fromDate: args.FromDate,
+                toDate: args.ToDate,
+                fromAmount: args.FromAmount,
+                toAmount: args.ToAmount,
+                externalReferenceContains: args.ExternalReferenceContains,
+                top: args.Top,
+                skip: args.Skip,
+                cancellation);
 
-            return null;
+            return new ReconciliationGetReconciledResponse
+            {
+                ReconciledCount = reconciledCount,
+                Reconciliations = reconciliations
+            };
         }
 
         public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)

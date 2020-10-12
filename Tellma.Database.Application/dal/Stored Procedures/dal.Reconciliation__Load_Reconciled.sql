@@ -47,21 +47,15 @@ AS
 	FROM dbo.Reconciliations
 	WHERE [Id] IN (SELECT [Id] FROM @ReconciliationIds);
 
-	WITH RE AS (
-		SELECT [EntryId]
-		FROM dbo.ReconciliationEntries
-		WHERE [ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
-	)
-	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference]
+	-- Select the Entries
+	SELECT R.[ReconciliationId], E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[Id] IN (SELECT [EntryId] FROM RE);
+	INNER JOIN dbo.ReconciliationEntries R ON R.[EntryId] = E.[Id]
+	WHERE R.[ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
 
-	WITH RE AS (
-		SELECT [ExternalEntryId]
-		FROM dbo.ReconciliationExternalEntries
-		WHERE [ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
-	)
-	SELECT E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt]
+	-- Select the External Entries
+	SELECT R.[ReconciliationId], E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt]
 	FROM dbo.ExternalEntries E
-	WHERE [Id] IN (SELECT [ExternalEntryId] FROM RE);
+	INNER JOIN dbo.ReconciliationExternalEntries R ON R.[ExternalEntryId] = E.[Id]
+	WHERE R.[ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
