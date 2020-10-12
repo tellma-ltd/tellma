@@ -21,9 +21,11 @@ FROM @ProcessedEntities A JOIN dbo.[Custodies] C ON A.[CustodyId] = C.Id;
 UPDATE A
 SET
 	A.[CurrencyId] = R.[CurrencyId],
-	A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
-FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id;
-
+	A.[CenterId] = COALESCE(
+		IIF(AC.[IsBusinessUnit] = 1, R.[CenterId], R.[CostCenterId]),
+		A.[CenterId])
+FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id
+JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id];
 -- In account type, Custodian def is null iff all custody definitions have custodian def is null
 
 
