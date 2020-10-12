@@ -9,6 +9,7 @@
 	[Code]						NVARCHAR (50),
 	[CurrencyId]				NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[CenterId]					INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
+	[CostCenterId]				INT					CONSTRAINT [FK_Resources__CostCenterId] REFERENCES dbo.[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),

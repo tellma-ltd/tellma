@@ -86,7 +86,7 @@ SET NOCOUNT ON;
 		OR SUM(E.[Direction] * E.[Quantity]) NOT BETWEEN AB.[MinQuantity] AND AB.[MaxQuantity]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + ']',
@@ -99,7 +99,7 @@ SET NOCOUNT ON;
 	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId];
 
 	-- To do: cannot close a document with a control account having non zero balance
-	IF (SELECT [DocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) = 2 -- N'Event'
+	IF (SELECT [DocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) >= 2 -- N'Event'
 	WITH ControlAccountTypes AS (
 		SELECT [Id]
 		FROM dbo.AccountTypes
@@ -107,19 +107,23 @@ SET NOCOUNT ON;
 			(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountsExtension')
 		) = 1
 	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(D.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentHasControlAccount0WithNetBalance1' AS [ErrorName],
+		N'Error_TheDocumentHasControlAccount0For1WithNetBalance2' AS [ErrorName],
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) As AccountName,
-		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetBalance
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS Participant,
+		FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
 	FROM @Ids D
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	-- TODO: Make the participant required in all control accounts
+	LEFT JOIN dbo.Relations R ON E.[ParticipantId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
-	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3])
-	HAVING SUM(E.[Direction] * E.[Value]) <> 0
+	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
+	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]), E.[CurrencyId], E.[CenterId], dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) 
+	HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 
 	-- Verify that workflow-less lines in Events can be in state posted
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],

@@ -174,7 +174,7 @@ SET NOCOUNT ON;
 		SELECT [Node]
 		FROM dbo.[AccountTypes]
 		WHERE [Concept] IN (
-			N'Revenue', N'CostOfMerchandiseSold'
+			N'Revenue', N'CostOfMerchandiseSold', N'TradersControlAccountsExtension'
 		)
 	),
 	DirectAccountTypes AS (

@@ -319,21 +319,23 @@ BEGIN
 				[LineIndex] INT, 
 				[DocumentIndex] INT,  
 				[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
+				--[CustodianDefinitionId] INT, 
 				[CustodianId] INT, 
 				[CustodyDefinitionId] INT, 
 				[CustodyId] INT,
+				--[ParticipanDefinitiontId] INT,
 				[ParticipantId] INT,
 				[ResourceDefinitionId] INT,
 				[ResourceId] INT,
 				[CenterId] INT,
 				[CurrencyId] NCHAR (3)
 			)
-	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId], [CustodianId], [CustodyDefinitionId], 
-					[CustodyId], [ParticipantId], [ResourceDefinitionId], [ResourceId], [CenterId], [CurrencyId])
-	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], 
-			E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId],
-			E.[ParticipantId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
-			E.[CenterId], E.[CurrencyId]
+	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId], [CustodianId],
+					[CustodyDefinitionId], [CustodyId], [ParticipantId],
+					[ResourceDefinitionId], [ResourceId], [CenterId], [CurrencyId])
+	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
+			E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId], E.[ParticipantId],
+			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId], E.[CenterId], E.[CurrencyId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
@@ -341,19 +343,25 @@ BEGIN
 	JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 	LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
+	LEFT JOIN dbo.[Relations] CR ON E.[CustodianId] = CR.[Id]
+	LEFT JOIN dbo.[Relations] PR ON E.[ParticipantId] = PR.[Id]
 	WHERE L.DefinitionId <> @ManualLineLD
+	--TODO: By using Null Resource and Null Custody, we can speed up the following code by 3x, as we can then use INNER JOIN
+	AND (E.[ResourceId] IS NOT NULL OR ATC.[ParticipantDefinitionId] IS NULL AND PR.[DefinitionId] IS NULL OR ATC.[ParticipantDefinitionId] = PR.[DefinitionId])
+	AND (E.[CustodyId] IS NOT NULL OR ATC.[CustodianDefinitionId] IS NULL AND CR.[DefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;
 
 	-- Set the Account based on provided info so far
 	DECLARE @ConformantAccounts TABLE(
-		[Index] INT, 
-		[LineIndex] INT, 
+		[Index]			INT,
+		[LineIndex]		INT, 
 		[DocumentIndex] INT, 
-		[AccountId]		INT PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountId])
+		[AccountId]		INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountId])
 	);
 	INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
 	SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
 	FROM dbo.Accounts A
+	--JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
 	WHERE
 		(A.[IsActive] = 1)
