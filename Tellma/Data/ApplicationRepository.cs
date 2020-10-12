@@ -6675,6 +6675,7 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
@@ -6886,6 +6887,225 @@ namespace Tellma.Data
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
+        }
+
+        #endregion
+
+        #region Reconciliation
+
+        public async Task<(
+            decimal entriesBalance,
+            decimal unreconciledEntriesBalance,
+            decimal unreconciledExternalEntriesBalance,
+            int unreconciledEntriesCount,
+            int unreconciledExternalEntriesCount,
+            List<EntryForReconciliation> entries,
+            List<ExternalEntry>
+            )> Reconciliation__Load_Unreconciled(int accountId, int custodyId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliation__Load_Unreconciled));
+
+            // Result variables
+            var entries = new List<EntryForReconciliation>();
+            var externalEntries = new List<ExternalEntry>();
+
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+
+            // Add parameters
+            cmd.Parameters.Add("@AccountId", accountId);
+            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@AsOfDate", asOfDate);
+            cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@Skip", skip);
+            cmd.Parameters.Add("@TopExternal", topExternal);
+            cmd.Parameters.Add("@SkipExternal", skipExternal);
+
+            // Output parameters
+            var entriesBalanceParam = new SqlParameter("@EntriesBalance", SqlDbType.Decimal)
+            {
+                Direction = ParameterDirection.Output,
+                Precision = 19,
+                Scale = 4
+            };
+            var unreconciledEntriesBalanceParam = new SqlParameter("@UnreconciledEntriesBalance", SqlDbType.Decimal)
+            {
+                Direction = ParameterDirection.Output,
+                Precision = 19,
+                Scale = 4
+            };
+            var unreconciledExternalEntriesBalanceParam = new SqlParameter("@UnreconciledExternalEntriesBalance", SqlDbType.Decimal)
+            {
+                Direction = ParameterDirection.Output,
+                Precision = 19,
+                Scale = 4
+            };
+            var unreconciledEntriesCountParam = new SqlParameter("@UnreconciledEntriesCount", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+            var unreconciledExternalEntriesCountParam = new SqlParameter("@UnreconciledExternalEntriesCount", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            // Parameters
+            cmd.Parameters.Add(entriesBalanceParam);
+            cmd.Parameters.Add(unreconciledEntriesBalanceParam);
+            cmd.Parameters.Add(unreconciledExternalEntriesBalanceParam);
+            cmd.Parameters.Add(unreconciledEntriesCountParam);
+            cmd.Parameters.Add(unreconciledExternalEntriesCountParam);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Unreconciled)}]";
+
+            // Execute
+            using (var reader = await cmd.ExecuteReaderAsync(cancellation))
+            {
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    entries.Add(new EntryForReconciliation
+                    {
+                        Id = reader.GetInt32(i++),
+                        PostingDate = reader.DateTime(i++),
+                        Direction = reader.GetInt16(i++),
+                        MonetaryValue = reader.Decimal(i++),
+                        ExternalReference = reader.String(i++)
+                    });
+                }
+
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    externalEntries.Add(new ExternalEntry
+                    {
+                        Id = reader.GetInt32(i++),
+                        PostingDate = reader.DateTime(i++),
+                        Direction = reader.GetInt16(i++),
+                        MonetaryValue = reader.Decimal(i++),
+                        ExternalReference = reader.String(i++),
+                        CreatedById = reader.Int32(i++),
+                        CreatedAt = reader.GetDateTimeOffset(i++),
+                        ModifiedById = reader.Int32(i++),
+                        ModifiedAt = reader.GetDateTimeOffset(i++)
+                    });
+                }
+            }
+
+            decimal entriesBalance = entriesBalanceParam.Value == DBNull.Value ? 0 : (decimal)entriesBalanceParam.Value;
+            decimal unreconciledEntriesBalance = unreconciledEntriesBalanceParam.Value == DBNull.Value ? 0 : (decimal)unreconciledEntriesBalanceParam.Value;
+            decimal unreconciledExternalEntriesBalance = unreconciledExternalEntriesBalanceParam.Value == DBNull.Value ? 0 : (decimal)unreconciledExternalEntriesBalanceParam.Value;
+            int unreconciledEntriesCount = unreconciledEntriesCountParam.Value == DBNull.Value ? 0 : (int)unreconciledEntriesCountParam.Value;
+            int unreconciledExternalEntriesCount = unreconciledExternalEntriesCountParam.Value == DBNull.Value ? 0 : (int)unreconciledExternalEntriesCountParam.Value;
+
+            return (entriesBalance, unreconciledEntriesBalance, unreconciledExternalEntriesBalance, unreconciledEntriesCount, unreconciledExternalEntriesCount, entries, externalEntries);
+        }
+
+        public async Task<(
+            int reconciledCount,
+            List<Reconciliation> reconciliations
+            )> Reconciliation__Load_Reconciled(int accountId, int custodyId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliation__Load_Unreconciled));
+
+            // Result variables
+            var result = new List<Reconciliation>();
+
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+
+            // Add parameters
+            cmd.Parameters.Add("@AccountId", accountId);
+            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@FromDate", fromDate);
+            cmd.Parameters.Add("@ToDate", toDate);
+            cmd.Parameters.Add("@FromAmount", fromAmount);
+            cmd.Parameters.Add("@ToAmount", toAmount);
+            cmd.Parameters.Add("@ExternalReferenceContains", externalReferenceContains);
+            cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@Skip", skip);
+
+            // Output parameters
+            var reconciledCountParam = new SqlParameter("@ReconciledCount", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            // Parameters
+            cmd.Parameters.Add(reconciledCountParam);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Reconciled)}]";
+
+            // Execute
+            using (var reader = await cmd.ExecuteReaderAsync(cancellation))
+            {
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    result.Add(new Reconciliation
+                    {
+                        Id = reader.GetInt32(i++),
+                        CreatedAt = reader.GetDateTimeOffset(i++),
+                        CreatedById = reader.Int32(i++),
+                        Entries = new List<ReconciliationEntry>(),
+                        ExternalEntries = new List<ReconciliationExternalEntry>(),
+                    });
+                }
+
+                // Put the reconciliations in a dictionary for fast lookup
+                var resultDic = result.ToDictionary(e => e.Id);
+
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    int reconciliationId = reader.GetInt32(i++);
+
+                    resultDic[reconciliationId].Entries.Add(new ReconciliationEntry
+                    {
+                        Id = reconciliationId,
+                        EntryId = reader.GetInt32(i),
+                        Entry = new EntryForReconciliation
+                        {
+                            Id = reader.GetInt32(i++),
+                            PostingDate = reader.DateTime(i++),
+                            Direction = reader.GetInt16(i++),
+                            MonetaryValue = reader.Decimal(i++),
+                            ExternalReference = reader.String(i++)
+                        }
+                    });
+                }
+
+
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    int reconciliationId = reader.GetInt32(i++);
+
+                    resultDic[reconciliationId].ExternalEntries.Add(new ReconciliationExternalEntry
+                    {
+                        Id = reconciliationId,
+                        ExternalEntryId = reader.GetInt32(i),
+                        ExternalEntry = new ExternalEntry
+                        {
+                            Id = reader.GetInt32(i++),
+                            PostingDate = reader.DateTime(i++),
+                            Direction = reader.GetInt16(i++),
+                            MonetaryValue = reader.Decimal(i++),
+                            ExternalReference = reader.String(i++)
+                        }
+                    });
+                }
+            }
+
+            int reconciledCount = reconciledCountParam.Value == DBNull.Value ? 0 : (int)reconciledCountParam.Value;
+            return (reconciledCount, result);
         }
 
         #endregion

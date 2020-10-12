@@ -1,4 +1,5 @@
 import { EntityForSave } from './base/entity-for-save';
+import { EntryForReconciliation } from './entry-for-reconciliation';
 import { ExternalEntry } from './external-entry';
 
 // tslint:disable:max-line-length
@@ -17,6 +18,7 @@ export interface ReconciliationEntryForSave extends EntityForSave {
 }
 
 export interface ReconciliationEntry extends ReconciliationEntryForSave {
+    Entry: EntryForReconciliation;
     CreatedAt: string;
     CreatedById: number;
 }

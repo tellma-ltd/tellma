@@ -14,10 +14,12 @@ import { FriendlyError } from '~/app/data/util';
 import {
   ReconciliationGetReconciledArguments,
   ReconciliationGetReconciledResponse,
-  ReconciliationGetUnreconciledArguments
+  ReconciliationGetUnreconciledArguments,
+  ReconciliationGetUnreconciledResponse
 } from '~/app/data/dto/reconciliation';
-import { Entry } from '~/app/data/entities/entry';
 import { ExternalEntry } from '~/app/data/entities/external-entry';
+import { metadata_Custody } from '~/app/data/entities/custody';
+import { EntryForReconciliation } from '~/app/data/entities/entry-for-reconciliation';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -163,21 +165,20 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   private doFetch(): Observable<void> {
     // For robustness grab a reference to the state object, in case it changes later
     const s = this.state;
-    const store = s.store;
 
     if (!this.requiredParametersAreSet) {
-      store.reportStatus = ReportStatus.information;
-      store.information = () => this.translate.instant('FillRequiredFields');
+      s.reportStatus = ReportStatus.information;
+      s.information = () => this.translate.instant('FillRequiredFields');
       return of();
     } else if (this.loadingRequiredParameters) {
       // Wait until required parameters have loaded
       // They will call fetch again once they load
-      store.reportStatus = ReportStatus.loading;
+      s.reportStatus = ReportStatus.loading;
       delete s.reconciled_response;
       delete s.unreconciled_response;
       return of();
     } else {
-      store.reportStatus = ReportStatus.loading;
+      s.reportStatus = ReportStatus.loading;
       let obs: Observable<void>;
       if (this.view === 'unreconciled') {
         delete s.unreconciled_response;
@@ -195,14 +196,14 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
         obs = this.api.getUnreconciled(args).pipe(
           tap(response => {
             // Result is loaded
-            store.reportStatus = ReportStatus.loaded;
+            s.reportStatus = ReportStatus.loaded;
 
             // Add the result to the state
             s.unreconciled_response = response;
           }),
           catchError((friendlyError: FriendlyError) => {
-            store.reportStatus = ReportStatus.error;
-            store.errorMessage = friendlyError.error;
+            s.reportStatus = ReportStatus.error;
+            s.errorMessage = friendlyError.error;
             return of(null);
           })
         );
@@ -224,14 +225,14 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
         obs = this.api.getReconciled(args).pipe(
           tap(response => {
             // Result is loaded
-            store.reportStatus = ReportStatus.loaded;
+            s.reportStatus = ReportStatus.loaded;
 
             // Add the result to the state
             s.reconciled_response = response;
           }),
           catchError((friendlyError: FriendlyError) => {
-            store.reportStatus = ReportStatus.error;
-            store.errorMessage = friendlyError.error;
+            s.reportStatus = ReportStatus.error;
+            s.errorMessage = friendlyError.error;
             return of(null);
           })
         );
@@ -310,7 +311,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   // UI Bindings
 
   public onParameterLoaded(): void {
-    if (this.state.store.reportStatus === ReportStatus.loading) {
+    if (this.state.reportStatus === ReportStatus.loading) {
       this.fetch();
     }
   }
@@ -344,25 +345,25 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   // Error Message
   public get showErrorMessage(): boolean {
-    return this.state.store.reportStatus === ReportStatus.error;
+    return this.state.reportStatus === ReportStatus.error;
   }
 
   public get errorMessage(): string {
-    return this.state.store.errorMessage;
+    return this.state.errorMessage;
   }
 
   // Information
   public get showInformation(): boolean {
-    return this.state.store.reportStatus === ReportStatus.information;
+    return this.state.reportStatus === ReportStatus.information;
   }
 
   public information(): string {
-    return this.state.store.information();
+    return this.state.information();
   }
 
   // Spinner
   public get showSpinner(): boolean {
-    return this.state.store.reportStatus === ReportStatus.loading;
+    return this.state.reportStatus === ReportStatus.loading;
   }
 
   // accountId
@@ -396,9 +397,26 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return !!account && !!account.CustodyDefinitionId;
   }
 
+  public get labelCustody_Manual(): string {
+    const account = this.account();
+    const defId = !!account ? account.CustodyDefinitionId : null;
+
+    return metadata_Custody(this.workspace, this.translate, defId).titleSingular();
+  }
+
   public get readonlyCustody_Manual(): boolean {
     const account = this.account();
     return !!account && !!account.CustodyId;
+  }
+
+  public get readonlyValueCustodyId_Manual(): number {
+    const account = this.account();
+    return !!account ? account.CustodyId : null;
+  }
+
+  public get definitionIdsCustody_Manual(): number[] {
+    const account = this.account();
+    return [account.CustodyDefinitionId];
   }
 
   // toDate
@@ -545,7 +563,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   private get isLoaded(): boolean {
-    return this.state.store.reportStatus === ReportStatus.loaded;
+    return this.state.reportStatus === ReportStatus.loaded;
   }
 
   public onExport() {
@@ -567,7 +585,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   public onRefresh(): void {
     // The if statement to deal with incessant button clickers (Users who hit refresh repeatedly)
-    if (this.state.store.reportStatus !== ReportStatus.loading) {
+    if (this.state.reportStatus !== ReportStatus.loading) {
       this.fetch();
     }
   }
@@ -614,31 +632,20 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   // results
 
-  private _reconciled: ReconciledRow[];
+  private _reconciled: ReconciliationRow[];
   private _reconciledResponse: ReconciliationGetReconciledResponse;
 
-  public get reconciled(): ReconciledRow[] {
+  public get reconciled(): ReconciliationRow[] {
     const res = this.state.reconciled_response;
     if (this._reconciledResponse !== res) {
       this._reconciledResponse = res;
 
       this._reconciled = [];
       if (!!res) {
-        const entriesDic: { [id: number]: Entry } = {};
-        const exEntriesDic: { [id: number]: ExternalEntry } = {};
-
-        for (const entry of res.Entries) {
-          entriesDic[entry.Id] = entry;
-        }
-
-        for (const exEntry of res.ExternalEntries) {
-          exEntriesDic[exEntry.Id] = exEntry;
-        }
-
         for (const reconciliation of res.Reconciliations) {
           const length = Math.max(reconciliation.Entries.length, reconciliation.ExternalEntries.length);
           for (let i = 0; i < length; i++) {
-            const row: ReconciledRow = { };
+            const row: ReconciliationRow = { isReconciled: true };
 
             // The first row will have a middle cell extending to the entire reconciliation, with a button to unreconcile
             if (i === 0) {
@@ -650,16 +657,18 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
             }
 
             // The entry
-            const reconciliationEntry = reconciliation.Entries[0];
-            if (!!reconciliationEntry && !!reconciliationEntry.EntryId) {
-              row.entry = entriesDic[reconciliationEntry.EntryId];
+            const reconciliationEntry = reconciliation.Entries[i];
+            if (!!reconciliationEntry) {
+              row.entry = reconciliationEntry.Entry;
             }
 
             // The external entry
-            const reconciliationExEntry = reconciliation.ExternalEntries[0];
+            const reconciliationExEntry = reconciliation.ExternalEntries[i];
             if (!!reconciliationExEntry && !!reconciliationExEntry.ExternalEntryId) {
-              row.exEntry = exEntriesDic[reconciliationExEntry.ExternalEntryId];
+              row.exEntry = reconciliationExEntry.ExternalEntry;
             }
+
+            this._reconciled.push(row);
           }
         }
       }
@@ -668,14 +677,53 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return this._reconciled;
   }
 
-  public onSelectRow(row: ReconciledRow) {
+  private _unreconciled: ReconciliationRow[];
+  private _unreconciledResponse: ReconciliationGetUnreconciledResponse;
+
+  public get unreconciled(): ReconciliationRow[] {
+    const res = this.state.unreconciled_response;
+    if (this._unreconciledResponse !== res) {
+      this._unreconciledResponse = res;
+
+      this._unreconciled = [];
+      if (!!res) {
+        const length = Math.max(res.Entries.length, res.ExternalEntries.length);
+        for (let i = 0; i < length; i++) {
+          const row: ReconciliationRow = { isReconciled: false };
+
+          // The entry
+          row.entry = res.Entries[i];
+          row.exEntry = res.ExternalEntries[i];
+
+          this._unreconciled.push(row);
+        }
+      }
+    }
+
+    return this._unreconciled;
+  }
+
+  public get rows(): ReconciliationRow[] {
+    switch (this.view) {
+      case 'unreconciled':
+        return this.unreconciled;
+      case 'reconciled':
+        return this.reconciled;
+    }
+  }
+
+  public onSelectRow(row: ReconciliationRow) {
     alert('TODO');
   }
 }
 
-interface ReconciledRow {
-  entry?: Entry;
+interface ReconciliationRow {
+  isReconciled: boolean;
+  entry?: EntryForReconciliation;
   exEntry?: ExternalEntry;
   rowSpan?: number;
   lastOne?: boolean;
+
+  entryIsChecked?: boolean;
+  exEntryIsChecked?: boolean;
 }

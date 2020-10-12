@@ -31,12 +31,17 @@ export interface ReconciliationSavePayload {
     DeletedExternalEntryIds: number[];
     DeletedReconciliationIds: number[];
 }
-
 export interface ReconciliationGetUnreconciledResponse {
     ExternalEntries: ExternalEntry[];
     Entries: EntryForReconciliation[];
+    EntriesBalance: number;
+    UnreconciledEntriesBalance: number;
+    UnreconciledExternalEntriesBalance: number;
+    UnreconciledEntriesCount: number;
+    UnreconciledExternalEntriesCount: number;
 }
 
-export interface ReconciliationGetReconciledResponse extends ReconciliationGetUnreconciledResponse {
+export interface ReconciliationGetReconciledResponse {
     Reconciliations: Reconciliation[];
+    ReconciledCount: number;
 }
