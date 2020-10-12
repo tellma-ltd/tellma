@@ -181,32 +181,31 @@ BEGIN
 	END
 	-- for all lines, Get currency and center from Resources
 	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
+	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 
 	--	For Manual JV, get center from resource, if any
-	WITH BalanceSheetAccounts AS (
-		SELECT [Id] FROM dbo.[Accounts]
-		WHERE [AccountTypeId] IN (
-			SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@BalanceSheetNode) = 1
-		)
-	)
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId])
+		E.[CenterId]		= COALESCE(
+			IIF(A.[IsBusinessUnit] = 1, R.[CenterId], R.[CostCenterId]),
+			E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
-	JOIN BalanceSheetAccounts A ON E.[AccountId] = A.[Id] -- E.AccountId is NULL for smart screens
+	JOIN map.Accounts() A ON E.[AccountId] = A.[Id] -- E.AccountId is NULL for smart screens
 
 	-- For smart lines, get center from resource, if any
 	UPDATE E
 	SET
-		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId])
+		E.[CenterId]		= COALESCE(
+			IIF(AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 0, R.[CenterId], R.[CostCenterId]),
+			E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
 	JOIN dbo.AccountTypes AC ON LDE.[ParentAccountTypeId] = AC.[Id]
 	JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
+	WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 
 	-- for all lines, get currency from resource (which is required), and monetary value, if any
 	UPDATE E 
@@ -343,8 +342,8 @@ BEGIN
 	JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 	LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
-	LEFT JOIN dbo.[Relations] CR ON E.[CustodianId] = CR.[Id]
-	LEFT JOIN dbo.[Relations] PR ON E.[ParticipantId] = PR.[Id]
+	LEFT JOIN dbo.[Relations] CR ON E.[CustodianId] = CR.[Id] -- added
+	LEFT JOIN dbo.[Relations] PR ON E.[ParticipantId] = PR.[Id] -- added
 	WHERE L.DefinitionId <> @ManualLineLD
 	--TODO: By using Null Resource and Null Custody, we can speed up the following code by 3x, as we can then use INNER JOIN
 	AND (E.[ResourceId] IS NOT NULL OR ATC.[ParticipantDefinitionId] IS NULL AND PR.[DefinitionId] IS NULL OR ATC.[ParticipantDefinitionId] = PR.[DefinitionId])
