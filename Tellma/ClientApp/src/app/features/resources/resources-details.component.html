@@ -171,6 +171,18 @@
         </t-centers-picker>
     </t-form-group>
 
+    <!-- Cost Center -->
+    <t-form-group *ngIf="CostCenter_isVisible" class="t-form-group" [label]="CostCenter_label"
+        [serverErrors]="model?.serverErrors?.CostCenterId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CostCenter">
+            <t-view-link link="../../../centers" [itemId]="model?.CostCenterId">
+                {{ ws.getMultilingualValue('Center', model.CostCenterId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CostCenterId" [required]="CostCenter_isRequired">
+        </t-centers-picker>
+    </t-form-group>
+
     <!-- Lookup 1 -->
     <t-form-group class="t-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup1Id">

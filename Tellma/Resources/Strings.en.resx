@@ -2347,6 +2347,9 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
+  <data name="Resource_CostCenter" xml:space="preserve">
+    <value>Cost Center</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>

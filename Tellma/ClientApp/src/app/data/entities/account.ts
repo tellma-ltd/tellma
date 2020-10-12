@@ -26,6 +26,7 @@ export interface AccountForSave extends EntityWithKey {
 
 export interface Account extends AccountForSave {
     IsActive?: boolean;
+    IsBusinessUnit?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;

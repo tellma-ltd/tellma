@@ -208,6 +208,18 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.translate.instant('Entity_Center');
   }
 
+  public get CostCenter_isVisible(): boolean {
+    return !!this.definition.CostCenterVisibility;
+  }
+
+  public get CostCenter_isRequired(): boolean {
+    return this.definition.CostCenterVisibility === 'Required';
+  }
+
+  public get CostCenter_label(): string {
+    return this.translate.instant('Resource_CostCenter');
+  }
+
   public get Image_isVisible(): boolean {
     return !!this.definition.ImageVisibility;
   }

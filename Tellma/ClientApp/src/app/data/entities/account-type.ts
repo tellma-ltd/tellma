@@ -63,6 +63,7 @@ export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefini
   ActiveChildCount?: number;
   ChildCount?: number;
   IsActive?: boolean;
+  IsBusinessUnit?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
 

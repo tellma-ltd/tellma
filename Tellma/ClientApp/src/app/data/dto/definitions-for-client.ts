@@ -269,6 +269,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;
+    CostCenterVisibility: Visibility;
     ImageVisibility: Visibility;
     DescriptionVisibility: Visibility;
     LocationVisibility: Visibility;

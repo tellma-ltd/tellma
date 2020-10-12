@@ -97,10 +97,15 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
       return true;
     }
 
-    // The center becomes readonly if either the resource or the custody have a center selected
+    // The center becomes readonly if either the resource or the custody have a center
+    const at = this.accountType(model);
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
     const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-    return (!!model.ResourceId && !!resource.CenterId) || (!!model.CustodyId && !!custody.CenterId);
+    if (at.IsBusinessUnit) {
+      return (!!model.ResourceId && !!resource.CenterId) || (!!model.CustodyId && !!custody.CenterId);
+    } else {
+      return !!model.ResourceId && !!resource.CostCenterId;
+    }
   }
 
   public readonlyValueCenterId(model: Account): number {
@@ -108,18 +113,41 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
       return null;
     }
 
-    if (!!model.ResourceId) {
-      const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-      if (!!resource.CenterId) {
-        return resource.CenterId;
+    const at = this.accountType(model);
+    if (at.IsBusinessUnit) {
+      if (!!model.ResourceId) {
+        const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+        if (!!resource.CenterId) {
+          return resource.CenterId;
+        }
+      }
+
+      if (!!model.CustodyId) {
+        const custody = this.ws.get('Custody', model.CustodyId) as Custody;
+        if (!!custody.CenterId) {
+          return custody.CenterId;
+        }
+      }
+    } else {
+      if (!!model.ResourceId) {
+        const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+        if (!!resource.CostCenterId) {
+          return resource.CostCenterId;
+        }
       }
     }
 
-    if (!!model.CustodyId) {
-      const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-      if (!!custody.CenterId) {
-        return custody.CenterId;
-      }
+    return null;
+  }
+
+  public filterCenter(model: Account): string {
+    if (!model) {
+      return null;
+    }
+
+    const at = this.accountType(model);
+    if (!!at && at.IsBusinessUnit) {
+      return 'CenterType eq \'BusinessUnit\'';
     }
 
     return null;
@@ -138,6 +166,7 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
     // The currency becomes readonly if either the resource or the custody have a currency selected
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
     const custody = this.ws.get('Custody', model.CustodyId) as Custody;
+
     return (!!model.ResourceId && !!resource.CurrencyId) || (!!model.CustodyId && !!custody.CurrencyId);
   }
 
@@ -190,12 +219,12 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
         this._choicesCustodyDefinitionIdResult = [];
       } else {
         this._choicesCustodyDefinitionIdResult = at.CustodyDefinitions
-        .filter(d => !!defs.Custodies[d.CustodyDefinitionId])
-        .map(d =>
-          ({
-            value: d.CustodyDefinitionId,
-            name: () => ws.getMultilingualValueImmediate(defs.Custodies[d.CustodyDefinitionId], 'TitleSingular')
-          }));
+          .filter(d => !!defs.Custodies[d.CustodyDefinitionId])
+          .map(d =>
+            ({
+              value: d.CustodyDefinitionId,
+              name: () => ws.getMultilingualValueImmediate(defs.Custodies[d.CustodyDefinitionId], 'TitleSingular')
+            }));
       }
     }
 
@@ -284,7 +313,7 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
 
   public showParticipant(model: AccountForSave): boolean {
     const at = this.accountType(model);
-    return  !!at && !!at.ParticipantDefinitionId && !this.showCustodyDefinitionId(model);
+    return !!at && !!at.ParticipantDefinitionId && !this.showCustodyDefinitionId(model);
   }
 
   public labelParticipant(model: AccountForSave): string {
@@ -326,12 +355,12 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
         this._choicesResourceDefinitionIdResult = [];
       } else {
         this._choicesResourceDefinitionIdResult = at.ResourceDefinitions
-        .filter(d => !!defs.Resources[d.ResourceDefinitionId])
-        .map(d =>
-          ({
-            value: d.ResourceDefinitionId,
-            name: () => ws.getMultilingualValueImmediate(defs.Resources[d.ResourceDefinitionId], 'TitleSingular')
-          }));
+          .filter(d => !!defs.Resources[d.ResourceDefinitionId])
+          .map(d =>
+            ({
+              value: d.ResourceDefinitionId,
+              name: () => ws.getMultilingualValueImmediate(defs.Resources[d.ResourceDefinitionId], 'TitleSingular')
+            }));
       }
     }
 
