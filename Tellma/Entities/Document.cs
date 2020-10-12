@@ -273,6 +273,8 @@ namespace Tellma.Entities
                 CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}")
             ).Concat(
                 CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}")
+            ).Concat(
+                CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}/{p}")
             );
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             // This is used in account, it does not need currency or center, since they already come with the account
@@ -338,6 +340,9 @@ namespace Tellma.Entities
             nameof(Account.Name3),
             nameof(Account.Code),
 
+            // Misc.
+            nameof(Account.IsBusinessUnit),
+
             // Definitions
             nameof(Account.CustodyDefinitionId),
             nameof(Account.ResourceDefinitionId)
@@ -353,6 +358,7 @@ namespace Tellma.Entities
             // Misc
             nameof(AccountType.EntryTypeParentId),
             nameof(AccountType.StandardAndPure),
+            nameof(AccountType.IsBusinessUnit),
 
             // Definitions
             nameof(AccountType.CustodianDefinitionId),

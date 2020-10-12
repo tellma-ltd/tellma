@@ -873,6 +873,11 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.CenterVisibility, display);
                     isRequired = def.CenterVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.CostCenter):
+                case nameof(Resource.CostCenterId):
+                    display = PropertyDisplay(def.CostCenterVisibility, display);
+                    isRequired = def.CostCenterVisibility == Visibility.Required;
+                    break;
                 case nameof(Resource.Lookup1):
                 case nameof(Resource.Lookup1Id):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);

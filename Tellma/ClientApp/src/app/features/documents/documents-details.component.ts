@@ -21,7 +21,7 @@ import {
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError, Observable, Subscription } from 'rxjs';
-import { AccountForSave, metadata_Account } from '~/app/data/entities/account';
+import { Account, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Relation } from '~/app/data/entities/relation';
@@ -990,8 +990,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   /////// Properties of the lines
 
-  public account(entry: Entry): AccountForSave {
-    return this.ws.get('Account', entry.AccountId) as AccountForSave;
+  public account(entry: Entry): Account {
+    return this.ws.get('Account', entry.AccountId) as Account;
   }
 
   public accountType(entry: Entry): AccountType {
@@ -1126,10 +1126,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const custody = this.custody(entry);
 
     const accountCenterId = !!account ? account.CenterId : null;
-    const resourceCenterId = !!resource ? resource.CenterId : null;
-    const custodyCenterId = !!custody ? custody.CenterId : null;
+    const resourceCenterId = !!resource ? (account.IsBusinessUnit ? resource.CenterId : resource.CostCenterId) : null;
+    const custodyCenterId = !!custody ? (account.IsBusinessUnit ? custody.CenterId : null) : null;
 
     return accountCenterId || resourceCenterId || custodyCenterId;
+  }
+
+  public filterCenter_Manual(entry: Entry): string {
+    if (!entry) {
+      return null;
+    }
+
+    const account = this.account(entry);
+    if (!!account && account.IsBusinessUnit) {
+      return 'CenterType eq \'BusinessUnit\'';
+    }
+
+    return null;
   }
 
   // CustodianId

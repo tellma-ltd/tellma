@@ -198,6 +198,9 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
+        [AlwaysAccessible]
+        public bool? IsBusinessUnit { get; set; }
+
         [Display(Name = "IsSystem")]
         [AlwaysAccessible]
         public bool? IsSystem { get; set; }

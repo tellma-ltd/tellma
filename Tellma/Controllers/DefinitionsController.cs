@@ -308,6 +308,7 @@ namespace Tellma.Controllers
                 LocationVisibility = MapVisibility(def.LocationVisibility),
                 ImageVisibility = MapVisibility(def.ImageVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
+                CostCenterVisibility = MapVisibility(def.CostCenterVisibility),
 
                 FromDateLabel = def.FromDateLabel,
                 FromDateLabel2 = def.FromDateLabel2,

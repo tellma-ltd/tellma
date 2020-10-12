@@ -1463,7 +1463,7 @@
         <ng-container *ngIf="isEdit && !bookkeeping">
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
                 <t-centers-picker *ngIf="!readonlyCenter_Manual(entry)" [(ngModel)]="entry.CenterId"
-                    (ngModelChange)="update.call(null, pair);">
+                    (ngModelChange)="update.call(null, pair);" [filter]="filterCenter_Manual(entry)">
                 </t-centers-picker>
                 <t-restricted *ngIf="readonlyCenter_Manual(entry)" [metadata]="entry.EntityMetadata?.CenterId">
                     {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual(entry), 'Name') }}

@@ -39,6 +39,9 @@ namespace Tellma.Entities
         [Display(Name = "Entity_Center")]
         public int? CenterId { get; set; } // Check
 
+        [Display(Name = "Resource_CostCenter")]
+        public int? CostCenterId { get; set; } // Check
+
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [StringLength(2048)]
         [AlwaysAccessible]
@@ -184,6 +187,10 @@ namespace Tellma.Entities
         [Display(Name = "Entity_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
+
+        [Display(Name = "Resource_CostCenter")]
+        [ForeignKey(nameof(CostCenterId))]
+        public Center CostCenter { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

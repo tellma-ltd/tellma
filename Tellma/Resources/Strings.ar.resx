@@ -2347,6 +2347,9 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
+  <data name="Resource_CostCenter" xml:space="preserve">
+    <value>مركز التكلفة</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>
   </data>

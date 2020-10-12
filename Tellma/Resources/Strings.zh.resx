@@ -989,7 +989,7 @@
     <value>属性{0}不是关键属性有效，密钥属性必须是int类型或字符串的</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后，例如：“雇员 - 姓名”。</value>
+    <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后例如：“雇员 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签“{0}”不上式{1}匹配的集合。</value>
@@ -2347,6 +2347,9 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
+  <data name="Resource_CostCenter" xml:space="preserve">
+    <value>成本中心</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
   </data>
@@ -2675,7 +2678,7 @@
     <value>关闭量</value>
   </data>
   <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>关闭数量</value>
+    <value>截止数量</value>
   </data>
   <data name="SummaryEntry_Credit" xml:space="preserve">
     <value>信用</value>

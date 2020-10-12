@@ -1131,8 +1131,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const custody = this.custody();
 
     const accountCenterId = !!account ? account.CenterId : null;
-    const resourceCenterId = !!resource ? resource.CenterId : null;
-    const custodyCenterId = !!custody ? custody.CenterId : null;
+    const resourceCenterId = !!resource ? (account.IsBusinessUnit ? resource.CenterId : resource.CostCenterId) : null;
+    const custodyCenterId = !!custody ? (account.IsBusinessUnit ? custody.CenterId : null) : null;
 
     return accountCenterId || resourceCenterId || custodyCenterId;
   }

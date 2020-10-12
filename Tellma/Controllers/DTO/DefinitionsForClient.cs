@@ -316,6 +316,7 @@ namespace Tellma.Controllers.Dto
     {
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }
+        public string CostCenterVisibility { get; set; }
         public string ImageVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
         public string LocationVisibility { get; set; }
