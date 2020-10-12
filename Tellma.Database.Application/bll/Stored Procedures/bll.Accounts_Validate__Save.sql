@@ -289,10 +289,12 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
+	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
 	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
-	WHERE (FE.[CenterId] <> R.[CenterId])
+	WHERE (FE.[CenterId] <> R.[CenterId] AND AC.[IsBusinessUnit] = 1)
+	OR  (FE.[CenterId] <> R.[CostCenterId] AND AC.[IsBusinessUnit] = 0)
 
 	-- If Custody Id is not null, and Currency Id is not null, then Account and Custody must have same currency (also added as FK constraint)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
@@ -317,10 +319,11 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [CustodyCenter],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
+	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Custodies] R ON R.[Id] = FE.CustodyId
 	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
 	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
-	WHERE (FE.[CenterId] <> R.[CenterId])
+	WHERE (FE.[CenterId] <> R.[CenterId] AND AC.[IsBusinessUnit] = 1)
 
 	-- Trying to change the account type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
