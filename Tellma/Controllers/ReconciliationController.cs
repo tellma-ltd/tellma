@@ -51,17 +51,6 @@ namespace Tellma.Controllers
             _logger);
         }
 
-        //[HttpGet("report")]
-        //public async Task<ActionResult<ReconciliationLoadReconciledResponse>> LoadReport([FromQuery] ReconciliationLoadReconciledArguments args, CancellationToken cancellation)
-        //{
-        //    return await ControllerUtilities.InvokeActionImpl(async () =>
-        //    {
-        //        var result = await _service.GetReconciled(args, cancellation);
-        //        return Ok(result);
-        //    },
-        //    _logger);
-        //}
-
         [HttpPost("unreconciled")]
         public async Task<ActionResult<SaveSettingsResponse>> SaveAndGetUnreconciled([FromBody] ReconciliationSavePayload payload, [FromQuery] ReconciliationGetUnreconciledArguments args)
         {
@@ -170,17 +159,81 @@ namespace Tellma.Controllers
 
         public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)
         {
-            // Authorized access (Criteria are not supported here)
-            var permissions = await _repo.PermissionsFromCache(VIEW, Constants.Update, default);
-            if (!permissions.Any())
-            {
-                throw new ForbiddenException();
-            }
+            // Start transaction
+            using var trx = ControllerUtilities.CreateTransaction();
 
-            return null;
+            // Preprocess and Validate
+            await PermissionsPreprocessAndValidate(args.AccountId, args.CustodyId, payload);
+
+            // Save
+            var (
+                entriesBalance,
+                unreconciledEntriesBalance,
+                unreconciledExternalEntriesBalance,
+                unreconciledEntriesCount,
+                unreconciledExternalEntriesCount,
+                entries,
+                externalEntries
+            ) = await _repo.Reconciliations__SaveAndLoad_Unreconciled(
+                accountId: args.AccountId,
+                custodyId: args.CustodyId,
+                externalEntriesForSave: payload.ExternalEntries,
+                reconciliations: payload.Reconciliations,
+                deletedExternalEntryIds: payload.DeletedExternalEntryIds,
+                deletedReconciliationIds: payload.DeletedReconciliationIds,
+                asOfDate: args.AsOfDate,
+                top: args.EntriesTop,
+                skip: args.EntriesSkip,
+                topExternal: args.ExternalEntriesTop,
+                skipExternal: args.ExternalEntriesSkip);
+
+            return new ReconciliationGetUnreconciledResponse
+            {
+                EntriesBalance = entriesBalance,
+                UnreconciledEntriesBalance = unreconciledEntriesBalance,
+                UnreconciledExternalEntriesBalance = unreconciledExternalEntriesBalance,
+                UnreconciledEntriesCount = unreconciledEntriesCount,
+                UnreconciledExternalEntriesCount = unreconciledExternalEntriesCount,
+                Entries = entries,
+                ExternalEntries = externalEntries
+            };
         }
 
-        public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
+        public async Task<ReconciliationGetReconciledResponse> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
+        {
+            // Start transaction
+            using var trx = ControllerUtilities.CreateTransaction();
+
+            // Preprocess and Validate
+            await PermissionsPreprocessAndValidate(args.AccountId, args.CustodyId, payload);
+
+            // Save
+            var (
+                reconciledCount,
+                reconciliations
+            ) = await _repo.Reconciliations__SaveAndLoad_Reconciled(
+                accountId: args.AccountId,
+                custodyId: args.CustodyId,
+                externalEntriesForSave: payload.ExternalEntries,
+                reconciliations: payload.Reconciliations,
+                deletedExternalEntryIds: payload.DeletedExternalEntryIds,
+                deletedReconciliationIds: payload.DeletedReconciliationIds,
+                fromDate: args.FromDate,
+                toDate: args.ToDate,
+                fromAmount: args.FromAmount,
+                toAmount: args.ToAmount,
+                externalReferenceContains: args.ExternalReferenceContains,
+                top: args.Top,
+                skip: args.Skip);
+
+            return new ReconciliationGetReconciledResponse
+            {
+                ReconciledCount = reconciledCount,
+                Reconciliations = reconciliations
+            };
+        }
+
+        private async Task PermissionsPreprocessAndValidate(int accountId, int custodyId, ReconciliationSavePayload payload)
         {
             // Authorized access (Criteria are not supported here)
             var permissions = await _repo.PermissionsFromCache(VIEW, Constants.Update, default);
@@ -189,7 +242,20 @@ namespace Tellma.Controllers
                 throw new ForbiddenException();
             }
 
-            return null;
+            // Trim the only string property
+            payload.ExternalEntries?.ForEach(e => e.ExternalReference = e.ExternalReference?.Trim());
+
+            // Validate Save
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var sqlErrors = await _repo.Reconciliations_Validate__Save(
+                accountId: accountId,
+                custodyId: custodyId,
+                externalEntriesForSave: payload.ExternalEntries,
+                reconciliations: payload.Reconciliations,
+                top: ModelState.MaxAllowedErrors);
+
+            ModelState.AddLocalizedErrors(sqlErrors, _localizer);
+            ModelState.ThrowIfInvalid();
         }
     }
 }

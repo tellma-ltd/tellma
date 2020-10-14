@@ -700,6 +700,8 @@
     <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
     <Build Include="bll\Functions\bll.fn_IsLeap.sql" />
     <Build Include="bll\Functions\bll.fn_BusinessUnit__CostCenter.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Unreconciled.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Reconciled.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

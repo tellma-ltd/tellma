@@ -17,6 +17,7 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using System.Runtime.InteropServices.ComTypes;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Tellma.Data
 {
@@ -6032,6 +6033,7 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
@@ -6913,95 +6915,14 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Add parameters
-            cmd.Parameters.Add("@AccountId", accountId);
-            cmd.Parameters.Add("@CustodyId", custodyId);
-            cmd.Parameters.Add("@AsOfDate", asOfDate);
-            cmd.Parameters.Add("@Top", top);
-            cmd.Parameters.Add("@Skip", skip);
-            cmd.Parameters.Add("@TopExternal", topExternal);
-            cmd.Parameters.Add("@SkipExternal", skipExternal);
-
-            // Output parameters
-            var entriesBalanceParam = new SqlParameter("@EntriesBalance", SqlDbType.Decimal)
-            {
-                Direction = ParameterDirection.Output,
-                Precision = 19,
-                Scale = 4
-            };
-            var unreconciledEntriesBalanceParam = new SqlParameter("@UnreconciledEntriesBalance", SqlDbType.Decimal)
-            {
-                Direction = ParameterDirection.Output,
-                Precision = 19,
-                Scale = 4
-            };
-            var unreconciledExternalEntriesBalanceParam = new SqlParameter("@UnreconciledExternalEntriesBalance", SqlDbType.Decimal)
-            {
-                Direction = ParameterDirection.Output,
-                Precision = 19,
-                Scale = 4
-            };
-            var unreconciledEntriesCountParam = new SqlParameter("@UnreconciledEntriesCount", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            var unreconciledExternalEntriesCountParam = new SqlParameter("@UnreconciledExternalEntriesCount", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-
-            // Parameters
-            cmd.Parameters.Add(entriesBalanceParam);
-            cmd.Parameters.Add(unreconciledEntriesBalanceParam);
-            cmd.Parameters.Add(unreconciledExternalEntriesBalanceParam);
-            cmd.Parameters.Add(unreconciledEntriesCountParam);
-            cmd.Parameters.Add(unreconciledExternalEntriesCountParam);
+            AddUnreconciledParamsInner(cmd, accountId, custodyId, asOfDate, top, skip, topExternal, skipExternal);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Unreconciled)}]";
 
             // Execute
-            using (var reader = await cmd.ExecuteReaderAsync(cancellation))
-            {
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    entries.Add(new EntryForReconciliation
-                    {
-                        Id = reader.GetInt32(i++),
-                        PostingDate = reader.DateTime(i++),
-                        Direction = reader.GetInt16(i++),
-                        MonetaryValue = reader.Decimal(i++),
-                        ExternalReference = reader.String(i++)
-                    });
-                }
-
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    externalEntries.Add(new ExternalEntry
-                    {
-                        Id = reader.GetInt32(i++),
-                        PostingDate = reader.DateTime(i++),
-                        Direction = reader.GetInt16(i++),
-                        MonetaryValue = reader.Decimal(i++),
-                        ExternalReference = reader.String(i++),
-                        CreatedById = reader.Int32(i++),
-                        CreatedAt = reader.GetDateTimeOffset(i++),
-                        ModifiedById = reader.Int32(i++),
-                        ModifiedAt = reader.GetDateTimeOffset(i++)
-                    });
-                }
-            }
-
-            decimal entriesBalance = entriesBalanceParam.Value == DBNull.Value ? 0 : (decimal)entriesBalanceParam.Value;
-            decimal unreconciledEntriesBalance = unreconciledEntriesBalanceParam.Value == DBNull.Value ? 0 : (decimal)unreconciledEntriesBalanceParam.Value;
-            decimal unreconciledExternalEntriesBalance = unreconciledExternalEntriesBalanceParam.Value == DBNull.Value ? 0 : (decimal)unreconciledExternalEntriesBalanceParam.Value;
-            int unreconciledEntriesCount = unreconciledEntriesCountParam.Value == DBNull.Value ? 0 : (int)unreconciledEntriesCountParam.Value;
-            int unreconciledExternalEntriesCount = unreconciledExternalEntriesCountParam.Value == DBNull.Value ? 0 : (int)unreconciledExternalEntriesCountParam.Value;
-
-            return (entriesBalance, unreconciledEntriesBalance, unreconciledExternalEntriesBalance, unreconciledEntriesCount, unreconciledExternalEntriesCount, entries, externalEntries);
+            return await LoadUnreconciledInner(cmd);
         }
 
         public async Task<(
@@ -7009,15 +6930,165 @@ namespace Tellma.Data
             List<Reconciliation> reconciliations
             )> Reconciliation__Load_Reconciled(int accountId, int custodyId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliation__Load_Unreconciled));
+            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliation__Load_Reconciled));
 
-            // Result variables
-            var result = new List<Reconciliation>();
-
+            // Connection
             var conn = await GetConnectionAsync(cancellation);
             using var cmd = conn.CreateCommand();
 
             // Add parameters
+            AddReconciledParamsInner(cmd, accountId, custodyId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Reconciled)}]";
+
+            // Execute
+            return await LoadReconciledInner(cmd, cancellation);
+        }
+        
+        public async Task<IEnumerable<ValidationError>> Reconciliations_Validate__Save(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, int top)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@AccountId", accountId);
+            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@Top", top);
+            AddReconciliationsAndExternalEntries(cmd, externalEntriesForSave, reconciliations);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Reconciliations_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<(
+            decimal entriesBalance,
+            decimal unreconciledEntriesBalance,
+            decimal unreconciledExternalEntriesBalance,
+            int unreconciledEntriesCount,
+            int unreconciledExternalEntriesCount,
+            List<EntryForReconciliation> entries,
+            List<ExternalEntry> externalEntries
+            )> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations__SaveAndLoad_Unreconciled));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Add parameters
+            AddUnreconciledParamsInner(cmd, accountId, custodyId, asOfDate, top, skip, topExternal, skipExternal);
+            AddReconciliationsAndExternalEntries(cmd, externalEntriesForSave, reconciliations, deletedExternalEntryIds, deletedReconciliationIds);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Reconciliations__SaveAndLoad_Unreconciled)}]";
+
+            // Execute
+            return await LoadUnreconciledInner(cmd);
+        }
+
+        public async Task<(
+            int reconciledCount,
+            List<Reconciliation> reconciliations
+            )> Reconciliations__SaveAndLoad_Reconciled(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
+        {
+            using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations__SaveAndLoad_Reconciled));
+
+            // Connection
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Add parameters
+            AddReconciledParamsInner(cmd, accountId, custodyId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
+            AddReconciliationsAndExternalEntries(cmd, externalEntriesForSave, reconciliations, deletedExternalEntryIds, deletedReconciliationIds);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Reconciliations__SaveAndLoad_Reconciled)}]";
+
+            // Execute
+            return await LoadReconciledInner(cmd);
+        }
+
+        #region Helpers
+
+        private void AddReconciliationsAndExternalEntries(SqlCommand cmd, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds = null, List<int> deletedReconciliationIds = null)
+        {
+            // ExternalEntries
+            DataTable externalEntriesTable = RepositoryUtilities.DataTable(externalEntriesForSave, addIndex: true);
+            var externalEntriesTvp = new SqlParameter("@ExternalEntries", externalEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ExternalEntry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(externalEntriesTvp);
+
+            // Reconciliations
+            DataTable reconciliationsTable = RepositoryUtilities.DataTable(reconciliations, addIndex: true);
+            var reconciliationsTvp = new SqlParameter("@Reconciliations", reconciliationsTable)
+            {
+                TypeName = $"[dbo].[{nameof(Reconciliation)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(reconciliationsTvp);
+
+            // ReconciliationEntries
+            DataTable reconciliationEntriesTable = RepositoryUtilities.DataTableWithHeaderIndex(reconciliations, e => e.Entries);
+            var reconciliationEntriesTvp = new SqlParameter("@ReconciliationEntries", reconciliationEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReconciliationEntry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(reconciliationEntriesTvp);
+
+            // ReconciliationExternalEntries
+            DataTable reconciliationsExternalEntriesTable = RepositoryUtilities.DataTableWithHeaderIndex(reconciliations, e => e.ExternalEntries);
+            var reconciliationExternalEntriesTvp = new SqlParameter("@ReconciliationExternalEntries", reconciliationsExternalEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReconciliationExternalEntry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(reconciliationExternalEntriesTvp);
+
+            if (deletedExternalEntryIds != null) // Validate SP doesn't take this params
+            {
+                DataTable deletedExternalEntryIdsTable = RepositoryUtilities.DataTable(deletedExternalEntryIds.Select(e => new IdListItem { Id = e }));
+                var deletedExternalEntryIdsTvp = new SqlParameter("@DeletedExternalEntryIds", deletedExternalEntryIdsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(deletedExternalEntryIdsTvp);
+            }
+
+            if (deletedReconciliationIds != null) // Validate SP doesn't take this params
+            {
+                DataTable deletedReconciliationIdsTable = RepositoryUtilities.DataTable(deletedReconciliationIds.Select(e => new IdListItem { Id = e }));
+                var deletedReconciliationIdsTvp = new SqlParameter("@DeletedReconcilationIds", deletedReconciliationIdsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(deletedReconciliationIdsTvp);
+            }
+        }
+
+        private void AddReconciledParamsInner(SqlCommand cmd, int accountId, int custodyId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
+        {
             cmd.Parameters.Add("@AccountId", accountId);
             cmd.Parameters.Add("@CustodyId", custodyId);
             cmd.Parameters.Add("@FromDate", fromDate);
@@ -7036,12 +7107,13 @@ namespace Tellma.Data
 
             // Parameters
             cmd.Parameters.Add(reconciledCountParam);
+        }
 
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Reconciled)}]";
+        private async Task<(int reconciledCount, List<Reconciliation> reconciliations)> LoadReconciledInner(SqlCommand cmd, CancellationToken cancellation = default)
+        {
+            // Result variables
+            var result = new List<Reconciliation>();
 
-            // Execute
             using (var reader = await cmd.ExecuteReaderAsync(cancellation))
             {
                 while (await reader.ReadAsync(cancellation))
@@ -7104,9 +7176,122 @@ namespace Tellma.Data
                 }
             }
 
-            int reconciledCount = reconciledCountParam.Value == DBNull.Value ? 0 : (int)reconciledCountParam.Value;
+            int reconciledCount = GetValue(cmd.Parameters["@ReconciledCount"].Value, 0);
             return (reconciledCount, result);
         }
+
+        private void AddUnreconciledParamsInner(SqlCommand cmd, int accountId, int custodyId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
+        {
+            // Add parameters
+            cmd.Parameters.Add("@AccountId", accountId);
+            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@AsOfDate", asOfDate);
+            cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@Skip", skip);
+            cmd.Parameters.Add("@TopExternal", topExternal);
+            cmd.Parameters.Add("@SkipExternal", skipExternal);
+
+            // Output parameters
+            var entriesBalanceParam = new SqlParameter("@EntriesBalance", SqlDbType.Decimal)
+            {
+                Direction = ParameterDirection.Output,
+                Precision = 19,
+                Scale = 4
+            };
+            var unreconciledEntriesBalanceParam = new SqlParameter("@UnreconciledEntriesBalance", SqlDbType.Decimal)
+            {
+                Direction = ParameterDirection.Output,
+                Precision = 19,
+                Scale = 4
+            };
+            var unreconciledExternalEntriesBalanceParam = new SqlParameter("@UnreconciledExternalEntriesBalance", SqlDbType.Decimal)
+            {
+                Direction = ParameterDirection.Output,
+                Precision = 19,
+                Scale = 4
+            };
+            var unreconciledEntriesCountParam = new SqlParameter("@UnreconciledEntriesCount", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+            var unreconciledExternalEntriesCountParam = new SqlParameter("@UnreconciledExternalEntriesCount", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            // Parameters
+            cmd.Parameters.Add(entriesBalanceParam);
+            cmd.Parameters.Add(unreconciledEntriesBalanceParam);
+            cmd.Parameters.Add(unreconciledExternalEntriesBalanceParam);
+            cmd.Parameters.Add(unreconciledEntriesCountParam);
+            cmd.Parameters.Add(unreconciledExternalEntriesCountParam);
+        }
+
+        private async Task<(decimal entriesBalance, decimal unreconciledEntriesBalance, decimal unreconciledExternalEntriesBalance, int unreconciledEntriesCount, int unreconciledExternalEntriesCount, List<EntryForReconciliation> entries, List<ExternalEntry>)> LoadUnreconciledInner(SqlCommand cmd, CancellationToken cancellation = default)
+        {
+            // Result variables
+            var entries = new List<EntryForReconciliation>();
+            var externalEntries = new List<ExternalEntry>();
+
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    entries.Add(new EntryForReconciliation
+                    {
+                        Id = reader.GetInt32(i++),
+                        PostingDate = reader.DateTime(i++),
+                        Direction = reader.GetInt16(i++),
+                        MonetaryValue = reader.Decimal(i++),
+                        ExternalReference = reader.String(i++)
+                    });
+                }
+
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    externalEntries.Add(new ExternalEntry
+                    {
+                        Id = reader.GetInt32(i++),
+                        PostingDate = reader.DateTime(i++),
+                        Direction = reader.GetInt16(i++),
+                        MonetaryValue = reader.Decimal(i++),
+                        ExternalReference = reader.String(i++),
+                        CreatedById = reader.Int32(i++),
+                        CreatedAt = reader.GetDateTimeOffset(i++),
+                        ModifiedById = reader.Int32(i++),
+                        ModifiedAt = reader.GetDateTimeOffset(i++)
+                    });
+                }
+            }
+
+            decimal entriesBalance = GetValue(cmd.Parameters["@EntriesBalance"].Value, 0m);
+            decimal unreconciledEntriesBalance = GetValue(cmd.Parameters["@UnreconciledEntriesBalance"].Value, 0m);
+            decimal unreconciledExternalEntriesBalance = GetValue(cmd.Parameters["@UnreconciledExternalEntriesBalance"].Value, 0m);
+            int unreconciledEntriesCount = GetValue(cmd.Parameters["@UnreconciledEntriesCount"].Value, 0);
+            int unreconciledExternalEntriesCount = GetValue(cmd.Parameters["@UnreconciledExternalEntriesCount"].Value, 0);
+
+            return (entriesBalance, unreconciledEntriesBalance, unreconciledExternalEntriesBalance, unreconciledEntriesCount, unreconciledExternalEntriesCount, entries, externalEntries);
+        }
+
+        /// <summary>
+        /// Utility function: if obj is <see cref="DBNull.Value"/>, returns the default value of the type, else returns cast value
+        /// </summary>
+        private T GetValue<T>(object obj, T defaultValue = default)
+        {
+            if (obj == DBNull.Value)
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return (T)obj;
+            }
+        }
+
+        #endregion
 
         #endregion
     }
