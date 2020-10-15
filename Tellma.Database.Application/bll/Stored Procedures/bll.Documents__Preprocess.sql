@@ -77,7 +77,8 @@ BEGIN
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.[ParticipantDefinitionId] IS NULL;
+	WHERE AC.[ParticipantDefinitionId] IS NULL
+	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
 	UPDATE E
 	SET E.[ResourceId] = NULL, E.Quantity = NULL, E.UnitId = NULL

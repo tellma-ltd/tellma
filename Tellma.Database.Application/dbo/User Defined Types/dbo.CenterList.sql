@@ -8,7 +8,8 @@
 														N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
 														N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
-														N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl'
+														N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl',
+														N'OtherPL'
 													)
 												),
 	[Name]				NVARCHAR (255)		NOT NULL,

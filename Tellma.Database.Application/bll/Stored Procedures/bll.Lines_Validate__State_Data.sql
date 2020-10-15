@@ -136,7 +136,7 @@ BEGIN
 
 	-- Null Values are not allowed
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' +
 			CAST([Index]  AS NVARCHAR (255))+ '].Value',
@@ -147,7 +147,7 @@ BEGIN
 
 	-- Lines must be balanced
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TransactionHasDebitCreditDifference0',
@@ -159,7 +159,7 @@ BEGIN
 
 	-- account/currency/center/ must not be null
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
@@ -192,7 +192,7 @@ BEGIN
 	WHERE (A.[ResourceDefinitionId] IS NOT NULL) AND (E.[ResourceId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].CustodyId',
@@ -204,7 +204,7 @@ BEGIN
 	WHERE (A.[CustodyDefinitionId] IS NOT NULL) AND (E.[CustodyId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].EntryTypeId',
@@ -510,7 +510,7 @@ IF @State > 0
 BEGIN
 	-- No inactive account, for any positive state
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheAccount0IsInactive',
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account

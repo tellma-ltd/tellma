@@ -309,6 +309,17 @@ SET NOCOUNT ON;
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'CurrentInventoriesInTransitExpendituresControl'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_OtherPL'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'OtherPL'
 
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

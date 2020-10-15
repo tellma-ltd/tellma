@@ -35,8 +35,7 @@ SET NOCOUNT ON;
 	FROM @Entities FE 
 	JOIN [dbo].[AccountTypes] BE ON FE.Code = BE.Code
 	WHERE FE.[Code] IS NOT NULL
-	AND (FE.Id <> BE.Id)
-	OPTION(HASH JOIN);
+	AND (FE.Id <> BE.Id);
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -51,6 +50,32 @@ SET NOCOUNT ON;
 		WHERE [Code] IS NOT NULL
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
+	);
+
+	-- Name must not be already in the back end
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
+		N'Error_TheName0IsUsed',
+		FE.[Name] AS Argument0
+	FROM @Entities FE 
+	JOIN [dbo].[AccountTypes] BE ON FE.[Name] = BE.[Name]
+	WHERE FE.[Name] IS NOT NULL
+	AND (FE.Id <> BE.Id);
+
+	-- Name must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
+		N'Error_TheName0IsDuplicated',
+		[Name]
+	FROM @Entities
+	WHERE [Name] IN (
+		SELECT [Name]
+		FROM @Entities
+		WHERE [Name] IS NOT NULL
+		GROUP BY [Name]
+		HAVING COUNT(*) > 1
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

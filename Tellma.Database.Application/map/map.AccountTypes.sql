@@ -47,13 +47,13 @@ SELECT
     Q.[ValidFrom],
     Q.[ValidTo],
     CAST(IIF(
-        Q.[Code] LIKE N'2111011%' OR -- Revenues
-        Q.[Code] LIKE N'2111015%' OR -- Expense By Nature
+        
         Q.[Code] LIKE N'1110112%' OR -- Construction in progress
         Q.[Code] LIKE N'111022%' OR -- Investment property under construction or development
         Q.[Code] LIKE N'112112%' OR -- Current work in progress
         Q.[Code] LIKE N'112114%' OR -- Current inventories in transit
-        Q.[Code] LIKE N'41%'
+        Q.[Code] LIKE N'2%' OR -- Profit Or Loss
+        Q.[Code] LIKE N'3%' -- Other comprehensive income
     , 0, 1) AS BIT) AS IsBusinessUnit,
 
     [Node].GetAncestor(1)  AS [ParentNode],
