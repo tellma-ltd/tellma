@@ -6,18 +6,7 @@
 	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
 	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
 	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
-	@DeletedReconcilationIds	IdList READONLY, -- <- delete
-	@AsOfDate					DATE,
-	@ReturnUnreconciled			BIT = 0,
-	--<- We must also add the search parameters of dal.Reconciliation_Load_Reconciled
-	@FromDate					DATE,
-	@ToDate						DATE,
-	@FromAmount					DECIMAL (19, 4),
-	@ToAmount					DECIMAL (19, 4),
-	@ExternalReferenceContains	NVARCHAR (50),
-	@Top						INT, 
-	@Skip						INT,
-	@ReconciledCount			INT OUTPUT
+	@DeletedReconcilationIds	IdList READONLY -- <- delete
 AS
 	DECLARE @RIndexedIds [dbo].[IndexedIdList];
 	DECLARE @EEIndexedIds [dbo].[IndexedIdList];
@@ -77,31 +66,3 @@ AS
 	FROM @ReconciliationExternalEntries REE
 	JOIN @RIndexedIds RII ON REE.[HeaderIndex] = RII.[Index]
 	JOIN @EEIndexedIds EEII ON REE.[ExternalEntryIndex] = EEII.[Index]
-
-	--IF @ReturnUnreconciled = 1
-	--	EXEC [dal].[Reconciliation__Load_Unreconciled]
-	--		@AccountId = @AccountId,
-	--		@CustodyId = @CustodyId,
-	--		@AsOfDate = @AsOfDate,
-	--		@Top = 	@Top,
-	--		@Skip =	@Skip,
-	--		@TopExternal = @TopExternal, 
-	--		@SkipExternal =	@SkipExternal,
-	--		@EntriesBalance = @EntriesBalance OUTPUT,
-	--		@UnreconciledEntriesBalance = @UnreconciledEntriesBalance OUTPUT,
-	--		@UnreconciledExternalEntriesBalance = @UnreconciledExternalEntriesBalance OUTPUT,
-	--		@UnreconciledEntriesCount = @UnreconciledEntriesCount OUTPUT,
-	--		@UnreconciledExternalEntriesCount =	@UnreconciledExternalEntriesCount OUTPUT
-
-	IF @ReturnUnreconciled = 0
-		EXEC [dal].[Reconciliation__Load_Reconciled]
-			@AccountId = @AccountId,
-			@CustodyId = @CustodyId,
-			@FromDate = @FromDate,
-			@ToDate = @ToDate,
-			@FromAmount = @FromAmount,
-			@ToAmount = @ToAmount,
-			@ExternalReferenceContains = @ExternalReferenceContains,
-			@Top = 	@Top,
-			@Skip =	@Skip,
-			@ReconciledCount = @ReconciledCount OUTPUT

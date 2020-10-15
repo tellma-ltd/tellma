@@ -6,6 +6,8 @@
             <ul class="breadcrumb mb-0">
                 <li class="breadcrumb-item active">
                     {{ 'BankReconciliation' | translate }}
+                    <!-- Dirty Asterisk -->
+                    <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">&nbsp;*</span>
                 </li>
             </ul>
         </div>
@@ -23,7 +25,7 @@
 
                     <!-- Account -->
                     <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
-                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="CustodyDefinitionId"
+                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="CustodyDefinitionId,Currency/E"
                             filter="AccountType/Concept eq 'BalancesWithBanks'" [ensureAdditionalSelect]="true"
                             (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                         </t-accounts-picker>
@@ -32,8 +34,8 @@
                     <!-- Custody -->
                     <t-form-group class="t-form-group" [label]="labelCustody_Manual" *ngIf="showCustodyParameter">
                         <t-custodies-picker *ngIf="!readonlyCustody_Manual" [(ngModel)]="custodyId"
-                            [definitionIds]="definitionIdsCustody_Manual" [ensureAdditionalSelect]="true"
-                            (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                            additionalSelect="Currency/E" [definitionIds]="definitionIdsCustody_Manual"
+                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                         </t-custodies-picker>
                         <t-view-link *ngIf="readonlyCustody_Manual"
                             [link]="'../custodies/' + ws.get('Custody', readonlyValueCustodyId_Manual)?.DefinitionId"
@@ -54,19 +56,50 @@
         <!-- Toolbar -->
         <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
 
-            <!-- Left Buttons -->
-            <div>
+            <!-- Reconeile toolbar -->
+            <div *ngIf="showCheckedEntriesToolbar">
 
-                <!-- Export -->
-                <button class="btn btn-primary btn-sm t-toolbar-button d-none" (click)="onExport()" [disabled]="!canExport">
-                    <fa-icon icon="download"></fa-icon>
-                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+                <span class="mx-2 t-vertical-align-middle">
+                    {{ 'NSelectedItems' | translate: { count: checkedEntriesTotal | accounting:amountsFormat } }}
+                </span>
+
+                <!-- Reconcile -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onReconcileChecked()"
+                    [disabled]="!canReconcileChecked">
+                    <fa-icon icon="compress"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Reconcile' | translate }}</span>
                 </button>
+
+                <!-- Cancel -->
+                <button class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button" type="button"
+                    (click)="onCancelReconcileChecked()">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
+                </button>
+            </div>
+
+
+            <!-- Edit Toolbar -->
+            <div *ngIf="showEditToolbar">
+
+                <!-- Save -->
+                <button class="btn btn-sm t-toolbar-button btn-primary" (click)="onSave()">
+                    <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
+                </button>
+
+                <!-- Cancel -->
+                <button class="btn btn-sm t-toolbar-button btn-light text-primary t-white-button" (click)="onCancel()">
+                    <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
+                </button>
+            </div>
+
+            <!-- Left Buttons -->
+            <div *ngIf="showViewToolbar">
 
                 <!-- Export -->
                 <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
-                    <fa-icon icon="compress"></fa-icon>
-                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Reconcile (Enter)' | translate }}</span>
+                    <fa-icon icon="download"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
                 </button>
 
                 <!-- Data dropdown -->
@@ -138,11 +171,11 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th colSpan="3">GL Account Statement</th>
+                            <th colSpan="3">Internal Entries</th>
                             <th *ngIf="isUnreconciled"></th>
                             <th></th>
                             <th *ngIf="isUnreconciled"></th>
-                            <th colSpan="3">External Statement</th>
+                            <th colSpan="3">External Entries</th>
                             <th></th>
                         </tr>
                         <tr>
@@ -189,8 +222,9 @@
                             <td class="t-a">
                                 {{ row.entry?.ExternalReference }}
                             </td>
-                            <td class="text-right t-a font-weight-bold" [class.text-danger]="row.exEntry?.Direction < 0">
-                                {{ !!row.entry ? (row.entry?.MonetaryValue * row.entry?.Direction | accounting) : '' }}
+                            <td class="text-right t-a font-weight-bold"
+                                [class.text-danger]="row.exEntry?.Direction < 0">
+                                {{ !!row.entry ? (row.entry?.MonetaryValue * row.entry?.Direction | accounting:amountsFormat) : '' }}
                             </td>
                             <td class="text-right t-a" *ngIf="isUnreconciled">
                                 <!-- checkbox -->
@@ -203,10 +237,10 @@
                             </td>
                             <td *ngIf="row.isReconciled && !!row.rowSpan" [rowSpan]="row.rowSpan"
                                 class="bg-white border-left border-right">
-                                
+
                             </td>
                             <td *ngIf="!row.isReconciled" class="bg-white border-left border-right">
-                                
+
                             </td>
                             <td class="t-b" *ngIf="isUnreconciled">
                                 <!-- checkbox -->
@@ -223,8 +257,9 @@
                             <td class="t-b">
                                 {{ row.exEntry?.ExternalReference }}
                             </td>
-                            <td class="text-right t-b font-weight-bold" [class.text-danger]="row.exEntry?.Direction < 0">
-                                {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction | accounting) : '' }}
+                            <td class="text-right t-b font-weight-bold"
+                                [class.text-danger]="row.exEntry?.Direction < 0">
+                                {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction | accounting:amountsFormat) : '' }}
                             </td>
                             <td class="t-b">&zwnj;</td>
                         </tr>
@@ -270,6 +305,35 @@
         <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Unsaved Changes Modal -->
+<ng-template #unsavedChangesModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ 'UnsavedChangesConfirmationMessage' | translate }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-danger" (click)="modal.close(true)">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Proceed' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
         </button>
     </div>
 </ng-template>

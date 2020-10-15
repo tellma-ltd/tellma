@@ -1,10 +1,10 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { WorkspaceService, ReconciliationStore, ReportStatus } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { ApiService } from '~/app/data/api.service';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,9 +17,12 @@ import {
   ReconciliationGetUnreconciledArguments,
   ReconciliationGetUnreconciledResponse
 } from '~/app/data/dto/reconciliation';
-import { ExternalEntry } from '~/app/data/entities/external-entry';
-import { metadata_Custody } from '~/app/data/entities/custody';
+import { ExternalEntry, ExternalEntryForSave } from '~/app/data/entities/external-entry';
+import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { EntryForReconciliation } from '~/app/data/entities/entry-for-reconciliation';
+import { Currency } from '~/app/data/entities/currency';
+import { ReconciliationForSave } from '~/app/data/entities/reconciliation';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -37,6 +40,9 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   private notifyFetch$ = new Subject<void>();
   private notifyDestruct$ = new Subject<void>();
   private api = this.apiService.reconciliationApi(this.notifyDestruct$); // Only for intellisense
+
+  @ViewChild('unsavedChangesModal', { static: true })
+  unsavedChangesModal: TemplateRef<any>;
 
   public viewChoices: SelectorChoice[] = [
     { value: 'reconciled', name: () => this.translate.instant('Reconciled') },
@@ -65,7 +71,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   constructor(
     private workspace: WorkspaceService, private router: Router, private customUserSettings: CustomUserSettingsService,
-    private route: ActivatedRoute, private apiService: ApiService, private translate: TranslateService) { }
+    private route: ActivatedRoute, private apiService: ApiService, private translate: TranslateService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
 
@@ -194,17 +200,9 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
         // Prepare the query params
         obs = this.api.getUnreconciled(args).pipe(
-          tap(response => {
-            // Result is loaded
-            s.reportStatus = ReportStatus.loaded;
-
+          map(response => {
             // Add the result to the state
             s.unreconciled_response = response;
-          }),
-          catchError((friendlyError: FriendlyError) => {
-            s.reportStatus = ReportStatus.error;
-            s.errorMessage = friendlyError.error;
-            return of(null);
           })
         );
       } else {
@@ -223,20 +221,27 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
         // Prepare the query params
         obs = this.api.getReconciled(args).pipe(
-          tap(response => {
-            // Result is loaded
-            s.reportStatus = ReportStatus.loaded;
-
+          map(response => {
             // Add the result to the state
             s.reconciled_response = response;
-          }),
-          catchError((friendlyError: FriendlyError) => {
-            s.reportStatus = ReportStatus.error;
-            s.errorMessage = friendlyError.error;
-            return of(null);
           })
         );
       }
+
+      obs = obs.pipe(
+        tap(_ => {
+          // Result is loaded
+          s.reportStatus = ReportStatus.loaded;
+
+          // Edits cannot stay after a refresh
+          this.resetEdits();
+        }),
+        catchError((friendlyError: FriendlyError) => {
+          s.reportStatus = ReportStatus.error;
+          s.errorMessage = friendlyError.error;
+          return of(null);
+        })
+      );
 
       return obs;
     }
@@ -274,29 +279,28 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   public canDeactivate(): boolean | Observable<boolean> {
-    return true;
-    // if (this.isDirty) {
+    if (this.isDirty) {
 
-    //   // IF there are unsaved changes, prompt the user asking if they would like them discarded
-    //   const modal = this.modalService.open(this.unsavedChangesModal);
+      // IF there are unsaved changes, prompt the user asking if they would like them discarded
+      const modal = this.modalService.open(this.unsavedChangesModal);
 
-    //   // capture the user's decision in a subject:
-    //   // first action when the user presses one of the two buttons
-    //   // second func is when the user dismisses the modal with x or ESC or clicking the background
-    //   const decision$ = new Subject<boolean>();
-    //   modal.result.then(
-    //     v => { decision$.next(v); decision$.complete(); },
-    //     _ => { decision$.next(false); decision$.complete(); }
-    //   );
+      // capture the user's decision in a subject:
+      // first action when the user presses one of the two buttons
+      // second func is when the user dismisses the modal with x or ESC or clicking the background
+      const decision$ = new Subject<boolean>();
+      modal.result.then(
+        v => { decision$.next(v); decision$.complete(); },
+        _ => { decision$.next(false); decision$.complete(); }
+      );
 
-    //   // return the subject that will eventually emit the user's decision
-    //   return decision$;
+      // return the subject that will eventually emit the user's decision
+      return decision$;
 
-    // } else {
+    } else {
 
-    //   // IF there are no unsaved changes, the navigation can happily proceed
-    //   return true;
-    // }
+      // IF there are no unsaved changes, the navigation can happily proceed
+      return true;
+    }
   }
 
   public get canExport() {
@@ -714,6 +718,119 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   public onSelectRow(row: ReconciliationRow) {
     alert('TODO');
+  }
+
+  public get showCheckedEntriesToolbar(): boolean {
+    // Always appears when there are checkboxes selected
+    return !!this.rows && this.rows.some(e => e.entryIsChecked || e.exEntryIsChecked);
+  }
+
+  public get showEditToolbar(): boolean {
+    // Appears when there are dirty changes
+    return this.isDirty && !this.showCheckedEntriesToolbar;
+  }
+
+  public get showViewToolbar(): boolean {
+    return !this.isDirty && !this.showCheckedEntriesToolbar;
+  }
+
+  private get checkedEntries(): EntryForReconciliation[] {
+    if (!this.rows) {
+      return [];
+    }
+
+    return this.rows.filter(e => !!e.entry && e.entryIsChecked).map(e => e.entry);
+  }
+
+  private get checkedExEntries(): ExternalEntry[] {
+    if (!this.rows) {
+      return [];
+    }
+
+    return this.rows.filter(e => !!e.exEntry && e.exEntryIsChecked).map(e => e.exEntry);
+  }
+
+  public get checkedEntriesTotal(): number {
+    return this.checkedEntries.map(e => e.Direction * e.MonetaryValue).reduce((a, b) => a + b, 0);
+  }
+
+  public get checkedExEntriesTotal(): number {
+    return this.checkedExEntries.map(e => e.Direction * e.MonetaryValue).reduce((a, b) => a + b, 0);
+  }
+
+  public get isDirty(): boolean {
+    return this.externalEntriesForSave.length > 0 ||
+      this.reconciliationsForSave.length > 0 ||
+      this.deletedExternalEntryIds.length > 0 ||
+      this.deletedReconciliationIds.length > 0;
+  }
+
+  private externalEntriesForSave: ExternalEntryForSave[] = [];
+  private reconciliationsForSave: ReconciliationForSave[] = [];
+  private deletedExternalEntryIds: number[] = [];
+  private deletedReconciliationIds: number[] = [];
+
+  private resetEdits() {
+    this.externalEntriesForSave = [];
+    this.reconciliationsForSave = [];
+    this.deletedExternalEntryIds = [];
+    this.deletedReconciliationIds = [];
+  }
+
+  public onSave() {
+    alert('TODO');
+  }
+
+  public onCancel() {
+    this.resetEdits();
+  }
+
+  /**
+   * Unchecks all checked internal entries and external entries
+   */
+  private uncheckAll() {
+    if (!!this.rows) {
+      for (const row of this.rows) {
+        delete row.entryIsChecked;
+        delete row.exEntryIsChecked;
+      }
+    }
+  }
+
+  public onReconcileChecked() {
+    if (this.canReconcileChecked) {
+      const reconciliation: ReconciliationForSave = {
+        Entries: this.checkedEntries.map(e => ({ EntryId: +e.Id })),
+        ExternalEntries: this.checkedExEntries.map(e => ({ ExternalEntryId: +e.Id, ExternalEntryIndex: 0 }))
+      };
+
+      this.reconciliationsForSave.push(reconciliation);
+      this.uncheckAll(); // Clear the selection
+    }
+  }
+
+  public get canReconcileChecked(): boolean {
+    return this.checkedEntriesTotal === this.checkedExEntriesTotal;
+  }
+
+  public onCancelReconcileChecked() {
+    this.uncheckAll();
+  }
+
+  private amountsFormatAccount: Account;
+  private amountsFormatCustody: Custody;
+  private amountsFormatResult: string;
+  public get amountsFormat(): string {
+    const custody = this.ws.get('Custody', this.custodyId);
+    const account = this.ws.get('Account', this.accountId);
+    if (this.amountsFormatCustody !== custody && this.amountsFormatAccount !== account) {
+      const currencyId = (!!account ? account.CurrencyId : null) || (!!custody ? custody.CurrencyId : null);
+      const currency = this.ws.get('Currency', currencyId) as Currency;
+      const decimals = !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+      this.amountsFormatResult = `1.${decimals}-${decimals}`;
+    }
+
+    return this.amountsFormatResult;
   }
 }
 

@@ -841,11 +841,17 @@
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>帐户的价值平衡“{0}”将变为负。</value>
   </data>
+  <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
+    <value>帐户找不到。</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>帐户类型 '{0}' 帐户 '{1}' 中使用。</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>发生意外错误添加外部登录与电子邮件用户“{0}”。</value>
+  </data>
+  <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
+    <value>内部条目的总量{0}不等于外部条目{1}的。</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>
@@ -900,6 +906,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
+  </data>
+  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
+    <value>保管找不到。</value>
   </data>
   <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
     <value>托管DefinitionId“{0}”未能找到。</value>
@@ -989,7 +998,7 @@
     <value>属性{0}不是关键属性有效，密钥属性必须是int类型或字符串的</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后例如：“雇员 - 姓名”。</value>
+    <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后，例如：“雇员 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签“{0}”不上式{1}匹配的集合。</value>
@@ -1213,8 +1222,8 @@
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>该文件已完成线。</value>
   </data>
-  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
-    <value>控制帐户“{0}”的“{1}”非零净平衡。</value>
+  <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
+    <value>控制帐户“{0}”“{1}”具有的“{2}”非零净平衡。</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>有些行缺少必需的签名。</value>
@@ -2678,7 +2687,7 @@
     <value>关闭量</value>
   </data>
   <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>截止数量</value>
+    <value>关闭数量</value>
   </data>
   <data name="SummaryEntry_Credit" xml:space="preserve">
     <value>信用</value>

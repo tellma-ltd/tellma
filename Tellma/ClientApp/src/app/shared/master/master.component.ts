@@ -1093,7 +1093,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         }
 
         const prop = props[propName];
-        if (prop.control === 'text' || (prop.control === 'number' && prop.maxDecimalPlaces === 0)) {
+        if (prop.control === 'text' || prop.control === 'serial' || (prop.control === 'number' && prop.maxDecimalPlaces === 0)) {
           this.importKeyChoicesResult.push({ value: propName, name: prop.label });
         }
       }
@@ -1124,7 +1124,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // Try to suggestion a user key
     if (!this.importKey) {
       const choices = this.importKeyChoices;
-      if (choices.find(e => e.value === 'Code')) {
+      if (choices.find(e => e.value === 'SerialNumber')) {
+        this.importKey = 'SerialNumber';
+      } else if (choices.find(e => e.value === 'Code')) {
         this.importKey = 'Code';
       } else if (choices.find(e => e.value === 'Name')) {
         this.importKey = 'Name';

@@ -841,11 +841,17 @@
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>መለያ ዋጋ ሚዛን «{0}» አሉታዊ ይሆናል.</value>
   </data>
+  <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
+    <value>መለያ ሊገኝ አልቻለም.</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ አይነት «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>ያልተጠበቀ ስህተት «{0}» ኢሜይል ጋር ተጠቃሚ ውጫዊ የመግቢያ በማከል ተከስቷል.</value>
+  </data>
+  <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
+    <value>የውስጥ ግቤቶች ጠቅላላ መጠን {0} ውጫዊ ግቤቶችን {1} መካከል እኩል አይደለም.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
@@ -900,6 +906,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ ላይ ሳለ አንድ ስህተት ተከስቷል.</value>
+  </data>
+  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
+    <value>የጥበቃ ሥር ሊገኝ አልቻለም.</value>
   </data>
   <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
     <value>የጥበቃ DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
@@ -1213,8 +1222,8 @@
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>ሰነዱ መስመሮች አጠናቅቋል.</value>
   </data>
-  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
-    <value>ይቆጣጠሩ መለያ «{0} '' {1} 'አንድ ዜሮ ባልሆኑ የተጣራ ሚዛን አለው.</value>
+  <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
+    <value>መቆጣጠር መለያ «{0} '' {1}» «{2} 'አንድ ዜሮ ባልሆኑ የተጣራ ሚዛን አለው.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>አንዳንድ መስመሮች ያስፈልጋል ፊርማ ይጎድላሉ.</value>
