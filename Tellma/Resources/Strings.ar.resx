@@ -280,6 +280,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>تكاليف مبان للتأجير قيد الإنشاء</value>
   </data>
+  <data name="Center_CenterType_OtherPL" xml:space="preserve">
+    <value>أرباح أو خسائر أخرى</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>تسويقي وإداري</value>
   </data>

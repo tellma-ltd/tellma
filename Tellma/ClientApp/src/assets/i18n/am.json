@@ -93,6 +93,7 @@
   "Center_CenterType_CostOfSales": "የሽያጭ ወጪ",
   "Center_CenterType_CurrentInventoriesInTransitExpendituresControl": "የትራንዚት የወጪ",
   "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl": "ኪራዮች ስር ኮንስትራክሽን የወጪ",
+  "Center_CenterType_OtherPL": "ሌሎች ትርፍ / ማጣት",
   "Center_CenterType_SellingGeneralAndAdministration": "ሽያጭ አጠቃላይ እና አስተዳደር",
   "Center_CenterType_SharedExpenseControl": "የተጋራ የወጪ",
   "Center_CenterType_WorkInProgressExpendituresControl": "የምርት የወጪ",

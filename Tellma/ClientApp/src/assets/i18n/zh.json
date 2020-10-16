@@ -93,6 +93,7 @@
   "Center_CenterType_CostOfSales": "销售成本",
   "Center_CenterType_CurrentInventoriesInTransitExpendituresControl": "运输费用",
   "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl": "在建出租费用",
+  "Center_CenterType_OtherPL": "其它利润/亏损",
   "Center_CenterType_SellingGeneralAndAdministration": "销售一般及行政",
   "Center_CenterType_SharedExpenseControl": "共享费用",
   "Center_CenterType_WorkInProgressExpendituresControl": "生产费用",

@@ -280,6 +280,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>Rentals Under Construction Expense</value>
   </data>
+  <data name="Center_CenterType_OtherPL" xml:space="preserve">
+    <value>Other Profit/Loss</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>Selling General and Administration</value>
   </data>

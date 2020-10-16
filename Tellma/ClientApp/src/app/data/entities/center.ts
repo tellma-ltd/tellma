@@ -71,7 +71,8 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                         'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
                         'CurrentInventoriesInTransitExpendituresControl',
                         'ConstructionInProgressExpendituresControl',
-                        'WorkInProgressExpendituresControl'
+                        'WorkInProgressExpendituresControl',
+                        'OtherPL',
                     ],
                     format: (c: string) => !!c ? trx.instant(`Center_CenterType_${c}`) : ''
                 },
