@@ -55,16 +55,18 @@ AS
 	OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	-- Insert internal side of the reconciliation
 	INSERT INTO dbo.ReconciliationEntries([ReconciliationId], [EntryId])
 	SELECT II.Id, RE.EntryId
 	FROM @ReconciliationEntries RE
 	JOIN @RIndexedIds II ON RE.[HeaderIndex] = II.[Index];
 
+	-- Insert external side of the reconciliation
 	INSERT INTO dbo.ReconciliationExternalEntries([ReconciliationId], [ExternalEntryId])
-	SELECT RII.Id, EEII.Id
+	SELECT RII.Id, COALESCE(EEII.Id, REE.ExternalEntryId)
 	FROM @ReconciliationExternalEntries REE
 	JOIN @RIndexedIds RII ON REE.[HeaderIndex] = RII.[Index]
-	JOIN @EEIndexedIds EEII ON REE.[ExternalEntryIndex] = EEII.[Index]
+	LEFT JOIN @EEIndexedIds EEII ON REE.[ExternalEntryIndex] = EEII.[Index]
 
 	-- Delete Reconciliations
 	DELETE FROM dbo.[Reconciliations] WHERE Id IN (SELECT [Id] FROM @DeletedReconcilationIds)
