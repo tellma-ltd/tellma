@@ -636,83 +636,120 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   // results
 
-  private _reconciled: ReconciliationRow[];
-  private _reconciledResponse: ReconciliationGetReconciledResponse;
-
-  public get reconciled(): ReconciliationRow[] {
-    const res = this.state.reconciled_response;
-    if (this._reconciledResponse !== res) {
-      this._reconciledResponse = res;
-
-      this._reconciled = [];
-      if (!!res) {
-        for (const reconciliation of res.Reconciliations) {
-          const length = Math.max(reconciliation.Entries.length, reconciliation.ExternalEntries.length);
-          for (let i = 0; i < length; i++) {
-            const row: ReconciliationRow = { isReconciled: true };
-
-            // The first row will have a middle cell extending to the entire reconciliation, with a button to unreconcile
-            if (i === 0) {
-              row.rowSpan = length;
-            }
-            // The last row will have a thick bottom border indicating that the reconciliation is done, and shows the next reconciliation
-            if (i === length - 1) {
-              row.lastOne = true;
-            }
-
-            // The entry
-            const reconciliationEntry = reconciliation.Entries[i];
-            if (!!reconciliationEntry) {
-              row.entry = reconciliationEntry.Entry;
-            }
-
-            // The external entry
-            const reconciliationExEntry = reconciliation.ExternalEntries[i];
-            if (!!reconciliationExEntry && !!reconciliationExEntry.ExternalEntryId) {
-              row.exEntry = reconciliationExEntry.ExternalEntry;
-            }
-
-            this._reconciled.push(row);
-          }
-        }
-      }
-    }
-
-    return this._reconciled;
-  }
-
-  private _unreconciled: ReconciliationRow[];
-  private _unreconciledResponse: ReconciliationGetUnreconciledResponse;
-
-  public get unreconciled(): ReconciliationRow[] {
-    const res = this.state.unreconciled_response;
-    if (this._unreconciledResponse !== res) {
-      this._unreconciledResponse = res;
-
-      this._unreconciled = [];
-      if (!!res) {
-        const length = Math.max(res.Entries.length, res.ExternalEntries.length);
-        for (let i = 0; i < length; i++) {
-          const row: ReconciliationRow = { isReconciled: false };
-
-          // The entry
-          row.entry = res.Entries[i];
-          row.exEntry = res.ExternalEntries[i];
-
-          this._unreconciled.push(row);
-        }
-      }
-    }
-
-    return this._unreconciled;
-  }
-
+  private _rowsResponse: ReconciliationGetUnreconciledResponse | ReconciliationGetReconciledResponse;
+  private _rows: ReconciliationRow[] = [];
   public get rows(): ReconciliationRow[] {
     switch (this.view) {
-      case 'unreconciled':
-        return this.unreconciled;
-      case 'reconciled':
-        return this.reconciled;
+      case 'reconciled': {
+        const res = this.state.reconciled_response;
+        if (this._rowsResponse !== res) {
+          this._rowsResponse = res;
+          this._rows = [];
+          if (!!res) {
+            for (const reconciliation of res.Reconciliations) {
+              const length = Math.max(reconciliation.Entries.length, reconciliation.ExternalEntries.length);
+              for (let i = 0; i < length; i++) {
+                const row: ReconciliationRow = { isReconciled: true };
+
+                // The first row will have a middle cell extending to the entire reconciliation, with a button to unreconcile
+                if (i === 0) {
+                  row.rowSpan = length;
+                }
+                // The last row will have a thick bottom border indicating that the
+                // reconciliation is done, and shows the next reconciliation
+                if (i === length - 1) {
+                  row.lastOne = true;
+                }
+
+                // The entry
+                const reconciliationEntry = reconciliation.Entries[i];
+                if (!!reconciliationEntry) {
+                  row.entry = reconciliationEntry.Entry;
+                }
+
+                // The external entry
+                const reconciliationExEntry = reconciliation.ExternalEntries[i];
+                if (!!reconciliationExEntry && !!reconciliationExEntry.ExternalEntryId) {
+                  row.exEntry = reconciliationExEntry.ExternalEntry;
+                }
+
+                this._rows.push(row);
+              }
+            }
+          }
+        }
+        break;
+      }
+      case 'unreconciled': {
+        const res = this.state.unreconciled_response;
+        if (this._rowsResponse !== res) {
+          this._rowsResponse = res;
+          this._rows = [];
+          if (!!res) {
+            const length = Math.max(res.Entries.length, res.ExternalEntries.length);
+            let lastExEntryIndex = 0; // Keeps track of the last row that isn't reconciled and doesn't have an external entry
+            for (let i = 0; i < length; i++) {
+              const row: ReconciliationRow = { isReconciled: false };
+
+              // The entry
+              row.entry = res.Entries[i];
+              row.exEntry = res.ExternalEntries[i];
+
+              this._rows.push(row);
+
+              if (row.isReconciled || !!row.exEntry) {
+                lastExEntryIndex = i;
+              }
+            }
+
+            this.addPlaceholder(lastExEntryIndex + 1, false); // Add placeholder on the next row
+          }
+        }
+        break;
+      }
+
+      default: {
+        console.error(`Unknown view ${this.view}`); // future proofing
+        this._rows = [];
+      }
+    }
+
+    return this._rows;
+  }
+
+  private addPlaceholder(index: number = -1, refresh: boolean) {
+
+    // If the index is not supplied, compute it automatically
+    if (index < 0) {
+      index = this._rows.length - 1;
+      for (; index >= 0; index--) {
+        const row = this._rows[index];
+
+        if (row.isReconciled || !!row.exEntry) {
+          // 1 + the last index that is either reconciled or contains an external entry
+          index++;
+          break;
+        }
+      }
+    }
+
+    if (!this._rows[index]) {
+      this._rows[index] = { isReconciled: false, isPlaceholder: true, isEdit: true, exEntry: {} };
+      if (refresh) {
+        this._rows = this._rows.slice(); // A refresh trigger is needed for virtual scroll when adding a new row
+      }
+    } else {
+      const row = this._rows[index];
+      row.isEdit = true;
+      row.isPlaceholder = true;
+      row.exEntry = {};
+    }
+  }
+
+  public onExEntryChange(row: ReconciliationRow, rowIndex: number): void {
+    if (row.isPlaceholder) {
+      row.isPlaceholder = false;
+      this.addPlaceholder(rowIndex + 1, true); // Add placeholder on the next row
     }
   }
 
@@ -817,6 +854,24 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     this.uncheckAll();
   }
 
+  private amountsDecimalsAccount: Account;
+  private amountsDecimalsCustody: Custody;
+  private amountsDecimalsResult: number;
+  public get amountsDecimals(): number {
+    const custody = this.ws.get('Custody', this.custodyId);
+    const account = this.ws.get('Account', this.accountId);
+    if (this.amountsDecimalsCustody !== custody && this.amountsDecimalsAccount !== account) {
+      this.amountsDecimalsCustody = custody;
+      this.amountsDecimalsAccount = account;
+
+      const currencyId = (!!account ? account.CurrencyId : null) || (!!custody ? custody.CurrencyId : null);
+      const currency = this.ws.get('Currency', currencyId) as Currency;
+      this.amountsDecimalsResult = !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+    }
+
+    return this.amountsDecimalsResult;
+  }
+
   private amountsFormatAccount: Account;
   private amountsFormatCustody: Custody;
   private amountsFormatResult: string;
@@ -824,13 +879,31 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     const custody = this.ws.get('Custody', this.custodyId);
     const account = this.ws.get('Account', this.accountId);
     if (this.amountsFormatCustody !== custody && this.amountsFormatAccount !== account) {
-      const currencyId = (!!account ? account.CurrencyId : null) || (!!custody ? custody.CurrencyId : null);
-      const currency = this.ws.get('Currency', currencyId) as Currency;
-      const decimals = !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+      this.amountsFormatAccount = custody;
+      this.amountsFormatCustody = account;
+
+      const decimals = this.amountsDecimals;
       this.amountsFormatResult = `1.${decimals}-${decimals}`;
     }
 
     return this.amountsFormatResult;
+  }
+
+  public getMonetaryValue(exEntry: ExternalEntry): number {
+    if (!exEntry) {
+      return null;
+    }
+
+    return exEntry.Direction * exEntry.MonetaryValue;
+  }
+
+  public setMonetaryValue(exEntry: ExternalEntry, v: number): void {
+    if (!exEntry) {
+      return;
+    }
+
+    exEntry.Direction = v < 0 ? -1 : 1;
+    exEntry.MonetaryValue = Math.abs(v);
   }
 }
 
@@ -841,6 +914,23 @@ interface ReconciliationRow {
   rowSpan?: number;
   lastOne?: boolean;
 
+  /**
+   * Checkbox for external entry
+   */
   entryIsChecked?: boolean;
+
+  /**
+   * Checkbox for external entry
+   */
   exEntryIsChecked?: boolean;
+
+  /**
+   * Indicates that this row shows an editable placeholder external entry, which when edited creates a new external entry
+   */
+  isPlaceholder?: boolean;
+
+  /**
+   * Indicates that the external entry in this row is in edit mode
+   */
+  isEdit?: boolean;
 }

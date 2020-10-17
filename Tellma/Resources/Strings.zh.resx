@@ -280,6 +280,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>在建出租费用</value>
   </data>
+  <data name="Center_CenterType_OtherPL" xml:space="preserve">
+    <value>其它利润/亏损</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>销售一般及行政</value>
   </data>

@@ -93,6 +93,7 @@
   "Center_CenterType_CostOfSales": "تكلفة مبيعات",
   "Center_CenterType_CurrentInventoriesInTransitExpendituresControl": "تكاليف نقل",
   "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl": "تكاليف مبان للتأجير قيد الإنشاء",
+  "Center_CenterType_OtherPL": "أرباح أو خسائر أخرى",
   "Center_CenterType_SellingGeneralAndAdministration": "تسويقي وإداري",
   "Center_CenterType_SharedExpenseControl": "تكاليف مشتركة",
   "Center_CenterType_WorkInProgressExpendituresControl": "تكاليف تصنيع",

@@ -171,11 +171,11 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th colSpan="3">Internal Entries</th>
+                            <th class="w-50" colSpan="3">Internal Entries</th>
                             <th *ngIf="isUnreconciled"></th>
                             <th></th>
                             <th *ngIf="isUnreconciled"></th>
-                            <th colSpan="3">External Entries</th>
+                            <th class="w-50" colSpan="3">External Entries</th>
                             <th></th>
                         </tr>
                         <tr>
@@ -222,8 +222,7 @@
                             <td class="t-a">
                                 {{ row.entry?.ExternalReference }}
                             </td>
-                            <td class="text-right t-a font-weight-bold"
-                                [class.text-danger]="row.exEntry?.Direction < 0">
+                            <td class="text-right t-a">
                                 {{ !!row.entry ? (row.entry?.MonetaryValue * row.entry?.Direction | accounting:amountsFormat) : '' }}
                             </td>
                             <td class="text-right t-a" *ngIf="isUnreconciled">
@@ -245,23 +244,65 @@
                             <td class="t-b" *ngIf="isUnreconciled">
                                 <!-- checkbox -->
                                 <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
-                                    *ngIf="row.exEntry && !row.isReconciled">
+                                    *ngIf="row.exEntry && !row.isReconciled && !row.isPlaceholder">
                                     <input type="checkbox" class="custom-control-input" id="exEntryCheck{{i}}"
                                         [(ngModel)]="row.exEntryIsChecked">
                                     <label class="custom-control-label t-pointer" for="exEntryCheck{{i}}">&zwnj;</label>
                                 </div>
                             </td>
-                            <td class="t-b">
-                                {{ row.exEntry?.PostingDate | date:'yyyy-MM-dd' }}
+
+                            <!-- External Entry (Edit) -->
+                            <ng-container *ngIf="row.isEdit && !row.isReconciled ; else viewExEntry">
+                                <td class="t-b">
+                                    <t-form-group-dynamic class="t-form-group"
+                                        [serverErrors]="row.exEntry?.serverErrors?.PostingDate">
+                                        <t-date-picker [(ngModel)]="row.exEntry.PostingDate"
+                                            (ngModelChange)="onExEntryChange(row, i)"
+                                            [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
+                                    </t-form-group-dynamic>
+                                </td>
+                                <td class="t-b">
+                                    <t-form-group-dynamic class="t-form-group"
+                                        [serverErrors]="row.exEntry?.serverErrors?.ExternalReference">
+                                        <t-text-editor [(ngModel)]="row.exEntry.ExternalReference"
+                                            (ngModelChange)="onExEntryChange(row, i)"
+                                            [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+                                    </t-form-group-dynamic>
+                                </td>
+                                <td class="text-right t-b">
+                                    <t-form-group-dynamic class="t-form-group"
+                                        [serverErrors]="row.exEntry?.serverErrors?.MonetaryValue">
+                                        <t-decimal-editor [ngModel]="getMonetaryValue(row.exEntry)"
+                                            (ngModelChange)="setMonetaryValue(row.exEntry, $event); onExEntryChange(row, i);"
+                                            textAlignment="right" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            [minDecimalPlaces]="amountsDecimals" [maxDecimalPlaces]="amountsDecimals">
+                                        </t-decimal-editor>
+                                    </t-form-group-dynamic>
+                                </td>
+                            </ng-container>
+
+                            <!-- External Entry (View) -->
+                            <ng-template #viewExEntry>
+                                <td class="t-b">
+                                    {{ row.exEntry?.PostingDate | date:'yyyy-MM-dd' }}
+                                </td>
+                                <td class="t-b">
+                                    {{ row.exEntry?.ExternalReference }}
+                                </td>
+                                <td class="text-right t-b">
+                                    {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction | accounting:amountsFormat) : '' }}
+                                </td>
+                            </ng-template>
+
+                            <td class="t-b">&zwnj;
+                                <!-- <button
+                                    class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline"
+                                    [style.opacity]="item.PH ? 0 : null" [style.cursor]="item.PH ? 'inherit' : null"
+                                    (click)="onDeleteLine(i)" *ngIf="isEdit">
+                                    <fa-icon icon="trash" [title]="item.PH ? '' : ('Delete' | translate)">
+                                    </fa-icon>
+                                </button> -->
                             </td>
-                            <td class="t-b">
-                                {{ row.exEntry?.ExternalReference }}
-                            </td>
-                            <td class="text-right t-b font-weight-bold"
-                                [class.text-danger]="row.exEntry?.Direction < 0">
-                                {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction | accounting:amountsFormat) : '' }}
-                            </td>
-                            <td class="t-b">&zwnj;</td>
                         </tr>
                     </tbody>
                 </table>

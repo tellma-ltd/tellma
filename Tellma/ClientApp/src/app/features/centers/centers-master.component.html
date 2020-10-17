@@ -17,7 +17,8 @@
                 { template: rentals, expression: 'CenterType eq \'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl\''},
                 { template: transit, expression: 'CenterType eq \'CurrentInventoriesInTransitExpendituresControl\''},
                 { template: construction, expression: 'CenterType eq \'ConstructionInProgressExpendituresControl\''},
-                { template: wip, expression: 'CenterType eq \'WorkInProgressExpendituresControl\''}
+                { template: wip, expression: 'CenterType eq \'WorkInProgressExpendituresControl\''},
+                { template: opl, expression: 'CenterType eq \'OtherPL\''}
             ]
           }">
 </t-master>
@@ -58,3 +59,4 @@
 <ng-template #transit> {{ 'Center_CenterType_CurrentInventoriesInTransitExpendituresControl' | translate }} </ng-template>
 <ng-template #construction> {{ 'Center_CenterType_ConstructionInProgressExpendituresControl' | translate }} </ng-template>
 <ng-template #wip> {{ 'Center_CenterType_WorkInProgressExpendituresControl' | translate }} </ng-template>
+<ng-template #opl> {{ 'Center_CenterType_OtherPL' | translate }} </ng-template>

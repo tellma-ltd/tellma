@@ -29,22 +29,27 @@ namespace Tellma.Data
             int index = 0;
             foreach (var entity in entities)
             {
-                DataRow row = table.NewRow();
-
-                // We add an index property since SQL works with un-ordered sets
-                if (addIndex)
+                if (entity != null)
                 {
-                    row["Index"] = index++;
+                    DataRow row = table.NewRow();
+
+                    // We add an index property since SQL works with un-ordered sets
+                    if (addIndex)
+                    {
+                        row["Index"] = index;
+                    }
+
+                    // Add the remaining properties
+                    foreach (var prop in props)
+                    {
+                        var propValue = prop.GetValue(entity);
+                        row[prop.Name] = propValue ?? DBNull.Value;
+                    }
+
+                    table.Rows.Add(row);
                 }
 
-                // Add the remaining properties
-                foreach (var prop in props)
-                {
-                    var propValue = prop.GetValue(entity);
-                    row[prop.Name] = propValue ?? DBNull.Value;
-                }
-
-                table.Rows.Add(row);
+                index++;
             }
 
             return table;

@@ -280,6 +280,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>ኪራዮች ስር ኮንስትራክሽን የወጪ</value>
   </data>
+  <data name="Center_CenterType_OtherPL" xml:space="preserve">
+    <value>ሌሎች ትርፍ / ማጣት</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>ሽያጭ አጠቃላይ እና አስተዳደር</value>
   </data>
