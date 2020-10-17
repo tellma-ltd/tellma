@@ -13,9 +13,6 @@ AS
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	-- Delete Reconciliations
-	DELETE FROM dbo.Reconciliations WHERE Id IN (SELECT [Id] FROM @DeletedReconcilationIds)
-
 	-- Insert Reconciliations
 	INSERT INTO @RIndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -44,6 +41,8 @@ AS
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
+				t.[AccountId]			= @AccountId,
+				t.[CustodyId]			= @CustodyId,
 				t.[PostingDate]			= s.[PostingDate],
 				t.[Direction]			= s.[Direction],
 				t.[MonetaryValue]		= s.[MonetaryValue],
@@ -51,8 +50,8 @@ AS
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([PostingDate], [Direction], [MonetaryValue], [ExternalReference])
-			Values (s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference])
+			INSERT ([AccountId], [CustodyId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference])
+			Values (@AccountId, @CustodyId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference])
 	OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
@@ -66,3 +65,9 @@ AS
 	FROM @ReconciliationExternalEntries REE
 	JOIN @RIndexedIds RII ON REE.[HeaderIndex] = RII.[Index]
 	JOIN @EEIndexedIds EEII ON REE.[ExternalEntryIndex] = EEII.[Index]
+
+	-- Delete Reconciliations
+	DELETE FROM dbo.[Reconciliations] WHERE Id IN (SELECT [Id] FROM @DeletedReconcilationIds)
+
+	-- Delete External Entries
+	DELETE FROM dbo.[ExternalEntries] WHERE Id IN (SELECT [Id] FROM @DeletedExternalEntryIds)

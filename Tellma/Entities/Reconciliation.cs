@@ -7,7 +7,10 @@ namespace Tellma.Entities
 {
     public class ReconciliationForSave<TEntry, TExternalEntry> : EntityWithKey<int>
     {
+        [ForeignKey(nameof(ReconciliationEntry.ReconciliationId))]
         public List<TEntry> Entries { get; set; }
+
+        [ForeignKey(nameof(ReconciliationExternalEntry.ReconciliationId))]
         public List<TExternalEntry> ExternalEntries { get; set; }
     }
 
@@ -37,6 +40,8 @@ namespace Tellma.Entities
 
     public class ReconciliationEntry : ReconciliationEntryForSave
     {
+        public int? ReconciliationId { get; set; }
+
         [ForeignKey(nameof(EntryId))]
         public EntryForReconciliation Entry { get; set; }
 
@@ -61,6 +66,8 @@ namespace Tellma.Entities
 
     public class ReconciliationExternalEntry : ReconciliationExternalEntryForSave
     {
+        public int? ReconciliationId { get; set; }
+
         [ForeignKey(nameof(ExternalEntryId))]
         public ExternalEntry ExternalEntry { get; set; }
 

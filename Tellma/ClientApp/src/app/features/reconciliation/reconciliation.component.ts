@@ -10,19 +10,20 @@ import { CustomUserSettingsService } from '~/app/data/custom-user-settings.servi
 import { TranslateService } from '@ngx-translate/core';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Account } from '~/app/data/entities/account';
-import { FriendlyError } from '~/app/data/util';
+import { FriendlyError, isSpecified } from '~/app/data/util';
 import {
   ReconciliationGetReconciledArguments,
   ReconciliationGetReconciledResponse,
   ReconciliationGetUnreconciledArguments,
-  ReconciliationGetUnreconciledResponse
+  ReconciliationGetUnreconciledResponse,
+  ReconciliationSavePayload
 } from '~/app/data/dto/reconciliation';
 import { ExternalEntry, ExternalEntryForSave } from '~/app/data/entities/external-entry';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { EntryForReconciliation } from '~/app/data/entities/entry-for-reconciliation';
 import { Currency } from '~/app/data/entities/currency';
-import { ReconciliationForSave } from '~/app/data/entities/reconciliation';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/reconciliation';
+import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -40,6 +41,9 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   private notifyFetch$ = new Subject<void>();
   private notifyDestruct$ = new Subject<void>();
   private api = this.apiService.reconciliationApi(this.notifyDestruct$); // Only for intellisense
+
+  @ViewChild('errorModal', { static: true })
+  errorModal: TemplateRef<any>;
 
   @ViewChild('unsavedChangesModal', { static: true })
   unsavedChangesModal: TemplateRef<any>;
@@ -153,6 +157,9 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   private parametersChanged(): void {
 
+    // Just in case
+    this.resetEdits();
+
     // Update the URL
     this.urlStateChanged();
 
@@ -162,6 +169,32 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
     // Refresh the results
     this.fetch();
+  }
+
+  private get UnreconciledArgs(): ReconciliationGetUnreconciledArguments {
+    return {
+      accountId: this.accountId,
+      custodyId: this.custodyId,
+      asOfDate: this.toDate,
+      entriesTop: this.entriesTop,
+      entriesSkip: this.entriesSkip,
+      externalEntriesTop: this.externalEntriesTop,
+      externalEntriesSkip: this.externalEntriesSkip,
+    };
+  }
+
+  private get ReconciledArgs(): ReconciliationGetReconciledArguments {
+    return {
+      accountId: this.accountId,
+      custodyId: this.custodyId,
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      fromAmount: this.fromAmount,
+      toAmount: this.toAmount,
+      externalReferenceContains: this.externalReferenceContains,
+      top: this.top,
+      skip: this.skip,
+    };
   }
 
   public fetch() {
@@ -186,46 +219,24 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     } else {
       s.reportStatus = ReportStatus.loading;
       let obs: Observable<void>;
-      if (this.view === 'unreconciled') {
+      if (this.isUnreconciled) {
         delete s.unreconciled_response;
-        const args: ReconciliationGetUnreconciledArguments = {
-          accountId: this.accountId,
-          custodyId: this.custodyId,
-          asOfDate: this.toDate,
-          entriesTop: this.entriesTop,
-          entriesSkip: this.entriesSkip,
-          externalEntriesTop: this.externalEntriesTop,
-          externalEntriesSkip: this.externalEntriesSkip,
-        };
-
-        // Prepare the query params
-        obs = this.api.getUnreconciled(args).pipe(
+        obs = this.api.getUnreconciled(this.UnreconciledArgs).pipe(
           map(response => {
             // Add the result to the state
             s.unreconciled_response = response;
           })
         );
-      } else {
+      } else if (this.isReconciled) {
         delete s.reconciled_response;
-        const args: ReconciliationGetReconciledArguments = {
-          accountId: this.accountId,
-          custodyId: this.custodyId,
-          fromDate: this.fromDate,
-          toDate: this.toDate,
-          fromAmount: this.fromAmount,
-          toAmount: this.toAmount,
-          externalReferenceContains: this.externalReferenceContains,
-          top: this.top,
-          skip: this.skip,
-        };
-
-        // Prepare the query params
-        obs = this.api.getReconciled(args).pipe(
+        obs = this.api.getReconciled(this.ReconciledArgs).pipe(
           map(response => {
             // Add the result to the state
             s.reconciled_response = response;
           })
         );
+      } else {
+        console.error(`Unknown view ${this.view}`); // Future proofing
       }
 
       obs = obs.pipe(
@@ -354,6 +365,10 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   public get errorMessage(): string {
     return this.state.errorMessage;
+  }
+
+  public get modalErrorMessage(): string {
+    return this._modalErrorMessage;
   }
 
   // Information
@@ -578,6 +593,10 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
+  public get commandsDropdownPlacement(): Placement {
+    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
+  }
+
   public get flip() {
     // this is to flip the UI icons in RTL
     return this.workspace.ws.isRtl ? 'horizontal' : null;
@@ -702,7 +721,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
               }
             }
 
-            this.addPlaceholder(lastExEntryIndex + 1, false); // Add placeholder on the next row
+            this.fixCreateExEntryRow();
           }
         }
         break;
@@ -717,40 +736,261 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return this._rows;
   }
 
-  private addPlaceholder(index: number = -1, refresh: boolean) {
+  private _showBuiltInCreateRow = false;
 
-    // If the index is not supplied, compute it automatically
-    if (index < 0) {
-      index = this._rows.length - 1;
-      for (; index >= 0; index--) {
-        const row = this._rows[index];
+  public get showBuiltInCreateRow(): boolean {
+    return this._showBuiltInCreateRow;
+  }
 
-        if (row.isReconciled || !!row.exEntry) {
-          // 1 + the last index that is either reconciled or contains an external entry
-          index++;
-          break;
-        }
-      }
-    }
+  private fixCreateExEntryRow(i = -1): void {
+    this._rows.forEach(r => delete r.exEntryIsCreate);
+    this._showBuiltInCreateRow = false;
 
-    if (!this._rows[index]) {
-      this._rows[index] = { isReconciled: false, isPlaceholder: true, isEdit: true, exEntry: {} };
-      if (refresh) {
-        this._rows = this._rows.slice(); // A refresh trigger is needed for virtual scroll when adding a new row
-      }
+    // Find the index of the last occupied row
+    const index = i >= 0 ? i : this.findIndexForCreate();
+
+    if (index >= this._rows.length) {
+      this._showBuiltInCreateRow = true; // All rows are occupied show the Create command on a dedicated row
     } else {
-      const row = this._rows[index];
-      row.isEdit = true;
-      row.isPlaceholder = true;
-      row.exEntry = {};
+      this._rows[index].exEntryIsCreate = true; // Show the Create command at this row index
     }
   }
 
-  public onExEntryChange(row: ReconciliationRow, rowIndex: number): void {
-    if (row.isPlaceholder) {
-      row.isPlaceholder = false;
-      this.addPlaceholder(rowIndex + 1, true); // Add placeholder on the next row
+  private findIndexForCreate(): number {
+
+    // Find the index of the last occupied row
+    const rowsLength = this._rows.length;
+    let index = rowsLength - 1;
+    for (; index >= 0; index--) {
+      const row = this._rows[index];
+      if (row.isReconciled || !!row.exEntry) {
+        break;
+      }
     }
+
+    return index + 1;
+  }
+
+  public onCreateExEntry(): void {
+    // (1) Find the index in _rows where the new external entry can be inserted
+    const index = this.findIndexForCreate();
+
+    // (2) Create the external entry and add it to entities for save
+    const exEntry: ExternalEntryForSave = {};
+    this.externalEntriesForSave.push(exEntry);
+    const exEntryIndex = this.externalEntriesForSave.length - 1;
+
+    // (3) Add the external entry to the view and make it editable
+    if (this._rows.length <= index) {
+      this._rows.push({ isReconciled: false, exEntryIsEdit: true, exEntry, exEntryIndex });
+      this._rows = this._rows.slice(); // To refresh the virtual scroll
+    } else {
+      const row = this._rows[index];
+      row.exEntry = exEntry;
+      row.exEntryIsEdit = true;
+      row.exEntryIndex = exEntryIndex;
+    }
+
+    this.fixCreateExEntryRow(index + 1);
+  }
+
+  private removeExternalEntryForSave(exEntryIndex: number) {
+    const forSave = this.externalEntriesForSave;
+    forSave[exEntryIndex] = null; // In order not to mess up other indices
+
+    // Cleanup: if the last N externalEntriesForSave are null, remove them
+    const forSaveLength = forSave.length;
+    for (let i = forSaveLength - 1; i >= 0; i--) {
+      if (!forSave[i]) {
+        forSave.pop();
+      } else {
+        break;
+      }
+    }
+  }
+
+  public onDeleteExEntry(row: ReconciliationRow, index: number): void {
+    const exEntryIndex = row.exEntryIndex;
+    if (isSpecified(exEntryIndex)) {
+      this.removeExternalEntryForSave(exEntryIndex);
+    }
+
+    // If it has an Id, add it to the deleted Ids
+    if (!!row.exEntry.Id) {
+      this.deletedExternalEntryIds.push(+row.exEntry.Id);
+    }
+
+    // Delete the external entry
+    delete row.exEntry;
+    delete row.exEntryOriginal;
+    delete row.exEntryIsEdit;
+    delete row.exEntryIndex;
+    delete row.exEntryIsChecked;
+
+    // Shift all subsequent entries one row up
+    this.shiftAllExternalEntriesUp(index);
+
+    // Adjust the row that allows for creating a new external entry
+    this.fixCreateExEntryRow();
+  }
+
+  private shiftAllExternalEntriesUp(index: number) {
+    for (let i = index + 1; i < this._rows.length; i++) {
+      const prevRow = this._rows[i - 1];
+      const nextRow = this._rows[i];
+
+      prevRow.exEntry = nextRow.exEntry;
+      prevRow.exEntryOriginal = nextRow.exEntryOriginal;
+      prevRow.exEntryIsEdit = nextRow.exEntryIsEdit;
+      prevRow.exEntryIndex = nextRow.exEntryIndex;
+      prevRow.exEntryIsChecked = nextRow.exEntryIsChecked;
+    }
+
+    const lastRow = this._rows[this._rows.length - 1];
+    if (!lastRow.entry) {
+      this._rows.pop();
+      this._rows = this._rows.slice(); // To refresh the virtual scroll
+    }
+  }
+
+  public onEditExEntry(row: ReconciliationRow): void {
+    row.exEntryIsEdit = true;
+    row.exEntryOriginal = row.exEntry;
+    row.exEntry = JSON.parse(JSON.stringify(row.exEntryOriginal)); // Store the original safely to support cancellation
+  }
+
+  public onCancelEditExEntry(row: ReconciliationRow, index: number): void {
+    if (!row.exEntry.Id) { // New entry
+      this.onDeleteExEntry(row, index);
+    } else { // Modified entry
+      if (isSpecified(row.exEntryIndex)) {
+        this.removeExternalEntryForSave(row.exEntryIndex);
+      }
+
+      row.exEntryIsEdit = false;
+      row.exEntry = row.exEntryOriginal;
+      delete row.exEntryOriginal;
+    }
+  }
+
+  public onChangeExEntry(row: ReconciliationRow, _: number): void {
+    if (!isSpecified(row.exEntryIndex)) { // Freshly edited
+      this.externalEntriesForSave.push(row.exEntry);
+      row.exEntryIndex = this.externalEntriesForSave.length - 1;
+    }
+  }
+
+  public onChangeExternalReference(row: ReconciliationRow, rowIndex: number, v: string): void {
+    this.onChangeExEntry(row, rowIndex);
+    row.exEntry.ExternalReference = v;
+  }
+
+  public onChangePostingDate(row: ReconciliationRow, rowIndex: number, v: string): void {
+    this.onChangeExEntry(row, rowIndex);
+    row.exEntry.PostingDate = v;
+  }
+
+  public onChangeMonetaryValue(row: ReconciliationRow, rowIndex: number, v: number): void {
+    this.onChangeExEntry(row, rowIndex);
+    this.setMonetaryValue(row.exEntry, v);
+  }
+
+  private externalEntriesForSave: ExternalEntryForSave[] = [];
+  private reconciliationsForSave: ReconciliationForSave[] = [];
+  private deletedExternalEntryIds: number[] = [];
+  private deletedReconciliationIds: number[] = [];
+
+  private resetEdits() {
+    this.externalEntriesForSave = [];
+    this.reconciliationsForSave = [];
+    this.deletedExternalEntryIds = [];
+    this.deletedReconciliationIds = [];
+  }
+
+  public get canSave(): boolean {
+    return true;
+  }
+
+  public onSave(): void {
+    // For robustness grab a reference to the state object, in case it changes later
+    if (this.canSave && this.isDirty && this.requiredParametersAreSet && !this.loadingRequiredParameters) {
+
+      // Prepare the payload
+      const payload: ReconciliationSavePayload = {
+        ExternalEntries: this.externalEntriesForSave,
+        Reconciliations: this.reconciliationsForSave,
+        DeletedExternalEntryIds: this.deletedExternalEntryIds,
+        DeletedReconciliationIds: this.deletedReconciliationIds
+      };
+
+      const s = this.state;
+      let obs$: Observable<void>;
+      if (this.isUnreconciled) {
+        obs$ = this.api.saveAndGetUnreconciled(payload, this.UnreconciledArgs).pipe(
+          map(response => {
+            // Add the result to the state
+            s.unreconciled_response = response;
+          })
+        );
+      } else if (this.isReconciled) {
+        delete s.reconciled_response;
+        obs$ = this.api.saveAndGetReconciled(payload, this.ReconciledArgs).pipe(
+          map(response => {
+            // Add the result to the state
+            s.reconciled_response = response;
+          })
+        );
+      } else {
+        console.error(`Unknown view ${this.view}`); // Future proofing
+      }
+
+      obs$.pipe(
+        tap(_ => {
+          // Result is loaded
+          s.reportStatus = ReportStatus.loaded;
+
+          // Edits cannot stay after a refresh
+          this.resetEdits();
+        }),
+        catchError((friendlyError: FriendlyError) => {
+
+          if (friendlyError.status === 422) {
+            alert('TODO: Validation Errors');
+          } else {
+            this.displayModalError(friendlyError.error);
+          }
+
+          return of(null);
+        })
+      ).subscribe();
+    }
+  }
+
+  private _modalErrorMessage: string; // in the modal
+
+  public displayModalError(errorMessage: string) {
+    // shows the error message in a dismissable modal
+    this._modalErrorMessage = errorMessage;
+    this.modalService.open(this.errorModal);
+  }
+
+  public onCancel() {
+    // prompt the user manually, since the Angular Router isn't involved
+    const canCancel = this.canDeactivate();
+    if (canCancel instanceof Observable) {
+      canCancel.subscribe(can => {
+        if (can) {
+          this.doCancel();
+        }
+      });
+    } else if (canCancel) {
+      this.doCancel();
+    }
+  }
+
+  public doCancel() {
+    this.resetEdits();
+    delete this._rowsResponse; // Causes rows() to re-render
   }
 
   public onSelectRow(row: ReconciliationRow) {
@@ -800,26 +1040,6 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
       this.reconciliationsForSave.length > 0 ||
       this.deletedExternalEntryIds.length > 0 ||
       this.deletedReconciliationIds.length > 0;
-  }
-
-  private externalEntriesForSave: ExternalEntryForSave[] = [];
-  private reconciliationsForSave: ReconciliationForSave[] = [];
-  private deletedExternalEntryIds: number[] = [];
-  private deletedReconciliationIds: number[] = [];
-
-  private resetEdits() {
-    this.externalEntriesForSave = [];
-    this.reconciliationsForSave = [];
-    this.deletedExternalEntryIds = [];
-    this.deletedReconciliationIds = [];
-  }
-
-  public onSave() {
-    alert('TODO');
-  }
-
-  public onCancel() {
-    this.resetEdits();
   }
 
   /**
@@ -908,16 +1128,34 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 }
 
 interface ReconciliationRow {
+  // Reconciled Stuff
   isReconciled: boolean;
-  entry?: EntryForReconciliation;
-  exEntry?: ExternalEntry;
   rowSpan?: number;
   lastOne?: boolean;
+
+  ///////////////// Entry
+
+  /**
+   * Entry
+   */
+  entry?: EntryForReconciliation;
 
   /**
    * Checkbox for external entry
    */
   entryIsChecked?: boolean;
+
+  ///////////////// External Entry ()
+
+  /**
+   * External Entry
+   */
+  exEntry?: ExternalEntry;
+
+  /**
+   * External Entry
+   */
+  exEntryOriginal?: ExternalEntry;
 
   /**
    * Checkbox for external entry
@@ -925,12 +1163,17 @@ interface ReconciliationRow {
   exEntryIsChecked?: boolean;
 
   /**
-   * Indicates that this row shows an editable placeholder external entry, which when edited creates a new external entry
+   * Inserted or updates external entries will have their indices stored here
    */
-  isPlaceholder?: boolean;
+  exEntryIndex?: number;
 
   /**
    * Indicates that the external entry in this row is in edit mode
    */
-  isEdit?: boolean;
+  exEntryIsEdit?: boolean;
+
+  /**
+   * Indicates that you can create an external entry in this row
+   */
+  exEntryIsCreate?: boolean;
 }

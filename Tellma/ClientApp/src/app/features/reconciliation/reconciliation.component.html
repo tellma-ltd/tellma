@@ -19,7 +19,8 @@
 
                     <!-- View -->
                     <t-form-group class="t-form-group" [label]="'View' | translate">
-                        <t-selector [(ngModel)]="view" [choices]="viewChoices" [ngModelOptions]="{ updateOn: 'blur' }">
+                        <t-selector [(ngModel)]="view" [choices]="viewChoices" [ngModelOptions]="{ updateOn: 'blur' }"
+                            [disabled]="isDirty">
                         </t-selector>
                     </t-form-group>
 
@@ -27,7 +28,7 @@
                     <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
                         <t-accounts-picker [(ngModel)]="accountId" additionalSelect="CustodyDefinitionId,Currency/E"
                             filter="AccountType/Concept eq 'BalancesWithBanks'" [ensureAdditionalSelect]="true"
-                            (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                            (entityLoaded)="onParameterLoaded()" [showCreate]="false" [disabled]="isDirty">
                         </t-accounts-picker>
                     </t-form-group>
 
@@ -35,7 +36,8 @@
                     <t-form-group class="t-form-group" [label]="labelCustody_Manual" *ngIf="showCustodyParameter">
                         <t-custodies-picker *ngIf="!readonlyCustody_Manual" [(ngModel)]="custodyId"
                             additionalSelect="Currency/E" [definitionIds]="definitionIdsCustody_Manual"
-                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false"
+                            [disabled]="isDirty">
                         </t-custodies-picker>
                         <t-view-link *ngIf="readonlyCustody_Manual"
                             [link]="'../custodies/' + ws.get('Custody', readonlyValueCustodyId_Manual)?.DefinitionId"
@@ -46,7 +48,8 @@
 
                     <!-- ToDate -->
                     <t-form-group class="t-form-group" [label]="(isUnreconciled ? 'AsOfDate' : 'ToDate') | translate">
-                        <t-date-picker [(ngModel)]="toDate" [ngModelOptions]="{ updateOn: 'blur' }">
+                        <t-date-picker [(ngModel)]="toDate" [ngModelOptions]="{ updateOn: 'blur' }"
+                            [disabled]="isDirty">
                         </t-date-picker>
                     </t-form-group>
                 </div>
@@ -97,9 +100,10 @@
             <div *ngIf="showViewToolbar">
 
                 <!-- Export -->
-                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
-                    <fa-icon icon="download"></fa-icon>
-                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onCreateExEntry()"
+                    [disabled]="!canExport">
+                    <fa-icon icon="plus"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
                 </button>
 
                 <!-- Data dropdown -->
@@ -180,31 +184,31 @@
                         </tr>
                         <tr>
                             <th style="width:10px"></th>
-                            <th>
+                            <th style="width:12.5%">
                                 {{ 'Line_PostingDate' | translate }}
                             </th>
-                            <th>
+                            <th style="width:25%">
                                 {{ 'Entry_ExternalReference' | translate }}
                             </th>
-                            <th class="text-right">
+                            <th class="text-right" style="width:12.5%">
                                 {{ 'Entry_MonetaryValue' | translate }}
                             </th>
-                            <th *ngIf="isUnreconciled">
+                            <th *ngIf="isUnreconciled" style="min-width: 43px;">
                                 <!-- Checkboxes -->
                             </th>
                             <th>
-
+                                <!-- Reconcile/Unreconcile -->
                             </th>
-                            <th *ngIf="isUnreconciled">
+                            <th *ngIf="isUnreconciled" style="min-width: 43px;">
                                 <!-- Checkboxes -->
                             </th>
-                            <th>
+                            <th style="width:12.5%">
                                 {{ 'Line_PostingDate' | translate }}
                             </th>
-                            <th>
+                            <th style="width:25%">
                                 {{ 'Entry_ExternalReference' | translate }}
                             </th>
-                            <th class="text-right">
+                            <th class="text-right" style="width:12.5%">
                                 {{ 'Entry_MonetaryValue' | translate }}
                             </th>
                             <th style="width:10px"></th>
@@ -235,16 +239,17 @@
                                 </div>
                             </td>
                             <td *ngIf="row.isReconciled && !!row.rowSpan" [rowSpan]="row.rowSpan"
-                                class="bg-white border-left border-right">
-
+                                class="bg-white border-left border-right border-top-0 border-bottom-0">
+                                
                             </td>
-                            <td *ngIf="!row.isReconciled" class="bg-white border-left border-right">
+                            <td *ngIf="!row.isReconciled"
+                                class="bg-white border-left border-right border-top-0 border-bottom-0">
 
                             </td>
                             <td class="t-b" *ngIf="isUnreconciled">
                                 <!-- checkbox -->
                                 <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
-                                    *ngIf="row.exEntry && !row.isReconciled && !row.isPlaceholder">
+                                    *ngIf="!!row.exEntry && !row.isReconciled">
                                     <input type="checkbox" class="custom-control-input" id="exEntryCheck{{i}}"
                                         [(ngModel)]="row.exEntryIsChecked">
                                     <label class="custom-control-label t-pointer" for="exEntryCheck{{i}}">&zwnj;</label>
@@ -252,20 +257,20 @@
                             </td>
 
                             <!-- External Entry (Edit) -->
-                            <ng-container *ngIf="row.isEdit && !row.isReconciled ; else viewExEntry">
+                            <ng-container *ngIf="row.exEntryIsEdit && !row.isReconciled ; else viewExEntry">
                                 <td class="t-b">
                                     <t-form-group-dynamic class="t-form-group"
                                         [serverErrors]="row.exEntry?.serverErrors?.PostingDate">
-                                        <t-date-picker [(ngModel)]="row.exEntry.PostingDate"
-                                            (ngModelChange)="onExEntryChange(row, i)"
+                                        <t-date-picker [ngModel]="row.exEntry.PostingDate"
+                                            (ngModelChange)="onChangePostingDate(row, i, $event)"
                                             [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
                                     </t-form-group-dynamic>
                                 </td>
                                 <td class="t-b">
                                     <t-form-group-dynamic class="t-form-group"
                                         [serverErrors]="row.exEntry?.serverErrors?.ExternalReference">
-                                        <t-text-editor [(ngModel)]="row.exEntry.ExternalReference"
-                                            (ngModelChange)="onExEntryChange(row, i)"
+                                        <t-text-editor [ngModel]="row.exEntry.ExternalReference"
+                                            (ngModelChange)="onChangeExternalReference(row, i, $event)"
                                             [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
                                     </t-form-group-dynamic>
                                 </td>
@@ -273,7 +278,7 @@
                                     <t-form-group-dynamic class="t-form-group"
                                         [serverErrors]="row.exEntry?.serverErrors?.MonetaryValue">
                                         <t-decimal-editor [ngModel]="getMonetaryValue(row.exEntry)"
-                                            (ngModelChange)="setMonetaryValue(row.exEntry, $event); onExEntryChange(row, i);"
+                                            (ngModelChange)="onChangeMonetaryValue(row, i, $event)"
                                             textAlignment="right" [ngModelOptions]="{ updateOn: 'blur' }"
                                             [minDecimalPlaces]="amountsDecimals" [maxDecimalPlaces]="amountsDecimals">
                                         </t-decimal-editor>
@@ -294,18 +299,68 @@
                                 </td>
                             </ng-template>
 
-                            <td class="t-b">&zwnj;
-                                <!-- <button
-                                    class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline"
-                                    [style.opacity]="item.PH ? 0 : null" [style.cursor]="item.PH ? 'inherit' : null"
-                                    (click)="onDeleteLine(i)" *ngIf="isEdit">
-                                    <fa-icon icon="trash" [title]="item.PH ? '' : ('Delete' | translate)">
-                                    </fa-icon>
-                                </button> -->
+                            <td class="t-b">
+                                <!-- Edit Delete and Cancel -->
+                                <ng-container *ngIf="isUnreconciled && !!row.exEntry">
+                                    <div ngbDropdown [placement]="commandsDropdownPlacement">
+                                        <button
+                                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                                            ngbDropdownToggle><span class="small">
+                                                <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                                            </span></button>
+                                        <div ngbDropdownMenu style="min-width: 5rem;">
+                                            <button ngbDropdownItem class="t-transparent-background"
+                                                (click)="onEditExEntry(row)"
+                                                *ngIf="!row.exEntryIsEdit; else cancelTemplate">
+                                                {{ 'Edit' | translate }}
+                                            </button>
+                                            <ng-template #cancelTemplate>
+                                                <button ngbDropdownItem class="t-transparent-background"
+                                                    (click)="onCancelEditExEntry(row, i)">
+                                                    {{ 'Cancel' | translate }}
+                                                </button>
+                                            </ng-template>
+                                            <button ngbDropdownItem class="t-transparent-background"
+                                                (click)="onDeleteExEntry(row, i)">
+                                                {{ 'Delete' | translate }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <!-- Create -->
+                                <ng-container *ngIf="row.exEntryIsCreate">
+                                    <ng-container *ngTemplateOutlet="createMenu">
+
+                                    </ng-container>
+                                </ng-container>
+                            </td>
+                        </tr>
+                        <tr *ngIf="showBuiltInCreateRow">
+                            <td [colSpan]="isUnreconciled ? 5 : 4"></td>
+                            <td class="bg-white border-left border-right border-top-0 border-bottom-0"></td>
+                            <td [colSpan]="isUnreconciled ? 4 : 3"></td>
+                            <td>
+                                <ng-container *ngTemplateOutlet="createMenu">
+                                </ng-container>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+
+                <ng-template #createMenu>
+                    <div ngbDropdown [placement]="commandsDropdownPlacement">
+                        <button
+                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                            ngbDropdownToggle><span class="small">
+                                <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                            </span></button>
+                        <div ngbDropdownMenu style="min-width: 5rem;">
+                            <button ngbDropdownItem class="t-transparent-background" (click)="onCreateExEntry()">
+                                {{ 'Create' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
 
                 <!-- Spinner -->
                 <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">
@@ -338,7 +393,7 @@
 
     <!-- body -->
     <div class="modal-body">
-        {{ errorMessage }}
+        {{ modalErrorMessage }}
     </div>
 
     <!-- footer -->

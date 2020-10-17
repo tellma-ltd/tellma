@@ -7033,7 +7033,14 @@ namespace Tellma.Data
             cmd.Parameters.Add(externalEntriesTvp);
 
             // Reconciliations
-            DataTable reconciliationsTable = RepositoryUtilities.DataTable(reconciliations, addIndex: true);
+            DataTable reconciliationsTable = new DataTable();
+            reconciliationsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            for (int i = 0; i < reconciliations.Count; i++)
+            {
+                DataRow row = reconciliationsTable.NewRow();
+                row["Index"] = i;
+                reconciliationsTable.Rows.Add(row);
+            }
             var reconciliationsTvp = new SqlParameter("@Reconciliations", reconciliationsTable)
             {
                 TypeName = $"[dbo].[{nameof(Reconciliation)}List]",
@@ -7043,7 +7050,29 @@ namespace Tellma.Data
             cmd.Parameters.Add(reconciliationsTvp);
 
             // ReconciliationEntries
-            DataTable reconciliationEntriesTable = RepositoryUtilities.DataTableWithHeaderIndex(reconciliations, e => e.Entries);
+            DataTable reconciliationEntriesTable = new DataTable();
+            reconciliationEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            reconciliationEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            reconciliationEntriesTable.Columns.Add(new DataColumn(nameof(ReconciliationEntryForSave.EntryId), typeof(int)));
+            for (int i = 0; i < reconciliations.Count; i++)
+            {
+                var reconciliation = reconciliations[i];
+                if (reconciliation != null && reconciliation.Entries != null)
+                {
+                    for (int j = 0; j < reconciliation.Entries.Count; j++)
+                    {
+                        var entry = reconciliation.Entries[j];
+                        if (entry != null)
+                        {
+                            DataRow row = reconciliationEntriesTable.NewRow();
+                            row["Index"] = j;
+                            row["HeaderIndex"] = i;
+                            row[nameof(ReconciliationEntryForSave.EntryId)] = entry.EntryId;
+                            reconciliationEntriesTable.Rows.Add(row);
+                        }
+                    }
+                }
+            }
             var reconciliationEntriesTvp = new SqlParameter("@ReconciliationEntries", reconciliationEntriesTable)
             {
                 TypeName = $"[dbo].[{nameof(ReconciliationEntry)}List]",
@@ -7052,9 +7081,34 @@ namespace Tellma.Data
 
             cmd.Parameters.Add(reconciliationEntriesTvp);
 
+
             // ReconciliationExternalEntries
-            DataTable reconciliationsExternalEntriesTable = RepositoryUtilities.DataTableWithHeaderIndex(reconciliations, e => e.ExternalEntries);
-            var reconciliationExternalEntriesTvp = new SqlParameter("@ReconciliationExternalEntries", reconciliationsExternalEntriesTable)
+            DataTable reconciliationExternalEntriesTable = new DataTable();
+            reconciliationExternalEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            reconciliationExternalEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            reconciliationExternalEntriesTable.Columns.Add(new DataColumn(nameof(ReconciliationExternalEntryForSave.ExternalEntryIndex), typeof(int)));
+            reconciliationExternalEntriesTable.Columns.Add(new DataColumn(nameof(ReconciliationExternalEntryForSave.ExternalEntryId), typeof(int)));
+            for (int i = 0; i < reconciliations.Count; i++)
+            {
+                var reconciliation = reconciliations[i];
+                if (reconciliation != null && reconciliation.ExternalEntries != null)
+                {
+                    for (int j = 0; j < reconciliation.ExternalEntries.Count; j++)
+                    {
+                        var exEntry = reconciliation.ExternalEntries[j];
+                        if (exEntry != null)
+                        {
+                            DataRow row = reconciliationExternalEntriesTable.NewRow();
+                            row["Index"] = j;
+                            row["HeaderIndex"] = i;
+                            row[nameof(ReconciliationExternalEntryForSave.ExternalEntryIndex)] = exEntry.ExternalEntryIndex;
+                            row[nameof(ReconciliationExternalEntryForSave.ExternalEntryId)] = exEntry.ExternalEntryId;
+                            reconciliationExternalEntriesTable.Rows.Add(row);
+                        }
+                    }
+                }
+            }
+            var reconciliationExternalEntriesTvp = new SqlParameter("@ReconciliationExternalEntries", reconciliationExternalEntriesTable)
             {
                 TypeName = $"[dbo].[{nameof(ReconciliationExternalEntry)}List]",
                 SqlDbType = SqlDbType.Structured
@@ -7062,6 +7116,7 @@ namespace Tellma.Data
 
             cmd.Parameters.Add(reconciliationExternalEntriesTvp);
 
+            // DeletedExternalEntryIds
             if (deletedExternalEntryIds != null) // Validate SP doesn't take this params
             {
                 DataTable deletedExternalEntryIdsTable = RepositoryUtilities.DataTable(deletedExternalEntryIds.Select(e => new IdListItem { Id = e }));
@@ -7074,6 +7129,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add(deletedExternalEntryIdsTvp);
             }
 
+            // DeletedReconciliationIds
             if (deletedReconciliationIds != null) // Validate SP doesn't take this params
             {
                 DataTable deletedReconciliationIdsTable = RepositoryUtilities.DataTable(deletedReconciliationIds.Select(e => new IdListItem { Id = e }));

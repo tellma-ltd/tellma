@@ -187,6 +187,8 @@ namespace Tellma.Controllers
                 topExternal: args.ExternalEntriesTop,
                 skipExternal: args.ExternalEntriesSkip);
 
+            trx.Complete();
+
             return new ReconciliationGetUnreconciledResponse
             {
                 EntriesBalance = entriesBalance,
@@ -225,6 +227,8 @@ namespace Tellma.Controllers
                 externalReferenceContains: args.ExternalReferenceContains,
                 top: args.Top,
                 skip: args.Skip);
+
+            trx.Complete();
 
             return new ReconciliationGetReconciledResponse
             {
