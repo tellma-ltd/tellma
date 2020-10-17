@@ -1049,6 +1049,7 @@ namespace Tellma.Controllers
                 {
                     // Line defaults
                     line.Entries ??= new List<EntryForSave>();
+                    line.Boolean1 ??= false;
                 });
             });
 
