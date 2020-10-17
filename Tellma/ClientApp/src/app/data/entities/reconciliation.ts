@@ -4,32 +4,32 @@ import { ExternalEntry } from './external-entry';
 
 // tslint:disable:max-line-length
 export interface ReconciliationForSave<TEntry = ReconciliationEntryForSave, TExternalEntry = ReconciliationExternalEntryForSave> extends EntityForSave {
-    Entries: TEntry[];
-    ExternalEntries: TExternalEntry[];
+    Entries?: TEntry[];
+    ExternalEntries?: TExternalEntry[];
 }
 
 export interface Reconciliation extends ReconciliationForSave<ReconciliationEntry, ReconciliationExternalEntry> {
-    CreatedAt: string;
-    CreatedById: number;
+    CreatedAt?: string;
+    CreatedById?: number;
 }
 
 export interface ReconciliationEntryForSave extends EntityForSave {
-    EntryId: number;
+    EntryId?: number;
 }
 
 export interface ReconciliationEntry extends ReconciliationEntryForSave {
-    Entry: EntryForReconciliation;
-    CreatedAt: string;
-    CreatedById: number;
+    Entry?: EntryForReconciliation;
+    CreatedAt?: string;
+    CreatedById?: number;
 }
 
 export interface ReconciliationExternalEntryForSave extends EntityForSave {
-    ExternalEntryId: number;
-    ExternalEntryIndex: number;
+    ExternalEntryId?: number;
+    ExternalEntryIndex?: number;
 }
 
 export interface ReconciliationExternalEntry extends ReconciliationExternalEntryForSave {
-    ExternalEntry: ExternalEntry;
-    CreatedAt: string;
-    CreatedById: number;
+    ExternalEntry?: ExternalEntry;
+    CreatedAt?: string;
+    CreatedById?: number;
 }

@@ -22,7 +22,7 @@ import { ExternalEntry, ExternalEntryForSave } from '~/app/data/entities/externa
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { EntryForReconciliation } from '~/app/data/entities/entry-for-reconciliation';
 import { Currency } from '~/app/data/entities/currency';
-import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/reconciliation';
+import { ReconciliationForSave } from '~/app/data/entities/reconciliation';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 
 type View = 'unreconciled' | 'reconciled';
@@ -850,6 +850,12 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     if (!lastRow.entry) {
       this._rows.pop();
       this._rows = this._rows.slice(); // To refresh the virtual scroll
+    } else {
+      delete lastRow.exEntry;
+      delete lastRow.exEntryOriginal;
+      delete lastRow.exEntryIsEdit;
+      delete lastRow.exEntryIndex;
+      delete lastRow.exEntryIsChecked;
     }
   }
 
@@ -1057,9 +1063,21 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   public onReconcileChecked() {
     if (this.canReconcileChecked) {
       const reconciliation: ReconciliationForSave = {
-        Entries: this.checkedEntries.map(e => ({ EntryId: +e.Id })),
-        ExternalEntries: this.checkedExEntries.map(e => ({ ExternalEntryId: +e.Id, ExternalEntryIndex: 0 }))
+        Entries: [],
+        ExternalEntries: []
       };
+
+      for (const row of this._rows) {
+        if (row.entryIsChecked && !!row.entry) {
+          const entry = row.entry;
+          reconciliation.Entries.push({ EntryId: +entry.Id });
+        }
+
+        if (row.exEntryIsChecked && !!row.exEntry) {
+          const exEntry = row.exEntry;
+          reconciliation.ExternalEntries.push({ ExternalEntryId: +exEntry.Id, ExternalEntryIndex: row.exEntryIndex });
+        }
+      }
 
       this.reconciliationsForSave.push(reconciliation);
       this.uncheckAll(); // Clear the selection

@@ -170,7 +170,7 @@
         <div class="table-responsive" *ngIf="!showInformation">
             <!-- Details (Flat Table) -->
             <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
-                <table class="table table-striped table-sm border-bottom bg-white t-master-table text-nowrap">
+                <table class="table table-striped2 table-sm border-bottom bg-white t-master-table text-nowrap">
                     <!-- Column Header -->
                     <thead>
                         <tr>
@@ -240,7 +240,7 @@
                             </td>
                             <td *ngIf="row.isReconciled && !!row.rowSpan" [rowSpan]="row.rowSpan"
                                 class="bg-white border-left border-right border-top-0 border-bottom-0">
-                                
+
                             </td>
                             <td *ngIf="!row.isReconciled"
                                 class="bg-white border-left border-right border-top-0 border-bottom-0">
@@ -346,6 +346,9 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="py-5 t-transparent">
+
+                </div>
 
                 <ng-template #createMenu>
                     <div ngbDropdown [placement]="commandsDropdownPlacement">
