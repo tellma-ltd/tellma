@@ -124,8 +124,9 @@ namespace Tellma.Controllers
 
                 var line = nameof(DetailsEntry.Line);
                 var memo = nameof(LineForQuery.Memo);
+                var text1 = nameof(LineForQuery.Text1);
 
-                var filterString = $"{line}/{memo} {Ops.contains} '{search}'";
+                var filterString = $"{line}/{memo} {Ops.contains} '{search}' or {line}/{text1} {Ops.contains} '{search}' ";
                 query = query.Filter(FilterExpression.Parse(filterString));
             }
 

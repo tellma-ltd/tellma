@@ -1594,6 +1594,12 @@
   <data name="Line" xml:space="preserve">
     <value>መሥመር</value>
   </data>
+  <data name="Line_Boolean1" xml:space="preserve">
+    <value>ቡሊያን መገለጫ ባህሪ 1</value>
+  </data>
+  <data name="Line_Decimal1" xml:space="preserve">
+    <value>አስርዮሽ መገለጫ ባህሪ 1</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>መግለጫ</value>
   </data>
@@ -1635,6 +1641,9 @@
   </data>
   <data name="Line_TemplateLine" xml:space="preserve">
     <value>የአብነት</value>
+  </data>
+  <data name="Line_Text1" xml:space="preserve">
+    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>

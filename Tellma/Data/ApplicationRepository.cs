@@ -5224,6 +5224,9 @@ namespace Tellma.Data
                     DefinitionId = reader.Int32(i++),
                     PostingDate = reader.DateTime(i++),
                     Memo = reader.String(i++),
+                    Boolean1 = reader.Boolean(i++),
+                    Decimal1 = reader.Decimal(i++),
+                    Text1 = reader.String(i++),
 
                     Entries = new List<EntryForSave>(),
                 });

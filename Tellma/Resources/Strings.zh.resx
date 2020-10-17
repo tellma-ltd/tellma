@@ -1594,6 +1594,12 @@
   <data name="Line" xml:space="preserve">
     <value>线</value>
   </data>
+  <data name="Line_Boolean1" xml:space="preserve">
+    <value>布尔属性1</value>
+  </data>
+  <data name="Line_Decimal1" xml:space="preserve">
+    <value>十进制属性1</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>定义</value>
   </data>
@@ -1635,6 +1641,9 @@
   </data>
   <data name="Line_TemplateLine" xml:space="preserve">
     <value>模板</value>
+  </data>
+  <data name="Line_Text1" xml:space="preserve">
+    <value>文本属性1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>行定义</value>

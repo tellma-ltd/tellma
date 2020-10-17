@@ -28,7 +28,7 @@
             ngbDropdownToggle>
             <fa-icon *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
             <ng-template #spinner>
-              <t-spinner></t-spinner>
+                <t-spinner></t-spinner>
             </ng-template>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
         </button>
@@ -414,25 +414,24 @@
                         {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
                 </ng-template>
 
-                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-update="update"
+                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index" let-update="update"
                     let-isForm="isForm" let-isEdit="isEdit">
-
                     <t-form-group-cell *ngIf="!isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)">
                         <ng-container
-                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, line: line, update: update, isForm: isForm }">
+                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, rowIndex: rowIndex, line: line, update: update, isForm: isForm }">
                         </ng-container>
                     </t-form-group-cell>
                     <t-form-group *ngIf="isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)"
                         [label]="columnLabel(lineDefId, columnIndex)">
                         <ng-container
-                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, line: line, update: update, isForm: isForm }">
+                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, rowIndex: rowIndex, line: line, update: update, isForm: isForm }">
                         </ng-container>
                     </t-form-group>
                 </ng-template>
 
-                <ng-template #formGroupContent let-columnIndex="columnIndex" let-update="update" let-line="line"
+                <ng-template #formGroupContent let-columnIndex="columnIndex" let-rowIndex="rowIndex" let-update="update" let-line="line"
                     let-isForm="isForm">
                     <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                         <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
@@ -498,6 +497,11 @@
                         <span
                             *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
                         <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                        <span
+                            *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
+                        <span
+                            *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
+                        <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
                         <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
@@ -649,6 +653,30 @@
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </t-date-picker>
                         <t-text-editor *ngSwitchCase="'Memo'"
+                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
+                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                            [ngModelOptions]="{ updateOn: 'blur' }">
+                        </t-text-editor>
+                        <div *ngSwitchCase="'Text1'" class="custom-control custom-checkbox t-labelless-checkbox">
+                            <input type="checkbox" class="custom-control-input"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
+                                [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                id="standardandpure{{ rowIndex }}">
+                            <label class="custom-control-label t-pointer" for="standardandpure{{ rowIndex }}">&zwnj;</label>
+                        </div>
+                        <t-decimal-editor *ngSwitchCase="'Decimal1'"
+                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
+                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                            [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
+                            [textAlignment]="isForm ? null : 'right'">
+                        </t-decimal-editor>
+                        <t-text-editor *ngSwitchCase="'Text1'"
                             [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
                             [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                             [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"

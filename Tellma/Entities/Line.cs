@@ -25,7 +25,16 @@ namespace Tellma.Entities
         [Display(Name = "Memo")]
         [StringLength(255)]
         [UserKey]
-        public string Memo { get; set; }        
+        public string Memo { get; set; }
+
+        [Display(Name = "Line_Boolean1")]
+        public bool? Boolean1 { get; set; }
+
+        [Display(Name = "Line_Decimal1")]
+        public decimal? Decimal1 { get; set; }
+
+        [Display(Name = "Line_Text1")]
+        public string Text1 { get; set; }
 
         [ForeignKey(nameof(Entry.LineId))]
         public List<TEntry> Entries { get; set; }

@@ -1594,6 +1594,12 @@
   <data name="Line" xml:space="preserve">
     <value>Line</value>
   </data>
+  <data name="Line_Boolean1" xml:space="preserve">
+    <value>Boolean Attribute 1</value>
+  </data>
+  <data name="Line_Decimal1" xml:space="preserve">
+    <value>Decimal Attribute 1</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>Definition</value>
   </data>
@@ -1635,6 +1641,9 @@
   </data>
   <data name="Line_TemplateLine" xml:space="preserve">
     <value>Template</value>
+  </data>
+  <data name="Line_Text1" xml:space="preserve">
+    <value>Text Attribute 1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>Line Definition</value>

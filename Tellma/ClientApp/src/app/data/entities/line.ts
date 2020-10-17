@@ -18,6 +18,9 @@ export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     TemplateLineId?: number;
     Multiplier?: number;
     Memo?: string;
+    Boolean1?: boolean;
+    Decimal1?: number;
+    Text1?: string;
     Entries?: TEntry[];
 
     // Only for client side tracking of new lines
@@ -70,8 +73,10 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 TemplateLineId: { control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 TemplateLine: { control: 'navigation', label: () => trx.instant('Line_TemplateLine'), type: 'LineForQuery', foreignKeyName: 'TemplateLineId' },
                 Multiplier: { control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
+                Boolean1: { control: 'boolean', label: () => trx.instant('Line_Boolean1') },
+                Decimal1: { control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Text1: { control: 'text', label: () => trx.instant('Line_Text1') },
                 State: {
                     control: 'state',
                     label: () => trx.instant('State'),

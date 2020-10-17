@@ -2776,16 +2776,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
    * Returns either the line or one of its entries depending on the column definition
    */
   private entity(def: LineDefinitionColumnForClient, line: LineForSave): LineForSave | EntryForSave {
-    let entity: LineForSave | EntryForSave;
     if (!!def) {
-      if (def.ColumnName === 'Memo' || def.ColumnName === 'PostingDate') {
-        entity = line;
-      } else {
-        entity = !!line && !!line.Entries ? line.Entries[def.EntryIndex] : null;
+      switch (def.ColumnName) {
+        case 'Memo':
+        case 'PostingDate':
+        case 'Boolean1':
+        case 'Decimal1':
+        case 'Text1':
+          return line;
+        default:
+          return !!line && !!line.Entries ? line.Entries[def.EntryIndex] : null;
       }
     }
-
-    return entity;
   }
 
   /**
@@ -2795,6 +2797,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     switch (colDef.ColumnName) {
       case 'Memo':
       case 'PostingDate':
+      case 'Boolean1':
+      case 'Decimal1':
+      case 'Text1':
         return 0;
       default:
         return colDef.EntryIndex;
@@ -2815,7 +2820,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public entry(lineDefId: number, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    if (!!colDef && colDef.ColumnName !== 'Memo' && colDef.ColumnName !== 'PostingDate') {
+    if (!!colDef && colDef.ColumnName !== 'Memo' &&
+      colDef.ColumnName !== 'PostingDate' &&
+      colDef.ColumnName !== 'Boolean1' &&
+      colDef.ColumnName !== 'Decimal1' &&
+      colDef.ColumnName !== 'Text1') {
       return !!line && !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 

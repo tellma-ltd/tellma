@@ -1594,6 +1594,12 @@
   <data name="Line" xml:space="preserve">
     <value>سطر</value>
   </data>
+  <data name="Line_Boolean1" xml:space="preserve">
+    <value>الصفة الثنائية 1</value>
+  </data>
+  <data name="Line_Decimal1" xml:space="preserve">
+    <value>الصفة العشرية 1</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>التعريف</value>
   </data>
@@ -1635,6 +1641,9 @@
   </data>
   <data name="Line_TemplateLine" xml:space="preserve">
     <value>القالب</value>
+  </data>
+  <data name="Line_Text1" xml:space="preserve">
+    <value>الصفة النصية 1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>تعريف سطر</value>
