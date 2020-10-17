@@ -14,8 +14,8 @@ AS
 
 	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId
 	
-	INSERT INTO @Lines([Index], [DefinitionId], [PostingDate], [Memo])
-	SELECT [Index], @LineDefinitionId, [PostingDate], [Memo] FROM @WideLines
+	INSERT INTO @Lines([Index], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
+	SELECT [Index], @LineDefinitionId, [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1] FROM @WideLines
 
 	INSERT INTO @Entries
 	EXEC [bll].[WideLines__Unpivot] @WideLines;
