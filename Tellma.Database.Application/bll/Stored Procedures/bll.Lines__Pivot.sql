@@ -13,6 +13,9 @@ AS
 		[TemplateLineId],
 		[Multiplier],
 		[Memo],
+		[Boolean1],
+		[Decimal1],
+		[Text1],
 
 		[Id0],
 		[Direction0],
@@ -375,6 +378,9 @@ AS
 		L.[TemplateLineId],
 		L.[Multiplier],
 		L.[Memo],
+		L.[Boolean1],
+		L.[Decimal1],
+		L.[Text1],
 
 		E0.[Id],
 		E0.[Direction],

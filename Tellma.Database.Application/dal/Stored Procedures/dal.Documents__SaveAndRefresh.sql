@@ -300,7 +300,10 @@ BEGIN
 				L.[PostingDate],
 				L.[TemplateLineId],
 				L.[Multiplier],
-				L.[Memo]
+				L.[Memo],
+				L.[Boolean1],
+				L.[Decimal1],
+				L.[Text1]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.Id = s.Id)
@@ -312,11 +315,14 @@ BEGIN
 				t.[TemplateLineId]		= s.[TemplateLineId],
 				t.[Multiplier]			= s.[Multiplier],
 				t.[Memo]				= s.[Memo],
+				t.[Boolean1]			= s.[Boolean1],
+				t.[Decimal1]			= s.[Decimal1],
+				t.[Text1]				= s.[Text1],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo], [Boolean1], [Decimal1], [Text1])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]

@@ -11,5 +11,8 @@
 		[TemplateLineId] IS NULL AND [Multiplier] IS NULL OR
 		[TemplateLineId] IS NOT NULL AND [Multiplier] IS NOT NULL
 	),
-	[Memo]						NVARCHAR (255) -- a textual description for statements and reports
+	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
+	[Boolean1]					BIT,
+	[Decimal1]					DECIMAL (19,4),
+	[Text1]						NVARCHAR(10)
 );

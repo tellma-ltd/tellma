@@ -45,8 +45,8 @@ BEGIN -- Inserting
 		[CenterId0] = @C101_INV
 	WHERE [DocumentIndex] = -1 AND [Index] = 1;
 
-	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo])
-	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo]
+	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo], [Boolean1], [Decimal1], [Text1])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo], [Boolean1], [Decimal1], [Text1]
 	FROM @WL
 	
 	INSERT INTO @E

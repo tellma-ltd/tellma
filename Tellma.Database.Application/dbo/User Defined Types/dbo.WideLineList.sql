@@ -8,6 +8,9 @@
 	[TemplateLineId]			INT,
 	[Multiplier]				DECIMAL (19,4),
 	[Memo]						NVARCHAR (255),
+	[Boolean1]					BIT,
+	[Decimal1]					DECIMAL (19,4),
+	[Text1]						NVARCHAR(10),
 	
 	[Id0]						INT				NOT NULL DEFAULT 0,
 	[Direction0]				SMALLINT,
