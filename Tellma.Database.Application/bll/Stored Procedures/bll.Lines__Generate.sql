@@ -26,7 +26,10 @@ AS
 		--[L].[TemplateLineId],
 		--[L].[Multiplier],
 		[L].[Memo],
-		[L].[Index]
+		[L].[Index],
+		[L].[Boolean1],
+		[L].[Decimal1],
+		[L].[Text1]
 	FROM @Lines AS [L] -- LineList
 	ORDER BY [L].[Index] ASC
 
