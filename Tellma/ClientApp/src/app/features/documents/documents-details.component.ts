@@ -3035,6 +3035,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._onNewLineFactoryResult = (line) => {
         // set the definition Id
         line.DefinitionId = lineDefId;
+        line.Boolean1 = false;
         line._flags = { isModified: true };
         // Add the specified number of entries
         line.Entries = [];

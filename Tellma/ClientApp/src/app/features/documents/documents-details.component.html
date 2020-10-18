@@ -659,7 +659,7 @@
                             (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </t-text-editor>
-                        <div *ngSwitchCase="'Text1'" class="custom-control custom-checkbox t-labelless-checkbox">
+                        <div *ngSwitchCase="'Boolean1'" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"

@@ -147,6 +147,9 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       case 'PostingDate':
       case 'TemplateLineId':
       case 'Multiplier':
+      case 'Boolean1':
+      case 'Decimal1':
+      case 'Text1':
         prefix = 'Line_';
         break;
       default:
