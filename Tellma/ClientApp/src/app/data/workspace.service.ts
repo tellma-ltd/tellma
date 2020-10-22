@@ -677,6 +677,11 @@ export class ReconciliationStore extends ReportStoreBase {
   arguments: ReportArguments = {}; // entries_top, ex_entries_skip, entries_total, account_id, etc...
   unreconciled_response: ReconciliationGetUnreconciledResponse;
   reconciled_response: ReconciliationGetReconciledResponse;
+
+  // For paging display
+  unreconciled_entries_count: number;
+  unreconciled_ex_entries_count: number;
+  reconciled_count: number;
 }
 
 export class ReportStore extends ReportStoreBase {

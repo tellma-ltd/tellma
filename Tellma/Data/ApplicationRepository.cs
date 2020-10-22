@@ -7104,8 +7104,8 @@ namespace Tellma.Data
                             DataRow row = reconciliationExternalEntriesTable.NewRow();
                             row["Index"] = j;
                             row["HeaderIndex"] = i;
-                            row[nameof(ReconciliationExternalEntryForSave.ExternalEntryIndex)] = exEntry.ExternalEntryIndex;
-                            row[nameof(ReconciliationExternalEntryForSave.ExternalEntryId)] = exEntry.ExternalEntryId;
+                            row[nameof(ReconciliationExternalEntryForSave.ExternalEntryIndex)] = (object)exEntry.ExternalEntryIndex ?? DBNull.Value;
+                            row[nameof(ReconciliationExternalEntryForSave.ExternalEntryId)] = (object)exEntry.ExternalEntryId ?? DBNull.Value;
                             reconciliationExternalEntriesTable.Rows.Add(row);
                         }
                     }

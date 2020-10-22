@@ -1242,10 +1242,6 @@ tr.t-highlight {
   background-color: rgba(17, 17, 17, 0.075) !important;
 }
 
-tr.highlight-a td.t-a, tr.highlight-b td.t-b {
-  background-color: rgba(232, 232, 232) !important;
-}
-
 .t-slightly-bold,
 .t-view-link {
   font-weight: 500;
@@ -1889,3 +1885,22 @@ td .t-studio-input {
 // .t-attention-b td.t-b {
 //   animation: highlight 2s;
 // }
+
+// Reconciliation screen
+
+tr.t-highlight-a td.t-a, tr.t-highlight-b td.t-b {
+  background-color: rgba(232, 232, 232) !important;
+}
+
+tr.t-pale-a td.t-a, tr.t-pale-b td.t-b {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
+th.t-slimfit {
+  width: 1px; // Used for table columns that fit their content
+}
+
+table.t-border td.t-border {
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}

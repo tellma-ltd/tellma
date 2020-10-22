@@ -102,11 +102,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
           view: 'exchange-rates', sortKey: 100
         },
-        // {
-        //   label: 'BankReconciliation', icon: 'tasks', link: '../reconciliation',
-        //   view: 'reconciliation', sortKey: 200,
-        //   paramsFunc: () => this.userSettings.get<Params>('reconciliation/arguments'),
-        // }
+        {
+          label: 'BankReconciliation', icon: 'tasks', link: '../reconciliation',
+          view: 'reconciliation', sortKey: 200,
+          paramsFunc: () => this.userSettings.get<Params>('reconciliation/arguments'),
+        }
       ]
     },
     FixedAssets: {
