@@ -142,26 +142,35 @@
             <!-- Left Buttons -->
             <div *ngIf="showViewToolbar">
 
-                <!-- Export -->
-                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
-                    <fa-icon icon="download"></fa-icon>
-                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+                <!-- Report -->
+                <button class="btn btn-primary btn-sm t-toolbar-button"
+                    (click)="modalService.open(reconciliationReport)" [disabled]="!canShowReport">
+                    <fa-icon icon="chart-line"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Report' | translate }}</span>
                 </button>
 
-                <!-- Data dropdown -->
-                <!-- <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+                <!-- Actions dropdown -->
+                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
                     <button type="button"
                         class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
                         ngbDropdownToggle>
-                        {{ 'Data' | translate }}
+                        {{ 'Actions' | translate }}
                     </button>
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                        <button type="button" *ngIf="showEditDefinition" class="dropdown-item btn-light" ngbDropdownItem
-                            (click)="onEdit()">
-                            {{ 'EditDefinition' | translate }}
+                        <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
+                            [disabled]="!canExport">
+                            {{ 'Export' | translate }}
+                        </button>
+                        <button type="button" class="dropdown-item btn-light" *ngIf="isUnreconciled" ngbDropdownItem
+                            (click)="onAutoReconcileExact()" [disabled]="!canAutoReconcileExact">
+                            {{ 'AutoReconcileExact' | translate }}
+                        </button>
+                        <button type="button" class="dropdown-item btn-light" *ngIf="isUnreconciled" ngbDropdownItem
+                            (click)="onAutoReconcileApprox()" [disabled]="!canAutoReconcileApprox">
+                            {{ 'AutoReconcileApprox' | translate }}
                         </button>
                     </div>
-                </div> -->
+                </div>
                 <!-- 
                 <t-spinner class="t-vertical-align-middle mx-1" *ngIf="showExportSpinner">
                 </t-spinner> -->
@@ -190,39 +199,6 @@
                             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
                         </button>
                     </div>
-
-                    <!-- Internal Entries Paging -->
-                    <div class="d-inline" *ngIf="isUnreconciled && isManualMode">
-                        <span class="t-vertical-align-middle small mx-2">
-                            {{ entries_from | number }} - {{ entries_to | number }} /
-                            {{ entries_total | number }}</span>
-                        <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
-                            title="{{ 'Previous' | translate }}" (click)="entries_onPreviousPage()"
-                            [disabled]="!entries_canPreviousPage">
-                            <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
-                        </button>
-                        <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
-                            title="{{ 'Next' | translate }}" (click)="entries_onNextPage()"
-                            [disabled]="!entries_canNextPage">
-                            <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Manual/Auto Toggle -->
-                <div class="btn-group btn-group-toggle t-toolbar-button">
-                    <label class="btn btn-sm btn-light t-pointer" [class.active]="isManualMode"
-                        title="{{ 'Manual' | translate }}" (click)="onManualMode()">
-                        <input type="radio" name="displayMode">
-                        <fa-icon icon="fist-raised"></fa-icon>
-                        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Manual' | translate }}</span>
-                    </label>
-                    <label class="btn btn-sm btn-light t-pointer" [class.active]="isAutoMode"
-                        title="{{ 'Auto' | translate }}" (click)="onAutoMode()">
-                        <input type="radio" name="displayMode">
-                        <fa-icon icon="magic"></fa-icon>
-                        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Auto' | translate }}</span>
-                    </label>
                 </div>
             </div>
         </div>
@@ -233,12 +209,11 @@
         <div class="table-responsive">
             <!-- Details (Flat Table) -->
             <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
-                <table class="table table-sm border-bottom bg-white t-master-table text-nowrap"
-                    [class.table-striped]="isManualMode" [class.table-hover]="isManualMode"
-                    [class.t-border]="isAutoMode">
+                <table
+                    class="table table-sm border-bottom bg-white t-master-table text-nowrap table-striped table-hover">
                     <!-- Column Header -->
                     <thead>
-                        <tr *ngIf="isAutoMode">
+                        <tr>
                             <th></th>
                             <th class="w-50" colSpan="3">
                                 <div class="d-flex justify-content-between align-items-baseline">
@@ -261,12 +236,26 @@
                                     </div>
                                 </div>
                             </th>
-                            <th *ngIf="isUnreconciled"></th>
-                            <th *ngIf="isReconciled"></th>
-                            <th *ngIf="isUnreconciled"></th>
+                            <ng-container *ngIf="isUnreconciled; else reconciledheader1">
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </ng-container>
+                            <ng-template #reconciledheader1>
+                                <th></th>
+                            </ng-template>
                             <th class="w-50" colSpan="4">
                                 <div class="d-flex justify-content-between align-items-baseline">
-                                    <span>{{ 'ExternalEntries' | translate }}</span>
+                                    <div class="d-inline">
+                                        <span>{{ 'ExternalEntries' | translate }}</span>
+                                        <button (click)="onImport()" *ngIf="showImport" [disabled]="!canImport"
+                                            [title]="'Import' | translate"
+                                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 mx-2 align-baseline">
+                                            <fa-icon icon="upload" tabindex="-1"></fa-icon>
+                                        </button>
+                                    </div>
                                     <!-- External Entries Paging -->
                                     <div class="d-inline" *ngIf="isUnreconciled && !isDirty">
                                         <span class="t-vertical-align-middle font-weight-normal mx-2">
@@ -298,35 +287,40 @@
                             <th class="text-right">
                                 {{ 'Entry_MonetaryValue' | translate }}
                             </th>
-                            <th *ngIf="isUnreconciled" class="t-slimfit">
-                                <!-- Checkboxes or Check buttons -->
-                            </th>
-                            <th *ngIf="isReconciled" class="t-slimfit">
-                                <!-- Reconcile/Unreconcile -->
-                            </th>
-                            <ng-container *ngIf="isAutoMode">
-                                <th *ngIf="isUnreconciled" class="t-slimfit">
-                                    <!-- Checkboxes -->
-                                </th>
-                                <th style="width:12.5%">
-                                    {{ 'Line_PostingDate' | translate }}
-                                </th>
-                                <th style="width:25%">
-                                    {{ 'Entry_ExternalReference' | translate }}
-                                </th>
-                                <th class="text-right" style="width:12.5%">
-                                    {{ 'Entry_MonetaryValue' | translate }}
-                                </th>
-                                <th class="t-slimfit"></th>
+                            <ng-container *ngIf="isUnreconciled; else reconciledheader2">
+                                <!-- Clone and Reconcile Buttons -->
+                                <th class="t-slimfit" style="min-width: 33px;"></th>
+                                <!-- Checkboxes #1 -->
+                                <th class="t-slimfit" style="min-width: 42px;"></th>
+                                <!-- Entry Errors -->
+                                <th class="t-slimfit px-0"></th>
+                                <!-- External Entry Errors -->
+                                <th class="t-slimfit px-0"></th>
+                                <!-- Checkboxes #2 -->
+                                <th class="t-slimfit" style="min-width: 42px;"></th>
                             </ng-container>
+                            <ng-template #reconciledheader2>
+                                <!-- Unreconcile -->
+                                <th class="t-slimfit"></th>
+                            </ng-template>
+                            <th style="width:12.5%">
+                                {{ 'Line_PostingDate' | translate }}
+                            </th>
+                            <th style="width:25%">
+                                {{ 'Entry_ExternalReference' | translate }}
+                            </th>
+                            <th class="text-right" style="width:12.5%">
+                                {{ 'Entry_MonetaryValue' | translate }}
+                            </th>
+                            <th class="t-slimfit"></th>
                         </tr>
                     </thead>
                     <!-- Rows -->
                     <tbody>
                         <!-- Internal Entries -->
-                        <tr [class.t-highlight-a]="row.entryIsChecked" [class.d-none]="isManualMode && !row.entry"
-                            [class.t-pale-a]="row.entryReconciliation" [class.t-highlight-b]="row.exEntryIsChecked"
-                            [class.t-pale-b]="row.exEntryReconciliation" *cdkVirtualFor="let row of rows; index as i">
+                        <tr [class.t-highlight-a]="row.entryIsChecked" [class.t-pale-a]="row.entryReconciliation"
+                            [class.t-highlight-b]="row.exEntryIsChecked" [class.t-pale-b]="row.exEntryReconciliation"
+                            *cdkVirtualFor="let row of rows; index as i">
                             <td class="t-a">
                                 &zwnj;
                             </td>
@@ -339,9 +333,31 @@
                             <td class="text-right t-a">
                                 {{ !!row.entry ? (row.entry?.MonetaryValue * row.entry?.Direction | accounting:amountsFormat) : '' }}
                             </td>
-                            <td class="text-center t-a" *ngIf="isUnreconciled">
-                                <ng-container *ngIf="row.entry">
-                                    <ng-container *ngIf="isAutoMode; else checkbutton">
+
+                            <ng-container *ngIf="isUnreconciled; else reconciledcolumns">
+
+                                <!-- Clone and Reconcile -->
+                                <td class="text-center t-a">
+                                    <ng-container *ngIf="row.entry">
+                                        <button (click)="onCloneAndReconcile(row)"
+                                            *ngIf="!row.entryReconciliation; else cancelAndDeleteButton"
+                                            [title]="'CloneAndReconcile' | translate"
+                                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
+                                            <fa-icon icon="compress" tabindex="-1"></fa-icon>
+                                        </button>
+                                        <ng-template #cancelAndDeleteButton>
+                                            <button (click)="onUndoCloneAndReconcile(row)"
+                                                [title]="'UnreconcileAndDelete' | translate"
+                                                class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline d-none2">
+                                                <fa-icon icon="undo" tabindex="-1"></fa-icon>
+                                            </button>
+                                        </ng-template>
+                                    </ng-container>
+                                </td>
+
+                                <!-- Checkbox #1 -->
+                                <td class="text-center t-a">
+                                    <ng-container *ngIf="row.entry">
                                         <!-- Checkbox -->
                                         <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
                                             *ngIf="!row.entryReconciliation; else cancelButton">
@@ -353,41 +369,62 @@
                                         <!-- Cancel reconcile -->
                                         <ng-template #cancelButton>
                                             <button (click)="onUndoReconcileCheckedEntry(row)"
-                                                class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
-                                                    class="small">
-                                                    <fa-icon icon="times" tabindex="-1"></fa-icon>
-                                                </span></button>
-                                        </ng-template>
-                                    </ng-container>
-                                    <ng-template #checkbutton>
-                                        <button (click)="onCloneAndReconcile(row)"
-                                            *ngIf="!row.entryReconciliation; else cancalAndDeleteButton"
-                                            [title]="'Reconcile' | translate"
-                                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
-                                            <fa-icon icon="check" tabindex="-1"></fa-icon>
-                                        </button>
-                                        <ng-template #cancalAndDeleteButton>
-                                            <button (click)="onUndoCloneAndReconcile(row)"
                                                 [title]="'Unreconcile' | translate"
                                                 class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
                                                     class="small">
                                                     <fa-icon icon="times" tabindex="-1"></fa-icon>
                                                 </span></button>
                                         </ng-template>
+                                    </ng-container>
+                                </td>
+
+                                <!-- Validation Errors -->
+                                <td class="px-0 t-a">
+                                    <div class="mx-2" *ngIf="row.entryReconciliation?.serverErrors?.Entries"
+                                        [ngbPopover]="entryErrorsPopover" popoverClass="t-error-popover"
+                                        container="body" triggers="mouseenter:mouseleave"
+                                        [placement]="errorPopoverPlacement">
+                                        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>
+                                    </div>
+
+                                    <!-- Popover -->
+                                    <ng-template #entryErrorsPopover>
+                                        <div style="width: 250px;">
+                                            <p class="m-0 p-0"
+                                                *ngFor="let error of row.entryReconciliation?.serverErrors?.Entries">
+                                                <fa-icon icon="exclamation-triangle"></fa-icon>
+                                                &nbsp;
+                                                {{ error }}
+                                            </p>
+                                        </div>
                                     </ng-template>
-                                </ng-container>
-                            </td>
+                                </td>
 
-                            <!-- Unreconcile button -->
-                            <td *ngIf="isReconciled && !!row.rowSpan" [rowSpan]="row.rowSpan" class="t-border">
-                                <button (click)="onDeleteReconciliation(row)" [title]="'Unreconcile' | translate"
-                                    class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
-                                    <fa-icon icon="times" tabindex="-1"></fa-icon>
-                                </button>
-                            </td>
 
-                            <ng-container *ngIf="isAutoMode">
-                                <td class="text-center t-b" *ngIf="isUnreconciled">
+                                <!-- Validation Errors -->
+                                <td class="px-0 t-b">
+                                    <div class="mx-2" *ngIf="row.exEntryReconciliation?.serverErrors?.ExternalEntries"
+                                        [ngbPopover]="exEntryErrorsPopover" popoverClass="t-error-popover"
+                                        container="body" triggers="mouseenter:mouseleave"
+                                        [placement]="errorPopoverPlacement">
+                                        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>
+                                    </div>
+
+                                    <!-- Popover -->
+                                    <ng-template #exEntryErrorsPopover>
+                                        <div style="width: 250px;">
+                                            <p class="m-0 p-0"
+                                                *ngFor="let error of row.exEntryReconciliation?.serverErrors?.ExternalEntries">
+                                                <fa-icon icon="exclamation-triangle"></fa-icon>
+                                                &nbsp;
+                                                {{ error }}
+                                            </p>
+                                        </div>
+                                    </ng-template>
+                                </td>
+
+                                <!-- Checkbox #2 -->
+                                <td class="text-center t-b">
                                     <ng-container *ngIf="row.exEntry">
                                         <!-- Checkbox -->
                                         <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
@@ -399,7 +436,7 @@
                                         </div>
                                         <!-- Cancel Reconcile -->
                                         <button (click)="onUndoReconciledCheckedExEntry(row)"
-                                            *ngIf="row.exEntryReconciliation"
+                                            [title]="'Unreconcile' | translate" *ngIf="row.exEntryReconciliation"
                                             class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
                                                 class="small">
                                                 <fa-icon icon="times" tabindex="-1"></fa-icon>
@@ -407,91 +444,148 @@
                                     </ng-container>
                                 </td>
 
-                                <!-- External Entry (Edit) -->
-                                <ng-container *ngIf="row.exEntryIsEdit && !row.exEntryReconciliation; else viewExEntry">
-                                    <td class="t-b">
-                                        <t-form-group-dynamic class="t-form-group"
-                                            [serverErrors]="row.exEntry?.serverErrors?.PostingDate">
-                                            <t-date-picker [ngModel]="row.exEntry.PostingDate"
-                                                (ngModelChange)="onChangePostingDate(row, i, $event)"
-                                                [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
-                                        </t-form-group-dynamic>
-                                    </td>
-                                    <td class="t-b">
-                                        <t-form-group-dynamic class="t-form-group"
-                                            [serverErrors]="row.exEntry?.serverErrors?.ExternalReference">
-                                            <t-text-editor [ngModel]="row.exEntry.ExternalReference"
-                                                (ngModelChange)="onChangeExternalReference(row, i, $event)"
-                                                [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-                                        </t-form-group-dynamic>
-                                    </td>
-                                    <td class="text-right t-b">
-                                        <t-form-group-dynamic class="t-form-group"
-                                            [serverErrors]="row.exEntry?.serverErrors?.MonetaryValue">
-                                            <t-decimal-editor [ngModel]="getMonetaryValue(row.exEntry)"
-                                                (ngModelChange)="onChangeMonetaryValue(row, i, $event)"
-                                                textAlignment="right" [ngModelOptions]="{ updateOn: 'blur' }"
-                                                [minDecimalPlaces]="amountsDecimals"
-                                                [maxDecimalPlaces]="amountsDecimals">
-                                            </t-decimal-editor>
-                                        </t-form-group-dynamic>
-                                    </td>
-                                </ng-container>
+                            </ng-container>
+                            <ng-template #reconciledcolumns>
+                                <!-- Unreconcile button -->
+                                <td *ngIf="!!row.rowSpan" [rowSpan]="row.rowSpan"
+                                    class="bg-white border-right border-left">
+                                    <button (click)="onDeleteReconciliation(row)" [title]="'Unreconcile' | translate"
+                                        class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
+                                        <fa-icon icon="times" tabindex="-1"></fa-icon>
+                                    </button>
+                                </td>
+                            </ng-template>
 
-                                <!-- External Entry (View) -->
-                                <ng-template #viewExEntry>
-                                    <td class="t-b">
-                                        {{ row.exEntry?.PostingDate | date:'yyyy-MM-dd' }}
-                                    </td>
-                                    <td class="t-b">
-                                        {{ row.exEntry?.ExternalReference }}
-                                    </td>
-                                    <td class="text-right t-b">
-                                        {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction | accounting:amountsFormat) : '' }}
-                                    </td>
-                                </ng-template>
-
+                            <!-- External Entry (Edit) -->
+                            <ng-container *ngIf="row.exEntryIsEdit && !row.exEntryReconciliation; else viewExEntry">
                                 <td class="t-b">
-                                    <!-- Edit Delete and Cancel -->
-                                    <ng-container *ngIf="isUnreconciled && !!row.exEntry && !row.exEntryReconciliation">
-                                        <div ngbDropdown [placement]="commandsDropdownPlacement">
-                                            <button
-                                                class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
-                                                ngbDropdownToggle><span class="small">
-                                                    <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
-                                                </span></button>
-                                            <div ngbDropdownMenu style="min-width: 5rem;">
-                                                <button ngbDropdownItem class="t-transparent-background"
-                                                    (click)="onEditExEntry(row)"
-                                                    *ngIf="!row.exEntryIsEdit; else cancelTemplate">
-                                                    {{ 'Edit' | translate }}
-                                                </button>
-                                                <ng-template #cancelTemplate>
-                                                    <button ngbDropdownItem class="t-transparent-background"
-                                                        (click)="onCancelEditExEntry(row, i)">
-                                                        {{ 'Cancel' | translate }}
-                                                    </button>
-                                                </ng-template>
-                                                <button ngbDropdownItem class="t-transparent-background"
-                                                    *ngIf="!!row.exEntry?.Id" (click)="onDeleteExEntry(row, i)">
-                                                    {{ 'Delete' | translate }}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                    <!-- Create -->
-                                    <ng-container *ngIf="row.exEntryIsCreate">
-                                        <ng-container *ngTemplateOutlet="createMenu">
-
-                                        </ng-container>
-                                    </ng-container>
+                                    <t-form-group-dynamic class="t-form-group"
+                                        [serverErrors]="row.exEntry?.serverErrors?.PostingDate">
+                                        <t-date-picker [disabled]="row.exEntryReconciliation"
+                                            [ngModel]="row.exEntry.PostingDate"
+                                            (ngModelChange)="onChangePostingDate(row, i, $event)"
+                                            [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
+                                    </t-form-group-dynamic>
+                                </td>
+                                <td class="t-b">
+                                    <t-form-group-dynamic class="t-form-group"
+                                        [serverErrors]="row.exEntry?.serverErrors?.ExternalReference">
+                                        <t-text-editor [disabled]="row.exEntryReconciliation"
+                                            [ngModel]="row.exEntry.ExternalReference"
+                                            (ngModelChange)="onChangeExternalReference(row, i, $event)"
+                                            [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+                                    </t-form-group-dynamic>
+                                </td>
+                                <td class="text-right t-b">
+                                    <t-form-group-dynamic class="t-form-group"
+                                        [serverErrors]="row.exEntry?.serverErrors?.MonetaryValue">
+                                        <t-decimal-editor [disabled]="row.exEntryReconciliation"
+                                            [ngModel]="getMonetaryValue(row.exEntry)"
+                                            (ngModelChange)="onChangeMonetaryValue(row, i, $event)"
+                                            textAlignment="right" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            [minDecimalPlaces]="amountsDecimals" [maxDecimalPlaces]="amountsDecimals">
+                                        </t-decimal-editor>
+                                    </t-form-group-dynamic>
                                 </td>
                             </ng-container>
+
+                            <!-- External Entry (View) -->
+                            <ng-template #viewExEntry>
+                                <td class="t-b" (dblclick)="onRowDoubleClick(row)"
+                                    [ngbPopover]="row.exEntry?.serverErrors?.PostingDate ? postingDateErrors : null"
+                                    container="body" popoverClass="t-error-popover" [placement]="errorPopoverPlacement"
+                                    triggers="mouseenter:mouseleave">
+                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="row.exEntry?.serverErrors?.PostingDate"></fa-icon>
+                                    {{ row.exEntry?.PostingDate | date:'yyyy-MM-dd' }}
+
+                                    <ng-template #postingDateErrors>
+                                        <div class="" style="width: 250px">
+                                            <p class="m-0 p-0"
+                                                *ngFor="let errorMsg of row.exEntry?.serverErrors?.PostingDate">
+                                                <fa-icon icon="exclamation-triangle"></fa-icon>
+                                                &nbsp;{{ errorMsg }}
+                                            </p>
+                                        </div>
+                                    </ng-template>
+                                </td>
+                                <td class="t-b" (dblclick)="onRowDoubleClick(row)"
+                                    [ngbPopover]="row.exEntry?.serverErrors?.ExternalReference ? exRefErrors : null"
+                                    container="body" popoverClass="t-error-popover" [placement]="errorPopoverPlacement"
+                                    triggers="mouseenter:mouseleave">
+                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="row.exEntry?.serverErrors?.ExternalReference"></fa-icon>
+                                    {{ row.exEntry?.ExternalReference }}
+
+                                    <ng-template #exRefErrors>
+                                        <div class="" style="width: 250px">
+                                            <p class="m-0 p-0"
+                                                *ngFor="let errorMsg of row.exEntry?.serverErrors?.ExternalReference">
+                                                <fa-icon icon="exclamation-triangle"></fa-icon>
+                                                &nbsp;{{ errorMsg }}
+                                            </p>
+                                        </div>
+                                    </ng-template>
+                                </td>
+                                <td class="text-right t-b" (dblclick)="onRowDoubleClick(row)"
+                                    [ngbPopover]="row.exEntry?.serverErrors?.MonetaryValue ? exRefErrors : null"
+                                    container="body" popoverClass="t-error-popover" [placement]="errorPopoverPlacement"
+                                    triggers="mouseenter:mouseleave">
+                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="row.exEntry?.serverErrors?.MonetaryValue"></fa-icon>
+                                    {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction | accounting:amountsFormat) : '' }}
+
+                                    <ng-template #monetaryValueErrors>
+                                        <div class="" style="width: 250px">
+                                            <p class="m-0 p-0"
+                                                *ngFor="let errorMsg of row.exEntry?.serverErrors?.MonetaryValue">
+                                                <fa-icon icon="exclamation-triangle"></fa-icon>
+                                                &nbsp;{{ errorMsg }}
+                                            </p>
+                                        </div>
+                                    </ng-template>
+                                </td>
+                            </ng-template>
+
+                            <td class="t-b">
+                                <!-- Edit Delete and Cancel -->
+                                <ng-container *ngIf="isUnreconciled && !!row.exEntry && !row.exEntryReconciliation">
+                                    <div ngbDropdown [placement]="commandsDropdownPlacement">
+                                        <button
+                                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                                            ngbDropdownToggle><span class="small">
+                                                <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                                            </span></button>
+                                        <div ngbDropdownMenu style="min-width: 5rem;">
+                                            <button ngbDropdownItem class="t-transparent-background"
+                                                (click)="onEditExEntry(row)"
+                                                *ngIf="!row.exEntryIsEdit; else cancelTemplate">
+                                                {{ 'Edit' | translate }}
+                                            </button>
+                                            <ng-template #cancelTemplate>
+                                                <button ngbDropdownItem class="t-transparent-background"
+                                                    (click)="onCancelEditExEntry(row, i)">
+                                                    {{ 'Cancel' | translate }}
+                                                </button>
+                                            </ng-template>
+                                            <button ngbDropdownItem class="t-transparent-background"
+                                                *ngIf="!!row.exEntry?.Id" (click)="onDeleteExEntry(row, i)">
+                                                {{ 'Delete' | translate }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <!-- Create -->
+                                <ng-container *ngIf="row.exEntryIsCreate">
+                                    <ng-container *ngTemplateOutlet="createMenu">
+
+                                    </ng-container>
+                                </ng-container>
+                            </td>
                         </tr>
                         <tr *ngIf="showBuiltInCreateRow">
-                            <td [colSpan]="isUnreconciled ? 5 : 4"></td>
-                            <!-- <td class="bg-white border-left border-right border-top-0 border-bottom-0"></td> -->
-                            <td [colSpan]="isUnreconciled ? 4 : 3"></td>
+                            <td [colSpan]="isUnreconciled ? 8 : 4"></td>
+                            <td [colSpan]="isUnreconciled ? 4 : 3" (dblclick)="onCreateExEntry()"></td>
                             <td>
                                 <ng-container *ngTemplateOutlet="createMenu">
                                 </ng-container>
@@ -599,6 +693,85 @@
         <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- Error Modal -->
+<ng-template #reconciliationReport let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'ReconciliationReport' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+
+        <!-- Account -->
+        <div class="form-group">
+            <label class="small font-weight-bold">{{ 'Entry_Account' | translate }}</label>
+            <p>
+                {{ ws.getMultilingualValue('Account', accountId, 'Name') }}
+            </p>
+        </div>
+        <!-- Custody -->
+        <div class="form-group" *ngIf="showCustodyParameter">
+            <label class="small font-weight-bold">{{ labelCustody_Manual }}</label>
+            <p>
+                {{ ws.getMultilingualValue('Custody', custodyId, 'Name') }}
+            </p>
+        </div>
+        <!-- As of Date -->
+        <div class="form-group">
+            <label class="small font-weight-bold">{{ 'AsOfDate' | translate }}</label>
+            <p>
+                {{ toDate ? (toDate | date:'yyyy-MM-dd') : '-' }}&zwnj;
+            </p>
+        </div>
+
+        <!-- Reconciliation Equation -->
+        <table class="table table-sm border-bottom text-nowrap table-striped mt-2">
+            <tbody>
+                <tr>
+                    <td>Internal Balance</td>
+                    <td>{{ entriesBalance | accounting:amountsFormat }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Internal Unreconciled Balance</td>
+                    <td>{{ unreconciledEntriesBalance | accounting:amountsFormat }}</td>
+                    <td>
+                        <fa-icon icon="minus"></fa-icon>
+                    </td>
+                </tr>
+                <tr>
+                    <td>External Unreconciled Balance</td>
+                    <td>{{ unreconciledExEntriesBalance | accounting:amountsFormat }}</td>
+                    <td>
+                        <fa-icon icon="plus"></fa-icon>
+                    </td>
+                </tr>
+                <tr>
+                    <td>External Balance</td>
+                    <td>{{ exEntriesBalance | accounting:amountsFormat }}</td>
+                    <td>
+                        <fa-icon icon="equals"></fa-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
         </button>
     </div>
 </ng-template>

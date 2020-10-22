@@ -26,7 +26,7 @@ import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/recon
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 
 type View = 'unreconciled' | 'reconciled';
-type Mode = 'manual' | 'auto';
+// type Mode = 'manual' | 'auto';
 
 @Component({
   selector: 't-reconciliation',
@@ -69,7 +69,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   private stringKeys: { [key: string]: any } = {
     view: 'unreconciled',
-    mode: 'auto',
+    // mode: 'auto',
     from_date: undefined,
     to_date: undefined,
     ex_ref_contains: undefined
@@ -77,7 +77,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
   constructor(
     private workspace: WorkspaceService, private router: Router, private customUserSettings: CustomUserSettingsService,
-    private route: ActivatedRoute, private apiService: ApiService, private translate: TranslateService, private modalService: NgbModal) { }
+    private route: ActivatedRoute, private apiService: ApiService, private translate: TranslateService, public modalService: NgbModal) { }
 
   ngOnInit(): void {
 
@@ -323,10 +323,6 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     }
   }
 
-  public get canExport() {
-    return this.isLoaded;
-  }
-
   private account(id?: number): Account {
     id = id || this.accountId;
     return this.ws.get('Account', id);
@@ -340,34 +336,34 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     }
   }
 
-  // mode
-  public get mode(): Mode {
-    return this.state.arguments.mode;
-  }
+  // // mode
+  // public get mode(): Mode {
+  //   return this.state.arguments.mode;
+  // }
 
-  public set mode(v: Mode) {
-    const args = this.state.arguments;
-    if (args.mode !== v) {
-      args.mode = v;
-      this.urlStateChanged(true); // To avoid triggering unsaved changes confirmation
-    }
-  }
+  // public set mode(v: Mode) {
+  //   const args = this.state.arguments;
+  //   if (args.mode !== v) {
+  //     args.mode = v;
+  //     this.urlStateChanged(true); // To avoid triggering unsaved changes confirmation
+  //   }
+  // }
 
-  public get isManualMode(): boolean {
-    return this.mode === 'manual';
-  }
+  // public get isManualMode(): boolean {
+  //   return this.mode === 'manual';
+  // }
 
-  public get isAutoMode(): boolean {
-    return this.mode === 'auto';
-  }
+  // public get isAutoMode(): boolean {
+  //   return this.mode === 'auto';
+  // }
 
-  public onManualMode() {
-    this.mode = 'manual';
-  }
+  // public onManualMode() {
+  //   this.mode = 'manual';
+  // }
 
-  public onAutoMode() {
-    this.mode = 'auto';
-  }
+  // public onAutoMode() {
+  //   this.mode = 'auto';
+  // }
 
   // view
   public get view(): View {
@@ -629,16 +625,80 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return this.state.reportStatus === ReportStatus.loaded;
   }
 
+  public get canShowReport(): boolean {
+    return this.isLoaded;
+  }
+
+  // This
+  public get entriesBalance(): number {
+    const res = this.state.unreconciled_response;
+    return !!res ? res.EntriesBalance : 0;
+  }
+
+  // ... Minus This
+  public get unreconciledEntriesBalance(): number {
+    const res = this.state.unreconciled_response;
+    return !!res ? res.UnreconciledEntriesBalance : 0;
+  }
+
+  // ... Plus This
+  public get unreconciledExEntriesBalance(): number {
+    const res = this.state.unreconciled_response;
+    return !!res ? res.UnreconciledExternalEntriesBalance : 0;
+  }
+
+  // ... Equals This
+  public get exEntriesBalance(): number {
+    const res = this.state.unreconciled_response;
+    return !!res ? (res.EntriesBalance - res.UnreconciledEntriesBalance + res.UnreconciledExternalEntriesBalance) : 0;
+  }
+
+  public onImport() {
+    alert('TODO');
+  }
+
+  public showImport() {
+    return this.isUnreconciled;
+  }
+
+  public canImport() {
+    return this.isLoaded;
+  }
+
   public onExport() {
     alert('TODO');
   }
 
-  public get actionsDropdownPlacement() {
+  public get canExport() {
+    return this.isLoaded;
+  }
+
+  public onAutoReconcileExact() {
+    alert('TODO');
+  }
+
+  public get canAutoReconcileExact() {
+    return this.isLoaded;
+  }
+
+  public onAutoReconcileApprox() {
+    alert('TODO');
+  }
+
+  public get canAutoReconcileApprox() {
+    return this.isLoaded;
+  }
+
+  public get actionsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
   public get commandsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
+  }
+
+  public get errorPopoverPlacement(): Placement {
+    return 'bottom';
   }
 
   public get flip() {
@@ -671,8 +731,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   get total(): number {
-    const state = this.state;
-    return isSpecified(state.reconciled_count) ? state.reconciled_count : this.top;
+    return this.state.reconciled_count || 0;
   }
 
   onPreviousPage() {
@@ -713,8 +772,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   get entries_total(): number {
-    const state = this.state;
-    return isSpecified(state.unreconciled_entries_count) ? state.unreconciled_entries_count : this.entriesTop;
+    return this.state.unreconciled_entries_count || 0;
   }
 
   entries_onPreviousPage() {
@@ -755,8 +813,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   get ex_entries_total(): number {
-    const state = this.state;
-    return isSpecified(state.unreconciled_ex_entries_count) ? state.unreconciled_ex_entries_count : this.externalEntriesTop;
+    return this.state.unreconciled_ex_entries_count || 0;
   }
 
   ex_entries_onPreviousPage() {
@@ -875,7 +932,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   private _showBuiltInCreateRow = false;
 
   public get showBuiltInCreateRow(): boolean {
-    return this._showBuiltInCreateRow && this.isUnreconciled && this.isAutoMode;
+    return this._showBuiltInCreateRow && this.isUnreconciled;
   }
 
   private fixCreateExEntryRow(i = -1): void {
@@ -907,6 +964,16 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return index + 1;
   }
 
+  public onRowDoubleClick(row: ReconciliationRow) {
+    if (this.isUnreconciled) {
+      if (row.exEntryIsCreate) {
+        this.onCreateExEntry();
+      } else {
+        this.onEditExEntry(row);
+      }
+    }
+  }
+
   /**
    * Returns the index of the row where the ex entry was created
    */
@@ -915,7 +982,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     const index = this.findIndexForCreate();
 
     // (2) Create the external entry and add it to entities for save
-    const exEntry: ExternalEntryForSave = {};
+    const exEntry: ExternalEntryForSave = { Direction: 1 };
     this.externalEntriesForSave.push(exEntry);
     const exEntryIndex = this.externalEntriesForSave.length - 1;
 
@@ -1003,9 +1070,11 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   public onEditExEntry(row: ReconciliationRow): void {
-    row.exEntryIsEdit = true;
-    row.exEntryOriginal = row.exEntry;
-    row.exEntry = JSON.parse(JSON.stringify(row.exEntryOriginal)); // Store the original safely to support cancellation
+    if (!row.exEntryIsEdit && !!row.exEntry) {
+      row.exEntryIsEdit = true;
+      row.exEntryOriginal = row.exEntry;
+      row.exEntry = JSON.parse(JSON.stringify(row.exEntryOriginal)); // Store the original safely to support cancellation
+    }
   }
 
   public onCancelEditExEntry(row: ReconciliationRow, index: number): void {
@@ -1064,6 +1133,22 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     // For robustness grab a reference to the state object, in case it changes later
     if (this.canSave && this.isDirty && this.requiredParametersAreSet && !this.loadingRequiredParameters) {
 
+      // Clear all errors
+      for (const exEntry of this.externalEntriesForSave) {
+        if (!!exEntry) {
+          delete exEntry.serverErrors;
+        }
+      }
+      for (const reconciliation of this.reconciliationsForSave) {
+        delete reconciliation.serverErrors;
+        for (const e of reconciliation.Entries) {
+          delete e.serverErrors;
+        }
+        for (const e of reconciliation.ExternalEntries) {
+          delete e.serverErrors;
+        }
+      }
+
       // Prepare the payload
       const payload: ReconciliationSavePayload = {
         ExternalEntries: this.externalEntriesForSave,
@@ -1106,7 +1191,106 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
         catchError((friendlyError: FriendlyError) => {
 
           if (friendlyError.status === 422) {
-            alert('TODO: Validation Errors');
+            const errorsDic = friendlyError.error as { [key: string]: string[] };
+            const keys = Object.keys(errorsDic);
+            const unboundErrors: string[] = [];
+            for (const key of keys) {
+              const errors = errorsDic[key];
+              const steps = key.split('.');
+
+              const step1 = steps[0];
+              if (step1.startsWith('ExternalEntries') && steps.length > 1) {
+                const parts1 = step1.substring(0, step1.length - 1).split('[');
+                const exEntryIndex = +parts1[1];
+                if (isNaN(exEntryIndex)) {
+                  unboundErrors.push(...errors);
+                } else {
+                  const step2 = steps[1];
+                  switch (step2) {
+                    case 'PostingDate':
+                    case 'ExternalReference':
+                    case 'MonetaryValue':
+                      const exEntry = payload.ExternalEntries[exEntryIndex];
+                      exEntry.serverErrors = exEntry.serverErrors || {};
+                      exEntry.serverErrors[step2] = errors;
+                      break;
+                    default:
+                      unboundErrors.push(...errors);
+                  }
+                }
+              } else if (step1.startsWith('Reconciliations') && steps.length > 2) {
+                const parts1 = step1.substring(0, step1.length - 1).split('[');
+                const reconciliationIndex = +parts1[1];
+                if (isNaN(reconciliationIndex)) {
+                  unboundErrors.push(...errors);
+                } else {
+                  const reconciliation = payload.Reconciliations[reconciliationIndex];
+                  reconciliation.serverErrors = reconciliation.serverErrors || {};
+                  const step2 = steps[1];
+                  if (step2.startsWith('Entries')) {
+                    reconciliation.serverErrors.Entries = reconciliation.serverErrors.Entries || [];
+                    reconciliation.serverErrors.Entries.push(...errors);
+
+                    // const parts2 = step2.substring(0, step2.length - 1).split('[');
+                    // const entryIndex = +parts2[1];
+                    // if (isNaN(entryIndex)) {
+                    //   unboundErrors.push(...errors);
+                    // } else {
+                    //   const step3 = steps[2];
+                    //   if (step3 === 'EntryId') {
+                    //     const entry = reconciliation.Entries[entryIndex];
+                    //     entry.serverErrors = entry.serverErrors || {};
+                    //     entry.serverErrors[step2] = errors;
+                    //   } else {
+                    //     unboundErrors.push(...errors);
+                    //   }
+                    // }
+                  } else if (step2.startsWith('ExternalEntries')) {
+                    reconciliation.serverErrors.ExternalEntries = reconciliation.serverErrors.ExternalEntries || [];
+                    reconciliation.serverErrors.ExternalEntries.push(...errors);
+
+                    // const parts2 = step2.substring(0, step2.length - 1).split('[');
+                    // const exEntryIndex = +parts2[1];
+                    // if (isNaN(exEntryIndex)) {
+                    //   unboundErrors.push(...errors);
+                    // } else {
+                    //   const step3 = steps[2];
+                    //   if (step3 === 'ExternalEntryId') {
+                    //     const exEntry = reconciliation.ExternalEntries[exEntryIndex];
+                    //     exEntry.serverErrors = exEntry.serverErrors || {};
+                    //     exEntry.serverErrors[step2] = errors;
+                    //   } else {
+                    //     unboundErrors.push(...errors);
+                    //   }
+                    // }
+                  } else {
+                    unboundErrors.push(...errors);
+                  }
+                }
+              } else {
+                unboundErrors.push(...errors);
+              }
+            }
+
+            // If there are unbound errors, show them in a modal
+            if (unboundErrors.length > 0) {
+              const tracker: { [key: string]: true } = {};
+              for (const error of unboundErrors) {
+                tracker[error] = true;
+              }
+
+              const distinctUnboundErrors = Object.keys(tracker);
+
+              const newline = `
+`;
+              const top = 10;
+              let errorMessage = distinctUnboundErrors.slice(0, top).map(e => ` - ${e}`).join(newline);
+              if (distinctUnboundErrors.length > top) {
+                errorMessage += '...'; // To show that's not all
+              }
+
+              this.displayModalError(errorMessage);
+            }
           } else {
             this.displayModalError(friendlyError.error);
           }
@@ -1264,7 +1448,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   /**
    * Creates a reconciliation for the supplied entries and external entries, and flags the rows as reconciled
    */
-  private addReconciliation(entryRows: ReconciliationRow[], exEntryRows: ReconciliationRow[]) {
+  private addReconciliation(entryRows: ReconciliationRow[], exEntryRows: ReconciliationRow[]): void {
     const reconciliation: ReconciliationForSave = {
       Entries: [],
       ExternalEntries: []

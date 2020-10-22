@@ -7,14 +7,17 @@ namespace Tellma.Entities
     public class ExternalEntryForSave : EntityWithKey<int>
     {
         [Display(Name = "Line_PostingDate")]
+        [Required]
         public DateTime? PostingDate { get; set; }
 
         [Display(Name = "Entry_Direction")]
         [AlwaysAccessible]
+        [Required]
         [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
         public short? Direction { get; set; }
 
         [Display(Name = "Entry_MonetaryValue")]
+        [Required]
         public decimal? MonetaryValue { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]

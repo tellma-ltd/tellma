@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
+using Tellma.Entities;
 using Tellma.Services.ApiAuthentication;
+using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
@@ -79,12 +83,16 @@ namespace Tellma.Controllers
         public const string VIEW = "reconciliation";
 
         private readonly ApplicationRepository _repo;
+        private readonly MetadataProvider _metadata;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IStringLocalizer _localizer;
 
-        public ReconciliationService(ApplicationRepository repo,
-            IStringLocalizer<Strings> localizer)
+        public ReconciliationService(ApplicationRepository repo, MetadataProvider metadata,
+            ITenantIdAccessor tenantIdAccessor, IStringLocalizer<Strings> localizer)
         {
             _repo = repo;
+            _metadata = metadata;
+            _tenantIdAccessor = tenantIdAccessor;
             _localizer = localizer;
         }
 
@@ -246,10 +254,30 @@ namespace Tellma.Controllers
                 throw new ForbiddenException();
             }
 
-            // Trim the only string property
-            payload.ExternalEntries?.ForEach(e => e.ExternalReference = e.ExternalReference?.Trim());
+            // Makes the subsequent logic simpler
+            payload.ExternalEntries ??= new List<ExternalEntryForSave>();
+            payload.Reconciliations ??= new List<ReconciliationForSave>();
+            foreach (var reconciliation in payload.Reconciliations)
+            {
+                reconciliation.Entries ??= new List<ReconciliationEntryForSave>();
+                reconciliation.ExternalEntries ??= new List<ReconciliationExternalEntryForSave>();
+            }
 
-            // Validate Save
+            // Trim the only string property
+            payload.ExternalEntries.ForEach(e => e.ExternalReference = e.ExternalReference?.Trim());
+
+            // C# Validation
+            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
+
+            var exEntryMeta = _metadata.GetMetadata(tenantId, typeof(ExternalEntryForSave));
+            ValidateList(payload.ExternalEntries, exEntryMeta, "ExternalEntries");
+
+            var reconciliationMeta = _metadata.GetMetadata(tenantId, typeof(ReconciliationForSave));
+            ValidateList(payload.Reconciliations, reconciliationMeta, "Reconciliation");
+
+            ModelState.ThrowIfInvalid();
+
+            // SQL Validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.Reconciliations_Validate__Save(
                 accountId: accountId,

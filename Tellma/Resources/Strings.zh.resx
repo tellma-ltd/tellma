@@ -947,7 +947,7 @@
     <value>该文档不是{0}。</value>
   </data>
   <data name="Error_DuplicateLineDefinition" xml:space="preserve">
-    <value>重复行的定义。</value>
+    <value>重复行定义。</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>电子邮件没有被外部登录提供。</value>

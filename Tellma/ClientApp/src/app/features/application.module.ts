@@ -171,7 +171,9 @@ import {
   faHandRock,
   faMagic,
   faHandPointRight,
-  faFistRaised
+  faFistRaised,
+  faMinus,
+  faEquals
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
@@ -798,6 +800,7 @@ export class ApplicationModule {
       faEdit,
       faEllipsisH,
       faEllipsisV,
+      faEquals,
       faEuroSign,
       faExchangeAlt,
       faExclamation,
@@ -852,6 +855,7 @@ export class ApplicationModule {
       faMap,
       faMapMarkerAlt,
       faMicrochip,
+      faMinus,
       faMoneyBillWave,
       faMoneyCheck,
       faMoneyCheckAlt,

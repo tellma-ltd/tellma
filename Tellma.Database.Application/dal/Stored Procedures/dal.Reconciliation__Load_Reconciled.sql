@@ -12,7 +12,7 @@
 AS
 	DECLARE @ReconciliationIds IdList;
 
-	SELECT @ReconciledCount = COUNT(RE.[ReconciliationId])
+	SELECT @ReconciledCount = COUNT(DISTINCT RE.[ReconciliationId])
 	FROM dbo.ReconciliationEntries RE
 	JOIN dbo.Entries E ON RE.[EntryId] = E.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
