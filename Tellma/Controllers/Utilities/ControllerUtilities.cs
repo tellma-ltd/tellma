@@ -11,11 +11,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Tellma.Controllers.ImportExport;
 using Tellma.Data;
 using Tellma.Entities;
 using Tellma.Entities.Descriptors;
@@ -413,6 +415,43 @@ namespace Tellma.Controllers.Utilities
             {
                 entity.EntityMetadata.LocationJsonParseError = ex.Message;
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Takes an XLSX or a CSV stream and unpackages its content into a 2-D table of strings
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="contentType"></param>
+        /// <param name="localizer"></param>
+        /// <returns></returns>
+        public static IEnumerable<string[]> ExtractStringsFromFile(Stream stream, string fileName, string contentType, IStringLocalizer localizer)
+        {
+            IDataExtractor extracter;
+            if (contentType == MimeTypes.Csv || (fileName?.ToLower()?.EndsWith(".csv") ?? false))
+            {
+                extracter = new CsvExtractor();
+            }
+            else if (contentType == MimeTypes.Excel || (fileName?.ToLower()?.EndsWith(".xlsx") ?? false))
+            {
+                extracter = new ExcelExtractor();
+            }
+            else
+            {
+                throw new FormatException(localizer["Error_OnlyCsvOrExcelAreSupported"]);
+            }
+
+            // Extrat and return
+            try
+            {
+                return extracter.Extract(stream).ToList();
+            }
+            catch (Exception ex)
+            {
+                // Report any errors during extraction
+                string msg = localizer["Error_FailedToParseFileError0", ex.Message];
+                throw new BadRequestException(msg);
             }
         }
     }

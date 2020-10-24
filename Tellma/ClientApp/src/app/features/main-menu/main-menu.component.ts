@@ -491,7 +491,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // this captures all keydown events from the root document
-  // in here we allo the user to navigate the focus around the main menu
+  // in here we allow the user to navigate the focus around the main menu
   // tiles with the arrow keys, ala metro style
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {

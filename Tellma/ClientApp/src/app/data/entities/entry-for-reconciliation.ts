@@ -7,4 +7,7 @@ export interface EntryForReconciliation extends EntityForSave {
     Direction?: 1 | -1;
     MonetaryValue?: number;
     ExternalReference?: string;
+    DocumentId?: number;
+    DocumentDefinitionId?: number;
+    DocumentSerialNumber?: number;
 }

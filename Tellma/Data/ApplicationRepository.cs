@@ -6949,7 +6949,7 @@ namespace Tellma.Data
             // Execute
             return await LoadReconciledInner(cmd, cancellation);
         }
-        
+
         public async Task<IEnumerable<ValidationError>> Reconciliations_Validate__Save(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, int top)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations_Validate__Save));
@@ -7207,7 +7207,10 @@ namespace Tellma.Data
                             PostingDate = reader.DateTime(i++),
                             Direction = reader.GetInt16(i++),
                             MonetaryValue = reader.Decimal(i++),
-                            ExternalReference = reader.String(i++)
+                            ExternalReference = reader.String(i++),
+                            DocumentId = reader.GetInt32(i++),
+                            DocumentDefinitionId = reader.GetInt32(i++),
+                            DocumentSerialNumber = reader.GetInt32(i++),
                         }
                     });
                 }
@@ -7303,7 +7306,10 @@ namespace Tellma.Data
                         PostingDate = reader.DateTime(i++),
                         Direction = reader.GetInt16(i++),
                         MonetaryValue = reader.Decimal(i++),
-                        ExternalReference = reader.String(i++)
+                        ExternalReference = reader.String(i++),
+                        DocumentId = reader.GetInt32(i++),
+                        DocumentDefinitionId = reader.GetInt32(i++),
+                        DocumentSerialNumber = reader.GetInt32(i++),
                     });
                 }
 

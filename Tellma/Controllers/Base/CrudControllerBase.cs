@@ -864,7 +864,7 @@ namespace Tellma.Controllers
             }
 
             // Extract the raw data from the file stream
-            IEnumerable<string[]> data = ExtractStringsFromFile(fileStream, fileName, contentType);
+            IEnumerable<string[]> data = ControllerUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
             if (!data.Any())
             {
                 throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
@@ -1625,35 +1625,6 @@ namespace Tellma.Controllers
             }
 
             return (prop?.Trim(), key?.Trim());
-        }
-
-        protected IEnumerable<string[]> ExtractStringsFromFile(Stream stream, string fileName, string contentType)
-        {
-            IDataExtractor extracter;
-            if (contentType == MimeTypes.Csv || (fileName?.ToLower()?.EndsWith(".csv") ?? false))
-            {
-                extracter = new CsvExtractor();
-            }
-            else if (contentType == MimeTypes.Excel || (fileName?.ToLower()?.EndsWith(".xlsx") ?? false))
-            {
-                extracter = new ExcelExtractor();
-            }
-            else
-            {
-                throw new FormatException(_localizer["Error_OnlyCsvOrExcelAreSupported"]);
-            }
-
-            // Extrat and return
-            try
-            {
-                return extracter.Extract(stream).ToList();
-            } 
-            catch (Exception ex)
-            {
-                // Report any errors during extraction
-                string msg = _localizer["Error_FailedToParseFileError0", ex.Message];
-                throw new BadRequestException(msg);
-            }
         }
 
         private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)

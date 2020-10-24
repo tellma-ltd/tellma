@@ -1,8 +1,8 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef, ViewChild, AfterViewInit, HostListener } from '@angular/core';
 import { WorkspaceService, ReconciliationStore, ReportStatus } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
-import { Subscription, Subject, Observable, of } from 'rxjs';
+import { Subscription, Subject, Observable, of, timer } from 'rxjs';
 import { ApiService } from '~/app/data/api.service';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
@@ -10,7 +10,7 @@ import { CustomUserSettingsService } from '~/app/data/custom-user-settings.servi
 import { TranslateService } from '@ngx-translate/core';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Account } from '~/app/data/entities/account';
-import { FriendlyError, isSpecified } from '~/app/data/util';
+import { csvPackage, downloadBlob, FriendlyError, getEditDistance, isSpecified } from '~/app/data/util';
 import {
   ReconciliationGetReconciledArguments,
   ReconciliationGetReconciledResponse,
@@ -24,16 +24,21 @@ import { EntryForReconciliation } from '~/app/data/entities/entry-for-reconcilia
 import { Currency } from '~/app/data/entities/currency';
 import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/reconciliation';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
+import { formatSerialFromDefId } from '~/app/data/entities/document';
 
 type View = 'unreconciled' | 'reconciled';
-// type Mode = 'manual' | 'auto';
+
+interface AutoReconcileArguments {
+  postingDateTolerance: number;
+  externalRefTolerance: number;
+}
 
 @Component({
   selector: 't-reconciliation',
   templateUrl: './reconciliation.component.html',
   styles: []
 })
-export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivate {
+export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy, ICanDeactivate {
 
   private MIN_PAGE_SIZE = 500;
 
@@ -92,6 +97,15 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
       switchMap(() => this.doFetch())
     ).subscribe());
 
+    const autoReconcileParams = this.customUserSettings.get<AutoReconcileArguments>(this._autoReconcileParamsKey);
+    if (!!autoReconcileParams) {
+      this.postingDateTolerance = +autoReconcileParams.postingDateTolerance || 0;
+      this.externalRefTolerance = +autoReconcileParams.externalRefTolerance || 0;
+    } else {
+      this.postingDateTolerance = 0;
+      this.externalRefTolerance = 0;
+    }
+
     // Subscribe to changing URL param
     this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
 
@@ -117,10 +131,21 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
         }
       }
 
+      // Collapse, special case
+      args.collapse = params.get('collapse') === 'true';
+
       if (fetchIsNeeded) {
         this.fetch();
       }
     }));
+  }
+
+  public initialized = false;
+
+  ngAfterViewInit() {
+    if (!this.initialized) {
+      timer(1).subscribe(() => this.initialized = true);
+    }
   }
 
   ngOnDestroy(): void {
@@ -153,6 +178,11 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
       if (!!value) {
         params[key] = value;
       }
+    }
+
+    // Collapse, special case
+    if (args.collapse) {
+      params.collapse = 'true';
     }
 
     // navigate to the new url
@@ -625,8 +655,16 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return this.state.reportStatus === ReportStatus.loaded;
   }
 
-  public get canShowReport(): boolean {
-    return this.isLoaded;
+  public get showReport(): boolean {
+    return this.isUnreconciled;
+  }
+
+  public get disableReport(): boolean {
+    if (!this.isLoaded) {
+      return this.translate.instant('Error_NotLoadedYet');
+    }
+
+    return null;
   }
 
   // This
@@ -653,41 +691,321 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return !!res ? (res.EntriesBalance - res.UnreconciledEntriesBalance + res.UnreconciledExternalEntriesBalance) : 0;
   }
 
-  public onImport() {
-    alert('TODO');
+  private get canEditPermissions(): boolean {
+    return this.ws.canUpdate('reconciliation', null);
   }
 
-  public showImport() {
+  private get canReadPermissions(): boolean {
+    return this.ws.canRead('reconciliation');
+  }
+
+  ////////////// Import
+  public onSelectFileToImport(input: HTMLInputElement) {
+    if (!!this.disableImport) {
+      return;
+    }
+
+    const files = input.files;
+    if (files.length === 0) {
+      return;
+    }
+
+    const file = files[0];
+    input.value = '';
+
+    this.api.import(file).subscribe(
+      (exEntries: ExternalEntryForSave[]) => {
+
+        // Just in case
+        if (!this.isLoaded) {
+          return;
+        }
+
+        // Find the index in _rows where the new external entry can be inserted
+        let index = this.findIndexForCreate();
+
+        // Add the entries one by one
+        const countBefore = this._rows.length;
+        for (const exEntry of exEntries) {
+          this.addCreatedExEntry(exEntry, index);
+
+          index++;
+        }
+        const countAfter = this._rows.length;
+
+        if (countBefore !== countAfter) {
+          this._rows = this._rows.slice(); // To refresh the virtual scroll
+        }
+
+        this.fixCreateExEntryRow(index);
+      },
+      (friendlyError: any) => {
+        this.displayModalError(friendlyError.error);
+      }
+    );
+  }
+
+  public get showImport() {
     return this.isUnreconciled;
   }
 
-  public canImport() {
-    return this.isLoaded;
+  public get disableImport(): string {
+    if (!this.isLoaded) {
+      return this.translate.instant('Error_NotLoadedYet');
+    } else if (!this.canEditPermissions) {
+      return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    }
+
+    return null;
   }
 
+  // Download template
+  public onDownloadTemplate(): void {
+    // The template is just one row containing 3 headers
+    const templateArray = [[
+      this.translate.instant('Line_PostingDate'),
+      this.translate.instant('Entry_ExternalReference'),
+      this.translate.instant('Entry_MonetaryValue'),
+    ]];
+
+    const blob = csvPackage(templateArray);
+    const filename = this.translate.instant('ImportTemplate') + '.csv';
+    downloadBlob(blob, filename);
+  }
+
+  public get showDownloadTemplate(): boolean {
+    return this.showImport;
+  }
+
+  ////////////// Export
   public onExport() {
     alert('TODO');
   }
 
-  public get canExport() {
-    return this.isLoaded;
+  public get disableExport(): string {
+    if (!this.isLoaded) {
+      return this.translate.instant('Error_NotLoadedYet');
+    } else if (!this.canReadPermissions) {
+      return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    }
+
+    return null;
   }
 
-  public onAutoReconcileExact() {
-    alert('TODO');
+  public showExport() {
+    return true;
   }
 
-  public get canAutoReconcileExact() {
-    return this.isLoaded;
+  private _postingDateTolerance = 0;
+  private _externalRefTolerance = 0;
+
+  private _postingDateToleranceChoices: SelectorChoice[] = [
+    { value: 0, name: () => this.translate.instant('ExactMatch') },
+    { value: 1, name: () => '1' },
+    { value: 2, name: () => '2' },
+    { value: 3, name: () => '3' },
+    { value: 4, name: () => '4' },
+    { value: 5, name: () => '5' },
+  ];
+
+  private _externalRefToleranceChoices: SelectorChoice[] = [
+    { value: 0, name: () => this.translate.instant('ExactMatch') },
+    { value: 1, name: () => this.translate.instant('StringDistance_1', { 0: 1 }) },
+    { value: 2, name: () => this.translate.instant('StringDistance_2', { 0: 2 }) },
+    { value: 3, name: () => this.translate.instant('StringDistance_3', { 0: 3 }) },
+    { value: 1000000, name: () => this.translate.instant('IgnoreMatch') },
+  ];
+
+  public get postingDateTolerance(): number {
+    return this._postingDateTolerance;
   }
 
-  public onAutoReconcileApprox() {
-    alert('TODO');
+  public set postingDateTolerance(v: number) {
+    this._postingDateTolerance = v;
   }
 
-  public get canAutoReconcileApprox() {
-    return this.isLoaded;
+  public get postingDateToleranceChoices(): SelectorChoice[] {
+    return this._postingDateToleranceChoices;
   }
+
+  public get externalRefTolerance(): number {
+    return this._externalRefTolerance;
+  }
+
+  public set externalRefTolerance(v: number) {
+    this._externalRefTolerance = v;
+  }
+
+  public get externalRefToleranceChoices(): SelectorChoice[] {
+    return this._externalRefToleranceChoices;
+  }
+
+  private _autoReconcileParamsKey = 'reconciliation/auto-reconcile-params';
+
+  ////////////// Auto-Reconcile
+  public onAutoReconcile() {
+    if (!this.disableAutoReconcile) {
+      // (1) Save the params to user settings, if they have changed
+      const postingDateTolerance = this.postingDateTolerance;
+      const externalRefTolerance = this.externalRefTolerance;
+
+      // Inline utility functions
+      function dateDifference(a: ReconciliationRow, b: ReconciliationRow) {
+        const datesDiff = Math.abs(a.entryDays - b.exEntryDays);
+        return datesDiff > postingDateTolerance ? Infinity : datesDiff;
+      }
+
+      function externalRefDifference(a: ReconciliationRow, b: ReconciliationRow) {
+        const exRefsDiff = getEditDistance(
+          a.entry.ExternalReference,
+          b.exEntry.ExternalReference,
+          externalRefTolerance + 1);
+
+        return exRefsDiff > externalRefTolerance ? Infinity : exRefsDiff;
+      }
+
+      function difference(a: ReconciliationRow, b: ReconciliationRow): number {
+        return dateDifference(a, b) + 1000 * externalRefDifference(a, b);
+      }
+
+      function dateMatches(a: ReconciliationRow, b: ReconciliationRow): boolean {
+        return dateDifference(a, b) !== Infinity;
+      }
+
+      function exRefMatches(a: ReconciliationRow, b: ReconciliationRow): boolean {
+        return externalRefDifference(a, b) !== Infinity;
+      }
+
+      const oldArgs = this.customUserSettings.get<AutoReconcileArguments>(this._autoReconcileParamsKey);
+      if (!oldArgs || oldArgs.postingDateTolerance !== postingDateTolerance
+        || oldArgs.externalRefTolerance !== externalRefTolerance) {
+        const args: AutoReconcileArguments = { postingDateTolerance, externalRefTolerance };
+        this.customUserSettings.save(this._autoReconcileParamsKey, JSON.stringify(args));
+      }
+
+      // (2) Auto-Reconcile (e = entry, ex = external entry)
+      // Get the rows that contain unreconciled entries, and unreconciled external entries
+      const entryRows = this.rows
+        .filter(e => !!e.entry && isSpecified(e.entry.MonetaryValue) && e.entry.PostingDate && !e.entryReconciliation);
+      const exEntryRows = this.rows
+        .filter(e => !!e.exEntry && isSpecified(e.exEntry.MonetaryValue) && e.exEntry.PostingDate && !e.exEntryReconciliation);
+
+      // Hash the amounts of entries rows
+      const eAmountsHash: { [amount: number]: ReconciliationRow[] } = {};
+      for (const eRow of entryRows) {
+        // Calculate the number of days since 1st Jan 1970, the earliest JS date
+        eRow.entryDays = new Date(eRow.entry.PostingDate).getTime() / 86400000; // milliseconds per day
+
+        // Hash the amounts
+        const amount = eRow.entry.MonetaryValue * eRow.entry.Direction;
+        eAmountsHash[amount] = eAmountsHash[amount] || [];
+        eAmountsHash[amount].push(eRow);
+      }
+
+      // Hash the amounts of external entries rows
+      const exAmountsHash: { [amount: number]: ReconciliationRow[] } = {};
+      for (const exRow of exEntryRows) {
+        // Calculate the number of days since 1st Jan 1970, the earliest JS date
+        exRow.exEntryDays = new Date(exRow.exEntry.PostingDate).getTime() / 86400000; // milliseconds per day
+
+        // Hash the amounts
+        const amount = exRow.exEntry.MonetaryValue * exRow.exEntry.Direction;
+        exAmountsHash[amount] = exAmountsHash[amount] || [];
+        exAmountsHash[amount].push(exRow);
+      }
+
+      for (const amountKey of Object.keys(eAmountsHash)) {
+
+        // Those two collections contain rows with matching amounts
+        const amountERows: ReconciliationRow[] = eAmountsHash[amountKey];
+        const amountExRows: ReconciliationRow[] = exAmountsHash[amountKey];
+
+        if (!!amountERows && amountERows.length > 0 && !!amountExRows && amountExRows.length > 0) {
+          if (amountERows.length === 1 && amountExRows.length === 1) {
+            // Optimization for the common scenario where there is one row on each side
+            const eRow = amountERows[0];
+            const exRow = amountExRows[0];
+
+            if (dateMatches(eRow, exRow) && exRefMatches(eRow, exRow)) {
+              this.addReconciliation([eRow], [exRow]);
+            }
+          } else {
+            // One or both sides have more than one row, match them as best as you can
+
+            // First sort both collections by days, this makes it efficient to weed out non-matches
+            amountERows.sort((a, b) => a.entryDays - b.entryDays);
+            amountExRows.sort((a, b) => a.exEntryDays - b.exEntryDays);
+
+            // Here we collect all compatible entry and external entries and the difference score between them
+            const compatibles: { eIndex: number, exIndex: number, diff: number }[] = [];
+
+            let startingIndex = 0; // The first external entry with a compatible date
+            let endingIndexPlusOne = 0; // 1 + The last external entry with a compatible date
+            let prevEntryDays: number; // The days of the current entry row
+            for (let i = 0; i < amountERows.length; i++) {
+
+              const eRow = amountERows[i];
+
+              // Adjust the indices if it's a new date
+              if (eRow.entryDays !== prevEntryDays) {
+                prevEntryDays = eRow.entryDays;
+                const earliestDays = eRow.entryDays - postingDateTolerance;
+                while (startingIndex < amountExRows.length && amountExRows[startingIndex].exEntryDays < earliestDays) {
+                  startingIndex++;
+                }
+                const latestDays = eRow.entryDays + postingDateTolerance;
+                while (endingIndexPlusOne < amountExRows.length && amountExRows[endingIndexPlusOne].exEntryDays <= latestDays) {
+                  endingIndexPlusOne++;
+                }
+              }
+
+              // Go over all external entries with compatible dates and calculate the difference
+              // Push the results into a large array "compatibles"
+              for (let j = startingIndex; j < endingIndexPlusOne; j++) {
+                const exRow = amountExRows[j];
+                const diff = difference(eRow, exRow);
+                if (diff < Infinity) {
+                  compatibles.push({ eIndex: i, exIndex: j, diff });
+                }
+              }
+            }
+
+            compatibles.sort((a, b) => a.diff - b.diff); // Best matches will come first
+            const eReconciledTracker: { [amount: number]: true } = {}; // entries that were already reconciled
+            const exReconciledTracker: { [amount: number]: true } = {}; // external entries that were already reconciled
+
+            for (const match of compatibles) {
+              if (!eReconciledTracker[match.eIndex] && !exReconciledTracker[match.exIndex]) {
+                eReconciledTracker[match.eIndex] = true;
+                exReconciledTracker[match.exIndex] = true;
+
+                const eRow = amountERows[match.eIndex];
+                const exRow = amountExRows[match.exIndex];
+
+                this.addReconciliation([eRow], [exRow]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public get showAutoReconcile(): boolean {
+    return this.isUnreconciled;
+  }
+
+  public get disableAutoReconcile(): string {
+    if (!this.isLoaded) {
+      return this.translate.instant('Error_NotLoadedYet');
+    } else if (!this.canEditPermissions) {
+      return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    }
+
+    return null;
+  }
+
+  ////////////// Placements and orientations
 
   public get actionsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
@@ -706,15 +1024,17 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  public get disableRefresh(): boolean {
-    return !this.requiredParametersAreSet;
-  }
+  ////////////// Refresh
 
   public onRefresh(): void {
     // The if statement to deal with incessant button clickers (Users who hit refresh repeatedly)
     if (this.state.reportStatus !== ReportStatus.loading) {
       this.fetch();
     }
+  }
+
+  public get disableRefresh(): boolean {
+    return !this.requiredParametersAreSet;
   }
 
   // Paging for reconciled entities
@@ -977,7 +1297,12 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   /**
    * Returns the index of the row where the ex entry was created
    */
-  public onCreateExEntry(): number {
+  public onCreateExEntryOld(): number {
+    // Just in case
+    if (!this.isLoaded) {
+      return;
+    }
+
     // (1) Find the index in _rows where the new external entry can be inserted
     const index = this.findIndexForCreate();
 
@@ -998,6 +1323,55 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     }
 
     this.fixCreateExEntryRow(index + 1);
+
+    return index;
+  }
+
+  /**
+   * Returns the index of the row where the ex entry was created
+   */
+  public onCreateExEntry(): number {
+    // Just in case
+    if (!this.isLoaded) {
+      return;
+    }
+
+    // (1) Find the index in _rows where the new external entry can be inserted
+    const index = this.findIndexForCreate();
+
+    // (2) Create the external entry and add it to entities for save
+    const exEntry: ExternalEntryForSave = { Direction: 1 };
+
+    const countBefore = this._rows.length;
+    this.addCreatedExEntry(exEntry, index);
+    const countAfter = this._rows.length;
+
+    if (countBefore !== countAfter) {
+      this._rows = this._rows.slice(); // To refresh the virtual scroll
+    }
+
+    this.fixCreateExEntryRow(index + 1);
+    return index;
+  }
+
+  /**
+   * Creates the entry at the specified index without refreshing the scroll or fixing create ex entry row.
+   * Used when adding batch ex entries for performance
+   */
+  private addCreatedExEntry(exEntry: ExternalEntryForSave, index: number): number {
+    // (2) Create the external entry and add it to entities for save
+    this.externalEntriesForSave.push(exEntry);
+    const exEntryIndex = this.externalEntriesForSave.length - 1;
+
+    // (3) Add the external entry to the view and make it editable
+    if (this._rows.length <= index) {
+      this._rows.push({ exEntryIsEdit: true, exEntry, exEntryIndex });
+    } else {
+      const row = this._rows[index];
+      row.exEntry = exEntry;
+      row.exEntryIsEdit = true;
+      row.exEntryIndex = exEntryIndex;
+    }
 
     return index;
   }
@@ -1328,10 +1702,6 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     delete this._rowsResponse; // Causes rows() to re-render
   }
 
-  public onSelectRow(row: ReconciliationRow) {
-    alert('TODO');
-  }
-
   public get showCheckedEntriesToolbar(): boolean {
     // Always appears when there are checkboxes selected
     return !!this.rows && this.rows.some(e => e.entryIsChecked || e.exEntryIsChecked);
@@ -1424,7 +1794,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
   }
 
   public onReconcileChecked() {
-    if (this.canReconcileChecked) {
+    if (!this.disableReconcileChecked) {
 
       // Search for checked entries and external entries
       const entryRows: ReconciliationRow[] = [];
@@ -1443,6 +1813,16 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
       // Reconcile them
       this.addReconciliation(entryRows, exEntryRows);
     }
+  }
+
+  public get disableReconcileChecked(): boolean {
+    if (!this.canEditPermissions) {
+      return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    } else if (this.checkedEntriesTotal !== this.checkedExEntriesTotal) {
+      return this.translate.instant('Error_TotalsImbalance');
+    }
+
+    return null;
   }
 
   /**
@@ -1499,10 +1879,6 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
     }
   }
 
-  public get canReconcileChecked(): boolean {
-    return this.checkedEntriesTotal === this.checkedExEntriesTotal;
-  }
-
   public onCancelReconcileChecked() {
     this.uncheckAll();
   }
@@ -1557,6 +1933,71 @@ export class ReconciliationComponent implements OnInit, OnDestroy, ICanDeactivat
 
     exEntry.Direction = v < 0 ? -1 : 1;
     exEntry.MonetaryValue = Math.abs(v);
+  }
+
+  public formatSerialNumber(serial: number, docDefId: number) {
+    return formatSerialFromDefId(serial, this.ws, docDefId);
+  }
+
+  // Collapse parameters
+  public get collapseParameters(): boolean {
+    return this.state.arguments.collapse;
+  }
+
+  public set collapseParameters(v: boolean) {
+    const args = this.state.arguments;
+    if (args.collapse !== v) {
+      args.collapse = v;
+      this.urlStateChanged(true);
+    }
+  }
+
+  // Hovering over a reconciled entry/external entry highlights all entries/external entries with yellow marker
+
+  public onToggleCollapseParameters() {
+    this.collapseParameters = !this.collapseParameters;
+  }
+
+  private _hoveredReconciliation: Reconciliation;
+
+  public onReconciledEntryMouseEnter(row: ReconciliationRow) {
+    this._hoveredReconciliation = row.entryReconciliation;
+  }
+
+  public onReconciledEntryMouseLeave(_: ReconciliationRow) {
+    delete this._hoveredReconciliation;
+  }
+
+  public onReconciledExEntryMouseEnter(row: ReconciliationRow) {
+    this._hoveredReconciliation = row.exEntryReconciliation;
+  }
+
+  public onReconciledExEntryMouseLeave(_: ReconciliationRow) {
+    delete this._hoveredReconciliation;
+  }
+
+  public isHoveredEntryReconciliation(row: ReconciliationRow) {
+    return !!this._hoveredReconciliation && this._hoveredReconciliation === row.entryReconciliation;
+  }
+
+  public isHoveredExEntryReconciliation(row: ReconciliationRow) {
+    return !!this._hoveredReconciliation && this._hoveredReconciliation === row.exEntryReconciliation;
+  }
+
+  // ALT+R to reconcile
+
+  // this captures all keydown events from the root document
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.workspace.ignoreKeyDownEvents) {
+      return;
+    }
+
+    if (event.altKey && event.code === 'KeyR') {
+      if (this.showCheckedEntriesToolbar) {
+        this.onReconcileChecked();
+      }
+    }
   }
 }
 
@@ -1619,4 +2060,16 @@ interface ReconciliationRow {
    * Indicates that you can create an external entry in this row (No need to copy this one when shifting up or down)
    */
   exEntryIsCreate?: boolean;
+
+  ///////////////// Auto-Reconciliation
+
+  /**
+   * Number of days of entry posting date since 1st Jan 1970
+   */
+  entryDays?: number;
+
+  /**
+   * Number of days of external entry posting date since 1st Jan 1970
+   */
+  exEntryDays?: number;
 }

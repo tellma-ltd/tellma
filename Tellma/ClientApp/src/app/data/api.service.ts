@@ -72,6 +72,7 @@ import {
   ReconciliationGetReconciledArguments,
   ReconciliationSavePayload
 } from './dto/reconciliation';
+import { ExternalEntryForSave } from './entities/external-entry';
 
 
 @Injectable({
@@ -924,7 +925,40 @@ export class ApiService {
         );
 
         return obs$;
-      }
+      },
+
+      import: (file: File) => {
+        // args = args || {};
+
+        const paramsArray: string[] = [];
+
+        // if (!!args.mode) {
+        //   paramsArray.push(`mode=${args.mode}`);
+        // }
+
+        // if (!!args.key) {
+        //   paramsArray.push(`key=${args.key}`);
+        // }
+
+        const formData = new FormData();
+        formData.append(file.name, file, file.name);
+
+        this.showRotator = true;
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/import?${params}`;
+        const obs$ = this.http.post<ExternalEntryForSave[]>(url, formData).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
     };
   }
 

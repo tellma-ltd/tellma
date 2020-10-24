@@ -36,9 +36,10 @@ AS
 	AND E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 	AND E.[PostingDate] <= @AsOfDate
 	
-	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference]
+	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE E.[CustodyId] = @CustodyId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4

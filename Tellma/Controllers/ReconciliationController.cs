@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Entities;
@@ -76,6 +79,23 @@ namespace Tellma.Controllers
             },
             _logger);
         }
+
+        [HttpPost("import"), RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
+        public async Task<ActionResult<List<ExternalEntryForSave>>> Import()
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                IFormFile formFile = Request.Form.Files.FirstOrDefault();
+                var contentType = formFile?.ContentType;
+                var fileName = formFile?.FileName;
+                using var fileStream = formFile?.OpenReadStream();
+
+                var result = await _service.Import(fileStream, fileName, contentType);
+
+                return Ok(result);
+            }, _logger);
+        }
+
     }
 
     public class ReconciliationService : ServiceBase
@@ -264,7 +284,13 @@ namespace Tellma.Controllers
             }
 
             // Trim the only string property
-            payload.ExternalEntries.ForEach(e => e.ExternalReference = e.ExternalReference?.Trim());
+            payload.ExternalEntries.ForEach(e =>
+            {
+                if (e != null && e.ExternalReference != null)
+                {
+                    e.ExternalReference = e.ExternalReference.Trim();
+                }
+            });
 
             // C# Validation
             int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
@@ -289,5 +315,89 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
             ModelState.ThrowIfInvalid();
         }
+
+        public Task<List<ExternalEntryForSave>> Import(Stream fileStream, string fileName, string contentType)
+        {
+            // Validation
+            if (fileStream == null)
+            {
+                throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
+            }
+
+            // Extract the raw data from the file stream
+            IEnumerable<string[]> data = ControllerUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+            if (data.Count() <= 1)
+            {
+                throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
+            }
+
+            // Errors
+            var importErrors = new ImportErrors();
+
+            // Result
+            var result = new List<ExternalEntryForSave>();
+
+            // Go over every row and parse
+            foreach (var (row, rowIndex) in data.Select((e, i) => (e, i)).Skip(1))
+            {
+                var dateString = row.ElementAtOrDefault(0);
+                var externalRef = row.ElementAtOrDefault(1);
+                var amountString = row.ElementAtOrDefault(2);
+                
+                // Ignore empty rows
+                if (string.IsNullOrWhiteSpace(dateString) && string.IsNullOrWhiteSpace(externalRef) && string.IsNullOrWhiteSpace(amountString))
+                {
+                    continue;
+                }
+
+                var exEntry = new ExternalEntryForSave
+                {
+                    ExternalReference = externalRef
+                };
+
+                // Parse date
+                if (string.IsNullOrWhiteSpace(dateString))
+                {
+                    importErrors.AddImportError(rowIndex + 1, 1, _localizer[Constants.Error_Field0IsRequired, _localizer["Line_PostingDate"]]);
+                }
+                else if (DateTime.TryParse(dateString, out DateTime result))
+                {
+                    exEntry.PostingDate = result;
+                }
+                else if (double.TryParse(dateString, out double d))
+                {
+                    // Double indicates an OLE Automation date which typically comes from excel
+                    exEntry.PostingDate = DateTime.FromOADate(d);
+                }
+                else
+                {
+                    throw new ParseException(_localizer["Error_Value0IsNotAValid1Example2", dateString, _localizer["DateTime"], DateTime.Today.ToString("yyyy-MM-dd")]);
+                }
+
+                if (string.IsNullOrWhiteSpace(amountString))
+                {
+                    importErrors.AddImportError(rowIndex + 1, 3, _localizer[Constants.Error_Field0IsRequired, _localizer["Entry_MonetaryValue"]]);
+                }
+                else if (decimal.TryParse(amountString, out decimal d))
+                {
+                    exEntry.MonetaryValue = Math.Abs(d);
+                    exEntry.Direction = d < 0 ? (short)-1 : (short)1; 
+                }
+                else
+                {
+                    throw new ParseException(_localizer["Error_Value0IsNotAValid1Example2", amountString, _localizer["Decimal"], 21502.75m]);
+                }
+
+                if (importErrors.IsValid)
+                {
+                    result.Add(exEntry);
+                }
+            }
+
+            importErrors.ThrowIfInvalid(_localizer);
+
+            return Task.FromResult(result);
+        }
+
     }
 }
