@@ -4,13 +4,13 @@ import { WorkspaceService, ReconciliationStore, ReportStatus } from '~/app/data/
 import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of, timer } from 'rxjs';
 import { ApiService } from '~/app/data/api.service';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { Account } from '~/app/data/entities/account';
-import { csvPackage, downloadBlob, FriendlyError, getEditDistance, isSpecified } from '~/app/data/util';
+import { Account, metadata_Account } from '~/app/data/entities/account';
+import { csvPackage, downloadBlob, formatAccounting, FriendlyError, getEditDistance, isSpecified } from '~/app/data/util';
 import {
   ReconciliationGetReconciledArguments,
   ReconciliationGetReconciledResponse,
@@ -25,6 +25,7 @@ import { Currency } from '~/app/data/entities/currency';
 import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/reconciliation';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { formatSerialFromDefId } from '~/app/data/entities/document';
+import { formatDate } from '@angular/common';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -777,9 +778,125 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     return this.showImport;
   }
 
+  public showExportSpinner: boolean;
+
   ////////////// Export
   public onExport() {
-    alert('TODO');
+    if (this.disableExport) {
+      return;
+    }
+
+    if (this.isUnreconciled) {
+      const s = this.state;
+      const args = this.UnreconciledArgs;
+      const custodyLabel = this.labelCustody_Manual;
+      const format = this.amountsFormat;
+
+      const obs$: Observable<ReconciliationGetUnreconciledResponse> = this.api.getUnreconciled(args);
+      this.showExportSpinner = true;
+      obs$.pipe(
+        tap((res: ReconciliationGetUnreconciledResponse) => {
+          this.showExportSpinner = false;
+          const fileName = `${this.translate.instant('Unreconciled')}.csv`;
+          const data: string[][] = [
+            [
+              this.translate.instant('Entry_Account'),
+              metadata_Account(this.workspace, this.translate).format(this.ws.get('Account', args.accountId)),
+              '', '', '', '', ''
+            ],
+            [
+              custodyLabel,
+              this.ws.getMultilingualValue('Custody', args.custodyId, 'Name'),
+              '', '', '', '', ''
+            ],
+            [
+              this.translate.instant('AsOfDate'),
+              !!args.asOfDate ? formatDate(args.asOfDate, 'yyyy-MM-dd', 'en-GB') : '',
+              '', '', '', '', ''
+            ],
+            ['', '', '', '', '', '', ''], // Margin
+            [
+              this.translate.instant('InternalBalance'),
+              formatAccounting(res.EntriesBalance, format),
+              '', '', '', '', ''
+            ],
+            [
+              this.translate.instant('InternalUnreconciledBalance'),
+              formatAccounting(res.UnreconciledEntriesBalance, format),
+              '-', '', '', '', ''
+            ],
+            [
+              this.translate.instant('ExternalUnreconciledBalance'),
+              formatAccounting(res.UnreconciledExternalEntriesBalance, format),
+              '+', '', '', '', ''
+            ],
+            [
+              this.translate.instant('ExternalBalance'),
+              formatAccounting(res.EntriesBalance - res.UnreconciledEntriesBalance + res.UnreconciledExternalEntriesBalance, format),
+              '=', '', '', '', ''
+            ],
+            ['', '', '', '', '', '', ''], // Margin
+            [
+              this.translate.instant('InternalEntries'),
+              '',
+              '',
+              '',
+              this.translate.instant('ExternalEntries'),
+              '',
+              '',
+            ], [
+              this.translate.instant('Line_Document'),
+              this.translate.instant('Line_PostingDate'),
+              this.translate.instant('Entry_ExternalReference'),
+              this.translate.instant('Entry_MonetaryValue'),
+              this.translate.instant('Line_PostingDate'),
+              this.translate.instant('Entry_ExternalReference'),
+              this.translate.instant('Entry_MonetaryValue'),
+            ]];
+
+
+          const length = Math.max(res.Entries.length, res.ExternalEntries.length);
+          for (let i = 0; i < length; i++) {
+            const entry = res.Entries[i];
+            const exEntry = res.ExternalEntries[i];
+
+            const dataRow = [];
+            if (!!entry) {
+              dataRow.push(this.formatSerialNumber(entry.DocumentSerialNumber, entry.DocumentDefinitionId));
+              dataRow.push(formatDate(entry.PostingDate, 'yyyy-MM-dd', 'en-GB'));
+              dataRow.push(entry.ExternalReference);
+              dataRow.push(formatAccounting(entry.MonetaryValue * entry.Direction, format));
+            } else {
+              dataRow.push(...['', '', '', '']);
+            }
+
+            if (!!exEntry) {
+              dataRow.push(formatDate(exEntry.PostingDate, 'yyyy-MM-dd', 'en-GB'));
+              dataRow.push(exEntry.ExternalReference);
+              dataRow.push(formatAccounting(exEntry.MonetaryValue * exEntry.Direction, format));
+            } else {
+              dataRow.push(...['', '', '']);
+            }
+
+            data.push(dataRow);
+          }
+
+          const blob = csvPackage(data);
+          downloadBlob(blob, fileName);
+        }),
+        catchError(friendlyError => {
+          this.showExportSpinner = false;
+          this.displayModalError(friendlyError.error);
+          return of();
+        }),
+        finalize(() => {
+          this.showExportSpinner = false;
+        })
+      ).subscribe();
+
+    } else if (this.isReconciled) {
+      // TODO
+    }
   }
 
   public get disableExport(): string {
@@ -793,7 +910,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public showExport() {
-    return true;
+    return this.isUnreconciled;
   }
 
   private _postingDateTolerance = 0;

@@ -157,24 +157,24 @@
 
                 <!-- Actions dropdown -->
                 <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
-                    <button type="button"
+                    <button type="button" *ngIf="isUnreconciled"
                         class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
                         ngbDropdownToggle>
                         {{ 'Actions' | translate }}
                     </button>
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                        <div *ngIf="showExport" [placement]="actionsDropdownPlacement" [ngbTooltip]="disableExport"
-                            container="body">
-                            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
-                                [disabled]="!!disableExport">
-                                {{ 'Export' | translate }}
-                            </button>
-                        </div>
                         <div *ngIf="showAutoReconcile" [placement]="actionsDropdownPlacement"
                             [ngbTooltip]="disableAutoReconcile" container="body">
                             <button type="button" class="dropdown-item btn-light" ngbDropdownItem
                                 (click)="modalService.open(autoReconcile)" [disabled]="!!disableAutoReconcile">
                                 {{ 'AutoReconcile' | translate }}
+                            </button>
+                        </div>
+                        <div *ngIf="showExport" [placement]="actionsDropdownPlacement" [ngbTooltip]="disableExport"
+                            container="body">
+                            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
+                                [disabled]="!!disableExport">
+                                {{ 'Export' | translate }}
                             </button>
                         </div>
                     </div>
@@ -784,26 +784,26 @@
             <table class="table table-sm border-bottom text-nowrap table-striped">
                 <tbody>
                     <tr>
-                        <td>Internal Balance</td>
+                        <td>{{ 'InternalBalance' | translate }}</td>
                         <td>{{ entriesBalance | accounting:amountsFormat }}</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Internal Unreconciled Balance</td>
+                        <td>{{ 'InternalUnreconciledBalance' | translate }}</td>
                         <td>{{ unreconciledEntriesBalance | accounting:amountsFormat }}</td>
                         <td class="small">
                             <fa-icon class="t-vertical-align-middle" icon="minus"></fa-icon>
                         </td>
                     </tr>
                     <tr>
-                        <td>External Unreconciled Balance</td>
+                        <td>{{ 'ExternalUnreconciledBalance' | translate }}</td>
                         <td>{{ unreconciledExEntriesBalance | accounting:amountsFormat }}</td>
                         <td class="small">
                             <fa-icon class="t-vertical-align-middle" icon="plus"></fa-icon>
                         </td>
                     </tr>
                     <tr>
-                        <td>External Balance</td>
+                        <td>{{ 'ExternalBalance' | translate }}</td>
                         <td>{{ exEntriesBalance | accounting:amountsFormat }}</td>
                         <td class="small">
                             <fa-icon class="t-vertical-align-middle" icon="equals"></fa-icon>
@@ -838,7 +838,7 @@
 
     <!-- body -->
     <div class="modal-body">
-        <div class="row pt-0 pb-3">
+        <div class="row pt-0 pb-3 px-2">
             <t-form-group class="t-wide-form-group" [label]="'PostingDateTolerance' | translate">
                 <t-selector [(ngModel)]="postingDateTolerance" [choices]="postingDateToleranceChoices">
                 </t-selector>
