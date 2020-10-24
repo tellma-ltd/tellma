@@ -360,9 +360,9 @@ namespace Tellma.Controllers
                 {
                     importErrors.AddImportError(rowIndex + 1, 1, _localizer[Constants.Error_Field0IsRequired, _localizer["Line_PostingDate"]]);
                 }
-                else if (DateTime.TryParse(dateString, out DateTime result))
+                else if (DateTime.TryParse(dateString, out DateTime date))
                 {
-                    exEntry.PostingDate = result;
+                    exEntry.PostingDate = date;
                 }
                 else if (double.TryParse(dateString, out double d))
                 {
