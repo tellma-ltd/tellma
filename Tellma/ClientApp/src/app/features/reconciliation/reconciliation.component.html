@@ -20,7 +20,7 @@
                     <!-- View -->
                     <t-form-group class="t-form-group" [label]="'View' | translate">
                         <t-selector [(ngModel)]="view" [choices]="viewChoices" [ngModelOptions]="{ updateOn: 'blur' }"
-                            [disabled]="isDirty">
+                            [disabled]="isDirty" [hideEmptyOption]="true">
                         </t-selector>
                     </t-form-group>
 
@@ -381,12 +381,12 @@
                                 <td class="text-center t-a">
                                     <ng-container *ngIf="row.entry">
                                         <button (click)="onCloneAndReconcile(row)"
-                                            *ngIf="!row.entryReconciliation; else cancelAndDeleteButton"
-                                            [title]="'CloneAndReconcile' | translate"
+                                            *ngIf="!row.entryReconciliation && !row.entryIsChecked"
+                                            [title]="'Clone' | translate"
                                             class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
-                                            <fa-icon icon="compress" tabindex="-1"></fa-icon>
+                                            <fa-icon icon="clone" tabindex="-1"></fa-icon>
                                         </button>
-                                        <ng-template #cancelAndDeleteButton>
+                                        <!-- <ng-template #cancelAndDeleteButton>
                                             <button (click)="onUndoCloneAndReconcile(row)"
                                                 (mouseenter)="onReconciledEntryMouseEnter(row)"
                                                 (mouseleave)="onReconciledEntryMouseLeave(row)"
@@ -394,7 +394,7 @@
                                                 class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline d-none2">
                                                 <fa-icon icon="undo" tabindex="-1"></fa-icon>
                                             </button>
-                                        </ng-template>
+                                        </ng-template> -->
                                     </ng-container>
                                 </td>
 
@@ -722,6 +722,33 @@
     </div>
 </ng-template>
 
+<!-- Success Modal -->
+<ng-template #successModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title">
+      <fa-icon class="text-success" icon="check"></fa-icon>&nbsp;&nbsp;{{ 'Success' | translate }}
+    </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    {{ modalSuccessMessage }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Dismiss' | translate }}
+    </button>
+  </div>
+</ng-template>
+
 <!-- Unsaved Changes Modal -->
 <ng-template #unsavedChangesModal let-modal>
 
@@ -840,11 +867,11 @@
     <div class="modal-body">
         <div class="row pt-0 pb-3 px-2">
             <t-form-group class="t-wide-form-group" [label]="'PostingDateTolerance' | translate">
-                <t-selector [(ngModel)]="postingDateTolerance" [choices]="postingDateToleranceChoices">
+                <t-selector [(ngModel)]="postingDateTolerance" [choices]="postingDateToleranceChoices" [hideEmptyOption]="true">
                 </t-selector>
             </t-form-group>
             <t-form-group class="t-wide-form-group" [label]="'ExternalReferenceTolerance' | translate">
-                <t-selector [(ngModel)]="externalRefTolerance" [choices]="externalRefToleranceChoices">
+                <t-selector [(ngModel)]="externalRefTolerance" [choices]="externalRefToleranceChoices"  [hideEmptyOption]="true">
                 </t-selector>
             </t-form-group>
         </div>

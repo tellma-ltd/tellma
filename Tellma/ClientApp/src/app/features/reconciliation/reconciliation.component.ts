@@ -52,6 +52,9 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('errorModal', { static: true })
   errorModal: TemplateRef<any>;
 
+  @ViewChild('successModal', { static: true })
+  successModal: TemplateRef<any>;
+
   @ViewChild('unsavedChangesModal', { static: true })
   unsavedChangesModal: TemplateRef<any>;
 
@@ -75,7 +78,6 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   private stringKeys: { [key: string]: any } = {
     view: 'unreconciled',
-    // mode: 'auto',
     from_date: undefined,
     to_date: undefined,
     ex_ref_contains: undefined
@@ -367,38 +369,9 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  // // mode
-  // public get mode(): Mode {
-  //   return this.state.arguments.mode;
-  // }
-
-  // public set mode(v: Mode) {
-  //   const args = this.state.arguments;
-  //   if (args.mode !== v) {
-  //     args.mode = v;
-  //     this.urlStateChanged(true); // To avoid triggering unsaved changes confirmation
-  //   }
-  // }
-
-  // public get isManualMode(): boolean {
-  //   return this.mode === 'manual';
-  // }
-
-  // public get isAutoMode(): boolean {
-  //   return this.mode === 'auto';
-  // }
-
-  // public onManualMode() {
-  //   this.mode = 'manual';
-  // }
-
-  // public onAutoMode() {
-  //   this.mode = 'auto';
-  // }
-
   // view
   public get view(): View {
-    return this.state.arguments.view;
+    return this.state.arguments.view || 'unreconciled';
   }
 
   public set view(v: View) {
@@ -434,6 +407,11 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   public get modalErrorMessage(): string {
     return this._modalErrorMessage;
+  }
+
+  // Success message
+  public get modalSuccessMessage(): string {
+    return this._modalSuccessMessage;
   }
 
   // Information
@@ -741,7 +719,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
         this.fixCreateExEntryRow(index);
       },
       (friendlyError: any) => {
-        this.displayModalError(friendlyError.error);
+        this.displayErrorModal(friendlyError.error);
       }
     );
   }
@@ -886,7 +864,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
         }),
         catchError(friendlyError => {
           this.showExportSpinner = false;
-          this.displayModalError(friendlyError.error);
+          this.displayErrorModal(friendlyError.error);
           return of();
         }),
         finalize(() => {
@@ -966,7 +944,14 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       const postingDateTolerance = this.postingDateTolerance;
       const externalRefTolerance = this.externalRefTolerance;
 
-      // Inline utility functions
+      const oldArgs = this.customUserSettings.get<AutoReconcileArguments>(this._autoReconcileParamsKey);
+      if (!oldArgs || oldArgs.postingDateTolerance !== postingDateTolerance
+        || oldArgs.externalRefTolerance !== externalRefTolerance) {
+        const args: AutoReconcileArguments = { postingDateTolerance, externalRefTolerance };
+        this.customUserSettings.save(this._autoReconcileParamsKey, JSON.stringify(args));
+      }
+
+      // (2) Define inline utility functions
       function dateDifference(a: ReconciliationRow, b: ReconciliationRow) {
         const datesDiff = Math.abs(a.entryDays - b.exEntryDays);
         return datesDiff > postingDateTolerance ? Infinity : datesDiff;
@@ -993,19 +978,12 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
         return externalRefDifference(a, b) !== Infinity;
       }
 
-      const oldArgs = this.customUserSettings.get<AutoReconcileArguments>(this._autoReconcileParamsKey);
-      if (!oldArgs || oldArgs.postingDateTolerance !== postingDateTolerance
-        || oldArgs.externalRefTolerance !== externalRefTolerance) {
-        const args: AutoReconcileArguments = { postingDateTolerance, externalRefTolerance };
-        this.customUserSettings.save(this._autoReconcileParamsKey, JSON.stringify(args));
-      }
-
-      // (2) Auto-Reconcile (e = entry, ex = external entry)
+      // (3) Auto-Reconcile (e = entry, ex = external entry)
       // Get the rows that contain unreconciled entries, and unreconciled external entries
       const entryRows = this.rows
-        .filter(e => !!e.entry && isSpecified(e.entry.MonetaryValue) && e.entry.PostingDate && !e.entryReconciliation);
+        .filter(r => !!r.entry && isSpecified(r.entry.MonetaryValue) && r.entry.PostingDate && !r.entryReconciliation);
       const exEntryRows = this.rows
-        .filter(e => !!e.exEntry && isSpecified(e.exEntry.MonetaryValue) && e.exEntry.PostingDate && !e.exEntryReconciliation);
+        .filter(r => !!r.exEntry && isSpecified(r.exEntry.MonetaryValue) && r.exEntry.PostingDate && !r.exEntryReconciliation);
 
       // Hash the amounts of entries rows
       const eAmountsHash: { [amount: number]: ReconciliationRow[] } = {};
@@ -1031,6 +1009,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
         exAmountsHash[amount].push(exRow);
       }
 
+      let reconciliationsCount = 0; // To report once done
       for (const amountKey of Object.keys(eAmountsHash)) {
 
         // Those two collections contain rows with matching amounts
@@ -1045,6 +1024,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (dateMatches(eRow, exRow) && exRefMatches(eRow, exRow)) {
               this.addReconciliation([eRow], [exRow]);
+              reconciliationsCount++;
             }
           } else {
             // One or both sides have more than one row, match them as best as you can
@@ -1053,7 +1033,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
             amountERows.sort((a, b) => a.entryDays - b.entryDays);
             amountExRows.sort((a, b) => a.exEntryDays - b.exEntryDays);
 
-            // Here we collect all compatible entry and external entries and the difference score between them
+            // Here we collect all compatible entries, external entries and the difference scores between each pair
             const compatibles: { eIndex: number, exIndex: number, diff: number }[] = [];
 
             let startingIndex = 0; // The first external entry with a compatible date
@@ -1100,11 +1080,21 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
                 const exRow = amountExRows[match.exIndex];
 
                 this.addReconciliation([eRow], [exRow]);
+                reconciliationsCount++;
               }
             }
           }
         }
       }
+
+      // (4) Cleanup
+      for (const row of this.rows) {
+        delete row.entryDays;
+        delete row.exEntryDays;
+      }
+
+      const msg = this.translate.instant('AutoReconcileMessage', { 0: reconciliationsCount });
+      this.displaySuccessModal(msg);
     }
   }
 
@@ -1780,10 +1770,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
                 errorMessage += '...'; // To show that's not all
               }
 
-              this.displayModalError(errorMessage);
+              this.displayErrorModal(errorMessage);
             }
           } else {
-            this.displayModalError(friendlyError.error);
+            this.displayErrorModal(friendlyError.error);
           }
 
           return of(null);
@@ -1794,10 +1784,18 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   private _modalErrorMessage: string; // in the modal
 
-  public displayModalError(errorMessage: string) {
+  public displayErrorModal(errorMessage: string) {
     // shows the error message in a dismissable modal
     this._modalErrorMessage = errorMessage;
     this.modalService.open(this.errorModal);
+  }
+
+  private _modalSuccessMessage: string; // in the modal
+
+  public displaySuccessModal(successMsg: string) {
+    // shows the error message in a dismissable modal
+    this._modalSuccessMessage = successMsg;
+    this.modalService.open(this.successModal);
   }
 
   public onCancel() {
@@ -1854,7 +1852,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public get checkedExEntriesTotal(): number {
-    return this.checkedExEntries.map(e => e.Direction * e.MonetaryValue).reduce((a, b) => a + b, 0);
+    return this.checkedExEntries.map(e => e.Direction * (e.MonetaryValue || 0)).reduce((a, b) => a + b, 0);
   }
 
   public get isDirty(): boolean {
@@ -1890,7 +1888,9 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       exEntry.MonetaryValue = entry.MonetaryValue;
 
       // Reconcile
-      this.addReconciliation([entryRow], [exEntryRow]);
+      entryRow.entryIsChecked = true;
+      exEntryRow.exEntryIsChecked = true;
+      // this.addReconciliation([entryRow], [exEntryRow]);
     }
   }
 

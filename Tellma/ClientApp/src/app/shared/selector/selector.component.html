@@ -1,5 +1,5 @@
 <select class="form-control t-input" [class.t-pointer]="!isDisabled" #selector (change)="onValueChanged($event.target.value)"
   (blur)="onTouched();" [disabled]="isDisabled">
-  <option></option>
+  <option *ngIf="!hideEmptyOption"></option>
   <option *ngFor="let choice of choices; trackBy: trackByFn" value="{{choice.value}}">{{ choice.name() }}</option>
 </select>
