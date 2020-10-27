@@ -11,7 +11,7 @@ import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { DocumentDefinitionLineDefinitionForSave, DocumentDefinitionLineDefinition } from './document-definition-line-definition';
 import { DocumentDefinitionMarkupTemplateForSave, DocumentDefinitionMarkupTemplate } from './document-definition-markup-template';
 
-export type DefinitionDocumentType = 0 | 1 | 2;
+export type DefinitionDocumentType = 0 | 1 | 2 | 3;
 
 export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionLineDefinitionForSave,
     TMarkupTemplate = DocumentDefinitionMarkupTemplateForSave> extends EntityForSave {
@@ -82,7 +82,7 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 DocumentType: {
                     control: 'choice',
                     label: () => trx.instant('DocumentDefinition_DocumentType'),
-                    choices: [0, 1, 2],
+                    choices: [0, 1, 2, 3],
                     format: (type: number) => trx.instant('DocumentDefinition_DocumentType_' + type)
                 },
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },

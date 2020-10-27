@@ -4,6 +4,7 @@
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
+	@Attachments [dbo].[AttachmentList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -45,7 +46,6 @@ BEGIN
 	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
 	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
 	[AdditionalReference]		NVARCHAR (50) '$.AdditionalReference',
-	[NotedRelationId]			INT '$.NotedRelationId',
 	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
 	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE '$.NotedDate'
@@ -85,5 +85,6 @@ BEGIN
 		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
 		@Entries = @PreprocessedEntries,
+		@Attachments = @Attachments,
 		@ReturnIds = 0;
 END;

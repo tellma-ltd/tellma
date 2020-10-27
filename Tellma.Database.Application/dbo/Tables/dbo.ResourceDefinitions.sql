@@ -9,7 +9,7 @@
 	[TitlePlural2]						NVARCHAR (100),
 	[TitlePlural3]						NVARCHAR (100),
 	-- TODO Make NOT NULL
-	[ResourceDefinitionType]			NVARCHAR (255) NULL
+	[ResourceDefinitionType]			NVARCHAR (255) NOT NULL
 	CONSTRAINT [CK_ResourceDefinitions__ResourceDefinitionType] CHECK ([ResourceDefinitionType] IN (
 		N'PropertyPlantAndEquipment',
 		N'InvestmentProperty',
@@ -28,6 +28,7 @@
 	-----Resource Properties Common with Contracts
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'Required' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[CostCenterVisibility]				NVARCHAR (50)	NULL DEFAULT N'None' CHECK ([CostCenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
 	[LocationVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([LocationVisibility] IN (N'None', N'Optional', N'Required')),

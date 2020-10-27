@@ -1,4 +1,3 @@
-
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
 import { WorkspaceService } from '../workspace.service';
@@ -37,11 +36,12 @@ export interface DetailsEntry extends EntityWithKey {
     Value?: number;
     AlgebraicValue?: number;
     NegativeAlgebraicValue?: number;
+    MonetaryValuePerUnit?: number;
+    ValuePerUnit?: number;
     Time1?: string;
     Time2?: string;
     ExternalReference?: string;
     AdditionalReference?: string;
-    NotedRelationId?: number;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
@@ -152,12 +152,19 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     alignment: 'right'
                 },
+
+                MonetaryValuePerUnit: { control: 'number', label: () => trx.instant('DetailsEntry_MonetaryValuePerUnit'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                ValuePerUnit: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_ValuePerUnit')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
                 Time1: { control: 'datetime', label: () => trx.instant('Entry_Time1') },
                 Time2: { control: 'datetime', label: () => trx.instant('Entry_Time2') },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                NotedRelationId: { control: 'number', label: () => `${trx.instant('Entry_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedRelation: { control: 'navigation', label: () => trx.instant('Entry_NotedRelation'), type: 'Relation', foreignKeyName: 'NotedRelationId' },
                 NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NotedDate: { control: 'date', label: () => trx.instant('Entry_NotedDate') },

@@ -78,10 +78,3 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryResourceDefinitions])
-
--- Get the NotedRelation definitions of the line definition entries
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[NotedRelationDefinitionId]
-FROM dbo.LineDefinitionEntries LDE
-JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-WHERE ATC.[NotedRelationDefinitionId] IS NOT NULL

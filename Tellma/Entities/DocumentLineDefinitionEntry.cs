@@ -29,11 +29,11 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
-        [Display(Name = "Entry_NotedRelation")]
-        public int? NotedRelationId { get; set; }
+        [Display(Name = "Entry_Participant")]
+        public int? ParticipantId { get; set; }
 
-        [IsCommonDisplay(Name = "Entry_NotedRelation")]
-        public bool? NotedRelationIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Entry_Participant")]
+        public bool? ParticipantIsCommon { get; set; }
 
         [Display(Name = "Entry_Currency")]
         [StringLength(3)]
@@ -120,9 +120,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(LineDefinitionId))]
         public LineDefinition Definition { get; set; }
 
-        [Display(Name = "Document_NotedRelation")]
-        [ForeignKey(nameof(NotedRelationId))]
-        public Relation NotedRelation { get; set; }
+        [Display(Name = "Entry_Participant")]
+        [ForeignKey(nameof(ParticipantId))]
+        public Relation Participant { get; set; }
 
         [Display(Name = "Document_Currency")]
         [ForeignKey(nameof(CurrencyId))]

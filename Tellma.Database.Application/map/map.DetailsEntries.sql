@@ -34,5 +34,8 @@ SELECT
 	EB.[Direction] * EB.[RValue]					AS [AlgebraicRestatedValue],
 -	EB.[Direction] * EB.[RValue]					AS [NegativeAlgebraicRestatedValue],
 	EB.[Direction] * EB.[PValue]					AS [AlgebraicPresentationValue],
--	EB.[Direction] * EB.[PValue]					AS [NegativeAlgebraicPresentationValue]
+-	EB.[Direction] * EB.[PValue]					AS [NegativeAlgebraicPresentationValue],
+
+	IIF(EB.[BaseQuantity] = 0, 0, EB.[MonetaryValue] / EB.[BaseQuantity]) AS [MonetaryValuePerUnit],
+	IIF(EB.[BaseQuantity] = 0, 0, EB.[Value] / EB.[BaseQuantity]) AS [ValuePerUnit]
 FROM EB

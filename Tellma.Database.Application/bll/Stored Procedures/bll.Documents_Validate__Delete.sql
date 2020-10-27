@@ -21,6 +21,7 @@ SET NOCOUNT ON;
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE
 
 	-- Cannot delete if it will cause a gap in the sequence of serial numbers
+	IF (SELECT [IsOriginalDocument] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) = 1
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
     SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -28,7 +29,9 @@ SET NOCOUNT ON;
 	FROM @Ids FE 
 	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
 	JOIN dbo.[Documents] DO ON D.DefinitionId = DO.DefinitionId
-	WHERE D.SerialNumber < DO.SerialNumber
+	JOIN dbo.DocumentDefinitions DD ON D.DefinitionId = DD.[Id]
+	WHERE DD.IsOriginalDocument = 1 
+	AND D.SerialNumber < DO.SerialNumber
 	AND DO.[Id] NOT IN (SELECT [Id] FROM @Ids)
 
 	-- Cannot delete If there are completed lines

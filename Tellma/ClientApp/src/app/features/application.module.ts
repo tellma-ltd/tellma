@@ -124,6 +124,7 @@ import {
   faSearchDollar,
   faSeedling,
   faShapes,
+  faShieldAlt,
   faShare,
   faShareSquare,
   faShip,
@@ -165,7 +166,14 @@ import {
   faArrowsAlt,
   faCartArrowDown,
   faExpand,
-  faCompress
+  faCompress,
+  faClone,
+  faHandRock,
+  faMagic,
+  faHandPointRight,
+  faFistRaised,
+  faMinus,
+  faEquals
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
@@ -240,6 +248,7 @@ import { DocumentDefinitionsMasterComponent } from './document-definitions/docum
 import { DocumentDefinitionsDetailsComponent } from './document-definitions/document-definitions-details.component';
 import { DocumentDefinitionsPickerComponent } from './document-definitions/document-definitions-picker.component';
 import { MarkupTemplatesPickerComponent } from './markup-templates/markup-templates-picker.component';
+import { ReconciliationComponent } from './reconciliation/reconciliation.component';
 
 const routes: Routes = [
   {
@@ -614,6 +623,13 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
 
+      // Bank Reconciliation
+      {
+        path: 'reconciliation',
+        component: ReconciliationComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -725,6 +741,7 @@ const routes: Routes = [
     DocumentDefinitionsDetailsComponent,
     DocumentDefinitionsPickerComponent,
     MarkupTemplatesPickerComponent,
+    ReconciliationComponent,
   ],
   imports: [
     SharedModule,
@@ -771,6 +788,7 @@ export class ApplicationModule {
       faChevronUp,
       faCity,
       faClipboard,
+      faClone,
       faCode,
       faCodeBranch,
       faCoins,
@@ -782,6 +800,7 @@ export class ApplicationModule {
       faEdit,
       faEllipsisH,
       faEllipsisV,
+      faEquals,
       faEuroSign,
       faExchangeAlt,
       faExclamation,
@@ -803,6 +822,7 @@ export class ApplicationModule {
       faFilePowerpoint,
       faFileVideo,
       faFileWord,
+      faFistRaised,
       faFolder,
       faFolderMinus,
       faFolderPlus,
@@ -813,6 +833,8 @@ export class ApplicationModule {
       faGrinHearts,
       faHammer,
       faHandHoldingUsd,
+      faHandPointRight,
+      faHandRock,
       faHandsHelping,
       faHistory,
       faHollyBerry,
@@ -828,10 +850,12 @@ export class ApplicationModule {
       faListUl,
       faLock,
       faLockOpen,
+      faMagic,
       faMale,
       faMap,
       faMapMarkerAlt,
       faMicrochip,
+      faMinus,
       faMoneyBillWave,
       faMoneyCheck,
       faMoneyCheckAlt,
@@ -854,6 +878,7 @@ export class ApplicationModule {
       faSearchDollar,
       faSeedling,
       faShapes,
+      faShieldAlt,
       faShare,
       faShareSquare,
       faShip,
@@ -862,7 +887,6 @@ export class ApplicationModule {
       faSitemap,
       faSpa,
       faStar,
-      faStarAlternative,
       faStoreSlash,
       faStream,
       faSuitcaseRolling,

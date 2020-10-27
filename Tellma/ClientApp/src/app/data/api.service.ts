@@ -65,6 +65,14 @@ import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ServerNotificationSummary } from './dto/server-notification-summary';
 import { LineForSave } from './entities/line';
 import { Custody } from './entities/custody';
+import {
+  ReconciliationGetUnreconciledArguments,
+  ReconciliationGetUnreconciledResponse,
+  ReconciliationGetReconciledResponse,
+  ReconciliationGetReconciledArguments,
+  ReconciliationSavePayload
+} from './dto/reconciliation';
+import { ExternalEntryForSave } from './entities/external-entry';
 
 
 @Injectable({
@@ -556,6 +564,44 @@ export class ApiService {
         );
         return obs$;
       },
+      printByFilter: (templateId: number, args: GenerateMarkupByFilterArguments) => {
+        const paramsArray: string[] = [
+        ];
+
+        if (!!args.filter) {
+          paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!args.orderby) {
+          paramsArray.push(`orderby=${encodeURIComponent(args.orderby)}`);
+        }
+
+        if (!!args.skip || args.skip === 0) {
+          paramsArray.push(`skip=${args.skip}`);
+        }
+
+        if (!!args.top || args.top === 0) {
+          paramsArray.push(`top=${args.top}`);
+        }
+
+        if (!!args.i) {
+          args.i.forEach(id => {
+            paramsArray.push(`i=${encodeURIComponent(id)}`);
+          });
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/print/${templateId}?${params}`;
+
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
       printById: (docId: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
         const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
         const params: string = paramsArray.join('&');
@@ -792,6 +838,123 @@ export class ApiService {
         const url = appsettings.apiAddress + `api/ping`;
         const obs$ = this.http.get<void>(url).pipe(
           takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  public reconciliationApi(cancellationToken$: Observable<void>) {
+    return {
+      getUnreconciled: (args: ReconciliationGetUnreconciledArguments) => {
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/unreconciled?${params}`;
+
+        const obs$ = this.http.get<ReconciliationGetUnreconciledResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      getReconciled: (args: ReconciliationGetReconciledArguments) => {
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/reconciled?${params}`;
+
+        const obs$ = this.http.get<ReconciliationGetReconciledResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      saveAndGetUnreconciled: (payload: ReconciliationSavePayload, args: ReconciliationGetUnreconciledArguments) => {
+        this.showRotator = true;
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/unreconciled?${params}`;
+
+        const obs$ = this.http.post<ReconciliationGetUnreconciledResponse>(url, payload, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      saveAndGetReconciled: (payload: ReconciliationSavePayload, args: ReconciliationGetReconciledArguments) => {
+        this.showRotator = true;
+        const paramsArray: string[] = this.stringifyArguments(args);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/reconciled?${params}`;
+
+        const obs$ = this.http.post<ReconciliationGetReconciledResponse>(url, payload, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      import: (file: File) => {
+        // args = args || {};
+
+        const paramsArray: string[] = [];
+
+        // if (!!args.mode) {
+        //   paramsArray.push(`mode=${args.mode}`);
+        // }
+
+        // if (!!args.key) {
+        //   paramsArray.push(`key=${args.key}`);
+        // }
+
+        const formData = new FormData();
+        formData.append(file.name, file, file.name);
+
+        this.showRotator = true;
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/reconciliation/import?${params}`;
+        const obs$ = this.http.post<ExternalEntryForSave[]>(url, formData).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
@@ -1461,7 +1624,7 @@ export class ApiService {
     return paramsArray;
   }
 
-  stringifyArguments(args: { [key: string]: any }) {
+  stringifyArguments(args: { [key: string]: any }): string[] {
     const paramsArray: string[] = [];
     const keys = Object.keys(args);
     for (const key of keys) {

@@ -31,8 +31,8 @@ BEGIN
 				[SegmentId],
 				[CenterId],
 				[CenterIsCommon],
-				[NotedRelationId],
-				[NotedRelationIsCommon],
+				[ParticipantId],
+				[ParticipantIsCommon],
 				[CurrencyId],
 				[CurrencyIsCommon],
 				[ExternalReference],
@@ -58,8 +58,8 @@ BEGIN
 				t.[SegmentId]					= s.[SegmentId],
 				t.[CenterId]					= s.[CenterId],
 				t.[CenterIsCommon]				= s.[CenterIsCommon],
-				t.[NotedRelationId]				= s.[NotedRelationId],
-				t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+				t.[ParticipantId]				= s.[ParticipantId],
+				t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
 				t.[CurrencyId]					= s.[CurrencyId],
 				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
 				t.[ExternalReference]			= s.[ExternalReference],
@@ -80,8 +80,8 @@ BEGIN
 				[SegmentId],
 				[CenterId],
 				[CenterIsCommon],
-				[NotedRelationId],
-				[NotedRelationIsCommon],
+				[ParticipantId],
+				[ParticipantIsCommon],
 				[CurrencyId],
 				[CurrencyIsCommon],
 				[ExternalReference],
@@ -100,8 +100,8 @@ BEGIN
 				s.[SegmentId],
 				s.[CenterId],
 				s.[CenterIsCommon],
-				s.[NotedRelationId],
-				s.[NotedRelationIsCommon],		
+				s.[ParticipantId],
+				s.[ParticipantIsCommon],		
 				s.[CurrencyId],
 				s.[CurrencyIsCommon],
 				s.[ExternalReference],
@@ -129,8 +129,8 @@ BEGIN
 			LDE.[Memo],
 			LDE.[MemoIsCommon],
 	
-			LDE.[NotedRelationId],
-			LDE.[NotedRelationIsCommon],
+			LDE.[ParticipantId],
+			LDE.[ParticipantIsCommon],
 
 			LDE.[CenterId],
 			LDE.[CenterIsCommon],
@@ -170,8 +170,8 @@ BEGIN
 			t.[Memo]						= s.[Memo],
 			t.[MemoIsCommon]				= s.[MemoIsCommon],
 	
-			t.[NotedRelationId]				= s.[NotedRelationId],
-			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+			t.[ParticipantId]				= s.[ParticipantId],
+			t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
 
 			t.[CurrencyId]					= s.[CurrencyId],
 			t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
@@ -211,8 +211,8 @@ BEGIN
 			[Memo],
 			[MemoIsCommon],
 	
-			[NotedRelationId],
-			[NotedRelationIsCommon],
+			[ParticipantId],
+			[ParticipantIsCommon],
 
 			[CurrencyId],
 			[CurrencyIsCommon],
@@ -250,8 +250,8 @@ BEGIN
 			s.[Memo],
 			s.[MemoIsCommon],
 	
-			s.[NotedRelationId],
-			s.[NotedRelationIsCommon],
+			s.[ParticipantId],
+			s.[ParticipantIsCommon],
 
 			s.[CurrencyId],
 			s.[CurrencyIsCommon],
@@ -300,7 +300,10 @@ BEGIN
 				L.[PostingDate],
 				L.[TemplateLineId],
 				L.[Multiplier],
-				L.[Memo]
+				L.[Memo],
+				L.[Boolean1],
+				L.[Decimal1],
+				L.[Text1]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.Id = s.Id)
@@ -312,11 +315,14 @@ BEGIN
 				t.[TemplateLineId]		= s.[TemplateLineId],
 				t.[Multiplier]			= s.[Multiplier],
 				t.[Memo]				= s.[Memo],
+				t.[Boolean1]			= s.[Boolean1],
+				t.[Decimal1]			= s.[Decimal1],
+				t.[Text1]				= s.[Text1],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo], [Boolean1], [Decimal1], [Text1])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -337,7 +343,6 @@ BEGIN
 			E.[Time1], E.[Time2],
 			E.[ExternalReference],
 			E.[AdditionalReference],
-			E.[NotedRelationId], 
 			E.[NotedAgentName], 
 			E.[NotedAmount], 
 			E.[NotedDate]
@@ -348,7 +353,7 @@ BEGIN
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
-			t.[IsSystem]				= s.[IsSystem], 
+			t.[IsSystem]				= ISNULL(s.[IsSystem], 0), 
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
@@ -366,7 +371,6 @@ BEGIN
 			t.[Time2]					= s.[Time2],	
 			t.[ExternalReference]		= s.[ExternalReference],
 			t.[AdditionalReference]		= s.[AdditionalReference],
-			t.[NotedRelationId]			= s.[NotedRelationId],
 			t.[NotedAgentName]			= s.[NotedAgentName],
 			t.[NotedAmount]				= s.[NotedAmount],
 			t.[NotedDate]				= s.[NotedDate],
@@ -380,7 +384,6 @@ BEGIN
 			[Time1], [Time2],
 			[ExternalReference],
 			[AdditionalReference],
-			[NotedRelationId], 
 			[NotedAgentName], 
 			[NotedAmount], 
 			[NotedDate]
@@ -392,7 +395,6 @@ BEGIN
 			s.[Time1], s.[Time2],
 			s.[ExternalReference],
 			s.[AdditionalReference],
-			s.[NotedRelationId], 
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
 			s.[NotedDate]

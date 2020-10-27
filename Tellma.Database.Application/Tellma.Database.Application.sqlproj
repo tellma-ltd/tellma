@@ -109,7 +109,7 @@
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.Lines.sql" />
-    <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
+    <Build Include="dbo\Tables\dbo.Reconciliations.sql" />
     <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
     <Build Include="dbo\Tables\dbo.DocumentDefinitions.sql" />
@@ -129,7 +129,6 @@
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.WideLineList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
     <None Include="Tests\04_IfrsDisclosures.sql" />
     <None Include="Tests\03_MeasurementUnits.sql" />
@@ -587,7 +586,7 @@
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Activate.sql" />
-    <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeCustodyDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.CustodyDefinitionList.sql" />
@@ -668,7 +667,6 @@
     <Build Include="map\map.LineDefinitionStateReasons.sql" />
     <Build Include="map\map.Workflows.sql" />
     <Build Include="map\map.WorkflowSignatures.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.LineDefinitions__Insert.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Code__Legacy.sql" />
     <Build Include="map\map.DocumentDefinitionLineDefinitions.sql" />
     <Build Include="map\map.DocumentDefinitionMarkupTemplates.sql" />
@@ -679,9 +677,31 @@
     <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
     <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
-    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineDefinitionEntryList.sql" />
     <Build Include="map\map.DocumentLineDefinitionEntries.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__Save.sql" />
+    <Build Include="dbo\Tables\dbo.ReconciliationEntries.sql" />
+    <Build Include="dbo\Tables\dbo.ExternalEntries.sql" />
+    <Build Include="dbo\Tables\dbo.ReconciliationExternalEntries.sql" />
+    <Build Include="bll\Stored Procedures\bll.Reconciliations_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__Delete.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__Capitalize.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ExternalEntryList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReconciliationList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReconciliationEntryList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReconciliationExternalEntryList.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Unreconciled.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
+    <Build Include="dbo\User Defined Types\dbo.InventoryEventList.sql" />
+    <Build Include="bll\Functions\bll.fi_InventoryAverageCosts2.sql" />
+    <Build Include="dal\Stored Procedures\dal.InventoryEntries_AVCO__Update.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data2.sql" />
+    <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
+    <Build Include="bll\Functions\bll.fn_IsLeap.sql" />
+    <Build Include="bll\Functions\bll.fn_BusinessUnit__CostCenter.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Unreconciled.sql" />
+    <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Reconciled.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -759,8 +779,5 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
 </Project>

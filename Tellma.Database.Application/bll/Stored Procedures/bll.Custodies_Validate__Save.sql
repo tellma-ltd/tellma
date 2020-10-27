@@ -47,7 +47,7 @@ SET NOCOUNT ON;
 
 	-- Cannot change currency if Custody is already used in Entries with different currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CurrencyId',
 		N'Error_TheCustody0WasUsedInDocument1WithCurrency2',
 		@TitleSingular,
@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 
 	-- Cannot change currency if Custody is already used in Account with different currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CurrencyId',
 		N'Error_TheCustody0WasUsedInAccount1WithCurrency2',
 		@TitleSingular,
@@ -73,33 +73,37 @@ SET NOCOUNT ON;
 
 	-- Cannot change Center if Custody is already used in Entries with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_TheCustody0WasUsedInDocument1WithCenter2',
 		@TitleSingular,
 		D.[Code],
-		E.[CenterId]
+		dbo.fn_Localize(CC.[Name], CC.[Name2], CC.[Name3])
 	FROM @Entities C
 	JOIN dbo.Entries E ON C.[Id] = E.CustodyId
+	JOIN map.Accounts() A ON E.AccountId = A.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
+	JOIN dbo.Centers CC ON E.[CenterId] = CC.[Id]
 	WHERE C.[CenterId] IS NOT NULL AND E.[CenterId] <> C.[CenterId]
+	AND A.IsBusinessUnit = 1;
 
 	-- Cannot change Center if Custody is already used in Account with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(C.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_TheCustody0WasUsedInAccount1WithCenter2',
 		@TitleSingular,
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]),
-		A.[CenterId]
+		dbo.fn_Localize(CC.[Name], CC.[Name2], CC.[Name3])
 	FROM @Entities C
 	JOIN dbo.Accounts A ON C.[Id] = A.CustodyId
+	JOIN dbo.Centers CC ON A.[CenterId] = CC.[Id]
 	WHERE C.[CenterId] IS NOT NULL AND A.[CenterId] <> C.[CenterId]
 
 	-- Cannot assign an inactive Custodian
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CustodianId',
 		N'Error_TheCustodian01IsInactive',
 		dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]),
@@ -111,7 +115,7 @@ SET NOCOUNT ON;
 
 	-- Cannot assign an inactive center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_TheCenter0IsInactive',
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
@@ -121,7 +125,7 @@ SET NOCOUNT ON;
 
 	-- Cannot assign an inactive currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CurrencyId',
 		N'Error_TheCurrency0IsInactive',
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])

@@ -9,6 +9,7 @@
 	[Code]						NVARCHAR (50),
 	[CurrencyId]				NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[CenterId]					INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
+	[CostCenterId]				INT					CONSTRAINT [FK_Resources__CostCenterId] REFERENCES dbo.[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
@@ -50,9 +51,6 @@
 	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name_Identifier]
-  ON [dbo].[Resources]([DefinitionId], [Name], [Identifier]);
-GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name2], [Identifier]) WHERE [Name2] IS NOT NULL;
 GO
@@ -61,4 +59,6 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name3_Identifier]
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__ResourceDefinitionId_Code]
   ON [dbo].[Resources]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
+GO
+CREATE INDEX [IX_Resources__ResourceDefinitionId]   ON [dbo].[Resources]([DefinitionId]);
 GO

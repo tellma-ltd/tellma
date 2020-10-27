@@ -873,6 +873,11 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.CenterVisibility, display);
                     isRequired = def.CenterVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.CostCenter):
+                case nameof(Resource.CostCenterId):
+                    display = PropertyDisplay(def.CostCenterVisibility, display);
+                    isRequired = def.CostCenterVisibility == Visibility.Required;
+                    break;
                 case nameof(Resource.Lookup1):
                 case nameof(Resource.Lookup1Id):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
@@ -1323,13 +1328,13 @@ namespace Tellma.Controllers
                 case nameof(Document.PostingDateIsCommon):
                     display = PropertyDisplay(def.PostingDateVisibility, display);
                     break;
-                case nameof(Document.NotedRelationId):
-                case nameof(Document.NotedRelation):
-                    display = PropertyDisplay(settings, def.NotedRelationVisibility, def.NotedRelationLabel, def.NotedRelationLabel2, def.NotedRelationLabel3, display);
-                    isRequired = def.NotedRelationRequiredState == 0;
+                case nameof(Document.ParticipantId):
+                case nameof(Document.Participant):
+                    display = PropertyDisplay(settings, def.ParticipantVisibility, def.ParticipantLabel, def.ParticipantLabel2, def.ParticipantLabel3, display);
+                    isRequired = def.ParticipantRequiredState == 0;
                     break;
-                case nameof(Document.NotedRelationIsCommon):
-                    display = PropertyDisplay(def.NotedRelationVisibility, display);
+                case nameof(Document.ParticipantIsCommon):
+                    display = PropertyDisplay(def.ParticipantVisibility, display);
                     break;
                 case nameof(Document.CenterId):
                 case nameof(Document.Center):
@@ -1369,7 +1374,7 @@ namespace Tellma.Controllers
 
             int? targetDefId = propInfo.Name switch
             {
-                nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,
+                nameof(Document.Participant) => def.ParticipantDefinitionIds.Count == 1 ? (int?)def.ParticipantDefinitionIds[0] : null,
                 _ => null,
             };
 

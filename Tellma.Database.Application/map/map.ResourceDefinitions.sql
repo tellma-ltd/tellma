@@ -16,6 +16,7 @@ RETURN (
 
 		[CurrencyVisibility],
 		[CenterVisibility],
+		[CostCenterVisibility],
 		[ImageVisibility],
 		[DescriptionVisibility],
 		[LocationVisibility],

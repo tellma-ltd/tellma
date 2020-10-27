@@ -25,25 +25,26 @@ BEGIN
 	Planned([ResourceId], [Mass], [Quantity]) AS (
 		SELECT 
 		ResourceId,
-		SUM([Mass]) * (
+		SUM(BE.[Quantity] * R.[UnitMass]) * (
 			DATEDIFF(
 				DAY,
-				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
-				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
+				(CASE WHEN BE.[FromDate] > @fromDate THEN BE.[FromDate] ELSE @fromDate END),
+				(CASE WHEN BE.[ToDate] < @toDate THEN BE.[ToDate] Else @toDate END)
 			) + 1
 		) As [Mass],
 		SUM([Quantity]) * (
 			DATEDIFF(
 				DAY,
-				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
-				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
+				(CASE WHEN BE.[FromDate] > @fromDate THEN BE.[FromDate] ELSE @fromDate END),
+				(CASE WHEN BE.[ToDate] < @toDate THEN BE.[ToDate] Else @toDate END)
 			) + 1
 		) As [Quantity]
 		FROM dbo.[BudgetEntries] BE
 		JOIN dbo.[Budgets] B ON B.[Id] = BE.[BudgetId]
-		WHERE (ToDate >= @fromDate AND FromDate <= @toDate)
+		LEFT JOIN dbo.Resources R ON B.ResourceId = R.Id
+		WHERE (BE.[ToDate] >= @fromDate AND BE.[FromDate] <= @toDate)
 		AND [EntryTypeId] = @InventoryProductionExtension
-		GROUP BY [ResourceId], [FromDate], [ToDate]
+		GROUP BY [ResourceId], BE.[FromDate], BE.[ToDate]
 	)
 	SELECT RL.Id, RL.[Name],
 		A.[Mass] AS MassActual, P.Mass As MassPlanned, A.Mass/P.Mass * 100 As [PercentOfMassPlanned],

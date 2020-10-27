@@ -124,8 +124,9 @@ namespace Tellma.Controllers
 
                 var line = nameof(DetailsEntry.Line);
                 var memo = nameof(LineForQuery.Memo);
+                var text1 = nameof(LineForQuery.Text1);
 
-                var filterString = $"{line}/{memo} {Ops.contains} '{search}'";
+                var filterString = $"{line}/{memo} {Ops.contains} '{search}' or {line}/{text1} {Ops.contains} '{search}' ";
                 query = query.Filter(FilterExpression.Parse(filterString));
             }
 
@@ -234,9 +235,8 @@ namespace Tellma.Controllers
             // Step 2: Load the entries
             var factArgs = new GetArguments
             {
-
                 Select = args.Select,
-                Top = args.Top,
+                Top = args.Skip + args.Top, // We need this to compute openining balance, we do the skipping later in memory
                 Skip = 0, // args.Skip,
                 OrderBy = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
                 CountEntities = true,
@@ -275,7 +275,7 @@ namespace Tellma.Controllers
                 entry.Accumulation = acc;
                 entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
 
-                accQuantity += (entry.Quantity ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
+                accQuantity += entry.AlgebraicQuantity ?? 0m; // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
                 entry.QuantityAccumulation = accQuantity;
                 entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
 
@@ -316,28 +316,5 @@ namespace Tellma.Controllers
             data = data.Skip(args.Skip).ToList(); // Skip in memory
             return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
         }
-
-        //public async Task<List<Account>> GetRelationAccounts(int relationId, CancellationToken cancellation)
-        //{
-        //    string accountIdProp = nameof(DetailsEntry.AccountId);
-        //    string custodyIdProp = nameof(DetailsEntry.CustodyId);
-        //    string algebraicValueSum = $"sum({nameof(DetailsEntry.AlgebraicValue)})";
-
-        //    var (data, _) = await GetAggregate(new GetAggregateArguments
-        //    {
-        //        Select = $"{accountIdProp},{algebraicValueSum}",
-        //        Filter = $""
-        //    },
-        //    cancellation);
-
-        //    var dic = data.Select(e => ((int?)e[accountIdProp], (decimal?)e[algebraicValueSum]))
-
-        //    var ids = data.Select(e => e[accountIdProp]).Where(e => e != null).Select(e => (int)e).ToList();
-        //    var result = await GetByIds(ids, new SelectExpandArguments { Select = "$Details" }, cancellation);
-
-        //    var dic = data.Se
-
-        //    return result;
-        //}
     }
 }

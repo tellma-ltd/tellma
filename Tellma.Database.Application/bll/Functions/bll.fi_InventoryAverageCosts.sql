@@ -1,5 +1,5 @@
 ﻿CREATE FUNCTION [bll].[fi_InventoryAverageCosts] (
-	@ProcessedWideLines dbo.WideLineList READONLY
+	@InventoryEntries dbo.[InventoryEntryList] READONLY
 )
 RETURNS TABLE AS RETURN (
 	WITH InventoryAccounts AS (
@@ -12,14 +12,14 @@ RETURNS TABLE AS RETURN (
 	)
 -- two assumptions: Resource cannot appear in more than one inventory account. Warehouse determines center.
 	SELECT
-		PWL.PostingDate, E.[CustodyId] , E.[ResourceId], -- A.[AccountTypeId], E.[CenterId],
+		IE.PostingDate, E.[CustodyId] , E.[ResourceId], -- A.[AccountTypeId], E.[CenterId],
 		SUM(E.[AlgebraicMonetaryValue]) AS NetMonetaryValue,
 		SUM(E.[AlgebraicValue]) AS NetValue,
 		SUM(E.[AlgebraicQuantity]) AS NetQuantity
 	FROM map.[DetailsEntries]() E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	JOIN @ProcessedWideLines PWL ON PWL.[ResourceId1] = E.[ResourceId] AND PWL.[CustodyId1] = E.[CustodyId] AND L.PostingDate <= PWL.[PostingDate]
+	JOIN @InventoryEntries IE ON IE.[ResourceId] = E.[ResourceId] AND IE.[CustodyId] = E.[CustodyId] AND L.PostingDate <= IE.[PostingDate]
 	JOIN InventoryAccounts A ON E.[AccountId] = A.[Id]
 	WHERE L.[State] = 4
-	GROUP BY PWL.PostingDate, E.[CustodyId] , E.[ResourceId]--, A.[AccountTypeId], E.[CenterId]
+	GROUP BY IE.PostingDate, E.[CustodyId] , E.[ResourceId]--, A.[AccountTypeId], E.[CenterId]
 );

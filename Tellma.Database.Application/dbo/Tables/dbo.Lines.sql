@@ -14,6 +14,9 @@
 	),
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[Index]						INT				NOT NULL,
+	[Boolean1]					BIT,
+	[Decimal1]					DECIMAL (19,4),
+	[Text1]						NVARCHAR(10),
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET() CONSTRAINT [FK_Lines__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
 	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
@@ -22,4 +25,6 @@
 );
 GO
 CREATE INDEX [IX_Lines__DocumentId] ON [dbo].[Lines]([DocumentId]);
+GO
+CREATE INDEX [IX_Lines__DefinitionId] ON [dbo].[Lines]([DefinitionId]);
 GO

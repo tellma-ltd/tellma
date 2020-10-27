@@ -9,6 +9,7 @@ SET NOCOUNT ON;
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 
+	--RETURN;
 	-- List all document definitions where no account type is common to All their line definitions
 	WITH DDAccountTypes AS (
 		SELECT LD.HeaderIndex, LDE.[ParentAccountTypeId], COUNT(DISTINCT LD.LineDefinitionId) AS AccountTypeOccurrences

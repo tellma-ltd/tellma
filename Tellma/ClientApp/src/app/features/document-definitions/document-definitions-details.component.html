@@ -547,7 +547,7 @@
                 <label class="small">{{ 'DocumentDefinitionMarkupTemplate_MarkupTemplate' | translate }}</label>
                 <t-markup-templates-picker theme="dark" [(ngModel)]="markupTemplateToEdit.MarkupTemplateId"
                     (ngModelChange)="onItemToEditChange()" required #markuptemplatemodel="ngModel"
-                    filter="Collection eq 'Document' and MarkupLanguage eq 'text/html' and Usage eq 'QueryById'">
+                    filter="Collection eq 'Document' and MarkupLanguage eq 'text/html' and (Usage eq 'QueryById' or Usage eq 'QueryByFilter')">
                 </t-markup-templates-picker>
                 <ng-container
                     *ngTemplateOutlet="errorsTemplate;context: { control: markuptemplatemodel, serverErrors: markupTemplateToEdit.serverErrors?.MarkupTemplateId }">

@@ -844,7 +844,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               orderby,
               select,
               filter,
-              countEntities: true
+              countEntities: true,
+              skip: 0,
+              top: 2147483647 // Everything
             }, extras).pipe(
               tap((response: GetResponse) => {
                 const data = composeEntitiesFromResponse(response, columns, collection, definitionId, this.workspace, this.translate);
@@ -1893,15 +1895,22 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       desc.navigateToDetails(entity, this.router);
 
     } else if (!!desc.masterScreenUrl) {
-      // tslint:disable-next-line:no-string-literal
+      // tslint:disable:no-string-literal
       const id = entity['Id'];
       if (isSpecified(id)) {
         const tenantId = this.workspace.ws.tenantId;
         const screenUrlSegments = desc.masterScreenUrl.split('/');
 
-        // Should we add the master parameters here?
+        // Prepare the commands
+        const commands = ['app', tenantId + '', ...screenUrlSegments];
+        if (!desc.definitionId && !!desc.definitionIds) {
+          // A definitioned entity, but the report is generic
+          const defId = entity['DefinitionId'];
+          commands.push(defId);
+        }
+        commands.push(id);
 
-        this.router.navigate(['app', tenantId + '', ...screenUrlSegments, id]);
+        this.router.navigate(commands);
       } else {
         const def = this.definition;
         console.error(`no screen URL is defined for collection: '${def.Collection}', definitionId '${def.DefinitionId}'`);

@@ -29,13 +29,8 @@
       </a>
     </div>
 
-    <!-- Spinner for huge menu -->
-    <div class="text-center" *ngIf="!initialized">
-      <t-spinner [scale]="2"></t-spinner>
-    </div>
-
     <!-- Main Menu -->
-    <ng-container *ngIf="initialized">
+    <ng-container *ngIf="initialized; else spinner">
       <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
         [class.d-none]="!showSection(section?.items)">
         <div class="t-menu-section" (dblclick)="onSectionDoubleClick(section)">
@@ -53,5 +48,12 @@
         </a>
       </div>
     </ng-container>
+
+    <!-- Spinner for huge menu -->
+    <ng-template #spinner>
+      <div class="text-center">
+        <t-spinner [scale]="2"></t-spinner>
+      </div>
+    </ng-template>
   </div>
 </div>

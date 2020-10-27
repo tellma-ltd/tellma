@@ -3,7 +3,7 @@ import {
   ViewChild, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 import { ActivatedRoute, Params, Router, ParamMap } from '@angular/router';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize, skip, map } from 'rxjs/operators';
@@ -69,6 +69,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   tileTemplate: TemplateRef<any>;
+
+  @Input()
+  multiselectToolbarTemplate: TemplateRef<any>;
 
   @Input()
   tableSummaryColumnTemplate: TemplateRef<any>;
@@ -1090,7 +1093,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         }
 
         const prop = props[propName];
-        if (prop.control === 'text' || (prop.control === 'number' && prop.maxDecimalPlaces === 0)) {
+        if (prop.control === 'text' || prop.control === 'serial' || (prop.control === 'number' && prop.maxDecimalPlaces === 0)) {
           this.importKeyChoicesResult.push({ value: propName, name: prop.label });
         }
       }
@@ -1121,7 +1124,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // Try to suggestion a user key
     if (!this.importKey) {
       const choices = this.importKeyChoices;
-      if (choices.find(e => e.value === 'Code')) {
+      if (choices.find(e => e.value === 'SerialNumber')) {
+        this.importKey = 'SerialNumber';
+      } else if (choices.find(e => e.value === 'Code')) {
         this.importKey = 'Code';
       } else if (choices.find(e => e.value === 'Name')) {
         this.importKey = 'Name';
@@ -1338,11 +1343,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  public get actionsDropdownPlacement() {
+  public get actionsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
-  public get errorPopoverPlacement() {
+  public get errorPopoverPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'left' : 'right';
   }
 

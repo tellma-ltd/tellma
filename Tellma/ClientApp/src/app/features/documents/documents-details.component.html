@@ -4,7 +4,8 @@
     [documentHeaderTemplate]="documentHeader" [actions]="[
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
     [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
-    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select" [savePreprocessing]="savePreprocessing">
+    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select"
+    [savePreprocessing]="savePreprocessing">
 
 </t-details>
 
@@ -25,7 +26,10 @@
     <div *ngIf="!isEdit && showPrint" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
         <button type="button" class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle"
             ngbDropdownToggle>
-            <fa-icon icon="print"></fa-icon>
+            <fa-icon *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
+            <ng-template #spinner>
+                <t-spinner></t-spinner>
+            </ng-template>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
         </button>
         <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
@@ -36,9 +40,7 @@
         </div>
     </div>
 
-    <div class="t-vertical-align-middle d-inline-block" style="min-width: 30px;">
-        <t-spinner *ngIf="isPrinting"></t-spinner>
-    </div>
+    <div class="mx-2 d-inline-block"></div>
 
     <!-- Open -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
@@ -134,7 +136,7 @@
 <ng-template #document let-model="model" let-extras="extras" let-isEdit="isEdit">
 
     <!-- Serial Number -->
-    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="model?.serverErrors?.SerialNumber">
         <h2 class="font-weight-normal" *ngIf="!isEdit || isOriginalDocument">{{ formatSerial(model?.SerialNumber) }}
         </h2>
         <t-serial-editor *ngIf="isEdit && !isOriginalDocument" [(ngModel)]="model.SerialNumber"
@@ -168,20 +170,20 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Noted Relation -->
-    <t-form-group class="t-form-group" [label]="labelDocumentNotedRelation(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="NotedRelationIsCommon" [disableLabelMenu]="!isEdit"
-        [serverErrors]="model?.serverErrors?.NotedRelationId" *ngIf="showDocumentNotedRelation(model)">
-        <ng-container *ngIf="model?.NotedRelationIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedRelationId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.NotedRelationId)?.DefinitionId"
-                    [itemId]="model?.NotedRelationId">
-                    {{ ws.getMultilingualValue('Relation', model?.NotedRelationId, 'Name') }}
+    <!-- Participant -->
+    <t-form-group class="t-form-group" [label]="labelDocumentParticipant(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="ParticipantIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.ParticipantId" *ngIf="showDocumentParticipant(model)">
+        <ng-container *ngIf="model?.ParticipantIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ParticipantId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.ParticipantId)?.DefinitionId"
+                    [itemId]="model?.ParticipantId">
+                    {{ ws.getMultilingualValue('Relation', model?.ParticipantId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.NotedRelationId"
-                [definitionIds]="documentNotedRelationDefinitionIds(model)"
-                [required]="requireDocumentNotedRelation(model)" [disabled]="readonlyDocumentNotedRelation(model)">
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantId"
+                [definitionIds]="documentParticipantDefinitionIds(model)" [filter]="filterDocumentParticipant(model)"
+                [required]="requireDocumentParticipant(model)" [disabled]="readonlyDocumentParticipant(model)">
             </t-relations-picker>
         </ng-container>
     </t-form-group>
@@ -210,7 +212,7 @@
                 </t-view-link>
             </t-restricted>
             <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="requireDocumentCenter(model)"
-                [disabled]="readonlyDocumentCenter(model)">
+                [disabled]="readonlyDocumentCenter(model)" [filter]="filterDocumentCenter(model)">
             </t-centers-picker>
         </ng-container>
     </t-form-group>
@@ -225,7 +227,7 @@
                     {{ ws.getMultilingualValue('Currency', model?.CurrencyId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
+            <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [filter]="filterDocumentCurrency(model)"
                 [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)">
             </t-currencies-picker>
         </ng-container>
@@ -336,7 +338,8 @@
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
                             [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
-                            [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartHeaderCommands, smartCommands)"
+                            [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
+                            [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
                             [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
                             (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
                         </t-table>
@@ -411,25 +414,24 @@
                         {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
                 </ng-template>
 
-                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-update="update"
-                    let-isForm="isForm">
-
+                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index" let-update="update"
+                    let-isForm="isForm" let-isEdit="isEdit">
                     <t-form-group-cell *ngIf="!isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)">
                         <ng-container
-                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, line: line, update: update, isForm: isForm }">
+                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, rowIndex: rowIndex, line: line, update: update, isForm: isForm }">
                         </ng-container>
                     </t-form-group-cell>
                     <t-form-group *ngIf="isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)"
                         [label]="columnLabel(lineDefId, columnIndex)">
                         <ng-container
-                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, line: line, update: update, isForm: isForm }">
+                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, rowIndex: rowIndex, line: line, update: update, isForm: isForm }">
                         </ng-container>
                     </t-form-group>
                 </ng-template>
 
-                <ng-template #formGroupContent let-columnIndex="columnIndex" let-update="update" let-line="line"
+                <ng-template #formGroupContent let-columnIndex="columnIndex" let-rowIndex="rowIndex" let-update="update" let-line="line"
                     let-isForm="isForm">
                     <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                         <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
@@ -487,11 +489,6 @@
                             *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-                        <t-view-link *ngSwitchCase="'NotedRelationId'"
-                            [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
-                            [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
-                            {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
-                        </t-view-link>
                         <span
                             *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
@@ -500,6 +497,11 @@
                         <span
                             *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
                         <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                        <span
+                            *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
+                        <span
+                            *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
+                        <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
                         <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
@@ -626,14 +628,6 @@
                             (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </t-text-editor>
-                        <t-relations-picker *ngSwitchCase="'NotedRelationId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [definitionIds]="definitionIdsNotedRelation_Smart(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-relations-picker>
                         <t-text-editor *ngSwitchCase="'NotedAgentName'"
                             [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
                             [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
@@ -659,6 +653,30 @@
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </t-date-picker>
                         <t-text-editor *ngSwitchCase="'Memo'"
+                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
+                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                            [ngModelOptions]="{ updateOn: 'blur' }">
+                        </t-text-editor>
+                        <div *ngSwitchCase="'Boolean1'" class="custom-control custom-checkbox t-labelless-checkbox">
+                            <input type="checkbox" class="custom-control-input"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
+                                [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                id="standardandpure{{ rowIndex }}">
+                            <label class="custom-control-label t-pointer" for="standardandpure{{ rowIndex }}">&zwnj;</label>
+                        </div>
+                        <t-decimal-editor *ngSwitchCase="'Decimal1'"
+                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
+                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                            [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
+                            [textAlignment]="isForm ? null : 'right'">
+                        </t-decimal-editor>
+                        <t-text-editor *ngSwitchCase="'Text1'"
                             [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
                             [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                             [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
@@ -1404,27 +1422,6 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Noted Relation -->
-            <ng-container *ngIf="showNotedRelation_Manual(entry)">
-                <t-form-group-dynamic [label]="labelNotedRelation_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.NotedRelation">
-                    <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedRelationId">
-                        <t-view-link
-                            [link]="'../../../relations/' + ws.get('Relation', entry.NotedRelationId)?.DefinitionId"
-                            [itemId]="entry.NotedRelationId">
-                            {{ ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name') }}
-                        </t-view-link>
-                    </t-restricted>
-                    <!-- Edit -->
-                    <t-relations-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedRelationId"
-                        (ngModelChange)="update.call(null, pair);"
-                        [definitionIds]="definitionIdsNotedRelation_Manual(entry)">
-                    </t-relations-picker>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
             <!-- Noted Agent Name -->
             <ng-container *ngIf="showNotedAgentName_Manual(entry)">
                 <t-form-group-dynamic [label]="labelNotedAgentName_Manual(entry)"
@@ -1494,7 +1491,7 @@
         <ng-container *ngIf="isEdit && !bookkeeping">
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
                 <t-centers-picker *ngIf="!readonlyCenter_Manual(entry)" [(ngModel)]="entry.CenterId"
-                    (ngModelChange)="update.call(null, pair);">
+                    (ngModelChange)="update.call(null, pair);" [filter]="filterCenter_Manual(entry)">
                 </t-centers-picker>
                 <t-restricted *ngIf="readonlyCenter_Manual(entry)" [metadata]="entry.EntityMetadata?.CenterId">
                     {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual(entry), 'Name') }}
@@ -1904,6 +1901,13 @@
                     [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-custodies-picker>
             </t-form-group>
 
+            <!-- Lookup -->
+            <t-form-group *ngSwitchCase="'Lookup'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-lookups-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
+                    [definitionId]="dataTypeDefinitionId(param.DataType)"></t-lookups-picker>
+            </t-form-group>
+
             <!-- Resource -->
             <t-form-group *ngSwitchCase="'Resource'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
@@ -1921,6 +1925,12 @@
             <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
+            </t-form-group>
+
+            <!-- Percentage -->
+            <t-form-group *ngSwitchCase="'Percentage'" class="t-form-group" style="margin-top:0!important"
+                [label]="parameterLabel(param)">
+                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]" [isPercentage]="true"></t-decimal-editor>
             </t-form-group>
 
             <!-- String -->

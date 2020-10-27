@@ -30,7 +30,6 @@ export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionFo
   CustodianDefinitionId?: number;
   ParticipantDefinitionId?: number;
   EntryTypeParentId?: number;
-  NotedRelationDefinitionId?: number;
   IsMonetary?: boolean;
   Time1Label?: string;
   Time1Label2?: string;
@@ -64,6 +63,7 @@ export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefini
   ActiveChildCount?: number;
   ChildCount?: number;
   IsActive?: boolean;
+  IsBusinessUnit?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
 
@@ -117,8 +117,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         ParticipantDefinition: { control: 'navigation', label: () => trx.instant('AccountType_ParticipantDefinition'), type: 'RelationDefinition', foreignKeyName: 'ParticipantDefinitionId' },
         EntryTypeParentId: { control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { control: 'navigation', label: () => trx.instant('AccountType_EntryTypeParent'), type: 'EntryType', foreignKeyName: 'EntryTypeParentId' },
-        NotedRelationDefinitionId: { control: 'number', label: () => `${trx.instant('AccountType_NotedRelationDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        NotedRelationDefinition: { control: 'navigation', label: () => trx.instant('AccountType_NotedRelationDefinition'), type: 'RelationDefinition', foreignKeyName: 'NotedRelationDefinitionId' },
         Time1Label: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.primaryPostfix },
         Time1Label2: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.secondaryPostfix },
         Time1Label3: { control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.ternaryPostfix },

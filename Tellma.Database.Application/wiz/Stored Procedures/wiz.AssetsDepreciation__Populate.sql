@@ -8,7 +8,7 @@
 AS
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEDepreciation');
 	
-	IF @UnitID IS NULL
+	IF @UnitId IS NULL
 		SELECT @UnitId = [Id] FROM dbo.Units WHERE [Code] = N'mo';
 	
 	SELECT @Quantity = ISNULL(@Quantity, 1), @Time2 = ISNULL(@Time2, @PostingDate)

@@ -71,41 +71,12 @@ SET NOCOUNT ON;
 
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
 	-- Similar Logic in bll.Documents_Validate__Save
-	WITH ExpendituresParentAccountTypes AS (
-		SELECT [Node]
-		FROM dbo.[AccountTypes]
-		WHERE [Concept] IN (
-			N'ConstructionInProgress',
-			N'InvestmentPropertyUnderConstructionOrDevelopment',
-			N'WorkInProgress',
-			N'ExpenseByNature'
-		)
-	),
-	ExpendituresAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN ExpendituresParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	),
-	DirectParentAccountTypes AS (
-		SELECT [Node]
-		FROM dbo.[AccountTypes]
-		WHERE [Concept] IN (
-			N'Revenue', N'CostOfMerchandiseSold'
-		)
-	),
-	DirectAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN DirectParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	),
-	BusinessUnitAccountTypes AS (
-		SELECT [Id] FROM dbo.AccountTypes
-		EXCEPT
-		SELECT [Id] FROM ExpendituresAccountTypes
-		EXCEPT
-		SELECT [Id] FROM DirectAccountTypes
-	),
-	ConstructionInProgressAccountTypes AS (
+	DECLARE @BalanceSheetRootNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
+	DECLARE @ProfitLossRootNode  HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'IncomeStatementAbstract');
+	DECLARE @OtherComprehensiveIncomeRootNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'OtherComprehensiveIncome');
+	
+
+	WITH ConstructionInProgressAccountTypes AS (
 		SELECT ATC.[Id]
 		FROM dbo.[AccountTypes] ATC
 		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
@@ -129,6 +100,58 @@ SET NOCOUNT ON;
 		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
 		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
+	),
+	DirectParentAccountTypes AS (
+		SELECT [Node]
+		FROM dbo.[AccountTypes]
+		WHERE [Concept] IN (
+			N'Revenue', N'CostOfMerchandiseSold'
+		)
+	),
+	DirectAccountTypes AS (
+		SELECT ATC.[Id]
+		FROM dbo.[AccountTypes] ATC
+		JOIN DirectParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+	),
+	ExpendituresAccountTypes AS (
+		SELECT [Id] FROM ConstructionInProgressAccountTypes
+		UNION
+		SELECT [Id] FROM InvestmentPropertyUnderConstructionOrDevelopmentAccountTypes
+		UNION
+		SELECT [Id] FROM WorkInProgressAccountTypes
+		UNION
+		SELECT [Id] FROM CurrentInventoriesInTransitAccountTypes
+	),
+	BalanceSheetAccountTypes AS (
+		SELECT [Id]
+		FROM dbo.[AccountTypes]
+		WHERE [Node].IsDescendantOf(@BalanceSheetRootNode) = 1
+	),
+	ProfitLossAccountTypes AS (
+		SELECT [Id]
+		FROM dbo.[AccountTypes]
+		WHERE [Node].IsDescendantOf(@ProfitLossRootNode) = 1
+	),
+	OtherComprehensiveIncomeAccountTypes AS (
+		SELECT [Id]
+		FROM dbo.[AccountTypes]
+		WHERE [Node].IsDescendantOf(@OtherComprehensiveIncomeRootNode) = 1
+	),
+	BusinessUnitAccountTypes AS (
+		SELECT [Id] FROM AccountTypes
+		EXCEPT
+		SELECT [Id] FROM ExpendituresAccountTypes
+		EXCEPT
+		SELECT [Id] FROM DirectAccountTypes
+	),
+	OtherPLAccountTypes AS (
+		SELECT [Id] FROM ProfitLossAccountTypes
+		UNION
+		SELECT [Id] FROM OtherComprehensiveIncomeAccountTypes
+		EXCEPT
+		SELECT [Id] FROM ExpendituresAccountTypes
+		EXCEPT
+		SELECT [Id] FROM DirectAccountTypes
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
@@ -289,10 +312,12 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
+	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
 	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
-	WHERE (FE.[CenterId] <> R.[CenterId])
+	WHERE (FE.[CenterId] <> R.[CenterId] AND AC.[IsBusinessUnit] = 1)
+	OR  (FE.[CenterId] <> R.[CostCenterId] AND AC.[IsBusinessUnit] = 0)
 
 	-- If Custody Id is not null, and Currency Id is not null, then Account and Custody must have same currency (also added as FK constraint)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
@@ -317,10 +342,11 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [CustodyCenter],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
+	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Custodies] R ON R.[Id] = FE.CustodyId
 	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
 	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
-	WHERE (FE.[CenterId] <> R.[CenterId])
+	WHERE (FE.[CenterId] <> R.[CenterId] AND AC.[IsBusinessUnit] = 1)
 
 	-- Trying to change the account type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])

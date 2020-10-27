@@ -308,6 +308,7 @@ namespace Tellma.Controllers
                 LocationVisibility = MapVisibility(def.LocationVisibility),
                 ImageVisibility = MapVisibility(def.ImageVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
+                CostCenterVisibility = MapVisibility(def.CostCenterVisibility),
 
                 FromDateLabel = def.FromDateLabel,
                 FromDateLabel2 = def.FromDateLabel2,
@@ -487,8 +488,7 @@ namespace Tellma.Controllers
             Dictionary<int, List<int>> entryCustodianDefs,
             Dictionary<int, List<int>> entryCustodyDefs,
             Dictionary<int, List<int>> entryParticipantDefs,
-            Dictionary<int, List<int>> entryResourceDefs,
-            Dictionary<int, List<int>> entryNotedRelationDefs)
+            Dictionary<int, List<int>> entryResourceDefs)
         {
             var line = new LineDefinitionForClient
             {
@@ -519,7 +519,6 @@ namespace Tellma.Controllers
                     CustodyDefinitionIds = entryCustodyDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ParticipantDefinitionIds = entryParticipantDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
-                    NotedRelationDefinitionIds = entryNotedRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -624,7 +623,7 @@ namespace Tellma.Controllers
                 MainMenuSection = def.MainMenuSection,
 
                 // These should not be null
-                NotedRelationDefinitionIds = new List<int>(),
+                ParticipantDefinitionIds = new List<int>(),
             };
 
             // Here we compute some values based on the associated line definitions
@@ -633,8 +632,8 @@ namespace Tellma.Controllers
                 .Where(e => e != null && e.Columns != null);
 
             // Lines
-            var notedRelationDefIds = new HashSet<int>();
-            var notedRelationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var participantDefIds = new HashSet<int>();
+            var participantFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -685,49 +684,49 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // Noted Relation
-                    else if (colDef.ColumnName == nameof(Entry.NotedRelationId))
+                    // Participant
+                    else if (colDef.ColumnName == nameof(Entry.ParticipantId))
                     {
-                        result.NotedRelationVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.NotedRelationLabel))
+                        result.ParticipantVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.ParticipantLabel))
                         {
-                            result.NotedRelationLabel = colDef.Label;
-                            result.NotedRelationLabel2 = colDef.Label2;
-                            result.NotedRelationLabel3 = colDef.Label3;
+                            result.ParticipantLabel = colDef.Label;
+                            result.ParticipantLabel2 = colDef.Label2;
+                            result.ParticipantLabel3 = colDef.Label3;
                         }
 
-                        if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0))
+                        if (colDef.RequiredState > (result.ParticipantRequiredState ?? 0))
                         {
-                            result.NotedRelationRequiredState = colDef.RequiredState;
+                            result.ParticipantRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0))
+                        if (colDef.ReadOnlyState > (result.ParticipantReadOnlyState ?? 0))
                         {
-                            result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+                            result.ParticipantReadOnlyState = colDef.ReadOnlyState;
                         }
 
-                        // Accumulate all the noted relation definition IDs in the hash set
+                        // Accumulate all the participant definition IDs in the hash set
                         if (colDef.EntryIndex < lineDef.Entries.Count)
                         {
                             var entryDef = lineDef.Entries[colDef.EntryIndex];
-                            if (entryDef.NotedRelationDefinitionIds == null || entryDef.NotedRelationDefinitionIds.Count == 0)
+                            if (entryDef.ParticipantDefinitionIds == null || entryDef.ParticipantDefinitionIds.Count == 0)
                             {
-                                notedRelationDefIds = null; // Means no definitionIds will be added
+                                participantDefIds = null; // Means no definitionIds will be added
                             }
-                            else if (notedRelationDefIds != null)
+                            else if (participantDefIds != null)
                             {
-                                entryDef.NotedRelationDefinitionIds.ForEach(defId => notedRelationDefIds.Add(defId));
+                                entryDef.ParticipantDefinitionIds.ForEach(defId => participantDefIds.Add(defId));
                             }
                         }
 
                         // Accumulate all the filter atoms in the hash set
                         if (string.IsNullOrWhiteSpace(colDef.Filter))
                         {
-                            notedRelationFilters = null; // It means no filters will be added
+                            participantFilters = null; // It means no filters will be added
                         }
-                        else if (notedRelationFilters != null)
+                        else if (participantFilters != null)
                         {
-                            notedRelationFilters.Add(colDef.Filter);
+                            participantFilters.Add(colDef.Filter);
                         }
                     }
 
@@ -838,8 +837,8 @@ namespace Tellma.Controllers
             }
 
             // Calculate the definitionIds and filters
-            result.NotedRelationDefinitionIds = notedRelationDefIds?.ToList() ?? new List<int>();
-            result.NotedRelationFilter = Disjunction(notedRelationFilters);
+            result.ParticipantDefinitionIds = participantDefIds?.ToList() ?? new List<int>();
+            result.ParticipantFilter = Disjunction(participantFilters);
             result.CenterFilter = Disjunction(centerFilters);
             result.CurrencyFilter = Disjunction(currencyFilters);
 
@@ -861,7 +860,7 @@ namespace Tellma.Controllers
                 result.MemoLabel2 = null;
                 result.MemoLabel3 = null;
 
-                result.NotedRelationVisibility = false;
+                result.ParticipantVisibility = false;
                 result.AdditionalReferenceVisibility = false;
                 result.ExternalReferenceVisibility = false;
                 result.CurrencyVisibility = false;
@@ -888,8 +887,7 @@ namespace Tellma.Controllers
                 entryCustodianDefs,
                 entryCustodyDefs,
                 entryParticipantDefs,
-                entryResourceDefs,
-                entryNotedRelationDefs) = await repo.Definitions__Load(cancellation);
+                entryResourceDefs) = await repo.Definitions__Load(cancellation);
 
             // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
@@ -899,7 +897,7 @@ namespace Tellma.Controllers
                 Custodies = custodyDefs.ToDictionary(def => def.Id, def => MapCustodyDefinition(def)),
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs, entryNotedRelationDefs))
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs))
             };
 
             // Map Lines and Documents (Special handling)

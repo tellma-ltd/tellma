@@ -16,14 +16,14 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		CASE
 			WHEN LDC.InheritsFromHeader >= 2 AND (
 				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
-				FL.Id = N'NotedRelationId' AND D.[NotedRelationIsCommon] = 1 OR
+				FL.Id = N'ParticipantId' AND D.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND D.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND D.[ExternalReferenceIsCommon] = 1 OR
 				FL.Id = N'AdditionalReference' AND D.[AdditionalReferenceIsCommon] = 1
 			) THEN
 				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
-				FL.Id = N'NotedRelationId' AND DLDE.[NotedRelationIsCommon] = 1 OR -- AND (DLDE.[NotedRelationIsCommon] IS NULL OR DLDE.[NotedRelationIsCommon] = 1)
+				FL.Id = N'ParticipantId' AND DLDE.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND DLDE.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'CustodyId' AND DLDE.[CustodyIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
@@ -46,7 +46,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	CROSS JOIN (VALUES
 		(N'CurrencyId'),('CustodianId'),(N'CustodyId'),(N'ParticipantId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
 		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
-		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
+		(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
@@ -70,7 +70,6 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR
 		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
 		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
-		FL.Id = N'NotedRelationId'		AND E.[NotedRelationId] IS NULL OR
 		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
 		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
@@ -137,7 +136,7 @@ BEGIN
 
 	-- Null Values are not allowed
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' +
 			CAST([Index]  AS NVARCHAR (255))+ '].Value',
@@ -148,7 +147,7 @@ BEGIN
 
 	-- Lines must be balanced
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TransactionHasDebitCreditDifference0',
@@ -160,7 +159,7 @@ BEGIN
 
 	-- account/currency/center/ must not be null
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
@@ -193,7 +192,7 @@ BEGIN
 	WHERE (A.[ResourceDefinitionId] IS NOT NULL) AND (E.[ResourceId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].CustodyId',
@@ -205,7 +204,7 @@ BEGIN
 	WHERE (A.[CustodyDefinitionId] IS NOT NULL) AND (E.[CustodyId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].EntryTypeId',
@@ -347,7 +346,7 @@ BEGIN
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 END
--- must unpost (4=>1,2,3) in reverse historical order
+-- cannot unpost (4=>1,2,3) iif it cause negative quantity
 IF @State < 4
 BEGIN
 	WITH InventoryAccounts AS (
@@ -356,18 +355,12 @@ BEGIN
 		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories'
-	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Resource01AndCustody23AppearInLaterDocument4',
-			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
-			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
-			BD.Code
+	),
+	NegativeBalancesDocuments AS (
+	SELECT
+		L.[DocumentIndex], L.[Index] AS [LineIndex], E.[Index], BD.Code, E.ResourceId, E.CustodyId,
+		SUM(BE.[Direction] * BE.[Quantity]) 
+			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY BL.[PostingDate], [LineId]) AS RunningTotal
 		FROM (
 			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
 			FROM @Lines LFE
@@ -379,14 +372,30 @@ BEGIN
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+		WHERE BL.[State] = 4
+		AND (BL.[Id] NOT IN (SELECT [Id] FROM @Lines))
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+			N'Error_Resource01AndCustody23AppearInLaterDocument4', -- cause negative quantity in document
+			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
+			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
+			E.Code
+		FROM
+		NegativeBalancesDocuments E
 		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
 		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
 		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
-		WHERE BL.[State] = 4
-		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND BL.DocumentId <> L.[DocumentId])
+		WHERE E.RunningTotal < 0
+
 END
--- must post (1,2,3=>4) in historical order
+-- cannot post (1,2,3=>4) if it causes negative anywhere
 IF @State = 4
 BEGIN
 	WITH InventoryAccounts AS (
@@ -395,105 +404,113 @@ BEGIN
 		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories'
-	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Resource01AndCustody23AppearInLaterDocument4',
-			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
-			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
-			BD.Code
+	),
+	NegativeBalancesDocuments AS (
+	SELECT
+		L.[DocumentIndex], L.[Index] AS LineIndex, E.[Index], BD.Code, E.ResourceId, E.CustodyId,
+		SUM(BE.[Direction] * BE.[Quantity]) 
+			OVER (Partition BY BE.[ResourceId], BE.[CustodyId] ORDER BY MONTH(BL.[PostingDate]), BE.[Direction] DESC) AS RunningTotal
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
 		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[CustodyId] = E.[CustodyId]
 		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
 		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+		WHERE BL.[State] = 4
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+		--	N'Error_ResourceIssue01FromCustody2InDocument4',
+			N'Error_Resource01AndCustody23AppearInLaterDocument4', -- cause negative quantity in document
+			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+			dbo.fn_Localize(CD.[TitleSingular], CD.[TitleSingular2], CD.[TitleSingular3]) AS CustodyDefinition,
+			dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [Custody],
+			E.Code
+		FROM NegativeBalancesDocuments E
 		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
 		JOIN dbo.Custodies C ON E.CustodyId = C.[Id]
 		JOIN dbo.CustodyDefinitions CD ON C.DefinitionId = CD.[Id]
-		WHERE BL.[State] = 4
-		AND (BL.PostingDate > L.PostingDate OR BL.PostingDate = L.PostingDate AND BL.Id > L.Id AND L.Id > 0)
+		WHERE E.[RunningTotal] < 0
 END
--- cannot complete/post if causes negative quantity
-IF @State IN (3, 4)
-BEGIN
-	WITH InventoryAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-		WHERE ATP.[Concept] = N'Inventories'
-	),
-	PreBalances AS (
-		SELECT
-			E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId],
-			SUM(E.[AlgebraicQuantity]) AS NetQuantity
-		FROM map.[DetailsEntries]() E
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-		JOIN (
-			SELECT DISTINCT [AccountId], [ResourceId], [CustodyId],  [CenterId]
-			FROM @Entries
-		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId] AND E.[CenterId] = FE.[CenterId]
-		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
-		AND L.[State] IN (3, 4)
-		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
-		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
-		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId],  E.[CenterId], E.[CenterId]
-	),
-	CurrentBalances AS (
-		SELECT
-			E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId],
-			SUM(IIF(EU.UnitType = N'Pure',
-				E.[Quantity],
-				CAST(
-					E.[Direction]
-				*	E.[Quantity] -- Quantity in E.UnitId
-				*	EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
-				*	RBU.[UnitAmount] / RBU.[BaseAmount]
-					AS DECIMAL (19,4)
-				)
-			)) As [NetQuantity]--,-- Quantity in Base unit of that resource
-		--	IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass]) AS [Density]
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.[Resources] R ON E.ResourceId = R.[Id]
-		JOIN dbo.Units EU ON E.UnitId = EU.[Id]
-		JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
-		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
-		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId]
-	)	
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3] )
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index]  AS NVARCHAR (255))+ '].ResourceId',
-		N'Error_Resource01AvailableBalance2Unit3',
-		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
-		ISNULL(PB.NetQuantity, 0) AS [AvailableBalance],
-		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS UnitName
-	FROM @Lines L
-	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
-	JOIN dbo.Units U ON R.[UnitId] = U.[Id]
-	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId] AND E.[CenterId] = CB.[CenterId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId] AND E.[CenterId] = PB.[CenterId]
-	WHERE
-			ISNULL(PB.NetQuantity, 0) + ISNULL(CB.[NetQuantity], 0) < 0
-END
+-- cannot complete/post if causes negative quantity (handled above
+--IF @State IN (3, 4)
+--BEGIN
+--	WITH InventoryAccounts AS (
+--		SELECT A.[Id]
+--		FROM dbo.Accounts A
+--		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
+--		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
+--		WHERE ATP.[Concept] = N'Inventories'
+--	),
+--	PreBalances AS (
+--		SELECT
+--			E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId],
+--			SUM(E.[AlgebraicQuantity]) AS NetQuantity
+--		FROM map.[DetailsEntries]() E
+--		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+--		JOIN (
+--			SELECT DISTINCT [AccountId], [ResourceId], [CustodyId],  [CenterId]
+--			FROM @Entries
+--		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[CustodyId] = FE.[CustodyId] AND E.[CenterId] = FE.[CenterId]
+--		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
+--		AND L.[State] IN (3, 4)
+--		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
+--		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
+--		GROUP BY E.[AccountId], E.[CustodyId], E.[ResourceId], E.[CenterId]
+--	),
+--	CurrentBalances AS (
+--		SELECT
+--			E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId],
+--			SUM(IIF(EU.UnitType = N'Pure',
+--				E.[Quantity],
+--				CAST(
+--					E.[Direction]
+--				*	E.[Quantity] -- Quantity in E.UnitId
+--				*	EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
+--				*	RBU.[UnitAmount] / RBU.[BaseAmount]
+--					AS DECIMAL (19,4)
+--				)
+--			)) As [NetQuantity]--,-- Quantity in Base unit of that resource
+--		--	IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass]) AS [Density]
+--		FROM @Lines L
+--		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+--		JOIN dbo.[Resources] R ON E.ResourceId = R.[Id]
+--		JOIN dbo.Units EU ON E.UnitId = EU.[Id]
+--		JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
+--		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
+--		GROUP BY E.[AccountId], E.[CustodyId],  E.[ResourceId], E.[CenterId]
+--	)	
+--	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3] )
+--	SELECT DISTINCT TOP (@Top)
+--		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+--			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+--			CAST(E.[Index]  AS NVARCHAR (255))+ '].ResourceId',
+--		N'Error_Resource01AvailableBalance2Unit3',
+--		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+--		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
+--		ISNULL(PB.NetQuantity, 0) AS [AvailableBalance],
+--		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS UnitName
+--	FROM @Lines L
+--	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+--	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+--	JOIN dbo.Units U ON R.[UnitId] = U.[Id]
+--	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
+--	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[CustodyId] = CB.[CustodyId] AND E.[CenterId] = CB.[CenterId]
+--	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[CustodyId] = PB.[CustodyId] AND E.[CenterId] = PB.[CenterId]
+--	WHERE
+--			ISNULL(PB.NetQuantity, 0) + ISNULL(CB.[NetQuantity], 0) < 0
+--END
 
 IF @State > 0
 BEGIN
 	-- No inactive account, for any positive state
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheAccount0IsInactive',
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account

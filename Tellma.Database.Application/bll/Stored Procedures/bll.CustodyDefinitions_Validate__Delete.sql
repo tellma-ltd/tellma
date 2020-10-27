@@ -7,7 +7,7 @@ SET NOCOUNT ON;
 
 	-- Check that Definition is not used
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP (@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_Definition0AlreadyContainsData',
 		dbo.fn_Localize(D.[TitlePlural], D.[TitlePlural2], D.[TitlePlural3]) AS [Custody]
@@ -17,7 +17,7 @@ SET NOCOUNT ON;
 
 	-- Check that Definition is not used in Account Definition Filters
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP (@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCustodyDefinition0IsUsedInAccountType1',
 		dbo.fn_Localize(D.[TitleSingular], D.[TitleSingular2], D.[TitleSingular3]) AS [Definition],

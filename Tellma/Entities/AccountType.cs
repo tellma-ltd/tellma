@@ -83,10 +83,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? EntryTypeParentId { get; set; }
 
-        [Display(Name = "AccountType_NotedRelationDefinition")]
-        [AlwaysAccessible]
-        public int? NotedRelationDefinitionId { get; set; }
-
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Primary)]
         [StringLength(50)]
         public string Time1Label { get; set; }
@@ -202,6 +198,9 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
+        [AlwaysAccessible]
+        public bool? IsBusinessUnit { get; set; }
+
         [Display(Name = "IsSystem")]
         [AlwaysAccessible]
         public bool? IsSystem { get; set; }
@@ -237,9 +236,5 @@ namespace Tellma.Entities
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]
         public EntryType EntryTypeParent { get; set; }
-
-        [Display(Name = "AccountType_NotedRelationDefinition")]
-        [ForeignKey(nameof(NotedRelationDefinitionId))]
-        public RelationDefinition NotedRelationDefinition { get; set; }
     }
 }

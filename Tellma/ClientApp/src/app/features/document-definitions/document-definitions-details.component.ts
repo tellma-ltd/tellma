@@ -245,7 +245,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       // Not needed for preview
       result.MarkupTemplates = [];
 
-      result.NotedRelationDefinitionIds = [];
+      result.ParticipantDefinitionIds = [];
 
       // The rest looks identical to the C# code
       const documentLineDefinitions = result.LineDefinitions
@@ -253,8 +253,8 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         .filter(e => !!e && !!e.Columns);
 
       // Hash tables to accumulate some values
-      let notedRelationDefIds: { [id: number]: true } = {};
-      let notedRelationFilters: { [filter: string]: true } = {};
+      let participantDefIds: { [id: number]: true } = {};
+      let participantFilters: { [filter: string]: true } = {};
       let centerFilters: { [filter: string]: true } = {};
       let currencyFilters: { [filter: string]: true } = {};
 
@@ -292,38 +292,38 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
             }
 
             // Relations
-          } else if (colDef.ColumnName === 'NotedRelationId') {
+          } else if (colDef.ColumnName === 'ParticipantId') {
 
-            result.NotedRelationVisibility = true;
-            if (!result.NotedRelationLabel) {
-              result.NotedRelationLabel = colDef.Label;
-              result.NotedRelationLabel2 = colDef.Label2;
-              result.NotedRelationLabel3 = colDef.Label3;
+            result.ParticipantVisibility = true;
+            if (!result.ParticipantLabel) {
+              result.ParticipantLabel = colDef.Label;
+              result.ParticipantLabel2 = colDef.Label2;
+              result.ParticipantLabel3 = colDef.Label3;
             }
 
-            if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0)) {
-              result.NotedRelationRequiredState = colDef.RequiredState;
+            if (colDef.RequiredState > (result.ParticipantRequiredState ?? 0)) {
+              result.ParticipantRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0)) {
-              result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+            if (colDef.ReadOnlyState > (result.ParticipantReadOnlyState ?? 0)) {
+              result.ParticipantReadOnlyState = colDef.ReadOnlyState;
             }
 
             if (colDef.EntryIndex < lineDef.Entries.length) {
               const entryDef = lineDef.Entries[colDef.EntryIndex];
-              if (!entryDef.NotedRelationDefinitionIds || entryDef.NotedRelationDefinitionIds.length === 0) {
-                notedRelationDefIds = null; // Means no definitionIds will be added
-              } else if (!!notedRelationDefIds) {
-                for (const defId of entryDef.NotedRelationDefinitionIds) {
-                  notedRelationDefIds[defId] = true;
+              if (!entryDef.ParticipantDefinitionIds || entryDef.ParticipantDefinitionIds.length === 0) {
+                participantDefIds = null; // Means no definitionIds will be added
+              } else if (!!participantDefIds) {
+                for (const defId of entryDef.ParticipantDefinitionIds) {
+                  participantDefIds[defId] = true;
                 }
               }
             }
 
             if (!colDef.Filter) {
-              notedRelationFilters = null;
-            } else if (!!notedRelationFilters) {
-              notedRelationFilters[colDef.Filter] = true;
+              participantFilters = null;
+            } else if (!!participantFilters) {
+              participantFilters[colDef.Filter] = true;
             }
 
           } else if (colDef.ColumnName === 'CenterId') {
@@ -402,8 +402,8 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         }
       }
       // Calculate the definitionIds and filters
-      result.NotedRelationDefinitionIds = Object.keys(notedRelationDefIds ?? {}).map(e => +e);
-      result.NotedRelationFilter = disjunction(notedRelationFilters);
+      result.ParticipantDefinitionIds = Object.keys(participantDefIds ?? {}).map(e => +e);
+      result.ParticipantFilter = disjunction(participantFilters);
       result.CenterFilter = disjunction(centerFilters);
       result.CurrencyFilter = disjunction(currencyFilters);
 

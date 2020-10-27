@@ -93,6 +93,12 @@ namespace Tellma.Entities
         [Display(Name = "Entry_NegativeAlgebraicValue")]
         public decimal? NegativeAlgebraicValue { get; set; }
 
+        [Display(Name = "DetailsEntry_MonetaryValuePerUnit")]
+        public decimal? MonetaryValuePerUnit { get; set; }
+
+        [Display(Name = "DetailsEntry_ValuePerUnit")]
+        public decimal? ValuePerUnit { get; set; }
+
         [Display(Name = "Entry_Time1")]
         public DateTime? Time1 { get; set; }
 
@@ -104,9 +110,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_AdditionalReference")]
         public string AdditionalReference { get; set; }
-
-        [Display(Name = "Entry_NotedRelation")]
-        public int? NotedRelationId { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
         public string NotedAgentName { get; set; }
@@ -166,10 +169,6 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
-
-        [Display(Name = "Entry_NotedRelation")]
-        [ForeignKey(nameof(NotedRelationId))]
-        public Relation NotedRelation { get; set; }
 
         [Display(Name = "Entry_Unit")]
         [ForeignKey(nameof(UnitId))]

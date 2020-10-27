@@ -596,8 +596,8 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   public watch(model: MarkupTemplateForSave): boolean {
     // If it's a different model thant last time, reset the params and refetch
     const s = this.state.detailsState;
-    if (s.modelId !== model.Id) {
-      s.modelId = model.Id;
+    if (s.modelId !== (model.Id || null)) {
+      s.modelId = model.Id || null;
 
       this.resetState();
       this.fetch(model);
@@ -708,6 +708,9 @@ const defaultBody = `<!DOCTYPE html>
         @page {
             margin: 0.5in;
             size: A4 Portrait;
+        }
+        .page {
+            break-after: page;
         }
         /* End Printing CSS */
         

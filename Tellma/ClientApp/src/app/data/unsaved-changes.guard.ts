@@ -14,7 +14,7 @@ export class UnsavedChangesGuard implements CanDeactivate<ICanDeactivate> {
   }
 
   canDeactivate(
-    component: ICanDeactivate, _: ActivatedRouteSnapshot,
+    component: ICanDeactivate, x: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot) {
 
     if (this.workspace.current.unauthorized) {

@@ -203,6 +203,17 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
+        [HttpGet("print/{templateId}")]
+        public async Task<ActionResult> PrintByFilter(int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var (fileBytes, fileName) = await _service.PrintByFilter(templateId, args, cancellation);
+                var contentType = ContentType(fileName);
+                return File(fileContents: fileBytes, contentType: contentType, fileName);
+            }, _logger);
+        }
+
         [HttpGet("generate-lines/{lineDefId}")]
         public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
@@ -296,7 +307,7 @@ namespace Tellma.Controllers
         {
             PostingDateIsCommon = true,
             MemoIsCommon = true,
-            NotedRelationIsCommon = true,
+            ParticipantIsCommon = true,
             CurrencyIsCommon = true,
             CustodyIsCommon = true,
             ResourceIsCommon = true,
@@ -673,7 +684,106 @@ namespace Tellma.Controllers
             }
         }
 
-        public async Task<(byte[] FileBytes, string FileName)> PrintById(int docId, int templateId, GenerateMarkupArguments args, CancellationToken cancellation)
+
+        public async Task<(byte[] FileBytes, string FileName)> PrintByFilter([FromRoute] int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
+        {
+            var collection = "Document";
+            var defId = DefinitionId;
+            var def = Definition();
+
+            if (def.MarkupTemplates == null || !def.MarkupTemplates.Any(e => e.MarkupTemplateId == templateId))
+            {
+                // A proper UI will only allow the user to use supported template
+                throw new BadRequestException($"The requested templateId {templateId} is not one of the supported templates for document definition {DefinitionId}");
+            }
+
+            var template = await _repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
+            if (template == null)
+            {
+                // Shouldn't happen in theory cause of previous check, but just to be extra safe
+                throw new BadRequestException($"The template with Id {templateId} does not exist");
+            }
+
+            // The errors below should be prevented through SQL validation, but just to be safe
+            if (template.Usage != MarkupTemplateConst.QueryByFilter)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
+            }
+
+            if (template.MarkupLanguage != MimeTypes.Html)
+            {
+                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
+            }
+
+            if (template.Collection != collection)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
+            }
+
+            if (template.DefinitionId != defId)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
+            }
+
+            // Onto the printing itself
+            var templates = new string[] { template.DownloadName, template.Body };
+            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
+
+            var preloadedQuery = new QueryByFilterInfo(collection, defId, args.Filter, args.OrderBy, args.Top, args.Skip, args.I);
+            var inputVariables = new Dictionary<string, object>
+            {
+                ["$Source"] = $"{collection}/{defId}",
+                ["$Filter"] = args.Filter,
+                ["$OrderBy"] = args.Filter,
+                ["$Top"] = args.Filter,
+                ["$Skip"] = args.Filter,
+                ["$Ids"] = args.I
+            };
+
+            // Generate the output
+            string[] outputs;
+            try
+            {
+                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
+            }
+            catch (TemplateException ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Do some sanitization of the downloadName
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                var tenantInfo = await _repo.GetTenantInfoAsync(cancellation);
+                var titlePlural = tenantInfo.Localize(def.TitlePlural, def.TitlePlural2, def.TitlePlural3);
+                if (args.I != null && args.I.Count > 0)
+                {
+                    downloadName = $"{titlePlural} ({args.I.Count})";
+                }
+                else
+                {
+                    int from = args.Skip + 1;
+                    int to = Math.Max(from, args.Skip + args.Top);
+                    downloadName = $"{titlePlural} {from}-{to}";
+                }
+            }
+
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return (bodyBytes, downloadName);
+        }
+
+        public async Task<(byte[] FileBytes, string FileName)> PrintById(int docId, int templateId, [FromQuery] GenerateMarkupArguments args, CancellationToken cancellation)
         {
             var collection = "Document";
             var defId = DefinitionId;
@@ -935,7 +1045,7 @@ namespace Tellma.Controllers
                 }
 
 
-                doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
+                doc.ParticipantIsCommon = docDef.ParticipantVisibility && (doc.ParticipantIsCommon ?? false);
                 doc.CenterIsCommon = docDef.CenterVisibility && (doc.CenterIsCommon ?? false);
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
@@ -950,6 +1060,7 @@ namespace Tellma.Controllers
                 {
                     // Line defaults
                     line.Entries ??= new List<EntryForSave>();
+                    line.Boolean1 ??= false;
                 });
             });
 
@@ -964,7 +1075,7 @@ namespace Tellma.Controllers
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
                 doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
-                doc.NotedRelationId = doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
+                doc.ParticipantId = doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
                 doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null;
                 doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
@@ -1018,7 +1129,7 @@ namespace Tellma.Controllers
                         {
                             // If less, add the missing entries
                             var entryDef = lineDef.Entries[line.Entries.Count];
-                            line.Entries.Add(new EntryForSave());
+                            line.Entries.Add(new EntryForSave { IsSystem = false });
                         }
 
                         // Copy the direction from the definition
@@ -1082,14 +1193,14 @@ namespace Tellma.Controllers
 
                                 switch (colDef.ColumnName)
                                 {
-                                    case nameof(Entry.NotedRelationId):
-                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                    case nameof(Entry.ParticipantId):
+                                        if (CopyFromDocument(colDef, doc.ParticipantIsCommon))
                                         {
-                                            entry.NotedRelationId = doc.NotedRelationId;
+                                            entry.ParticipantId = doc.ParticipantId;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, isForm))
                                         {
-                                            entry.NotedRelationId = tabEntry.NotedRelationId;
+                                            entry.ParticipantId = tabEntry.ParticipantId;
                                         }
                                         break;
 
@@ -1353,19 +1464,19 @@ namespace Tellma.Controllers
 
                                 switch (colDef.ColumnName)
                                 {
-                                    case nameof(Entry.NotedRelationId):
-                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                    case nameof(Entry.ParticipantId):
+                                        if (CopyFromDocument(colDef, doc.ParticipantIsCommon))
                                         {
-                                            if (entry.NotedRelationId != doc.NotedRelationId)
+                                            if (entry.ParticipantId != doc.ParticipantId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedRelationId} to {entry.NotedRelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ParticipantId} to {entry.ParticipantId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, isForm))
                                         {
-                                            if (entry.NotedRelationId != tabEntry.NotedRelationId)
+                                            if (entry.ParticipantId != tabEntry.ParticipantId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedRelationId} to {entry.NotedRelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ParticipantId} to {entry.ParticipantId}");
                                             }
                                         }
                                         break;
@@ -1574,7 +1685,7 @@ namespace Tellma.Controllers
                     }
 
                     // Date cannot be before archive date
-                    if (doc.PostingDate <= settings.ArchiveDate)
+                    if (doc.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                     {
                         var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
@@ -1644,7 +1755,7 @@ namespace Tellma.Controllers
                         }
 
                         // Date cannot be before archive date
-                        if (line.PostingDate <= settings.ArchiveDate)
+                        if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                         {
                             var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
                             ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),

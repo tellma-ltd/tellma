@@ -25,8 +25,8 @@ BEGIN -- Inserting
 		[Time11] = N'2019.01.06'
 	WHERE [DocumentIndex] = 12 AND [Index] = 0;
 
-	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [TemplateLineId], [Multiplier], [Memo])
-	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [TemplateLineId], [Multiplier], [Memo]
+	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [TemplateLineId], [Multiplier], [Memo], [Boolean1], [Decimal1], [Text1])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [TemplateLineId], [Multiplier], [Memo], [Boolean1], [Decimal1], [Text1]
 	FROM @WL
 	
 	INSERT INTO @E

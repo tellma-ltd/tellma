@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -863,7 +864,7 @@ namespace Tellma.Controllers
             }
 
             // Extract the raw data from the file stream
-            IEnumerable<string[]> data = ExtractStringsFromFile(fileStream, fileName, contentType);
+            IEnumerable<string[]> data = ControllerUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
             if (!data.Any())
             {
                 throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
@@ -931,12 +932,6 @@ namespace Tellma.Controllers
 
         private async Task HydrateIds(IEnumerable<TEntityForSave> entities, ImportArguments args, MappingInfo mapping, ImportErrors errors)
         {
-            // If key property is ID, there is nothing to do
-            if (args.Key == "Id")
-            {
-                return;
-            }
-
             var propMapping = mapping.SimpleProperty(args.Key);
             if (propMapping == null)
             {
@@ -955,7 +950,7 @@ namespace Tellma.Controllers
             // For update mode, check that all keys are present
             if (args.Mode == ImportModes.Update)
             {
-                foreach (var entity in entities.Where(e => forSaveKeyGet(e) == null))
+                foreach (var entity in entities.Where(e => forSaveKeyGet(e) == null || forSaveKeyGet(e).Equals(0)))
                 {
                     // In update mode, the 
                     string errorMsg = _localizer["Error_Property0IsKeyPropertyThereforeRequiredForUpdate", propMeta.Display()];
@@ -984,6 +979,12 @@ namespace Tellma.Controllers
             if (!errors.IsValid)
             {
                 // Later code may fail if there are key uniqueness errors
+                return;
+            }
+
+            // If key property is Id, there is nothing to hydrate
+            if (args.Key == "Id")
+            {
                 return;
             }
 
@@ -1624,35 +1625,6 @@ namespace Tellma.Controllers
             }
 
             return (prop?.Trim(), key?.Trim());
-        }
-
-        protected IEnumerable<string[]> ExtractStringsFromFile(Stream stream, string fileName, string contentType)
-        {
-            IDataExtractor extracter;
-            if (contentType == MimeTypes.Csv || (fileName?.ToLower()?.EndsWith(".csv") ?? false))
-            {
-                extracter = new CsvExtractor();
-            }
-            else if (contentType == MimeTypes.Excel || (fileName?.ToLower()?.EndsWith(".xlsx") ?? false))
-            {
-                extracter = new ExcelExtractor();
-            }
-            else
-            {
-                throw new FormatException(_localizer["Error_OnlyCsvOrExcelAreSupported"]);
-            }
-
-            // Extrat and return
-            try
-            {
-                return extracter.Extract(stream).ToList();
-            } 
-            catch (Exception ex)
-            {
-                // Report any errors during extraction
-                string msg = _localizer["Error_FailedToParseFileError0", ex.Message];
-                throw new BadRequestException(msg);
-            }
         }
 
         private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)

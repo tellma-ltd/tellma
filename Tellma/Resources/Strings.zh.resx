@@ -148,9 +148,6 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
   </data>
-  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
-    <value>注意到关系定义</value>
-  </data>
   <data name="AccountType_ParticipantDefinition" xml:space="preserve">
     <value>与会者定义</value>
   </data>
@@ -282,6 +279,9 @@
   </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>在建出租费用</value>
+  </data>
+  <data name="Center_CenterType_OtherPL" xml:space="preserve">
+    <value>其它利润/亏损</value>
   </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>销售一般及行政</value>
@@ -416,7 +416,7 @@
     <value>脚本</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>表演</value>
+    <value>显示</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -472,6 +472,9 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>量ACC。</value>
   </data>
+  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
+    <value>量每单位</value>
+  </data>
   <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
     <value>负代数货币价值</value>
   </data>
@@ -486,6 +489,9 @@
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>时间</value>
+  </data>
+  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
+    <value>值单位</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
     <value>体积</value>
@@ -544,11 +550,11 @@
   <data name="Document_ExternalReference" xml:space="preserve">
     <value>外部参考</value>
   </data>
-  <data name="Document_NotedRelation" xml:space="preserve">
-    <value>注意到关系</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
+  </data>
+  <data name="Document_Participant" xml:space="preserve">
+    <value>参加者</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>
@@ -600,6 +606,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>事件</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
+    <value>监管机构</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>是原始文档</value>
@@ -658,8 +667,23 @@
   <data name="Email" xml:space="preserve">
     <value>电子邮件</value>
   </data>
+  <data name="Email_Body" xml:space="preserve">
+    <value>身体</value>
+  </data>
+  <data name="Email_FromEmail" xml:space="preserve">
+    <value>从电子邮件地址</value>
+  </data>
+  <data name="Email_Subject" xml:space="preserve">
+    <value>学科</value>
+  </data>
+  <data name="Email_ToEmail" xml:space="preserve">
+    <value>对方的电子邮件地址</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>感谢您确认您的电子邮件</value>
+  </data>
+  <data name="Emails" xml:space="preserve">
+    <value>电子邮件</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>输入你的电子邮箱</value>
@@ -766,9 +790,6 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
   </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>相关代理</value>
-  </data>
   <data name="Entry_Participant" xml:space="preserve">
     <value>参加者</value>
   </data>
@@ -823,11 +844,17 @@
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>帐户的价值平衡“{0}”将变为负。</value>
   </data>
+  <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
+    <value>帐户找不到。</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>帐户类型 '{0}' 帐户 '{1}' 中使用。</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>发生意外错误添加外部登录与电子邮件用户“{0}”。</value>
+  </data>
+  <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
+    <value>内部条目的总量{0}不等于外部条目{1}的。</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>
@@ -882,6 +909,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
+  </data>
+  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
+    <value>保管找不到。</value>
   </data>
   <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
     <value>托管DefinitionId“{0}”未能找到。</value>
@@ -974,7 +1004,7 @@
     <value>设置“{0}”字段的一个关键特性是必需的，键的属性被添加到字段标签减号后，例如：“雇员 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
-    <value>标记“{0}”不上式{1}匹配的集合。</value>
+    <value>标签“{0}”不上式{1}匹配的集合。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
     <value>标签“{0}”不匹配类型的任何集合{1}，你的意思是“{2}”？</value>
@@ -1195,8 +1225,8 @@
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>该文件已完成线。</value>
   </data>
-  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
-    <value>控制帐户“{0}”的“{1}”非零净平衡。</value>
+  <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
+    <value>控制帐户“{0}”“{1}”具有的“{2}”非零净平衡。</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>有些行缺少必需的签名。</value>
@@ -1564,6 +1594,12 @@
   <data name="Line" xml:space="preserve">
     <value>线</value>
   </data>
+  <data name="Line_Boolean1" xml:space="preserve">
+    <value>布尔属性1</value>
+  </data>
+  <data name="Line_Decimal1" xml:space="preserve">
+    <value>十进制属性1</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>定义</value>
   </data>
@@ -1605,6 +1641,9 @@
   </data>
   <data name="Line_TemplateLine" xml:space="preserve">
     <value>模板</value>
+  </data>
+  <data name="Line_Text1" xml:space="preserve">
+    <value>文本属性1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2329,6 +2368,9 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
+  <data name="Resource_CostCenter" xml:space="preserve">
+    <value>成本中心</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
   </data>
@@ -2583,6 +2625,18 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>你想退出的{0}？</value>
+  </data>
+  <data name="SmsMessage" xml:space="preserve">
+    <value>短信留言</value>
+  </data>
+  <data name="SmsMessage_Message" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
+    <value>要电话号码</value>
+  </data>
+  <data name="SmsMessages" xml:space="preserve">
+    <value>短信</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>排序关键字</value>

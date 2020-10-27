@@ -1868,3 +1868,38 @@ td .t-studio-input {
   font-family: monospace;
   white-space: pre!important;
 }
+
+// @keyframes highlight {
+//   0% {
+//     background: #eeff44;
+//   }
+//   100% {
+//     background: none;
+//   }
+// }
+
+// .t-attention-a td.t-a {
+//   animation: highlight 2s;
+// }
+
+// .t-attention-b td.t-b {
+//   animation: highlight 2s;
+// }
+
+// Reconciliation screen
+
+tr.t-highlight-a td.t-a, tr.t-highlight-b td.t-b {
+  background-color: rgba(232, 232, 232) !important;
+}
+
+tr.t-yellow-a td.t-a, tr.t-yellow-b td.t-b {
+  background-color: #eeff44;
+}
+
+tr.t-pale-a td.t-a, tr.t-pale-b td.t-b {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
+th.t-slimfit {
+  width: 1px; // Used for table columns that fit their content
+}

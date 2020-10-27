@@ -14,8 +14,8 @@ AS
 
 	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId
 	
-	INSERT INTO @Lines([Index], [DefinitionId], [PostingDate], [Memo])
-	SELECT [Index], @LineDefinitionId, [PostingDate], [Memo] FROM @WideLines
+	INSERT INTO @Lines([Index], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
+	SELECT [Index], @LineDefinitionId, [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1] FROM @WideLines
 
 	INSERT INTO @Entries
 	EXEC [bll].[WideLines__Unpivot] @WideLines;
@@ -26,7 +26,10 @@ AS
 		--[L].[TemplateLineId],
 		--[L].[Multiplier],
 		[L].[Memo],
-		[L].[Index]
+		[L].[Index],
+		[L].[Boolean1],
+		[L].[Decimal1],
+		[L].[Text1]
 	FROM @Lines AS [L] -- LineList
 	ORDER BY [L].[Index] ASC
 
@@ -38,7 +41,6 @@ AS
 	[E].[ParticipantId],
 	[E].[ResourceId],
 	[E].[EntryTypeId],
-	[E].[NotedRelationId],
 	[E].[CenterId],
 	[E].[UnitId],
 	[E].[IsSystem],
@@ -97,7 +99,7 @@ AS
 	FROM [map].[Resources]() [R] 
 	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
 
-	-- Relation (From 3 places)
+	-- Relation (From 2 places)
 	SELECT 
 	[R].[Id], 
 	[R].[Name],
@@ -105,8 +107,7 @@ AS
 	[R].[Name3],
 	[R].[DefinitionId]
 	FROM [map].[Relations]() [R] 
-	WHERE [Id] IN (SELECT [NotedRelationId] FROM @Entries)
-		OR [Id] IN (SELECT [CustodianId] FROM @Entries)
+	WHERE [Id] IN (SELECT [CustodianId] FROM @Entries)
 		OR [Id] IN  (SELECT [ParticipantId] FROM @Entries)
 
 	-- EntryType

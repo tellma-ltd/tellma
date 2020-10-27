@@ -47,6 +47,7 @@ import { Custody } from './entities/custody';
 import { EntitiesResponse } from './dto/entities-response';
 import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
+import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 
 enum WhichWorkspace {
   /**
@@ -336,6 +337,11 @@ export class TenantWorkspace extends SpecificWorkspace {
   mdState: { [key: string]: MasterDetailsStore };
 
   /**
+   * Keeps the state of the reconciliation screen
+   */
+  reconciliationState: ReconciliationStore;
+
+  /**
    * Master screens use this to remember the last opened master screen,
    * if it's not the same as the current screen, the current screen may
    * wish to refresh
@@ -345,7 +351,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   /**
    * Any misc. state that screens may wish to preserve across the session
    */
-  miscState: { [key: string]: any } = { };
+  miscState: { [key: string]: any } = {};
 
   /**
    * Keeps the state of every report widget
@@ -661,14 +667,28 @@ export interface MeasureCell {
   isTotal?: boolean;
 }
 
-export class ReportStore {
+export class ReportStoreBase {
+  reportStatus: ReportStatus;
+  errorMessage: string;
+  information: () => string;
+}
+
+export class ReconciliationStore extends ReportStoreBase {
+  arguments: ReportArguments = {}; // entries_top, ex_entries_skip, entries_total, account_id, etc...
+  unreconciled_response: ReconciliationGetUnreconciledResponse;
+  reconciled_response: ReconciliationGetReconciledResponse;
+
+  // For paging display
+  unreconciled_entries_count: number;
+  unreconciled_ex_entries_count: number;
+  reconciled_count: number;
+}
+
+export class ReportStore extends ReportStoreBase {
   definition: ReportDefinitionForClient;
   skip = 0;
   top = 0;
   total = 0;
-  reportStatus: ReportStatus;
-  errorMessage: string;
-  information: () => string;
   arguments: ReportArguments = {};
   result: Entity[] = [];
   response: EntitiesResponse;
@@ -818,7 +838,7 @@ export class MasterDetailsStore {
       // in tree mode the total is never the entire table count, just the number of items displayed
       this.total = this.total + afterCount - beforeCount;
     } else {
-      const deletedIdsHash: {[id: string]: true} =  {};
+      const deletedIdsHash: { [id: string]: true } = {};
       for (const id of ids) {
         deletedIdsHash[id] = true;
       }

@@ -189,7 +189,7 @@
         <ng-container *ngIf="isEdit">
             <span
                 *ngIf="readonlyCenterId(model)">{{ ws.getMultilingualValue('Center', readonlyValueCenterId(model), 'Name') }}</span>
-            <t-centers-picker *ngIf="!readonlyCenterId(model)" [(ngModel)]="model.CenterId">
+            <t-centers-picker *ngIf="!readonlyCenterId(model)" [(ngModel)]="model.CenterId" [filter]="filterCenter(model)">
             </t-centers-picker>
         </ng-container>
     </t-form-group>

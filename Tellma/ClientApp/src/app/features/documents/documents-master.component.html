@@ -1,7 +1,7 @@
 <t-master *ngIf="found;else pageNotFound" collection="Document" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader"
+  [tableSummaryHeaderTemplate]="summaryHeader" [multiselectToolbarTemplate]="multiselectToolbarTemplate"
   [selectDefault]="selectDefault" selectForTiles="PostingDate,State,Memo"
   [multiselectActions]="[
                 { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },
@@ -25,6 +25,26 @@
 <ng-template #pageNotFound>
   <t-application-page-not-found [showHome]="!isPopupMode">
   </t-application-page-not-found>
+</ng-template>
+
+<ng-template #multiselectToolbarTemplate>
+    <!-- Print Dropdown -->
+    <div *ngIf="showPrint" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
+      <button type="button" class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle"
+          ngbDropdownToggle>
+          <fa-icon *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
+          <ng-template #spinner>
+            <t-spinner></t-spinner>
+          </ng-template>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
+      </button>
+      <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+          <button type="button" class="dropdown-item t-transparent-background btn-light"
+              *ngFor="let template of printingTemplates" ngbDropdownItem (click)="onPrint(template)">
+              {{ template.name() }}
+          </button>
+      </div>
+  </div>
 </ng-template>
 
 <!-- Tile Template -->

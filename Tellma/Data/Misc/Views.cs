@@ -267,6 +267,15 @@
                             Li("Update", false)
                         }
                     },
+                    new ViewInfo {
+                        Id = "reconciliation",
+                        Name = "BankReconciliation",
+                        Actions = new ActionInfo[]
+                        {
+                            Li("Read", false),
+                            Li("Update", false)
+                        }
+                    },
                 };
             }
         }

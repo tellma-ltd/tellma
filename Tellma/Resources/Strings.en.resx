@@ -148,9 +148,6 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
   </data>
-  <data name="AccountType_NotedRelationDefinition" xml:space="preserve">
-    <value>Noted Relation Definition</value>
-  </data>
   <data name="AccountType_ParticipantDefinition" xml:space="preserve">
     <value>Participant Definition</value>
   </data>
@@ -282,6 +279,9 @@
   </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>Rentals Under Construction Expense</value>
+  </data>
+  <data name="Center_CenterType_OtherPL" xml:space="preserve">
+    <value>Other Profit/Loss</value>
   </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>Selling General and Administration</value>
@@ -472,6 +472,9 @@
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>Amount Acc.</value>
   </data>
+  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
+    <value>Amount Per Unit</value>
+  </data>
   <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
     <value>Negative Algebraic Monetary Value</value>
   </data>
@@ -486,6 +489,9 @@
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>Time</value>
+  </data>
+  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
+    <value>Value Per Unit</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
     <value>Volume</value>
@@ -544,11 +550,11 @@
   <data name="Document_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
   </data>
-  <data name="Document_NotedRelation" xml:space="preserve">
-    <value>Noted Relation</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
+  </data>
+  <data name="Document_Participant" xml:space="preserve">
+    <value>Participant</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>
@@ -600,6 +606,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>Event</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
+    <value>Regulatory</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>Is Original Document</value>
@@ -658,8 +667,23 @@
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
+  <data name="Email_Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="Email_FromEmail" xml:space="preserve">
+    <value>From Email Address</value>
+  </data>
+  <data name="Email_Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="Email_ToEmail" xml:space="preserve">
+    <value>To Email Address</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>Thank you for confirming your email</value>
+  </data>
+  <data name="Emails" xml:space="preserve">
+    <value>Emails</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>Enter your email</value>
@@ -766,9 +790,6 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
   </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>Noted Relation</value>
-  </data>
   <data name="Entry_Participant" xml:space="preserve">
     <value>Participant</value>
   </data>
@@ -823,11 +844,17 @@
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>The value balance for account '{0}' will become negative.</value>
   </data>
+  <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
+    <value>Account could not be found.</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>Account type '{0}' is used in account '{1}'.</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>Unexpected error occurred adding external login for user with email '{0}'.</value>
+  </data>
+  <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
+    <value>Total amount of internal entries {0} does not equal that of external entries {1}.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>A user with email '{0}' could not be found.</value>
@@ -882,6 +909,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
+  </data>
+  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
+    <value>Custody could not be found.</value>
   </data>
   <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Custody DefinitionId '{0}' could not be found.</value>
@@ -1195,8 +1225,8 @@
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>The document has completed lines.</value>
   </data>
-  <data name="Error_TheDocumentHasControlAccount0WithNetBalance1" xml:space="preserve">
-    <value>Control account '{0}' has a non-zero net balance of '{1}'.</value>
+  <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
+    <value>Control account '{0}' for '{1}' has a non-zero net balance of '{2}'.</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>Some lines are missing required signatures.</value>
@@ -1564,6 +1594,12 @@
   <data name="Line" xml:space="preserve">
     <value>Line</value>
   </data>
+  <data name="Line_Boolean1" xml:space="preserve">
+    <value>Boolean Attribute 1</value>
+  </data>
+  <data name="Line_Decimal1" xml:space="preserve">
+    <value>Decimal Attribute 1</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>Definition</value>
   </data>
@@ -1605,6 +1641,9 @@
   </data>
   <data name="Line_TemplateLine" xml:space="preserve">
     <value>Template</value>
+  </data>
+  <data name="Line_Text1" xml:space="preserve">
+    <value>Text Attribute 1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
@@ -2329,6 +2368,9 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
+  <data name="Resource_CostCenter" xml:space="preserve">
+    <value>Cost Center</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>
@@ -2583,6 +2625,18 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>Would you like to sign out of {0}?</value>
+  </data>
+  <data name="SmsMessage" xml:space="preserve">
+    <value>SMS Message</value>
+  </data>
+  <data name="SmsMessage_Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
+    <value>To Phone Number</value>
+  </data>
+  <data name="SmsMessages" xml:space="preserve">
+    <value>SMS Messages</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>Sort Key</value>

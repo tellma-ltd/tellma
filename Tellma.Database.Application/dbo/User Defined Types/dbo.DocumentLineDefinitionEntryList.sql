@@ -1,11 +1,11 @@
 ﻿CREATE TYPE [dbo].[DocumentLineDefinitionEntryList] AS TABLE
 (
-	[Index]					INT		DEFAULT 0,
-	[DocumentIndex]			INT		DEFAULT 0,
+	[Index]							INT		DEFAULT 0,
+	[DocumentIndex]					INT		DEFAULT 0,
 	PRIMARY KEY ([Index], [DocumentIndex]),
-	[Id]					INT		DEFAULT 0,
-	[LineDefinitionId]		INT,
-	[EntryIndex]			INT,
+	[Id]							INT		DEFAULT 0,
+	[LineDefinitionId]				INT,
+	[EntryIndex]					INT,
 	UNIQUE ([DocumentIndex], [LineDefinitionId], [EntryIndex]),
 
 	[PostingDate]					DATE, 
@@ -13,8 +13,8 @@
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	
-	[NotedRelationId]				INT,
-	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[ParticipantId]					INT,
+	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
 
 	[CurrencyId]					NCHAR (3),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,

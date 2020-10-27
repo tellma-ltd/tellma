@@ -147,6 +147,9 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       case 'PostingDate':
       case 'TemplateLineId':
       case 'Multiplier':
+      case 'Boolean1':
+      case 'Decimal1':
+      case 'Text1':
         prefix = 'Line_';
         break;
       default:
@@ -316,6 +319,13 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     if (this._dataTypeChoicesDefinitions !== defs) {
       this._dataTypeChoicesDefinitions = defs;
 
+      const lookupDefinitions = Object.keys(defs.Lookups).map(defId => {
+        const def = defs.Lookups[defId];
+        return {
+          value: 'Lookup/' + defId,
+          name: () => this.translate.instant('Lookup') + ' - ' + ws.getMultilingualValueImmediate(def, 'TitleSingular')
+        };
+      });
       const resourceDefinitions = Object.keys(defs.Resources).map(defId => {
         const def = defs.Resources[defId];
         return {
@@ -341,10 +351,13 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       this._dataTypeChoices = [
         { value: 'Date', name: () => this.translate.instant('DateTime') },
         { value: 'Decimal', name: () => this.translate.instant('Decimal') },
+        { value: 'Percentage', name: () => this.translate.instant('Percentage') },
         { value: 'String', name: () => this.translate.instant('String') },
         { value: 'Center', name: () => this.translate.instant('Center') },
         { value: 'Unit', name: () => this.translate.instant('Unit') },
         { value: 'Currency', name: () => this.translate.instant('Currency') },
+        { value: 'Lookup', name: () => this.translate.instant('Lookup') },
+        ...lookupDefinitions,
         { value: 'Resource', name: () => this.translate.instant('Resource') },
         ...resourceDefinitions,
         { value: 'Custody', name: () => this.translate.instant('Custody') },

@@ -16,7 +16,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,NotedRelationDefinition,
+  public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,
 CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
 
   constructor(
@@ -121,14 +121,10 @@ CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
     return true;
   }
 
-  public showNotedRelationDefinition(_: AccountType): boolean {
-    return true;
-  }
-
   public resourceDefinitionFilter(model: AccountType): string {
     let filter = `State ne 'Hidden'`;
     if (!!model && !!model.ParticipantDefinitionId) {
-      filter += ` and ParticipantDefinitionId eq ${model.ParticipantDefinitionId}`;
+      filter += ` and (ParticipantDefinitionId eq ${model.ParticipantDefinitionId} or ParticipantDefinitionId eq null)`;
     }
 
     return filter;
@@ -137,7 +133,7 @@ CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
   public custodyDefinitionFilter(model: AccountType): string {
     let filter = `State ne 'Hidden'`;
     if (!!model && !!model.CustodianDefinitionId) {
-      filter += ` and CustodianDefinitionId eq ${model.CustodianDefinitionId}`;
+      filter += ` and (CustodianDefinitionId eq ${model.CustodianDefinitionId} or CustodianDefinitionId eq null)`;
     }
 
     return filter;

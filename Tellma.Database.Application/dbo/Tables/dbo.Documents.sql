@@ -21,8 +21,8 @@
 	[CenterId]						INT	CONSTRAINT [FK_Documents__CenterId] REFERENCES dbo.[Centers]([Id]), -- Only business units allowed here
 	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
 
-	[NotedRelationId]				INT	CONSTRAINT [FK_Documents__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
-	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[ParticipantId]					INT	CONSTRAINT [FK_Documents__ParticipantId] REFERENCES dbo.[Relations]([Id]), 
+	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
 
 	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_Documents__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,

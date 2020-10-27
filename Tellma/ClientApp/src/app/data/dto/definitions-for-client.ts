@@ -118,15 +118,15 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     PostingDateLabel2?: string;
     PostingDateLabel3?: string;
 
-    // Noted Relation
-    NotedRelationVisibility?: boolean;
-    NotedRelationRequiredState?: PositiveLineState | 5;
-    NotedRelationReadOnlyState?: PositiveLineState | 5;
-    NotedRelationDefinitionIds?: number[];
-    NotedRelationLabel?: string;
-    NotedRelationLabel2?: string;
-    NotedRelationLabel3?: string;
-    NotedRelationFilter?: string;
+    // Participant
+    ParticipantVisibility?: boolean;
+    ParticipantRequiredState?: PositiveLineState | 5;
+    ParticipantReadOnlyState?: PositiveLineState | 5;
+    ParticipantDefinitionIds?: number[];
+    ParticipantLabel?: string;
+    ParticipantLabel2?: string;
+    ParticipantLabel3?: string;
+    ParticipantFilter?: string;
 
     // Center
     CenterVisibility?: boolean;
@@ -218,7 +218,6 @@ export interface LineDefinitionEntryForClient {
     CustodyDefinitionIds: number[];
     ParticipantDefinitionIds: number[];
     ResourceDefinitionIds: number[];
-    NotedRelationDefinitionIds: number[];
 }
 
 export interface LineDefinitionColumnForClient {
@@ -252,24 +251,25 @@ export interface LineDefinitionGenerateParameterForClient {
     Visibility: Visibility;
 }
 
-export const entryColumnNames = ['Memo', 'PostingDate', 'TemplateLineId',
+export const entryColumnNames = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'TemplateLineId',
     'Multiplier', 'AccountId', 'CurrencyId',
     'CustodianId', 'CustodyId', 'ParticipantId', 'ResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
-    'ExternalReference', 'AdditionalReference', 'NotedRelationId',
+    'ExternalReference', 'AdditionalReference',
     'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
-export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
+export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
     'CustodianId' | 'CustodyId' | 'ParticipantId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'AdditionalReference' | 'NotedRelationId' |
+    'ExternalReference' | 'AdditionalReference' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;
+    CostCenterVisibility: Visibility;
     ImageVisibility: Visibility;
     DescriptionVisibility: Visibility;
     LocationVisibility: Visibility;

@@ -43,3 +43,6 @@
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Relations__Code]
   ON [dbo].[Relations]([Code]) WHERE [Code] IS NOT NULL;
+ GO
+ CREATE INDEX [IX_Relations__DefinitionId] ON [dbo].[Relations]([DefinitionId])
+ GO

@@ -298,13 +298,13 @@ namespace Tellma.Entities
             Modifiers.week,
             Modifiers.weekday
         }, new string[] {
-            "Function_year",
-            "Function_quarter",
-            "Function_month",
-            "Function_dayofyear",
-            "Function_day",
-            "Function_week",
-            "Function_weekday"
+            "Modifier_year",
+            "Modifier_quarter",
+            "Modifier_month",
+            "Modifier_dayofyear",
+            "Modifier_day",
+            "Modifier_week",
+            "Modifier_weekday"
         })]
         public string Modifier { get; set; }
 

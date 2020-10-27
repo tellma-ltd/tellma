@@ -1,6 +1,6 @@
 ﻿-- To sync with Production:
 -- Posting Date, Memo must have Entry Index 0, and Always Inherists from Document Header
--- Noted Relation, Business Unit, Currency, External Reference, Additional Reference possibly inherits from Document Header, 
+-- Participant, Business Unit, Currency, External Reference, Additional Reference possibly inherits from Document Header, 
 INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
 (1000, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0),
 (1020, N'PPEFromIPC', N'Reclassifying investment property as property for use', N'IPC => PPE', N'IPC => PPE', 0, 0),
@@ -186,8 +186,8 @@ SET
 	[MonetaryValue0]	=  dbo.fn_[bll].[fn_ConvertCurrencies]([PostingDate] , [CurrencyId1],
 							ISNULL([CurrencyId0], @FunctionalCurrencyId), 
 							[MonetaryValue1]),
-	[ParticipantId1]	= [NotedRelationId0],
-	[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0])',
+	[ParticipantId1]	= [ParticipantId0],
+	[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])',
 	[ValidateScript] = NULL
 WHERE [Index] = 1200;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -219,7 +219,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader], [Filter]) VALUES
 (0,1200,	N'Memo',				1,	N'Memo',			1,4,1,NULL), -- Document Memo
-(1,1200,	N'NotedRelationId',		0,	N'Supplier',		3,4,1,NULL), -- Document Noted Relation
+(1,1200,	N'ParticipantId',		0,	N'Supplier',		3,4,1,NULL), -- Document Participant
 (2,1200,	N'CustodyId',			0,	N'Warehouse',		3,4,1,NULL), -- Tab Custody
 (3,1200,	N'ResourceId',			0,	N'Item',			2,4,0,NULL),
 (4,1200,	N'Quantity',			0,	N'Qty',				2,4,0,NULL),
@@ -283,9 +283,9 @@ SET [PreprocessScript] = N'
 								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
 								),
 		[MonetaryValue2]	= [MonetaryValue3],
-		[NotedRelationId0]	= [ParticipantId3],
+		[ParticipantId0]	= [ParticipantId3],
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId3]),
-		[NotedRelationId2]	= [NotedRelationId3]
+		[ParticipantId2]	= [ParticipantId3]
 	FROM @ProcessedWideLines PWL
 	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
@@ -383,10 +383,10 @@ UPDATE PWL
 		[MonetaryValue2]	= ISNULL([MonetaryValue4],0) * ( 1 + R.[VatRate]), -- Total Due
 		[MonetaryValue3]	= ISNULL([MonetaryValue4],0) * R.[VatRate], -- VAT
 		[NotedAmount3]		= ISNULL([MonetaryValue4],0), -- Revenues, Taxable Amount
-		[NotedRelationId0]	= [NotedRelationId4],
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = PWL.[NotedRelationId4]),
-		[ParticipantId2]	= [NotedRelationId4],
-		[NotedRelationId3]	= [NotedRelationId4]
+		[ParticipantId0]	= [ParticipantId4],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = PWL.[ParticipantId4]),
+		[ParticipantId2]	= [ParticipantId4],
+		[ParticipantId3]	= [ParticipantId4]
 	FROM @ProcessedWideLines PWL
 	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
@@ -398,7 +398,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
 (0,1300,+1,	@CostOfMerchandiseSold,								NULL),
 (1,1300,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
-(2,1300,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
+(2,1300,+1,	@CashControlExtension,			NULL),
 (3,1300,-1,	@CurrentValueAddedTaxPayables,						NULL),
 (4,1300,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
@@ -424,7 +424,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1300,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1300,	N'NotedRelationId',		4,	N'Customer',		3,4,1,NULL),
+(1,1300,	N'ParticipantId',		4,	N'Customer',		3,4,1,NULL),
 (2,1300,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL),
 (3,1300,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
 (4,1300,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
@@ -507,10 +507,10 @@ UPDATE PWL
 		[MonetaryValue3]	= (P.[MonetaryValue] * [Quantity1] / P.Quantity) * R.[VatRate], -- VAT
 		[MonetaryValue4]	= (P.[MonetaryValue] * [Quantity1] / P.Quantity),
 		[NotedAmount3]		= (P.[MonetaryValue] * [Quantity1] / P.Quantity),
-		[NotedRelationId0]	= [NotedRelationId4],
-		[NotedRelationId3]	= [NotedRelationId4],
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = PWL.[NotedRelationId4]),
-		[ParticipantId2]	= [NotedRelationId4]
+		[ParticipantId0]	= [ParticipantId4],
+		[ParticipantId3]	= [ParticipantId4],
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = PWL.[ParticipantId4]),
+		[ParticipantId2]	= [ParticipantId4]
 	FROM @ProcessedWideLines PWL
 	LEFT JOIN Prices P ON PWL.[ResourceId1] = P.[ResourceId]
 	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
@@ -533,7 +533,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
 (0,1301,+1,	@CostOfMerchandiseSold,								NULL),
 (1,1301,-1,	@Inventories,										@InventoriesIssuesToSaleExtension),
-(2,1301,+1,	@CashReceiptsFromCustomersControlExtension,			NULL),
+(2,1301,+1,	@CashControlExtension,			NULL),
 (3,1301,-1,	@CurrentValueAddedTaxPayables,						NULL),
 (4,1301,-1,	@Revenue,											NULL)
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
@@ -551,7 +551,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1301,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1301,	N'NotedRelationId',		4,	N'Customer',		3,4,1,NULL),
+(1,1301,	N'ParticipantId',		4,	N'Customer',		3,4,1,NULL),
 (2,1301,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL),
 (3,1301,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
 (4,1301,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
@@ -572,15 +572,15 @@ SET [PreprocessScript] = N'
 		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
-		[ParticipantId1]	= [NotedRelationId0],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
+		[ParticipantId1]	= [ParticipantId0],
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
 WHERE [Index] = 1350;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
 (0,1350,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,1350,-1,		@CashReceiptsFromCustomersControlExtension,	NULL);
+(1,1350,-1,		@CashControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -589,7 +589,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1350,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (2,1350,	N'MonetaryValue',		1,	N'Amount',			1,2,0,NULL), 
 (3,1350,	N'CurrencyId',			1,	N'Currency',		0,2,1,NULL),
-(4,1350,	N'NotedRelationId',		0,	N'Customer',		1,4,1,NULL),
+(4,1350,	N'ParticipantId',		0,	N'Customer',		1,4,1,NULL),
 (5,1350,	N'PostingDate',			1,	N'Received On',		1,4,1,NULL),
 (6,1350,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
 (7,1350,	N'CenterId',			1,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
@@ -605,8 +605,8 @@ SET [PreprocessScript] = N'
 		[CenterId0]		= COALESCE([CenterId0], [CenterId2]),
 		[MonetaryValue2]	= ISNULL([MonetaryValue2], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
-		[NotedRelationId1]	= [NotedRelationId2],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId2]),
+		[ParticipantId1]	= [ParticipantId2],
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0]) 
 '
 WHERE [Index] = 1360;
@@ -614,13 +614,13 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
 (0,1360,+1,		@CashAndCashEquivalents,					@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
 (1,1360,+1,		@WithholdingTaxReceivablesExtension,		NULL),
-(2,1360,-1,		@CashReceiptsFromCustomersControlExtension,	NULL); 
+(2,1360,-1,		@CashControlExtension,	NULL); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1360,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1360,	N'NotedRelationId',		2,	N'Customer',		1,4,1,NULL),
+(1,1360,	N'ParticipantId',		2,	N'Customer',		1,4,1,NULL),
 (2,1360,	N'CurrencyId',			2,	N'Currency',		0,2,1,NULL),
 (3,1360,	N'MonetaryValue',		2,	N'Due Amount',		1,2,0,NULL), -- 
 (6,1360,	N'MonetaryValue',		1,	N'Amount Withheld',	4,4,0,NULL),
@@ -643,9 +643,9 @@ SET [PreprocessScript] = N'
 		[MonetaryValue2]	= ISNULL([MonetaryValue2], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue2], 0) + ISNULL([MonetaryValue1], 0),
 		[NotedAmount1]		= ISNULL([MonetaryValue2], 0),
-		[NotedRelationId1]	= [NotedRelationId2],
+		[ParticipantId1]	= [ParticipantId2],
 	--	[EntryTypeId0]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''ReceiptsFromSalesOfGoodsAndRenderingOfServices''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId2]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
 WHERE [Index] = 1370;
@@ -659,7 +659,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1370,	N'Memo',				0,	N'Memo',			1,4,1,NULL),
-(1,1370,	N'NotedRelationId',		2,	N'Customer',		1,4,1,NULL),
+(1,1370,	N'ParticipantId',		2,	N'Customer',		1,4,1,NULL),
 (2,1370,	N'CurrencyId',			2,	N'Currency',		0,2,1,NULL),
 (3,1370,	N'MonetaryValue',		2,	N'Amount (VAT Excl)',1,2,0,NULL), -- 
 (4,1370,	N'MonetaryValue',		1,	N'VAT',				0,0,0,NULL),
@@ -689,11 +689,11 @@ SET [PreprocessScript] = N'
 		--[ExternalReference1]= ISNULL([ExternalReference1], N''--''),
 		[NotedAmount2]		= ISNULL([MonetaryValue3], 0),
 		[NotedAmount1]		= ISNULL([MonetaryValue3], 0),
-		[NotedRelationId2]	= [NotedRelationId3],
-		[NotedRelationId1]	= [NotedRelationId3],
+		[ParticipantId2]	= [ParticipantId3],
+		[ParticipantId1]	= [ParticipantId3],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId0]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''ReceiptsFromSalesOfGoodsAndRenderingOfServices''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId3]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId3]),
 		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
 '
 WHERE [Index] = 1390;
@@ -708,7 +708,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1390,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1390,	N'NotedRelationId',		3,	N'Customer',		1,4,1,NULL),
+(1,1390,	N'ParticipantId',		3,	N'Customer',		1,4,1,NULL),
 (2,1390,	N'CurrencyId',			3,	N'Currency',		0,2,1,NULL),
 (3,1390,	N'MonetaryValue',		3,	N'Amount (VAT Excl.)',1,2,0,NULL), -- 
 (4,1390,	N'MonetaryValue',		2,	N'VAT',				0,0,0,NULL),
@@ -839,10 +839,10 @@ SET [PreprocessScript] = N'
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue2]	= ISNULL([MonetaryValue0], 0) + ISNULL([MonetaryValue1], 0),
 		[NotedAmount1]		= ISNULL([MonetaryValue0], 0),
-		[NotedRelationId1]	= [NotedRelationId0],
+		[ParticipantId1]	= [ParticipantId0],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId2]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
+		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
 		[AdditionalReference2] = IIF(ISNUMERIC([AdditionalReference2]) = 1, N''CPV'' + [AdditionalReference2], [AdditionalReference2])
 '
 WHERE [Index] = 1590;
@@ -856,7 +856,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1590,N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1590,N'NotedRelationId',		0,	N'Supplier',		1,4,1,NULL),
+(1,1590,N'ParticipantId',		0,	N'Supplier',		1,4,1,NULL),
 (2,1590,N'CurrencyId',			0,	N'Currency',		0,2,1,NULL),
 (3,1590,N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0,NULL),
 (4,1590,N'MonetaryValue',		1,	N'VAT',				1,4,0,NULL),
@@ -886,11 +886,11 @@ SET [PreprocessScript] = N'
 		--[ExternalReference2]= ISNULL([ExternalReference2], N''--''),
 		[NotedAmount1]		= ISNULL([MonetaryValue0], 0),
 		[NotedAmount2]		= ISNULL([MonetaryValue0], 0),
-		[NotedRelationId1]	= [NotedRelationId0],
-		[NotedRelationId2]	= [NotedRelationId0],
+		[ParticipantId1]	= [ParticipantId0],
+		[ParticipantId2]	= [ParticipantId0],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId3]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
+		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
 		[AdditionalReference3] = IIF(ISNUMERIC([AdditionalReference3]) = 1, N''CPV'' + [AdditionalReference3], [AdditionalReference3])
 '
 WHERE [Index] = 1610;
@@ -905,7 +905,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1610,N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1610,N'NotedRelationId',		0,	N'Supplier',		1,4,1,NULL),
+(1,1610,N'ParticipantId',		0,	N'Supplier',		1,4,1,NULL),
 (2,1610,N'CurrencyId',			0,	N'Currency',		0,2,1,NULL),
 (3,1610,N'MonetaryValue',		0,	N'Amount (VAT Excl)',1,2,0,NULL),
 (4,1610,N'MonetaryValue',		1,	N'VAT',				1,4,0,NULL),
@@ -927,13 +927,13 @@ SET [PreprocessScript] = N'
 		[CenterId1]		= COALESCE([CenterId1], [CenterId0]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId0]),
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
 		[AdditionalReference1] = IIF(ISNUMERIC([AdditionalReference1]) = 1, N''CPV'' + [AdditionalReference1], [AdditionalReference1]) 
 '
 WHERE [Index] = 1630;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId],							[EntryTypeId]) VALUES
-(0,1630,+1,		@CashPaymentsToSuppliersControlExtension,	NULL),
+(0,1630,+1,		@CashControlExtension,	NULL),
 (1,1630,-1,		@CashAndCashEquivalents,					@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -943,7 +943,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1630,N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0,NULL),
 (2,1630,N'MonetaryValue',		0,	N'Amount',			1,2,0,NULL), 
 (3,1630,N'CurrencyId',			0,	N'Currency',		0,2,1,NULL),
-(4,1630,N'NotedRelationId',		0,	N'Supplier',		1,4,1,NULL),
+(4,1630,N'ParticipantId',		0,	N'Supplier',		1,4,1,NULL),
 (5,1630,N'PostingDate',			0,	N'Paid On',			1,4,1,NULL),
 (6,1630,N'ExternalReference',	1,	N'Check #',			5,5,0,NULL),
 (7,1630,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
@@ -957,19 +957,19 @@ SET [PreprocessScript] = N'
 		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue1]	= ISNULL(0.02 * [NotedAmount1], 0),
 		[MonetaryValue0]	= ISNULL(0.02 * [NotedAmount1], 0),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1]) 
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId1]) 
 '
 WHERE [Index] = 1660;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1660,+1,	@CashPaymentsToSuppliersControlExtension,NULL),
+(0,1660,+1,	@CashControlExtension,NULL),
 (1,1660,-1,	@WithholdingTaxPayableExtension,NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1660,N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1660,N'NotedRelationId',		1,	N'Supplier',		3,4,1,NULL),
+(1,1660,N'ParticipantId',		1,	N'Supplier',		3,4,1,NULL),
 (2,1660,N'CurrencyId',			1,	N'Currency',		0,2,1,NULL),
 (3,1660,N'NotedAmount',			1,	N'Amount (VAT Excl.)',3,3,0,NULL),
 (4,1660,N'MonetaryValue',		1,	N'Amount Withheld',	0,0,0,NULL),
@@ -1065,7 +1065,7 @@ SET [PreprocessScript] = N'
 	SET
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0),
 		[CurrencyId0] = [CurrencyId1],
-		[NotedRelationId0] = [NotedRelationId1] 
+		[ParticipantId0] = [ParticipantId1] 
 '
 WHERE [Index] = 1710;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -1077,7 +1077,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1710,	N'Memo',				0,	N'Memo',			1,5,1,NULL),
-(1,1710,	N'NotedRelationId',		1,	N'Supplier',		2,3,1,NULL),
+(1,1710,	N'ParticipantId',		1,	N'Supplier',		2,3,1,NULL),
 (2,1710,	N'CurrencyId',			1,	N'Currency',		0,2,1,NULL),
 (3,1710,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0,NULL),
 (4,1710,	N'CenterId',			0,	N'Cost Center',		0,4,0,NULL),
@@ -1093,21 +1093,21 @@ SET [PreprocessScript] = N'
 		[MonetaryValue2] = ISNULL([MonetaryValue0], 0) + ISNULL([MonetaryValue1], 0),
 		[CurrencyId0] = [CurrencyId2],
 		[NotedAmount1] =  ISNULL([MonetaryValue0], 0),
-		[NotedRelationId1] = [NotedRelationId2],
-		[NotedRelationId0] = [NotedRelationId2] 
+		[ParticipantId1] = [ParticipantId2],
+		[ParticipantId0] = [ParticipantId2] 
 '
 WHERE [Index] = 1730;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
 (0,1730,+1,	@ExpenseByNature,										NULL),
 (1,1730,+1,	@CurrentValueAddedTaxReceivables,						NULL),
-(2,1730,-1,	@CashPaymentsToSuppliersControlExtension,				NULL);
+(2,1730,-1,	@CashControlExtension,				NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1730,	N'Memo',				0,	N'Memo',			1,5,1,NULL),
-(1,1730,	N'NotedRelationId',		2,	N'Supplier',		2,3,1,NULL),
+(1,1730,	N'ParticipantId',		2,	N'Supplier',		2,3,1,NULL),
 (2,1730,	N'CurrencyId',			2,	N'Currency',		0,2,1,NULL),
 (3,1730,	N'MonetaryValue',		0,	N'Cost (VAT Excl.)',1,2,0,NULL),
 (4,1730,	N'MonetaryValue',		1,	N'VAT',				1,2,0,NULL),

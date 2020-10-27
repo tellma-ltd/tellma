@@ -17,6 +17,7 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Code?: string;
     CurrencyId?: string;
     CenterId?: number;
+    CostCenterId?: number;
     Description?: string;
     Description2?: string;
     Description3?: string;
@@ -107,6 +108,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Currency: { control: 'navigation', label: () => trx.instant('Entity_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 CenterId: { control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { control: 'navigation', label: () => trx.instant('Entity_Center'), type: 'Center', foreignKeyName: 'CenterId' },
+                CostCenterId: { control: 'number', label: () => `${trx.instant('Resource_CostCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CostCenter: { control: 'navigation', label: () => trx.instant('Resource_CostCenter'), type: 'Center', foreignKeyName: 'CostCenterId' },
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
@@ -227,7 +230,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'Center']) {
+            for (const propName of ['Currency', 'Center', 'CostCenter']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

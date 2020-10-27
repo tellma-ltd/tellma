@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[fn_ConvertCurrencies]
+﻿CREATE FUNCTION [bll].[fn_ConvertCurrenciesNoRound]
 (
 	@Date DATE,
 	@FromCurrencyId NCHAR (3),
@@ -33,5 +33,5 @@ BEGIN
 				AND @Date < ValidTill
 			));
 
-	RETURN (SELECT ROUND(@Result, E) FROM dbo.Currencies WHERE [Id] = @ToCurrencyId);
+	RETURN @Result;
 END;

@@ -69,7 +69,11 @@ namespace Tellma.Entities
     public class Account : AccountForSave
     {
         [AlwaysAccessible]
+        [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
+
+        [AlwaysAccessible]
+        public bool? IsBusinessUnit { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }

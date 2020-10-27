@@ -288,6 +288,10 @@
           </div>
         </div>
 
+        <ng-container
+          *ngTemplateOutlet="multiselectToolbarTemplate">
+        </ng-container>
+
         <!-- Cancel -->
         <button class="btn btn-sm t-toolbar-button"
           [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
@@ -502,7 +506,7 @@
         <!-- Template reused in both tree and flat tables -->
         <ng-template #errorsColumn let-id="id">
 
-          <td class="pl-0 pr-0" *ngIf="isScreenMode">
+          <td class="px-0" *ngIf="isScreenMode">
             <div class="mx-2" *ngIf="showErrorHighlight(id)" [ngbPopover]="errorsPopover" popoverClass="t-error-popover"
               container="body" triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement">
               <fa-icon class="text-danger" [class.t-light-danger]="isDark" icon="exclamation-triangle"></fa-icon>

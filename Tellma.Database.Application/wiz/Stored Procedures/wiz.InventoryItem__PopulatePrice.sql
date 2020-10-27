@@ -8,7 +8,7 @@
 AS
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventoryWithPointInvoiceTemplate');
 	
-	IF @UnitID IS NULL
+	IF @UnitId IS NULL
 		SELECT @UnitId = [UnitId] FROM dbo.Resources WHERE [Id] = @ResourceId;
 	
 	SELECT @Quantity = ISNULL(@Quantity, 1);
@@ -48,7 +48,6 @@ AS
 		[Time2],
 		[ExternalReference],
 		[AdditionalReference],
-		[NotedRelationId],
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate])
@@ -70,7 +69,6 @@ AS
 		[Time2],
 		[ExternalReference],
 		[AdditionalReference],
-		[NotedRelationId],
 		[NotedAgentName],
 		[NotedAmount] * @Multiplier AS [NotedAmount],
 		[NotedDate]

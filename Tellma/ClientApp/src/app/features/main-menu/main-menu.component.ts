@@ -101,6 +101,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
           view: 'exchange-rates', sortKey: 100
+        },
+        {
+          label: 'BankReconciliation', icon: 'tasks', link: '../reconciliation',
+          view: 'reconciliation', sortKey: 200,
+          paramsFunc: () => this.userSettings.get<Params>('reconciliation/arguments'),
         }
       ]
     },
@@ -169,7 +174,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'users', sortKey: 100
         },
         {
-          label: 'Roles', icon: 'tasks', link: '../roles',
+          label: 'Roles', icon: 'shield-alt', link: '../roles',
           view: 'roles', sortKey: 200
         },
       ]
@@ -486,7 +491,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // this captures all keydown events from the root document
-  // in here we allo the user to navigate the focus around the main menu
+  // in here we allow the user to navigate the focus around the main menu
   // tiles with the arrow keys, ala metro style
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {

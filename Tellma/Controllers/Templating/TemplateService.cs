@@ -20,8 +20,8 @@ namespace Tellma.Controllers.Templating
     public class TemplateService
     {
         private readonly IServiceProvider _provider;
-        private readonly ApplicationRepository _repo;        
-        
+        private readonly ApplicationRepository _repo;
+
         // Just the names of the standard query functions
         private string QueryByFilter => nameof(QueryByFilter);
         private string QueryById => nameof(QueryById);
@@ -129,35 +129,56 @@ namespace Tellma.Controllers.Templating
                 // Load the query
                 if (query is QueryByFilterInfo queryByFilter)
                 {
-                    // Prepare the GetArguments
-                    var args = new GetArguments
+                    if (queryByFilter.Ids != null && queryByFilter.Ids.Any())
                     {
-                        Select = select,
-                        Filter = queryByFilter.Filter,
-                        OrderBy = queryByFilter.OrderBy,
-                        // TODO: add query Ids
-                        CountEntities = false
-                    };
+                        // If IDs are supplied, ignore all other parameters
+                        var args = new GetByIdArguments
+                        {
+                            Select = select,
+                        };
 
-                    if (queryByFilter.Top != null)
-                    {
-                        args.Top = queryByFilter.Top.Value;
+                        try
+                        {
+                            var service = _provider.FactWithIdServiceByEntityType(query.Collection, query.DefinitionId);
+                            var (list, _) = await service.GetByIds(queryByFilter.Ids.ToList(), args, cancellation);
+                            queryResults[query] = list;
+                        }
+                        catch (UnknownCollectionException)
+                        {
+                            throw new TemplateException($"Unknown collection '{query.Collection}'");
+                        }
                     }
+                    else
+                    {
+                        // Prepare the GetArguments
+                        var args = new GetArguments
+                        {
+                            Select = select,
+                            Filter = queryByFilter.Filter,
+                            OrderBy = queryByFilter.OrderBy,
+                            CountEntities = false
+                        };
 
-                    if (queryByFilter.Skip != null)
-                    {
-                        args.Skip = queryByFilter.Skip.Value;
-                    }
+                        if (queryByFilter.Top != null)
+                        {
+                            args.Top = queryByFilter.Top.Value;
+                        }
 
-                    try 
-                    {
-                        var service = _provider.FactServiceByCollectionName(query.Collection, query.DefinitionId);
-                        var (list, _, _, _) = await service.GetFact(args, cancellation);
-                        queryResults[query] = list;
-                    } 
-                    catch (UnknownCollectionException)
-                    {
-                        throw new TemplateException($"Unknown collection '{query.Collection}'");
+                        if (queryByFilter.Skip != null)
+                        {
+                            args.Skip = queryByFilter.Skip.Value;
+                        }
+
+                        try
+                        {
+                            var service = _provider.FactServiceByCollectionName(query.Collection, query.DefinitionId);
+                            var (list, _, _, _) = await service.GetFact(args, cancellation);
+                            queryResults[query] = list;
+                        }
+                        catch (UnknownCollectionException)
+                        {
+                            throw new TemplateException($"Unknown collection '{query.Collection}'");
+                        }
                     }
                 }
                 else if (query is QueryByIdInfo queryById)
@@ -228,11 +249,16 @@ namespace Tellma.Controllers.Templating
             var globalFuncs = new EvaluationContext.FunctionsDictionary
             {
                 [nameof(Sum)] = Sum(env),
-                [nameof(Filter)] = Filter(env),
+                [nameof(Filter)] = Filter(),
+                [nameof(OrderBy)] = OrderBy(),
                 [nameof(Count)] = Count(),
+                [nameof(SelectMany)] = SelectMany(),
+                [nameof(StartsWith)] = StartsWith(),
+                [nameof(EndsWith)] = EndsWith(),
                 [nameof(Localize)] = Localize(env),
                 [nameof(Format)] = Format(),
                 [nameof(If)] = If(),
+                [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight()
             };
@@ -498,15 +524,15 @@ namespace Tellma.Controllers.Templating
 
         #region Filter
 
-        private TemplateFunction Filter(TemplateEnvironment env)
+        private TemplateFunction Filter()
         {
             return new TemplateFunction(
-                functionAsync: (object[] args, EvaluationContext ctx) => FilterImpl(args, ctx, env),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx, env),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx, env));
+                functionAsync: (object[] args, EvaluationContext ctx) => FilterImpl(args, ctx),
+                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx),
+                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx));
         }
 
-        private async Task<object> FilterImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        private async Task<object> FilterImpl(object[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -552,7 +578,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> FilterSelect(ExpressionBase[] args, EvaluationContext ctx, TemplateEnvironment env)
+        private async IAsyncEnumerable<Path> FilterSelect(ExpressionBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -566,12 +592,12 @@ namespace Tellma.Controllers.Templating
             // Get and parse the value selector expression
             var conditionParameterExp = args[1];
             var conditionObj = await conditionParameterExp.Evaluate(ctx);
-            if (!(conditionObj is string valueSelectorString))
+            if (!(conditionObj is string conditionString))
             {
-                throw new TemplateException($"Function '{nameof(Filter)}' expects a 2nd argument selector of type string");
+                throw new TemplateException($"Function '{nameof(Filter)}' expects a 2nd argument condition of type string");
             }
 
-            var conditionExp = ExpressionBase.Parse(valueSelectorString) ??
+            var conditionExp = ExpressionBase.Parse(conditionString) ??
                 throw new TemplateException($"Function '{nameof(Filter)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -587,7 +613,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private IAsyncEnumerable<Path> FilterPaths(ExpressionBase[] args, EvaluationContext ctx, TemplateEnvironment env)
+        private IAsyncEnumerable<Path> FilterPaths(ExpressionBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -597,6 +623,239 @@ namespace Tellma.Controllers.Templating
 
             var listExp = args[0];
             return listExp.ComputePaths(ctx);
+        }
+
+        #endregion
+
+        #region OrderBy
+
+        private TemplateFunction OrderBy()
+        {
+            return new TemplateFunction(
+                functionAsync: (object[] args, EvaluationContext ctx) => OrderByImpl(args, ctx),
+                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => OrderBySelect(args, ctx),
+                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => OrderByPaths(args, ctx));
+        }
+
+        private async Task<object> OrderByImpl(object[] args, EvaluationContext ctx)
+        {
+            // Get arguments
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects {argCount} arguments");
+            }
+
+            if (!(args[0] is IList items))
+            {
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 1st argument list of type List");
+            }
+
+            if (!(args[1] is string selectorExpString))
+            {
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 2nd argument selector of type string");
+            }
+
+            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+                throw new TemplateException($"Function '{nameof(OrderBy)}' 2nd parameter cannot be an empty string");
+
+            // Retrieve the selected value on which the sorting happens
+            var selections = new object[items.Count];
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+
+                // Clone an empty context and set a single local variable
+                var scopedCtx = ctx.CloneWithoutLocals();
+                scopedCtx.SetLocalVariable("$", new TemplateVariable(value: item));
+
+                selections[i] = await selectorExp.Evaluate(scopedCtx);
+            }
+
+            // Sort using linq
+            var result = items.Cast<object>() // Change to IEnumerable<object>
+                .Select((item, index) => (item, index)) // Remember the index
+                .OrderBy(e => selections[e.index]) // sort
+                .Select(e => e.item) // Forget the index
+                .ToList();
+
+            return result;
+        }
+
+        private async IAsyncEnumerable<Path> OrderBySelect(ExpressionBase[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects {argCount} arguments");
+            }
+
+            // Get the list expression
+            var listExp = args[0];
+
+            // Get and parse the value selector expression
+            var selectorParameterExp = args[1];
+            var selectorObj = await selectorParameterExp.Evaluate(ctx);
+            if (!(selectorObj is string selectorString))
+            {
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 2nd argument selector of type string");
+            }
+
+            var selectorExp = ExpressionBase.Parse(selectorString) ??
+                throw new TemplateException($"Function '{nameof(OrderBy)}' 2nd parameter cannot be an empty string");
+
+            // Remove local variables and functions and add one $ variable
+            var scopedCtx = ctx.CloneWithoutLocals();
+            scopedCtx.SetLocalVariable("$", new TemplateVariable(
+                    eval: TemplateUtil.VariableThatThrows("$"),
+                    pathsResolver: () => listExp.ComputePaths(ctx))); // Use the paths of listExp as the paths of the $ variable
+
+            // Return the selects of the inner expression
+            await foreach (var path in selectorExp.ComputeSelect(scopedCtx))
+            {
+                yield return path;
+            }
+        }
+
+        private IAsyncEnumerable<Path> OrderByPaths(ExpressionBase[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects {argCount} arguments");
+            }
+
+            var listExp = args[0];
+            return listExp.ComputePaths(ctx);
+        }
+
+        #endregion
+
+        #region SelectMany
+
+        private TemplateFunction SelectMany()
+        {
+            return new TemplateFunction(
+                functionAsync: (object[] args, EvaluationContext ctx) => SelectManyImpl(args, ctx),
+                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => SelectManySelect(args, ctx),
+                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => SelectManyPaths(args, ctx));
+        }
+
+        private async Task<object> SelectManyImpl(object[] args, EvaluationContext ctx)
+        {
+            // Get arguments
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects {argCount} arguments");
+            }
+
+            if (!(args[0] is IList items))
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 1st argument list of type List");
+            }
+
+            if (!(args[1] is string selectorExpString))
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
+            }
+
+            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+                throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
+
+            List<object> result = new List<object>();
+            for (int i = 0; i < items.Count; i++)
+            {
+                var parentItem = items[i];
+
+                // Clone an empty context and set a single local variable
+                var scopedCtx = ctx.CloneWithoutLocals();
+                scopedCtx.SetLocalVariable("$", new TemplateVariable(value: parentItem));
+
+                var childListObj = await selectorExp.Evaluate(scopedCtx) ?? false;
+                if (childListObj is IList childList)
+                {
+                    foreach (var childItem in childList)
+                    {
+                        result.Add(childItem);
+                    }
+                }
+                else if (!(childListObj is null))
+                {
+                    throw new TemplateException($"Selector '{selectorExpString}' must evaluate to a list value");
+                }
+            }
+
+            return result;
+        }
+
+        private async IAsyncEnumerable<Path> SelectManySelect(ExpressionBase[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects {argCount} arguments");
+            }
+
+            // Get the list expression
+            var listExp = args[0];
+
+            // Get and parse the value selector expression
+            var selectorExpExp = args[1];
+            var selectorExpObj = await selectorExpExp.Evaluate(ctx);
+            if (!(selectorExpObj is string selectorExpString))
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
+            }
+
+            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+                throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
+
+            // Remove local variables and functions and add one $ variable
+            var scopedCtx = ctx.CloneWithoutLocals();
+            scopedCtx.SetLocalVariable("$", new TemplateVariable(
+                    eval: TemplateUtil.VariableThatThrows("$"),
+                    pathsResolver: () => listExp.ComputePaths(ctx))); // Use the paths of listExp as the paths of the $ variable
+
+            // Return the selects of the inner expression
+            await foreach (var path in selectorExp.ComputeSelect(scopedCtx))
+            {
+                yield return path;
+            }
+        }
+
+        private async IAsyncEnumerable<Path> SelectManyPaths(ExpressionBase[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects {argCount} arguments");
+            }
+
+            var listExp = args[0];
+
+            // Get and parse the value selector expression
+            var selectorExpExp = args[1];
+            var selectorExpObj = await selectorExpExp.Evaluate(ctx);
+            if (!(selectorExpObj is string selectorExpString))
+            {
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
+            }
+
+            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+                throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
+
+            // Remove local variables and functions and add one $ variable
+            var scopedCtx = ctx.CloneWithoutLocals();
+            scopedCtx.SetLocalVariable("$", new TemplateVariable(
+                    eval: TemplateUtil.VariableThatThrows("$"),
+                    pathsResolver: () => listExp.ComputePaths(ctx))); // Use the paths of listExp as the paths of the $ variable
+
+            // Return the paths of the inner expression
+            await foreach (var path in selectorExp.ComputePaths(scopedCtx))
+            {
+                yield return path;
+            }
         }
 
         #endregion
@@ -760,7 +1019,7 @@ namespace Tellma.Controllers.Templating
             return toFormat.ToString(formatString, null);
         }
 
-        #endregion
+        #endregion,
 
         #region If
 
@@ -812,6 +1071,161 @@ namespace Tellma.Controllers.Templating
             }
         }
 
+
+        #endregion
+
+        #region AmountInWords
+
+        private TemplateFunction AmountInWords(TemplateEnvironment env)
+        {
+            return new TemplateFunction(function: (object[] args, EvaluationContext ctx) => AmountInWordsImpl(args, ctx, env));
+        }
+
+        private object AmountInWordsImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        {
+            // Validation
+            int minArgCount = 1;
+            int maxArgCount = 3;
+            if (args.Length < minArgCount || args.Length > maxArgCount)
+            {
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
+            }
+
+            // Amount
+            object amountObj = args[0];
+            decimal amount;
+            try
+            {
+                amount = Convert.ToDecimal(amountObj);
+            }
+            catch
+            {
+                throw new TemplateException($"{nameof(AmountInWords)} expects a 1st parameter amount of a numeric type");
+            }
+
+            // Currency ISO
+            string currencyIso = null;
+            if (args.Length >= 2)
+            {
+                currencyIso = args[1]?.ToString();
+            }
+
+            // Decimals
+            int? decimals = null;
+            if (args.Length >= 3 && args[2] != null)
+            {
+                object decimalsObj = args[2]; 
+                try
+                {
+                    decimals = Convert.ToInt32(decimalsObj);
+                }
+                catch
+                {
+                    throw new TemplateException($"{nameof(AmountInWords)} expects a 3rd parameter decimals of type int");
+                }
+            }
+
+            // Validation
+            if (decimals != null)
+            {
+                var allowedValues = new List<int> { 0, 2, 3 };
+                if (!allowedValues.Contains(decimals.Value))
+                {
+                    throw new TemplateException($"{nameof(AmountInWords)} 3rd parameter can be one of the following: {string.Join(", ", allowedValues)}");
+                }
+            }
+
+            // TODO: Add more languages based on env.Culture
+            return AmountInWordsEn.ConvertAmount(amount, currencyIso, decimals);
+        }
+
+        #endregion
+
+        #region StartsWith
+
+        private TemplateFunction StartsWith()
+        {
+            return new TemplateFunction(StartsWithImpl);
+        }
+
+        private object StartsWithImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(StartsWith)}' expects {argCount} arguments");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return false; // null does not start with anything
+            }
+            else if (textObj is string textString)
+            {
+                var prefixObj = args[1];
+                if (prefixObj is null)
+                {
+                    return true; // Everything starts with null
+                }
+                else if (prefixObj is string prefixString)
+                {
+                    return textString.StartsWith(prefixString);
+                }
+                else
+                {
+                    throw new TemplateException($"Function '{nameof(StartsWith)}' expects a 2st argument prefix of type string");
+                }
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(StartsWith)}' expects a 1st argument text of type string");
+            }
+        }
+
+        #endregion
+
+        #region EndsWith
+
+        private TemplateFunction EndsWith()
+        {
+            return new TemplateFunction(EndsWithImpl);
+        }
+
+        private object EndsWithImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(EndsWith)}' expects {argCount} arguments");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return false; // null does not start with anything
+            }
+            else if (textObj is string textString)
+            {
+                var prefixObj = args[1];
+                if (prefixObj is null)
+                {
+                    return true; // Everything starts with null
+                }
+                else if (prefixObj is string prefixString)
+                {
+                    return textString.EndsWith(prefixString);
+                }
+                else
+                {
+                    throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 2st argument prefix of type string");
+                }
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 1st argument text of type string");
+            }
+        }
 
         #endregion
 

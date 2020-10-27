@@ -15,7 +15,7 @@ namespace Tellma.Entities
         /// <summary>
         /// Those strings cannot be used as Ids in Entities with string Ids because they will mess up the routing logic
         /// </summary>
-        public static readonly string[] RESERVED_IDS = { "new", "import", "template", "export", "export-by-ids", "aggregate", "children-of", "by-ids" };
+        public static readonly string[] RESERVED_IDS = { "new", "import", "template", "export", "export-by-ids", "aggregate", "children-of", "by-ids", "print" };
 
         /// <summary>
         /// All inheriting classes will have a strongly typed Id property that is usually an int or a string,

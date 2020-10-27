@@ -253,7 +253,7 @@ namespace Tellma.Controllers.ImportExport
             {
                 foreach (var (navType, navDefId, keyPropMeta, keysSet) in queryInfos)
                 {
-                    IFactWithIdService service = _sp.FactWithIdServiceByEntityType(navType, navDefId);
+                    IFactWithIdService service = _sp.FactWithIdServiceByEntityType(navType.Name, navDefId);
 
                     var keyPropDesc = keyPropMeta.Descriptor;
                     var keyPropName = keyPropDesc.Name;

@@ -607,7 +607,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     if (friendlyError.status === 422) {
       const validationErrors = friendlyError.error as { [key: string]: string[] };
       const keys = Object.keys(validationErrors);
-      const tracker: { [key: string]: true } = {};
+      const tracker: { [error: string]: true } = {};
       for (const key of keys) {
         for (const error of validationErrors[key]) {
           tracker[error] = true; // To show distinct errors

@@ -30,7 +30,6 @@
 	-- Decimal1, Decimal2, Decimal3: VAT percent, WIP percent completion: DM, DL, O/H
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[NotedRelationId]			INT				CONSTRAINT [FK_Entries__NotedRelationId] REFERENCES dbo.[Relations]([Id]),
 	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax, or Control Quantity for poultry
 	[NotedDate]					DATE,
@@ -54,6 +53,8 @@ GO
 CREATE INDEX [IX_Entries__UnitId] ON [dbo].[Entries]([UnitId]);
 GO
 CREATE INDEX [IX_Entries__CustodyId] ON [dbo].[Entries]([CustodyId]);
+GO
+CREATE INDEX [IX_Entries__ParticipantId] ON [dbo].[Entries]([ParticipantId]);
 GO
 CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO

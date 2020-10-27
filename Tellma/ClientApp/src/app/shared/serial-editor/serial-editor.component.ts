@@ -71,6 +71,11 @@ export class SerialEditorComponent implements ControlValueAccessor, OnChanges {
 
   private parse(value: string): number {
 
+    // Prevent any input larger than the code width
+    if (!!value && value.length > this.codeWidth) {
+      value = undefined;
+    }
+
     if (value === null || value === undefined || value === '') {
       return undefined;
     }

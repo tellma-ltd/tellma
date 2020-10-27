@@ -9,8 +9,10 @@ RETURN
 			E.[AccountId],
 			E.[CenterId],
 			E.[CurrencyId],
+			E.[ParticipantId],
 			E.[ResourceId],
 			E.[UnitId],
+			E.[CustodianId],
 			E.[CustodyId],
 			E.[EntryTypeId],
 			SUM(E.[AlgebraicMonetaryValue]) AS [MonetaryValue],
@@ -22,15 +24,18 @@ RETURN
 		WHERE 
 			(@fromDate IS NOT NULL AND L.[PostingDate] < @fromDate)
 			AND L.[State] = 4 -- TODO, return state as well
-		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[CustodyId], E.[EntryTypeId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[CurrencyId], E.[ParticipantId], E.[ResourceId], E.[UnitId],
+				 E.[CustodianId], E.[CustodyId], E.[EntryTypeId]
 	),
 	Movements AS (
 		SELECT
 			E.[AccountId],
 			E.[CenterId],
 			E.[CurrencyId],
+			E.[ParticipantId],
 			E.[ResourceId],
 			E.[UnitId],
+			E.[CustodianId],
 			E.[CustodyId],
 			E.[EntryTypeId],
 			SUM(CASE WHEN [Direction] > 0 THEN E.[MonetaryValue] ELSE 0 END) AS MonetaryValueIn,
@@ -49,15 +54,18 @@ RETURN
 			(@fromDate IS NULL OR L.[PostingDate] >= @fromDate)
 		AND (@toDate IS NULL OR L.[PostingDate] <= @toDate)
 		AND L.[State] = 4 -- TODO, return state as well
-		GROUP BY E.AccountId, E.[CenterId], E.[CurrencyId], E.[ResourceId], E.[UnitId], E.[CustodyId], E.[EntryTypeId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[CurrencyId], E.[ParticipantId], E.[ResourceId], E.[UnitId],
+				 E.[CustodianId], E.[CustodyId], E.[EntryTypeId]
 	),
 	Register AS (
 		SELECT
 			COALESCE(OpeningBalances.AccountId, Movements.AccountId) AS [AccountId],
 			COALESCE(OpeningBalances.[CenterId], Movements.[CenterId]) AS [CenterId],
 			COALESCE(OpeningBalances.[CurrencyId], Movements.[CurrencyId]) AS [CurrencyId],
+			COALESCE(OpeningBalances.[ParticipantId], Movements.[ResourceId]) AS [ParticipantId],
 			COALESCE(OpeningBalances.[ResourceId], Movements.[ResourceId]) AS [ResourceId],
 			COALESCE(OpeningBalances.[UnitId], Movements.[UnitId]) AS [UnitId],
+			COALESCE(OpeningBalances.[CustodianId], Movements.[CustodyId]) AS [CustodianId],			
 			COALESCE(OpeningBalances.[CustodyId], Movements.[CustodyId]) AS [CustodyId],			
 			COALESCE(OpeningBalances.[EntryTypeId], Movements.[EntryTypeId]) AS [EntryTypeId],
 
@@ -76,14 +84,24 @@ RETURN
 			ISNULL(OpeningBalances.[Mass], 0) + ISNULL(Movements.[MassIn], 0) - ISNULL(Movements.[MassOut],0) AS [ClosingMass],
 			ISNULL(OpeningBalances.[Value], 0) + ISNULL(Movements.[Debit], 0) - ISNULL(Movements.[Credit],0) AS [Closing]
 		FROM OpeningBalances
-		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
+		FULL OUTER JOIN Movements
+		ON OpeningBalances.[AccountId] = Movements.[AccountId]
+		AND OpeningBalances.[CenterId] = Movements.[CenterId]
+		AND OpeningBalances.[CurrencyId] = Movements.[CurrencyId]
+		AND OpeningBalances.[ParticipantId] = Movements.[ParticipantId]
+		AND OpeningBalances.[ResourceId] = Movements.[ResourceId]
+		AND OpeningBalances.[CustodianId] = Movements.[CustodianId]
+		AND OpeningBalances.[CustodyId] = Movements.[CustodyId]
+		AND OpeningBalances.[EntryTypeId] = Movements.[EntryTypeId]
 	)
 	SELECT
 		[AccountId], 
 		[CenterId],
 		[CurrencyId],
+		[ParticipantId],
 		[ResourceId],
 		[UnitId],
+		[CustodianId],
 		[CustodyId],
 		[EntryTypeId],
 		[OpeningMonetaryValue],	[MonetaryValueIn],	[MonetaryValueOut],	[ClosingMonetaryValue],

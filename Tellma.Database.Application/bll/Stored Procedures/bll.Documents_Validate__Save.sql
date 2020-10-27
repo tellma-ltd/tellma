@@ -100,6 +100,7 @@ SET NOCOUNT ON;
 		FE.[SerialNumber] IS NOT NULL
 	AND BE.DefinitionId = @DefinitionId
 	AND FE.Id <> BE.Id;
+
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
 	
 	-- Must not edit a document that is already closed/canceled
@@ -173,7 +174,7 @@ SET NOCOUNT ON;
 		SELECT [Node]
 		FROM dbo.[AccountTypes]
 		WHERE [Concept] IN (
-			N'Revenue', N'CostOfMerchandiseSold'
+			N'Revenue', N'CostOfMerchandiseSold', N'TradersControlAccountsExtension'
 		)
 	),
 	DirectAccountTypes AS (
@@ -308,6 +309,17 @@ SET NOCOUNT ON;
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'CurrentInventoriesInTransitExpendituresControl'
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNot1',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		N'localize:Center_CenterType_OtherPL'
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'OtherPL'
 
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

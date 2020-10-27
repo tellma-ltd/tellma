@@ -168,15 +168,15 @@ namespace Tellma.Controllers.Dto
         public string PostingDateLabel2 { get; set; }
         public string PostingDateLabel3 { get; set; }
 
-        // Noted Relation
-        public bool NotedRelationVisibility { get; set; }
-        public short? NotedRelationRequiredState { get; set; }
-        public short? NotedRelationReadOnlyState { get; set; }
-        public List<int> NotedRelationDefinitionIds { get; set; }
-        public string NotedRelationLabel { get; set; }
-        public string NotedRelationLabel2 { get; set; }
-        public string NotedRelationLabel3 { get; set; }
-        public string NotedRelationFilter { get; set; }
+        // Participant
+        public bool ParticipantVisibility { get; set; }
+        public short? ParticipantRequiredState { get; set; }
+        public short? ParticipantReadOnlyState { get; set; }
+        public List<int> ParticipantDefinitionIds { get; set; }
+        public string ParticipantLabel { get; set; }
+        public string ParticipantLabel2 { get; set; }
+        public string ParticipantLabel3 { get; set; }
+        public string ParticipantFilter { get; set; }
 
         // Center
         public bool CenterVisibility { get; set; }
@@ -274,7 +274,6 @@ namespace Tellma.Controllers.Dto
         public List<int> CustodyDefinitionIds { get; set; }
         public List<int> ParticipantDefinitionIds { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
-        public List<int> NotedRelationDefinitionIds { get; set; }
     }
 
     public class LineDefinitionColumnForClient
@@ -317,6 +316,7 @@ namespace Tellma.Controllers.Dto
     {
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }
+        public string CostCenterVisibility { get; set; }
         public string ImageVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
         public string LocationVisibility { get; set; }
