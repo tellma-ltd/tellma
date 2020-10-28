@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Entities;
@@ -88,57 +90,102 @@ namespace Tellma.Data
 
 
             // Execute the Query
-
             await conn.OpenAsync(cancellation);
+            await ExponentialBackoff(cancellation, async () =>
+            {
+                // Load Email Ids
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    int index = reader.GetInt32(i++);
+
+                    var email = emails[index];
+                    email.Id = reader.GetInt32(i++);
+                    emailsReadyToSend.Add(email);
+                }
+
+                // Load SMS Ids
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    int index = reader.GetInt32(i++);
+
+                    var sms = smses[index];
+                    sms.Id = reader.GetInt32(i++);
+                    smsesReadyToSend.Add(sms);
+                }
+
+                // Load Push Notification Ids
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    int index = reader.GetInt32(i++);
+
+                    var push = pushes[index];
+                    push.Id = reader.GetInt32(i++);
+                    pushesReadyToSend.Add(push);
+                }
+            });
+
+            return (emailsReadyToSend, smsesReadyToSend, pushesReadyToSend);
+        }
+
+        public async Task SmsMessages__UpdateStatus(int tenantId, List<int> ids, string status, string error, CancellationToken cancellation)
+        {
+            // Prep connection
+            string connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
+            using var conn = new SqlConnection(connString);
+
+            // Command and parameters
+            using var cmd = new SqlCommand($"[dal].[{nameof(SmsMessages__UpdateStatus)}]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            var idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable);
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.AddWithValue("@NewStatus", status);
+            cmd.Parameters.AddWithValue("@Error", error);
+
+
+            // Execute the Query
+            await conn.OpenAsync(cancellation);
+            await ExponentialBackoff(cancellation, async() =>
+            {
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            });
+        }
+
+        /// <summary>
+        /// Helper function that executes an async action
+        /// </summary>
+        /// <param name="cancellation"></param>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        private async Task ExponentialBackoff(CancellationToken cancellation, Func<Task> sqlQuery)
+        {
+            // Exponential backoff
+            const int maxAttempts = 2;
+            const int maxBackoff = 4000; // 4 Seconds
+            const int minBackoff = 1000; // 1 Second
+            const int deltaBackoff = 1000; // 1 Second
+
+            int attemptsSoFar = 0;
+            int backoff = minBackoff;
+
             while (!cancellation.IsCancellationRequested)
             {
-                // Exponential backoff
-                const int maxAttempts = 2;
-                const int maxBackoff = 4000; // 4 Seconds
-                const int minBackoff = 1000; // 1 Second
-                const int deltaBackoff = 1000; // 1 Second
-
-                int attemptsSoFar = 0;
-                int backoff = minBackoff;
                 try
                 {
                     attemptsSoFar++;
 
                     // Load Email Ids
-                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        int i = 0;
-                        int index = reader.GetInt32(i++);
-
-                        var email = emails[index];
-                        email.Id = reader.GetInt32(i++);
-                        emailsReadyToSend.Add(email);
-                    }
-
-                    // Load SMS Ids
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        int i = 0;
-                        int index = reader.GetInt32(i++);
-
-                        var sms = smses[index];
-                        sms.Id = reader.GetInt32(i++);
-                        smsesReadyToSend.Add(sms);
-                    }
-
-                    // Load Push Notification Ids
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        int i = 0;
-                        int index = reader.GetInt32(i++);
-
-                        var push = pushes[index];
-                        push.Id = reader.GetInt32(i++);
-                        pushesReadyToSend.Add(push);
-                    }
+                    await sqlQuery();
                 }
                 catch (SqlException ex) when (ex.Number == 1205)
                 {
@@ -157,8 +204,6 @@ namespace Tellma.Data
                     }
                 }
             }
-
-            return (emailsReadyToSend, smsesReadyToSend, pushesReadyToSend);
         }
     }
 }

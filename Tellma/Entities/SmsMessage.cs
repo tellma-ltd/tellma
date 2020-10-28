@@ -13,9 +13,21 @@ namespace Tellma.Entities
         public string Message { get; set; }
     }
 
-    public class SmsMessage : SmsMessageForSave
+    public class SmsMessageForQuery : SmsMessageForSave
     {
 
         // TODO: State and timestamps
+    }
+
+    public static class SmsMessageStatus
+    {
+        public const string New = nameof(New);
+        public const string Scheduled = nameof(Scheduled);
+        //public const string New = nameof(New);
+        //public const string New = nameof(New);
+        //public const string New = nameof(New);
+        //public const string New = nameof(New);
+        //public const string New = nameof(New);
+        //public const string New = nameof(New);
     }
 }

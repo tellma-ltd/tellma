@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Tellma.Controllers.Jobs
 {
-    public class PushNotificationQueue : BackgroundQueue<PushNotificationQueueItem>
+    public class PushNotificationQueue : BackgroundQueue<PushNotification>
     {
     }
 }

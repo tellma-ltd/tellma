@@ -9,9 +9,6 @@ namespace Tellma.Entities
         [Display(Name = "Email_ToEmail")]
         public string ToEmail { get; set; }
 
-        [Display(Name = "Email_FromEmail")]
-        public string FromEmail { get; set; }
-
         [Display(Name = "Email_Subject")]
         public string Subject { get; set; }
 
@@ -19,7 +16,7 @@ namespace Tellma.Entities
         public string Body { get; set; }
     }
 
-    public class Email : EmailForSave
+    public class EmailForQuery : EmailForSave
     {
         // TODO: State and timestamps
     }

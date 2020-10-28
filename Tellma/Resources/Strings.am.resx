@@ -202,6 +202,9 @@
   <data name="Android" xml:space="preserve">
     <value>የ Android</value>
   </data>
+  <data name="AppFullName" xml:space="preserve">
+    <value>ተልማ</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>ተልማ</value>
   </data>
@@ -668,13 +671,10 @@
     <value>ኢሜይል</value>
   </data>
   <data name="Email_Body" xml:space="preserve">
-    <value>አካል</value>
-  </data>
-  <data name="Email_FromEmail" xml:space="preserve">
-    <value>የኢሜይል አድራሻ ከ</value>
+    <value>Loading...</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>ትምህርት</value>
+    <value>Loading...</value>
   </data>
   <data name="Email_ToEmail" xml:space="preserve">
     <value>አድራሻ ኢሜይል ወደ</value>
@@ -2050,6 +2050,18 @@
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
   </data>
+  <data name="PushNotification" xml:space="preserve">
+    <value>ግፋ ማሳወቂያ</value>
+  </data>
+  <data name="PushNotification_Body" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="PushNotification_Title" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="PushNotifications" xml:space="preserve">
+    <value>ግፋ ማሳወቂያዎች</value>
+  </data>
   <data name="RD_Type_BiologicalAssets" xml:space="preserve">
     <value>ባዮሎጂካል ንብረቶች</value>
   </data>
@@ -2630,7 +2642,7 @@
     <value>ኤስ ኤም ኤስ መልዕክት</value>
   </data>
   <data name="SmsMessage_Message" xml:space="preserve">
-    <value>መልእክት</value>
+    <value>Loading...</value>
   </data>
   <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
     <value>ወደ ስልክ ቁጥር</value>

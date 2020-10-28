@@ -320,8 +320,12 @@ namespace Tellma.Controllers
                 throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
             }
 
-            var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-            await _emailSender.SendAsync(toEmail, subject, htmlMessage);
+            var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
+            await _emailSender.SendAsync(new Email(toEmail)
+            {
+                Subject = subject,
+                Body = body,
+            });
         }
 
         public async Task<User> GetMyUser(CancellationToken cancellation)
@@ -685,25 +689,21 @@ namespace Tellma.Controllers
             // Step (8): Send the invitation emails
             if (_usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
             {
-                var userIds = _usersToInvite.Select(e => e.User.Id).ToArray();
-                var tos = new List<string>();
-                var subjects = new List<string>();
-                var substitutions = new List<Dictionary<string, string>>();
+                var emails = new List<Email>(_usersToInvite.Count);
+
                 foreach (var (idUser, user) in _usersToInvite)
                 {
                     // Add the email sender parameters
                     var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-                    tos.Add(idUser.Email);
-                    subjects.Add(subject);
-                    substitutions.Add(new Dictionary<string, string> { { "-message-", body } });
+
+                    emails.Add(new Email(toEmail: idUser.Email)
+                    {
+                        Subject = subject,
+                        Body = body
+                    });
                 }
 
-                await _emailSender.SendBulkAsync(
-                    tos: tos,
-                    subjects: subjects,
-                    htmlMessage: $"-message-",
-                    substitutions: substitutions.ToList()
-                    );
+                await _emailSender.SendBulkAsync(emails);
             }
         }
 
@@ -834,7 +834,7 @@ namespace Tellma.Controllers
                     "/Account/ConfirmEmail",
                     pageHandler: null,
                     values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-                    protocol: _scheme);     
+                    protocol: _scheme);
 
             // Prepare the email
             string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];

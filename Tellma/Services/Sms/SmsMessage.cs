@@ -2,9 +2,9 @@
 
 namespace Tellma.Services.Sms
 {
-    public class SmsForSender
+    public class SmsMessage
     {
-        public SmsForSender(string toPhoneNumber, string message)
+        public SmsMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
             {
@@ -20,9 +20,24 @@ namespace Tellma.Services.Sms
             Message = message;
         }
 
+        /// <summary>
+        /// The phone number to send the SMS to
+        /// </summary>
         public string ToPhoneNumber { get; }
+
+        /// <summary>
+        /// The content of the SMS
+        /// </summary>
         public string Message { get; }
-        public int? TenantId { get; set; }
-        public int? MessageId { get; set; }
+
+        /// <summary>
+        /// The message id in the tenant database
+        /// </summary>
+        public int TenantId { get; set; }
+
+        /// <summary>
+        /// The Id of the tenant where the message is stored
+        /// </summary>
+        public int MessageId { get; set; }
     }
 }

@@ -202,6 +202,9 @@
   <data name="Android" xml:space="preserve">
     <value>Android</value>
   </data>
+  <data name="AppFullName" xml:space="preserve">
+    <value>Tellma ERP</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>Tellma</value>
   </data>
@@ -669,9 +672,6 @@
   </data>
   <data name="Email_Body" xml:space="preserve">
     <value>Body</value>
-  </data>
-  <data name="Email_FromEmail" xml:space="preserve">
-    <value>From Email Address</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
     <value>Subject</value>
@@ -2049,6 +2049,18 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
+  </data>
+  <data name="PushNotification" xml:space="preserve">
+    <value>Push Notification</value>
+  </data>
+  <data name="PushNotification_Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="PushNotification_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="PushNotifications" xml:space="preserve">
+    <value>Push Notifications</value>
   </data>
   <data name="RD_Type_BiologicalAssets" xml:space="preserve">
     <value>Biological assets</value>

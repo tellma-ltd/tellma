@@ -17,7 +17,7 @@ namespace Tellma.Controllers.Jobs
         private readonly ConcurrentQueue<TItem> _queue = new ConcurrentQueue<TItem>();
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
 
-        public void QueueBackgroundWorkItem(TItem item)
+        public virtual void QueueBackgroundWorkItem(TItem item)
         {
             if (item == null)
             {
@@ -28,7 +28,7 @@ namespace Tellma.Controllers.Jobs
             _signal.Release();
         }
 
-        public async Task<TItem> DequeueAsync(CancellationToken cancellationToken)
+        public async virtual Task<TItem> DequeueAsync(CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
 

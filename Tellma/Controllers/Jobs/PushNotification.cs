@@ -1,6 +1,12 @@
-﻿namespace Tellma.Controllers.Jobs
+﻿using Newtonsoft.Json;
+using Tellma.Entities;
+
+namespace Tellma.Controllers.Jobs
 {
-    public class PushNotificationQueueItem
+    /// <summary>
+    /// Represent a single web push notification to an end user device
+    /// </summary>
+    public class PushNotification // TODO Move to push notifications service
     {
         public string Endpoint { get; set; }
         public string P256dh { get; set; }

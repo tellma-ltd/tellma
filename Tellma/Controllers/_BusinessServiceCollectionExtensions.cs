@@ -31,12 +31,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // These are helper services that business services rely on
             services = services
+                // Notifications
                 .AddSingleton<EmailQueue>()
                 .AddSingleton<SmsQueue>()
                 .AddSingleton<PushNotificationQueue>()
+                .AddSingleton<ExternalNotificationsService>()
 
                 .AddSingleton<GlobalSettingsProvider>()
-                .AddSingleton<ExternalNotificationsService>()
                 .AddSingleton<IDefinitionsCache, DefinitionsCache>()
                 .AddSingleton<ISettingsCache, SettingsCache>()
                 .AddScoped<MetadataProvider>()

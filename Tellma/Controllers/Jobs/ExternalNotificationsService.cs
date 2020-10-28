@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,6 +6,8 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Data;
 using Tellma.Entities;
+using Tellma.Services.Email;
+using Tellma.Services.Sms;
 
 namespace Tellma.Controllers.Jobs
 {
@@ -25,48 +26,77 @@ namespace Tellma.Controllers.Jobs
             _pushQueue = pushQueue;
         }
 
-        public async Task Enqueue(int tenantId, List<EmailQueueItem> emailQueueItems = null, List<SmsQueueItem> smsQueueItems = null, List<PushNotificationQueueItem> pushQueueItems = null, CancellationToken cancellation)
+        public async Task Enqueue(int tenantId, List<Email> emails = null, List<SmsMessage> smsMessages = null, List<PushNotification> pushNotifications = null, CancellationToken cancellation = default)
         {
-            emailQueueItems ??= new List<EmailQueueItem>();
-            smsQueueItems ??= new List<SmsQueueItem>();
-            pushQueueItems ??= new List<PushNotificationQueueItem>();
+            emails ??= new List<Email>();
+            smsMessages ??= new List<SmsMessage>();
+            pushNotifications ??= new List<PushNotification>();
 
-            var emails = emailQueueItems.Select(e => Map(e)).ToList();
-            var smses = smsQueueItems.Select(e => Map(e)).ToList();
-            var pushes = pushQueueItems.Select(e => Map(e)).ToList();
+            var emailsDic = emails.ToDictionary(e => ToEntity(e));
+            var smsesDic = smsMessages.ToDictionary(e => ToEntity(e));
+            var pushesDic = pushNotifications.ToDictionary(e => ToEntity(e));
 
             var trxOptions = new TransactionOptions { IsolationLevel = IsolationLevel.Serializable };
             using var trx = new TransactionScope(TransactionScopeOption.Required, trxOptions, TransactionScopeAsyncFlowOption.Enabled);
 
-            var (emailsRead, smsesReady, pushesReady) = await _repo.Notifications_Enqueu(tenantId, emails, smses, pushes, cancellation);
+            // Persist the notifications in the database
+            // The returned notifications are those that we can queue immediately, since their tables contain no previous NEW or stale PENDING notifications
+            var (emailsReady, smsesReady, pushesReady) = await _repo.Notifications_Enqueu(
+                    tenantId: tenantId,
+                    emails: emailsDic.Keys.ToList(),
+                    smses: smsesDic.Keys.ToList(),
+                    pushes: pushesDic.Keys.ToList(),
+                    cancellation: cancellation);
 
+            // Queue emails
+            _emailQueue.QueueBackgroundWorkItem(emailsReady.Select(e => emailsDic[e]));
 
-            _emailQueue.QueueBackgroundWorkItem();
+            // Queue SMS messages
+            foreach (SmsMessage sms in smsesReady.Select(e => smsesDic[e]))
+            {
+                _smsQueue.QueueBackgroundWorkItem(sms);
+            }
+
+            // Queue web push notifications
+            foreach (PushNotification pushNotification in pushesReady.Select(e => pushesDic[e]))
+            {
+                _pushQueue.QueueBackgroundWorkItem(pushNotification);
+            }
+
+            // A set of background jobs will asynchrously dequeue these notifications and dispatch them to the appropriate external services
         }
 
-        private static EmailForSave Map(EmailQueueItem e)
+        /// <summary>
+        /// Helper function
+        /// </summary>
+        public static EmailForSave ToEntity(Email e)
         {
             return new EmailForSave
             {
-                FromEmail = e.FromEmail,
-                Body = e.Body,
-                Subject = e.Subject,
                 ToEmail = e.ToEmail,
+                Subject = e.Subject,
+                Body = e.Body,
+                Id = e.EmailId
             };
         }
 
-        private static EmailQueueItem Map(EmailForSave e)
+        /// <summary>
+        /// Helper function
+        /// </summary>
+        public static Email FromEntity(EmailForSave e)
         {
-            return new EmailQueueItem
+            return new Email(e.ToEmail)
             {
-                FromEmail = e.FromEmail,
-                Body = e.Body,
+                EmailId = e.Id,
                 Subject = e.Subject,
-                ToEmail = e.ToEmail,
+                Body = e.Body
             };
         }
 
-        private static SmsMessageForSave Map(SmsQueueItem e)
+        /// <summary>
+        /// Helper function
+        /// </summary>
+        public static SmsMessageForSave ToEntity(SmsMessage e)
         {
             return new SmsMessageForSave
             {
@@ -75,16 +105,18 @@ namespace Tellma.Controllers.Jobs
             };
         }
 
-        private static SmsQueueItem Map(SmsMessageForSave e)
+        /// <summary>
+        /// Helper function
+        /// </summary>
+        public static SmsMessage FromEntity(SmsMessageForSave e)
         {
-            return new SmsQueueItem
-            {
-                ToPhoneNumber = e.ToPhoneNumber,
-                Message = e.Message,
-            };
+            return new SmsMessage(e.ToPhoneNumber, e.Message);
         }
 
-        private static PushNotificationForSave Map(PushNotificationQueueItem e)
+        /// <summary>
+        /// Helper function
+        /// </summary>
+        public static PushNotificationForSave ToEntity(PushNotification e)
         {
             return new PushNotificationForSave
             {
@@ -98,19 +130,22 @@ namespace Tellma.Controllers.Jobs
             };
         }
 
-        private static PushNotificationQueueItem Map(PushNotificationForSave e)
+        /// <summary>
+        ///  Helper function
+        /// </summary>
+        public static PushNotification FromEntity(PushNotificationForSave e)
         {
             PushNotificationInfo content;
             try
             {
                 content = JsonConvert.DeserializeObject<PushNotificationInfo>(e.Content);
-            } 
+            }
             catch
             {
                 return null; // Should not happen in theory but just in case
             }
 
-            return new PushNotificationQueueItem
+            return new PushNotification
             {
                 Auth = e.Auth,
                 Endpoint = e.Endpoint,

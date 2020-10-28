@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Tellma.Services.Sms;
 
 namespace Tellma.Controllers.Jobs
 {
-    public class SmsQueue : BackgroundQueue<SmsQueueItem>
+    public class SmsQueue : BackgroundQueue<SmsMessage>
     {
     }
 }

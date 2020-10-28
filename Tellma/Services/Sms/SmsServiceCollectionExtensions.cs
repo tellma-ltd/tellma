@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IApplicationBuilder UseSmsCallback(this IApplicationBuilder thisApp, IConfiguration config)
+        public static IApplicationBuilder UseSmsCallback(this IApplicationBuilder bldr, IConfiguration config)
         {
             // Get the Twilio Section
             var section = config.GetSection(SECTION_NAME);
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // This configures a callback endpoint for Twilio event webhooks
             if (opt?.Sms?.CallbacksEnabled ?? false)
             {
-                thisApp = thisApp.Map("/api/sms-callback", (app) =>
+                bldr = bldr.Map("/api/sms-callback", (app) =>
                 {
                     app.Run(async ctx =>
                     {
@@ -186,7 +186,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
             }
 
-            return thisApp;
+            return bldr;
         }
 
         /// <summary>

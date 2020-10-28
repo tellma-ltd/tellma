@@ -26,7 +26,7 @@ namespace Tellma.Services.Sms
             _logger = logger;
         }
 
-        public async Task SendAsync(SmsForSender sms, CancellationToken cancellation = default)
+        public async Task SendAsync(SmsMessage sms, CancellationToken cancellation = default)
         {
             var serviceSid = !string.IsNullOrWhiteSpace(_options.ServiceSid) ? _options.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
 
@@ -40,7 +40,7 @@ namespace Tellma.Services.Sms
             Uri callbackUri = null;
             if (messageId != null)
             {
-                string hostname = "https://web.tellma.com".WithoutTrailingSlash();
+                string hostname = _options.CallbackHost?.WithoutTrailingSlash() ?? throw new InvalidOperationException("CallbackHost is missing");
                 string stringUri = $"{hostname}/api/sms-callback?{MessageIdParamName}={messageId}";
                 if (tenantId != null)
                 {
