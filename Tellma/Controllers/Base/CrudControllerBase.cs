@@ -49,6 +49,8 @@ namespace Tellma.Controllers
 
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
+                using var _ = _instrumentation.Block("Controller Save");
+
                 // Basic sanity check, to prevent null entities
                 if (entities == null && !ModelState.IsValid)
                 {
@@ -71,10 +73,13 @@ namespace Tellma.Controllers
 
                 await OnSuccessfulSave(data, extras);
 
+
                 // Transform it and return the result
                 var returnEntities = args?.ReturnEntities ?? false;
                 if (returnEntities)
                 {
+                    using var block = _instrumentation.Block("TransformToEntitiesResponse");
+
                     // Transform the entities as an EntitiesResponse
                     var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
@@ -229,20 +234,38 @@ namespace Tellma.Controllers
         {
             try
             {
+                using var _ = _instrumentation.Block("Service Save");
+
+                IDisposable block;
+
+                block = _instrumentation.Block("Trim Str Properties");
+
                 // Trim all strings as a preprocessing step
                 entities.ForEach(e => TrimStringProperties(e));
 
+                block.Dispose();
+                block = _instrumentation.Block("Check Permissions");
+
                 // Check that any updated Ids are 
                 FilterExpression updateFilter = await CheckUpdatePermissionBefore(entities);
+
+                block.Dispose();
+                block = _instrumentation.Block("Validate Unique Ids");
 
                 // Validate
                 // Check that non-null non-0 Ids are unique
                 ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
 
+                block.Dispose();
+                block = _instrumentation.Block("Metadata Validate");
+
                 // Basic Validation (before preprocessing)
                 var meta = GetMetadataForSave();
                 ValidateList(entities, meta);
                 ModelState.ThrowIfInvalid();
+
+                block.Dispose();
+                block = _instrumentation.Block("SavePreprocessAsync");
 
                 // Start a transaction scope for save since it causes data modifications
                 using var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions());
@@ -250,9 +273,15 @@ namespace Tellma.Controllers
                 // Optional preprocessing
                 await SavePreprocessAsync(entities);
 
+                block.Dispose();
+                block = _instrumentation.Block("SaveValidateAsync");
+
                 // Custom validation
                 await SaveValidateAsync(entities);
                 ModelState.ThrowIfInvalid();
+
+                block.Dispose();
+                block = _instrumentation.Block("SaveExecuteAsync");
 
                 // Save and retrieve Ids
                 var returnEntities = args?.ReturnEntities ?? false;
@@ -263,18 +292,37 @@ namespace Tellma.Controllers
                 Extras extras = null;
                 if (returnEntities)
                 {
+
+                    block.Dispose();
+                    block = _instrumentation.Block("SaveExecuteAsync");
+
                     (data, extras) = await GetByIds(ids, args, Constants.Update, cancellation: default);
                 }
+
+                block.Dispose();
+                block = _instrumentation.Block("CheckActionPermissionsAfter");
 
                 // Check that the saved entities satisfy the user's row level security filter
                 await CheckActionPermissionsAfter(updateFilter, ids, data);
 
+                block.Dispose();
+                block = _instrumentation.Block("NonTransactionalSideEffectsForSave");
+
                 // Perform side effects of save that are not transactional, just before committing the transaction
                 await NonTransactionalSideEffectsForSave(entities, data);
 
+                block.Dispose();
+                block = _instrumentation.Block("OnSaveCompleted");
+
                 // Commit and return
                 await OnSaveCompleted();
+
+                block.Dispose();
+                block = _instrumentation.Block("trx.Complete");
+
                 trx.Complete();
+
+                block.Dispose();
 
                 return (data, extras);
             }
