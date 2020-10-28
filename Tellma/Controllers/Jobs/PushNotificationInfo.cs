@@ -10,13 +10,8 @@ namespace Tellma.Controllers.Jobs
     /// </summary>
     public class PushNotificationInfo
     {
-        public PushNotificationInfo(string title)
-        {
-            Title = title ?? throw new ArgumentNullException(nameof(title));
-        }
-
         [JsonProperty("title")]
-        public string Title { get; }
+        public string Title { get; } // Required
 
         [JsonProperty("badge")]
         public string Badge { get; set; }
@@ -62,17 +57,11 @@ namespace Tellma.Controllers.Jobs
 
         public class NotificationAction
         {
-            public NotificationAction(string action, string title)
-            {
-                Action = action ?? throw new ArgumentNullException(nameof(action));
-                Title = title ?? throw new ArgumentNullException(nameof(title));
-            }
-
             [JsonProperty("action")]
-            public string Action { get; }
+            public string Action { get; } // Required
 
             [JsonProperty("title")]
-            public string Title { get; }
+            public string Title { get; } // Required
         }
     }
 }

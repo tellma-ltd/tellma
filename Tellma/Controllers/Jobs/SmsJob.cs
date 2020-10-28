@@ -10,13 +10,13 @@ using Tellma.Data;
 
 namespace Tellma.Controllers.Jobs
 {
-    public class SmsPushJob : BackgroundService
+    public class SmsJob : BackgroundService
     {
         private readonly SmsQueue _queue;
-        private readonly ILogger<SmsPushJob> _logger;
+        private readonly ILogger<SmsJob> _logger;
         private readonly IServiceProvider _services;
 
-        public SmsPushJob(SmsQueue queue, ILogger<SmsPushJob> logger, IServiceProvider services)
+        public SmsJob(SmsQueue queue, ILogger<SmsJob> logger, IServiceProvider services)
         {
             _queue = queue;
             _logger = logger;
@@ -35,7 +35,7 @@ namespace Tellma.Controllers.Jobs
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error in {nameof(SmsPushJob)}.");
+                    _logger.LogError(ex, $"Error in {nameof(SmsJob)}.");
                 }
             }
         }

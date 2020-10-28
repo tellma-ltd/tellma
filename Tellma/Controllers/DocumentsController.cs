@@ -291,7 +291,7 @@ namespace Tellma.Controllers
         private readonly ISettingsCache _settingsCache;
         private readonly IClientInfoAccessor _clientInfo;
         private readonly ITenantInfoAccessor _tenantInfoAccessor;
-        private readonly NotificationsService _notificationsService;
+        private readonly ExternalNotificationsService _notificationsService;
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
@@ -348,7 +348,7 @@ namespace Tellma.Controllers
         public DocumentsService(TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, NotificationsService notificationsSerice,
+            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, ExternalNotificationsService notificationsSerice,
             IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(sp)
         {
             _templateService = templateService;
@@ -477,7 +477,7 @@ namespace Tellma.Controllers
             if (userInfo.UserId != args.AssigneeId)
             {
                 // TODO
-                await _notificationsService.Enqueue(null, null, null);
+                await _notificationsService.Enqueue(_tenantIdAccessor.GetTenantId(), null, null, null);
             }
 
             trx.Complete();

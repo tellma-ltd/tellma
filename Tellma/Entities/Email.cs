@@ -4,7 +4,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Email", Plural = "Emails")]
-    public class Email : EntityWithKey<int>
+    public class EmailForSave : EntityWithKey<int>
     {
         [Display(Name = "Email_ToEmail")]
         public string ToEmail { get; set; }
@@ -17,7 +17,10 @@ namespace Tellma.Entities
 
         [Display(Name = "Email_Body")]
         public string Body { get; set; }
+    }
 
+    public class Email : EmailForSave
+    {
         // TODO: State and timestamps
     }
 }
