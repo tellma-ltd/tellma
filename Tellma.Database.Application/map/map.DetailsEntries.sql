@@ -14,8 +14,13 @@ With EB AS ( -- TODO: Test with Resources having both pure and non pure units
 				AS DECIMAL (19,4)
 			)
 		) As [BaseQuantity],-- Quantity in Base unit of that resource
-		IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass]) AS [Density]
+		IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass]) AS [Density],
+		IIF(DD.[DocumentType] = 1, E.[Direction] * E.[Value], 0) AS [Planned],
+		IIF(DD.[DocumentType] = 2, E.[Direction] * E.[Value], 0) AS [Actual]
 	FROM dbo.Entries E
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
+	JOIN dbo.DocumentDefinitions DD ON D.[DefinitionId] = DD.[Id]
 	LEFT JOIN dbo.[Resources] R ON E.ResourceId = R.[Id]
 	LEFT JOIN dbo.Units EU ON E.UnitId = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
@@ -37,5 +42,6 @@ SELECT
 -	EB.[Direction] * EB.[PValue]					AS [NegativeAlgebraicPresentationValue],
 
 	IIF(EB.[BaseQuantity] = 0, 0, EB.[MonetaryValue] / EB.[BaseQuantity]) AS [MonetaryValuePerUnit],
-	IIF(EB.[BaseQuantity] = 0, 0, EB.[Value] / EB.[BaseQuantity]) AS [ValuePerUnit]
+	IIF(EB.[BaseQuantity] = 0, 0, EB.[Value] / EB.[BaseQuantity]) AS [ValuePerUnit],
+	(EB.[Planned] - EB.[Actual]) AS [Variance]
 FROM EB

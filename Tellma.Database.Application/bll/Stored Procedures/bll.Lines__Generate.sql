@@ -23,13 +23,11 @@ AS
 	SELECT
 		[L].[DefinitionId],
 		[L].[PostingDate],
-		--[L].[TemplateLineId],
-		--[L].[Multiplier],
 		[L].[Memo],
-		[L].[Index],
 		[L].[Boolean1],
 		[L].[Decimal1],
-		[L].[Text1]
+		[L].[Text1],
+		[L].[Index]
 	FROM @Lines AS [L] -- LineList
 	ORDER BY [L].[Index] ASC
 
@@ -67,7 +65,7 @@ AS
 	[A].[Name3], 
 	[A].[Code] 
 	FROM [map].[Accounts]() [A] 
-	WHERE [Id] IN (SELECT [AccountId] FROM @Entries)
+	WHERE [Id] IN (SELECT [AccountId] FROM @Entries);
 
 	-- Currency
 	SELECT 
@@ -77,7 +75,7 @@ AS
 	[C].[Name3], 
 	[C].[E] FROM 
 	[map].[Currencies]() [C] 
-	WHERE [Id] IN (SELECT [CurrencyId] FROM @Entries)
+	WHERE [Id] IN (SELECT [CurrencyId] FROM @Entries);
 
 	-- Custody
 	SELECT 
@@ -87,7 +85,7 @@ AS
 	[C].[Name3],
 	[C].[DefinitionId]
 	FROM [map].[Custodies]() [C] 
-	WHERE [Id] IN (SELECT [CustodyId] FROM @Entries)
+	WHERE [Id] IN (SELECT [CustodyId] FROM @Entries);
 
 	-- Resource
 	SELECT 
@@ -97,7 +95,7 @@ AS
 	[R].[Name3], 
 	[R].[DefinitionId] 
 	FROM [map].[Resources]() [R] 
-	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
+	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries);
 
 	-- Relation (From 2 places)
 	SELECT 
@@ -108,7 +106,7 @@ AS
 	[R].[DefinitionId]
 	FROM [map].[Relations]() [R] 
 	WHERE [Id] IN (SELECT [CustodianId] FROM @Entries)
-		OR [Id] IN  (SELECT [ParticipantId] FROM @Entries)
+		OR [Id] IN  (SELECT [ParticipantId] FROM @Entries);
 
 	-- EntryType
 	SELECT 
@@ -117,7 +115,7 @@ AS
 	[ET].[Name2], 
 	[ET].[Name3]
 	FROM [map].[EntryTypes]() [ET]
-	WHERE [Id] IN (SELECT [EntryTypeId] FROM @Entries)
+	WHERE [Id] IN (SELECT [EntryTypeId] FROM @Entries);
 	
 	-- Center
 	SELECT 
@@ -126,7 +124,7 @@ AS
 	[C].[Name2], 
 	[C].[Name3] 
 	FROM [map].[Centers]() [C] 
-	WHERE [Id] IN (SELECT [CenterId] FROM @Entries)
+	WHERE [Id] IN (SELECT [CenterId] FROM @Entries);
 
 	-- Unit
 	SELECT 
@@ -135,4 +133,4 @@ AS
 	[U].[Name2], 
 	[U].[Name3] 
 	FROM [map].[Units]() [U] 
-	WHERE [Id] IN (SELECT [UnitId] FROM @Entries)
+	WHERE [Id] IN (SELECT [UnitId] FROM @Entries);

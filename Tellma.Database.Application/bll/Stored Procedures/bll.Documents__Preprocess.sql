@@ -185,6 +185,7 @@ BEGIN
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 
 	--	For Manual JV, get center from resource, if any
+	IF (1=0) -- Skip this
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(
@@ -196,6 +197,7 @@ BEGIN
 	JOIN map.Accounts() A ON E.[AccountId] = A.[Id] -- E.AccountId is NULL for smart screens
 
 	-- For smart lines, get center from resource, if any
+	IF (1=0) -- Skip this
 	UPDATE E
 	SET
 		E.[CenterId]		= COALESCE(
@@ -319,11 +321,9 @@ BEGIN
 				[LineIndex] INT, 
 				[DocumentIndex] INT,  
 				[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
-				--[CustodianDefinitionId] INT, 
 				[CustodianId] INT, 
 				[CustodyDefinitionId] INT, 
 				[CustodyId] INT,
-				--[ParticipanDefinitiontId] INT,
 				[ParticipantId] INT,
 				[ResourceDefinitionId] INT,
 				[ResourceId] INT,
@@ -394,7 +394,6 @@ BEGIN
 	ON E.[Index] = CAS.[Index] AND E.[LineIndex] = CAS.[LineIndex] AND E.[DocumentIndex] = CAS.[DocumentIndex]
 	WHERE L.DefinitionId  <> @ManualLineLD
 	AND CAS.AccountCount = 1
---	AND E.AccountId <> CAS.[AccountId]
 
 	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
 	SET E.AccountId = NULL

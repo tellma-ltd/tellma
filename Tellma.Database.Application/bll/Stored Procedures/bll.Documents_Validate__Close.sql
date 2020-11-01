@@ -66,7 +66,7 @@ SET NOCOUNT ON;
 	BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
 		SELECT TOP (@Top)
 			AB.[Id] AS [AccountBalanceId], 
-			FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
+			FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'G', 'en-us') AS NetBalance
 		FROM dbo.Documents D
 		JOIN dbo.Lines L ON L.DocumentId = D.[Id]
 		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
@@ -113,7 +113,7 @@ SET NOCOUNT ON;
 		N'Error_TheDocumentHasControlAccount0For1WithNetBalance2' AS [ErrorName],
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) As AccountName,
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS Participant,
-		FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
+		FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'G', 'en-us') AS NetBalance
 	FROM @Ids D
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]

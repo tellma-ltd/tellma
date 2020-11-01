@@ -61,6 +61,8 @@ WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[AccountTypesHistory]));
 GO
 CREATE INDEX [IX_AccountTypes__ParentId] ON dbo.AccountTypes([ParentId]);
 GO
+CREATE INDEX [IX_AccountTypes__CenterType] ON dbo.AccountTypes([CenterType]);
+GO
 CREATE TRIGGER dbo.traiu_AccountTypes ON dbo.[AccountTypes]
 AFTER INSERT, UPDATE
 AS

@@ -77,9 +77,11 @@ SET NOCOUNT ON;
 			EXECUTE	sp_executesql @Script, N'
 				@DefinitionId INT,
 				@Documents [dbo].[DocumentList] READONLY,
+				@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 				@Lines [dbo].[LineList] READONLY, 
 				@Entries [dbo].EntryList READONLY,
-				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents, @Lines = @L, @Entries = @E, @Top = @Top;
+				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
+				@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,  @Lines = @L, @Entries = @E, @Top = @Top;
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
@@ -150,76 +152,54 @@ SET NOCOUNT ON;
 
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
 	-- Similar logic in bll.Accounts_Validate__Save
-	WITH ExpendituresParentAccountTypes AS (
-		SELECT [Node]
-		FROM dbo.[AccountTypes]
-		WHERE [Concept] IN (
-			N'ConstructionInProgress',
-			N'InvestmentPropertyUnderConstructionOrDevelopment',
-			N'WorkInProgress',
-			N'CurrentInventoriesInTransit',
-			N'ExpenseByNature'
-		)
-	),
-	ExpendituresAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN ExpendituresParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	),
-	ExpendituresAccounts AS (
-		SELECT [Id] FROM dbo.Accounts
-		WHERE AccountTypeId IN (SELECT [Id] FROM ExpendituresAccountTypes)
-	),
-	DirectParentAccountTypes AS (
-		SELECT [Node]
-		FROM dbo.[AccountTypes]
-		WHERE [Concept] IN (
-			N'Revenue', N'CostOfMerchandiseSold', N'TradersControlAccountsExtension'
-		)
-	),
-	DirectAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN DirectParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	),
-	DirectAccounts AS (
-		SELECT [Id] FROM dbo.Accounts
-		WHERE AccountTypeId IN (SELECT [Id] FROM DirectAccountTypes)
-	),
-	BusinessUnitAccounts AS (
-		SELECT [Id] FROM dbo.Accounts
-		EXCEPT
-		SELECT [Id] FROM ExpendituresAccounts
-		EXCEPT
-		SELECT [Id] FROM DirectAccounts
-	),
+	WITH
 	ConstructionInProgressAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
-		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'ConstructionInProgress'
-	), -- 
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'ConstructionInProgressExpendituresControl'
+	), --
 	InvestmentPropertyUnderConstructionOrDevelopmentAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
-		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'InvestmentPropertyUnderConstructionOrDevelopment'
-	), 
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'InvestmentPropertyUnderConstructionOrDevelopment'
+	),
 	WorkInProgressAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
-		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'WorkInProgress'
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'WorkInProgressExpendituresControl'
 	),
 	CurrentInventoriesInTransitAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
-		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'CurrentInventoriesInTransitExpendituresControl'
+	),
+	BusinessUnitAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'BusinessUnit'
+	),
+	CostOfSaleAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'CostOfSales'
+	),
+	ExpendituresAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'Expenditure'
+	),
+	OtherPLAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.CenterType = N'OtherPL'
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
@@ -253,7 +233,7 @@ SET NOCOUNT ON;
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM DirectAccounts) AND C.[CenterType] <> N'CostOfSales'
+	WHERE E.AccountId IN (SELECT [Id] FROM CostOfSaleAccounts) AND C.[CenterType] <> N'CostOfSales'
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
@@ -319,7 +299,7 @@ SET NOCOUNT ON;
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'OtherPL'
+	WHERE E.AccountId IN (SELECT [Id] FROM OtherPLAccounts)  AND C.[CenterType] <> N'OtherPL'
 
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
