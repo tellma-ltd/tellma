@@ -42,9 +42,6 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     return this._definitionId;
   }
 
-  @ViewChild(MasterComponent, { static: false })
-  master: MasterComponent;
-
   public expand = '';
 
   constructor(

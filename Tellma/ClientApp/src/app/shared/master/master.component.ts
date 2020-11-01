@@ -3,7 +3,7 @@ import {
   ViewChild, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 import { ActivatedRoute, Params, Router, ParamMap } from '@angular/router';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize, skip, map } from 'rxjs/operators';
@@ -1343,11 +1343,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  public get actionsDropdownPlacement() {
+  public get actionsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
-  public get errorPopoverPlacement() {
+  public get errorPopoverPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'left' : 'right';
   }
 

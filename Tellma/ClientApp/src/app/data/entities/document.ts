@@ -242,6 +242,10 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
     return _cache[key];
 }
 
+export function formatSerialFromDefId(serial: number, ws: TenantWorkspace, definitionId: number) {
+    return formatSerial(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId));
+}
+
 export function formatSerial(serial: number, prefix: string, codeWidth: number) {
 
     // Handle null and 0

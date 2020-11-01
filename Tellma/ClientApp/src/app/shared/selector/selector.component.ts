@@ -34,6 +34,9 @@ export class SelectorComponent implements ControlValueAccessor {
   @ViewChild('selector', { static: true })
   selector: ElementRef;
 
+  @Input()
+  hideEmptyOption = false; // When setting the true, the selector control ngModel expression should not be null
+
   public isDisabled = false;
   public onChange: (val: any) => void = _ => { };
   public onTouched: () => void = () => { };

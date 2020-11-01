@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Tellma.Controllers
 {
@@ -178,9 +179,9 @@ namespace Tellma.Controllers
         #region Validation
 
         /// <summary>
-        /// Recursively validates a list of entities, and all subsequent entities according to their <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>
+        /// Recursively validates a list of entities, and all subsequent entities according to their <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>, appends an optional prefix to the error path
         /// </summary>
-        protected void ValidateList<T>(List<T> entities, TypeMetadata meta) where T : Entity
+        protected void ValidateList<T>(List<T> entities, TypeMetadata meta, string prefix = "") where T : Entity
         {
             if (entities is null)
             {
@@ -197,7 +198,7 @@ namespace Tellma.Controllers
             var validated = new HashSet<Entity>();
             foreach (var (key, errorMsg) in ValidateListInner(entities, meta, validated))
             {
-                ModelState.AddModelError(key, errorMsg);
+                ModelState.AddModelError(prefix + key, errorMsg);
                 if (ModelState.HasReachedMaxErrors)
                 {
                     return;
@@ -206,9 +207,9 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Recursively validates an entity according to the provided <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>
+        /// Recursively validates an entity according to the provided <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>, appends an optional prefix to the error path
         /// </summary>
-        protected void ValidateEntity<T>(T entity, TypeMetadata meta) where T : Entity
+        protected void ValidateEntity<T>(T entity, TypeMetadata meta, string prefix = "") where T : Entity
         {
             if (entity is null)
             {
@@ -225,7 +226,7 @@ namespace Tellma.Controllers
             var validated = new HashSet<Entity>();
             foreach (var (key, errorMsg) in ValidateEntityInner(entity, meta, validated))
             {
-                ModelState.AddModelError(key, errorMsg);
+                ModelState.AddModelError(prefix + key, errorMsg);
                 if (ModelState.HasReachedMaxErrors)
                 {
                     return;

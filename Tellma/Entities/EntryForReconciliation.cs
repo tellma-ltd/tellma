@@ -20,5 +20,9 @@ namespace Tellma.Entities
         [Display(Name = "Entry_ExternalReference")]
         [StringLength(50)]
         public string ExternalReference { get; set; }
+
+        public int? DocumentId { get; set; }
+        public int? DocumentDefinitionId { get; set; }
+        public int? DocumentSerialNumber { get; set; }
     }
 }
