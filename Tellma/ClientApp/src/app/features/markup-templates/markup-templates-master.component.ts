@@ -24,7 +24,7 @@ export class MarkupTemplatesMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.ws.Center;
+    return this.ws.MarkupTemplate;
   }
 
   public get ws() {

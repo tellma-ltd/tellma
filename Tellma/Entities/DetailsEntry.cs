@@ -87,6 +87,15 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Value")]
         public decimal? Value { get; set; }
 
+        [Display(Name = "DetailsEntry_Actual")]
+        public decimal? Actual { get; set; }
+
+        [Display(Name = "DetailsEntry_Planned")]
+        public decimal? Planned { get; set; }
+
+        [Display(Name = "DetailsEntry_Variance")]
+        public decimal? Variance { get; set; }
+
         [Display(Name = "Entry_AlgebraicValue")]
         public decimal? AlgebraicValue { get; set; }
 

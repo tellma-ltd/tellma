@@ -202,6 +202,9 @@
   <data name="Android" xml:space="preserve">
     <value>Android的</value>
   </data>
+  <data name="AppFullName" xml:space="preserve">
+    <value>敏锐</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>敏锐</value>
   </data>
@@ -416,7 +419,7 @@
     <value>脚本</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>显示</value>
+    <value>节目</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -441,6 +444,9 @@
   </data>
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>加。</value>
+  </data>
+  <data name="DetailsEntry_Actual" xml:space="preserve">
+    <value>实际</value>
   </data>
   <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
     <value>代数计数</value>
@@ -484,6 +490,9 @@
   <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
     <value>负代数价值</value>
   </data>
+  <data name="DetailsEntry_Planned" xml:space="preserve">
+    <value>计划</value>
+  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>数量加速。</value>
   </data>
@@ -492,6 +501,9 @@
   </data>
   <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
     <value>值单位</value>
+  </data>
+  <data name="DetailsEntry_Variance" xml:space="preserve">
+    <value>方差</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
     <value>体积</value>
@@ -602,7 +614,7 @@
     <value>模板</value>
   </data>
   <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>条款</value>
+    <value>计划</value>
   </data>
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>事件</value>
@@ -670,8 +682,32 @@
   <data name="Email_Body" xml:space="preserve">
     <value>身体</value>
   </data>
-  <data name="Email_FromEmail" xml:space="preserve">
-    <value>从电子邮件地址</value>
+  <data name="Email_EngagementState" xml:space="preserve">
+    <value>订婚</value>
+  </data>
+  <data name="Email_EngagementState_0" xml:space="preserve">
+    <value>没有</value>
+  </data>
+  <data name="Email_EngagementState_1" xml:space="preserve">
+    <value>打开电子邮件</value>
+  </data>
+  <data name="Email_EngagementState_2" xml:space="preserve">
+    <value>被点击电子邮件中的链接</value>
+  </data>
+  <data name="Email_EngagementState_minus_1" xml:space="preserve">
+    <value>报道称电子邮件为垃圾邮件</value>
+  </data>
+  <data name="Email_EngagementStateSince" xml:space="preserve">
+    <value>参与状态，因为</value>
+  </data>
+  <data name="Email_ErrorMessage" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Email_State_3" xml:space="preserve">
+    <value>交付</value>
+  </data>
+  <data name="Email_State_minus_3" xml:space="preserve">
+    <value>运送失败</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
     <value>学科</value>
@@ -1939,6 +1975,21 @@
   <data name="No" xml:space="preserve">
     <value>没有</value>
   </data>
+  <data name="Notification_State_0" xml:space="preserve">
+    <value>计划</value>
+  </data>
+  <data name="Notification_State_1" xml:space="preserve">
+    <value>进行中</value>
+  </data>
+  <data name="Notification_State_2" xml:space="preserve">
+    <value>调度</value>
+  </data>
+  <data name="Notification_State_minus_1" xml:space="preserve">
+    <value>验证失败</value>
+  </data>
+  <data name="Notification_State_minus_2" xml:space="preserve">
+    <value>调度失败</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>要么</value>
   </data>
@@ -2049,6 +2100,18 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
+  </data>
+  <data name="PushNotification" xml:space="preserve">
+    <value>推送通知</value>
+  </data>
+  <data name="PushNotification_Body" xml:space="preserve">
+    <value>身体</value>
+  </data>
+  <data name="PushNotification_Title" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="PushNotifications" xml:space="preserve">
+    <value>推送通知</value>
   </data>
   <data name="RD_Type_BiologicalAssets" xml:space="preserve">
     <value>生物资产</value>
@@ -2629,8 +2692,23 @@
   <data name="SmsMessage" xml:space="preserve">
     <value>短信留言</value>
   </data>
+  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
+    <value>错误</value>
+  </data>
   <data name="SmsMessage_Message" xml:space="preserve">
     <value>信息</value>
+  </data>
+  <data name="SmsMessage_State_3" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="SmsMessage_State_4" xml:space="preserve">
+    <value>交付</value>
+  </data>
+  <data name="SmsMessage_State_minus_3" xml:space="preserve">
+    <value>发送失败</value>
+  </data>
+  <data name="SmsMessage_State_minus_4" xml:space="preserve">
+    <value>运送失败</value>
   </data>
   <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
     <value>要电话号码</value>
@@ -2679,6 +2757,9 @@
   </data>
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>行定义</value>
+  </data>
+  <data name="StateSince" xml:space="preserve">
+    <value>国家自</value>
   </data>
   <data name="String" xml:space="preserve">
     <value>文本</value>
