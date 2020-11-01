@@ -56,11 +56,11 @@ namespace Microsoft.Extensions.DependencyInjection
             var section = config.GetSection(SECTION_NAME);
             var opt = section.Get<TwilioOptions>();
 
-            var twilioRequestValidator = new RequestValidator(opt.AuthToken);
-
             // This configures a callback endpoint for Twilio event webhooks
             if (opt?.Sms?.CallbacksEnabled ?? false)
             {
+                var twilioRequestValidator = new RequestValidator(opt.AuthToken);
+
                 bldr = bldr.Map("/api/sms-callback", (app) =>
                 {
                     app.Run(async ctx =>
@@ -74,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             // Helps during configuration for making sure the endpoint is working
                             res.StatusCode = StatusCodes.Status200OK;
-                            await res.WriteAsync($"No implementation of {nameof(ISmsCallbackHandler)} was registered", cancellation);
+                            await res.WriteAsync($"No implementation of {nameof(ISmsCallbackHandler)} was registered.", cancellation);
                         }
                         else if (req.Method == "GET")
                         {
@@ -139,21 +139,21 @@ namespace Microsoft.Extensions.DependencyInjection
                                 }
 
                                 // https://bit.ly/32K9o1j
-                                SmsEventType type;
+                                SmsEvent type;
                                 switch (twilioStatus)
                                 {
                                     // Tracked
                                     case "sent": // Twilio sent it (treat as final after 72h)
-                                        type = SmsEventType.Sent;
+                                        type = SmsEvent.Sent;
                                         break;
                                     case "failed": // Twilio failed to send it (no charges)
-                                        type = SmsEventType.Failed;
+                                        type = SmsEvent.Failed;
                                         break;
                                     case "delivered": // The carrier delivered it
-                                        type = SmsEventType.Delivered;
+                                        type = SmsEvent.Delivered;
                                         break;
                                     case "undelivered": // The carrier failed to deliver it (charges apply)
-                                        type = SmsEventType.Undelivered;
+                                        type = SmsEvent.Undelivered;
                                         break;
 
                                     // No point tracking those, TMI
@@ -167,19 +167,24 @@ namespace Microsoft.Extensions.DependencyInjection
                                     case "read": // Only for whatsapp
                                     default:
                                         // Nothing to handle, return OK 200
+                                        res.StatusCode = StatusCodes.Status200OK;
                                         return;
                                 }
 
                                 // Create the event and handle it with custom behavior
-                                var smsEvent = new SmsEvent
+                                var smsEvent = new SmsEventNotification
                                 {
                                     MessageId = messageId,
                                     TenantId = tenantId,
-                                    Type = type,
+                                    Event = type,
                                     Timestamp = DateTimeOffset.Now
                                 };
 
-                                await handler.HandleCallback(smsEvent);
+                                // Custom handler
+                                await handler.HandleCallback(smsEvent, cancellation);
+
+                                // Return 200 upon success
+                                res.StatusCode = StatusCodes.Status200OK;
                             }
                         }
                     });

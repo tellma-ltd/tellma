@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,12 @@ namespace Tellma.Services.Sms
 
         public async Task SendAsync(SmsMessage sms, CancellationToken cancellation = default)
         {
+            var error = SmsValidation.Validate(sms);
+            if (error != null)
+            {
+                throw new SmsInvalidException(error);
+            }
+
             var serviceSid = !string.IsNullOrWhiteSpace(_options.ServiceSid) ? _options.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
 
             // Extract the values from the argument
@@ -38,11 +45,11 @@ namespace Tellma.Services.Sms
 
             // Calculate the callbackUri (if required)
             Uri callbackUri = null;
-            if (messageId != null)
+            if (messageId != 0)
             {
                 string hostname = _options.CallbackHost?.WithoutTrailingSlash() ?? throw new InvalidOperationException("CallbackHost is missing");
                 string stringUri = $"{hostname}/api/sms-callback?{MessageIdParamName}={messageId}";
-                if (tenantId != null)
+                if (tenantId != 0)
                 {
                     stringUri += $"&{TenantIdParamName}={tenantId}";
                 }
@@ -58,12 +65,12 @@ namespace Tellma.Services.Sms
 
             int attemptsSoFar = 0;
             int backoff = minBackoff;
-            while (!cancellation.IsCancellationRequested)
+            while (attemptsSoFar < maxAttempts && !cancellation.IsCancellationRequested)
             {
+                attemptsSoFar++;
+
                 try
                 {
-                    attemptsSoFar++;
-
                     // Send using Twilio's Messaging Service
                     await MessageResource.CreateAsync(
                         body: message,
@@ -71,6 +78,8 @@ namespace Tellma.Services.Sms
                         to: to,
                         statusCallback: callbackUri
                     );
+
+                    break; // Success
                 }
                 catch (ApiException ex) when (ex.Status == (int)HttpStatusCode.TooManyRequests || ex.Status >= 500)
                 {
@@ -94,20 +103,5 @@ namespace Tellma.Services.Sms
                 }
             }
         }
-
-        #region Bulk SMS
-
-        //public async Task<string> BulkSendAsync(IEnumerable<string> phoneNumbers, string sms, CancellationToken _)
-        //{
-        //    var serviceSid = !string.IsNullOrWhiteSpace(_smsOpt.ServiceSid) ? _smsOpt.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
-        //    var binding = phoneNumbers.Select(to => $"{{\"binding_type\":\"sms\",\"address\":\"{to}\"}}").ToList();
-
-        //    // Send the SMS through the Twilio API
-        //    var notification = await Twilio.Rest.Notify.V1.Service.NotificationResource.CreateAsync(serviceSid, toBinding: binding, body: sms);
-
-        //    return notification.Sid;
-        //}
-
-        #endregion
     }
 }

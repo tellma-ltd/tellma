@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -10,120 +9,72 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Services.Utilities;
+using HtmlAgilityPack;
 
 namespace Tellma.Services.Email
 {
     public class SendGridEmailSender : IEmailSender
     {
+        public const string EmailIdKey = "email_id";
+        public const string TenantIdKey = "tenant_id";
+
+        private const string Placeholder = "-ph-";
+
         private readonly SendGridOptions _options;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<SendGridEmailSender> _logger;
-        private readonly IStringLocalizer<SendGridEmailSender> _localizer;
         private readonly Random _rand = new Random();
 
         public SendGridEmailSender(
             IOptions<SendGridOptions> options,
             IHttpClientFactory httpClientFactory,
-            ILogger<SendGridEmailSender> logger,
-            IStringLocalizer<SendGridEmailSender> localizer)
+            ILogger<SendGridEmailSender> logger)
         {
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
-            _localizer = localizer;
         }
 
         public async Task SendBulkAsync(IEnumerable<Email> emails, string fromEmail = null, CancellationToken cancellation = default)
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            var client = new SendGridClient(httpClient, _options.ApiKey);
+            // Prepare the SendGridMessage
+            var msg = new SendGridMessage();
 
-            var fromAddress = new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: "Tellma ERP");
-            var toAddresses = emails.Select(e => new EmailAddress(e.ToEmail)).ToList();
-            var subjects = emails.Select(e => e.Subject).ToList();
-            var htmlMessage = "-ph-";
-            var substitutions = emails.Select(e => new Dictionary<string, string> { { "-ph-", e.Body } }).ToList();
-
-
-            var msg = MailHelper.CreateMultipleEmailsToMultipleRecipients(
-                fromAddress, 
-                toAddresses, 
-                subjects, 
-                "", // plain text body
-                htmlMessage, 
-                substitutions);
-
-            var response = await client.SendEmailAsync(msg, cancellation);
-
-            // Handle returned errors
-            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
+            msg.AddContent(MimeType.Html, Placeholder);
+            foreach (var (email, index) in emails.Select((e, i) => (e, i)))
             {
-                // SendGrid has a quota depending on your subscription, on a free account you only get 100 emails per day
-                throw new InvalidOperationException("The SendGrid subscription configured in the system has reached its limit, please contact support");
+                msg.AddTo(new EmailAddress(email.ToEmail), index);
+                msg.SetSubject(email.Subject, index);
+                msg.AddSubstitutions(new Dictionary<string, string> { { Placeholder, email.Body } }, index);
+                msg.AddCustomArg(EmailIdKey, email.EmailId.ToString(), index);
+                msg.AddCustomArg(TenantIdKey, email.TenantId.ToString(), index);
             }
 
-            if (response.StatusCode >= HttpStatusCode.BadRequest)
-            {
-                string responseMessage = await response.Body.ReadAsStringAsync();
-                _logger.LogError($"Error sending email through SendGrid, Status Code: {response.StatusCode}, Message: {responseMessage}");
-
-                throw new InvalidOperationException($"The SendGrid API returned an unknown error {response.StatusCode} when trying to send the email through it");
-            }
+            // Send it to SendGrid using their official C# library
+            await SendEmailAsync(msg, cancellation);
         }
 
         public async Task SendAsync(Email email, string fromEmail = null, CancellationToken cancellation = default)
         {
-            var from = new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: "Tellma ERP");
-            var to = new EmailAddress(email.ToEmail);
+            // Prepare the SendGridMessage
+            var msg = new SendGridMessage();
 
-            var msg = MailHelper.CreateSingleEmail(from, to, email.Subject, "", email.Body);
+            msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
+            msg.AddTo(new EmailAddress(email.ToEmail));
+            msg.SetSubject(email.Subject);
+            msg.AddContent(MimeType.Html, email.Body);
+            msg.AddCustomArg(EmailIdKey, email.EmailId.ToString());
+            msg.AddCustomArg(TenantIdKey, email.TenantId.ToString());
+
+            // Send it to SendGrid using their official C# library
             await SendEmailAsync(msg, cancellation);
         }
 
-        //public async Task SendBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
-        //{
-        //    string fromName = "Tellma";
-        //    fromEmail ??= _options.DefaultFromEmail;
-        //    string sendGridApiKey = _options.ApiKey;
-
-        //    var httpClient = _httpClientFactory.CreateClient();
-        //    var client = new SendGridClient(httpClient, sendGridApiKey);
-        //    var from = new EmailAddress(fromEmail, fromName);
-        //    var toAddresses = tos.Select(e => new EmailAddress(e)).ToList();
-
-
-        //    var msg = MailHelper.CreateMultipleEmailsToMultipleRecipients(
-        //        from, toAddresses, subjects, "", htmlMessage, substitutions);
-
-        //    var response = await client.SendEmailAsync(msg);
-
-        //    // Handle returned errors
-        //    if (response.StatusCode == HttpStatusCode.TooManyRequests)
-        //    {
-        //        // SendGrid has a quota depending on your subscription, on a free account you only get 100 emails per day
-        //        throw new InvalidOperationException("The SendGrid subscription configured in the system has reached its limit, please contact support");
-        //    }
-
-        //    if (response.StatusCode >= HttpStatusCode.BadRequest)
-        //    {
-        //        string responseMessage = await response.Body.ReadAsStringAsync();
-        //        _logger.LogError($"Error sending email through SendGrid, Status Code: {response.StatusCode}, Message: {responseMessage}");
-
-        //        throw new InvalidOperationException($"The SendGrid API returned an unknown error {response.StatusCode} when trying to send the email through it");
-        //    }
-        //}
-
-        //public async Task SendAsync(string email, string subject, string htmlMessage, string fromEmail = null)
-        //{
-        //    var from = new EmailAddress(fromEmail ?? _options.DefaultFromEmail, "Tellma ERP");
-        //    var to = new EmailAddress(email);
-        //    var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
-
-        //    await SendEmailAsync(msg, default);
-        //}
-
         /// <summary>
-        /// Helper method that dispatches a <see cref="SendGridMessage"/> using exponential backoff.
+        /// Helper method that dispatches a <see cref="SendGridMessage"/> using the official SendGrid C# library
+        /// And applies recommended exponential backoff if certain error responses are returned
         /// </summary>
         private async Task SendEmailAsync(SendGridMessage msg, CancellationToken cancellation)
         {
@@ -139,16 +90,16 @@ namespace Tellma.Services.Email
             int attemptsSoFar = 0;
             int backoff = minBackoff;
 
-            while (true)
+            while (attemptsSoFar < maxAttempts && !cancellation.IsCancellationRequested)
             {
                 attemptsSoFar++;
                 Response response = await client.SendEmailAsync(msg, cancellation);
 
-                string body = await response.Body.ReadAsStringAsync();
-                string logMessage = $"SendGrid: {response.StatusCode} response after {attemptsSoFar} attempts with exponential backoff: {body}";
-
                 if (response.StatusCode == HttpStatusCode.TooManyRequests || response.StatusCode >= HttpStatusCode.InternalServerError)
                 {
+                    string body = (await response.Body.ReadAsStringAsync()).Truncate(500, appendEllipses: true);
+                    string logMessage = $"SendGrid: {response.StatusCode} response after {attemptsSoFar} attempts with exponential backoff: {body}";
+
                     // Here we implement exponential backoff attempts to retry the call few more times before giving up
                     // In the case of errors, as recommended here https://bit.ly/2CWYrjQ
                     if (attemptsSoFar < maxAttempts)
@@ -170,6 +121,35 @@ namespace Tellma.Services.Email
                         throw new EmailApiException($"Failed to send email(s) with status code {response.StatusCode}"); // Give up
                     }
                 }
+                else if (response.StatusCode >= HttpStatusCode.BadRequest)
+                {
+                    // Do not implement exponential backoff for 4xx errors (except 429 Too Many Requests)
+                    string body = (await response.Body.ReadAsStringAsync()).Truncate(500, appendEllipses: true);
+                    throw new EmailApiException($"Failed to send email(s) with status code {response.StatusCode}, body: {body}"); // Give up
+                }
+                else
+                {
+                    break; // Success, no need to loop again
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convert the HTML content to plain text
+        /// </summary>
+        /// <param name="html">The html content which is going to be converted</param>
+        /// <returns>The plain text represenation</returns>
+        public static string HtmlToPlainText(string html)
+        {
+            try
+            {
+                HtmlDocument document = new HtmlDocument();
+                document.LoadHtml(html);
+                return document.DocumentNode == null ? string.Empty : document.DocumentNode.InnerText;
+            }
+            catch
+            {
+                return ""; // Not worth it
             }
         }
     }

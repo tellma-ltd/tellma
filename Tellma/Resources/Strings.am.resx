@@ -671,10 +671,37 @@
     <value>ኢሜይል</value>
   </data>
   <data name="Email_Body" xml:space="preserve">
-    <value>Loading...</value>
+    <value>አካል</value>
+  </data>
+  <data name="Email_EngagementState" xml:space="preserve">
+    <value>ማጪት</value>
+  </data>
+  <data name="Email_EngagementState_0" xml:space="preserve">
+    <value>አንድም</value>
+  </data>
+  <data name="Email_EngagementState_1" xml:space="preserve">
+    <value>ተከፍቷል ኢሜይል</value>
+  </data>
+  <data name="Email_EngagementState_2" xml:space="preserve">
+    <value>ጠቅ ተደርጓል የኢሜይል አገናኝ</value>
+  </data>
+  <data name="Email_EngagementState_minus_1" xml:space="preserve">
+    <value>አይፈለጌ መልዕክት ተብሎ ሪፖርት ኢሜይል</value>
+  </data>
+  <data name="Email_EngagementStateSince" xml:space="preserve">
+    <value>ተሳትፎ ግዛት ጀምሮ</value>
+  </data>
+  <data name="Email_ErrorMessage" xml:space="preserve">
+    <value>ስሕተት</value>
+  </data>
+  <data name="Email_State_3" xml:space="preserve">
+    <value>ደርሷል</value>
+  </data>
+  <data name="Email_State_minus_3" xml:space="preserve">
+    <value>ማድረስ አልተሳካም</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>Loading...</value>
+    <value>ትምህርት</value>
   </data>
   <data name="Email_ToEmail" xml:space="preserve">
     <value>አድራሻ ኢሜይል ወደ</value>
@@ -1939,6 +1966,21 @@
   <data name="No" xml:space="preserve">
     <value>አይ</value>
   </data>
+  <data name="Notification_State_0" xml:space="preserve">
+    <value>የተያዘለት</value>
+  </data>
+  <data name="Notification_State_1" xml:space="preserve">
+    <value>በሂደት ላይ</value>
+  </data>
+  <data name="Notification_State_2" xml:space="preserve">
+    <value>ተላኩ</value>
+  </data>
+  <data name="Notification_State_minus_1" xml:space="preserve">
+    <value>ማረጋገጥ አልተሳካም</value>
+  </data>
+  <data name="Notification_State_minus_2" xml:space="preserve">
+    <value>በሚያደርሰው አልተሳካም</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>ወይም</value>
   </data>
@@ -2054,10 +2096,10 @@
     <value>ግፋ ማሳወቂያ</value>
   </data>
   <data name="PushNotification_Body" xml:space="preserve">
-    <value>Loading...</value>
+    <value>አካል</value>
   </data>
   <data name="PushNotification_Title" xml:space="preserve">
-    <value>Loading...</value>
+    <value>አርእስት</value>
   </data>
   <data name="PushNotifications" xml:space="preserve">
     <value>ግፋ ማሳወቂያዎች</value>
@@ -2641,8 +2683,23 @@
   <data name="SmsMessage" xml:space="preserve">
     <value>ኤስ ኤም ኤስ መልዕክት</value>
   </data>
+  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
+    <value>ስሕተት</value>
+  </data>
   <data name="SmsMessage_Message" xml:space="preserve">
-    <value>Loading...</value>
+    <value>መልእክት</value>
+  </data>
+  <data name="SmsMessage_State_3" xml:space="preserve">
+    <value>የተላከ</value>
+  </data>
+  <data name="SmsMessage_State_4" xml:space="preserve">
+    <value>ደርሷል</value>
+  </data>
+  <data name="SmsMessage_State_minus_3" xml:space="preserve">
+    <value>መላክ አልተሳካም</value>
+  </data>
+  <data name="SmsMessage_State_minus_4" xml:space="preserve">
+    <value>ማድረስ አልተሳካም</value>
   </data>
   <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
     <value>ወደ ስልክ ቁጥር</value>
@@ -2691,6 +2748,9 @@
   </data>
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>
+  </data>
+  <data name="StateSince" xml:space="preserve">
+    <value>መንግስት ጀምሮ</value>
   </data>
   <data name="String" xml:space="preserve">
     <value>ጽሑፍ</value>

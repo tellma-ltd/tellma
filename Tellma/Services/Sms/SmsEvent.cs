@@ -1,12 +1,25 @@
-﻿using System;
-
-namespace Tellma.Services.Sms
+﻿namespace Tellma.Services.Sms
 {
-    public class SmsEvent
+    public enum SmsEvent
     {
-        public int MessageId { get; set; }
-        public int? TenantId { get; set; }
-        public SmsEventType Type { get; set; }
-        public DateTimeOffset Timestamp { get; set; }
+        /// <summary>
+        /// External service sent it to network carrier
+        /// </summary>
+        Sent,
+
+        /// <summary>
+        /// External service failed to send it to network carrier
+        /// </summary>
+        Failed,
+
+        /// <summary>
+        /// Network carrier delivered it to end user
+        /// </summary>
+        Delivered,
+
+        /// <summary>
+        /// Network carrier failed to deliver it to end user
+        /// </summary>
+        Undelivered
     }
 }

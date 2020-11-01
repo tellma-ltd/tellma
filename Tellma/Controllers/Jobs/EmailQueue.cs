@@ -6,18 +6,18 @@ namespace Tellma.Controllers.Jobs
 {
     public class EmailQueue : BackgroundQueue<IEnumerable<Email>>
     {
-        private const int BatchSize = 100;
-        public override void QueueBackgroundWorkItem(IEnumerable<Email> emails)
+        private const int ChunkSize = 100;
+        public override void QueueBackgroundWorkItem(IEnumerable<Email> emailBatch)
         {
-            // This protects against huge number of emails, by batching them in chunks of 100 emails each
+            // This protects against very big batches of emails, by splitting them into small chunks of 100 emails each
+            int skip = 0;
             while (true)
             {
-                int skip = 0;
-                var batch = emails.Skip(skip).Take(BatchSize);
-
-                if (batch.Any())
+                var chunk = emailBatch.Skip(skip).Take(ChunkSize);
+                if (chunk.Any())
                 {
-                    base.QueueBackgroundWorkItem(batch);
+                    base.QueueBackgroundWorkItem(chunk);
+                    skip += ChunkSize;
                 }
                 else
                 {

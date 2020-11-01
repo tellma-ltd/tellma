@@ -257,8 +257,11 @@ namespace Tellma
                 app.UseHttpsRedirection();
                 app.UseMiddlewareInstrumentation("Https Redirection");
 
-                // Adds the SMS Callback from 
+                // Adds the SMS event webhook Callback
                 app.UseSmsCallback(_config);
+
+                // Adds the email event webhook Callback
+                app.UseEmailCallback(_config);
 
                 // Localization
                 // Extract the culture from the request string and set it in the execution thread

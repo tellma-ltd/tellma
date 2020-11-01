@@ -5,6 +5,8 @@ using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Templating;
 using Tellma.Entities;
+using Tellma.Services.Email;
+using Tellma.Services.Sms;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -20,20 +22,26 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            //// Bind
-            //services.Configure<JobsOptions>(config.GetSection("Jobs"));
+            // Bind
+            services.Configure<JobsOptions>(config.GetSection("Jobs"));
 
             // Register background jobs
             services = services
                 .AddSingleton<InstanceInfoProvider>()
                 .AddHostedService<HeartbeatJob>()
-                .AddHostedService<OrphanCareJob>();
+                .AddHostedService<OrphanCareJob>()
+                .AddHostedService<EmailJob>()
+                .AddHostedService<EmailPollingJob>()
+                .AddHostedService<SmsJob>()
+                .AddHostedService<SmsPollingJob>();
 
             // These are helper services that business services rely on
             services = services
                 // Notifications
                 .AddSingleton<EmailQueue>()
+                .AddSingleton<IEmailCallbackHandler, EmailCallbackHandler>()
                 .AddSingleton<SmsQueue>()
+                .AddSingleton<ISmsCallbackHandler, SmsCallbackHandler>()
                 .AddSingleton<PushNotificationQueue>()
                 .AddSingleton<ExternalNotificationsService>()
 

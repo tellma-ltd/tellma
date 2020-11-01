@@ -16,7 +16,6 @@ using System.Threading;
 using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
-using System.Runtime.InteropServices.ComTypes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Tellma.Data
@@ -4846,11 +4845,12 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool recordInHistory)
+        public async Task<(List<InboxNotificationInfo> notificationInfos, User assigneeInfo)> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool manualAssignment)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Documents__Assign));
 
-            var result = new List<InboxNotificationInfo>();
+            var notificationInfos = new List<InboxNotificationInfo>();
+            User assigneeInfo;
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4866,7 +4866,7 @@ namespace Tellma.Data
             cmd.Parameters.Add(idsTvp);
             cmd.Parameters.Add("@AssigneeId", assigneeId);
             cmd.Parameters.Add("@Comment", comment);
-            cmd.Parameters.Add("@RecordInHistory", recordInHistory);
+            cmd.Parameters.Add("@ManualAssignment", manualAssignment);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
@@ -4874,7 +4874,61 @@ namespace Tellma.Data
 
             // Execute                    
             using var reader = await cmd.ExecuteReaderAsync();
-            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
+            var inboxNotificationInfo = await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
+
+            if (manualAssignment)
+            {
+                await reader.NextResultAsync();
+                if (await reader.ReadAsync())
+                {
+                    int i = 0;
+
+                    assigneeInfo = new User
+                    {
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        PreferredLanguage = reader.String(i++),
+                        ContactEmail = reader.String(i++),
+                        ContactMobile = reader.String(i++),
+                        PushEndpoint = reader.String(i++),
+                        PushP256dh = reader.String(i++),
+                        PushAuth = reader.String(i++),
+                        PreferredChannel = reader.String(i++),
+                        EmailNewInboxItem = reader.Boolean(i++),
+                        SmsNewInboxItem = reader.Boolean(i++),
+                        PushNewInboxItem = reader.Boolean(i++),
+
+                        EntityMetadata = new EntityMetadata {
+                        { nameof(User.Name), FieldMetadata.Loaded },
+                        { nameof(User.Name2), FieldMetadata.Loaded },
+                        { nameof(User.Name3), FieldMetadata.Loaded },
+                        { nameof(User.PreferredLanguage), FieldMetadata.Loaded },
+                        { nameof(User.ContactEmail), FieldMetadata.Loaded },
+                        { nameof(User.ContactMobile), FieldMetadata.Loaded },
+                        { nameof(User.PushEndpoint), FieldMetadata.Loaded },
+                        { nameof(User.PushP256dh), FieldMetadata.Loaded },
+                        { nameof(User.PushAuth), FieldMetadata.Loaded },
+                        { nameof(User.PreferredChannel), FieldMetadata.Loaded },
+                        { nameof(User.EmailNewInboxItem), FieldMetadata.Loaded },
+                        { nameof(User.SmsNewInboxItem), FieldMetadata.Loaded },
+                        { nameof(User.PushNewInboxItem), FieldMetadata.Loaded },
+                    }
+                    };
+                }
+                else
+                {
+                    // Just in case
+                    throw new InvalidOperationException($"[Bug] Stored Procedure {nameof(Documents__Assign)} did not return assignee info.");
+                }
+            }
+            else
+            {
+                assigneeInfo = null;
+            }
+
+
+            return (notificationInfos, assigneeInfo);
         }
 
         public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds)> Documents__Delete(IEnumerable<int> ids)
@@ -7306,7 +7360,7 @@ namespace Tellma.Data
             var entries = new List<EntryForReconciliation>();
             var externalEntries = new List<ExternalEntry>();
 
-            using (var reader = await cmd.ExecuteReaderAsync())
+            using (var reader = await cmd.ExecuteReaderAsync(cancellation))
             {
                 while (await reader.ReadAsync(cancellation))
                 {

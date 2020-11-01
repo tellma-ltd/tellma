@@ -22,6 +22,8 @@ using Tellma.Services.ClientInfo;
 using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 using Tellma.Controllers.Jobs;
+using Tellma.Services.Email;
+using Tellma.Services.Sms;
 
 namespace Tellma.Controllers
 {
@@ -426,6 +428,11 @@ namespace Tellma.Controllers
 
         public async Task<(List<Document>, Extras)> Assign(List<int> ids, AssignArguments args)
         {
+            if (ids == null || !ids.Any())
+            {
+                throw new BadRequestException("No ids were supplied");
+            }
+
             // Check user permissions
             var action = Constants.Read;
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
@@ -456,7 +463,7 @@ namespace Tellma.Controllers
             }
 
             // Actual Assignment
-            var notificationInfos = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
+            var (notificationInfos, assigneeInfo) = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, manualAssignment: true);
 
             List<Document> data = null;
             Extras extras = null;
@@ -476,8 +483,79 @@ namespace Tellma.Controllers
             var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
             if (userInfo.UserId != args.AssigneeId)
             {
-                // TODO
-                await _notificationsService.Enqueue(_tenantIdAccessor.GetTenantId(), null, null, null);
+                List<Email> emails = new List<Email>();
+                List<SmsMessage> smsMessagses = new List<SmsMessage>();
+                List<PushNotification> pushNotifications = new List<PushNotification>();
+
+                if (assigneeInfo.EmailNewInboxItem ?? false)
+                {
+                    string emailSubject;
+                    StringBuilder emailBody = new StringBuilder();
+                    if (!string.IsNullOrWhiteSpace(args.Comment))
+                    {
+                        emailBody.AppendLine(args.Comment);
+                    }
+
+                    if (ids.Count == 1)
+                    {
+                        var id = ids[0];
+                        emailSubject = $"Assignment from {userInfo.Name}";
+                        emailBody.AppendLine($"https://web.tellma.com/app/{TenantId}/documents/{DefinitionId}/{id}");
+                    }
+                    else
+                    {
+                        emailSubject = $"{ids.Count} assignments from {userInfo.Name}";
+                        emailBody.Append($"https://web.tellma.com/app/{TenantId}/inbox;filter=CreatedById%20eq%20{userInfo.UserId}%20and%20Document%2FDefinitionId%20eq%20{DefinitionId}");
+                    }
+
+                    emails.Add(new Email(assigneeInfo.Email)
+                    {
+                        Subject = emailSubject,
+                        Body = emailBody.ToString(),
+                    });
+                }
+
+                if (assigneeInfo.SmsNewInboxItem ?? false && !string.IsNullOrWhiteSpace(assigneeInfo.ContactMobile))
+                {
+                    StringBuilder msgBuilder = new StringBuilder();
+                    if (ids.Count == 1)
+                    {
+                        msgBuilder.Append($"Assignment from {userInfo.Name}");
+                    }
+                    else
+                    {
+                        msgBuilder.Append($"{ids.Count} assignments from {userInfo.Name}");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(args.Comment))
+                    {
+                        msgBuilder.Append($": {args.Comment}");
+                    }
+
+                    msgBuilder.AppendLine();
+
+                    if (ids.Count == 1)
+                    {
+                        // If there is single, go to inbox 
+                        var id = ids[0];
+                        msgBuilder.Append($"https://web.tellma.com/app/{TenantId}/documents/{DefinitionId}/{id}");
+                    }
+                    else
+                    {
+                        // If there are multiple, go to inbox
+                        msgBuilder.Append($"https://web.tellma.com/app/{TenantId}/inbox;filter=CreatedById%20eq%20{userInfo.UserId}%20and%20Document%2FDefinitionId%20eq%20{DefinitionId}");
+                    }
+
+                    smsMessagses.Add(new SmsMessage(assigneeInfo.ContactMobile, msgBuilder.ToString()));
+                }
+
+                if (assigneeInfo.PushNewInboxItem ?? false)
+                {
+
+                }
+
+                // Queue the notifications
+                await _notificationsService.Enqueue(_tenantIdAccessor.GetTenantId(), emails, smsMessagses, pushNotifications, cancellation: default);
             }
 
             trx.Complete();

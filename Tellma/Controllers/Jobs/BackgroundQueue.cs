@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace Tellma.Controllers.Jobs
     /// <typeparam name="TItem">The type of queued items</typeparam>
     public class BackgroundQueue<TItem>
     {
-        private readonly ConcurrentQueue<TItem> _queue = new ConcurrentQueue<TItem>();
+        private readonly ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)> _queue = new ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)>();
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
 
         public virtual void QueueBackgroundWorkItem(TItem item)
@@ -24,11 +25,19 @@ namespace Tellma.Controllers.Jobs
                 throw new ArgumentNullException(nameof(item));
             }
 
-            _queue.Enqueue(item);
+            _queue.Enqueue((item, DateTimeOffset.Now));
             _signal.Release();
         }
 
-        public async virtual Task<TItem> DequeueAsync(CancellationToken cancellationToken)
+        public void QueueAllBackgroundWorkItems(IEnumerable<TItem> items)
+        {
+            foreach (var item in items)
+            {
+                QueueBackgroundWorkItem(item);
+            }
+        }
+
+        public async virtual Task<(TItem item, DateTimeOffset queuedAt)> DequeueAsync(CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
 

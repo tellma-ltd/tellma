@@ -35,18 +35,18 @@
         /// Happy medium => a generous duration that would not cause major alarm for users if notifications
         ///     were that late. Notifications in the vast majority of cases are sent by the original
         ///     instance in real time anyways and are only queued and checked by the parent instance
-        ///     in the rate situation that the original instance died prematurely before sending them.
+        ///     in the rare situation that the original instance died prematurely before sending them.
         /// </summary>
         public int NotificationCheckFrequencyInSeconds { get; set; } = 10 * 60; // 10 minutes
 
-        /// <summary>
-        /// How many tenants are checked for stale notifications simultaneously at every moment in time.
-        /// Too many: the thread pool may starve slowing down the app instance.
-        /// Too few: Checking all the tenants may take a very long time.
-        /// Happy medium: a rate which allows the instance to check all the tenants 
-        ///     it would adopt on average in a time well under the <see cref="NotificationCheckFrequencyInSeconds"/>.
-        /// </summary>
-        public int NotificationCheckDegreeOfParallelism { get; set; } = 4;
+        ///// <summary>
+        ///// How many tenants are checked for stale notifications simultaneously at every moment in time.
+        ///// Too many: the thread pool may starve slowing down the app instance.
+        ///// Too few: Checking all the tenants may take a very long time.
+        ///// Happy medium: a rate which allows the instance to check all the tenants 
+        /////     it would adopt on average in a time well under the <see cref="NotificationCheckFrequencyInSeconds"/>.
+        ///// </summary>
+        //public int NotificationCheckDegreeOfParallelism { get; set; } = 4;
 
         /// <summary>
         /// Autocomputed

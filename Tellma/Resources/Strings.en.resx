@@ -673,6 +673,33 @@
   <data name="Email_Body" xml:space="preserve">
     <value>Body</value>
   </data>
+  <data name="Email_EngagementState" xml:space="preserve">
+    <value>Engagement</value>
+  </data>
+  <data name="Email_EngagementState_0" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Email_EngagementState_1" xml:space="preserve">
+    <value>Opened email</value>
+  </data>
+  <data name="Email_EngagementState_2" xml:space="preserve">
+    <value>Clicked email link</value>
+  </data>
+  <data name="Email_EngagementState_minus_1" xml:space="preserve">
+    <value>Reported email as spam</value>
+  </data>
+  <data name="Email_EngagementStateSince" xml:space="preserve">
+    <value>Engagement State Since</value>
+  </data>
+  <data name="Email_ErrorMessage" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Email_State_3" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Email_State_minus_3" xml:space="preserve">
+    <value>Delivery Failed</value>
+  </data>
   <data name="Email_Subject" xml:space="preserve">
     <value>Subject</value>
   </data>
@@ -1939,6 +1966,21 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
+  <data name="Notification_State_0" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Notification_State_1" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="Notification_State_2" xml:space="preserve">
+    <value>Dispatched</value>
+  </data>
+  <data name="Notification_State_minus_1" xml:space="preserve">
+    <value>Validation Failed</value>
+  </data>
+  <data name="Notification_State_minus_2" xml:space="preserve">
+    <value>Dispatch Failed</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>Or</value>
   </data>
@@ -2641,8 +2683,23 @@
   <data name="SmsMessage" xml:space="preserve">
     <value>SMS Message</value>
   </data>
+  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
+    <value>Error</value>
+  </data>
   <data name="SmsMessage_Message" xml:space="preserve">
     <value>Message</value>
+  </data>
+  <data name="SmsMessage_State_3" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="SmsMessage_State_4" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="SmsMessage_State_minus_3" xml:space="preserve">
+    <value>Sending Failed</value>
+  </data>
+  <data name="SmsMessage_State_minus_4" xml:space="preserve">
+    <value>Delivery Failed</value>
   </data>
   <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
     <value>To Phone Number</value>
@@ -2691,6 +2748,9 @@
   </data>
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
+  </data>
+  <data name="StateSince" xml:space="preserve">
+    <value>State Since</value>
   </data>
   <data name="String" xml:space="preserve">
     <value>Text</value>

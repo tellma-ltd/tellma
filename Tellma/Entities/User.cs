@@ -48,13 +48,13 @@ namespace Tellma.Entities
         public string PreferredChannel { get; set; }
 
         [Display(Name = "User_EmailNewInboxItem")]
-        public bool EmailNewInboxItem { get; set; }
+        public bool? EmailNewInboxItem { get; set; }
 
         [Display(Name = "User_SmsNewInboxItem")]
-        public bool SmsNewInboxItem { get; set; }
+        public bool? SmsNewInboxItem { get; set; }
 
         [Display(Name = "User_PushNewInboxItem")]
-        public bool PushNewInboxItem { get; set; }
+        public bool? PushNewInboxItem { get; set; }
 
         [Display(Name = "User_Roles")]
         [ForeignKey(nameof(RoleMembership.UserId))]
@@ -65,6 +65,12 @@ namespace Tellma.Entities
 
     public class User : UserForSave<RoleMembership>, IEntityWithImage
     {
+        public string PushEndpoint { get; set; }
+        
+        public string PushP256dh { get; set; }
+        
+        public string PushAuth { get; set; }
+
         public string ImageId { get; set; }
 
         public string ExternalId { get; set; }

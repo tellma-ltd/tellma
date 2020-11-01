@@ -155,7 +155,7 @@
     <value>资源定义</value>
   </data>
   <data name="AccountType_StandardAndPure" xml:space="preserve">
-    <value>标准与纯</value>
+    <value>标准和纯</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>时间1个标签</value>
@@ -419,7 +419,7 @@
     <value>脚本</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>显示</value>
+    <value>节目</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -671,10 +671,37 @@
     <value>电子邮件</value>
   </data>
   <data name="Email_Body" xml:space="preserve">
-    <value>Loading...</value>
+    <value>身体</value>
+  </data>
+  <data name="Email_EngagementState" xml:space="preserve">
+    <value>订婚</value>
+  </data>
+  <data name="Email_EngagementState_0" xml:space="preserve">
+    <value>没有</value>
+  </data>
+  <data name="Email_EngagementState_1" xml:space="preserve">
+    <value>打开电子邮件</value>
+  </data>
+  <data name="Email_EngagementState_2" xml:space="preserve">
+    <value>被点击电子邮件中的链接</value>
+  </data>
+  <data name="Email_EngagementState_minus_1" xml:space="preserve">
+    <value>报道称电子邮件为垃圾邮件</value>
+  </data>
+  <data name="Email_EngagementStateSince" xml:space="preserve">
+    <value>参与状态，因为</value>
+  </data>
+  <data name="Email_ErrorMessage" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Email_State_3" xml:space="preserve">
+    <value>交付</value>
+  </data>
+  <data name="Email_State_minus_3" xml:space="preserve">
+    <value>运送失败</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>Loading...</value>
+    <value>学科</value>
   </data>
   <data name="Email_ToEmail" xml:space="preserve">
     <value>对方的电子邮件地址</value>
@@ -1007,7 +1034,7 @@
     <value>标签“{0}”不上式{1}匹配的集合。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
-    <value>标签“{0}”不匹配任何类型集合{1}，你的意思是“{2}”？</value>
+    <value>标签“{0}”不匹配类型的任何集合{1}，你的意思是“{2}”？</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
     <value>标签“{0}”不任何字段上式{1}匹配。</value>
@@ -1238,7 +1265,7 @@
     <value>该文件是封闭的。请首先打开它。</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
-    <value>与标识0 {}该文件没有被发现。</value>
+    <value>ID为{0}的文件没有被发现。</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>
@@ -1310,7 +1337,7 @@
     <value>资源 '{0}' 中心 '{1}'，而该帐户具有中心 '{2}'。</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>帐户资源 '{0}' 货币 '{1}'，而帐户有货币 '{2}'。</value>
+    <value>帐户资源 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
     <value>此{0}记录在帐户{1}与中心 '{2}' 中使用。</value>
@@ -1361,7 +1388,7 @@
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
   </data>
   <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
-    <value>单位 '{0}' 是不与{1} '{2}' 兼容。</value>
+    <value>单位 '{0}' 不是与{1} '{2}' 兼容。</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
     <value>未知导入模式 '{0}'，允许值是：{1}</value>
@@ -1391,7 +1418,7 @@
     <value>值 '{0}' 是无效的{1}字段，你的意思是 '{2}'？</value>
   </data>
   <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
-    <value>值的“{0}”无效{1}字段中，所支持的值有：{2}，</value>
+    <value>值 '{0}' 是无效的{1}字段中，所支持的值是：{2}。</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
     <value>增值税率必须在0％到100％之间。</value>
@@ -1939,6 +1966,21 @@
   <data name="No" xml:space="preserve">
     <value>没有</value>
   </data>
+  <data name="Notification_State_0" xml:space="preserve">
+    <value>计划</value>
+  </data>
+  <data name="Notification_State_1" xml:space="preserve">
+    <value>进行中</value>
+  </data>
+  <data name="Notification_State_2" xml:space="preserve">
+    <value>调度</value>
+  </data>
+  <data name="Notification_State_minus_1" xml:space="preserve">
+    <value>验证失败</value>
+  </data>
+  <data name="Notification_State_minus_2" xml:space="preserve">
+    <value>调度失败</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>要么</value>
   </data>
@@ -2054,10 +2096,10 @@
     <value>推送通知</value>
   </data>
   <data name="PushNotification_Body" xml:space="preserve">
-    <value>Loading...</value>
+    <value>身体</value>
   </data>
   <data name="PushNotification_Title" xml:space="preserve">
-    <value>Loading...</value>
+    <value>标题</value>
   </data>
   <data name="PushNotifications" xml:space="preserve">
     <value>推送通知</value>
@@ -2462,7 +2504,7 @@
     <value>行{0}</value>
   </data>
   <data name="Row0" xml:space="preserve">
-    <value>排{0}</value>
+    <value>行{0}</value>
   </data>
   <data name="RuleType_ByCustodian" xml:space="preserve">
     <value>通过托管</value>
@@ -2641,8 +2683,23 @@
   <data name="SmsMessage" xml:space="preserve">
     <value>短信留言</value>
   </data>
+  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
+    <value>错误</value>
+  </data>
   <data name="SmsMessage_Message" xml:space="preserve">
-    <value>Loading...</value>
+    <value>信息</value>
+  </data>
+  <data name="SmsMessage_State_3" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="SmsMessage_State_4" xml:space="preserve">
+    <value>交付</value>
+  </data>
+  <data name="SmsMessage_State_minus_3" xml:space="preserve">
+    <value>发送失败</value>
+  </data>
+  <data name="SmsMessage_State_minus_4" xml:space="preserve">
+    <value>运送失败</value>
   </data>
   <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
     <value>要电话号码</value>
@@ -2692,6 +2749,9 @@
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>
+  <data name="StateSince" xml:space="preserve">
+    <value>国家自</value>
+  </data>
   <data name="String" xml:space="preserve">
     <value>文本</value>
   </data>
@@ -2711,7 +2771,7 @@
     <value>关闭量</value>
   </data>
   <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>数量闭幕</value>
+    <value>关闭数量</value>
   </data>
   <data name="SummaryEntry_Credit" xml:space="preserve">
     <value>信用</value>

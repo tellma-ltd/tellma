@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tellma.Services.Sms
 {
     public interface ISmsCallbackHandler
     {
-        Task HandleCallback(SmsEvent smsEvent);
+        /// <summary>
+        /// Handles the notification from the external SMS service
+        /// </summary>
+        Task HandleCallback(SmsEventNotification smsEvent, CancellationToken cancellation);
     }
 }
