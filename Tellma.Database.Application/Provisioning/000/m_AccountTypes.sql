@@ -103,9 +103,12 @@ INSERT INTO @AT VALUES(112121,0,1,'112121', '/1/1/2/1/2/1/', NULL,N'CurrentTrade
 INSERT INTO @AT VALUES(112122,0,1,'112122', '/1/1/2/1/2/2/', NULL,N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'Current receivables due from related parties',N'The amount of current receivables due from related parties. [Refer: Related parties [member]]',NULL, @CustomerRLD)
 INSERT INTO @AT VALUES(112123,0,0,'112123', '/1/1/2/1/2/3/', NULL,N'CurrentPrepaymentsAndCurrentAccruedIncome', N'Current prepayments and current accrued income',N'The amount of current prepayments and current accrued income. [Refer: Prepayments; Accrued income]',NULL, NULL)
 INSERT INTO @AT VALUES(1121231,0,0,'1121231', '/1/1/2/1/2/3/1/', NULL,N'CurrentPrepayments', N'Current prepayments',N'The amount of current prepayments. [Refer: Prepayments]',NULL, NULL)
-INSERT INTO @AT VALUES(11212311,0,1,'11212311', '/1/1/2/1/2/3/1/1/', NULL,N'CurrentAdvancesToEmployees', N'Current advances to employees',N'',NULL, @EmployeeRLD)
-INSERT INTO @AT VALUES(11212312,0,0,'11212312', '/1/1/2/1/2/3/1/2/', NULL,N'CurrentAdvancesToSuppliers', N'Current advances to suppliers',N'The amount of current advances made to suppliers before goods or services are received.',NULL, @SupplierRLD)
-INSERT INTO @AT VALUES(11212313,0,0,'11212313', '/1/1/2/1/2/3/1/3/', NULL,N'CurrentPrepaidExpenses', N'Current prepaid expenses',N'The amount recognised as a current asset for expenditures made prior to the period when the economic benefit will be realised.',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(11212311,0,1,'11212311', '/1/1/2/1/2/3/1/1/', NULL,N'CurrentPrepaymentsToSuppliersExtension', N'Current prepayments to suppliers',N'',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(112123111,0,0,'112123111', '/1/1/2/1/2/3/1/1/1/', NULL,N'CurrentAdvancesToSuppliers', N'Current advances to suppliers',N'The amount of current advances made to suppliers before goods or services are received.',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(112123112,0,0,'112123112', '/1/1/2/1/2/3/1/1/2/', NULL,N'CurrentPrepaidExpenses', N'Current prepaid expenses',N'The amount recognised as a current asset for expenditures made prior to the period when the economic benefit will be realised.',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(11212312,0,1,'11212312', '/1/1/2/1/2/3/1/2/', NULL,N'CurrentPrepaymentsToEmployeesExtension', N'Current prepayments to employees',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(112123121,0,1,'112123121', '/1/1/2/1/2/3/1/2/1/', NULL,N'CurrentAdvancesToEmployeesExtension', N'Current advances to employees',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(112123122,0,1,'112123122', '/1/1/2/1/2/3/1/2/2/', NULL,N'CurrentDeductionsFromEmployeesExtension', N'Current deductions from employees',N'',NULL, @EmployeeRLD)
 INSERT INTO @AT VALUES(1121232,0,1,'1121232', '/1/1/2/1/2/3/2/', NULL,N'CurrentAccruedIncome', N'Current accrued income',N'The amount of current accrued income. [Refer: Accrued income]',NULL, @CustomerRLD)
 INSERT INTO @AT VALUES(112124,0,1,'112124', '/1/1/2/1/2/4/', NULL,N'CurrentBilledButNotReceivedExtension', N'Current billed but not received',N'The amount invoiced but against which there was no good or service received',NULL, @SupplierRLD)
 INSERT INTO @AT VALUES(112125,0,1,'112125', '/1/1/2/1/2/5/', NULL,N'CurrentReceivablesFromTaxesOtherThanIncomeTax', N'Current receivables from taxes other than income tax',N'The amount of current receivables from taxes other than income tax. [Refer: Receivables from taxes other than income tax]',NULL, NULL)
@@ -166,6 +169,7 @@ INSERT INTO @AT VALUES(121621,0,0,'121621', '/1/2/1/6/21/', N'ChangesInEquity',N
 INSERT INTO @AT VALUES(121622,0,0,'121622', '/1/2/1/6/22/', N'ChangesInEquity',N'CapitalRedemptionReserve', N'Capital redemption reserve',N'A component of equity representing the reserve for the redemption of the entity''s own shares.',NULL, NULL)
 INSERT INTO @AT VALUES(121623,0,0,'121623', '/1/2/1/6/23/', N'ChangesInEquity',N'MergerReserve', N'Merger reserve',N'A component of equity that may result in relation to a business combination outside the scope of IFRS 3.',NULL, NULL)
 INSERT INTO @AT VALUES(121624,0,0,'121624', '/1/2/1/6/24/', N'ChangesInEquity',N'StatutoryReserve', N'Statutory reserve',N'A component of equity representing reserves created based on legal requirements.',NULL, NULL)
+INSERT INTO @AT VALUES(1219,0,0,'1219', '/1/2/1/9/', N'ChangesInEquity',N'NonTaxDeductibleExpensesExtension', N'Non tax deductible expenses',N'A component of equity representing the entity''s non tax-deductible expenses.',NULL, NULL)
 INSERT INTO @AT VALUES(122,0,0,'122', '/1/2/2/', NULL,N'Liabilities', N'Liabilities',N'The amount of a present obligation of the entity to transfer an economic resource as a result of past events. Economic resource is a right that has the potential to produce economic benefits.',NULL, NULL)
 INSERT INTO @AT VALUES(1221,0,0,'1221', '/1/2/2/1/', NULL,N'NoncurrentLiabilities', N'Non-current liabilities',N'The amount of liabilities that do not meet the definition of current liabilities. [Refer: Current liabilities]',NULL, NULL)
 INSERT INTO @AT VALUES(12211,0,0,'12211', '/1/2/2/1/1/', NULL,N'NoncurrentProvisions', N'Non-current provisions',N'The amount of non-current provisions. [Refer: Provisions]',NULL, NULL)
@@ -215,8 +219,9 @@ INSERT INTO @AT VALUES(122222,0,1,'122222', '/1/2/2/2/2/2/', NULL,N'TradeAndOthe
 INSERT INTO @AT VALUES(122224,0,0,'122224', '/1/2/2/2/2/4/', NULL,N'AccrualsAndDeferredIncomeClassifiedAsCurrent', N'Accruals and deferred income classified as current',N'The amount of accruals and deferred income classified as current. [Refer: Accruals and deferred income]',NULL, NULL)
 INSERT INTO @AT VALUES(1222241,0,0,'1222241', '/1/2/2/2/2/4/1/', NULL,N'DeferredIncomeClassifiedAsCurrent', N'Deferred income classified as current',N'The amount of deferred income classified as current. [Refer: Deferred income]',NULL, @CustomerRLD)
 INSERT INTO @AT VALUES(12222411,0,0,'12222411', '/1/2/2/2/2/4/1/1/', NULL,N'RentDeferredIncomeClassifiedAsCurrent', N'Rent deferred income classified as current',N'The amount of deferred income arising on rental activity. [Refer: Deferred income]',NULL, @CustomerRLD)
-INSERT INTO @AT VALUES(1222242,0,1,'1222242', '/1/2/2/2/2/4/2/', NULL,N'AccrualsClassifiedAsCurrent', N'Accruals classified as current',N'The amount of accruals classified as current. [Refer: Accruals]',NULL, @SupplierRLD)
-INSERT INTO @AT VALUES(12222421,0,1,'12222421', '/1/2/2/2/2/4/2/1/', NULL,N'ShorttermEmployeeBenefitsAccruals', N'Short-term employee benefits accruals',N'The amount of accruals for employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services. [Refer: Accruals classified as current]',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(1222242,0,1,'1222242', '/1/2/2/2/2/4/2/', NULL,N'AccrualsClassifiedAsCurrent', N'Accruals classified as current',N'The amount of accruals classified as current. [Refer: Accruals]',NULL, NULL)
+INSERT INTO @AT VALUES(12222421,0,1,'12222421', '/1/2/2/2/2/4/2/1/', NULL,N'ShorttermSuppliersAccrualsExtension', N'Short-term suppliers accruals',N'',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(12222422,0,1,'12222422', '/1/2/2/2/2/4/2/2/', NULL,N'ShorttermEmployeeBenefitsAccruals', N'Short-term employee benefits accruals',N'The amount of accruals for employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services. [Refer: Accruals classified as current]',NULL, @EmployeeRLD)
 INSERT INTO @AT VALUES(122225,0,0,'122225', '/1/2/2/2/2/5/', NULL,N'CurrentBilledButNotIssuedExtension', N'Current billed but not delivered to trade customers',N'The amount invoiced but against which there was no good or service delivered to the customer',NULL, @CustomerRLD)
 INSERT INTO @AT VALUES(122226,0,1,'122226', '/1/2/2/2/2/6/', NULL,N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', N'Current payables on social security and taxes other than income tax',N'The amount of current payables on social security and taxes other than incomes tax. [Refer: Payables on social security and taxes other than income tax]',NULL, NULL)
 INSERT INTO @AT VALUES(12222601,0,1,'12222601', '/1/2/2/2/2/6/1/', NULL,N'CurrentValueAddedTaxPayables', N'Current value added tax payables',N'The amount of current value added tax payables. [Refer: Value added tax payables]',NULL, @CustomerRLD)
@@ -232,6 +237,7 @@ INSERT INTO @AT VALUES(12222610,0,1,'12222610', '/1/2/2/2/2/6/10/', NULL,N'Divid
 INSERT INTO @AT VALUES(12222611,0,1,'12222611', '/1/2/2/2/2/6/11/', NULL,N'ProfitTaxPayableExtension', N'Business Profit tax payable',N'',NULL, NULL)
 INSERT INTO @AT VALUES(122227,0,1,'122227', '/1/2/2/2/2/7/', NULL,N'CurrentRetentionPayables', N'Current retention payables',N'The amount of current retention payables. [Refer: Retention payables]',NULL, NULL)
 INSERT INTO @AT VALUES(122228,0,1,'122228', '/1/2/2/2/2/8/', NULL,N'OtherCurrentPayables', N'Other current payables',N'The amount of current payables that the entity does not separately disclose in the same statement or note.',NULL, NULL)
+INSERT INTO @AT VALUES(1222281,0,1,'1222281', '/1/2/2/2/2/8/1/', NULL,N'CurrentSecurityDepositsExtension', N'Current security deposits',N'',NULL, @CustomerRLD)
 INSERT INTO @AT VALUES(12223,0,1,'12223', '/1/2/2/2/3/', NULL,N'CurrentTaxLiabilitiesCurrent', N'Current tax liabilities, current',N'The current amount of current tax liabilities. [Refer: Current tax liabilities]',NULL, NULL)
 INSERT INTO @AT VALUES(12224,0,1,'12224', '/1/2/2/2/4/', NULL,N'OtherCurrentFinancialLiabilities', N'Other current financial liabilities',N'The amount of current financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities; Current financial liabilities]',NULL, NULL)
 INSERT INTO @AT VALUES(122241,0,1,'122241', '/1/2/2/2/4/1/', NULL,N'CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossAbstract', N'Current financial liabilities at fair value through profit or loss',N'The amount of current financial liabilities measured at fair value through profit or loss. [Refer: Financial liabilities at fair value through profit or loss]',NULL, NULL)
@@ -340,18 +346,21 @@ INSERT INTO @AT VALUES(322,0,0,'322', '/3/2/2/', NULL,N'OtherComprehensiveIncome
 INSERT INTO @AT VALUES(3221,0,0,'3221', '/3/2/2/1/', NULL,N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax', N'Gains (losses) on remeasuring available-for-sale financial assets, before tax',N'The gains (losses) recognised in other comprehensive income on remeasuring available-for-sale financial assets, before tax. [Refer: Financial assets available-for-sale]',NULL, NULL)
 INSERT INTO @AT VALUES(3222,0,0,'3222', '/3/2/2/2/', NULL,N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax', N'Reclassification adjustments on available-for-sale financial assets, before tax',N'The amount of reclassification adjustments related to available-for-sale financial assets, before tax. Reclassification adjustments are amounts reclassified to profit (loss) in the current period that were recognised in other comprehensive income in the current or previous periods. [Refer: Financial assets available-for-sale; Other comprehensive income]',NULL, NULL)
 INSERT INTO @AT VALUES(4,0,0,'4', '/4/', NULL,N'ControlAccountsExtension', N'Control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(41,0,0,'41', '/4/1/', NULL,N'TradersControlAccountsExtension', N'Traders control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(411,0,0,'411', '/4/1/1/', NULL,N'SuppliersControlAccountsExtension', N'Suppliers control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(4112,0,0,'4112', '/4/1/1/2/', NULL,N'ReceiptsAtPointInTimeFromSuppliersControlExtension', N'Receipts at point in time from suppliers control',N'',NULL, @SupplierRLD)
-INSERT INTO @AT VALUES(4113,0,0,'4113', '/4/1/1/3/', NULL,N'ReceiptsOverPeriodOfTimeFromSuppliersControlExtension', N'Receipts over period of time from suppliers control',N'',NULL, @SupplierRLD)
-INSERT INTO @AT VALUES(412,0,0,'412', '/4/1/2/', NULL,N'CustomersControlAccountsExtension', N'Customer control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(4122,0,0,'4122', '/4/1/2/2/', NULL,N'IssuesAtPointInTimeToCustomersControlExtension', N'Issues at point in time to customers control',N'',NULL, @CustomerRLD)
-INSERT INTO @AT VALUES(4123,0,0,'4123', '/4/1/2/3/', NULL,N'IssuesOverPeriodOfTimeToCustomersControlExtension', N'Issues over period of time to customers control',N'',NULL, @CustomerRLD)
-INSERT INTO @AT VALUES(413,0,0,'413', '/4/1/3/', NULL,N'PayrollControlExtension', N'Payroll control',N'',NULL, NULL)
-INSERT INTO @AT VALUES(4131,0,1,'4131', '/4/1/3/1/', NULL,N'CashPaymentsToEmployeesControlExtension', N'Cash payments to employees control',N'',NULL, @EmployeeRLD)
-INSERT INTO @AT VALUES(42,0,0,'42', '/4/2/', NULL,N'OthersAccountsControlExtension', N'Others control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(421,0,1,'421', '/4/2/1/', NULL,N'OthersCashAccountsControlExtension', N'Others cash control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(4211,0,1,'4211', '/4/2/1/1/', NULL,N'CashControlExtension', N'Cash control',N'',NULL, NULL)
+INSERT INTO @AT VALUES(41,0,0,'41', '/4/1/', N'ChangesInTradersControlExtension',N'PerformanceObligationsControlExtension', N'Performance obligations control',N'',NULL, NULL)
+INSERT INTO @AT VALUES(411,0,0,'411', '/4/1/1/', N'ChangesInTradersControlExtension',N'PerformanceObligationsAtAPointInTimeControlExtension', N'Performance obligations at a point in time control',N'',NULL, NULL)
+INSERT INTO @AT VALUES(4112,0,0,'4112', '/4/1/1/2/', N'ChangesInTradersControlExtension',N'SupplierPerformanceObligationsAtAPointInTimeControlExtension', N'Supplier performance obligations at a point in time control',N'',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(4113,0,0,'4113', '/4/1/1/3/', N'ChangesInTradersControlExtension',N'CustomerPerformanceObligationsAtAPointInTimeControlExtension', N'Customer performance obligations at a point in time control',N'',NULL, @CustomerRLD)
+INSERT INTO @AT VALUES(412,0,0,'412', '/4/1/2/', N'ChangesInTradersControlExtension',N'PerformanceObligationsOverAPeriodOfTimeControlExtension', N'Performance obligations over a period of time control',N'',NULL, NULL)
+INSERT INTO @AT VALUES(4122,0,0,'4122', '/4/1/2/2/', N'ChangesInTradersControlExtension',N'SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension', N'Supplier performance obligations over a period of time control',N'',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(4123,0,0,'4123', '/4/1/2/3/', N'ChangesInTradersControlExtension',N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension', N'Customer performance obligations over a period of time control',N'',NULL, @CustomerRLD)
+INSERT INTO @AT VALUES(413,0,0,'413', '/4/1/3/', N'ChangesInTradersControlExtension',N'EmployeesControlAccountsExtension', N'Employees control accounts',N'',NULL, NULL)
+INSERT INTO @AT VALUES(4131,0,1,'4131', '/4/1/3/1/', N'ChangesInTradersControlExtension',N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension', N'Employee performance obligations over a period of time control',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(42,0,0,'42', '/4/2/', N'ChangesInTradersControlExtension',N'OthersAccountsControlExtension', N'Others control accounts',N'',NULL, NULL)
+INSERT INTO @AT VALUES(421,0,1,'421', '/4/2/1/', N'ChangesInTradersControlExtension',N'PaymentControlExtension', N'Payment control',N'',NULL, NULL)
+INSERT INTO @AT VALUES(4211,0,1,'4211', '/4/2/1/1/', N'ChangesInTradersControlExtension',N'SupplierPaymentControlExtension', N'Supplier payment control',N'',NULL, @SupplierRLD)
+INSERT INTO @AT VALUES(4212,0,1,'4212', '/4/2/1/2/', N'ChangesInTradersControlExtension',N'EmployeePaymentControlExtension', N'Employee payment control',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(4213,0,1,'4213', '/4/2/1/3/', N'ChangesInTradersControlExtension',N'CustomerPaymentControlExtension', N'Customer payment control',N'',NULL, @CustomerRLD)
+INSERT INTO @AT VALUES(4219,0,1,'4219', '/4/2/1/9/', N'ChangesInTradersControlExtension',N'OtherPaymentControlExtension', N'Other payment control',N'',NULL, @OtherRLD)
 INSERT INTO @AT VALUES(5,0,1,'5', '/5/', NULL,N'StatisticalAccountsExtension', N'Statistical accounts',N'',NULL, NULL)
 INSERT INTO @AT VALUES(51,0,1,'51', '/5/1/', NULL,N'GuaranteesExtension', N'Guarantees',N'',NULL, NULL)
 INSERT INTO @AT VALUES(511,0,1,'511', '/5/1/1/', NULL,N'FinancialGuaranteesExtension', N'Financial guarantees',N'',NULL, NULL)
@@ -361,7 +370,6 @@ INSERT INTO @AT VALUES(52,0,1,'52', '/5/2/', NULL,N'TasksExtension', N'Tasks',N'
 INSERT INTO @AT VALUES(521,0,1,'521', '/5/2/1/', NULL,N'SellingGeneralAndAdministrationTasksExtension', N'SG&A tasks',N'',NULL, NULL)
 INSERT INTO @AT VALUES(522,0,1,'522', '/5/2/2/', NULL,N'OperationalTasksExtension', N'Operational tasks',N'',NULL, NULL)
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'',NULL, NULL)
-
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
 		[EntryTypeParentId], [Description],[CustodianDefinitionId], [ParticipantDefinitionId])
 SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [StandardAndPure], [IsMonetary],
@@ -569,8 +577,12 @@ DECLARE @CurrentTradeReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE 
 DECLARE @TradeAndOtherCurrentReceivablesDueFromRelatedParties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TradeAndOtherCurrentReceivablesDueFromRelatedParties');
 DECLARE @CurrentPrepaymentsAndCurrentAccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPrepaymentsAndCurrentAccruedIncome');
 DECLARE @CurrentPrepayments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPrepayments');
+DECLARE @CurrentPrepaymentsToSuppliersExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPrepaymentsToSuppliersExtension');
 DECLARE @CurrentAdvancesToSuppliers INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAdvancesToSuppliers');
 DECLARE @CurrentPrepaidExpenses INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPrepaidExpenses');
+DECLARE @CurrentPrepaymentsToEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPrepaymentsToEmployeesExtension');
+DECLARE @CurrentAdvancesToEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAdvancesToEmployeesExtension');
+DECLARE @CurrentDeductionsFromEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentDeductionsFromEmployeesExtension');
 DECLARE @CurrentAccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAccruedIncome');
 DECLARE @CurrentBilledButNotReceivedExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentBilledButNotReceivedExtension');
 DECLARE @CurrentReceivablesFromTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentReceivablesFromTaxesOtherThanIncomeTax');
@@ -631,6 +643,7 @@ DECLARE @ReserveOfEquityComponentOfConvertibleInstruments INT = (SELECT [Id] FRO
 DECLARE @CapitalRedemptionReserve INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CapitalRedemptionReserve');
 DECLARE @MergerReserve INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'MergerReserve');
 DECLARE @StatutoryReserve INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'StatutoryReserve');
+DECLARE @NonTaxDeductibleExpensesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NonTaxDeductibleExpensesExtension');
 DECLARE @Liabilities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'Liabilities');
 DECLARE @NoncurrentLiabilities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NoncurrentLiabilities');
 DECLARE @NoncurrentProvisions INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NoncurrentProvisions');
@@ -681,6 +694,7 @@ DECLARE @AccrualsAndDeferredIncomeClassifiedAsCurrent INT = (SELECT [Id] FROM db
 DECLARE @DeferredIncomeClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'DeferredIncomeClassifiedAsCurrent');
 DECLARE @RentDeferredIncomeClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RentDeferredIncomeClassifiedAsCurrent');
 DECLARE @AccrualsClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'AccrualsClassifiedAsCurrent');
+DECLARE @ShorttermSuppliersAccrualsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ShorttermSuppliersAccrualsExtension');
 DECLARE @ShorttermEmployeeBenefitsAccruals INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ShorttermEmployeeBenefitsAccruals');
 DECLARE @CurrentBilledButNotIssuedExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentBilledButNotIssuedExtension');
 DECLARE @CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax');
@@ -697,6 +711,7 @@ DECLARE @DividendTaxPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WH
 DECLARE @ProfitTaxPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProfitTaxPayableExtension');
 DECLARE @CurrentRetentionPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentRetentionPayables');
 DECLARE @OtherCurrentPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherCurrentPayables');
+DECLARE @CurrentSecurityDepositsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentSecurityDepositsExtension');
 DECLARE @CurrentTaxLiabilitiesCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentTaxLiabilitiesCurrent');
 DECLARE @OtherCurrentFinancialLiabilities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherCurrentFinancialLiabilities');
 DECLARE @CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossAbstract INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossAbstract');
@@ -805,18 +820,21 @@ DECLARE @OtherComprehensiveIncomeBeforeTaxAvailableforsaleFinancialAssets INT = 
 DECLARE @GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax');
 DECLARE @ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax');
 DECLARE @ControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountsExtension');
-DECLARE @TradersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TradersControlAccountsExtension');
-DECLARE @SuppliersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SuppliersControlAccountsExtension');
-DECLARE @ReceiptsAtPointInTimeFromSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ReceiptsAtPointInTimeFromSuppliersControlExtension');
-DECLARE @ReceiptsOverPeriodOfTimeFromSuppliersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ReceiptsOverPeriodOfTimeFromSuppliersControlExtension');
-DECLARE @CustomersControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomersControlAccountsExtension');
-DECLARE @IssuesAtPointInTimeToCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'IssuesAtPointInTimeToCustomersControlExtension');
-DECLARE @IssuesOverPeriodOfTimeToCustomersControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'IssuesOverPeriodOfTimeToCustomersControlExtension');
-DECLARE @PayrollControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PayrollControlExtension');
-DECLARE @CashPaymentsToEmployeesControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashPaymentsToEmployeesControlExtension');
+DECLARE @PerformanceObligationsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PerformanceObligationsControlExtension');
+DECLARE @PerformanceObligationsAtAPointInTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PerformanceObligationsAtAPointInTimeControlExtension');
+DECLARE @SupplierPerformanceObligationsAtAPointInTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SupplierPerformanceObligationsAtAPointInTimeControlExtension');
+DECLARE @CustomerPerformanceObligationsAtAPointInTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomerPerformanceObligationsAtAPointInTimeControlExtension');
+DECLARE @PerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PerformanceObligationsOverAPeriodOfTimeControlExtension');
+DECLARE @SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension');
+DECLARE @CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension');
+DECLARE @EmployeesControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeesControlAccountsExtension');
+DECLARE @EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension');
 DECLARE @OthersAccountsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OthersAccountsControlExtension');
-DECLARE @OthersCashAccountsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OthersCashAccountsControlExtension');
-DECLARE @CashControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CashControlExtension');
+DECLARE @PaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PaymentControlExtension');
+DECLARE @SupplierPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SupplierPaymentControlExtension');
+DECLARE @EmployeePaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeePaymentControlExtension');
+DECLARE @CustomerPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomerPaymentControlExtension');
+DECLARE @OtherPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherPaymentControlExtension');
 DECLARE @StatisticalAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'StatisticalAccountsExtension');
 DECLARE @GuaranteesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GuaranteesExtension');
 DECLARE @FinancialGuaranteesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'FinancialGuaranteesExtension');

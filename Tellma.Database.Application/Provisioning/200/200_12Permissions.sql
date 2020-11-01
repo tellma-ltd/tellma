@@ -10,11 +10,7 @@ SELECT	0,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Jiad Akra'
 UNION
 SELECT	1,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Mohamad Akra'
 UNION
-SELECT	2,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Ahmad Akra'
-UNION
-SELECT	3,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Abu Bakr elHadi'
-UNION
-SELECT	4,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Jiad Akra'
+SELECT	2,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Ahmad Akra';
 
 --IF @101MohamadAkra <> @AdminUserId
 --	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])

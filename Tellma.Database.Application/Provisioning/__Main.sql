@@ -15,11 +15,10 @@ IF @OverwriteDb = 0 RETURN
 :r .\000\m_AccountTypes.sql
 
 :r .\000\n_Settings.sql
-:r .\000\o_LineDefinitions.sql
-
-:r .\000\p_DocumentDefinitions.sql
-:r .\000\q_ReportDefinitions.sql
-:r .\000\r_AccountClassifications.sql
+--:r .\000\o_LineDefinitions.sql
+--:r .\000\p_DocumentDefinitions.sql
+--:r .\000\q_ReportDefinitions.sql
+--:r .\000\r_AccountClassifications.sql
 :r .\000\t_Accounts.sql
 :r .\000\u_Lookups.sql
 :r .\000\y_Roles.sql
@@ -69,7 +68,7 @@ BEGIN
 	:r .\200\200_04ResourceDefinitions.sql
 	:r .\200\200_05CustodyDefinitions.sql
 	:r .\200\200_06RelationDefinitions.sql
-	:r .\200\200_07DocumentDefinitions.sql
+	--:r .\200\200_07DocumentDefinitions.sql
 	:r .\200\200_11Users.sql
 	:r .\200\200_12Permissions.sql
 	:r .\200\200_13Workflows.sql

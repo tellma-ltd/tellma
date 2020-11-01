@@ -11,7 +11,7 @@ BEGIN
 	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenue');
 	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNatureAbstract');
 	DECLARE @EquityAndLiabilitiesAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EquityAndLiabilitiesAbstract');
-	DECLARE @EquityAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EquityAbstract');--TradeAndOtherPayables
+	DECLARE @EquityAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EquityAbstract');
 	DECLARE @TradeAndOtherNonCurrentPayables HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'TradeAndOtherNonCurrentPayables');
 	DECLARE @NonCurrentProvisionsAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'NonCurrentProvisionsAbstract');
 	
