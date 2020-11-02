@@ -34,6 +34,9 @@ export interface DetailsEntry extends EntityWithKey {
     Time?: number;
     AlgebraicTime?: number;
     Value?: number;
+    Actual?: number;
+    Planned?: number;
+    Variance?: number;
     AlgebraicValue?: number;
     NegativeAlgebraicValue?: number;
     MonetaryValuePerUnit?: number;
@@ -134,6 +137,27 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Value: {
                     control: 'number',
                     label: () => `${trx.instant('Entry_Value')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
+                Actual: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_Actual')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
+                Planned: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_Planned')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
+                Variance: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_Variance')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     alignment: 'right'

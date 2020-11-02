@@ -14,10 +14,12 @@ namespace Tellma.Services.BlobStorage
     public class AzureBlobStorageService : IBlobService
     {
         private readonly AzureBlobStorageOptions _config;
+        private readonly IInstrumentationService _instrumentation;
 
-        public AzureBlobStorageService(AzureBlobStorageOptions config)
+        public AzureBlobStorageService(AzureBlobStorageOptions config, IInstrumentationService instrumentation)
         {
             _config = config;
+            _instrumentation = instrumentation;
         }
 
         /// <summary>
@@ -25,6 +27,8 @@ namespace Tellma.Services.BlobStorage
         /// </summary>
         public async Task SaveBlobsAsync(IEnumerable<(string blobName, byte[] content)> blobs)
         {
+            using var _ = _instrumentation.Block("SaveBlobsAsync");
+
             // Open a container client and get a reference to the single container
             BlobContainerClient containerClient = new BlobContainerClient(_config.ConnectionString, _config.ContainerName);
             await containerClient.CreateIfNotExistsAsync(); // The very first attachment
@@ -45,6 +49,8 @@ namespace Tellma.Services.BlobStorage
         /// </summary>
         public async Task<byte[]> LoadBlob(string blobName, CancellationToken cancellation)
         {
+            using var _ = _instrumentation.Block("LoadBlob");
+
             // Open a container client and get a reference to the single container
             BlobContainerClient containerClient = new BlobContainerClient(_config.ConnectionString, _config.ContainerName);
             if (!await containerClient.ExistsAsync(cancellation))
@@ -72,6 +78,8 @@ namespace Tellma.Services.BlobStorage
         /// </summary>
         public async Task DeleteBlobsAsync(IEnumerable<string> blobNames)
         {
+            using var _ = _instrumentation.Block("DeleteBlobsAsync");
+
             // Open a container client and get a reference to the single container
             BlobContainerClient containerClient = new BlobContainerClient(_config.ConnectionString, _config.ContainerName);
             if (!await containerClient.ExistsAsync())

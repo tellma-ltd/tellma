@@ -17,6 +17,7 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Services;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.MultiTenancy;
@@ -31,10 +32,12 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "documents/";
 
         private readonly DocumentsService _service;
+        private readonly IInstrumentationService _instrumentation;
 
-        public DocumentsController(DocumentsService service, IServiceProvider sp) : base(sp)
+        public DocumentsController(DocumentsService service, IInstrumentationService instrumentation, IServiceProvider sp) : base(sp)
         {
             _service = service;
+            _instrumentation = instrumentation;
         }
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
@@ -42,6 +45,8 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
+                using var _ = _instrumentation.Block("GetAttachment");
+
                 var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
                 var contentType = ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);

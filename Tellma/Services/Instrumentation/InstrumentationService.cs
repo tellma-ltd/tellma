@@ -16,7 +16,7 @@ namespace Tellma.Services.Instrumentation
         /// <param name="options"></param>
         public InstrumentationService(IOptions<InstrumentationOptions> options)
         {
-            _threshold = options?.Value?.ThresholdInMilliseconds ?? 500L; // Default to 30 milliseconds
+            _threshold = options?.Value?.ThresholdInMilliseconds ?? 500L; // Default to 500 milliseconds
             _lifetimeSw.Start();
             _middlewareSw.Start();
         }

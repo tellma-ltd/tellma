@@ -10,11 +10,13 @@ namespace Tellma.Services.BlobStorage
     {
         private readonly BlobServiceOptions _config;
         private readonly ApplicationRepository _repo;
+        private readonly IInstrumentationService _instrumentationService;
 
-        public BlobServiceFactory(IOptions<BlobServiceOptions> options, ApplicationRepository repo)
+        public BlobServiceFactory(IOptions<BlobServiceOptions> options, ApplicationRepository repo, IInstrumentationService instrumentationService)
         {
             _config = options.Value;
             _repo = repo;
+            _instrumentationService = instrumentationService;
         }
 
         /// <summary>
@@ -24,7 +26,7 @@ namespace Tellma.Services.BlobStorage
         {
             if (!string.IsNullOrWhiteSpace(_config?.AzureBlobStorage?.ConnectionString))
             {
-                return new AzureBlobStorageService(_config.AzureBlobStorage);
+                return new AzureBlobStorageService(_config.AzureBlobStorage, _instrumentationService);
             }
             else
             {
