@@ -353,8 +353,7 @@ INSERT INTO @AT VALUES(4113,0,0,'4113', '/4/1/1/3/', N'ChangesInTradersControlEx
 INSERT INTO @AT VALUES(412,0,0,'412', '/4/1/2/', N'ChangesInTradersControlExtension',N'PerformanceObligationsOverAPeriodOfTimeControlExtension', N'Performance obligations over a period of time control',N'',NULL, NULL)
 INSERT INTO @AT VALUES(4122,0,0,'4122', '/4/1/2/2/', N'ChangesInTradersControlExtension',N'SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension', N'Supplier performance obligations over a period of time control',N'',NULL, @SupplierRLD)
 INSERT INTO @AT VALUES(4123,0,0,'4123', '/4/1/2/3/', N'ChangesInTradersControlExtension',N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension', N'Customer performance obligations over a period of time control',N'',NULL, @CustomerRLD)
-INSERT INTO @AT VALUES(413,0,0,'413', '/4/1/3/', N'ChangesInTradersControlExtension',N'EmployeesControlAccountsExtension', N'Employees control accounts',N'',NULL, NULL)
-INSERT INTO @AT VALUES(4131,0,1,'4131', '/4/1/3/1/', N'ChangesInTradersControlExtension',N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension', N'Employee performance obligations over a period of time control',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(4124,0,1,'4124', '/4/1/2/4/', N'ChangesInTradersControlExtension',N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension', N'Employee performance obligations over a period of time control',N'',NULL, @EmployeeRLD)
 INSERT INTO @AT VALUES(42,0,0,'42', '/4/2/', N'ChangesInTradersControlExtension',N'OthersAccountsControlExtension', N'Others control accounts',N'',NULL, NULL)
 INSERT INTO @AT VALUES(421,0,1,'421', '/4/2/1/', N'ChangesInTradersControlExtension',N'PaymentControlExtension', N'Payment control',N'',NULL, NULL)
 INSERT INTO @AT VALUES(4211,0,1,'4211', '/4/2/1/1/', N'ChangesInTradersControlExtension',N'SupplierPaymentControlExtension', N'Supplier payment control',N'',NULL, @SupplierRLD)
@@ -369,6 +368,10 @@ INSERT INTO @AT VALUES(5112,0,1,'5112', '/5/1/1/2/', NULL,N'DishonouredGuarantee
 INSERT INTO @AT VALUES(52,0,1,'52', '/5/2/', NULL,N'TasksExtension', N'Tasks',N'',NULL, NULL)
 INSERT INTO @AT VALUES(521,0,1,'521', '/5/2/1/', NULL,N'SellingGeneralAndAdministrationTasksExtension', N'SG&A tasks',N'',NULL, NULL)
 INSERT INTO @AT VALUES(522,0,1,'522', '/5/2/2/', NULL,N'OperationalTasksExtension', N'Operational tasks',N'',NULL, NULL)
+INSERT INTO @AT VALUES(53,0,1,'53', '/5/3/', NULL,N'HRMExtension', N'HRM',N'',NULL, NULL)
+INSERT INTO @AT VALUES(531,0,1,'531', '/5/3/1/', NULL,N'PaidLeavesExtension', N'Paid Leaves',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(532,0,1,'532', '/5/3/2/', NULL,N'CostCenterAssignmentExtension', N'Cost Center Assignments',N'',NULL, @EmployeeRLD)
+INSERT INTO @AT VALUES(533,0,1,'533', '/5/3/3/', NULL,N'PromotionExtension', N'Promotions',N'',NULL, @EmployeeRLD)
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'',NULL, NULL)
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
 		[EntryTypeParentId], [Description],[CustodianDefinitionId], [ParticipantDefinitionId])
@@ -827,7 +830,6 @@ DECLARE @CustomerPerformanceObligationsAtAPointInTimeControlExtension INT = (SEL
 DECLARE @PerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PerformanceObligationsOverAPeriodOfTimeControlExtension');
 DECLARE @SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension');
 DECLARE @CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension');
-DECLARE @EmployeesControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeesControlAccountsExtension');
 DECLARE @EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension');
 DECLARE @OthersAccountsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OthersAccountsControlExtension');
 DECLARE @PaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PaymentControlExtension');
@@ -843,6 +845,10 @@ DECLARE @DishonouredGuaranteeExtension INT = (SELECT [Id] FROM dbo.AccountTypes 
 DECLARE @TasksExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TasksExtension');
 DECLARE @SellingGeneralAndAdministrationTasksExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'SellingGeneralAndAdministrationTasksExtension');
 DECLARE @OperationalTasksExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OperationalTasksExtension');
+DECLARE @HRMExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'HRMExtension');
+DECLARE @PaidLeavesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PaidLeavesExtension');
+DECLARE @CostCenterAssignmentExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CostCenterAssignmentExtension');
+DECLARE @PromotionExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PromotionExtension');
 DECLARE @MigrationAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'MigrationAccountsExtension');
 END
 
@@ -1007,8 +1013,9 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (605,@RevenueFromSaleOfFoodAndBeverage,					@CurrentFoodAndBeverageRD),
 (610,@RevenueFromSaleOfAgriculturalProduce,				@CurrentAgriculturalProduceRD),
 
-(615,@RevenueFromRenderingOfServices,					@RevenueServiceRD),
-(620,@RevenueFromRenderingOfServices,					@InvestmentPropertyCompletedMemberRD),
+(615,@RevenueFromRenderingOfPointOfTimeServices,		@CustomerPointServiceRD),
+(620,@RevenueFromRenderingOfPeriodOfTimeServices,		@CustomerPeriodServiceRD),
+(621,@RevenueFromRenderingOfPeriodOfTimeServices,		@InvestmentPropertyCompletedMemberRD),
 (625,@OtherRevenue,										@ByproductGrainRD),
 (630,@OtherRevenue,										@ByproductOilRD),
 

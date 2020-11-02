@@ -250,7 +250,8 @@ INSERT INTO @ResourceDefinitionIds([Id]) VALUES
 --(@ByproductOilRD),
 --(@RawGrainRD),
 --(@RawVehicleRD),
-(@RevenueServiceRD),
+(@CustomerPointServiceRD),
+(@CustomerPeriodServiceRD),
 (@EmployeeBenefitRD),
 (@CheckReceivedRD);
 

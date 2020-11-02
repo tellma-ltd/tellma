@@ -25,26 +25,42 @@
 		GOTO Err_Label;
 	END;
 	
-	SET @DefinitionID = @RevenueServiceRD; DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 		INSERT INTO @Resources ([Index],
-		[Name],						[UnitId],[CurrencyId]) VALUES
-	(0,	N'Monthly Subscription',	@mo,		@ETB),
-	(1, N'Yearly Support',			@yr,		@ETB),
-	(2, N'ERP Implementation',		@ea,		@ETB),
-	(3, N'ERP Stabilization',		@mo,		@ETB)	
+		[Name],						[Name2],			[UnitId], [CurrencyId]) VALUES
+	(0, N'ERP Implementation',		N'تفعيل النظام',	@ea,		@USD),
+	(1, N'ERP Stabilization',		N'استقرار النظام',	@mo,		@USD)	
 	;
 
-EXEC [api].[Resources__Save] -- N'services-expenses'
-	@DefinitionId = @DefinitionID,
-	@Entities = @Resources,
-	@ResourceUnits = @ResourceUnits,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Resources__Save] -- N'services-expenses'
+		@DefinitionId = @CustomerPointServiceRD,
+		@Entities = @Resources,
+		@ResourceUnits = @ResourceUnits,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Inserting services: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Inserting customer point services: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
+
+		DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+			INSERT INTO @Resources ([Index],
+			[Name],						[Name2],			[UnitId], [CurrencyId]) VALUES
+		(0,	N'Monthly Subscription',	N'اشتراك شهري',	@mo,		@USD),
+		(1, N'Yearly Support',			N'مساندة سنوية',	@yr,		@USD);
+
+	EXEC [api].[Resources__Save] -- N'services-expenses'
+		@DefinitionId = @CustomerPeriodServiceRD,
+		@Entities = @Resources,
+		@ResourceUnits = @ResourceUnits,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Inserting customer period services: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
 
 SELECT @MonthlySubscription = [Id] FROM dbo.[Resources] WHERE [Name] = N'Monthly Subscription';
 SELECT @BasicSalary = [Id] FROM dbo.[Resources] WHERE [Name] = N'Basic';

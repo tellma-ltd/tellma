@@ -1,5 +1,25 @@
 ﻿INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],[AccountTypeParentId]) VALUES
 (1,NULL, N'1',N'Assets', N'الأصول',@Assets),
+(101,1, N'101',N'Cash', N'نقد',@Cash),
+(102,1, N'102',N'Net accounts Receivable', N'',NULL),
+(1021,10, N'1021',N'Account Receivables', N'الذمم المدينة التجارية والأخرى المتداولة',@TradeAndOtherCurrentReceivables),
+(10211,102, N'10211',N'Trade debtors', N'الذمم المدينة االتجارية المتداولة',@CurrentTradeReceivables),
+(10212,102, N'10212',N'Sundry Debtors', N'الدخل المستحق الحالي',NULL),
+(10213,102, N'10213',N'Staff debtors', N'ذمم مدينة متداولة أخرى',@OtherCurrentReceivables),
+(1022,10, N'1022',N'Allowance account for credit losses of trade and other current receivables', N'حساب مخصص خسائر الائتمان للذمم مدينة تجارية وأخرى الحالية',@AllowanceAccountForCreditLossesOfTradeAndOtherCurrentReceivablesExtension),
+(103,1, N'103',N'Prepaid Expenses', N'',NULL),
+(104,1, N'104',N'Inventories', N'المخزون الحالي',@Inventories),
+(1041,10, N'1041',N'Merchandise Stock', N'المخزون الحالي المحتفظ به برسم البيع',@CurrentInventoriesHeldForSale),
+(1042,10, N'1042',N'Finished/Processed product', N'',NULL),
+(1043,10, N'1043',N'Work in progress', N'الأعمال الحالية قيد التنفيذ',@WorkInProgress),
+(1044,10, N'1044',N'Raw Materials', N'المواد والمستلزمات الحالية التي تُستهلك في عملية الإنتاج أو تقديم الخدمات',NULL),
+(1045,10, N'1045',N'Reject, Byproduct and Other related items', N'المخزون في الطريق',NULL),
+(1046,10, N'1046',N'Spare Parts, supplies Packing and other Materials', N'مخزون حالي آخر',NULL),
+(105,1, N'105',N'Operating supplies', N'',NULL),
+(106,1, N'106',N'Other current assets', N'',NULL),
+(107,1, N'107',N'Loans to shareholders', N'',NULL),
+(108,1, N'108',N'Mortgage & Real Estate Loans Receivable', N'',NULL),
+(109,1, N'109',N'Other investment', N'',NULL),
 (11,1, N'11',N'Non-current assets', N'الأصول غير المتداولة',@NoncurrentAssets),
 (1101,11, N'1101',N'Property, plant and equipment', N'الممتلكات والمصانع والمعدات',@PropertyPlantAndEquipment),
 (110101,1101, N'110101',N'Land', N'الأراضي',@Land),
@@ -75,7 +95,6 @@
 (120206,1202, N'120206',N'Current receivables from taxes other than income tax', N'الذمم المدينة المتداولة من الضرائب عدا عن ضريبة الدخل',@CurrentReceivablesFromTaxesOtherThanIncomeTax),
 (120207,1202, N'120207',N'Current receivables from rental of properties', N'الذمم المدينة المتداولة من إيجار العقارات',@CurrentReceivablesFromRentalOfProperties),
 (120298,1202, N'120298',N'Other current receivables', N'ذمم مدينة متداولة أخرى',@OtherCurrentReceivables),
-(120299,1202, N'120299',N'Allowance account for credit losses of trade and other current receivables', N'حساب مخصص خسائر الائتمان للذمم مدينة تجارية وأخرى الحالية',@AllowanceAccountForCreditLossesOfTradeAndOtherCurrentReceivablesExtension),
 (1203,12, N'1203',N'Current tax assets, current', N'الأصول الضريبية المتداولة، جارية',@CurrentTaxAssetsCurrent),
 (1204,12, N'1204',N'Current biological assets', N'الأصول البيولوجية المتداولة',@CurrentBiologicalAssets),
 (1205,12, N'1205',N'Other current financial assets', N'أصول مالية متداولة أخرى',@OtherCurrentFinancialAssets),
@@ -98,6 +117,7 @@
 (200004,2000, N'200004',N'Treasury shares', N'أسهم الخزينة',@TreasuryShares),
 (200005,2000, N'200005',N'Other equity interest', N'حصة مالكين أخرى',@OtherEquityInterest),
 (200006,2000, N'200006',N'Other reserves', N'احتياطي آخر',@OtherReserves),
+(200009,2000, N'200009',N'Non tax deductible expenses', N'نفقات غير معفاة من الضرائب',@NonTaxDeductibleExpensesExtension),
 (3,NULL, N'3',N'Liabilities', N'الالتزامات',@Liabilities),
 (31,3, N'31',N'Non-current liabilities', N'الالتزامات غير الجارية',@NoncurrentLiabilities),
 (3101,31, N'3101',N'Non-current provisions', N'المخصصات غير المتداولة',@NoncurrentProvisions),
@@ -158,38 +178,41 @@
 (4200,42, N'4200',N'Other income.', N'دخل آخر.',@OtherIncome),
 (420000,4200, N'420000',N'Other income..', N'دخل آخر..',@OtherIncome),
 (43,4, N'43',N'Expenses by nature', N'النفقات حسب طبيعتها',@ExpenseByNature),
-(4301,43, N'4301',N'Raw materials and consumables used', N'المواد الخام والقابلة للاستهلاك المستخدمة',@RawMaterialsAndConsumablesUsed),
-(430100,4301, N'430100',N'Raw materials and consumables used.', N'المواد الخام والقابلة للاستهلاك المستخدمة.',@RawMaterialsAndConsumablesUsed),
-(4302,43, N'4302',N'Cost of goods sold', N'تكلفة البضائع المباعة',@CostOfMerchandiseSold),
-(430201,4302, N'430201',N'Cost of merchandise sold.', N'تكلفة البضائع المباعة.',@CostOfMerchandiseSold),
-(430202,4302, N'430202',N'Cost of finished goods sold.', N'تكلفة المنتج التام المباع',@CostOfMerchandiseSold),
-(4303,43, N'4303',N'Services expense', N'مصروف الخدمات',@ServicesExpense),
-(430301,4303, N'430301',N'Insurance expense', N'مصروف التأمين',@InsuranceExpense),
-(430302,4303, N'430302',N'Professional fees expense', N'مصروف الرسوم المهنية',@ProfessionalFeesExpense),
-(430303,4303, N'430303',N'Transportation expense', N'مصروف النقل',@TransportationExpense),
-(430304,4303, N'430304',N'Bank and similar charges', N'الرسوم البنكية والرسوم المشابهة',@BankAndSimilarCharges),
-(430305,4303, N'430305',N'Travel expense', N'مصروفات السفر',@TravelExpense),
-(430306,4303, N'430306',N'Communication expense', N'مصروفات الاتصالات',@CommunicationExpense),
-(430307,4303, N'430307',N'Utilities expense', N'المصروفات الخدمية',@UtilitiesExpense),
-(430308,4303, N'430308',N'Advertising expense', N'مصروفات الدعاية',@AdvertisingExpense),
-(4304,43, N'4304',N'Employee benefits expense', N'مصاريف منافع الموظفين',@EmployeeBenefitsExpense),
-(430401,4304, N'430401',N'Wages and salaries', N'الأجور والرواتب',@WagesAndSalaries),
-(430402,4304, N'430402',N'Social security contributions', N'مساهمات الضمان الاجتماعي',@SocialSecurityContributions),
-(430403,4304, N'430403',N'Other short-term employee benefits', N'منافع موظفين أخرى قصيرة الأجل',@OtherShorttermEmployeeBenefits),
-(430404,4304, N'430404',N'Post-employment benefit expense, defined contribution plans', N'مصروف منافع ما بعد التوظيف، خطط المساهمة المحددة',@PostemploymentBenefitExpenseDefinedContributionPlans),
-(430405,4304, N'430405',N'Post-employment benefit expense, defined benefit plans', N'مصروف منافع ما بعد التوظيف، خطط المنافع المحددة',@PostemploymentBenefitExpenseDefinedBenefitPlans),
-(430406,4304, N'430406',N'Termination benefits expense', N'مصروف منافع الإنهاء',@TerminationBenefitsExpense),
-(430407,4304, N'430407',N'Other long-term employee benefits', N'منافع الموظفين طويلة الاجل الأخرى',@OtherLongtermBenefits),
-(430499,4304, N'430499',N'Other employee expense', N'مصروف آخر للموظفين',@OtherEmployeeExpense),
-(4305,43, N'4305',N'Depreciation and amortisation expense', N'مصاريف الاستهلاك والإطفاء',@DepreciationAndAmortisationExpense),
-(430501,4305, N'430501',N'Depreciation expense', N'مصروف الاستهلاك',@DepreciationExpense),
-(430502,4305, N'430502',N'Amortisation expense', N'مصروف الإطفاء',@AmortisationExpense),
-(4306,43, N'4306',N'Reversal of impairment loss (impairment loss) recognised in profit or loss', N'عكس خسارة انخفاض القيمة (خسارة انخفاض القيمة) المعترف بها في الربح أو الخسارة',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss),
-(430601,4306, N'430601',N'Write-downs (reversals of write-downs) of inventories', N'تخفيضات (عكس التخفيضات) المخزون',@WritedownsReversalsOfInventories),
-(430602,4306, N'430602',N'Write-downs (reversals of write-downs) of property, plant and equipment', N'تخفيضات (عكس التخفيضات) الممتلكات والمصانع والمعدات',@WritedownsReversalsOfPropertyPlantAndEquipment),
-(430603,4306, N'430603',N'Impairment loss (reversal of impairment loss) recognised in profit or loss, trade receivables', N'خسارة انخفاض القيمة (عكس خسارة الانخفاض في القيمة) المعترف بها في الربح أو الخسارة، الذمم المدينة ال',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeReceivables),
-(430604,4306, N'430604',N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances', N'خسارة انخفاض القيمة (عكس خسارة الانخفاض في القيمة) المعترف بها في الربح أو الخسارة، والقروض والسلف',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances),
-(4307,43, N'4307',N'Tax expense other than income tax expense', N'مصروف ضريبة غير مصروف ضريبة الدخل',@TaxExpenseOtherThanIncomeTaxExpense),
+(4301,43, N'4301',N'Cost of goods imported', N'تكلفة البضاعة المستوردة',@CostOfGoodsImportedExtension),
+(430101,4301, N'430101',N'Cost of raw materials imported', N'',@CostOfGoodsImportedExtension),
+(430102,4301, N'430102',N'Cost of merchandise imported', N'',@CostOfGoodsImportedExtension),
+(4302,43, N'4302',N'Raw materials and consumables used', N'المواد الخام والقابلة للاستهلاك المستخدمة',@RawMaterialsAndConsumablesUsed),
+(430200,4302, N'430200',N'Raw materials and consumables used.', N'المواد الخام والقابلة للاستهلاك المستخدمة.',@RawMaterialsAndConsumablesUsed),
+(4303,43, N'4303',N'Cost of goods sold', N'تكلفة البضائع المباعة',@CostOfMerchandiseSold),
+(430301,4303, N'430301',N'Cost of merchandise sold.', N'تكلفة البضائع المباعة.',@CostOfMerchandiseSold),
+(430302,4303, N'430302',N'Cost of finished goods sold.', N'تكلفة المنتج التام المباع',@CostOfMerchandiseSold),
+(4304,43, N'4304',N'Services expense', N'مصروف الخدمات',@ServicesExpense),
+(430401,4304, N'430401',N'Insurance expense', N'مصروف التأمين',@InsuranceExpense),
+(430402,4304, N'430402',N'Professional fees expense', N'مصروف الرسوم المهنية',@ProfessionalFeesExpense),
+(430403,4304, N'430403',N'Transportation expense', N'مصروف النقل',@TransportationExpense),
+(430404,4304, N'430404',N'Bank and similar charges', N'الرسوم البنكية والرسوم المشابهة',@BankAndSimilarCharges),
+(430405,4304, N'430405',N'Travel expense', N'مصروفات السفر',@TravelExpense),
+(430406,4304, N'430406',N'Communication expense', N'مصروفات الاتصالات',@CommunicationExpense),
+(430407,4304, N'430407',N'Utilities expense', N'المصروفات الخدمية',@UtilitiesExpense),
+(430408,4304, N'430408',N'Advertising expense', N'مصروفات الدعاية',@AdvertisingExpense),
+(4305,43, N'4305',N'Employee benefits expense', N'مصاريف منافع الموظفين',@EmployeeBenefitsExpense),
+(430501,4305, N'430501',N'Wages and salaries', N'الأجور والرواتب',@WagesAndSalaries),
+(430502,4305, N'430502',N'Social security contributions', N'مساهمات الضمان الاجتماعي',@SocialSecurityContributions),
+(430503,4305, N'430503',N'Other short-term employee benefits', N'منافع موظفين أخرى قصيرة الأجل',@OtherShorttermEmployeeBenefits),
+(430504,4305, N'430504',N'Post-employment benefit expense, defined contribution plans', N'مصروف منافع ما بعد التوظيف، خطط المساهمة المحددة',@PostemploymentBenefitExpenseDefinedContributionPlans),
+(430505,4305, N'430505',N'Post-employment benefit expense, defined benefit plans', N'مصروف منافع ما بعد التوظيف، خطط المنافع المحددة',@PostemploymentBenefitExpenseDefinedBenefitPlans),
+(430506,4305, N'430506',N'Termination benefits expense', N'مصروف منافع الإنهاء',@TerminationBenefitsExpense),
+(430507,4305, N'430507',N'Other long-term employee benefits', N'منافع الموظفين طويلة الاجل الأخرى',@OtherLongtermBenefits),
+(430599,4305, N'430599',N'Other employee expense', N'مصروف آخر للموظفين',@OtherEmployeeExpense),
+(4306,43, N'4306',N'Depreciation and amortisation expense', N'مصاريف الاستهلاك والإطفاء',@DepreciationAndAmortisationExpense),
+(430601,4306, N'430601',N'Depreciation expense', N'مصروف الاستهلاك',@DepreciationExpense),
+(430602,4306, N'430602',N'Amortisation expense', N'مصروف الإطفاء',@AmortisationExpense),
+(4307,43, N'4307',N'Reversal of impairment loss (impairment loss) recognised in profit or loss', N'عكس خسارة انخفاض القيمة (خسارة انخفاض القيمة) المعترف بها في الربح أو الخسارة',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss),
+(430701,4307, N'430701',N'Write-downs (reversals of write-downs) of inventories', N'تخفيضات (عكس التخفيضات) المخزون',@WritedownsReversalsOfInventories),
+(430702,4307, N'430702',N'Write-downs (reversals of write-downs) of property, plant and equipment', N'تخفيضات (عكس التخفيضات) الممتلكات والمصانع والمعدات',@WritedownsReversalsOfPropertyPlantAndEquipment),
+(430703,4307, N'430703',N'Impairment loss (reversal of impairment loss) recognised in profit or loss, trade receivables', N'خسارة انخفاض القيمة (عكس خسارة الانخفاض في القيمة) المعترف بها في الربح أو الخسارة، الذمم المدينة ال',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossTradeReceivables),
+(430704,4307, N'430704',N'Impairment loss (reversal of impairment loss) recognised in profit or loss, loans and advances', N'خسارة انخفاض القيمة (عكس خسارة الانخفاض في القيمة) المعترف بها في الربح أو الخسارة، والقروض والسلف',@ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLossLoansAndAdvances),
+(4308,43, N'4308',N'Tax expense other than income tax expense', N'مصروف ضريبة غير مصروف ضريبة الدخل',@TaxExpenseOtherThanIncomeTaxExpense),
 (4399,43, N'4399',N'Other expenses', N'مصاريف أخرى',@OtherExpenseByNature),
 (439901,4399, N'439901',N'Other Allowed Expenses', N'مصاريف أخرى.',@OtherExpenseByNature),
 (439902,4399, N'439902',N'Other Unallowed expenses', N'',@UnallowedExpensesExtension),
@@ -231,16 +254,20 @@
 (620201,6202, N'620201',N'Gains (losses) on remeasuring available-for-sale financial assets, before tax', N'الأرباح (الخسائر) من إعادة قياس الأصول المالية المتوافرة برسم البيع، قبل الضريبة',@GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax),
 (620202,6202, N'620202',N'Reclassification adjustments on available-for-sale financial assets, before tax', N'تعديلات إعادة التصنيف على الأصول المالية المتوافرة برسم البيع، قبل الضريبة',@ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax),
 (7,NULL, N'7',N'Control accounts', N'حسابات المراقبة',@ControlAccountsExtension),
-(71,7, N'71',N'Traders control accounts', N'مراقبة حسابات العملاء',@TradersControlAccountsExtension),
-(7101,71, N'7101',N'Suppliers control accounts', N'مراقبة حسابات الموردين',@SuppliersControlAccountsExtension),
-(710100,7101, N'710100',N'Suppliers control accounts.', N'مراقبة حسابات الموردين.',@SuppliersControlAccountsExtension),
-(7102,71, N'7102',N'Customer control accounts', N'مراقبة حسابات الزبائن',@CustomersControlAccountsExtension),
-(710200,7102, N'710200',N'Customer control accounts.', N'مراقبة حسابات الزبائن.',@CustomersControlAccountsExtension),
-(7103,71, N'7103',N'Payroll control', N'مراقبة الرواتب',@PayrollControlExtension),
-(710300,7103, N'710300',N'Payroll control.', N'مراقبة الرواتب.',@PayrollControlExtension),
+(71,7, N'71',N'Performance obligations control', N'مراقبة حسابات العملاء',@PerformanceObligationsControlExtension),
+(7101,71, N'7101',N'Performance obligations at a point in time control', N'مراقبة حسابات الموردين',@PerformanceObligationsAtAPointInTimeControlExtension),
+(710101,7101, N'710101',N'Supplier performance obligations at a point in time control', N'مراقبة الاستلام من الموردين في زمن ما',@SupplierPerformanceObligationsAtAPointInTimeControlExtension),
+(710102,7101, N'710102',N'Customer performance obligations at a point in time control', N'مراقبة الاستلام  من الموردين طيلة فترة ما',@CustomerPerformanceObligationsAtAPointInTimeControlExtension),
+(7102,71, N'7102',N'Performance obligations over a period of time control', N'مراقبة حسابات الزبائن',@PerformanceObligationsOverAPeriodOfTimeControlExtension),
+(710201,7102, N'710201',N'Supplier performance obligations over a period of time control', N'مراقبة تسليم السلع/الخدمات إلى الزبائن',@SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension),
+(710202,7102, N'710202',N'Customer performance obligations over a period of time control', N'',@CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension),
+(710203,7102, N'710203',N'Employee performance obligations over a period of time control', N'مراقبة دفعيات الموظفين',@EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension),
 (72,7, N'72',N'Others control accounts', N'مراقبة حسابات الآخرين',@OthersAccountsControlExtension),
-(7201,72, N'7201',N'Others cash control accounts', N'مراقبة حسابات الآخرين.',@OthersCashAccountsControlExtension),
-(720100,7201, N'720100',N'Others cash control accounts.', N'مراقبة حسابات الآخرين.',NULL),
+(7201,72, N'7201',N'Payment control', N'مراقبة الدفعيات الصادرة',@PaymentControlExtension),
+(720101,7201, N'720101',N'Supplier payment control', N'مراقبة الدفعيات لموردين',@SupplierPaymentControlExtension),
+(720102,7201, N'720102',N'Employee payment control', N'مراقبة الدفعيات لموظفين',@EmployeePaymentControlExtension),
+(720103,7201, N'720103',N'Customer payment control', N'مراقبة الدفعيات لزبائن',@CustomerPaymentControlExtension),
+(720109,7201, N'720109',N'Other payment control', N'مراقبة الدفعيات لآخرين',@OtherPaymentControlExtension),
 (8,NULL, N'8',N'Statistical accounts', N'حسابات إحصائية',@StatisticalAccountsExtension),
 (81,8, N'81',N'Guarantees', N'حسابات الضمانات',@GuaranteesExtension),
 (8100,81, N'8100',N'Financial guarantees', N'حسابات الضمانات.',@FinancialGuaranteesExtension),
@@ -279,6 +306,26 @@ END;
 --END;
 --Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
+DECLARE @AC101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'101');
+DECLARE @AC102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'102');
+DECLARE @AC1021 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1021');
+DECLARE @AC10211 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'10211');
+DECLARE @AC10212 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'10212');
+DECLARE @AC10213 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'10213');
+DECLARE @AC1022 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1022');
+DECLARE @AC103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'103');
+DECLARE @AC104 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'104');
+DECLARE @AC1041 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1041');
+DECLARE @AC1042 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1042');
+DECLARE @AC1043 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1043');
+DECLARE @AC1044 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1044');
+DECLARE @AC1045 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1045');
+DECLARE @AC1046 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1046');
+DECLARE @AC105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'105');
+DECLARE @AC106 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'106');
+DECLARE @AC107 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'107');
+DECLARE @AC108 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'108');
+DECLARE @AC109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'109');
 DECLARE @AC11 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'11');
 DECLARE @AC1101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1101');
 DECLARE @AC110101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110101');
@@ -354,7 +401,6 @@ DECLARE @AC120205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC120206 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120206');
 DECLARE @AC120207 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120207');
 DECLARE @AC120298 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120298');
-DECLARE @AC120299 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'120299');
 DECLARE @AC1203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1203');
 DECLARE @AC1204 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1204');
 DECLARE @AC1205 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1205');
@@ -377,6 +423,7 @@ DECLARE @AC200003 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC200004 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'200004');
 DECLARE @AC200005 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'200005');
 DECLARE @AC200006 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'200006');
+DECLARE @AC200009 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'200009');
 DECLARE @AC3 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3');
 DECLARE @AC31 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'31');
 DECLARE @AC3101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'3101');
@@ -438,19 +485,13 @@ DECLARE @AC4200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC420000 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'420000');
 DECLARE @AC43 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'43');
 DECLARE @AC4301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4301');
-DECLARE @AC430100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430100');
+DECLARE @AC430101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430101');
+DECLARE @AC430102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430102');
 DECLARE @AC4302 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4302');
-DECLARE @AC430201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430201');
-DECLARE @AC430202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430202');
+DECLARE @AC430200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430200');
 DECLARE @AC4303 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4303');
 DECLARE @AC430301 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430301');
 DECLARE @AC430302 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430302');
-DECLARE @AC430303 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430303');
-DECLARE @AC430304 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430304');
-DECLARE @AC430305 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430305');
-DECLARE @AC430306 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430306');
-DECLARE @AC430307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430307');
-DECLARE @AC430308 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430308');
 DECLARE @AC4304 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4304');
 DECLARE @AC430401 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430401');
 DECLARE @AC430402 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430402');
@@ -459,16 +500,25 @@ DECLARE @AC430404 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC430405 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430405');
 DECLARE @AC430406 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430406');
 DECLARE @AC430407 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430407');
-DECLARE @AC430499 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430499');
+DECLARE @AC430408 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430408');
 DECLARE @AC4305 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4305');
 DECLARE @AC430501 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430501');
 DECLARE @AC430502 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430502');
+DECLARE @AC430503 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430503');
+DECLARE @AC430504 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430504');
+DECLARE @AC430505 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430505');
+DECLARE @AC430506 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430506');
+DECLARE @AC430507 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430507');
+DECLARE @AC430599 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430599');
 DECLARE @AC4306 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4306');
 DECLARE @AC430601 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430601');
 DECLARE @AC430602 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430602');
-DECLARE @AC430603 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430603');
-DECLARE @AC430604 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430604');
 DECLARE @AC4307 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4307');
+DECLARE @AC430701 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430701');
+DECLARE @AC430702 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430702');
+DECLARE @AC430703 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430703');
+DECLARE @AC430704 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'430704');
+DECLARE @AC4308 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4308');
 DECLARE @AC4399 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'4399');
 DECLARE @AC439901 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439901');
 DECLARE @AC439902 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'439902');
@@ -512,14 +562,18 @@ DECLARE @AC620202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code
 DECLARE @AC7 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7');
 DECLARE @AC71 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'71');
 DECLARE @AC7101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7101');
-DECLARE @AC710100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710100');
+DECLARE @AC710101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710101');
+DECLARE @AC710102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710102');
 DECLARE @AC7102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7102');
-DECLARE @AC710200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710200');
-DECLARE @AC7103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7103');
-DECLARE @AC710300 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710300');
+DECLARE @AC710201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710201');
+DECLARE @AC710202 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710202');
+DECLARE @AC710203 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'710203');
 DECLARE @AC72 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'72');
 DECLARE @AC7201 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7201');
-DECLARE @AC720100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720100');
+DECLARE @AC720101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720101');
+DECLARE @AC720102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720102');
+DECLARE @AC720103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720103');
+DECLARE @AC720109 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'720109');
 DECLARE @AC8 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8');
 DECLARE @AC81 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'81');
 DECLARE @AC8100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'8100');
