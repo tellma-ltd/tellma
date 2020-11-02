@@ -493,22 +493,23 @@ namespace Tellma.Controllers
                     StringBuilder emailBody = new StringBuilder();
                     if (!string.IsNullOrWhiteSpace(args.Comment))
                     {
-                        emailBody.AppendLine(args.Comment);
+                        emailBody.AppendLine($"<span>{args.Comment}</span>");
                     }
 
+                    var def = Definition();
                     if (ids.Count == 1)
                     {
                         var id = ids[0];
-                        emailSubject = $"Assignment from {userInfo.Name}";
-                        emailBody.AppendLine($"https://web.tellma.com/app/{TenantId}/documents/{DefinitionId}/{id}");
+                        emailSubject = $"{def.TitleSingular} from {userInfo.Name}";
+                        emailBody.AppendLine($"<a href=\"https://web.tellma.com/app/{TenantId}/documents/{DefinitionId}/{id}\">Go to {def.TitleSingular}</a>");
                     }
                     else
                     {
-                        emailSubject = $"{ids.Count} assignments from {userInfo.Name}";
-                        emailBody.Append($"https://web.tellma.com/app/{TenantId}/inbox;filter=CreatedById%20eq%20{userInfo.UserId}%20and%20Document%2FDefinitionId%20eq%20{DefinitionId}");
+                        emailSubject = $"{ids.Count} {def.TitlePlural} from {userInfo.Name}";
+                        emailBody.AppendLine($"<a href=\"https://web.tellma.com/app/{TenantId}/inbox;filter=CreatedById%20eq%20{userInfo.UserId}%20and%20Document%2FDefinitionId%20eq%20{DefinitionId}\">Go to Inbox</a>");
                     }
 
-                    emails.Add(new Email(assigneeInfo.Email)
+                    emails.Add(new Email(assigneeInfo.ContactEmail)
                     {
                         Subject = emailSubject,
                         Body = emailBody.ToString(),

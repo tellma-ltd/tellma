@@ -5,15 +5,15 @@ namespace Tellma.Services.Email
 {
     /// <summary>
     /// This class models the data that SendGrid posts from their event webhook stream
-    /// Docs: https://sendgrid.com/docs/API_Reference/Webhooks/event.html
+    /// Docs: https://sendgrid.com/docs/for-developers/tracking-events/event/
     /// </summary>
-    public class SendGridEvent
+    public class SendGridEventNotification
     {
         [JsonProperty("email")]
         public string Email { get; set; }
 
         [JsonProperty("timestamp")]
-        public int Timestamp { get; set; }
+        public long Timestamp { get; set; }
 
         [JsonProperty("uid")]
         public int Uid { get; set; }

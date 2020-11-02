@@ -445,6 +445,9 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>Acc.</value>
   </data>
+  <data name="DetailsEntry_Actual" xml:space="preserve">
+    <value>Actual</value>
+  </data>
   <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
     <value>Algebraic Count</value>
   </data>
@@ -487,6 +490,9 @@
   <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
     <value>Negative Algebraic Value</value>
   </data>
+  <data name="DetailsEntry_Planned" xml:space="preserve">
+    <value>Planned</value>
+  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>Quantity Acc.</value>
   </data>
@@ -495,6 +501,9 @@
   </data>
   <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
     <value>Value Per Unit</value>
+  </data>
+  <data name="DetailsEntry_Variance" xml:space="preserve">
+    <value>Variance</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
     <value>Volume</value>
@@ -605,7 +614,7 @@
     <value>Template</value>
   </data>
   <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>Clause</value>
+    <value>Plan</value>
   </data>
   <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
     <value>Event</value>
@@ -673,32 +682,29 @@
   <data name="Email_Body" xml:space="preserve">
     <value>Body</value>
   </data>
-  <data name="Email_EngagementState" xml:space="preserve">
-    <value>Engagement</value>
-  </data>
-  <data name="Email_EngagementState_0" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="Email_EngagementState_1" xml:space="preserve">
-    <value>Opened email</value>
-  </data>
-  <data name="Email_EngagementState_2" xml:space="preserve">
-    <value>Clicked email link</value>
-  </data>
-  <data name="Email_EngagementState_minus_1" xml:space="preserve">
-    <value>Reported email as spam</value>
-  </data>
-  <data name="Email_EngagementStateSince" xml:space="preserve">
-    <value>Engagement State Since</value>
+  <data name="Email_DeliveredAt" xml:space="preserve">
+    <value>Delivered At</value>
   </data>
   <data name="Email_ErrorMessage" xml:space="preserve">
     <value>Error</value>
   </data>
+  <data name="Email_OpenedAt" xml:space="preserve">
+    <value>Opened At</value>
+  </data>
   <data name="Email_State_3" xml:space="preserve">
     <value>Delivered</value>
   </data>
+  <data name="Email_State_4" xml:space="preserve">
+    <value>Opened email</value>
+  </data>
+  <data name="Email_State_5" xml:space="preserve">
+    <value>Clicked email link</value>
+  </data>
   <data name="Email_State_minus_3" xml:space="preserve">
     <value>Delivery Failed</value>
+  </data>
+  <data name="Email_State_minus_4" xml:space="preserve">
+    <value>Reported email as spam</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
     <value>Subject</value>

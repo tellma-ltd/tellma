@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -66,48 +67,48 @@ namespace Microsoft.Extensions.DependencyInjection
                         var handler = ctx.RequestServices.GetService<IEmailCallbackHandler>();
                         if (handler == null)
                         {
-                        // Helps during configuration for making sure the endpoint is working
-                        res.StatusCode = StatusCodes.Status200OK;
+                            // Helps during configuration for making sure the endpoint is working
+                            res.StatusCode = StatusCodes.Status200OK;
                             await res.WriteAsync($"No implementation of {nameof(IEmailCallbackHandler)} was registered.", cancellation);
                         }
                         else if (req.Method == "GET")
                         {
-                        // Helps during configuration for making sure the endpoint is accessible
-                        res.StatusCode = StatusCodes.Status200OK;
+                            // Helps during configuration for making sure the endpoint is accessible
+                            res.StatusCode = StatusCodes.Status200OK;
                             await res.WriteAsync("Welcome to the email callback endpoint for SendGrid webhooks!");
                         }
                         else if (req.Method != "POST")
                         {
-                        // SendGrid will POST to this endpoint
-                        res.StatusCode = StatusCodes.Status405MethodNotAllowed;
+                            // SendGrid will POST to this endpoint
+                            res.StatusCode = StatusCodes.Status405MethodNotAllowed;
                             await res.WriteAsync($"{req.Method} method is not supported.");
                         }
                         else
                         {
-                        // Get signature and timestamp from headers
-                        var signature = req.Headers[RequestValidator.SIGNATURE_HEADER];
+                            // Get signature and timestamp from headers
+                            var signature = req.Headers[RequestValidator.SIGNATURE_HEADER];
                             var timestamp = req.Headers[RequestValidator.TIMESTAMP_HEADER];
 
-                        // Read the body
-                        string body;
+                            // Read the body
+                            string body;
                             using (var sr = new StreamReader(req.Body))
                             {
                                 body = await sr.ReadToEndAsync();
                             }
 
-                        // Authenticate the source as SendGrid
-                        if (signature == StringValues.Empty || timestamp == StringValues.Empty || !sgRequestValidator.VerifySignature(publicKey, body, signature, timestamp))
+                            // Authenticate the source as SendGrid
+                            if (signature == StringValues.Empty || timestamp == StringValues.Empty || !sgRequestValidator.VerifySignature(publicKey, body, signature, timestamp))
                             {
                                 res.StatusCode = StatusCodes.Status401Unauthorized;
                                 await res.WriteAsync("Invalid signature.", cancellation);
                             }
                             else
                             {
-                            // Decode the webhook event into a list of DTOs
-                            List<SendGridEvent> sgEvents;
+                                // Decode the webhook event into a list of DTOs
+                                List<SendGridEventNotification> sgEventNotifications;
                                 try
                                 {
-                                    sgEvents = JsonConvert.DeserializeObject<List<SendGridEvent>>(body) ?? new List<SendGridEvent>();
+                                    sgEventNotifications = JsonConvert.DeserializeObject<List<SendGridEventNotification>>(body) ?? new List<SendGridEventNotification>();
                                 }
                                 catch (Exception)
                                 {
@@ -118,77 +119,80 @@ namespace Microsoft.Extensions.DependencyInjection
 
                                 try
                                 {
-                                // Map the SendGrid events to EmailEventNotifications
-                                var emailEvents = new List<EmailEventNotification>(sgEvents.Count);
-                                    foreach (var sgEvent in sgEvents)
+                                    // Map the SendGrid events to EmailEventNotifications
+                                    var emailEventNotifications = new List<EmailEventNotification>(sgEventNotifications.Count);
+                                    foreach (var sgEventNotification in sgEventNotifications)
                                     {
-                                        int emailId = sgEvent.EmailId;
-                                        int? tenantId = sgEvent.TenantId;
-                                        string error = sgEvent.Reason;
+                                        int emailId = sgEventNotification.EmailId;
+                                        int? tenantId = sgEventNotification.TenantId;
+                                        string error = sgEventNotification.Reason;
+                                        DateTimeOffset eventTimestamp = sgEventNotification.Timestamp != 0 ? DateTimeOffset.FromUnixTimeSeconds(sgEventNotification.Timestamp) : DateTimeOffset.Now ;
 
-                                        EmailEvent type;
-                                        var sgStatus = sgEvent.Status;
+                                        EmailEvent emailEvent;
+                                        var sgEvent = sgEventNotification.Event;
 
-                                    // https://sendgrid.com/docs/for-developers/tracking-events/event/
-                                    switch (sgStatus)
+                                        // https://sendgrid.com/docs/for-developers/tracking-events/event/
+                                        switch (sgEvent)
                                         {
-                                        // Tracked
-                                        case "dropped": // SG rejected it (spam, unsubscribe)
-                                            type = EmailEvent.Dropped;
+                                            // Tracked
+                                            case "dropped": // SG rejected it (spam, unsubscribe)
+                                                emailEvent = EmailEvent.Dropped;
                                                 break;
                                             case "delivered": // Recipient server accepted it
-                                            type = EmailEvent.Delivered;
+                                                emailEvent = EmailEvent.Delivered;
                                                 break;
                                             case "bounce": // Recipient server rejected it (type = "bounce" if permanently or "blocked" if temporarily)
-                                            type = EmailEvent.Bounce;
+                                                emailEvent = EmailEvent.Bounce;
                                                 break;
 
-                                        // Engagement
-                                        case "open": // User opened the email
-                                            type = EmailEvent.Open;
+                                            // Engagement
+                                            case "open": // User opened the email
+                                                emailEvent = EmailEvent.Open;
                                                 break;
                                             case "click": // User clicked a link in the email
-                                            type = EmailEvent.Click;
+                                                emailEvent = EmailEvent.Click;
                                                 break;
                                             case "spamreport": // User marked email as spam
-                                            type = EmailEvent.SpamReport;
+                                                emailEvent = EmailEvent.SpamReport;
                                                 break;
 
-                                        // No point tracking those, TMI
-                                        case "processed": // SG accepted it
-                                        case "deferred": // Recipient server temporary unavailable (SG retries up to 72h)
+                                            // No point tracking those, TMI
+                                            case "processed": // SG accepted it
+                                            case "deferred": // Recipient server temporary unavailable (SG retries up to 72h)
 
-                                        // Never used
-                                        case "unsubscribe": // Only when SG subscription mgmt features are enabled
-                                        case "group_unsubscribe": // Only when SG subscription mgmt features are enabled
-                                        case "group_resubscribe": // Only when SG subscription mgmt features are enabled
+                                            // Never used
+                                            case "unsubscribe": // Only when SG subscription mgmt features are enabled
+                                            case "group_unsubscribe": // Only when SG subscription mgmt features are enabled
+                                            case "group_resubscribe": // Only when SG subscription mgmt features are enabled
 
-                                        default:
-                                            // Nothing to handle, return OK 200
-                                            res.StatusCode = StatusCodes.Status200OK;
-                                                return;
+                                            default:
+                                                // Nothing to handle
+                                                continue;
                                         }
 
-                                        emailEvents.Add(new EmailEventNotification
+                                        emailEventNotifications.Add(new EmailEventNotification
                                         {
-                                            Event = type,
+                                            Event = emailEvent,
                                             EmailId = emailId,
                                             TenantId = tenantId,
                                             Error = error,
-                                            Timestamp = DateTimeOffset.Now
+                                            Timestamp = eventTimestamp
                                         });
                                     }
 
-                                // Custom handler
-                                await handler.HandleCallback(emailEvents, cancellation);
+                                    if (emailEventNotifications.Any())
+                                    {
+                                        // Custom handler
+                                        await handler.HandleCallback(emailEventNotifications, cancellation);
+                                    }
 
-                                // Return 200 upon success
-                                res.StatusCode = StatusCodes.Status200OK;
+                                    // Return 200 upon success
+                                    res.StatusCode = StatusCodes.Status200OK;
                                 }
                                 catch (Exception)
                                 {
-                                // Log the error
-                                res.StatusCode = StatusCodes.Status400BadRequest;
+                                    // Log the error
+                                    res.StatusCode = StatusCodes.Status400BadRequest;
                                     await res.WriteAsync("Failed to process the events.");
                                 }
                             }

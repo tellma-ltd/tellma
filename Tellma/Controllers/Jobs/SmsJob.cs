@@ -52,7 +52,7 @@ namespace Tellma.Controllers.Jobs
                     using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
 
                     // Update the state first (since this action can be rolled back)
-                    await _repo.Notifications_SmsMessages__UpdateState(sms.TenantId, sms.MessageId, SmsState.Dispatched); // actions that modify state should not use cancellationToken
+                    await _repo.Notifications_SmsMessages__UpdateState(sms.TenantId, sms.MessageId, SmsState.Dispatched, DateTimeOffset.Now); // actions that modify state should not use cancellationToken
 
                     try
                     {
@@ -65,7 +65,7 @@ namespace Tellma.Controllers.Jobs
                         _logger.LogWarning(ex, $"Failed to Dispatch SMS. TenantId = {sms.TenantId}, MessageId = {sms.MessageId}.");
 
                         // If sending the SMS fails, update the state to DispatchFailed together with the error message
-                        await _repo.Notifications_SmsMessages__UpdateState(sms.TenantId, sms.MessageId, SmsState.DispatchFailed, ex.Message);
+                        await _repo.Notifications_SmsMessages__UpdateState(sms.TenantId, sms.MessageId, SmsState.DispatchFailed, DateTimeOffset.Now, ex.Message);
                     }
 
                     trx.Complete();

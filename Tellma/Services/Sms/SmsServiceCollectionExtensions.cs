@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -60,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (opt?.Sms?.CallbacksEnabled ?? false)
             {
                 var twilioRequestValidator = new RequestValidator(opt.AuthToken);
+                var callbackHost = new HostString(opt.Sms.CallbackHost?.WithoutTrailingSlash());
 
                 bldr = bldr.Map("/api/sms-callback", (app) =>
                 {
@@ -90,7 +92,8 @@ namespace Microsoft.Extensions.DependencyInjection
                         }
                         else
                         {
-                            var requestUrl = $"{req.Scheme}://{req.Host}{req.Path}{req.QueryString}";
+                            var requestUrl = $"{callbackHost}{req.PathBase}{req.Path}{req.QueryString}";
+                            // var requestUrl = UriHelper.BuildAbsolute(req.Scheme, callbackHost, req.PathBase, req.Path, req.QueryString);
                             var parameters = req.Form.ToDictionary(e => e.Key, e => req.Form[e.Key].ToString());
                             var signature = req.Headers["X-Twilio-Signature"];
 

@@ -58,7 +58,7 @@ namespace Tellma.Controllers.Jobs
                     foreach (var emailsOfTenant in emails.GroupBy(e => e.TenantId))
                     {
                         var tenantId = emailsOfTenant.Key;
-                        var stateUpdates = emailsOfTenant.Select(e => new IdStateError { Id = e.EmailId, State = EmailState.Dispatched });
+                        var stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.Dispatched });
 
                         // Begin serializable transaction
                         using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
@@ -77,7 +77,7 @@ namespace Tellma.Controllers.Jobs
                             _logger.LogWarning(ex, $"Failed to Dispatch Emails. TenantId = {tenantId}, First EmailId = {emailsOfTenant.Select(e => e.EmailId).First()}");
 
                             // If sending the Email fails, update the state to DispatchFailed together with the error message
-                            stateUpdates = emailsOfTenant.Select(e => new IdStateError { Id = e.EmailId, State = EmailState.DeliveryFailed, Error = ex.Message });
+                            stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.DeliveryFailed, Error = ex.Message });
                             await _repo.Notifications_Emails__UpdateState(tenantId, stateUpdates);
                         }
 

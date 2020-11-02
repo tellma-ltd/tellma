@@ -707,7 +707,7 @@
     <Build Include="dbo\User Defined Types\dbo.PushNotificationList.sql" />
     <Build Include="dal\Stored Procedures\dal.Notifications_SmsMessages__Poll.sql" />
     <Build Include="dal\Stored Procedures\dal.Notifications_SmsMessages__UpdateState.sql" />
-    <Build Include="dbo\User Defined Types\dbo.IdStateErrorList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdStateErrorTimestampList.sql" />
     <Build Include="dal\Stored Procedures\dal.Notifications_Emails__UpdateState.sql" />
     <Build Include="dbo\Tables\dbo.Emails.sql" />
     <Build Include="dal\Stored Procedures\dal.Notifications_Emails__Poll.sql" />

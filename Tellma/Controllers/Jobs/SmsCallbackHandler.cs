@@ -19,7 +19,7 @@ namespace Tellma.Controllers.Jobs
         public async Task HandleCallback(SmsEventNotification smsEvent, CancellationToken cancellation)
         {
             // Nothing to do
-            if (smsEvent == null || smsEvent.TenantId == null)
+            if (smsEvent == null || smsEvent.TenantId == null) // Right now we do not handle null tenant Ids
             {
                 return;
             }
@@ -35,7 +35,7 @@ namespace Tellma.Controllers.Jobs
             };
 
             // Update the state in the database (should we make it serializable?)
-            await _repo.Notifications_SmsMessages__UpdateState(smsEvent.TenantId.Value, smsEvent.MessageId, state, smsEvent.Error, cancellation);
+            await _repo.Notifications_SmsMessages__UpdateState(smsEvent.TenantId.Value, smsEvent.MessageId, state, smsEvent.Timestamp, smsEvent.Error, cancellation);
         }
     }
 }

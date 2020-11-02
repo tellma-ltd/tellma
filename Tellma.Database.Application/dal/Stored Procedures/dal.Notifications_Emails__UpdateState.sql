@@ -1,25 +1,17 @@
 ﻿CREATE PROCEDURE [dal].[Notifications_Emails__UpdateState]
-	@StateUpdates		    [dbo].[IdStateErrorList] READONLY,
-	@EngagementUpdates		   [dbo].[IdStateErrorList] READONLY
+	@Updates	[dbo].[IdStateErrorTimestampList] READONLY
 AS
 BEGIN
 SET NOCOUNT ON;
 
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-
-	-- (1) Update regular states
 	UPDATE E
-	SET E.[State] = U.[State],  E.[ErrorMessage] = U.[Error], E.[StateSince] = @Now
+	SET 
+		E.[State] = U.[State],
+		E.[ErrorMessage] = U.[Error],
+		E.[StateSince] = U.[Timestamp],
+		E.[DeliveredAt] = IIF(E.[State] < 3 AND U.[State] >= 3, U.[Timestamp], E.[DeliveredAt]),
+		E.[OpenedAt] = IIF(E.[State] < 4 AND U.[State] >= 4, U.[Timestamp], E.[OpenedAt])
 	FROM dbo.[Emails] E
-	INNER JOIN @StateUpdates U ON E.[Id] = U.[Id]
-	WHERE E.[State] <> E.[State] AND (U.[State] < 0 OR E.[State] < U.[State]) -- Positive states only advance forward
-	
-	-- (2) Update engagement states
-	UPDATE E
-	SET E.[EngagementState] = U.[State], E.[EngagementStateSince] = @Now
-	FROM dbo.[Emails] E
-	INNER JOIN @EngagementUpdates U ON E.[Id] = U.[Id]
-	WHERE E.[EngagementState] <> E.[State] AND (U.[State] < 0 OR E.[EngagementState] < U.[State])
-
-	-- TODO: If the user reports an email as spam, flag him/her to prevent any future emails
+	INNER JOIN @Updates U ON E.[Id] = U.[Id]
+	WHERE E.[State] <> U.[State] AND (U.[State] < 0 OR E.[State] < U.[State]) -- Positive states only advance forward
 END

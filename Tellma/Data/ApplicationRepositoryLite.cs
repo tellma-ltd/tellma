@@ -174,12 +174,10 @@ namespace Tellma.Data
         /// Takes a list of (Id, State, Error), and updates the state of every email with a given Id to the given state.
         /// It also marks [StateSince] to the current time and persists the given Error in the Error column if the state is negative
         /// </summary>
-        public async Task Notifications_Emails__UpdateState(int tenantId, IEnumerable<IdStateError> stateUpdates, IEnumerable<IdStateError> engagementUpdates = null, CancellationToken cancellation = default)
+        public async Task Notifications_Emails__UpdateState(int tenantId, IEnumerable<IdStateErrorTimestamp> updates, CancellationToken cancellation = default)
         {
-            stateUpdates ??= new List<IdStateError>();
-            engagementUpdates ??= new List<IdStateError>();
-
-            if (!stateUpdates.Any() && !engagementUpdates.Any())
+            updates ??= new List<IdStateErrorTimestamp>();
+            if (!updates.Any())
             {
                 return;
             }
@@ -194,19 +192,14 @@ namespace Tellma.Data
                 CommandType = CommandType.StoredProcedure
             };
 
-            var stateUpdatesTable = RepositoryUtilities.DataTable(stateUpdates);
-            SqlParameter stateUpdatesTvp = new SqlParameter("@StateUpdates", stateUpdatesTable)
+            var updatesTable = RepositoryUtilities.DataTable(updates);
+            SqlParameter updatesTvp = new SqlParameter("@Updates", updatesTable)
             {
-                TypeName = $"[dbo].[{nameof(IdStateError)}List]",
+                TypeName = $"[dbo].[{nameof(IdStateErrorTimestamp)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
-            var engagementUpdatesTable = RepositoryUtilities.DataTable(stateUpdates);
-            SqlParameter engagementUpdatesTvp = new SqlParameter("@EngagementUpdates", stateUpdatesTable)
-            {
-                TypeName = $"[dbo].[{nameof(IdStateError)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            cmd.Parameters.Add(updatesTvp);
 
             // Execute the Query
             await conn.OpenAsync(cancellation);
@@ -320,7 +313,7 @@ namespace Tellma.Data
         /// <param name="tenantId">The database Id to query</param>
         /// <param name="id">The Id of the SMS to update</param>
         /// <param name="state">The new state</param>
-        public async Task Notifications_SmsMessages__UpdateState(int tenantId, int id, short state, string error = null, CancellationToken cancellation = default)
+        public async Task Notifications_SmsMessages__UpdateState(int tenantId, int id, short state, DateTimeOffset timestamp, string error = null, CancellationToken cancellation = default)
         {
             // Prep connection
             string connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
@@ -334,6 +327,7 @@ namespace Tellma.Data
 
             cmd.Parameters.AddWithValue("@Id", id);
             cmd.Parameters.AddWithValue("@NewState", state);
+            cmd.Parameters.AddWithValue("@Timestamp", timestamp);
             cmd.Parameters.Add("@Error", error);
 
             // Execute the Query
