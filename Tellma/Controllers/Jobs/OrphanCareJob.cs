@@ -5,19 +5,22 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Data;
 
 namespace Tellma.Controllers.Jobs
 {
     public class OrphanCareJob : BackgroundService
     {
+        private readonly AdminRepositoryLite _repo;
         private readonly ILogger<OrphanCareJob> _logger;
         private readonly IServiceProvider _services;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly JobsOptions _options;
 
-        public OrphanCareJob(ILogger<OrphanCareJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<JobsOptions> options)
+        public OrphanCareJob(AdminRepositoryLite repo, ILogger<OrphanCareJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<JobsOptions> options)
         {
+            _repo = repo;
             _logger = logger;
             _services = services;
             _instanceInfo = instanceInfo;
@@ -30,12 +33,13 @@ namespace Tellma.Controllers.Jobs
             {
                 try
                 {
-                    using var scope = _services.CreateScope();
+                    // Begin serializable transaction
+                    using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
 
-                    var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                    var orphans = await repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, stoppingToken);
+                    // Load a batch of orphans
+                    var orphans = await _repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, stoppingToken);
 
-                    // This makes them available for processing by all the various background Jobs
+                    // Make them available for processing to all the various background Jobs
                     _instanceInfo.AddNewlyAdoptedOrphans(orphans);
                 }
                 catch (Exception ex)

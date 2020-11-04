@@ -22,7 +22,7 @@ namespace Tellma.Controllers.Jobs
         {
             // Group events by tenant Id
             var emailEventsByTenant = emailEvents
-                .Where(e => e.TenantId != null) // Right now we do not handle null tenant Ids
+                .Where(e => e.TenantId != null && e.TenantId != 0) // Right now we do not handle null or zero tenant Ids, those were probably sent from identity or admin servers
                 .GroupBy(e => e.TenantId.Value);
 
             // Run all tenants in parallel

@@ -6,7 +6,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, FriendlyError } from '~/app/data/util';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
@@ -25,7 +25,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public expand = 'Roles/Role';
 
   create = () => {
-    const result: UserForSave = { };
+    const result: UserForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -134,8 +134,19 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  showRolesError(model: User) {
+  public showRolesError(model: User) {
     return !!model && !!model.Roles && model.Roles.some(r => !!r.serverErrors);
+  }
+
+  public showNotificationsError(model: User) {
+    return !!model && !!model.serverErrors && (
+      !!model.serverErrors.PreferredLanguage ||
+      !!model.serverErrors.ContactEmail ||
+      !!model.serverErrors.ContactMobile ||
+      !!model.serverErrors.EmailNewInboxItem ||
+      !!model.serverErrors.SmsNewInboxItem ||
+      !!model.serverErrors.PushNewInboxItem
+    );
   }
 
   public showInvitationInfo(model: UserForSave): boolean {
@@ -148,5 +159,64 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
 
   public get showPreferredLanguage(): boolean {
     return !!this.ws.settings.SecondaryLanguageId || !!this.ws.settings.TernaryLanguageId;
+  }
+
+  public get showNotifications(): boolean {
+    return this.showEmail || this.showSms || this.showPush;
+  }
+
+  public get showTabs(): boolean {
+    return this.showRoles || this.showNotifications;
+  }
+
+  public get showSms(): boolean {
+    return this.ws.settings.SmsEnabled && this.workspace.globalSettings.SmsEnabled;
+  }
+
+  public get showEmail(): boolean {
+    return this.workspace.globalSettings.EmailEnabled;
+  }
+
+  public get showPush(): boolean {
+    return this.workspace.globalSettings.PushEnabled;
+  }
+
+  public showNotificationTriggers(model: User): boolean {
+    return this.showEmailColumn(model) || this.showSmsColumn(model) || this.showPushColumn(model);
+  }
+
+  public showEmailColumn(model: User): boolean {
+    return this.showEmail && !!model && !!model.ContactEmail;
+  }
+
+  public showSmsColumn(model: User): boolean {
+    return this.showSms && !!model && !!model.ContactMobile;
+  }
+
+  public showPushColumn(model: User): boolean {
+    return this.showPush && !!model && !!model.PushEnabled;
+  }
+
+  public get activeTab(): string {
+    return this.ws.miscState.users_details_activeTab || 'roles';
+  }
+
+  public set activeTab(v: string) {
+    this.ws.miscState.users_details_activeTab = v;
+  }
+  public testEmail(email: string): void {
+    const details = this.details;
+    this.usersApi.testEmail(email).subscribe(
+      (msg: { Message: string }) => details.displayModalMessage(msg.Message),
+      (friendly: FriendlyError) => details.displayModalError(friendly.error)
+      );
+  }
+
+  public testPhoneNumber(phone: string): void {
+    const details = this.details;
+    this.usersApi.testPhone(phone).subscribe(
+      (msg: { Message: string }) => details.displayModalMessage(msg.Message),
+      (friendly: FriendlyError) => details.displayModalError(friendly.error)
+      );
   }
 }

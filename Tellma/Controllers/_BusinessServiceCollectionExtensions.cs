@@ -7,6 +7,7 @@ using Tellma.Controllers.Templating;
 using Tellma.Entities;
 using Tellma.Services.Email;
 using Tellma.Services.Sms;
+using Tellma.Controllers.Utiltites;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -45,6 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<PushNotificationQueue>()
                 .AddSingleton<ExternalNotificationsService>()
 
+                .AddSingleton<EmailTemplatesProvider>()
                 .AddSingleton<GlobalSettingsProvider>()
                 .AddSingleton<IDefinitionsCache, DefinitionsCache>()
                 .AddSingleton<ISettingsCache, SettingsCache>()
@@ -91,6 +93,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<RolesService>()
                 .AddScoped<SettingsService>()
                 .AddScoped<ReconciliationService>()
+                .AddScoped<EmailsService>()
+                .AddScoped<SmsMessagesService>()
                 .AddScoped<SummaryEntriesService>()
                 .AddScoped<UnitsService>()
                 .AddScoped<ResourceDefinitionsService>()
@@ -145,6 +149,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(User) => sp.GetRequiredService<UsersService>(),
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
+                nameof(EmailForQuery) => sp.GetRequiredService<EmailsService>(),
+                nameof(SmsMessageForQuery) => sp.GetRequiredService<SmsMessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactServiceBase)} implementation")
             };
@@ -188,6 +194,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(User) => sp.GetRequiredService<UsersService>(),
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
+                nameof(EmailForQuery) => sp.GetRequiredService<EmailsService>(),
+                nameof(SmsMessageForQuery) => sp.GetRequiredService<SmsMessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactWithIdService)} implementation")
             };
@@ -228,6 +236,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(User) => sp.GetRequiredService<UsersService>(),
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => sp.GetRequiredService<LineDefinitionsService>(),
+                nameof(EmailForQuery) => sp.GetRequiredService<EmailsService>(),
+                nameof(SmsMessageForQuery) => sp.GetRequiredService<SmsMessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IFactGetByIdServiceBase)} implementation")
             };

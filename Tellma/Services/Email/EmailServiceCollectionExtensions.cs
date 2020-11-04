@@ -40,7 +40,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<SendGridEmailSender>();
             services.AddSingleton<IEmailSenderFactory, EmailSenderFactory>();
             services.AddSingleton<IEmailSender, EmailSender>();
-            services.AddSingleton<EmailTemplatesProvider>();
 
             return services;
         }

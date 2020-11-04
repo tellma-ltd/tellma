@@ -3,6 +3,7 @@
 	@KeepAliveInSeconds INT
 AS
 	DECLARE @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();
+	DECLARE @TooOldIsDead DATETIMEOFFSET = DATEADD(second, -@KeepAliveInSeconds, @Now)
 	DECLARE @UpdatedId UNIQUEIDENTIFIER;
 
 	-- Rejuvenate the current instance
@@ -17,4 +18,4 @@ AS
 
 	-- Delete "dead" instances
 	DELETE FROM [dbo].[Instances] 
-	WHERE DATEDIFF(second, [LastHeartbeat], @Now) > @KeepAliveInSeconds
+	WHERE [LastHeartbeat] < @TooOldIsDead

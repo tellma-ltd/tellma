@@ -711,6 +711,8 @@
     <Build Include="dal\Stored Procedures\dal.Notifications_Emails__UpdateState.sql" />
     <Build Include="dbo\Tables\dbo.Emails.sql" />
     <Build Include="dal\Stored Procedures\dal.Notifications_Emails__Poll.sql" />
+    <Build Include="map\map.Emails.sql" />
+    <Build Include="map\map.SmsMessages.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -788,5 +790,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
 </Project>

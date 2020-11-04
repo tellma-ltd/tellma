@@ -6,9 +6,9 @@ namespace Tellma.Services.Email
     {
         private static readonly EmailAddressAttribute EmailAtt = new EmailAddressAttribute();
 
-        private const int MaximumEmailAddressLength = 256;
-        private const int MaximumSubjectLength = 1024;
-        private const int MaximumBodyLength = 50 * 1024; // 50 KB
+        public const int MaximumEmailAddressLength = 256;
+        public const int MaximumSubjectLength = 1024;
+        public const int MaximumBodyLength = 50 * 1024; // 50 KB
 
         /// <summary>
         /// If the <see cref="SmsMessage"/> is valid, returns null, otherwise returns the validation error message.

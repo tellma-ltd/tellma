@@ -52,6 +52,8 @@ BEGIN
 
 	-- Return contact info of the user, for notification purposeses
 	IF (@ManualAssignment = 1)
+	BEGIN
+		DECLARE @SerialNumber INT = (SELECT TOP 1 [SerialNumber] FROM dbo.[Documents] WHERE [Id] IN (SELECT [Id] FROM @Ids));
 		SELECT 
 			[Name],
 			[Name2],
@@ -59,13 +61,16 @@ BEGIN
 			[PreferredLanguage],
 			[ContactEmail], 
 			[ContactMobile], 
+			[NormalizedContactMobile], 
 			[PushEndpoint],	
 			[PushP256dh],
 			[PushAuth],	
 			[PreferredChannel],	
 			[EmailNewInboxItem],
 			[SmsNewInboxItem],
-			[PushNewInboxItem]
+			[PushNewInboxItem],
+			@SerialNumber
 		FROM dbo.[Users]
 		WHERE [Id] = @AssigneeId;
+	END;
 END;

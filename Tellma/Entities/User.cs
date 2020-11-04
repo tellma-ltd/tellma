@@ -42,6 +42,21 @@ namespace Tellma.Entities
         [CultureChoiceList]
         public string PreferredLanguage { get; set; }
 
+        [Display(Name = "User_ContactEmail")]
+        [EmailAddress]
+        [StringLength(255)]
+        public string ContactEmail { get; set; }
+
+        [Display(Name = "User_ContactMobile")]
+        [Phone]
+        [StringLength(50)]
+        public string ContactMobile { get; set; }
+
+        [Display(Name = "User_NormalizedContactMobile")]
+        [Phone]
+        [StringLength(50)]
+        public string NormalizedContactMobile { get; set; }
+
         [Display(Name = "User_PreferredChannel")]
         [ChoiceList(new object[] { "Email", "Sms", "Push" }, 
             new string[] { "User_PreferredChannel_Email", "User_PreferredChannel_Sms", "User_PreferredChannel_Push" })]
@@ -65,21 +80,21 @@ namespace Tellma.Entities
 
     public class User : UserForSave<RoleMembership>, IEntityWithImage
     {
+        [NotMapped]
         public string PushEndpoint { get; set; }
-        
+
+        [NotMapped]
         public string PushP256dh { get; set; }
-        
+
+        [NotMapped]
         public string PushAuth { get; set; }
+
+        [Display(Name = "User_PushEnabled")]
+        public bool? PushEnabled { get; set; }
 
         public string ImageId { get; set; }
 
         public string ExternalId { get; set; }
-
-        [Display(Name = "User_ContactEmail")]
-        public string ContactEmail { get; set; }
-
-        [Display(Name = "User_ContactMobile")]
-        public string ContactMobile { get; set; }
 
         [Display(Name = "State")]
         [ChoiceList(new object[] { "Invited", "Member" }, 

@@ -78,6 +78,9 @@ namespace Tellma.Entities
         /// </summary>
         public Guid SettingsVersion { get; set; }
 
+        [Display(Name = "Settings_SmsEnabled")]
+        public bool? SmsEnabled { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset CreatedAt { get; set; }
 

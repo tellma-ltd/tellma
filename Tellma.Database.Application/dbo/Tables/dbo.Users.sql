@@ -11,6 +11,7 @@
 	-- Notifications stuff
 	[ContactEmail]			NVARCHAR (255),
 	[ContactMobile]			NVARCHAR (50),
+	[NormalizedContactMobile]	NVARCHAR (50),
 	[PushEndpoint]			NVARCHAR (1024),
 	[PushP256dh]			NVARCHAR (1024),
 	[PushAuth]				NVARCHAR (1024),

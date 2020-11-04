@@ -25,8 +25,6 @@ namespace Tellma.Entities
             EmailState.Delivered,
             EmailState.Opened,
             EmailState.Clicked,
-
-
             EmailState.ValidationFailed,
             EmailState.DispatchFailed,
             EmailState.DeliveryFailed,
@@ -38,7 +36,6 @@ namespace Tellma.Entities
             EmailStateName.Delivered,
             EmailStateName.Opened,
             EmailStateName.Clicked,
-
             EmailStateName.ValidationFailed,
             EmailStateName.DispatchFailed,
             EmailStateName.DeliveryFailed,
@@ -60,14 +57,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Email_OpenedAt")]
         public DateTimeOffset? OpenedAt { get; set; }
-    }
-
-    public static class EmailEngagementState
-    {
-    }
-
-    public static class EmailEngagementStateName
-    {
     }
 
     public static class EmailState
@@ -140,7 +129,6 @@ namespace Tellma.Entities
         public const string ValidationFailed = _generic + "minus_1";
         public const string DispatchFailed = _generic + "minus_2";
         public const string DeliveryFailed = _email + "minus_3";
-
         public const string ReportedSpam = _email + "minus_4";
     }
 }

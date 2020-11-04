@@ -19,7 +19,7 @@ namespace Tellma.Controllers.Jobs
         public async Task HandleCallback(SmsEventNotification smsEvent, CancellationToken cancellation)
         {
             // Nothing to do
-            if (smsEvent == null || smsEvent.TenantId == null) // Right now we do not handle null tenant Ids
+            if (smsEvent == null || smsEvent.TenantId == null || smsEvent.TenantId == 0) // Right now we do not handle null tenant Ids, those were probably sent from identity or admin servers
             {
                 return;
             }

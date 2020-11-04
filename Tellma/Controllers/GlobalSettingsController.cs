@@ -69,7 +69,8 @@ namespace Tellma.Controllers
             var settings = new GlobalSettingsForClient
             {
                 EmailEnabled = opt.EmailEnabled,
-                SmsEnabled = opt.SmsEnabled
+                SmsEnabled = opt.SmsEnabled,
+                PushEnabled = opt.PushEnabled,
             };
 
             // Compute the version as SHA1 of the JSON representation of the global settings

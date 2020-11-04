@@ -173,7 +173,9 @@ import {
   faHandPointRight,
   faFistRaised,
   faMinus,
-  faEquals
+  faEquals,
+  faEnvelope,
+  faSms
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
@@ -249,6 +251,10 @@ import { DocumentDefinitionsDetailsComponent } from './document-definitions/docu
 import { DocumentDefinitionsPickerComponent } from './document-definitions/document-definitions-picker.component';
 import { MarkupTemplatesPickerComponent } from './markup-templates/markup-templates-picker.component';
 import { ReconciliationComponent } from './reconciliation/reconciliation.component';
+import { EmailsMasterComponent } from './emails/emails-master.component';
+import { EmailsDetailsComponent } from './emails/emails-details.component';
+import { SmsMessagesDetailsComponent } from './sms-messages/sms-messages-details.component';
+import { SmsMessagesMasterComponent } from './sms-messages/sms-messages-master.component';
 
 const routes: Routes = [
   {
@@ -627,14 +633,38 @@ const routes: Routes = [
       {
         path: 'reconciliation',
         component: ReconciliationComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Emails
+      {
+        path: 'emails',
+        component: EmailsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'emails/:id',
+        component: EmailsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // SMS Messages
+      {
+        path: 'sms-messages',
+        component: SmsMessagesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'sms-messages/:id',
+        component: SmsMessagesDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Settings
       {
         path: 'settings',
         component: SettingsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
       // Misc
       {
@@ -742,6 +772,10 @@ const routes: Routes = [
     DocumentDefinitionsPickerComponent,
     MarkupTemplatesPickerComponent,
     ReconciliationComponent,
+    EmailsMasterComponent,
+    EmailsDetailsComponent,
+    SmsMessagesDetailsComponent,
+    SmsMessagesMasterComponent
   ],
   imports: [
     SharedModule,
@@ -800,6 +834,7 @@ export class ApplicationModule {
       faEdit,
       faEllipsisH,
       faEllipsisV,
+      faEnvelope,
       faEquals,
       faEuroSign,
       faExchangeAlt,
@@ -885,6 +920,7 @@ export class ApplicationModule {
       faShoppingCart,
       faSign,
       faSitemap,
+      faSms,
       faSpa,
       faStar,
       faStoreSlash,

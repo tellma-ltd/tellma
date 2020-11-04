@@ -63,6 +63,9 @@ namespace Tellma
                 services.Configure<GlobalOptions>(_config);
                 GlobalOptions = _config.Get<GlobalOptions>();
 
+                // Adds a service that can resolve the client URI
+                services.AddClientAppAddressResolver();
+
                 // Azure Application Insights
                 services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
                 services.AddInstrumentation(GlobalOptions.InstrumentationEnabled, _config.GetSection("Instrumentation"));

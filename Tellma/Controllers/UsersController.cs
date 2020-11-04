@@ -21,6 +21,11 @@ using System.Transactions;
 using System.Threading;
 using Microsoft.AspNetCore.Routing;
 using Tellma.Controllers.ImportExport;
+using System.Text;
+using System.ComponentModel.DataAnnotations;
+using Tellma.Controllers.Utiltites;
+using Tellma.Controllers.Jobs;
+using Tellma.Services.Sms;
 
 namespace Tellma.Controllers
 {
@@ -134,6 +139,35 @@ namespace Tellma.Controllers
             _logger);
         }
 
+
+        [HttpPut("test-email")]
+        public async Task<ActionResult<string>> TestEmail([FromQuery] string email)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                string result = await _service.TestEmail(email);
+                return Ok(new
+                {
+                    Message = result
+                });
+            },
+            _logger);
+        }
+
+        [HttpPut("test-phone")]
+        public async Task<ActionResult<string>> TestPhone([FromQuery] string phone)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                string result = await _service.TestPhone(phone);
+                return Ok(new
+                {
+                    Message = result
+                });
+            },
+            _logger);
+        }
+
         private GetByIdResponse<User> TransformToResponse(User me, CancellationToken cancellation)
         {
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
@@ -156,11 +190,16 @@ namespace Tellma.Controllers
 
     public class UsersService : CrudServiceBase<UserForSave, User, int>
     {
+        private static readonly PhoneAttribute phoneAtt = new PhoneAttribute();
+        private static readonly EmailAddressAttribute emailAtt = new EmailAddressAttribute();
+        private static readonly Random rand = new Random();
+
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
         private readonly MetadataProvider _metadataProvider;
+        private readonly ExternalNotificationsService _notifications;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
         private readonly GlobalOptions _options;
@@ -175,6 +214,8 @@ namespace Tellma.Controllers
 
         private IUrlHelper _urlHelper = null;
         private string _scheme = null;
+
+        private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
 
         public UsersService SetUrlHelper(IUrlHelper urlHelper)
         {
@@ -199,13 +240,15 @@ namespace Tellma.Controllers
             EmailTemplatesProvider emailTemplates,
             ITenantIdAccessor tenantIdAccessor,
             IBlobService blobService,
-            MetadataProvider metadataProvider) : base(serviceProvider)
+            MetadataProvider metadataProvider,
+            ExternalNotificationsService notifications) : base(serviceProvider)
         {
             _appRepo = appRepo;
             _adminRepo = adminRepo;
             _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
             _metadataProvider = metadataProvider;
+            _notifications = notifications;
             _emailSender = emailSender;
             _emailTemplates = emailTemplates;
             _options = options.Value;
@@ -522,7 +565,28 @@ namespace Tellma.Controllers
                 var name3 = nameof(User.Name3);
                 var cs = Ops.contains;
 
-                query = query.Filter($"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {email} {cs} '{search}'");
+                string filter = $"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {email} {cs} '{search}'";
+
+                // If the search term looks like an email, include the contact email in the search
+                if (emailAtt.IsValid(search))
+                {
+                    var contactEmail = nameof(User.ContactEmail);
+                    var eq = Ops.eq;
+
+                    filter += $" or {contactEmail} {eq} '{search}'";
+                }
+
+                // If the search term looks like a phone number, include the contact mobile in the search
+                if (phoneAtt.IsValid(search))
+                {
+                    var e164 = ControllerUtilities.ToE164(search);
+                    var normalizedContactMobile = nameof(User.NormalizedContactMobile);
+                    var eq = Ops.eq;
+
+                    filter += $" or {normalizedContactMobile} {eq} '{e164}'";
+                }
+
+                query = query.Filter(filter);
             }
 
             return query;
@@ -590,6 +654,28 @@ namespace Tellma.Controllers
 
         protected override Task<List<UserForSave>> SavePreprocessAsync(List<UserForSave> entities)
         {
+            foreach (var entity in entities)
+            {
+                entity.Email = entity.Email.ToLower();
+
+                if (string.IsNullOrWhiteSpace(entity.ContactEmail))
+                {
+                    entity.ContactEmail = null;
+                }
+                else
+                {
+                    entity.ContactEmail = entity.ContactEmail.ToLower();
+                }
+
+                if (string.IsNullOrWhiteSpace(entity.ContactMobile))
+                {
+                    entity.ContactMobile = null;
+                }
+
+                // Normalized the contact mobile
+                entity.NormalizedContactMobile = ControllerUtilities.ToE164(entity.ContactMobile);
+            }
+
             // Make all the emails small case
             entities.ForEach(e => e.Email = e.Email.ToLower());
             return Task.FromResult(entities);
@@ -859,6 +945,95 @@ namespace Tellma.Controllers
             mapping.NormalizeIndices(); // Fix the gap we created in the previous line
 
             return base.ProcessDefaultMapping(mapping);
+        }
+
+        public async Task<string> TestEmail(string emailAddress)
+        {
+            // This sequence checks for all potential problems that could occur locally
+            if (string.IsNullOrWhiteSpace(emailAddress))
+            {
+                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["User_ContactEmail"]];
+                throw new BadRequestException(errorMsg);
+            }
+
+            if (!emailAtt.IsValid(emailAddress))
+            {
+                var errorMsg = _localizer[Constants.Error_Field0IsNotValidEmail, _localizer["User_ContactEmail"]];
+                throw new BadRequestException(errorMsg);
+            }
+
+            if (emailAddress.Length > EmailValidation.MaximumEmailAddressLength)
+            {
+                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["User_ContactEmail"], EmailValidation.MaximumEmailAddressLength];
+                throw new BadRequestException(errorMsg);
+            }
+
+            var email = new Email(emailAddress)
+            {
+                Subject = $"{ _localizer["Test"]} {rand.Next()}"
+            };
+
+            var error = EmailValidation.Validate(email);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new BadRequestException(error);
+            }
+
+            try
+            {
+                await _notifications.Enqueue(TenantId, emails: new List<Email> { email });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+            string successMsg = _localizer["TestEmailSentTo0WithSubject1", emailAddress, email.Subject];
+            return successMsg;
+        }
+
+        public async Task<string> TestPhone(string phone)
+        {
+            // This sequence checks for all potential problems that could occur locally
+            if (string.IsNullOrWhiteSpace(phone))
+            {
+                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["User_ContactMobile"]];
+                throw new BadRequestException(errorMsg);
+            }
+
+            if (!phoneAtt.IsValid(phone))
+            {
+                var errorMsg = _localizer[Constants.Error_Field0IsNotValidPhone, _localizer["User_ContactMobile"]];
+                throw new BadRequestException(errorMsg);
+            }
+
+            var normalizedPhone = ControllerUtilities.ToE164(phone);
+            if (normalizedPhone.Length > SmsValidation.MaximumPhoneNumberLength)
+            {
+                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["User_ContactMobile"], SmsValidation.MaximumPhoneNumberLength];
+                throw new BadRequestException(errorMsg);
+            }
+
+            var msg = $"{ _localizer["Test"]} {rand.Next(10000)}, {_localizer["AppFullName"]}";
+            var sms = new SmsMessage(normalizedPhone, msg);
+
+            var error = SmsValidation.Validate(sms);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new BadRequestException(error);
+            }
+
+            try
+            {
+                await _notifications.Enqueue(TenantId, smsMessages: new List<SmsMessage> { sms });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+            string successMsg = _localizer["TestSmsSentTo0WithMessage1", normalizedPhone, sms.Message];
+            return successMsg;
         }
     }
 }

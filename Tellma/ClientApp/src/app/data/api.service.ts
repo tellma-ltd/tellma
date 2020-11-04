@@ -755,6 +755,40 @@ export class ApiService {
 
         return obs$;
       },
+      testEmail: (email: string) => {
+        const url = appsettings.apiAddress + `api/users/test-email?email=${encodeURIComponent(email)}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<{ Message: string }>(url, null).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+      testPhone: (phone: string) => {
+        const url = appsettings.apiAddress + `api/users/test-phone?phone=${encodeURIComponent(phone)}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<{ Message: string }>(url, null).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
       getMyUser: () => {
         const url = appsettings.apiAddress + `api/users/me`;
         const obs$ = this.http.get<GetByIdResponse<User>>(url).pipe(
@@ -1073,7 +1107,6 @@ export class ApiService {
   }
 
   // Definitions update state
-
   public lookupDefinitionsApi(cancellationToken$: Observable<void>) {
     return {
       updateState: this.updateDefinitionStateFactory('lookup-definitions', cancellationToken$)

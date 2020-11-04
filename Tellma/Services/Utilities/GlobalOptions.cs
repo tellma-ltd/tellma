@@ -8,6 +8,8 @@ namespace Tellma.Services.Utilities
 
         public bool SmsEnabled { get; set; }
 
+        public bool PushEnabled { get; set; } = true;
+
         public bool EmbeddedIdentityServerEnabled { get; set; }
 
         public bool EmbeddedClientApplicationEnabled { get; set; }

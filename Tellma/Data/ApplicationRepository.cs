@@ -287,6 +287,8 @@ namespace Tellma.Data
                 nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
                 nameof(ExchangeRate) => "[map].[ExchangeRates]()",
                 nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+                nameof(EmailForQuery) => "[map].[Emails]()",
+                nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
 
                 // Line Definition stuff
                 nameof(LineDefinition) => "[map].[LineDefinitions]()",
@@ -4845,12 +4847,13 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<(List<InboxNotificationInfo> notificationInfos, User assigneeInfo)> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool manualAssignment)
+        public async Task<(List<InboxNotificationInfo> notificationInfos, User assigneeInfo, int docSerial)> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool manualAssignment)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Documents__Assign));
 
             var notificationInfos = new List<InboxNotificationInfo>();
             User assigneeInfo;
+            int serialNumber = 0;
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4891,6 +4894,7 @@ namespace Tellma.Data
                         PreferredLanguage = reader.String(i++),
                         ContactEmail = reader.String(i++),
                         ContactMobile = reader.String(i++),
+                        NormalizedContactMobile = reader.String(i++),
                         PushEndpoint = reader.String(i++),
                         PushP256dh = reader.String(i++),
                         PushAuth = reader.String(i++),
@@ -4900,21 +4904,24 @@ namespace Tellma.Data
                         PushNewInboxItem = reader.Boolean(i++),
 
                         EntityMetadata = new EntityMetadata {
-                        { nameof(User.Name), FieldMetadata.Loaded },
-                        { nameof(User.Name2), FieldMetadata.Loaded },
-                        { nameof(User.Name3), FieldMetadata.Loaded },
-                        { nameof(User.PreferredLanguage), FieldMetadata.Loaded },
-                        { nameof(User.ContactEmail), FieldMetadata.Loaded },
-                        { nameof(User.ContactMobile), FieldMetadata.Loaded },
-                        { nameof(User.PushEndpoint), FieldMetadata.Loaded },
-                        { nameof(User.PushP256dh), FieldMetadata.Loaded },
-                        { nameof(User.PushAuth), FieldMetadata.Loaded },
-                        { nameof(User.PreferredChannel), FieldMetadata.Loaded },
-                        { nameof(User.EmailNewInboxItem), FieldMetadata.Loaded },
-                        { nameof(User.SmsNewInboxItem), FieldMetadata.Loaded },
-                        { nameof(User.PushNewInboxItem), FieldMetadata.Loaded },
-                    }
+                            { nameof(User.Name), FieldMetadata.Loaded },
+                            { nameof(User.Name2), FieldMetadata.Loaded },
+                            { nameof(User.Name3), FieldMetadata.Loaded },
+                            { nameof(User.PreferredLanguage), FieldMetadata.Loaded },
+                            { nameof(User.ContactEmail), FieldMetadata.Loaded },
+                            { nameof(User.ContactMobile), FieldMetadata.Loaded },
+                            { nameof(User.NormalizedContactMobile), FieldMetadata.Loaded },
+                            { nameof(User.PushEndpoint), FieldMetadata.Loaded },
+                            { nameof(User.PushP256dh), FieldMetadata.Loaded },
+                            { nameof(User.PushAuth), FieldMetadata.Loaded },
+                            { nameof(User.PreferredChannel), FieldMetadata.Loaded },
+                            { nameof(User.EmailNewInboxItem), FieldMetadata.Loaded },
+                            { nameof(User.SmsNewInboxItem), FieldMetadata.Loaded },
+                            { nameof(User.PushNewInboxItem), FieldMetadata.Loaded },
+                        }
                     };
+
+                    serialNumber = reader.Int32(i++) ?? 0;
                 }
                 else
                 {
@@ -4928,7 +4935,7 @@ namespace Tellma.Data
             }
 
 
-            return (notificationInfos, assigneeInfo);
+            return (notificationInfos, assigneeInfo, serialNumber);
         }
 
         public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds)> Documents__Delete(IEnumerable<int> ids)

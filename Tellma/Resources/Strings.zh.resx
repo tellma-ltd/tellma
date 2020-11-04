@@ -595,6 +595,9 @@
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>美国历史</value>
   </data>
+  <data name="Document0From1" xml:space="preserve">
+    <value>{0}由{1}</value>
+  </data>
   <data name="DocumentAssignment" xml:space="preserve">
     <value>文件分配</value>
   </data>
@@ -695,16 +698,16 @@
     <value>交付</value>
   </data>
   <data name="Email_State_4" xml:space="preserve">
-    <value>打开电子邮件</value>
+    <value>开业</value>
   </data>
   <data name="Email_State_5" xml:space="preserve">
-    <value>被点击电子邮件中的链接</value>
+    <value>点击</value>
   </data>
   <data name="Email_State_minus_3" xml:space="preserve">
     <value>运送失败</value>
   </data>
   <data name="Email_State_minus_4" xml:space="preserve">
-    <value>报道称电子邮件为垃圾邮件</value>
+    <value>报告的垃圾邮件</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
     <value>学科</value>
@@ -1002,6 +1005,9 @@
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>{0}字段是不是一个有效的E-mail地址</value>
+  </data>
+  <data name="Error_Field0IsNotValidPhone" xml:space="preserve">
+    <value>{0}字段是不是一个有效的电话号码。</value>
   </data>
   <data name="Error_Field0IsRequired" xml:space="preserve">
     <value>{0}字段是必需的。</value>
@@ -2569,6 +2575,9 @@
   <data name="Settings_ShortCompanyName" xml:space="preserve">
     <value>公司简称</value>
   </data>
+  <data name="Settings_SmsEnabled" xml:space="preserve">
+    <value>短信通知启用</value>
+  </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>三元语言</value>
   </data>
@@ -2830,6 +2839,9 @@
   <data name="TermsOfService" xml:space="preserve">
     <value>服务条款</value>
   </data>
+  <data name="TestEmailSentTo0WithSubject1" xml:space="preserve">
+    <value>测试电子邮件，主题：“{1}”，发送到电子邮件地址“{0}”，请确认其收到。</value>
+  </data>
   <data name="TheCurrentBrowserHasBeenForgotten" xml:space="preserve">
     <value>目前的浏览器已经被遗忘了。当你从这个浏览器再次登录系统将提示您为您的2FA代码。</value>
   </data>
@@ -2947,6 +2959,9 @@
   <data name="User_Member" xml:space="preserve">
     <value>确认</value>
   </data>
+  <data name="User_NormalizedContactMobile" xml:space="preserve">
+    <value>联系移动（标准化）</value>
+  </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>权限</value>
   </data>
@@ -2965,6 +2980,9 @@
   <data name="User_PreferredLanguage" xml:space="preserve">
     <value>首选语言</value>
   </data>
+  <data name="User_PushEnabled" xml:space="preserve">
+    <value>推送通知启用</value>
+  </data>
   <data name="User_PushNewInboxItem" xml:space="preserve">
     <value>收件箱推送通知</value>
   </data>
@@ -2973,6 +2991,12 @@
   </data>
   <data name="User_SmsNewInboxItem" xml:space="preserve">
     <value>收件箱中短信通知</value>
+  </data>
+  <data name="User0SendYou1DocumentsOfType2" xml:space="preserve">
+    <value>{0}发送你{1} {2}。</value>
+  </data>
+  <data name="User0SentYouDocument12" xml:space="preserve">
+    <value>{0}发送你{1}数{2}。</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>用户已经设置密码。</value>

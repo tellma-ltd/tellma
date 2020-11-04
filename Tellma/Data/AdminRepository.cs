@@ -18,7 +18,7 @@ using Tellma.Services;
 
 namespace Tellma.Data
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope",
         Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class AdminRepository : IRepository, IDisposable
     {
@@ -383,30 +383,29 @@ namespace Tellma.Data
             DatabaseConnectionInfo result = null;
 
             var conn = await GetRawConnectionAsync(cancellation);
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@DatabaseId", databaseId);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
+
+            // Execute and Load
+            using var reader = await cmd.ExecuteReaderAsync(cancellation);
+            if (await reader.ReadAsync(cancellation))
             {
-                // Parameters
-                cmd.Parameters.Add("@DatabaseId", databaseId);
+                int i = 0;
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
-
-                // Execute and Load
-                using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                if (await reader.ReadAsync(cancellation))
+                // The user Info
+                result = new DatabaseConnectionInfo
                 {
-                    int i = 0;
-
-                    // The user Info
-                    result = new DatabaseConnectionInfo
-                    {
-                        ServerName = reader.String(i++),
-                        DatabaseName = reader.String(i++),
-                        UserName = reader.String(i++),
-                        PasswordKey = reader.String(i++),
-                    };
-                }
+                    ServerName = reader.String(i++),
+                    DatabaseName = reader.String(i++),
+                    UserName = reader.String(i++),
+                    PasswordKey = reader.String(i++),
+                };
             }
 
             return result;
@@ -474,6 +473,7 @@ namespace Tellma.Data
 
             var conn = await GetRawConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             cmd.Parameters.Add("Email", email);
             cmd.Parameters.Add("ExternalId", externalId);
@@ -493,45 +493,44 @@ namespace Tellma.Data
             var result = new List<string>();
 
             var conn = await GetRawConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
+            var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
             {
-                // Parameters
-                var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
-                var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
+            var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
+            {
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(newEmailsTvp);
+            cmd.Parameters.Add(oldEmailsTvp);
+            cmd.Parameters.Add("@DatabaseId", databaseId);
+            cmd.Parameters.Add("@ReturnEmailsForCreation", returnEmailsForCreation);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
+
+            // Execute and load
+            if (returnEmailsForCreation)
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
-                var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(newEmailsTvp);
-                cmd.Parameters.Add(oldEmailsTvp);
-                cmd.Parameters.Add("@DatabaseId", databaseId);
-                cmd.Parameters.Add("@ReturnEmailsForCreation", returnEmailsForCreation);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
-
-                // Execute and load
-                if (returnEmailsForCreation)
-                {
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        result.Add(reader.String(0));
-                    }
+                    result.Add(reader.String(0));
                 }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
+            }
+            else
+            {
+                await cmd.ExecuteNonQueryAsync();
             }
 
             return result;
@@ -787,53 +786,6 @@ namespace Tellma.Data
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
-        }
-
-        #endregion
-
-        #region Jobs
-
-        public async Task Heartbeat(Guid instanceId, int keepAliveInSeconds, CancellationToken cancellation)
-        {
-            var conn = await GetRawConnectionAsync(cancellation);
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            cmd.Parameters.Add("@InstanceId", instanceId);
-            cmd.Parameters.Add("@KeepAliveInSeconds", keepAliveInSeconds);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Heartbeat)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync(cancellation);
-        }
-
-        public async Task<IEnumerable<int>> AdoptOrphans(Guid instanceId, int keepAliveInSeconds, int orphanCount, CancellationToken cancellation)
-        {
-            var result = new List<int>();
-
-            var conn = await GetRawConnectionAsync(cancellation);
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            cmd.Parameters.Add("@InstanceId", instanceId);
-            cmd.Parameters.Add("@KeepAliveInSeconds", keepAliveInSeconds);
-            cmd.Parameters.Add("@OrphanCount", orphanCount);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(AdoptOrphans)}]";
-
-            // Execute and Load
-            using var reader = await cmd.ExecuteReaderAsync(cancellation);
-            while (await reader.ReadAsync(cancellation))
-            {
-                result.Add(reader.GetInt32(0));
-            }
-
-            return result;
         }
 
         #endregion

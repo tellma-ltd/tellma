@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Services.Utilities;
 
@@ -22,18 +21,16 @@ namespace Tellma.Areas.Identity.Pages.Account
         private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
-        private readonly ClientApplicationsOptions _config;
-        private readonly GlobalOptions _globalConfig;
+        private readonly ClientAppAddressResolver _resolver;
 
         public LoginModel(SignInManager<EmbeddedIdentityServerUser> signInManager, 
             ILogger<LoginModel> logger, IStringLocalizer<Strings> localizer, 
-            IOptions<GlobalOptions> globalOptions, IOptions<ClientApplicationsOptions> options)
+            ClientAppAddressResolver resolver)
         {
             _signInManager = signInManager;
             _logger = logger;
             _localizer = localizer;
-            _config = options.Value;
-            _globalConfig = globalOptions.Value;
+            _resolver = resolver;
         }
 
         [BindProperty]
@@ -128,17 +125,9 @@ namespace Tellma.Areas.Identity.Pages.Account
             }
             else
             {
-                // If no return url, send the user to the client app
-                if (_globalConfig.EmbeddedClientApplicationEnabled)
-                {
-                    // Embedded web client app
-                    return LocalRedirect("~/");
-                }
-                else
-                {
-                    // Validation ensures this value is not null
-                    return Redirect(_config?.WebClientUri);
-                }
+                // Redirect to the root of the web app
+                var url = _resolver.Resolve();
+                return Redirect(url);
             }
         }
     }
