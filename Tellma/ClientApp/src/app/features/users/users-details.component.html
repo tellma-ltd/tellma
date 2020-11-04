@@ -171,7 +171,7 @@
               [serverErrors]="model?.serverErrors?.ContactEmail" *ngIf="showEmail">
               <div *ngIf="!isEdit">{{ model?.ContactEmail }}</div>
               <ng-container *ngIf="isEdit">
-                <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ContactEmail" [ngModelOptions]="{ updateOn: 'blur' }">
+                <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ContactEmail">
                 </t-text-editor>
                 <button class="btn btn-primary btn-sm py-0 px-1 mx-2 text-nowrap" [disabled]="!model?.ContactEmail"
                   (click)="testEmail(model?.ContactEmail)">{{ 'Test' | translate }}</button>
@@ -183,7 +183,7 @@
               [serverErrors]="model?.serverErrors?.ContactMobile" *ngIf="showSms">
               <div *ngIf="!isEdit">{{ model?.ContactMobile }}</div>
               <ng-container *ngIf="isEdit">
-                <t-text-editor [(ngModel)]="model.ContactMobile" [ngModelOptions]="{ updateOn: 'blur' }" placeholder="+000-00-000-0000">
+                <t-text-editor [(ngModel)]="model.ContactMobile" placeholder="+000-00-000-0000">
                 </t-text-editor>
                 <button class="btn btn-primary btn-sm py-0 px-1 mx-2 text-nowrap" [disabled]="!model?.ContactMobile"
                   (click)="testPhoneNumber(model?.ContactMobile)">{{ 'Test' | translate }}</button>
