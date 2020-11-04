@@ -77,6 +77,7 @@ SET NOCOUNT ON;
 	-- Whether there are multiple active segments is an important cached value of the settings
 	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
 
+	-- BUG: filling Maximus centers did not update the segment count
 	IF (@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
 

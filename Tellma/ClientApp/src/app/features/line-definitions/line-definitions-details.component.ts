@@ -126,7 +126,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
   public isInactive: (model: LineDefinition) => string = (def: LineDefinition) =>
-    !!def && def.Id === this.ws.definitions.ManualJournalVouchersDefinitionId ? 'Error_CannotModifySystemItem' : null
+    !!def && def.Id === this.ws.definitions.ManualLinesDefinitionId ? 'Error_CannotModifySystemItem' : null
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;

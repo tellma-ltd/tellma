@@ -177,7 +177,7 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	-- AccountTypeCoustodyDefinitions
+	-- AccountTypeCustodyDefinitions
 	WITH BEATCD AS (
 		SELECT * FROM dbo.[AccountTypeCustodyDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
