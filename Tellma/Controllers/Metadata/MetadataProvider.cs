@@ -327,6 +327,11 @@ namespace Tellma.Controllers
                                     string msg = _localizer[Constants.Error_Field0IsNotValidEmail, displayName];
                                     validationResult = new ValidationResult(msg);
                                 }
+                                else if (validationAtt is PhoneAttribute)
+                                {
+                                    string msg = _localizer[Constants.Error_Field0IsNotValidPhone, displayName];
+                                    validationResult = new ValidationResult(msg);
+                                }
 
                                 validationResults.Add(validationResult);
                             }

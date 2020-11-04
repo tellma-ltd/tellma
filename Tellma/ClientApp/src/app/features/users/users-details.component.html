@@ -87,17 +87,6 @@
       [disabled]="!isNew"></t-text-editor>
   </t-form-group>
 
-  <!-- Preferred Language -->
-  <t-form-group class="t-form-group" [label]="'User_PreferredLanguage' | translate"
-    [serverErrors]="model?.serverErrors?.PreferredLanguage" *ngIf="showPreferredLanguage">
-    <div *ngIf="!isEdit">
-      <t-restricted [metadata]="model?.EntityMetadata?.PreferredLanguage">
-        {{ languageLookup(model?.PreferredLanguage) | translate }}
-      </t-restricted>
-    </div>
-    <t-selector *ngIf="isEdit" [(ngModel)]="model.PreferredLanguage" [choices]="languageChoices"></t-selector>
-  </t-form-group>
-
   <!-- Last Activity -->
   <t-form-group class="t-form-group" [label]="'User_LastActivity' | translate" *ngIf="!isEdit">
     <t-auto-cell collection="User" [entity]="model" path="LastAccess">
@@ -114,11 +103,11 @@
     <span>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</span>
   </div>
 
-  <ng-container *ngIf="showRoles">
-    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
+  <ng-container *ngIf="showTabs">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [(activeId)]="activeTab" [destroyOnHide]="true">
 
       <!-- Roles -->
-      <li [disabled]="true" ngbNavItem="roles">
+      <li ngbNavItem="roles" *ngIf="showRoles">
         <a ngbNavLink>
           <span *ngIf="showRolesError(model)" class="text-danger">
             <fa-icon icon="exclamation-triangle">
@@ -164,6 +153,98 @@
           </ng-template>
         </ng-template>
       </li>
+
+      <!-- Notifications -->
+      <li ngbNavItem="notifications" *ngIf="showNotifications">
+        <a ngbNavLink>
+          <span *ngIf="showNotificationsError(model)" class="text-danger">
+            <fa-icon icon="exclamation-triangle">
+            </fa-icon>&nbsp;
+          </span>
+          <span class="small t-slightly-bold">{{ 'Notifications' | translate }}</span>
+        </a>
+        <ng-template ngbNavContent>
+          <div class="row m-0 pt-2 pt-sm-3">
+
+            <!-- ContactEmail -->
+            <t-form-group class="t-form-group" [label]="'User_ContactEmail' | translate"
+              [serverErrors]="model?.serverErrors?.ContactEmail" *ngIf="showEmail">
+              <div *ngIf="!isEdit">{{ model?.ContactEmail }}</div>
+              <ng-container *ngIf="isEdit">
+                <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ContactEmail" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+                <button class="btn btn-primary btn-sm py-0 px-1 mx-2 text-nowrap" [disabled]="!model?.ContactEmail"
+                  (click)="testEmail(model?.ContactEmail)">{{ 'Test' | translate }}</button>
+              </ng-container>
+            </t-form-group>
+
+            <!-- ContactMobile -->
+            <t-form-group class="t-form-group" [label]="'User_ContactMobile' | translate"
+              [serverErrors]="model?.serverErrors?.ContactMobile" *ngIf="showSms">
+              <div *ngIf="!isEdit">{{ model?.ContactMobile }}</div>
+              <ng-container *ngIf="isEdit">
+                <t-text-editor [(ngModel)]="model.ContactMobile" [ngModelOptions]="{ updateOn: 'blur' }" placeholder="+000-00-000-0000">
+                </t-text-editor>
+                <button class="btn btn-primary btn-sm py-0 px-1 mx-2 text-nowrap" [disabled]="!model?.ContactMobile"
+                  (click)="testPhoneNumber(model?.ContactMobile)">{{ 'Test' | translate }}</button>
+              </ng-container>
+            </t-form-group>
+
+            <!-- Preferred Language -->
+            <t-form-group class="t-form-group" [label]="'User_PreferredLanguage' | translate"
+              [serverErrors]="model?.serverErrors?.PreferredLanguage" *ngIf="showPreferredLanguage">
+              <div *ngIf="!isEdit">
+                <t-restricted [metadata]="model?.EntityMetadata?.PreferredLanguage">
+                  {{ languageLookup(model?.PreferredLanguage) | translate }}
+                </t-restricted>
+              </div>
+              <t-selector *ngIf="isEdit" [(ngModel)]="model.PreferredLanguage" [choices]="languageChoices"></t-selector>
+            </t-form-group>
+
+            <table class="table mt-4 table-striped border-bottom text-nowrap" *ngIf="showNotificationTriggers(model)">
+              <thead>
+                <tr class="small">
+                  <th>{{ 'Trigger' | translate }}</th>
+                  <th *ngIf="showEmailColumn(model)">{{ 'NotifyByEmail' | translate }}</th>
+                  <th *ngIf="showSmsColumn(model)">{{ 'NotifyBySms' | translate }}</th>
+                  <th *ngIf="showPushColumn(model)">{{ 'NotifyByPush' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ 'NewDocumentAssignment' | translate }}</td>
+                  <td *ngIf="showEmailColumn(model)">
+                    <span *ngIf="!isEdit">{{ (model.EmailNewInboxItem ? 'Yes' : 'No') | translate }}</span>
+                    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+                      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.EmailNewInboxItem"
+                        id="EmailNewInboxItem">
+                      <label class="custom-control-label t-pointer" for="EmailNewInboxItem">&zwnj;</label>
+                    </div>
+                  </td>
+                  <td *ngIf="showSmsColumn(model)">
+                    <span *ngIf="!isEdit">{{ (model.SmsNewInboxItem ? 'Yes' : 'No') | translate }}</span>
+                    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+                      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.SmsNewInboxItem"
+                        id="SmsNewInboxItem">
+                      <label class="custom-control-label t-pointer" for="SmsNewInboxItem">&zwnj;</label>
+                    </div>
+                  </td>
+                  <td *ngIf="showPushColumn(model)">
+                    <span *ngIf="!isEdit">{{ (model.PushNewInboxItem ? 'Yes' : 'No') | translate }}</span>
+                    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+                      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.PushNewInboxItem"
+                        id="PushNewInboxItem">
+                      <label class="custom-control-label t-pointer" for="PushNewInboxItem">&zwnj;</label>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </ng-template>
+      </li>
+
     </ul>
     <div class="w-100" [ngbNavOutlet]="tabs"></div>
   </ng-container>

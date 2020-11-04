@@ -12,9 +12,9 @@ namespace Tellma.Services.Sms
             _smsSender = factory.Create();
         }
 
-        public async Task<string> SendAsync(string toPhoneNumber, string sms, CancellationToken cancellation)
+        public async Task SendAsync(SmsMessage sms, CancellationToken cancellation = default)
         {
-            return await _smsSender.SendAsync(toPhoneNumber, sms, cancellation);
+            await _smsSender.SendAsync(sms, cancellation);
         }
     }
 }

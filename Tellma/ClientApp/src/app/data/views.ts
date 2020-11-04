@@ -248,4 +248,14 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('Update', false)
         ]
     },
+    'emails': {
+        name: 'Emails',
+        read: true,
+        actions: []
+    },
+    'sms-messages': {
+        name: 'SmsMessages',
+        read: true,
+        actions: []
+    }
 };

@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Data;
 
 namespace Tellma.Controllers.Jobs
@@ -15,13 +15,15 @@ namespace Tellma.Controllers.Jobs
     /// </summary>
     public class HeartbeatJob : BackgroundService
     {
+        private readonly AdminRepositoryLite _repo;
         private readonly ILogger<HeartbeatJob> _logger;
         private readonly IServiceProvider _services;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly JobsOptions _options;
 
-        public HeartbeatJob(ILogger<HeartbeatJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<JobsOptions> options)
+        public HeartbeatJob(AdminRepositoryLite repo, ILogger<HeartbeatJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<JobsOptions> options)
         {
+            _repo = repo;
             _logger = logger;
             _services = services;
             _instanceInfo = instanceInfo;
@@ -34,10 +36,10 @@ namespace Tellma.Controllers.Jobs
             {
                 try
                 {
-                    using var scope = _services.CreateScope();
+                    // Begin serializable transaction
+                    using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
 
-                    var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                    await repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, stoppingToken);
+                    await _repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, stoppingToken);
                 } 
                 catch (Exception ex)
                 {

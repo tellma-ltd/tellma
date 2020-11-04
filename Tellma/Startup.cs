@@ -63,6 +63,9 @@ namespace Tellma
                 services.Configure<GlobalOptions>(_config);
                 GlobalOptions = _config.Get<GlobalOptions>();
 
+                // Adds a service that can resolve the client URI
+                services.AddClientAppAddressResolver();
+
                 // Azure Application Insights
                 services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
                 services.AddInstrumentation(GlobalOptions.InstrumentationEnabled, _config.GetSection("Instrumentation"));
@@ -84,7 +87,6 @@ namespace Tellma
 
                 // More custom services
                 services.AddBlobService(_config);
-                services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources
                 services.AddLocalization(opt =>
@@ -92,7 +94,7 @@ namespace Tellma
                     opt.ResourcesPath = "Resources";
                 });
 
-                // Register MVC using the most up to date version
+                // Register MVC
                 services.AddControllersWithViews(opt =>
                 {
                     // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
@@ -149,8 +151,8 @@ namespace Tellma
                 // Add Email
                 services.AddEmail(GlobalOptions.EmailEnabled, _config);
 
-                //// Add SMS
-                //services.AddSms(GlobalOptions.SmsEnabled, _config);
+                // Add SMS
+                services.AddSms(GlobalOptions.SmsEnabled, _config);
 
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>
@@ -188,9 +190,11 @@ namespace Tellma
                 // Add service for generating markup from templates
                 services.AddMarkupTemplates();
 
+                // For better management of HttpClients
+                services.AddHttpClient();
+
                 // Add the business logic services (DocumentsService, ResourcesService, etc...)
                 services.AddBusinessServices(_config);
-
             }
             catch (Exception ex)
             {
@@ -238,7 +242,6 @@ namespace Tellma
                 // Built-in instrumentation
                 app.UseInstrumentation();
 
-
                 // Regular Errors
                 if (_env.IsDevelopment())
                 {
@@ -257,6 +260,11 @@ namespace Tellma
                 app.UseHttpsRedirection();
                 app.UseMiddlewareInstrumentation("Https Redirection");
 
+                // Adds the SMS event webhook Callback
+                app.UseSmsCallback(_config);
+
+                // Adds the email event webhook Callback
+                app.UseEmailCallback(_config);
 
                 // Localization
                 // Extract the culture from the request string and set it in the execution thread

@@ -63,10 +63,11 @@ namespace Tellma.Areas.Identity.Pages.Account
                 string emailBody = toResetClickTheFollowingLink + resetLink;
 
                 string emailSubject = _localizer["ResetYourPassword"];
-                await _emailSender.SendAsync(
-                    to: Input.Email,
-                    subject: emailSubject,
-                    htmlMessage: emailBody);
+                await _emailSender.SendAsync(new Email(Input.Email)
+                {
+                    Subject = emailSubject,
+                    Body = emailBody
+                });
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

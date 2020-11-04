@@ -228,9 +228,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
       if (!isVersionRefreshRequest) {
         // global versions
-        if (!!this.workspace.globalSettingsVersion) {
-          headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion;
-        }
+          headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion || '???';
       }
 
       // clone the request and set the headers and parameters

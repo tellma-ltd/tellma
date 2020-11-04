@@ -29,8 +29,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.ConnectionString = connectionString;
             });
 
-            return services.AddScoped<AdminRepository>()
-                .AddScoped<IdentityRepository>();
+            return services.AddScoped<IdentityRepository>()
+                .AddScoped<AdminRepository>()
+                .AddSingleton<AdminRepositoryLite>();
         }
 
         /// <summary>
@@ -39,7 +40,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddApplicationRepository(this IServiceCollection services)
         {
-            return services.AddScoped<ApplicationRepository>();
+            return services.AddScoped<ApplicationRepository>()
+                .AddSingleton<ApplicationRepositoryLite>();
         }
     }
 }

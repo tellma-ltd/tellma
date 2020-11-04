@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
+using Tellma.Controllers.Utiltites;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
@@ -525,25 +526,21 @@ namespace Tellma.Controllers
             // Step (4): Send the invitation emails
             if (_usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
             {
-                var userIds = _usersToInvite.Select(e => e.User.Id).ToArray();
-                var tos = new List<string>();
-                var subjects = new List<string>();
-                var substitutions = new List<Dictionary<string, string>>();
+                var emails = new List<Email>(_usersToInvite.Count);
+
                 foreach (var (idUser, user) in _usersToInvite)
                 {
                     // Add the email sender parameters
                     var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name);
-                    tos.Add(idUser.Email);
-                    subjects.Add(subject);
-                    substitutions.Add(new Dictionary<string, string> { { "-message-", body } });
+
+                    emails.Add(new Email(toEmail: idUser.Email)
+                    {
+                        Subject = subject,
+                        Body = body
+                    });
                 }
 
-                await _emailSender.SendBulkAsync(
-                    tos: tos,
-                    subjects: subjects,
-                    htmlMessage: $"-message-",
-                    substitutions: substitutions.ToList()
-                    );
+                await _emailSender.SendBulkAsync(emails);
             }
         }
 

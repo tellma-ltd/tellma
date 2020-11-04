@@ -8,19 +8,28 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { supportedCultures } from '../supported-cultures';
 
 export interface UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
+  Image?: string;
   Name?: string;
   Name2?: string;
   Name3?: string;
   Email?: string;
   PreferredLanguage?: string;
-  Image?: string;
+  ContactEmail?: string;
+  ContactMobile?: string;
+  NormalizedContactMobile?: string;
+  PreferredChannel?: string;
+  EmailNewInboxItem?: boolean;
+  SmsNewInboxItem?: boolean;
+  PushNewInboxItem?: boolean;
   Roles?: TRoleMembership[];
 }
 
 export interface User extends UserForSave<RoleMembership> {
+  PushEnabled?: boolean;
   ImageId?: string;
   IsActive?: boolean;
   ExternalId?: string;
+  State?: 'New' | 'Confirmed';
   LastAccess?: string;
   CreatedAt?: string;
   CreatedById?: number | string;
@@ -66,6 +75,14 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
           choices: companyLanguages,
           format: (c: string) => supportedCultures[c]
         },
+        ContactEmail: { control: 'text', label: () => trx.instant('User_ContactEmail') },
+        ContactMobile: { control: 'text', label: () => trx.instant('User_ContactMobile') },
+        NormalizedContactMobile: { control: 'text', label: () => trx.instant('User_NormalizedContactMobile') },
+        PushEnabled: { control: 'boolean', label: () => trx.instant('User_PushEnabled') },
+        // PreferredChannel?: string;
+        EmailNewInboxItem: { control: 'boolean', label: () => trx.instant('User_EmailNewInboxItem') },
+        SmsNewInboxItem: { control: 'boolean', label: () => trx.instant('User_SmsNewInboxItem') },
+        PushNewInboxItem: { control: 'boolean', label: () => trx.instant('User_PushNewInboxItem') },
         State: {
           control: 'state',
           label: () => trx.instant('State'),

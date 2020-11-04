@@ -7,6 +7,19 @@
 	[Email]					NVARCHAR (255)		NOT NULL CONSTRAINT [IX_Users__Email] UNIQUE, -- Required
 	[ImageId]				NVARCHAR (50),
 	[PreferredLanguage]		NCHAR (2),
+
+	-- Notifications stuff
+	[ContactEmail]			NVARCHAR (255),
+	[ContactMobile]			NVARCHAR (50),
+	[NormalizedContactMobile]	NVARCHAR (50),
+	[PushEndpoint]			NVARCHAR (1024),
+	[PushP256dh]			NVARCHAR (1024),
+	[PushAuth]				NVARCHAR (1024),
+	[PreferredChannel]		NVARCHAR (10)		NOT NULL DEFAULT N'Email' CONSTRAINT [CK_Users__PreferredChannel] CHECK ([PreferredChannel] IN (N'Email', N'Sms', N'Push')),
+	[EmailNewInboxItem]		BIT					NOT NULL DEFAULT 0,
+	[SmsNewInboxItem]		BIT					NOT NULL DEFAULT 0,
+	[PushNewInboxItem]		BIT					NOT NULL DEFAULT 0,
+
 	[LastAccess]			DATETIMEOFFSET(7),
 	[PermissionsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[UserSettingsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),

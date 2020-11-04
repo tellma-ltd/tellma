@@ -10,9 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Tellma.Services.Sharding;
-using Microsoft.Extensions.Logging;
-using Tellma.Services;
 
 namespace Tellma.Controllers
 {

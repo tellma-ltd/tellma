@@ -17,6 +17,7 @@ export class SettingsForSave extends Entity {
 export class Settings extends SettingsForSave {
     DefinitionsVersion: string;
     SettingsVersion: string;
+    SmsEnabled: boolean;
     CreatedAt: string;
     CreatedById: number | string;
     ModifiedAt: string;

@@ -147,8 +147,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 UnitMassUnitId: { control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 UnitMassUnit: { control: 'navigation', label: () => trx.instant('Resource_UnitMassUnit'), type: 'Unit', foreignKeyName: 'UnitMassUnit' },
 
-                ParticipantId: { control: 'number', label: () => `${trx.instant('Entity_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { control: 'navigation', label: () => trx.instant('Entity_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
+                ParticipantId: { control: 'number', label: () => `${trx.instant('Resource_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { control: 'navigation', label: () => trx.instant('Resource_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
 
                 // Standard
 
