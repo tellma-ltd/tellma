@@ -869,7 +869,8 @@ INSERT INTO @AccountTypes(
 	[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
-	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
+	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
+	[CustodianDefinitionId], [ParticipantDefinitionId]
 )
 SELECT
 	[Id], [ParentId], [Id], [ParentId],
@@ -887,7 +888,8 @@ SELECT
 	[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
-	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
+	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
+	[CustodianDefinitionId], [ParticipantDefinitionId]
 FROM dbo.AccountTypes
 
 INSERT INTO @AccountTypeResourceDefinitions([Index],

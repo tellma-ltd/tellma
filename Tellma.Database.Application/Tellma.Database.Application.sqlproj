@@ -715,6 +715,7 @@
     <Build Include="map\map.SmsMessages.sql" />
     <Build Include="bll\Functions\bll.fn_WorkDays.sql" />
     <Build Include="bll\Functions\bll.fn_MonthAddEC.sql" />
+    <Build Include="bll\Functions\bll.fn_CostOfSaleCenter__BusinessUnit.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
