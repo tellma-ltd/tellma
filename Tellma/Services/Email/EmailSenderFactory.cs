@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
 using Tellma.Services.Utilities;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Tellma.Services.Email
 {

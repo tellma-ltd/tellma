@@ -276,6 +276,16 @@
                             Li("Update", false)
                         }
                     },
+                    new ViewInfo {
+                        Id = "emails",
+                        Name = "Emails",
+                        Read = true,
+                    },
+                    new ViewInfo {
+                        Id = "sms-messages",
+                        Name = "SmsMessages",
+                        Read = true,
+                    },
                 };
             }
         }

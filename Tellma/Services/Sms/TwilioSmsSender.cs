@@ -1,19 +1,22 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Twilio;
+using Tellma.Services.Utilities;
 using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace Tellma.Services.Sms
 {
     public class TwilioSmsSender : ISmsSender
     {
+        public const string MessageIdParamName = "message_id";
+        public const string TenantIdParamName = "tenant_id";
+
         private readonly SmsOptions _options;
         private readonly ILogger _logger;
         private readonly Random _rand = new Random();
@@ -24,41 +27,68 @@ namespace Tellma.Services.Sms
             _logger = logger;
         }
 
-        public async Task<string> SendAsync(string toPhoneNumber, string sms, CancellationToken cancellation)
+        public async Task SendAsync(SmsMessage sms, CancellationToken cancellation = default)
         {
+            var error = SmsValidation.Validate(sms);
+            if (error != null)
+            {
+                throw new SmsInvalidException(error);
+            }
+
             var serviceSid = !string.IsNullOrWhiteSpace(_options.ServiceSid) ? _options.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
-            var to = new Twilio.Types.PhoneNumber(toPhoneNumber);
+
+            // Extract the values from the argument
+            var to = new PhoneNumber(sms.ToPhoneNumber);
+            var message = sms.Message;
+            var messageId = sms.MessageId;
+            var tenantId = sms.TenantId;
+
+            // Calculate the callbackUri (if required)
+            Uri callbackUri = null;
+            if (messageId != 0)
+            {
+                string hostname = _options.CallbackHost?.WithoutTrailingSlash() ?? throw new InvalidOperationException("CallbackHost is missing");
+                string stringUri = $"{hostname}/api/sms-callback?{MessageIdParamName}={messageId}";
+                if (tenantId != 0)
+                {
+                    stringUri += $"&{TenantIdParamName}={tenantId}";
+                }
+
+                callbackUri = new Uri(stringUri);
+            }
 
             // Exponential backoff
             const int maxAttempts = 5;
             const int maxBackoff = 25000; // 25 Seconds
-            const int baseBackoff = 1000; // 1 Second
+            const int minBackoff = 1000; // 1 Second
+            const int deltaBackoff = 1000; // 1 Second
+
             int attemptsSoFar = 0;
-            int backoff = baseBackoff;
-            
-            while (!cancellation.IsCancellationRequested)
+            int backoff = minBackoff;
+            while (attemptsSoFar < maxAttempts && !cancellation.IsCancellationRequested)
             {
+                attemptsSoFar++;
+
                 try
                 {
-                    attemptsSoFar++;
-
                     // Send using Twilio's Messaging Service
-                    var message = await MessageResource.CreateAsync(
-                        body: sms,
+                    await MessageResource.CreateAsync(
+                        body: message,
                         messagingServiceSid: serviceSid,
-                        to: to
+                        to: to,
+                        statusCallback: callbackUri
                     );
 
-                    return message.Sid; // Breaks the while (true) loop
+                    break; // Success
                 }
                 catch (ApiException ex) when (ex.Status == (int)HttpStatusCode.TooManyRequests || ex.Status >= 500)
                 {
                     // Twilio imposes a maximum number of concurrent calls, and returns 429 when that maximum is reached
-                    // Here we implement exponential backoff attempts to retry the call few more times before giving up
-                    // As recommended here https://bit.ly/2CWYrjQ
+                    // Here we implement exponential backoff to retry the call few more times before giving up as
+                    // recommended here https://bit.ly/2CWYrjQ
                     if (attemptsSoFar < maxAttempts)
                     {
-                        var randomOffset = _rand.Next(0, 1000);
+                        var randomOffset = _rand.Next(0, deltaBackoff);
                         await Task.Delay(backoff + randomOffset, cancellation);
 
                         // Double the backoff for next attempt
@@ -72,24 +102,6 @@ namespace Tellma.Services.Sms
                     }
                 }
             }
-
-            // The request was cancelled, it doesn't matter what we return
-            return "";
         }
-
-        #region Bulk SMS
-
-        //public async Task<string> BulkSendAsync(IEnumerable<string> phoneNumbers, string sms, CancellationToken _)
-        //{
-        //    var serviceSid = !string.IsNullOrWhiteSpace(_smsOpt.ServiceSid) ? _smsOpt.ServiceSid : throw new InvalidOperationException("ServiceSid is missing");
-        //    var binding = phoneNumbers.Select(to => $"{{\"binding_type\":\"sms\",\"address\":\"{to}\"}}").ToList();
-
-        //    // Send the SMS through the Twilio API
-        //    var notification = await Twilio.Rest.Notify.V1.Service.NotificationResource.CreateAsync(serviceSid, toBinding: binding, body: sms);
-
-        //    return notification.Sid;
-        //}
-
-        #endregion
     }
 }

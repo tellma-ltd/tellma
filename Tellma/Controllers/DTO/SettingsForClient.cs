@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Tellma.Controllers.Dto
 {
@@ -52,5 +51,7 @@ namespace Tellma.Controllers.Dto
         public DateTimeOffset CreatedAt { get; set; }
 
         public bool IsMultiSegment { get; set; }
+
+        public bool SmsEnabled { get; set; }
     }
 }

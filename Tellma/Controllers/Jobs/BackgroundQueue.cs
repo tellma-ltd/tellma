@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,24 +12,32 @@ namespace Tellma.Controllers.Jobs
     /// handles it asynchrously without blocking the user operation. This code is modified
     /// from https://bit.ly/2EvjA58, it is thread-safe and allows "awaiting" new items.
     /// </summary>
-    /// <typeparam name="T">The type of queued items</typeparam>
-    public class BackgroundQueue<T>
+    /// <typeparam name="TItem">The type of queued items</typeparam>
+    public class BackgroundQueue<TItem>
     {
-        private readonly ConcurrentQueue<T> _queue = new ConcurrentQueue<T>();
+        private readonly ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)> _queue = new ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)>();
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
 
-        public void QueueBackgroundWorkItem(T item)
+        public virtual void QueueBackgroundWorkItem(TItem item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            _queue.Enqueue(item);
+            _queue.Enqueue((item, DateTimeOffset.Now));
             _signal.Release();
         }
 
-        public async Task<T> DequeueAsync(CancellationToken cancellationToken)
+        public void QueueAllBackgroundWorkItems(IEnumerable<TItem> items)
+        {
+            foreach (var item in items)
+            {
+                QueueBackgroundWorkItem(item);
+            }
+        }
+
+        public async virtual Task<(TItem item, DateTimeOffset queuedAt)> DequeueAsync(CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
 

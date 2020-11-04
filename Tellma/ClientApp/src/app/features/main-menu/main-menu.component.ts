@@ -146,23 +146,31 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       items: [
         {
           label: 'Agents', icon: 'id-badge', link: '../agents',
-          view: 'agents', sortKey: 50
+          view: 'agents', sortKey: 100
         },
         {
           label: 'Units', icon: 'ruler', link: '../units',
-          view: 'units', sortKey: 100
+          view: 'units', sortKey: 200
         },
         {
           label: 'Currencies', icon: 'euro-sign', link: '../currencies',
-          view: 'currencies', sortKey: 200
+          view: 'currencies', sortKey: 300
         },
         {
           label: 'IfrsConcepts', icon: 'stream', link: '../ifrs-concepts',
-          view: 'ifrs-concepts', sortKey: 400
+          view: 'ifrs-concepts', sortKey: 600
+        },
+        {
+          label: 'Emails', icon: 'envelope', link: '../emails',
+          view: 'emails', sortKey: 400
+        },
+        {
+          label: 'SmsMessages', icon: 'sms', link: '../sms-messages',
+          view: 'sms-messages', sortKey: 500
         },
         {
           label: 'Settings', icon: 'cog', link: '../settings',
-          view: 'settings', sortKey: 500
+          view: 'settings', sortKey: 700
         },
       ]
     },

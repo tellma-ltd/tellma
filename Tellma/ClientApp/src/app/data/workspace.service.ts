@@ -48,6 +48,8 @@ import { EntitiesResponse } from './dto/entities-response';
 import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
 import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
+import { EmailForQuery } from './entities/email';
+import { SmsMessageForQuery } from './entities/sms-message';
 
 enum WhichWorkspace {
   /**
@@ -387,6 +389,8 @@ export class TenantWorkspace extends SpecificWorkspace {
   LookupDefinition: EntityWorkspace<LookupDefinition>;
   LineDefinition: EntityWorkspace<LineDefinition>;
   DocumentDefinition: EntityWorkspace<DocumentDefinition>;
+  EmailForQuery: EntityWorkspace<EmailForQuery>;
+  SmsMessageForQuery: EntityWorkspace<SmsMessageForQuery>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -427,6 +431,8 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.LookupDefinition = {};
     this.LineDefinition = {};
     this.DocumentDefinition = {};
+    this.EmailForQuery = {};
+    this.SmsMessageForQuery = {};
 
     this.notifyStateChanged();
   }

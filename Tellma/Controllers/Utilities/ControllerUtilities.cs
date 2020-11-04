@@ -454,6 +454,34 @@ namespace Tellma.Controllers.Utilities
                 throw new BadRequestException(msg);
             }
         }
+
+        /// <summary>
+        /// Returns the E.164 representation of the phone number. Which starts with an optional '+' sign followed by digits only
+        /// </summary>
+        public static string ToE164(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+            {
+                return null;
+            }
+
+            // Normalize the phone number to E.164 format (Optional + sign, followed only by digits)
+            var e164 = new System.Text.StringBuilder();
+
+            // Start with a '+' sign if there is one
+            if (phoneNumber.StartsWith('+'))
+            {
+                e164.Append('+');
+            }
+
+            // Then append only the digits
+            foreach (var digit in phoneNumber.Where(char.IsDigit))
+            {
+                e164.Append(digit);
+            }
+
+            return e164.ToString();
+        }
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Services.Email
@@ -12,14 +13,14 @@ namespace Tellma.Services.Email
             _emailSender = factory.Create();
         }
 
-        public async Task SendBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
+        public async Task SendBulkAsync(IEnumerable<Email> emails, string fromEmail = null, CancellationToken cancellation = default)
         {
-            await _emailSender.SendBulkAsync(tos, subjects, htmlMessage, substitutions, fromEmail);
+            await _emailSender.SendBulkAsync(emails, fromEmail, cancellation);
         }
 
-        public async Task SendAsync(string to, string subject, string htmlMessage, string sourceEmail = null)
+        public async Task SendAsync(Email email, string fromEmail = null, CancellationToken cancellation = default)
         {
-            await _emailSender.SendAsync(to, subject, htmlMessage);
+            await _emailSender.SendAsync(email, fromEmail, cancellation);
         }
     }
 }

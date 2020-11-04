@@ -8,6 +8,7 @@
 @inject UserManager<EmbeddedIdentityServerUser> UserManager
 @inject IOptions<GlobalOptions> Config
 @inject SignInManager<EmbeddedIdentityServerUser> SignInManager
+@inject ClientAppAddressResolver WebAppResolver
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 
@@ -16,9 +17,7 @@
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
     var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
-    var webClientUri = Config.Value?.ClientApplications?.WebClientUri.WithoutTrailingSlash();
-    var appUri = (string.IsNullOrWhiteSpace(webClientUri) ? "/" : webClientUri); // + "?ui-culture=" + currentCulture;
-    // var appUri = ("/") + "?ui-culture=" + currentCulture;
+    var appUri = WebAppResolver.Resolve(); // + "?ui-culture=" + currentCulture;
 }
 
 <!DOCTYPE html>
@@ -70,7 +69,7 @@
                 <ol class="nav navbar-nav p-0">
                     <li class="nav-item dropdown">
                         <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow px-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div class="d-flex flex-column justify-content-center">
+                            <div class="d-flex flex-column justify-content-center h-100">
                                 @UserManager.GetUserName(User)
                             </div>
                         </button>

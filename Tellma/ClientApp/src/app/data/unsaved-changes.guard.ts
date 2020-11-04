@@ -21,6 +21,7 @@ export class UnsavedChangesGuard implements CanDeactivate<ICanDeactivate> {
       return true;
     }
 
+    // Using this guard already covers the functionality of SaveInProgressGuard
     return !this.api.showRotator && !this.progress.asyncOperationInProgress &&
       component.canDeactivate ? component.canDeactivate(currentState.url, nextState.url) : true;
   }

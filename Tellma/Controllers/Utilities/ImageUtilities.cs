@@ -3,7 +3,6 @@ using Tellma.Entities;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -83,7 +82,7 @@ namespace Tellma.Controllers.Utilities
 
                             // Some image formats that support transparent regions
                             // these regions will turn black in JPEG format unless we do this
-                            image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
+                            image.Mutate(c => c.BackgroundColor(new Rgba32(255, 255, 255))); ;
 
                             // Save as JPEG
                             var memoryStream = new MemoryStream();

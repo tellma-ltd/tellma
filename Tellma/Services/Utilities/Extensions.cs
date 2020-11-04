@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace Tellma.Services.Utilities
 {
@@ -328,6 +329,40 @@ namespace Tellma.Services.Utilities
 
             dic.Remove(key);
             dic.Add(key, value);
+        }
+
+        /// <summary>
+        /// Removes all characters after a certain length
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maxLength"></param>
+        /// <returns></returns>
+        public static string Truncate(this string value, int maxLength, bool appendEllipses = false)
+        {
+            const string ellipses = "...";
+
+            if (maxLength < 0)
+            {
+                return value;
+            }
+            else if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            else if (value.Length <= maxLength)
+            {
+                return value;
+            }
+            else
+            {
+                var truncated = value.Substring(0, maxLength);
+                if (appendEllipses)
+                {
+                    truncated += ellipses;
+                }
+
+                return truncated;
+            }
         }
     }
 }

@@ -36,6 +36,8 @@ import { metadata_Custody } from '../custody';
 import { metadata_CustodyDefinition } from '../custody-definition';
 import { metadata_LineDefinition } from '../line-definition';
 import { metadata_DocumentDefinition } from '../document-definition';
+import { metadata_Email } from '../email';
+import { metadata_SmsMessage } from '../sms-message';
 
 export const metadata: {
     [collection: string]: (
@@ -74,6 +76,8 @@ export const metadata: {
     LookupDefinition: metadata_LookupDefinition,
     LineDefinition: metadata_LineDefinition,
     DocumentDefinition: metadata_DocumentDefinition,
+    EmailForQuery: metadata_Email,
+    SmsMessageForQuery: metadata_SmsMessage,
 
     // Admin
     AdminUser: metadata_AdminUser,

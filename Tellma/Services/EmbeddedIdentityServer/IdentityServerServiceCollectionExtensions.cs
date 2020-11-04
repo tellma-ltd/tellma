@@ -48,6 +48,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // Setup the identity options (password requirements, lockout, etc)
             services.Configure<IdentityOptions>(configSection);
 
+            // Required dependency
+            services.AddClientAppAddressResolver();
+
             // Increase the default email and password reset tokens lifespan from 1 day to 3 days
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
                     opt.TokenLifespan = TimeSpan.FromDays(Constants.TokenExpiryInDays));

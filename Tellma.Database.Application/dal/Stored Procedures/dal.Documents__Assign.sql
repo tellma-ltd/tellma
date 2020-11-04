@@ -2,7 +2,7 @@
 	@Ids [dbo].[IdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024) = NULL,
-	@RecordInHistory BIT = 0
+	@ManualAssignment BIT = 0
 AS
 BEGIN
 	DECLARE @AffectedUsers dbo.IdList;
@@ -40,7 +40,7 @@ BEGIN
 			INSERT ([DocumentId], [AssigneeId], [Comment], [OpenedAt])
 			VALUES (s.[Id], @AssigneeId, @Comment, IIF(@AssigneeId = @UserId, @Now, NULL));
 
-		IF (@RecordInHistory = 1)
+		IF (@ManualAssignment = 1)
 			INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt])
 			SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt]
 			FROM dbo.DocumentAssignments
@@ -49,4 +49,28 @@ BEGIN
 
 	-- Return Notification info
 	EXEC [dal].[InboxCounts__Load] @UserIds = @AffectedUsers;
+
+	-- Return contact info of the user, for notification purposeses
+	IF (@ManualAssignment = 1)
+	BEGIN
+		DECLARE @SerialNumber INT = (SELECT TOP 1 [SerialNumber] FROM dbo.[Documents] WHERE [Id] IN (SELECT [Id] FROM @Ids));
+		SELECT 
+			[Name],
+			[Name2],
+			[Name3],
+			[PreferredLanguage],
+			[ContactEmail], 
+			[ContactMobile], 
+			[NormalizedContactMobile], 
+			[PushEndpoint],	
+			[PushP256dh],
+			[PushAuth],	
+			[PreferredChannel],	
+			[EmailNewInboxItem],
+			[SmsNewInboxItem],
+			[PushNewInboxItem],
+			@SerialNumber
+		FROM dbo.[Users]
+		WHERE [Id] = @AssigneeId;
+	END;
 END;

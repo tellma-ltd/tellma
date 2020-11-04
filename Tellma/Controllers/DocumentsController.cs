@@ -22,6 +22,13 @@ using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
+using Tellma.Controllers.Jobs;
+using Tellma.Services.Email;
+using Tellma.Services.Sms;
+using Microsoft.Extensions.Options;
+using Tellma.Services.EmbeddedIdentityServer;
+using Tellma.Controllers.Utiltites;
+using System.Globalization;
 
 namespace Tellma.Controllers
 {
@@ -288,6 +295,7 @@ namespace Tellma.Controllers
     public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int>
     {
         private readonly TemplateService _templateService;
+        private readonly ClientAppAddressResolver _clientAppResolver;
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
@@ -295,8 +303,10 @@ namespace Tellma.Controllers
         private readonly ISettingsCache _settingsCache;
         private readonly IClientInfoAccessor _clientInfo;
         private readonly ITenantInfoAccessor _tenantInfoAccessor;
+        private readonly ExternalNotificationsService _notificationsService;
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly EmailTemplatesProvider _emailTemplates;
 
         // Used across multiple methods
         private List<(string, byte[])> _blobsToSave;
@@ -348,13 +358,14 @@ namespace Tellma.Controllers
             });
         }
 
-        public DocumentsService(TemplateService templateService,
+        public DocumentsService(TemplateService templateService, ClientAppAddressResolver clientAppResolver,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp,
-            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(sp)
+            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, ExternalNotificationsService notificationsSerice,
+            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor, EmailTemplatesProvider emailTemplates) : base(sp)
         {
             _templateService = templateService;
+            _clientAppResolver = clientAppResolver;
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
             _tenantIdAccessor = tenantIdAccessor;
@@ -363,8 +374,10 @@ namespace Tellma.Controllers
             _settingsCache = settingsCache;
             _clientInfo = clientInfo;
             _tenantInfoAccessor = tenantInfoAccessor;
+            _notificationsService = notificationsSerice;
             _hubContext = hubContext;
             _contextAccessor = contextAccessor;
+            _emailTemplates = emailTemplates;
         }
 
         #region Context Params
@@ -428,6 +441,11 @@ namespace Tellma.Controllers
 
         public async Task<(List<Document>, Extras)> Assign(List<int> ids, AssignArguments args)
         {
+            if (ids == null || !ids.Any())
+            {
+                throw new BadRequestException("No ids were supplied");
+            }
+
             // Check user permissions
             var action = Constants.Read;
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
@@ -458,7 +476,7 @@ namespace Tellma.Controllers
             }
 
             // Actual Assignment
-            var notificationInfos = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
+            var (notificationInfos, assigneeInfo, serial) = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, manualAssignment: true);
 
             List<Document> data = null;
             Extras extras = null;
@@ -473,6 +491,89 @@ namespace Tellma.Controllers
 
             // Notify relevant parties
             await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+
+            // If assignee is not the same user, notify them by Email/SMS/Push
+            var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
+            if (userInfo.UserId != args.AssigneeId)
+            {
+                List<Email> emails = new List<Email>();
+                List<SmsMessage> smsMessagses = new List<SmsMessage>();
+                List<PushNotification> pushNotifications = new List<PushNotification>();
+
+                // Switch to the recipient's preferred language when preparing the notifications
+                var tenantInfo = _tenantInfoAccessor.GetInfo(TenantId);
+                var cultureCode = assigneeInfo.PreferredLanguage ?? tenantInfo.PrimaryLanguageId;
+                var culture = CultureInfo.GetCultureInfo(cultureCode) ?? CultureInfo.GetCultureInfo(tenantInfo.PrimaryLanguageId);
+                using (var _ = new CultureScope(culture))
+                {
+                    var docDef = Definition();
+
+                    string formattedSerial = FormatSerial(serial, docDef.Prefix, docDef.CodeWidth);
+                    string singularTitle = tenantInfo.Localize(docDef.TitleSingular, docDef.TitleSingular2, docDef.TitleSingular3);
+                    string pluralTitle = tenantInfo.Localize(docDef.TitlePlural, docDef.TitlePlural2, docDef.TitlePlural3);
+                    string senderName = tenantInfo.Localize(userInfo.Name, userInfo.Name3, userInfo.Name3);
+
+                    // Prepare the link that the recipient will click
+                    string clientAppUrl = _clientAppResolver.Resolve().WithTrailingSlash();
+                    string linkUrl;
+                    if (ids.Count == 1)
+                    {
+                        linkUrl = $"{clientAppUrl}app/{TenantId}/documents/{DefinitionId}/{ids[0]}";
+                    }
+                    else
+                    {
+                        linkUrl = $"{clientAppUrl}app/{TenantId}/inbox";
+                    }
+
+                    // Email notification
+                    if (assigneeInfo.EmailNewInboxItem ?? false && !string.IsNullOrWhiteSpace(assigneeInfo.ContactEmail))
+                    {
+                        Email email = _emailTemplates.MakeInboxNotificationEmail(
+                            toEmail: assigneeInfo.ContactEmail,
+                            formattedSerial: formattedSerial,
+                            singularTitle: singularTitle,
+                            pluralTitle: pluralTitle,
+                            senderName: senderName,
+                            docCount: ids.Count,
+                            comment: args.Comment,
+                            linkUrl);
+
+                        emails.Add(email);
+                    }
+
+                    // SMS notification
+                    if (assigneeInfo.SmsNewInboxItem ?? false && !string.IsNullOrWhiteSpace(assigneeInfo.NormalizedContactMobile))
+                    {
+                        StringBuilder msgBuilder = new StringBuilder();
+                        if (ids.Count == 1)
+                        {
+                            msgBuilder.Append(_localizer["Document0From1", formattedSerial, senderName]);
+                        }
+                        else
+                        {
+                            msgBuilder.Append(_localizer["Document0From1", $"{ids.Count} {pluralTitle}", senderName]);
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(args.Comment))
+                        {
+                            msgBuilder.Append($": {args.Comment}");
+                        }
+
+                        msgBuilder.AppendLine();
+                        msgBuilder.Append(linkUrl);
+
+                        smsMessagses.Add(new SmsMessage(assigneeInfo.NormalizedContactMobile, msgBuilder.ToString()));
+                    }
+
+                    if (assigneeInfo.PushNewInboxItem ?? false && !string.IsNullOrWhiteSpace(assigneeInfo.PushEndpoint))
+                    {
+                        // TODO
+                    }
+                }                 
+
+                // Queue the notifications
+                await _notificationsService.Enqueue(_tenantIdAccessor.GetTenantId(), emails, smsMessagses, pushNotifications, cancellation: default);
+            }
 
             trx.Complete();
             return (data, extras);
@@ -677,7 +778,6 @@ namespace Tellma.Controllers
                 throw new NotFoundException<int>(attachmentId);
             }
         }
-
 
         public async Task<(byte[] FileBytes, string FileName)> PrintByFilter([FromRoute] int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
         {

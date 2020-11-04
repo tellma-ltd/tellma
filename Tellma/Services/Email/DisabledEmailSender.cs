@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Services.Utilities;
 
@@ -10,12 +11,12 @@ namespace Tellma.Services.Email
     /// </summary>
     public class DisabledEmailSender : IEmailSender
     {
-        public Task SendBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
+        public Task SendBulkAsync(IEnumerable<Email> emails, string fromEmail = null, CancellationToken cancellation = default)
         {
             return Throw();
         }
 
-        public Task SendAsync(string email, string subject, string htmlMessage, string fromEmail = null)
+        public Task SendAsync(Email email, string fromEmail = null, CancellationToken cancellation = default)
         {
             return Throw();
         }

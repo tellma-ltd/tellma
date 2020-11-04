@@ -5,6 +5,6 @@ namespace Tellma.Services.Sms
 {
     public interface ISmsSender
     {
-        Task<string> SendAsync(string toPhoneNumber, string sms, CancellationToken cancellation);
+        Task SendAsync(SmsMessage sms, CancellationToken cancellation = default);
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Tellma.Services.Sms
+﻿namespace Tellma.Services.Sms
 {
     public class SmsOptions
     {
@@ -11,5 +6,15 @@ namespace Tellma.Services.Sms
         /// Notify Service Sid
         /// </summary>
         public string ServiceSid { get; set; }
+
+        /// <summary>
+        /// True if Twilio webhooks are enabled
+        /// </summary>
+        public bool CallbacksEnabled { get; set; }
+
+        /// <summary>
+        /// The name on which the system is hosted, Twilio will send SMS events it
+        /// </summary>
+        public string CallbackHost { get; set; }
     }
 }
