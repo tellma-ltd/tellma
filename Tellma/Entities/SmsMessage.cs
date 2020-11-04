@@ -46,6 +46,9 @@ namespace Tellma.Entities
     {
         [Display(Name = "StateSince")]
         public DateTimeOffset? StateSince { get; set; }
+
+        [Display(Name = "CreatedAt")]
+        public DateTimeOffset? CreatedAt { get; set; }
     }
 
     public static class SmsState

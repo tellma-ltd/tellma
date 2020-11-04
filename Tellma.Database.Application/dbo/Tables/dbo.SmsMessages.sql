@@ -5,7 +5,8 @@
 	[Message]					NVARCHAR (1600),
 	[State]						SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_SmsMessage__State] CHECK ([State] BETWEEN -4 AND +4),
 	[StateSince]				DATETIMEOFFSET		NOT NULL,
-	[ErrorMessage]				NVARCHAR (2048)
+	[ErrorMessage]				NVARCHAR (2048),
+	[CreatedAt]					DATETIMEOFFSET(7)		NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 );
 GO
 

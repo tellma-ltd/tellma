@@ -15,6 +15,7 @@ export interface EmailForQuery extends EntityWithKey {
     StateSince?: string;
     DeliveredAt?: string;
     OpenedAt?: string;
+    CreatedAt?: string;
 }
 
 let _cache: EntityDescriptor;
@@ -68,6 +69,7 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
             StateSince: { control: 'datetime', label: () => trx.instant('StateSince') },
             DeliveredAt: { control: 'datetime', label: () => trx.instant('Email_DeliveredAt') },
             OpenedAt: { control: 'datetime', label: () => trx.instant('Email_OpenedAt') },
+            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         }
     };
 

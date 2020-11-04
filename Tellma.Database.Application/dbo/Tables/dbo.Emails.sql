@@ -17,11 +17,12 @@
 		-3 = Delivery Failed (Bounced from Recipient server)
 		-4 = Reported Spam
 	*/
-	[State]						SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Email__State] CHECK ([State] BETWEEN -4 AND +5), 
+	[State]						SMALLINT				NOT NULL DEFAULT 0 CONSTRAINT [CK_Email__State] CHECK ([State] BETWEEN -4 AND +5), 
 	[ErrorMessage]				NVARCHAR (2048),
-	[StateSince]				DATETIMEOFFSET		NOT NULL,
-	[DeliveredAt]				DATETIMEOFFSET		NULL,
-	[OpenedAt]					DATETIMEOFFSET		NULL,
+	[StateSince]				DATETIMEOFFSET(7)		NOT NULL,
+	[DeliveredAt]				DATETIMEOFFSET(7)		NULL,
+	[OpenedAt]					DATETIMEOFFSET(7)		NULL,
+	[CreatedAt]					DATETIMEOFFSET(7)		NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 );
 GO
 

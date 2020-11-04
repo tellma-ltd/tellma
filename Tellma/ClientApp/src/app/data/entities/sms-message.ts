@@ -12,6 +12,7 @@ export interface SmsMessageForQuery extends EntityWithKey {
     State?: SmsMessageState;
     ErrorMessage?: string;
     StateSince?: string;
+    CreatedAt?: string;
 }
 
 let _cache: EntityDescriptor;
@@ -62,6 +63,7 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
             },
             ErrorMessage: { control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
             StateSince: { control: 'datetime', label: () => trx.instant('StateSince') },
+            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         }
     };
 

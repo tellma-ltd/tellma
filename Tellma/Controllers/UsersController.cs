@@ -677,7 +677,6 @@ namespace Tellma.Controllers
             }
 
             // Make all the emails small case
-            entities.ForEach(e => e.Email = e.Email.ToLower());
             return Task.FromResult(entities);
         }
 
@@ -728,7 +727,7 @@ namespace Tellma.Controllers
                     }
 
                     // Mark for invitation later 
-                    if (!identityUser.EmailConfirmed)
+                    if (!identityUser.EmailConfirmed && entity.Id == 0)
                     {
                         _usersToInvite.Add((identityUser, entity));
                     }

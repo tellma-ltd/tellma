@@ -57,6 +57,9 @@ namespace Tellma.Entities
 
         [Display(Name = "Email_OpenedAt")]
         public DateTimeOffset? OpenedAt { get; set; }
+
+        [Display(Name = "CreatedAt")]
+        public DateTimeOffset? CreatedAt { get; set; }
     }
 
     public static class EmailState
