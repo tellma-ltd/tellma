@@ -67,21 +67,37 @@
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 		INSERT INTO @Resources ([Index],
 		[Name],						[Name2],			[UnitId], [CurrencyId]) VALUES
-	(0,	N'Monthly Subscription',	N'اشتراك شهري',	@mo,		@USD),
-	(1, N'Yearly Support',			N'مساندة سنوية',	@yr,		@USD),
-	(2, N'ERP Implementation',		N'تفعيل النظام',	@ea,		@USD),
-	(3, N'ERP Stabilization',		N'استقرار النظام',	@mo,		@USD)	
+	(0, N'ERP Implementation',		N'تفعيل النظام',	@ea,		@USD),
+	(1, N'ERP Stabilization',		N'استقرار النظام',	@mo,		@USD)	
 	;
 
 EXEC [api].[Resources__Save] -- N'services-expenses'
-	@DefinitionId = @RevenueServiceRD,
+	@DefinitionId = @CustomerPointServiceRD,
 	@Entities = @Resources,
 	@ResourceUnits = @ResourceUnits,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Inserting services: ' + @ValidationErrorsJson
+	Print 'Inserting customer point services: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;
+
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+		INSERT INTO @Resources ([Index],
+		[Name],						[Name2],			[UnitId], [CurrencyId]) VALUES
+	(0,	N'Monthly Subscription',	N'اشتراك شهري',	@mo,		@USD),
+	(1, N'Yearly Support',			N'مساندة سنوية',	@yr,		@USD);
+
+EXEC [api].[Resources__Save] -- N'services-expenses'
+	@DefinitionId = @CustomerPeriodServiceRD,
+	@Entities = @Resources,
+	@ResourceUnits = @ResourceUnits,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Inserting customer period services: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 

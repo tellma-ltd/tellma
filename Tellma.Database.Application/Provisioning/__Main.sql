@@ -16,9 +16,9 @@ IF @OverwriteDb = 0 RETURN
 
 :r .\000\n_Settings.sql
 --:r .\000\o_LineDefinitions.sql
---:r .\000\p_DocumentDefinitions.sql
+:r .\000\p_DocumentDefinitions.sql
 --:r .\000\q_ReportDefinitions.sql
---:r .\000\r_AccountClassifications.sql
+:r .\000\r_AccountClassifications.sql
 :r .\000\t_Accounts.sql
 :r .\000\u_Lookups.sql
 :r .\000\y_Roles.sql
@@ -49,10 +49,10 @@ BEGIN
 	:r .\100\100_04ResourceDefinitions.sql
 	:r .\100\100_05CustodyDefinitions.sql
 	:r .\100\100_06RelationDefinitions.sql
-	:r .\100\100_07DocumentDefinitions.sql
+	--:r .\100\100_07DocumentDefinitions.sql
 	:r .\100\100_11Users.sql
 	:r .\100\100_12Permissions.sql
-	:r .\100\100_13Workflows.sql
+	--:r .\100\100_13Workflows.sql
 	:r .\100\100_21Lookups.sql
 	:r .\100\100_22Centers.sql
 	:r .\100\100_23Relations.sql
@@ -71,7 +71,7 @@ BEGIN
 	--:r .\200\200_07DocumentDefinitions.sql
 	:r .\200\200_11Users.sql
 	:r .\200\200_12Permissions.sql
-	:r .\200\200_13Workflows.sql
+	--:r .\200\200_13Workflows.sql
 	:r .\200\200_21Lookups.sql
 	:r .\200\200_22Centers.sql
 	:r .\200\200_23Relations.sql
@@ -87,7 +87,7 @@ BEGIN
 	:r .\201\201_04ResourceDefinitions.sql
 	:r .\201\201_05CustodyDefinitions.sql
 	:r .\201\201_06RelationDefinitions.sql
-	:r .\201\201_07DocumentDefinitions.sql
+	--:r .\201\201_07DocumentDefinitions.sql
 	:r .\201\201_11Users.sql
 	:r .\201\201_12Permissions.sql
 	--:r .\201\201_13Workflows.sql

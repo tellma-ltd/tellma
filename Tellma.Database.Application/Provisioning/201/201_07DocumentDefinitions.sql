@@ -99,7 +99,8 @@ AND [ResourceDefinitionId] IN (
 	@TradeConstructionMaterialRD,
 	@TradeSparePartRD,
 	@RawVehicleRD,
-	@RevenueServiceRD,
+	@CustomerPointServiceRD,
+	@CustomerPeriodServiceRD,
 	@EmployeeBenefitRD,
 	@CheckReceivedRD
 )

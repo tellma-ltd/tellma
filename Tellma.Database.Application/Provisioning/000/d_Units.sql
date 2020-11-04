@@ -23,7 +23,7 @@
 (23, N'cm', N'cm', N'Centimeter', N'Distance',100,1),
 (24, N'm', N'm', N'meter', N'Distance',1,1),
 (25, N'km', N'km', N'Kilometer', N'Distance',1,1000),
-(26, N'share', N'Shares', N'Count',1,1);
+(26, N'share', N'share', N'Shares', N'Count',1,1);
 
 
 	EXEC [api].[Units__Save]
