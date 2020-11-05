@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
@@ -50,18 +51,17 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
+        private readonly InboxNotificationsService _inboxService;
 
         public InboxService(
             ApplicationRepository repo,
             ITenantIdAccessor tenantIdAccessor,
-            IHubContext<ServerNotificationsHub,
-            INotifiedClient> hubContext,
+            InboxNotificationsService inboxService,
             IServiceProvider sp) : base(sp)
         {
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
-            _hubContext = hubContext;
+            _inboxService = inboxService;
         }
 
         public async Task CheckInbox(DateTimeOffset now)
@@ -70,7 +70,7 @@ namespace Tellma.Controllers
 
             // Notify the user
             var tenantId = _tenantIdAccessor.GetTenantId();
-            await _hubContext.NotifyInboxAsync(tenantId, infos, updateInboxList: false);
+            _inboxService.NotifyInbox(tenantId, infos, updateInboxList: false);
         }
 
         protected override OrderByExpression DefaultOrderBy()

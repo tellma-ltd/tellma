@@ -32,6 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddHostedService<HeartbeatJob>()
                 .AddHostedService<OrphanCareJob>()
                 .AddHostedService<EmailJob>()
+                .AddHostedService<InboxNotificationsJob>()
                 .AddHostedService<EmailPollingJob>()
                 .AddHostedService<SmsJob>()
                 .AddHostedService<SmsPollingJob>();
@@ -40,6 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services = services
                 // Notifications
                 .AddSingleton<EmailQueue>()
+                .AddSingleton<InboxNotificationsQueue>()
+                .AddSingleton<InboxNotificationsService>()
                 .AddSingleton<IEmailCallbackHandler, EmailCallbackHandler>()
                 .AddSingleton<SmsQueue>()
                 .AddSingleton<ISmsCallbackHandler, SmsCallbackHandler>()
