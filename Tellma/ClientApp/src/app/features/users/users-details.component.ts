@@ -34,6 +34,10 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
       result.Name3 = this.initialText;
     }
 
+    result.EmailNewInboxItem = false;
+    result.SmsNewInboxItem = false;
+    result.PushNewInboxItem = false;
+
     result.PreferredLanguage = this.ws.settings.PrimaryLanguageId;
 
     result.Roles = [];
