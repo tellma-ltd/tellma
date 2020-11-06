@@ -10,8 +10,8 @@
 	[ContactEmail]			NVARCHAR (255),
 	[ContactMobile]			NVARCHAR (50),
 	[NormalizedContactMobile] NVARCHAR (50),
-	[PreferredChannel]		NVARCHAR (255),
-	[EmailNewInboxItem]		BIT,
-	[SmsNewInboxItem]		BIT,
-	[PushNewInboxItem]		BIT
+	[PreferredChannel]		NVARCHAR (255) DEFAULT N'Email',
+	[EmailNewInboxItem]		BIT DEFAULT 0,
+	[SmsNewInboxItem]		BIT DEFAULT 0,
+	[PushNewInboxItem]		BIT DEFAULT 0
 )
