@@ -623,7 +623,7 @@
             <div class="flex-grow-1">
                 <div class="col bg-light border shadow h-100">
                     <t-report class="h-100" mode="preview" [previewDefinition]="getForClient(model)"
-                        [showChart]="model.DefaultsToChart">
+                        [showChart]="model.DefaultsToChart" [disableDrilldown]="isPopupMode">
 
                     </t-report>
                 </div>

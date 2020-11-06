@@ -68,7 +68,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   export: Observable<string>; // Must be set only once
 
   @Input()
-  mode: 'screen' | 'preview' | 'dashboard' = 'screen';
+  mode: 'screen' | 'preview' | 'dashboard' | 'embedded' = 'screen';
+
+  @Input()
+  disableDrilldown = false; // In popup mode we want to disable drilldown
 
   @Output()
   public exportStarting = new EventEmitter<void>();
@@ -1595,6 +1598,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private drilldown(cellFilter: string) {
+    if (this.disableDrilldown) {
+      return; // In popup mode, navigation behavior is strange
+    }
+
     const screenUrl = this.entityDescriptor.masterScreenUrl;
     if (!!screenUrl) {
       const tenantId = this.workspace.ws.tenantId;

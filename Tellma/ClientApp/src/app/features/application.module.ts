@@ -255,6 +255,7 @@ import { EmailsMasterComponent } from './emails/emails-master.component';
 import { EmailsDetailsComponent } from './emails/emails-details.component';
 import { SmsMessagesDetailsComponent } from './sms-messages/sms-messages-details.component';
 import { SmsMessagesMasterComponent } from './sms-messages/sms-messages-master.component';
+import { ReportDefinitionsPickerComponent } from './report-definitions/report-definitions-picker.component';
 
 const routes: Routes = [
   {
@@ -775,7 +776,8 @@ const routes: Routes = [
     EmailsMasterComponent,
     EmailsDetailsComponent,
     SmsMessagesDetailsComponent,
-    SmsMessagesMasterComponent
+    SmsMessagesMasterComponent,
+    ReportDefinitionsPickerComponent
   ],
   imports: [
     SharedModule,

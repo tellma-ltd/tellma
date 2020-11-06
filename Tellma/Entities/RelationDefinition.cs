@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Services.Utilities;
 
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "RelationDefinition", Plural = "RelationDefinitions")]
-    public class RelationDefinitionForSave : EntityWithKey<int>
+    public class RelationDefinitionForSave<TReportDefinition> : EntityWithKey<int>
     {
         #region Title & Code
 
@@ -301,9 +302,17 @@ namespace Tellma.Entities
         public decimal? MainMenuSortKey { get; set; }
 
         #endregion
+
+        [Display(Name = "Definition_ReportDefinitions")]
+        [ForeignKey(nameof(RelationDefinitionReportDefinition.RelationDefinitionId))]
+        public List<TReportDefinition> ReportDefinitions { get; set; }
     }
 
-    public class RelationDefinition : RelationDefinitionForSave
+    public class RelationDefinitionForSave : RelationDefinitionForSave<RelationDefinitionReportDefinitionForSave>
+    {
+    }
+
+    public class RelationDefinition : RelationDefinitionForSave<RelationDefinitionReportDefinition>
     {
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },

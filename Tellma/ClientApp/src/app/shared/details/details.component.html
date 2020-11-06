@@ -183,9 +183,9 @@
   </div>
 
   <!-- Content Area -->
-  <div class="row" [class.t-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
-    [class.t-rest-of-screen]="isScreenMode" [class.t-much-less-dark]="isDark" [class.t-dark-border]="isDark">
-    <div class="w-100" [class.t-main-document]="showSidebar" [class.h-100]="!showSidebar">
+  <div class="row t-rest-of-screen" [class.t-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
+    [class.t-rest-of-screen2]="isScreenMode" [class.t-much-less-dark]="isDark" [class.t-dark-border]="isDark">
+    <div class="w-100 " [class.t-main-document]="showSidebar" [class.h-100]="!showSidebar">
 
       <!-- Document content -->
       <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">

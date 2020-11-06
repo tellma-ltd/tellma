@@ -476,6 +476,8 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     JobVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;
+
+    ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 
 export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForClient {
@@ -576,4 +578,11 @@ export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForCl
     ExternalReferenceLabel2: string;
     ExternalReferenceLabel3: string;
     ExternalReferenceVisibility?: Visibility;
+}
+
+export interface DefinitionReportDefinitionForClient {
+    ReportDefinitionId?: number;
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
 }

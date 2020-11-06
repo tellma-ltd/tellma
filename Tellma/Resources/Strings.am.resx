@@ -415,6 +415,9 @@
   <data name="Definition_Hide" xml:space="preserve">
     <value>ደብቅ</value>
   </data>
+  <data name="Definition_ReportDefinition" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>ስክሪፕት</value>
   </data>
@@ -2206,6 +2209,12 @@
   <data name="RelationDefinition_UserCardinality" xml:space="preserve">
     <value>የተጠቃሚ የቁጥሮች</value>
   </data>
+  <data name="RelationDefinitionReportDefinition" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
+  <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
   <data name="RelationDefinitions" xml:space="preserve">
     <value>ግንኙነት ፍቺዎች</value>
   </data>
@@ -2840,6 +2849,9 @@
     <value>የአገልግሎት ውል</value>
   </data>
   <data name="TestEmailSentTo0WithSubject1" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
+  <data name="TestSmsSentTo0WithMessage1" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="TheCurrentBrowserHasBeenForgotten" xml:space="preserve">

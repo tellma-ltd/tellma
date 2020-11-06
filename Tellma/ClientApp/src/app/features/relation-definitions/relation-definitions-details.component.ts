@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
@@ -14,6 +14,9 @@ import { RelationDefinitionForClient, DefinitionsForClient } from '~/app/data/dt
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
+import { RelationDefinitionReportDefinition } from '~/app/data/entities/relation-definition-report-definition';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 't-relation-definitions-details',
@@ -22,9 +25,12 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 })
 export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
+  @ViewChild('reportDefinitionModal', { static: true })
+  reportDefinitionModal: TemplateRef<any>;
+
   private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = '';
+  public expand = 'ReportDefinitions/ReportDefinition';
 
   create = () => {
     const result: RelationDefinitionForSave = {};
@@ -43,6 +49,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.UserCardinality = 'None';
+    result.ReportDefinitions = [];
 
     return result;
   }
@@ -64,16 +71,11 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
       const clone = JSON.parse(JSON.stringify(item)) as RelationDefinition;
       clone.Id = null;
 
-      // if (!!clone.Rows) {
-      //   clone.Rows.forEach(e => {
-      //     e.Id = null;
-      //   });
-      // }
-      // if (!!clone.Columns) {
-      //   clone.Columns.forEach(e => {
-      //     e.Id = null;
-      //   });
-      // }
+      if (!!clone.ReportDefinitions) {
+        clone.ReportDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
 
       return clone;
     } else {
@@ -84,7 +86,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
+    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService, private modalService: NgbModal) {
     super();
 
     this.relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$);
@@ -145,6 +147,11 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   showSection(key: string): boolean {
     return this._sections[key];
+  }
+
+  public weakEntityErrors(model: EntityForSave) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
 
   public sectionErrors(section: string, model: RelationDefinition) {
@@ -225,6 +232,9 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.BankAccountNumberVisibility) ||
         areServerErrors(model.serverErrors.UserCardinality)
       ));
+    } else if (section === 'Reports') {
+      return !!model.ReportDefinitions &&
+        model.ReportDefinitions.some(e => this.weakEntityErrors(e));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MainMenuIcon) ||
@@ -391,4 +401,43 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public stateTooltip = (model: RelationDefinition) => this.hasStatePermission(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  // Report Definitions
+
+  public itemToEditHasChanged = false;
+  public reportDefinitionToEdit: RelationDefinitionReportDefinition;
+
+  public onItemToEditChange() {
+    this.itemToEditHasChanged = true;
+  }
+
+  public onCreateReportDefinition(model: RelationDefinition) {
+    const itemToEdit: RelationDefinitionReportDefinition = {};
+    this.reportDefinitionToEdit = itemToEdit; // Create new
+    this.modalService.open(this.reportDefinitionModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply) {
+        model.ReportDefinitions.push(itemToEdit);
+      }
+    }, (_: any) => { });
+  }
+
+  public onConfigureReportDefinition(index: number, model: RelationDefinition) {
+    this.itemToEditHasChanged = false;
+    const itemToEdit = { ...model.ReportDefinitions[index] } as RelationDefinitionReportDefinition;
+    this.reportDefinitionToEdit = itemToEdit;
+    this.modalService.open(this.reportDefinitionModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply && this.itemToEditHasChanged) {
+        model.ReportDefinitions[index] = itemToEdit;
+      }
+    }, (_: any) => { });
+  }
+
+  public onDeleteReportDefinition(index: number, model: RelationDefinition) {
+    model.ReportDefinitions.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
+    moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
 }

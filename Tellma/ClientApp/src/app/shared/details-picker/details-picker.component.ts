@@ -865,7 +865,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     } else {
       // get the first one or null
-      this.openCreateModalInner(this.createOptions[0]);
+        this.openCreateModalInner(this.createOptions[0]);
     }
   }
 
@@ -892,10 +892,15 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._definitionId = definitionId;
     this._idString = 'new';
 
-    const modalRef = this.modalService.open(this.detailsWrapperTemplate, { windowClass: this.detailsModalWindowClass });
+    console.log('Opening!!');
 
-    // this guarantees that the input will be focused again when the modal closes
-    modalRef.result.then(this.onFocusInput, this.onFocusInput);
+    // Without setTimeout it doesn't open in dev env sometimes, weird
+    setTimeout(() => {
+      const modalRef = this.modalService.open(this.detailsWrapperTemplate, { windowClass: this.detailsModalWindowClass });
+
+      // this guarantees that the input will be focused again when the modal closes
+      modalRef.result.then(this.onFocusInput, this.onFocusInput);
+    }, 0);
   }
 
   private openEditModalInner = () => {

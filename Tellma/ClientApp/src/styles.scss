@@ -220,7 +220,7 @@ ngb-datepicker {
 }
 
 .t-less-dark .dropdown-item:hover {
-  background: t
+  background: t;
 }
 
 ngb-tabset li.nav-item .small {
@@ -1284,6 +1284,7 @@ tr.t-highlight {
   }
 }
 
+.t-details-modal,
 .t-master-modal,
 .t-inbox-modal {
   .modal-content {
@@ -1297,6 +1298,18 @@ tr.t-highlight {
   }
 }
 
+// .t-details-modal {
+//   .modal-content {
+//     height: 100%;
+//   }
+//   .modal-dialog {
+//     height: calc(100% - 1rem);
+//   }
+//   .modal-body {
+//     height: 100%;
+//   }
+// }
+
 .t-myuser-modal .modal-dialog {
   max-width: 850px;
 }
@@ -1306,6 +1319,7 @@ tr.t-highlight {
 }
 
 @media (min-width: 576px) {
+  .t-details-modal,
   .t-master-modal,
   .t-inbox-modal {
     .modal-content {
@@ -1866,7 +1880,7 @@ td .t-studio-input {
 
 .t-code {
   font-family: monospace;
-  white-space: pre!important;
+  white-space: pre !important;
 }
 
 // @keyframes highlight {
@@ -1888,15 +1902,18 @@ td .t-studio-input {
 
 // Reconciliation screen
 
-tr.t-highlight-a td.t-a, tr.t-highlight-b td.t-b {
+tr.t-highlight-a td.t-a,
+tr.t-highlight-b td.t-b {
   background-color: rgba(232, 232, 232) !important;
 }
 
-tr.t-yellow-a td.t-a, tr.t-yellow-b td.t-b {
+tr.t-yellow-a td.t-a,
+tr.t-yellow-b td.t-b {
   background-color: #eeff44;
 }
 
-tr.t-pale-a td.t-a, tr.t-pale-b td.t-b {
+tr.t-pale-a td.t-a,
+tr.t-pale-b td.t-b {
   color: rgba(0, 0, 0, 0.25) !important;
 }
 

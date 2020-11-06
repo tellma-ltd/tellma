@@ -6,7 +6,7 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CDK_DRAG_CONFIG, DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {
   NgbCollapseModule,
@@ -197,7 +197,8 @@ import { ContextMenuDirective } from '../data/context-menu.directive';
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
-    { provide: NgbDatepickerI18n, useClass: DatePickerLocalization }
+    { provide: NgbDatepickerI18n, useClass: DatePickerLocalization },
+    { provide: CDK_DRAG_CONFIG, useValue: { zIndex: 10000 } }
   ]
 })
 export class SharedModule {

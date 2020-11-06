@@ -245,6 +245,7 @@ namespace Tellma.Data
                 nameof(Relation) => "[map].[Relations]()",
                 nameof(RelationUser) => "[map].[RelationUsers]()",
                 nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
+                nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
                 nameof(Custody) => "[map].[Custodies]()",
                 nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
                 nameof(Agent) => "[map].[Agents]()",
@@ -683,6 +684,27 @@ namespace Tellma.Data
                     }
 
                     relationDefinitions.Add(entity);
+                }
+
+                // RelationDefinitionReportDefinitions
+                var relationDefinitionsDic = relationDefinitions.ToDictionary(e => e.Id);
+                var relationDefinitionReportDefinitionProps = TypeDescriptor.Get<RelationDefinitionReportDefinition>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new RelationDefinitionReportDefinition();
+                    foreach (var prop in relationDefinitionReportDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var relationDefinition = relationDefinitionsDic[entity.RelationDefinitionId.Value];
+                    relationDefinition.ReportDefinitions ??= new List<RelationDefinitionReportDefinition>();
+                    relationDefinition.ReportDefinitions.Add(entity);
                 }
 
                 // Next load custody definitions
@@ -1852,7 +1874,15 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+            var reportDefinitionsTvp = new SqlParameter("@RelationDefinitionReportDefinitions", reportDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(RelationDefinitionReportDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(reportDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -1879,7 +1909,15 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+                var reportDefinitionsTvp = new SqlParameter("@RelationDefinitionReportDefinitions", reportDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(RelationDefinitionReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;

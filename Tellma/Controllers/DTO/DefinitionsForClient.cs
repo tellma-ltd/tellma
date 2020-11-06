@@ -521,8 +521,9 @@ namespace Tellma.Controllers.Dto
         public string JobVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
         public string UserCardinality { get; set; }
-    }
 
+        public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
+    }
 
     public class CustodyDefinitionForClient : MasterDetailDefinitionForClient
     {
@@ -626,6 +627,15 @@ namespace Tellma.Controllers.Dto
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient
     {
 
+    }
+
+    public class DefinitionReportDefinitionForClient
+    {
+        public int ReportDefinitionId { get; set; }
+
+        public string Name { get; set; }
+        public string Name2 { get; set; }
+        public string Name3 { get; set; }
     }
 
     ///////////////////// Supporting Classes

@@ -31,6 +31,9 @@ export class ReportComponent implements OnInit, OnDestroy {
   mode: 'screen' | 'preview' = 'screen';
 
   @Input()
+  disableDrilldown = false;
+
+  @Input()
   previewDefinition: ReportDefinitionForClient; // Used in preview mode
 
   @Input()
@@ -190,11 +193,12 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get state(): ReportStore {
 
-    if (!this.workspace.currentTenant.reportState[this.stateKey]) {
-      this.workspace.currentTenant.reportState[this.stateKey] = new ReportStore();
+    const rs = this.workspace.currentTenant.reportState;
+    if (!rs[this.stateKey]) {
+      rs[this.stateKey] = new ReportStore();
     }
 
-    return this.workspace.currentTenant.reportState[this.stateKey];
+    return rs[this.stateKey];
   }
 
   private urlStateChange(): void {

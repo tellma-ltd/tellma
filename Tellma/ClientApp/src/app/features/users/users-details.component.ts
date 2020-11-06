@@ -208,6 +208,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public set activeTab(v: string) {
     this.ws.miscState.users_details_activeTab = v;
   }
+
   public testEmail(email: string): void {
     const details = this.details;
     this.usersApi.testEmail(email).subscribe(

@@ -187,6 +187,15 @@ namespace Tellma.Controllers
                 JobVisibility = MapVisibility(def.JobVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
                 UserCardinality = MapCardinality(def.UserCardinality),
+
+                ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
+                {
+                    ReportDefinitionId = e.ReportDefinitionId.Value,
+                    Name = e.Name,
+                    Name2 = e.Name2,
+                    Name3 = e.Name3,
+
+                })?.ToList() ?? new List<DefinitionReportDefinitionForClient>()
             };
         }
 

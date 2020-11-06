@@ -9,6 +9,7 @@ SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the relation definitions
 SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
+SELECT * FROM [map].[RelationDefinitionReportDefinitions]() WHERE [RelationDefinitionId] IN (SELECT [Id] FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
 -- Get the custody definitions
 SELECT * FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden';

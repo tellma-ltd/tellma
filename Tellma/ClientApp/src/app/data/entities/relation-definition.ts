@@ -8,8 +8,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, DefinitionCardinality, lookupDefinitionIdPropDescriptor, cardinalityPropDescriptor, statePropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
+import { RelationDefinitionReportDefinition, RelationDefinitionReportDefinitionForSave } from './relation-definition-report-definition';
 
-export interface RelationDefinitionForSave extends EntityForSave {
+export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitionReportDefinitionForSave> extends EntityForSave {
     Code?: string;
     TitleSingular?: string;
     TitleSingular2?: string;
@@ -98,9 +99,11 @@ export interface RelationDefinitionForSave extends EntityForSave {
     MainMenuIcon?: string;
     MainMenuSection?: string;
     MainMenuSortKey?: number;
+
+    ReportDefinitions?: TReportDefinition[];
 }
 
-export interface RelationDefinition extends RelationDefinitionForSave {
+export interface RelationDefinition extends RelationDefinitionForSave<RelationDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
 }

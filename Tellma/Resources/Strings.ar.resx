@@ -415,6 +415,12 @@
   <data name="Definition_Hide" xml:space="preserve">
     <value>إخفاء</value>
   </data>
+  <data name="Definition_ReportDefinition" xml:space="preserve">
+    <value>تعريف التقرير</value>
+  </data>
+  <data name="Definition_ReportDefinitions" xml:space="preserve">
+    <value>تعريفات التقارير</value>
+  </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>كود</value>
   </data>
@@ -2205,6 +2211,12 @@
   </data>
   <data name="RelationDefinition_UserCardinality" xml:space="preserve">
     <value>عدد المستخدمين</value>
+  </data>
+  <data name="RelationDefinitionReportDefinition" xml:space="preserve">
+    <value>تعريف تقرير تعريف علاقة</value>
+  </data>
+  <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
+    <value>تعريفات تقارير تعريفات العلاقات</value>
   </data>
   <data name="RelationDefinitions" xml:space="preserve">
     <value>تعريفات العقود</value>

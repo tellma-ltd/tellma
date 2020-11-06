@@ -415,6 +415,9 @@
   <data name="Definition_Hide" xml:space="preserve">
     <value>隐藏</value>
   </data>
+  <data name="Definition_ReportDefinition" xml:space="preserve">
+    <value>报告定义</value>
+  </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>脚本</value>
   </data>
@@ -2206,6 +2209,12 @@
   <data name="RelationDefinition_UserCardinality" xml:space="preserve">
     <value>用户基数</value>
   </data>
+  <data name="RelationDefinitionReportDefinition" xml:space="preserve">
+    <value>关系定义报表定义</value>
+  </data>
+  <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
+    <value>关系定义报表定义</value>
+  </data>
   <data name="RelationDefinitions" xml:space="preserve">
     <value>关联定义</value>
   </data>
@@ -2841,6 +2850,9 @@
   </data>
   <data name="TestEmailSentTo0WithSubject1" xml:space="preserve">
     <value>测试电子邮件，主题：“{1}”，发送到电子邮件地址“{0}”，请确认其收到。</value>
+  </data>
+  <data name="TestSmsSentTo0WithMessage1" xml:space="preserve">
+    <value>测试SMS消息“{1}”被发送到{0}，请确认其接收。</value>
   </data>
   <data name="TheCurrentBrowserHasBeenForgotten" xml:space="preserve">
     <value>目前的浏览器已经被遗忘了。当你从这个浏览器再次登录系统将提示您为您的2FA代码。</value>
