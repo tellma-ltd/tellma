@@ -4851,7 +4851,7 @@ namespace Tellma.Data
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Documents__Assign));
 
-            var notificationInfos = new List<InboxNotificationInfo>();
+            List<InboxNotificationInfo> notificationInfos;
             User assigneeInfo;
             int serialNumber = 0;
 
@@ -4877,7 +4877,7 @@ namespace Tellma.Data
 
             // Execute                    
             using var reader = await cmd.ExecuteReaderAsync();
-            var inboxNotificationInfo = await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
+            notificationInfos = await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
 
             if (manualAssignment)
             {

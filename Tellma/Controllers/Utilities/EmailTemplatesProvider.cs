@@ -145,7 +145,7 @@ namespace Tellma.Controllers.Utiltites
     <tr>
         <td style=""padding: 1rem 3rem;border-top: 1px solid lightgrey;font-size: 80%;text-align: center;"">
             <p>
-                {(copyRightNotice)}
+                {Encode(copyRightNotice)}
             </p>
             <a style=""color: {HyperlinkColor};"" clicktracking=off href=""{appDomain}privacy"">{Encode(privacyPolicy)}</a><span style=""margin-left: 0.5rem;margin-right: 0.5rem;"">|</span><a
                 style=""color: {HyperlinkColor};"" clicktracking=off href=""{appDomain}terms-of-service"">{Encode(termsOfService)}</a>

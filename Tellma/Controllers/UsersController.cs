@@ -658,6 +658,12 @@ namespace Tellma.Controllers
             {
                 entity.Email = entity.Email.ToLower();
 
+                entity.EmailNewInboxItem ??= false;
+                entity.SmsNewInboxItem ??= false;
+                entity.PushNewInboxItem ??= false;
+
+                entity.PreferredChannel ??= "Email";
+
                 if (string.IsNullOrWhiteSpace(entity.ContactEmail))
                 {
                     entity.ContactEmail = null;

@@ -81,34 +81,6 @@ namespace Tellma.Controllers
     {
     }
 
-    public static class ServerNotificationsHubExtensions
-    {
-        public static async Task NotifyInboxAsync(this IHubContext<ServerNotificationsHub, INotifiedClient> hub, int tenantId, IEnumerable<InboxNotificationInfo> infos, bool updateInboxList = true)
-        {
-            if (infos == null || !infos.Any())
-            {
-                return;
-            }
-
-            var serverTime = DateTimeOffset.UtcNow;
-            var tasks = new List<Task>();
-
-            foreach (var info in infos)
-            {
-                tasks.Add(hub.Clients.User(info.ExternalId).UpdateInbox(new InboxNotification
-                {
-                    Count = info.Count,
-                    UnknownCount = info.UnknownCount,
-                    UpdateInboxList = updateInboxList,
-                    ServerTime = serverTime,
-                    TenantId = tenantId,
-                }));
-            }
-
-            await Task.WhenAll(tasks);
-        }
-    }
-
     /// <summary>
     /// The methods here are implemented on the client side
     /// </summary>

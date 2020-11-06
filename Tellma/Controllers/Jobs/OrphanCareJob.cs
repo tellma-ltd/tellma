@@ -41,6 +41,8 @@ namespace Tellma.Controllers.Jobs
 
                     // Make them available for processing to all the various background Jobs
                     _instanceInfo.AddNewlyAdoptedOrphans(orphans);
+
+                    trx.Complete();
                 }
                 catch (Exception ex)
                 {

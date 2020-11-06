@@ -17,5 +17,10 @@ namespace Tellma.Controllers.Dto
         /// The Tenant Id associated with this server notification
         /// </summary>
         public int TenantId { get; set; }
+
+        /// <summary>
+        /// The external user Id
+        /// </summary>
+        public string ExternalId { get; set; }
     }
 }

@@ -39,12 +39,10 @@ namespace Tellma.Controllers
         public const string BASE_ADDRESS = "documents/";
 
         private readonly DocumentsService _service;
-        private readonly IInstrumentationService _instrumentation;
 
-        public DocumentsController(DocumentsService service, IInstrumentationService instrumentation, IServiceProvider sp) : base(sp)
+        public DocumentsController(DocumentsService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _instrumentation = instrumentation;
         }
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
@@ -304,7 +302,7 @@ namespace Tellma.Controllers
         private readonly IClientInfoAccessor _clientInfo;
         private readonly ITenantInfoAccessor _tenantInfoAccessor;
         private readonly ExternalNotificationsService _notificationsService;
-        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
+        private readonly InboxNotificationsService _inboxService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly EmailTemplatesProvider _emailTemplates;
 
@@ -361,8 +359,8 @@ namespace Tellma.Controllers
         public DocumentsService(TemplateService templateService, ClientAppAddressResolver clientAppResolver,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, ExternalNotificationsService notificationsSerice,
-            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor, EmailTemplatesProvider emailTemplates) : base(sp)
+            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, ExternalNotificationsService notificationsSerice, InboxNotificationsService inboxService,
+            IHttpContextAccessor contextAccessor, EmailTemplatesProvider emailTemplates) : base(sp)
         {
             _templateService = templateService;
             _clientAppResolver = clientAppResolver;
@@ -375,7 +373,7 @@ namespace Tellma.Controllers
             _clientInfo = clientInfo;
             _tenantInfoAccessor = tenantInfoAccessor;
             _notificationsService = notificationsSerice;
-            _hubContext = hubContext;
+            _inboxService = inboxService;
             _contextAccessor = contextAccessor;
             _emailTemplates = emailTemplates;
         }
@@ -490,7 +488,7 @@ namespace Tellma.Controllers
             await CheckActionPermissionsAfter(actionFilter, ids, data);
 
             // Notify relevant parties
-            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+            _inboxService.NotifyInbox(TenantId, notificationInfos);
 
             // If assignee is not the same user, notify them by Email/SMS/Push
             var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
@@ -742,7 +740,7 @@ namespace Tellma.Controllers
             await CheckActionPermissionsAfter(actionFilter, ids, data);
 
             // Non-transactional stuff
-            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+            _inboxService.NotifyInbox(TenantId, notificationInfos);
 
             // Commit and return
             trx.Complete();
@@ -981,7 +979,7 @@ namespace Tellma.Controllers
 
                     // Notify the user
                     var tenantId = _tenantIdAccessor.GetTenantId();
-                    await _hubContext.NotifyInboxAsync(tenantId, infos);
+                    _inboxService.NotifyInbox(tenantId, infos);
                 }
             }
 
@@ -2114,7 +2112,7 @@ namespace Tellma.Controllers
             var block = _instrumentation.Block("hub.Notify");
 
             // Notify affected users
-            await _hubContext.NotifyInboxAsync(TenantId, _notificationInfos);
+            _inboxService.NotifyInbox(TenantId, _notificationInfos);
 
             block.Dispose();
 
@@ -2148,7 +2146,7 @@ namespace Tellma.Controllers
             {
                 var (notificationInfos, fileIdsToDelete) = await _repo.Documents__Delete(ids);
 
-                await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+                _inboxService.NotifyInbox(TenantId, notificationInfos);
 
                 // Delete the file Ids retrieved earlier if any
                 if (fileIdsToDelete.Any())

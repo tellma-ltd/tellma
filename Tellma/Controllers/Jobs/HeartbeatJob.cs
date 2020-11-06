@@ -40,6 +40,8 @@ namespace Tellma.Controllers.Jobs
                     using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
 
                     await _repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, stoppingToken);
+
+                    trx.Complete();
                 } 
                 catch (Exception ex)
                 {
