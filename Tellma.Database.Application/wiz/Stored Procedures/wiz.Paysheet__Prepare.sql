@@ -18,7 +18,7 @@ BEGIN
 			[Id]
 	FROM dbo.Relations RL
 	WHERE RL.DefinitionId = (SELECT [Id] FROM RelationDefinitions WHERE Code = N'Employee')
-	AND RL.ToDate <= @MonthEnding OR RL.Todate IS NULL
+	AND RL.ToDate <= @MonthEnding OR RL.ToDate IS NULL
 
 	SELECT * FROM @WideLines;
 END
