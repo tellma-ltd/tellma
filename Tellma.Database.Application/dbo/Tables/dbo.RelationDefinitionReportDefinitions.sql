@@ -8,7 +8,6 @@
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
 	[Index]					INT				NOT NULL,
-	-- TODO: Other business logic configuration related to printing
 	[SavedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_RelationDefinitionReportDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]				DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]				DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,

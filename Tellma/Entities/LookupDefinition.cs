@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Services.Utilities;
@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "LookupDefinition", Plural = "LookupDefinitions")]
-    public class LookupDefinitionForSave : EntityWithKey<int>
+    public class LookupDefinitionForSave<TReportDefinition> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [Required]
@@ -60,9 +60,17 @@ namespace Tellma.Entities
         [Display(Name = "MainMenuSortKey")]
         [AlwaysAccessible]
         public decimal? MainMenuSortKey { get; set; }
+
+        [Display(Name = "Definition_ReportDefinitions")]
+        [ForeignKey(nameof(LookupDefinitionReportDefinition.LookupDefinitionId))]
+        public List<TReportDefinition> ReportDefinitions { get; set; }
     }
 
-    public class LookupDefinition : LookupDefinitionForSave
+    public class LookupDefinitionForSave : LookupDefinitionForSave<LookupDefinitionReportDefinitionForSave>
+    {
+    }
+
+    public class LookupDefinition : LookupDefinitionForSave<LookupDefinitionReportDefinition>
     {
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },

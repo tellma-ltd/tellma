@@ -240,73 +240,72 @@ namespace Tellma.Data
         {
             var result = t.Name switch
             {
-                nameof(Entities.Settings) => "[dbo].[Settings]",
-                nameof(User) => "[map].[Users]()",
-                nameof(Relation) => "[map].[Relations]()",
-                nameof(RelationUser) => "[map].[RelationUsers]()",
-                nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
-                nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
-                nameof(Custody) => "[map].[Custodies]()",
-                nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
-                nameof(Agent) => "[map].[Agents]()",
-                nameof(Unit) => "[map].[Units]()",
-                nameof(Permission) => "[dbo].[Permissions]",
-                nameof(RoleMembership) => "[dbo].[RoleMemberships]",
-                nameof(Role) => "[dbo].[Roles]",
-                nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
-                nameof(Lookup) => "[map].[Lookups]()",
-                nameof(Currency) => "[map].[Currencies]()",
-                nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
-                nameof(Resource) => "[map].[Resources]()",
-                nameof(ResourceUnit) => "[map].[ResourceUnits]()",
+                nameof(Account) => "[map].[Accounts]()",
                 nameof(AccountClassification) => "[map].[AccountClassifications]()",
-                nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
                 nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
                 nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
-                nameof(Account) => "[map].[Accounts]()",
+                nameof(Agent) => "[map].[Agents]()",
+                nameof(Attachment) => "[map].[Attachments]()",
                 nameof(Center) => "[map].[Centers]()",
-                nameof(EntryType) => "[map].[EntryTypes]()",
+                nameof(Currency) => "[map].[Currencies]()",
+                nameof(Custody) => "[map].[Custodies]()",
+                nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
+                nameof(CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
+                nameof(DetailsEntry) => "[map].[DetailsEntries]()",
+                nameof(Document) => "[map].[Documents]()",
+                nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
                 nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
                 nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
                 nameof(DocumentDefinitionMarkupTemplate) => "[map].[DocumentDefinitionMarkupTemplates]()",
-                nameof(Document) => "[map].[Documents]()",
                 nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
-                nameof(Line) => "[map].[Lines]()",
-                nameof(LineForQuery) => "[map].[Lines]()",
-                nameof(Entry) => "[map].[Entries]()",
-                nameof(Attachment) => "[map].[Attachments]()",
-                nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
-                nameof(InboxRecord) => "[map].[Inbox]()",
-                nameof(OutboxRecord) => "[map].[Outbox]()",
                 nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
-                nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
-                nameof(ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
-                nameof(ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
-                nameof(ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
-                nameof(ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
-                nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
-                nameof(ExchangeRate) => "[map].[ExchangeRates]()",
-                nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
                 nameof(EmailForQuery) => "[map].[Emails]()",
-                nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
-
-                // Line Definition stuff
+                nameof(Entry) => "[map].[Entries]()",
+                nameof(EntryType) => "[map].[EntryTypes]()",
+                nameof(ExchangeRate) => "[map].[ExchangeRates]()",
+                nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
+                nameof(InboxRecord) => "[map].[Inbox]()",
+                nameof(Line) => "[map].[Lines]()",
                 nameof(LineDefinition) => "[map].[LineDefinitions]()",
+                nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
                 nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
                 nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
                 nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
-                nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
                 nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
                 nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
+                nameof(LineForQuery) => "[map].[Lines]()",
+                nameof(Lookup) => "[map].[Lookups]()",
+                nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
+                nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+                nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+                nameof(OutboxRecord) => "[map].[Outbox]()",
+                nameof(Permission) => "[dbo].[Permissions]",
+                nameof(Relation) => "[map].[Relations]()",
+                nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
+                nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
+                nameof(RelationUser) => "[map].[RelationUsers]()",
+                nameof(ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
+                nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
+                nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
+                nameof(ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
+                nameof(ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
+                nameof(ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
+                nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+                nameof(Resource) => "[map].[Resources]()",
+                nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
+                nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
+                nameof(ResourceUnit) => "[map].[ResourceUnits]()",
+                nameof(Role) => "[dbo].[Roles]",
+                nameof(RoleMembership) => "[dbo].[RoleMemberships]",
+                nameof(Entities.Settings) => "[dbo].[Settings]",
+                nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
+                nameof(SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
+                nameof(Unit) => "[map].[Units]()",
+                nameof(User) => "[map].[Users]()",
+                nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
                 nameof(Workflow) => "[map].[Workflows]()",
                 nameof(WorkflowSignature) => "[map].[WorkflowSignatures]()",
-
-                // Fact tables
-                nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
-                nameof(DetailsEntry) => "[map].[DetailsEntries]()",
-                nameof(SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
-                nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
                 _ => throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries"),
             };
             return result;
@@ -667,6 +666,27 @@ namespace Tellma.Data
                     lookupDefinitions.Add(entity);
                 }
 
+                // LookupDefinitionReportDefinitions
+                var lookupDefinitionsDic = lookupDefinitions.ToDictionary(e => e.Id);
+                var lookupDefinitionReportDefinitionProps = TypeDescriptor.Get<LookupDefinitionReportDefinition>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new LookupDefinitionReportDefinition();
+                    foreach (var prop in lookupDefinitionReportDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var lookupDefinition = lookupDefinitionsDic[entity.LookupDefinitionId.Value];
+                    lookupDefinition.ReportDefinitions ??= new List<LookupDefinitionReportDefinition>();
+                    lookupDefinition.ReportDefinitions.Add(entity);
+                }
+
                 // Next load relation definitions
                 var relationDefinitionProps = TypeDescriptor.Get<RelationDefinition>().SimpleProperties;
 
@@ -726,6 +746,27 @@ namespace Tellma.Data
                     custodyDefinitions.Add(entity);
                 }
 
+                // CustodyDefinitionReportDefinitions
+                var custodyDefinitionsDic = custodyDefinitions.ToDictionary(e => e.Id);
+                var custodyDefinitionReportDefinitionProps = TypeDescriptor.Get<CustodyDefinitionReportDefinition>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new CustodyDefinitionReportDefinition();
+                    foreach (var prop in custodyDefinitionReportDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var custodyDefinition = custodyDefinitionsDic[entity.CustodyDefinitionId.Value];
+                    custodyDefinition.ReportDefinitions ??= new List<CustodyDefinitionReportDefinition>();
+                    custodyDefinition.ReportDefinitions.Add(entity);
+                }
+
                 // Next load resource definitions
                 var resourceDefinitionProps = TypeDescriptor.Get<ResourceDefinition>().SimpleProperties;
 
@@ -743,6 +784,27 @@ namespace Tellma.Data
                     }
 
                     resourceDefinitions.Add(entity);
+                }
+
+                // ResourceDefinitionReportDefinitions
+                var resourceDefinitionsDic = resourceDefinitions.ToDictionary(e => e.Id);
+                var resourceDefinitionReportDefinitionProps = TypeDescriptor.Get<ResourceDefinitionReportDefinition>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new ResourceDefinitionReportDefinition();
+                    foreach (var prop in resourceDefinitionReportDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var resourceDefinition = resourceDefinitionsDic[entity.ResourceDefinitionId.Value];
+                    resourceDefinition.ReportDefinitions ??= new List<ResourceDefinitionReportDefinition>();
+                    resourceDefinition.ReportDefinitions.Add(entity);
                 }
 
                 // Next load report definitions
@@ -1496,7 +1558,15 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+            var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(CustodyDefinitionReportDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(reportDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -1523,7 +1593,15 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(CustodyDefinitionReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -1875,7 +1953,7 @@ namespace Tellma.Data
             };
 
             DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
-            var reportDefinitionsTvp = new SqlParameter("@RelationDefinitionReportDefinitions", reportDefinitionsTable)
+            var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
             {
                 TypeName = $"[dbo].[{nameof(RelationDefinitionReportDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
@@ -1910,7 +1988,7 @@ namespace Tellma.Data
                 };
 
                 DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
-                var reportDefinitionsTvp = new SqlParameter("@RelationDefinitionReportDefinitions", reportDefinitionsTable)
+                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
                 {
                     TypeName = $"[dbo].[{nameof(RelationDefinitionReportDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
@@ -6155,7 +6233,15 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+            var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ResourceDefinitionReportDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(reportDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -6182,7 +6268,15 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ResourceDefinitionReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -6346,7 +6440,15 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+            var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LookupDefinitionReportDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(reportDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -6373,7 +6475,15 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LookupDefinitionReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;

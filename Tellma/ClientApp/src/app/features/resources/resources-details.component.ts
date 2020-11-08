@@ -3,14 +3,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ResourceForSave, Resource } from '~/app/data/entities/resource';
-import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import {
+  DefinitionReportDefinitionForClient, ReportDefinitionForClient, ResourceDefinitionForClient
+} from '~/app/data/dto/definitions-for-client';
 import { Currency } from '~/app/data/entities/currency';
 import { LatLngLiteral } from '@agm/core';
+import { ReportView } from '../report-results/report-results.component';
 
 @Component({
   selector: 't-resources-details',
@@ -422,8 +425,8 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   // Resource Only
 
-  public get showTabs(): boolean {
-    return this.Units_isVisible || this.Location_isVisible;
+  public showTabs(isEdit: boolean, model: Resource): boolean {
+    return this.Units_isVisible || this.Location_isVisible || (this.reports.length > 0 && this.showReports(isEdit, model));
   }
 
   public get Unit_isVisible(): boolean {
@@ -649,5 +652,70 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public savePreprocessing = (entity: ResourceForSave) => {
     // Server validation on hidden properties will be confusing to the user
+  }
+
+  // Embedded Reports
+  public showReports(isEdit: boolean, model: Resource) {
+    return !!model && !!model.Id;
+  }
+
+  public get reports(): DefinitionReportDefinitionForClient[] {
+    return this.definition.ReportDefinitions;
+  }
+
+  public reportDefinition(e: DefinitionReportDefinitionForClient): ReportDefinitionForClient {
+    return this.ws.definitions.Reports[e.ReportDefinitionId];
+  }
+
+  public reportTitle(e: DefinitionReportDefinitionForClient): string {
+    return this.ws.getMultilingualValueImmediate(e, 'Name') ||
+      this.ws.getMultilingualValueImmediate(this.reportDefinition(e), 'Title')
+      || this.translate.instant('Untitled');
+  }
+
+  public state(e: DefinitionReportDefinitionForClient): ReportStore {
+    const stateKey = `resources_details_${this.definitionId}_${e.ReportDefinitionId}`;
+
+    const rs = this.workspace.currentTenant.reportState;
+    if (!rs[stateKey]) {
+      rs[stateKey] = new ReportStore();
+    }
+
+    return rs[stateKey];
+  }
+
+  public reportView(e: DefinitionReportDefinitionForClient): ReportView {
+    const reportDef = this.reportDefinition(e);
+    return !!reportDef && !!reportDef.Chart && reportDef.DefaultsToChart ? ReportView.chart : ReportView.pivot;
+  }
+
+  private get activeTabKey(): string {
+    return `resources_details_${this.definitionId}_activeTab`;
+  }
+
+  public get activeTab(): string {
+    const key = this.activeTabKey;
+    const miscState = this.ws.miscState;
+    if (!miscState[key]) {
+      if (this.Units_isVisible) {
+        miscState[key] = 'units';
+      } else if (this.Location_isVisible) {
+        miscState[key] = 'location';
+      } else if (this.reports.length > 0) {
+        miscState[key] = this.reports[0].ReportDefinitionId;
+      } else {
+        miscState[key] = '<unknown>';
+      }
+    }
+
+    return miscState[key];
+  }
+
+  public set activeTab(v: string) {
+    this.ws.miscState[this.activeTabKey] = v;
+  }
+
+  public onExpandReport(reportId: number, model: Resource) {
+    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
   }
 }

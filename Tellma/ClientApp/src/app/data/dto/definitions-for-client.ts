@@ -374,10 +374,12 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     MonetaryValueVisibility: Visibility;
     ParticipantVisibility?: Visibility;
     ParticipantDefinitionId?: number;
+
+    ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
+    ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 
 export interface RelationDefinitionForClient extends MasterDetailsDefinitionForClient {
@@ -578,6 +580,8 @@ export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForCl
     ExternalReferenceLabel2: string;
     ExternalReferenceLabel3: string;
     ExternalReferenceVisibility?: Visibility;
+
+    ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 
 export interface DefinitionReportDefinitionForClient {

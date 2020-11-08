@@ -6,6 +6,7 @@ SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 
 -- Get the lookup definitions
 SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
+SELECT * FROM [map].[LookupDefinitionReportDefinitions]() WHERE [LookupDefinitionId] IN (SELECT [Id] FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
 -- Get the relation definitions
 SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
@@ -13,9 +14,11 @@ SELECT * FROM [map].[RelationDefinitionReportDefinitions]() WHERE [RelationDefin
 
 -- Get the custody definitions
 SELECT * FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden';
+SELECT * FROM [map].[CustodyDefinitionReportDefinitions]() WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
 -- Get the resource definitions
 SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
+SELECT * FROM [map].[ResourceDefinitionReportDefinitions]() WHERE [ResourceDefinitionId] IN (SELECT [Id] FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
 -- Get the report definitions
 SELECT * FROM [map].[ReportDefinitions]()

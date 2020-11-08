@@ -426,6 +426,60 @@
                     </ng-template>
                 </div>
 
+                <!-- Reports Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Reports')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Reports'))"
+                        [rotate]="rotateIcon(showSection('Reports'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Reports' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                        *ngIf="sectionErrors('Reports', model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Reports')">
+                    <!-- Report Definitions -->
+                    <div class="form-group">
+                        <label class="small">{{ 'Definition_ReportDefinitions' | translate }}</label>&nbsp;
+                        <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                            (click)="onCreateReportDefinition(model)" [title]="'Create' | translate">
+                            <fa-icon icon="plus"></fa-icon>
+                        </button>
+                        <div class="t-studio-drop-area border t-dark-border" cdkDropList
+                            (cdkDropListDropped)="rowDrop($event, model.ReportDefinitions)">
+                            <div class="t-studio-drop-row t-draggable"
+                                *ngFor="let reportDefinition of model.ReportDefinitions; let i = index;" cdkDrag
+                                cdkDragLockAxis="y">
+                                <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(reportDefinition)">
+                                    </fa-icon>
+                                    <span class="flex-grow-1 text-truncate">
+                                        {{ ws.getMultilingualValue('ReportDefinition', reportDefinition.ReportDefinitionId, 'Title') }}
+                                    </span>
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                        (click)="onConfigureReportDefinition(i, model)"
+                                        [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                    &nbsp;
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                        (click)="onDeleteReportDefinition(i, model)" [title]="'Delete' | translate">
+                                        <fa-icon icon="times"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                        <span class="small t-light-danger px-1" *ngFor="let e of model.serverErrors?.ReportDefinitions">
+                            {{ e }}
+                        </span>
+                    </div>
+                </div>
+
                 <!-- Menu Section -->
                 <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Menu')">
                     &nbsp;
@@ -543,4 +597,84 @@
             {{ e() }}
         </span>
     </ng-container>
+</ng-template>
+
+<!-- Report Definitions Modal -->
+<ng-template #reportDefinitionModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header t-dark t-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ 'Configure' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="t-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col t-less-dark t-text-whitish">
+        <div class="row">
+            <!-- Report Definition -->
+            <div class="form-group col-12 col-sm-6"
+                [class.is-invalid]="invalid(reportdefinitionmodel, reportDefinitionToEdit.serverErrors?.ReportDefinitionId)">
+                <label class="small">{{ 'Definition_ReportDefinition' | translate }}</label>
+                <t-report-definitions-picker theme="dark" [(ngModel)]="reportDefinitionToEdit.ReportDefinitionId"
+                    (ngModelChange)="onItemToEditChange()" required #reportdefinitionmodel="ngModel">
+                </t-report-definitions-picker>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: reportdefinitionmodel, serverErrors: reportDefinitionToEdit.serverErrors?.ReportDefinitionId }">
+                </ng-container>
+            </div>
+
+            <!-- Name -->
+            <div class="form-group col-12 col-sm-6"
+                [class.is-invalid]="invalid(reportName, reportDefinitionToEdit.serverErrors?.Name)">
+                <label class="small" for="reportName">{{ ('Name' | translate) + ws.primaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="reportName" type="text"
+                    [(ngModel)]="reportDefinitionToEdit.Name" (ngModelChange)="onItemToEditChange()"
+                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="no" #reportName="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: reportName, serverErrors: reportDefinitionToEdit.serverErrors?.Name }">
+                </ng-container>
+            </div>
+
+            <!-- Name2 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.SecondaryLanguageId"
+                [class.is-invalid]="invalid(reportName2, reportDefinitionToEdit.serverErrors?.Name2)">
+                <label class="small" for="reportName2">{{ ('Name' | translate) + ws.secondaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="reportName2" type="text"
+                    [(ngModel)]="reportDefinitionToEdit.Name2" (ngModelChange)="onItemToEditChange()"
+                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="no" #reportName2="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: reportName2, serverErrors: reportDefinitionToEdit.serverErrors?.Name2 }">
+                </ng-container>
+            </div>
+
+            <!-- Name3 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.TernaryLanguageId"
+                [class.is-invalid]="invalid(reportName3, reportDefinitionToEdit.serverErrors?.Name3)">
+                <label class="small" for="reportName3">{{ ('Name' | translate) + ws.ternaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="reportName3" type="text"
+                    [(ngModel)]="reportDefinitionToEdit.Name3" (ngModelChange)="onItemToEditChange()"
+                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="no" #reportName3="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: reportName3, serverErrors: reportDefinitionToEdit.serverErrors?.Name3 }">
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close(true);"
+            [disabled]="!reportDefinitionToEdit.ReportDefinitionId">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Apply' | translate }}
+        </button>
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
 </ng-template>

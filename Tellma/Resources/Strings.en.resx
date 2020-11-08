@@ -388,6 +388,12 @@
   <data name="CustodyDefinition" xml:space="preserve">
     <value>Custody Definition</value>
   </data>
+  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
+    <value>Custody Definition Report Definition</value>
+  </data>
+  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
+    <value>Custody Definition Report Definitions</value>
+  </data>
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>Custody Definitions</value>
   </data>
@@ -1825,6 +1831,12 @@
   <data name="LookupDefinition" xml:space="preserve">
     <value>Lookup Definition</value>
   </data>
+  <data name="LookupDefinitionReportDefinition" xml:space="preserve">
+    <value>Lookup Definition Report Definition</value>
+  </data>
+  <data name="LookupDefinitionReportDefinitions" xml:space="preserve">
+    <value>Lookup Definition Report Definitions</value>
+  </data>
   <data name="LookupDefinitions" xml:space="preserve">
     <value>Lookup Definitions</value>
   </data>
@@ -2487,6 +2499,12 @@
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>Unit Cardinality</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinition" xml:space="preserve">
+    <value>Resource Definition Report Definition</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinitions" xml:space="preserve">
+    <value>Resource Definition Report Definitions</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>

@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[ResourceDefinitions_Validate__Save]
 	@Entities [ResourceDefinitionList] READONLY,
+	@ReportDefinitions [ResourceDefinitionReportDefinitionList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

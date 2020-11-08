@@ -388,6 +388,12 @@
   <data name="CustodyDefinition" xml:space="preserve">
     <value>托管定义</value>
   </data>
+  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>托管定义</value>
   </data>
@@ -417,6 +423,9 @@
   </data>
   <data name="Definition_ReportDefinition" xml:space="preserve">
     <value>报告定义</value>
+  </data>
+  <data name="Definition_ReportDefinitions" xml:space="preserve">
+    <value>Loading...</value>
   </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>脚本</value>
@@ -1822,6 +1831,12 @@
   <data name="LookupDefinition" xml:space="preserve">
     <value>查找定义</value>
   </data>
+  <data name="LookupDefinitionReportDefinition" xml:space="preserve">
+    <value>查找定义报表定义</value>
+  </data>
+  <data name="LookupDefinitionReportDefinitions" xml:space="preserve">
+    <value>查找定义报表定义</value>
+  </data>
   <data name="LookupDefinitions" xml:space="preserve">
     <value>查找定义</value>
   </data>
@@ -2213,7 +2228,7 @@
     <value>关系定义报表定义</value>
   </data>
   <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
-    <value>关系定义报表定义</value>
+    <value>Loading...</value>
   </data>
   <data name="RelationDefinitions" xml:space="preserve">
     <value>关联定义</value>
@@ -2484,6 +2499,12 @@
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>单位基数</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinition" xml:space="preserve">
+    <value>资源定义报表定义</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinitions" xml:space="preserve">
+    <value>资源定义报表定义</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>

@@ -436,6 +436,7 @@
         </ng-template>
       </li>
 
+      <!-- Embedded Reports -->
       <ng-container *ngIf="showReports(isEdit, model)">
         <li *ngFor="let reportDef of reports" [ngbNavItem]="reportDef.ReportDefinitionId">
           <a ngbNavLink [tContextMenu]="expandContextMenu" [tContext]="reportDef.ReportDefinitionId">

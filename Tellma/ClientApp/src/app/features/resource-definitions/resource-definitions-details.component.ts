@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
@@ -10,10 +10,13 @@ import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metad
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ResourceDefinitionForSave, metadata_ResourceDefinition, ResourceDefinition } from '~/app/data/entities/resource-definition';
 import { DefinitionVisibility, DefinitionCardinality } from '~/app/data/entities/base/definition-common';
-import { ResourceDefinitionForClient, DefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { ResourceDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
+import { ResourceDefinitionReportDefinition } from '~/app/data/entities/resource-definition-report-definition';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 't-resource-definitions-details',
@@ -22,9 +25,12 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 })
 export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
+  @ViewChild('reportDefinitionModal', { static: true })
+  reportDefinitionModal: TemplateRef<any>;
+
   private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'DefaultUnit,DefaultUnitMassUnit';
+  public expand = 'DefaultUnit,DefaultUnitMassUnit,ReportDefinitions/ReportDefinition';
 
   create = () => {
     const result: ResourceDefinitionForSave = {};
@@ -43,6 +49,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.UnitCardinality = 'None';
+    result.ReportDefinitions = [];
 
     return result;
   }
@@ -64,16 +71,11 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
       const clone = JSON.parse(JSON.stringify(item)) as ResourceDefinition;
       clone.Id = null;
 
-      // if (!!clone.Rows) {
-      //   clone.Rows.forEach(e => {
-      //     e.Id = null;
-      //   });
-      // }
-      // if (!!clone.Columns) {
-      //   clone.Columns.forEach(e => {
-      //     e.Id = null;
-      //   });
-      // }
+      if (!!clone.ReportDefinitions) {
+        clone.ReportDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
 
       return clone;
     } else {
@@ -84,7 +86,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
+    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService, private modalService: NgbModal) {
     super();
 
     this.resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$);
@@ -136,6 +138,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _sections: { [key: string]: boolean } = {
     Title: true,
     Fields: false,
+    Reports: false,
     MainMenu: false
   };
 
@@ -145,6 +148,11 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   showSection(key: string): boolean {
     return this._sections[key];
+  }
+
+  public weakEntityErrors(model: EntityForSave) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
 
   public sectionErrors(section: string, model: ResourceDefinition) {
@@ -232,6 +240,9 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
         false
       ));
+    } else if (section === 'Reports') {
+      return !!model.ReportDefinitions &&
+        model.ReportDefinitions.some(e => this.weakEntityErrors(e));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MainMenuIcon) ||
@@ -439,4 +450,43 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public stateTooltip = (model: ResourceDefinition) => this.hasStatePermission(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  // Report Definitions
+
+  public itemToEditHasChanged = false;
+  public reportDefinitionToEdit: ResourceDefinitionReportDefinition;
+
+  public onItemToEditChange() {
+    this.itemToEditHasChanged = true;
+  }
+
+  public onCreateReportDefinition(model: ResourceDefinition) {
+    const itemToEdit: ResourceDefinitionReportDefinition = {};
+    this.reportDefinitionToEdit = itemToEdit; // Create new
+    this.modalService.open(this.reportDefinitionModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply) {
+        model.ReportDefinitions.push(itemToEdit);
+      }
+    }, (_: any) => { });
+  }
+
+  public onConfigureReportDefinition(index: number, model: ResourceDefinition) {
+    this.itemToEditHasChanged = false;
+    const itemToEdit = { ...model.ReportDefinitions[index] } as ResourceDefinitionReportDefinition;
+    this.reportDefinitionToEdit = itemToEdit;
+    this.modalService.open(this.reportDefinitionModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply && this.itemToEditHasChanged) {
+        model.ReportDefinitions[index] = itemToEdit;
+      }
+    }, (_: any) => { });
+  }
+
+  public onDeleteReportDefinition(index: number, model: ResourceDefinition) {
+    model.ReportDefinitions.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
+    moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
 }

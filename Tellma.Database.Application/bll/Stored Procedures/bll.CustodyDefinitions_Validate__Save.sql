@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[CustodyDefinitions_Validate__Save]
 	@Entities [CustodyDefinitionList] READONLY,
+	@ReportDefinitions [CustodyDefinitionReportDefinitionList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

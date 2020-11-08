@@ -720,6 +720,15 @@
     <Build Include="dbo\Tables\dbo.RelationDefinitionReportDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.RelationDefinitionReportDefinitionList.sql" />
     <Build Include="map\map.RelationDefinitionReportDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.CustodyDefinitionReportDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceDefinitionReportDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.LookupDefinitionReportDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.CustodyDefinitionReportDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LookupDefinitionReportDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceDefinitionReportDefinitionList.sql" />
+    <Build Include="map\map.CustodyDefinitionReportDefinitions.sql" />
+    <Build Include="map\map.LookupDefinitionReportDefinitions.sql" />
+    <Build Include="map\map.ResourceDefinitionReportDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

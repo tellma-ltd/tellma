@@ -138,6 +138,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _sections: { [key: string]: boolean } = {
     Title: true,
     Fields: false,
+    Reports: false,
     MainMenu: false
   };
 

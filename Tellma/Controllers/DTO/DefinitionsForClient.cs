@@ -422,6 +422,8 @@ namespace Tellma.Controllers.Dto
         public string MonetaryValueVisibility { get; set; }
         public string ParticipantVisibility { get; set; }
         public int? ParticipantDefinitionId { get; set; }
+
+        public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 
     public class RelationDefinitionForClient : MasterDetailDefinitionForClient
@@ -622,11 +624,13 @@ namespace Tellma.Controllers.Dto
         public string ExternalReferenceLabel2 { get; set; }
         public string ExternalReferenceLabel3 { get; set; }
         public string ExternalReferenceVisibility { get; set; }
+
+        public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient
     {
-
+        public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 
     public class DefinitionReportDefinitionForClient

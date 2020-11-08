@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[CustodyDefinitions__Save]
 	@Entities [CustodyDefinitionList] READONLY,
+	@ReportDefinitions [CustodyDefinitionReportDefinitionList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -368,6 +369,43 @@ SET NOCOUNT ON;
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+
+	WITH CurrentDefinitionReportDefinitions AS (
+		SELECT *
+		FROM [dbo].[CustodyDefinitionReportDefinitions]
+		WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM @Entities)
+	)
+	MERGE CurrentDefinitionReportDefinitions AS t
+	USING (
+		SELECT
+			RDRD.[Index],
+			RDRD.[Id],
+			II.[Id] AS [CustodyDefinitionId],
+			RDRD.[ReportDefinitionId],
+			RDRD.[Name],
+			RDRD.[Name2],
+			RDRD.[Name3]
+		FROM @Entities DD
+		JOIN @IndexedIds II ON DD.[Index] = II.[Index]
+		JOIN @ReportDefinitions RDRD ON DD.[Index] = RDRD.[HeaderIndex]
+	) AS s
+	ON s.Id = t.Id
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[Index]				= s.[Index],
+			t.[ReportDefinitionId]	= s.[ReportDefinitionId],
+			t.[Name]				= s.[Name],
+			t.[Name2]				= s.[Name2],
+			t.[Name3]				= s.[Name3],
+			t.[SavedById]			= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[Index], [CustodyDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3]
+		) VALUES (
+			[Index], s.[CustodyDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3]
+		);
 	
 	-- Signal clients to refresh their cache
 	IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[CustodyDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')

@@ -92,6 +92,15 @@ namespace Tellma.Controllers
                 TitleSingular = def.TitleSingular,
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
+
+                ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
+                {
+                    ReportDefinitionId = e.ReportDefinitionId.Value,
+                    Name = e.Name,
+                    Name2 = e.Name2,
+                    Name3 = e.Name3,
+
+                })?.ToList() ?? new List<DefinitionReportDefinitionForClient>()
             };
         }
 
@@ -293,6 +302,15 @@ namespace Tellma.Controllers
                 ExternalReferenceLabel2 = def.ExternalReferenceLabel2,
                 ExternalReferenceLabel3 = def.ExternalReferenceLabel3,
                 ExternalReferenceVisibility = MapVisibility(def.ExternalReferenceVisibility),
+
+                ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
+                {
+                    ReportDefinitionId = e.ReportDefinitionId.Value,
+                    Name = e.Name,
+                    Name2 = e.Name2,
+                    Name3 = e.Name3,
+
+                })?.ToList() ?? new List<DefinitionReportDefinitionForClient>()
             };
         }
 
@@ -401,7 +419,16 @@ namespace Tellma.Controllers
 
                 MonetaryValueVisibility = MapVisibility(def.MonetaryValueVisibility),
                 ParticipantVisibility = MapVisibility(def.ParticipantVisibility),
-                ParticipantDefinitionId = def.ParticipantDefinitionId
+                ParticipantDefinitionId = def.ParticipantDefinitionId,
+
+                ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
+                {
+                    ReportDefinitionId = e.ReportDefinitionId.Value,
+                    Name = e.Name,
+                    Name2 = e.Name2,
+                    Name3 = e.Name3,
+
+                })?.ToList() ?? new List<DefinitionReportDefinitionForClient>()
             };
         }
 

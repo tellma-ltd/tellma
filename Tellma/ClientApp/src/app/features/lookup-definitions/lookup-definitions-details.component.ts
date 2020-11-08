@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
@@ -9,10 +9,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { LookupDefinitionForSave, metadata_LookupDefinition, LookupDefinition } from '~/app/data/entities/lookup-definition';
-import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
 import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
+import { LookupDefinitionReportDefinition } from '~/app/data/entities/lookup-definition-report-definition';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
 @Component({
   selector: 't-lookup-definitions-details',
@@ -21,9 +24,12 @@ import { NgControl } from '@angular/forms';
 })
 export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
 
+  @ViewChild('reportDefinitionModal', { static: true })
+  reportDefinitionModal: TemplateRef<any>;
+
   private lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = '';
+  public expand = 'ReportDefinitions/ReportDefinition';
 
   create = () => {
     const result: LookupDefinitionForSave = {};
@@ -34,6 +40,8 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
     } else if (this.ws.isTernaryLanguage) {
       result.TitleSingular3 = this.initialText;
     }
+
+    result.ReportDefinitions = [];
 
     return result;
   }
@@ -55,17 +63,11 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
       const clone = JSON.parse(JSON.stringify(item)) as LookupDefinition;
       clone.Id = null;
 
-      // if (!!clone.Rows) {
-      //   clone.Rows.forEach(e => {
-      //     e.Id = null;
-      //   });
-      // }
-      // if (!!clone.Columns) {
-      //   clone.Columns.forEach(e => {
-      //     e.Id = null;
-      //   });
-      // }
-
+      if (!!clone.ReportDefinitions) {
+        clone.ReportDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
       return clone;
     } else {
       // programmer mistake
@@ -75,7 +77,7 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
+    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService, private modalService: NgbModal) {
     super();
 
     this.lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$);
@@ -123,6 +125,11 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._sections[key];
   }
 
+  public weakEntityErrors(model: EntityForSave) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
+  }
+
   public sectionErrors(section: string, model: LookupDefinition) {
     if (section === 'Title') {
       return (!!model.serverErrors && (
@@ -134,6 +141,9 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.TitlePlural2) ||
         areServerErrors(model.serverErrors.TitlePlural3)
       ));
+    } else if (section === 'Reports') {
+      return !!model.ReportDefinitions &&
+        model.ReportDefinitions.some(e => this.weakEntityErrors(e));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MainMenuIcon) ||
@@ -234,4 +244,43 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public stateTooltip = (model: LookupDefinition) => this.hasStatePermission(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  // Report Definitions
+
+  public itemToEditHasChanged = false;
+  public reportDefinitionToEdit: LookupDefinitionReportDefinition;
+
+  public onItemToEditChange() {
+    this.itemToEditHasChanged = true;
+  }
+
+  public onCreateReportDefinition(model: LookupDefinition) {
+    const itemToEdit: LookupDefinitionReportDefinition = {};
+    this.reportDefinitionToEdit = itemToEdit; // Create new
+    this.modalService.open(this.reportDefinitionModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply) {
+        model.ReportDefinitions.push(itemToEdit);
+      }
+    }, (_: any) => { });
+  }
+
+  public onConfigureReportDefinition(index: number, model: LookupDefinition) {
+    this.itemToEditHasChanged = false;
+    const itemToEdit = { ...model.ReportDefinitions[index] } as LookupDefinitionReportDefinition;
+    this.reportDefinitionToEdit = itemToEdit;
+    this.modalService.open(this.reportDefinitionModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
+      if (apply && this.itemToEditHasChanged) {
+        model.ReportDefinitions[index] = itemToEdit;
+      }
+    }, (_: any) => { });
+  }
+
+  public onDeleteReportDefinition(index: number, model: LookupDefinition) {
+    model.ReportDefinitions.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
+    moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
 }

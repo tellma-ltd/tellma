@@ -103,10 +103,9 @@
             </div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitMass" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="UnitMass_isRequired" [minDecimalPlaces]="4"
-            [maxDecimalPlaces]="4">
+            [required]="UnitMass_isRequired" [minDecimalPlaces]="4" [maxDecimalPlaces]="4">
         </t-decimal-editor>
-    </t-form-group>    
+    </t-form-group>
 
     <!-- UnitMassUnit -->
     <t-form-group *ngIf="UnitMass_isVisible" class="t-form-group" [label]="'Resource_UnitMassUnit' | translate"
@@ -133,7 +132,7 @@
             [maxDecimalPlaces]="MonetaryValue_decimals(model)">
         </t-decimal-editor>
     </t-form-group>
-    
+
     <!-- Participant -->
     <t-form-group class="t-form-group" [label]="Participant_label" *ngIf="Participant_isVisible"
         [serverErrors]="model?.serverErrors?.ParticipantId">
@@ -423,8 +422,8 @@
     </t-form-group>
 
     <!-- Tabs -->
-    <ng-container *ngIf="showTabs">
-        <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
+    <ng-container *ngIf="showTabs(isEdit, model)">
+        <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [(activeId)]="activeTab">
 
             <!-- Units -->
             <li ngbNavItem="units" *ngIf="Units_isVisible">
@@ -517,6 +516,39 @@
                     </t-restricted>
                 </ng-template>
             </li>
+
+            <!-- Embedded Reports -->
+            <ng-container *ngIf="showReports(isEdit, model)">
+                <li *ngFor="let reportDef of reports" [ngbNavItem]="reportDef.ReportDefinitionId">
+                    <a ngbNavLink [tContextMenu]="expandContextMenu" [tContext]="reportDef.ReportDefinitionId">
+                        <span class="small t-slightly-bold">{{ reportTitle(reportDef) }}</span>
+                    </a>
+                    <ng-template ngbNavContent>
+                        <div class="bg-light" style="height: 450px">
+                            <t-report-results class="h-100 w-100" [definition]="reportDefinition(reportDef)"
+                                [arguments]="{ Id: model?.Id, CacheBuster: model?.EntityMetadata?.$refresh }"
+                                [view]="reportView(reportDef)" [state]="state(reportDef)" mode="embedded">
+                            </t-report-results>
+                        </div>
+                    </ng-template>
+                </li>
+
+                <!-- Context menu expanding report -->
+                <ng-template #expandContextMenu let-reportDefId let-close="close">
+                    <div class="dropdown">
+                        <ul class="dropdown-menu show shadow-sm">
+                            <li class="dropdown-item px-0 py-1" (click)="onExpandReport(reportDefId, model); close();">
+                                <div class="t-menu-icon">
+                                    <fa-icon icon="expand"></fa-icon>
+                                </div>
+                                <div class="t-menu-text">
+                                    {{ 'Expand' | translate }}
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </ng-template>
+            </ng-container>
         </ul>
         <div class="w-100" [ngbNavOutlet]="tabs"></div>
     </ng-container>

@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[RelationDefinitions_Validate__Save]
 	@Entities [RelationDefinitionList] READONLY,
-	@RelationDefinitionReportDefinitions [RelationDefinitionReportDefinitionList] READONLY,
+	@ReportDefinitions [RelationDefinitionReportDefinitionList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

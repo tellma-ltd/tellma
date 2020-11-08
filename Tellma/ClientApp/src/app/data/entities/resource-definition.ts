@@ -2,14 +2,15 @@
 // tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
-import { EntityDescriptor, ChoicePropDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, lookupDefinitionIdPropDescriptor, DefinitionCardinality, cardinalityPropDescriptor, statePropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
+import { ResourceDefinitionReportDefinition, ResourceDefinitionReportDefinitionForSave } from './resource-definition-report-definition';
 
-export interface ResourceDefinitionForSave extends EntityForSave {
+export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitionReportDefinitionForSave> extends EntityForSave {
     Code?: string;
     TitleSingular?: string;
     TitleSingular2?: string;
@@ -115,9 +116,11 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     MainMenuIcon?: string;
     MainMenuSection?: string;
     MainMenuSortKey?: number;
+
+    ReportDefinitions?: TReportDefinition[];
 }
 
-export interface ResourceDefinition extends ResourceDefinitionForSave {
+export interface ResourceDefinition extends ResourceDefinitionForSave<ResourceDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
 }

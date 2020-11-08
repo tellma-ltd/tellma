@@ -561,8 +561,9 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // Embedded Reports
+
   public showReports(isEdit: boolean, model: Relation) {
-    return true; // !isEdit && !!model && !!model.Id;
+    return !!model && !!model.Id;
   }
 
   public get reports(): DefinitionReportDefinitionForClient[] {

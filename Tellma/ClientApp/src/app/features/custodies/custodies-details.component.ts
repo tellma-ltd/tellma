@@ -4,12 +4,15 @@ import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Custody, CustodyForSave } from '~/app/data/entities/custody';
 import { addToWorkspace } from '~/app/data/util';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { CustodyDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import {
+  CustodyDefinitionForClient, DefinitionReportDefinitionForClient, ReportDefinitionForClient
+} from '~/app/data/dto/definitions-for-client';
 import { LatLngLiteral } from '@agm/core';
+import { ReportView } from '../report-results/report-results.component';
 
 @Component({
   selector: 't-custodies-details',
@@ -412,8 +415,8 @@ export class CustodiesDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Custody_ExternalReference');
   }
 
-  public get showTabs(): boolean {
-    return this.Location_isVisible;
+  public showTabs(isEdit: boolean, model: Custody): boolean {
+    return this.Location_isVisible || (this.reports.length > 0 && this.showReports(isEdit, model));
   }
 
   // Location + Map stuff
@@ -514,4 +517,67 @@ export class CustodiesDetailsComponent extends DetailsBaseComponent implements O
     return this.locationView === view;
   }
 
+  // Embedded Reports
+
+  public showReports(isEdit: boolean, model: Custody) {
+    return !!model && !!model.Id;
+  }
+
+  public get reports(): DefinitionReportDefinitionForClient[] {
+    return this.definition.ReportDefinitions;
+  }
+
+  public reportDefinition(e: DefinitionReportDefinitionForClient): ReportDefinitionForClient {
+    return this.ws.definitions.Reports[e.ReportDefinitionId];
+  }
+
+  public reportTitle(e: DefinitionReportDefinitionForClient): string {
+    return this.ws.getMultilingualValueImmediate(e, 'Name') ||
+      this.ws.getMultilingualValueImmediate(this.reportDefinition(e), 'Title')
+      || this.translate.instant('Untitled');
+  }
+
+  public state(e: DefinitionReportDefinitionForClient): ReportStore {
+    const stateKey = `custodies_details_${this.definitionId}_${e.ReportDefinitionId}`;
+
+    const rs = this.workspace.currentTenant.reportState;
+    if (!rs[stateKey]) {
+      rs[stateKey] = new ReportStore();
+    }
+
+    return rs[stateKey];
+  }
+
+  public reportView(e: DefinitionReportDefinitionForClient): ReportView {
+    const reportDef = this.reportDefinition(e);
+    return !!reportDef && !!reportDef.Chart && reportDef.DefaultsToChart ? ReportView.chart : ReportView.pivot;
+  }
+
+  private get activeTabKey(): string {
+    return `custodies_details_${this.definitionId}_activeTab`;
+  }
+
+  public get activeTab(): string {
+    const key = this.activeTabKey;
+    const miscState = this.ws.miscState;
+    if (!miscState[key]) {
+      if (this.Location_isVisible) {
+        miscState[key] = 'location';
+      } else if (this.reports.length > 0) {
+        miscState[key] = this.reports[0].ReportDefinitionId;
+      } else {
+        miscState[key] = '<unknown>';
+      }
+    }
+
+    return miscState[key];
+  }
+
+  public set activeTab(v: string) {
+    this.ws.miscState[this.activeTabKey] = v;
+  }
+
+  public onExpandReport(reportId: number, model: Custody) {
+    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
+  }
 }

@@ -388,6 +388,12 @@
   <data name="CustodyDefinition" xml:space="preserve">
     <value>تعريف عهدة</value>
   </data>
+  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
+    <value>تعريف تقرير تعريف عهدة</value>
+  </data>
+  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
+    <value>تعريفات تقارير تعريفات عهد</value>
+  </data>
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>تعريفات عهد</value>
   </data>
@@ -1825,6 +1831,12 @@
   <data name="LookupDefinition" xml:space="preserve">
     <value>تعريف قائمة</value>
   </data>
+  <data name="LookupDefinitionReportDefinition" xml:space="preserve">
+    <value>تعريف تقرير تعريف قائمة</value>
+  </data>
+  <data name="LookupDefinitionReportDefinitions" xml:space="preserve">
+    <value>تعريفات تقارير تعريفات قوائم</value>
+  </data>
   <data name="LookupDefinitions" xml:space="preserve">
     <value>تعريفات قوائم</value>
   </data>
@@ -2216,7 +2228,7 @@
     <value>تعريف تقرير تعريف علاقة</value>
   </data>
   <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
-    <value>تعريفات تقارير تعريفات العلاقات</value>
+    <value>تعريفات تقارير تعريفات علاقات</value>
   </data>
   <data name="RelationDefinitions" xml:space="preserve">
     <value>تعريفات العقود</value>
@@ -2487,6 +2499,12 @@
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>عدد الوحدات</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinition" xml:space="preserve">
+    <value>تعريف تقرير تعريف مورد</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinitions" xml:space="preserve">
+    <value>تعريفات تقارير تعريفات موارد</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>تعريفات موارد</value>

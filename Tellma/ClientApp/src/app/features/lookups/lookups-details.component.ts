@@ -3,11 +3,14 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { Lookup, LookupForSave } from '~/app/data/entities/lookup';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import {
+  DefinitionReportDefinitionForClient, LookupDefinitionForClient, ReportDefinitionForClient
+} from '~/app/data/dto/definitions-for-client';
+import { ReportView } from '../report-results/report-results.component';
 
 @Component({
   selector: 't-lookups-details',
@@ -76,7 +79,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
   }
 
   create = () => {
-    const result: LookupForSave = { };
+    const result: LookupForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -130,5 +133,71 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
 
   public get masterCrumb(): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
+  }
+
+  public showTabs(isEdit: boolean, model: Lookup): boolean {
+    return this.reports.length > 0 && this.showReports(isEdit, model);
+  }
+
+  // Embedded Reports
+
+  public showReports(isEdit: boolean, model: Lookup) {
+    return !!model && !!model.Id;
+  }
+
+  public get reports(): DefinitionReportDefinitionForClient[] {
+    return this.definition.ReportDefinitions;
+  }
+
+  public reportDefinition(e: DefinitionReportDefinitionForClient): ReportDefinitionForClient {
+    return this.ws.definitions.Reports[e.ReportDefinitionId];
+  }
+
+  public reportTitle(e: DefinitionReportDefinitionForClient): string {
+    return this.ws.getMultilingualValueImmediate(e, 'Name') ||
+      this.ws.getMultilingualValueImmediate(this.reportDefinition(e), 'Title')
+      || this.translate.instant('Untitled');
+  }
+
+  public state(e: DefinitionReportDefinitionForClient): ReportStore {
+    const stateKey = `lookups_details_${this.definitionId}_${e.ReportDefinitionId}`;
+
+    const rs = this.workspace.currentTenant.reportState;
+    if (!rs[stateKey]) {
+      rs[stateKey] = new ReportStore();
+    }
+
+    return rs[stateKey];
+  }
+
+  public reportView(e: DefinitionReportDefinitionForClient): ReportView {
+    const reportDef = this.reportDefinition(e);
+    return !!reportDef && !!reportDef.Chart && reportDef.DefaultsToChart ? ReportView.chart : ReportView.pivot;
+  }
+
+  private get activeTabKey(): string {
+    return `lookups_details_${this.definitionId}_activeTab`;
+  }
+
+  public get activeTab(): string {
+    const key = this.activeTabKey;
+    const miscState = this.ws.miscState;
+    if (!miscState[key]) {
+      if (this.reports.length > 0) {
+        miscState[key] = this.reports[0].ReportDefinitionId;
+      } else {
+        miscState[key] = '<unknown>';
+      }
+    }
+
+    return miscState[key];
+  }
+
+  public set activeTab(v: string) {
+    this.ws.miscState[this.activeTabKey] = v;
+  }
+
+  public onExpandReport(reportId: number, model: Lookup) {
+    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
   }
 }

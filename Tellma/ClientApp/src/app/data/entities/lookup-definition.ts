@@ -7,8 +7,9 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, statePropDescriptor } from './base/definition-common';
+import { LookupDefinitionReportDefinition, LookupDefinitionReportDefinitionForSave } from './lookup-definition-report-definition';
 
-export interface LookupDefinitionForSave extends EntityForSave {
+export interface LookupDefinitionForSave<TReportDefinition = LookupDefinitionReportDefinitionForSave> extends EntityForSave {
     Code?: string;
     TitleSingular?: string;
     TitleSingular2?: string;
@@ -19,9 +20,11 @@ export interface LookupDefinitionForSave extends EntityForSave {
     MainMenuIcon?: string;
     MainMenuSection?: string;
     MainMenuSortKey?: number;
+
+    ReportDefinitions?: TReportDefinition[];
 }
 
-export interface LookupDefinition extends LookupDefinitionForSave {
+export interface LookupDefinition extends LookupDefinitionForSave<LookupDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
 }
@@ -69,7 +72,7 @@ export function metadata_LookupDefinition(wss: WorkspaceService, trx: TranslateS
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
 
                 // IsActive & Audit info
-                SavedById: {control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }
             }
         };

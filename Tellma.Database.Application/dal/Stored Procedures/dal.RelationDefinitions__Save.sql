@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[RelationDefinitions__Save]
 	@Entities [RelationDefinitionList] READONLY,
-	@RelationDefinitionReportDefinitions [RelationDefinitionReportDefinitionList] READONLY,
+	@ReportDefinitions [RelationDefinitionReportDefinitionList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -370,7 +370,7 @@ SET NOCOUNT ON;
 			RDRD.[Name3]
 		FROM @Entities DD
 		JOIN @IndexedIds II ON DD.[Index] = II.[Index]
-		JOIN @RelationDefinitionReportDefinitions RDRD ON DD.[Index] = RDRD.[HeaderIndex]
+		JOIN @ReportDefinitions RDRD ON DD.[Index] = RDRD.[HeaderIndex]
 	) AS s
 	ON s.Id = t.Id
 	WHEN MATCHED THEN

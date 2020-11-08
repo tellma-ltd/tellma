@@ -388,6 +388,12 @@
   <data name="CustodyDefinition" xml:space="preserve">
     <value>የጥበቃ ፍቺ</value>
   </data>
+  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
+  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>የጥበቃ ፍቺዎች</value>
   </data>
@@ -416,6 +422,9 @@
     <value>ደብቅ</value>
   </data>
   <data name="Definition_ReportDefinition" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
+  <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="Definition_Script" xml:space="preserve">
@@ -1822,6 +1831,12 @@
   <data name="LookupDefinition" xml:space="preserve">
     <value>ፍለጋን ፍቺ</value>
   </data>
+  <data name="LookupDefinitionReportDefinition" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
+  <data name="LookupDefinitionReportDefinitions" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
   <data name="LookupDefinitions" xml:space="preserve">
     <value>ፍለጋን ፍቺዎች</value>
   </data>
@@ -2484,6 +2499,12 @@
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>ክፍል የቁጥሮች</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinition" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
+  </data>
+  <data name="ResourceDefinitionReportDefinitions" xml:space="preserve">
+    <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>

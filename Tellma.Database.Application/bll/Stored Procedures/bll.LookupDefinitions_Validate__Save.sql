@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[LookupDefinitions_Validate__Save]
 	@Entities [LookupDefinitionList] READONLY, -- @ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
+	@ReportDefinitions [LookupDefinitionReportDefinitionList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
