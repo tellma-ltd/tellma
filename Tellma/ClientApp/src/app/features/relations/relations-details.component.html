@@ -438,17 +438,34 @@
 
       <ng-container *ngIf="showReports(isEdit, model)">
         <li *ngFor="let reportDef of reports" [ngbNavItem]="reportDef.ReportDefinitionId">
-          <a ngbNavLink>
+          <a ngbNavLink [tContextMenu]="expandContextMenu" [tContext]="reportDef.ReportDefinitionId">
             <span class="small t-slightly-bold">{{ reportTitle(reportDef) }}</span>
           </a>
           <ng-template ngbNavContent>
             <div class="bg-light" style="height: 450px">
-              <t-report-results class="h-100 w-100" [definition]="reportDefinition(reportDef)" [arguments]="model"
+              <t-report-results class="h-100 w-100" [definition]="reportDefinition(reportDef)"
+                [arguments]="{ Id: model?.Id, CacheBuster: model?.EntityMetadata?.$refresh }"
                 [view]="reportView(reportDef)" [state]="state(reportDef)" mode="embedded">
               </t-report-results>
             </div>
           </ng-template>
         </li>
+
+        <!-- Context menu expanding report -->
+        <ng-template #expandContextMenu let-reportDefId let-close="close">
+          <div class="dropdown">
+            <ul class="dropdown-menu show shadow-sm">
+              <li class="dropdown-item px-0 py-1" (click)="onExpandReport(reportDefId, model); close();">
+                <div class="t-menu-icon">
+                  <fa-icon icon="expand"></fa-icon>
+                </div>
+                <div class="t-menu-text">
+                  {{ 'Expand' | translate }}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
       </ng-container>
     </ul>
     <div class="w-100" [ngbNavOutlet]="tabs"></div>

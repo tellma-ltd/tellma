@@ -9,11 +9,9 @@ import { catchError, debounceTime, map, switchMap, tap, exhaustMap } from 'rxjs/
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { addToWorkspace, Key, addSingleToWorkspace, computeSelectForDetailsPicker } from '~/app/data/util';
+import { addToWorkspace, Key, computeSelectForDetailsPicker } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
-import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
 import { GetArguments } from '~/app/data/dto/get-arguments';
 
 enum SearchStatus {
@@ -126,8 +124,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   @Input()
   formatter: (item: any) => string = (item: any) => {
+    return this.descriptor.format(item);
+  }
+
+  private get descriptor(): EntityDescriptor {
     const definition = this.definitionIdsSingleOrDefault;
-    return metadata[this.collection](this.workspace, this.translate, definition).format(item);
+    return metadata[this.collection](this.workspace, this.translate, definition);
   }
 
   ///////////////// Lifecycle Hooks
@@ -291,28 +293,46 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   private doFetchUnloadedItem(id: string | number) {
-    const args: GetByIdArguments = {
+    // Prep the filter
+    let filter: string;
+    const idDesc = this.descriptor.properties.Id;
+    if (!!idDesc && idDesc.control === 'text')  {
+      filter = `Id eq '${id}'`;
+    } else {
+      filter = `Id eq ${id}`;
+    }
+
+    // Prep the GetArguments
+    const args: GetArguments = {
+      filter,
       expand: this.expand,
       select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect),
     };
 
-    return this.api.getById(id, args).pipe(
-      tap((response: GetByIdResponse) => {
+    // Load the entity from the server
+    return this.api.getFact(args).pipe(
+      tap((response: GetResponse) => {
 
         // Stamp the loaded entity as adhering to additionalSelect
         // This stamp is used to ensureAdditionalSelect
         const stamp = this.additionalSelectKey;
-        if (!!stamp) {
-          response.Result.EntityMetadata[stamp] = 2;
-        }
+        const entity = response.Result[0];
+        if (!!entity) {
 
-        addSingleToWorkspace(response, this.workspace);
-        if (this.chosenItem === id) {
-          this.updateUI(id);
-        }
+          if (!!stamp) {
+            entity.EntityMetadata[stamp] = 2;
+          }
 
-        // Notify the outside world
-        this.entityLoaded.emit();
+          addToWorkspace(response, this.workspace);
+          if (this.chosenItem === id) {
+            this.updateUI(id);
+          }
+
+          // Notify the outside world
+          this.entityLoaded.emit();
+        } else {
+          this.chooseItem(null);
+        }
       }),
       catchError(_ => {
         this.chooseItem(null);
@@ -865,7 +885,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     } else {
       // get the first one or null
-        this.openCreateModalInner(this.createOptions[0]);
+      this.openCreateModalInner(this.createOptions[0]);
     }
   }
 

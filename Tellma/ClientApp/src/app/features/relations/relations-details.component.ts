@@ -562,7 +562,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
   // Embedded Reports
   public showReports(isEdit: boolean, model: Relation) {
-    return !isEdit && !!model && !!model.Id;
+    return true; // !isEdit && !!model && !!model.Id;
   }
 
   public get reports(): DefinitionReportDefinitionForClient[] {
@@ -575,7 +575,8 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
   public reportTitle(e: DefinitionReportDefinitionForClient): string {
     return this.ws.getMultilingualValueImmediate(e, 'Name') ||
-      this.ws.getMultilingualValueImmediate(this.reportDefinition(e), 'Title');
+      this.ws.getMultilingualValueImmediate(this.reportDefinition(e), 'Title')
+      || this.translate.instant('Untitled');
   }
 
   public state(e: DefinitionReportDefinitionForClient): ReportStore {
@@ -618,5 +619,9 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
   public set activeTab(v: string) {
     this.ws.miscState[this.activeTabKey] = v;
+  }
+
+  public onExpandReport(reportId: number, model: Relation) {
+    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
   }
 }

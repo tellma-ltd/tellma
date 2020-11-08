@@ -464,8 +464,11 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           tap((response: GetByIdResponse) => {
 
             // add the server item to the workspace
-            this.state.detailsId = addSingleToWorkspace(response, this.workspace);
-            this.state.extras = response.Extras;
+            s.detailsId = addSingleToWorkspace(response, this.workspace);
+            s.extras = response.Extras;
+
+            this.incrementRefreshCounter();
+
             if (!!this.handleFreshExtras) {
               this.handleFreshExtras(response.Extras);
             }
@@ -478,7 +481,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
             } else {
               // display the item in readonly if it's a screen
               // or in edit if it's a popup
-              this.state.detailsStatus = DetailsStatus.loaded;
+              s.detailsStatus = DetailsStatus.loaded;
               if (this.isPopupMode || showInEditMode) {
                 this.onEdit();
               }
@@ -486,7 +489,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           }),
           catchError((friendlyError) => {
             this._errorMessage = friendlyError.error;
-            this.state.detailsStatus = DetailsStatus.error;
+            s.detailsStatus = DetailsStatus.error;
             return of(null);
           })
         );
@@ -531,6 +534,17 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     }
 
     return mdState[key];
+  }
+
+  private incrementRefreshCounter() {
+    // Some components wish to track whether the entity was manually refreshed from the details screen
+    const model = this.viewModel;
+    if (!!model) {
+      model.EntityMetadata = model.EntityMetadata || { };
+      const meta = model.EntityMetadata;
+      meta.$refresh = meta.$refresh || 0;
+      meta.$refresh++;
+    }
   }
 
   public canDeactivate(currentUrl?: string, nextUrl?: string): boolean | Observable<boolean> {
@@ -910,6 +924,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           if (!!this.handleFreshExtras) {
             this.handleFreshExtras(response.Extras);
           }
+
+          this.incrementRefreshCounter();
 
           // IF it's a new entity add it to the global state, (not the local one even if inside a popup)
           const entityWs = this.workspace.current[response.CollectionName];
