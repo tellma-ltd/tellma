@@ -335,6 +335,7 @@
   "Error_LoadingCompanySettings": "حدث خطأ أثناء تحميل إعدادات الشركة",
   "Error_LoadingGlobalSettings": "حدث خطأ أثناء تحميل إعدادات النظام",
   "Error_LoginSessionExpired": "إنتهت صلاحية تسجيل دخولك، يرجى تسحيل الدخول من جديد",
+  "Error_ManyToManyReconciliation": "مطابقة أسطر متعددة مع أسطر متعددة",
   "Error_NoExRateFoundForCurrency0Date1": "لم يتم العثور على سعر صرف مناسب للعملة ({{0}}) بتاريخ ({{1}}).",
   "Error_NotLoadedYet": "البيانات لم تحمل بعد",
   "Error_OpenDocumentBeforeEdit": "قم بفتح المستند أولا.",
