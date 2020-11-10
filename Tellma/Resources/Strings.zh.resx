@@ -389,10 +389,10 @@
     <value>托管定义</value>
   </data>
   <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
-    <value>Loading...</value>
+    <value>托管定义报表定义</value>
   </data>
   <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>托管定义报表定义</value>
   </data>
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>托管定义</value>
@@ -425,7 +425,7 @@
     <value>报告定义</value>
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>报告定义</value>
   </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>脚本</value>
@@ -2228,7 +2228,7 @@
     <value>关系定义报表定义</value>
   </data>
   <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>关系定义报表定义</value>
   </data>
   <data name="RelationDefinitions" xml:space="preserve">
     <value>关联定义</value>

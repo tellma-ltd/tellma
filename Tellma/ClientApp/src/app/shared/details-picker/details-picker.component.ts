@@ -481,7 +481,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       const inactiveFilter = this.inactiveFilter();
       if (!!inactiveFilter) {
         if (!!result) {
-          result = `${inactiveFilter} and ${result}`;
+          result = `(${inactiveFilter}) and (${result})`;
         } else {
           result = inactiveFilter;
         }
@@ -502,7 +502,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
         .reduce((e1, e2) => `${e1} or ${e2}`);
 
       if (!!result) {
-        result = `${definitionfilter} and ${result}`;
+        result = `(${definitionfilter}) and (${result})`;
 
       } else {
         result = definitionfilter;

@@ -335,6 +335,7 @@
   "Error_LoadingCompanySettings": "የኩባንያ ቅንብሮችን በመጫን ላይ ስህተት",
   "Error_LoadingGlobalSettings": "በመጫን ላይ ስህተት ስርዓት ቅንብሮች",
   "Error_LoginSessionExpired": "የእርስዎ ክፍለ-ጊዜ አብቅቷል, በመለያ-እባክዎ እንደገና",
+  "Error_ManyToManyReconciliation": "የተባበሩት መንግስታት-የታረቀ",
   "Error_NoExRateFoundForCurrency0Date1": "በዛሬ ቀን {{0}} 'የምንዛሬ ተመኖች አልተገኙም {{1}}",
   "Error_NotLoadedYet": "የተባበሩት መንግስታት-የታረቀ",
   "Error_OpenDocumentBeforeEdit": "እባክዎ መጀመሪያ ሰነዱን አይለጥፉ",

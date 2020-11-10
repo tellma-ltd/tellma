@@ -1935,7 +1935,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   public get disableReconcileChecked(): boolean {
     if (!this.canEditPermissions) {
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
-    } else if (this.checkedEntriesTotal !== this.checkedExEntriesTotal) {
+    } else if (this.checkedEntries.length > 1 && this.checkedExEntriesTotal > 1) {
+      return this.translate.instant('Error_ManyToManyReconciliation');
+    } else if (Math.round(this.checkedEntriesTotal * 10000) !== Math.round(this.checkedExEntriesTotal * 10000)) {
+      // Rounding is key, since JS addition produces slightly different results when you change the order due to floating precision
       return this.translate.instant('Error_TotalsImbalance');
     }
 

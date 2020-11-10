@@ -331,7 +331,7 @@
             <ng-container *ngSwitchCase="'Pie'">
                 <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
-                    (select)="onChartSelect($event.name)">
+                    (select)="onChartSelect($event.name)" [trimLabels]="false">
                     <ng-template #tooltipTemplate let-model="model">
                         <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
                         </ng-container>
@@ -343,7 +343,7 @@
             <ng-container *ngSwitchCase="'Doughnut'">
                 <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [doughnut]="true" [labelFormatting]="formatChartDimension"
-                    [labels]="true" (select)="onChartSelect($event.name)">
+                    [labels]="true" (select)="onChartSelect($event.name)" [trimLabels]="false">
                     <ng-template #tooltipTemplate let-model="model">
                         <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
                         </ng-container>

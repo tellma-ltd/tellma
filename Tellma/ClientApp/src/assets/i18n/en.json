@@ -335,6 +335,7 @@
   "Error_LoadingCompanySettings": "Error loading company settings",
   "Error_LoadingGlobalSettings": "Error loading system settings",
   "Error_LoginSessionExpired": "Your session has expired, please sign-in again",
+  "Error_ManyToManyReconciliation": "Reconciling multiple entries with multiple external entries",
   "Error_NoExRateFoundForCurrency0Date1": "No exchange rate found for currency '{{0}}' on date: {{1}}.",
   "Error_NotLoadedYet": "Data is not loaded",
   "Error_OpenDocumentBeforeEdit": "Please open the document first.",

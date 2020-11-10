@@ -82,7 +82,7 @@ namespace Tellma.Controllers.ImportExport
         /// <summary>
         /// ParentId property is skipped in the regular parsing and hydration, since it relies
         /// on the complete list of imported entities to be hydrated first.
-        /// This method does he needful and hydrates the ParentIds
+        /// This method does the needful and hydrates the ParentIds
         /// </summary>
         private void HydrateParentIds<TEntityForSave>(IEnumerable<TEntityForSave> result, ImportErrors errors, ForeignKeyMappingInfo parentIdProp) where TEntityForSave : Entity
         {
