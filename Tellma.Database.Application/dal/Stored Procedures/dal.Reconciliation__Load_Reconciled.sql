@@ -12,35 +12,31 @@
 AS
 	DECLARE @ReconciliationIds IdList;
 
-	SELECT @ReconciledCount = COUNT(DISTINCT RE.[ReconciliationId])
-	FROM dbo.ReconciliationEntries RE
-	JOIN dbo.Entries E ON RE.[EntryId] = E.[Id]
-	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[CustodyId] = @CustodyId
-	AND E.[AccountId] = @AccountId
-	AND L.[State] = 4
-	AND E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries)
-	AND (@ToDate IS NULL OR L.PostingDate >= @FromDate)
-	AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
-	AND (@FromAmount IS NULL OR E.[MonetaryValue] >= @FromAmount)
-	AND (@ToAmount IS NULL OR E.[MonetaryValue] <= @ToAmount)
-	AND (@ExternalReferenceContains IS NULL OR E.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
+	SELECT @ReconciledCount = COUNT(DISTINCT R.[Id])
+	FROM dbo.Reconciliations  R
+	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
+	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
+	WHERE EE.[CustodyId] = @CustodyId
+	AND EE.[AccountId] = @AccountId
+	AND (@ToDate IS NULL OR PostingDate >= @FromDate)
+	AND (@ToDate IS NULL OR PostingDate <= @ToDate)
+	AND (@FromAmount IS NULL OR EE.[MonetaryValue] >= @FromAmount)
+	AND (@ToAmount IS NULL OR EE.[MonetaryValue] <= @ToAmount)
+	AND (@ExternalReferenceContains IS NULL OR EE.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
 
 	INSERT INTO @ReconciliationIds
-	SELECT RE.[ReconciliationId]
-	FROM dbo.ReconciliationEntries RE
-	JOIN dbo.Entries E ON RE.[EntryId] = E.[Id]
-	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[CustodyId] = @CustodyId
-	AND E.[AccountId] = @AccountId
-	AND L.[State] = 4
-	AND E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries)
-	AND (@ToDate IS NULL OR L.PostingDate >= @FromDate)
-	AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
-	AND (@FromAmount IS NULL OR E.[MonetaryValue] >= @FromAmount)
-	AND (@ToAmount IS NULL OR E.[MonetaryValue] <= @ToAmount)
-	AND (@ExternalReferenceContains IS NULL OR E.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
-	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
+	SELECT R.[Id]
+	FROM dbo.Reconciliations  R
+	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
+	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
+	WHERE EE.[CustodyId] = @CustodyId
+	AND EE.[AccountId] = @AccountId
+	AND (@ToDate IS NULL OR PostingDate >= @FromDate)
+	AND (@ToDate IS NULL OR PostingDate <= @ToDate)
+	AND (@FromAmount IS NULL OR EE.[MonetaryValue] >= @FromAmount)
+	AND (@ToAmount IS NULL OR EE.[MonetaryValue] <= @ToAmount)
+	AND (@ExternalReferenceContains IS NULL OR EE.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
+	ORDER BY EE.[PostingDate], EE.[MonetaryValue], EE.[ExternalReference]
 	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
 
 	SELECT *

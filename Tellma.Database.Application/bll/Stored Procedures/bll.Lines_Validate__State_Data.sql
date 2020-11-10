@@ -347,7 +347,7 @@ BEGIN
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 END
 -- cannot unpost (4=>1,2,3) iif it cause negative quantity
-IF @State < 4
+IF @State < 4 and (1=0)
 BEGIN
 	WITH InventoryAccounts AS (
 		SELECT A.[Id]
@@ -396,7 +396,7 @@ BEGIN
 
 END
 -- cannot post (1,2,3=>4) if it causes negative anywhere
-IF @State = 4
+IF @State = 4 and (1=0)
 BEGIN
 	WITH InventoryAccounts AS (
 		SELECT A.[Id]

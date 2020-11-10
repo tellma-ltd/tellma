@@ -397,6 +397,53 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
+	SET [NotedDateLabel] = N'Due Date'
+WHERE [Concept] IN (
+	N'NoncurrentReceivables',
+	N'NoncurrentTradeReceivables',
+	N'NoncurrentReceivablesDueFromRelatedParties',
+	N'NoncurrentPrepaymentsAndNoncurrentAccruedIncome',
+	N'NoncurrentPrepayments',
+	N'NoncurrentAccruedIncome',
+	N'NoncurrentReceivablesFromTaxesOtherThanIncomeTax',
+	N'NoncurrentValueAddedTaxReceivables',
+	N'NoncurrentReceivablesFromSaleOfProperties',
+	N'NoncurrentReceivablesFromRentalOfProperties',
+	N'OtherNoncurrentReceivables',
+	N'OtherNoncurrentFinancialAssets',
+	N'NoncurrentFinancialAssetsAtFairValueThroughProfitOrLoss',
+	N'NoncurrentFinancialAssetsAtFairValueThroughProfitOrLossDesignatedUponInitialRecognition',
+	N'NoncurrentFinancialAssetsAtFairValueThroughProfitOrLossMeasuredAsSuchInAccordanceWithExemptionForRepurchaseOfOwnFinancialLiabilities',
+	N'NoncurrentFinancialAssetsAtFairValueThroughProfitOrLossMeasuredAsSuchInAccordanceWithExemptionForReacquisitionOfOwnEquityInstruments',
+	N'NoncurrentFinancialAssetsAtFairValueThroughProfitOrLossClassifiedAsHeldForTrading',
+	N'NoncurrentFinancialAssetsAtFairValueThroughProfitOrLossMandatorilyMeasuredAtFairValue',
+	N'NoncurrentFinancialAssetsAvailableforsale',
+	N'NoncurrentHeldtomaturityInvestments',
+	N'NoncurrentLoansAndReceivables',
+	N'NoncurrentFinancialAssetsAtFairValueThroughOtherComprehensiveIncome',
+	N'NoncurrentFinancialAssetsMeasuredAtFairValueThroughOtherComprehensiveIncome',
+	N'NoncurrentInvestmentsInEquityInstrumentsDesignatedAtFairValueThroughOtherComprehensiveIncome',
+	N'NoncurrentFinancialAssetsAtAmortisedCost',
+	N'CurrentTradeReceivables',
+	N'TradeAndOtherCurrentReceivablesDueFromRelatedParties',
+	N'CurrentPrepaymentsAndCurrentAccruedIncome',
+	N'CurrentPrepayments',
+	N'CurrentPrepaymentsToSuppliersExtension',
+	N'CurrentAdvancesToSuppliers',
+	N'CurrentPrepaidExpenses',
+	N'CurrentPrepaymentsToEmployeesExtension',
+	N'CurrentAdvancesToEmployeesExtension',
+	N'CurrentDeductionsFromEmployeesExtension',
+	N'CurrentAccruedIncome',
+	N'CurrentBilledButNotReceivedExtension',
+	N'CurrentReceivablesFromTaxesOtherThanIncomeTax',
+	N'CurrentValueAddedTaxReceivables',
+	N'CurrentReceivablesFromRentalOfProperties',
+	N'OtherCurrentReceivables',
+	N'OtherCurrentFinancialAssets'
+);
+
+UPDATE  @AccountTypes
 	SET [ExternalReferenceLabel] = N'Check/Rcpt #', [AdditionalReferenceLabel] = N'Voucher #'
 WHERE [Concept] IN (
 	N'CashOnHand',

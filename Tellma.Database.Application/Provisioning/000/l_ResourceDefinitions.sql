@@ -60,11 +60,11 @@
 (60, N'OvertimeBenefit', N'Miscellaneous', N'Overtime Benefit', N'Overtime Benefits', N'user-clock', N'HumanCapital', 25,  N'Required', N'None', N'Optional', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (61, N'CheckReceived', N'OtherFinancialAssets', N'Check Received', N'Checks Received', N'money-check', N'Financials', 30,  N'Required', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Check Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'None',NULL, N'Required',@CustomerRLD),
 (62, N'Task', N'Miscellaneous', N'Task', N'Tasks', N'', N'Administration', 220,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'Required', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
-(63, N'LeaveTypes', N'Miscellaneous', N'Leave Type', N'Leave Types', N'', N'HumanCapital', 35,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(63, N'AbsenceReasons', N'Miscellaneous', N'Absence Reason', N'Absence Reasons', N'', N'HumanCapital', 35,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(64, N'EmployeeLoan', N'OtherFinancialAssets', N'Employee Loan', N'Employees Loans', N'hand-holding-usd', N'HumanCapital', 80,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
 
 (70, N'Accruals', N'TradeAndOtherPayables', N'Accrual', N'Accruals', N'', N'Financials', 40,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'Optional', N'Invoice Date', N'None', N'', N'None', N'', N'None',NULL, N'Optional',@SupplierRLD),
 (71, N'AccruedIncome', N'TradeAndOtherReceivables', N'Accrued Income', N'Accrued Incomes', N'', N'Financials', 50,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',@CustomerRLD),
-(72, N'EmployeeLoan', N'OtherFinancialAssets', N'Employee Loan', N'Employees Loans', N'', N'Financials', 80,  N'Required', N'Required', N'None', N'Optional', N'None', N'Optional', N'Loan Date', N'Optional', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'Optional',@EmployeeRLD),
 (73, N'CurrentBilledButNotIssued', N'TradeAndOtherPayables', N'Billed Not Issued', N'Billed Not Issued', N'', N'Financials', 90,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',@CustomerRLD),
 (74, N'DeferredIncome', N'TradeAndOtherPayables', N'Deferred Income', N'Deferred Incomes', N'', N'Financials', 100,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',@CustomerRLD),
 (75, N'Prepayments', N'TradeAndOtherReceivables', N'Prepayment', N'Prepayments', N'', N'Financials', 110,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',@SupplierRLD),
@@ -290,11 +290,11 @@ DECLARE @EmployeeBenefitRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHE
 DECLARE @OvertimeBenefitRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'OvertimeBenefit');
 DECLARE @CheckReceivedRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CheckReceived');
 DECLARE @TaskRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Task');
-DECLARE @LeaveTypesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'LeaveTypes');
+DECLARE @AbsenceReasonsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AbsenceReasons');
+DECLARE @EmployeeLoanRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeLoan');
 
 DECLARE @AccrualsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Accruals');
 DECLARE @AccruedIncomeRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AccruedIncome');
-DECLARE @EmployeeLoanRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeLoan');
 DECLARE @CurrentBilledButNotIssuedRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CurrentBilledButNotIssued');
 DECLARE @DeferredIncomeRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'DeferredIncome');
 DECLARE @PrepaymentsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Prepayments');
@@ -383,11 +383,11 @@ Variables
 (@OvertimeBenefitRD),
 (@CheckReceivedRD),
 (@TaskRD),
-(@LeaveTypesRD);
+(@AbsenceReasonsRD),
+(@EmployeeLoanRD),
 
 (@AccrualsRD),
 (@AccruedIncomeRD),
-(@EmployeeLoanRD),
 (@CurrentBilledButNotIssuedRD),
 (@DeferredIncomeRD),
 (@PrepaymentsRD),
@@ -411,5 +411,5 @@ Variables
 (@FinishedOilRD),
 (@ByproductOilRD),
 (@RawGrainRD),
-(@RawVehicleRD)
+(@RawVehicleRD),
 */

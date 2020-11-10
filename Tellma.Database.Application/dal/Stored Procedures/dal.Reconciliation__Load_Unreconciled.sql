@@ -18,16 +18,9 @@ AS
 	WHERE E.[CustodyId] = @CustodyId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
-	AND L.[PostingDate] <= @AsOfDate
+	AND L.[PostingDate] <= @AsOfDate;
 
-	SELECT @UnreconciledEntriesCount = COUNT(*), @UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
-	FROM dbo.Entries E
-	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[CustodyId] = @CustodyId
-	AND E.[AccountId] = @AccountId
-	AND L.[State] = 4
-	AND L.[PostingDate] <= @AsOfDate
-	AND E.[Id] NOT IN (
+	With SpecialEntries AS (
 		SELECT DISTINCT RE.[EntryId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
@@ -37,6 +30,23 @@ AS
 		AND EE.[AccountId] = @AccountId
 		AND EE.[CustodyId] = @CustodyId
 	)
+	SELECT
+		@UnreconciledEntriesCount = COUNT(*),
+		@UnreconciledEntriesBalance = SUM(
+			IIF (L.[PostingDate] <= @AsOfDate , E.[Direction] * E.[MonetaryValue], -E.[Direction] * E.[MonetaryValue])
+		)
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	WHERE E.[CustodyId] = @CustodyId
+	AND E.[AccountId] = @AccountId
+	AND L.[State] = 4
+	AND (
+		L.[PostingDate] > @AsOfDate 
+		AND E.[Id] IN (SELECT EntryId FROM SpecialEntries)
+		OR
+		L.[PostingDate] <= @AsOfDate  
+		AND E.[Id] NOT IN (SELECT EntryId FROM SpecialEntries)
+	);
 
 	SELECT @UnreconciledExternalEntriesCount = COUNT(*), @UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.ExternalEntries E
