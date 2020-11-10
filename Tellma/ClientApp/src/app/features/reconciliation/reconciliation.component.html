@@ -725,28 +725,28 @@
 <!-- Success Modal -->
 <ng-template #successModal let-modal>
 
-  <!-- header -->
-  <div class="modal-header">
-    <h5 class="modal-title">
-      <fa-icon class="text-success" icon="check"></fa-icon>&nbsp;&nbsp;{{ 'Success' | translate }}
-    </h5>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-success" icon="check"></fa-icon>&nbsp;&nbsp;{{ 'Success' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 
-  <!-- body -->
-  <div class="modal-body">
-    {{ modalSuccessMessage }}
-  </div>
+    <!-- body -->
+    <div class="modal-body">
+        {{ modalSuccessMessage }}
+    </div>
 
-  <!-- footer -->
-  <div class="modal-footer">
-    <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
-      <fa-icon icon="times"></fa-icon>
-      &nbsp;{{ 'Dismiss' | translate }}
-    </button>
-  </div>
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
 </ng-template>
 
 <!-- Unsaved Changes Modal -->
@@ -812,29 +812,29 @@
                 <tbody>
                     <tr>
                         <td>{{ 'InternalBalance' | translate }}</td>
-                        <td>{{ entriesBalance | accounting:amountsFormat }}</td>
                         <td></td>
+                        <td class="text-right">{{ entriesBalance | accounting:amountsFormat }}&zwnj;</td>
                     </tr>
                     <tr>
                         <td>{{ 'InternalUnreconciledBalance' | translate }}</td>
-                        <td>{{ unreconciledEntriesBalance | accounting:amountsFormat }}</td>
                         <td class="small">
                             <fa-icon class="t-vertical-align-middle" icon="minus"></fa-icon>
                         </td>
+                        <td class="text-right">{{ unreconciledEntriesBalance | accounting:amountsFormat }}&zwnj;</td>
                     </tr>
                     <tr>
                         <td>{{ 'ExternalUnreconciledBalance' | translate }}</td>
-                        <td>{{ unreconciledExEntriesBalance | accounting:amountsFormat }}</td>
                         <td class="small">
                             <fa-icon class="t-vertical-align-middle" icon="plus"></fa-icon>
                         </td>
+                        <td class="text-right">{{ unreconciledExEntriesBalance | accounting:amountsFormat }}&zwnj;</td>
                     </tr>
                     <tr>
                         <td>{{ 'ExternalBalance' | translate }}</td>
-                        <td>{{ exEntriesBalance | accounting:amountsFormat }}</td>
                         <td class="small">
                             <fa-icon class="t-vertical-align-middle" icon="equals"></fa-icon>
                         </td>
+                        <td class="text-right">{{ exEntriesBalance | accounting:amountsFormat }}&zwnj;</td>
                     </tr>
                 </tbody>
             </table>
@@ -867,11 +867,13 @@
     <div class="modal-body">
         <div class="row pt-0 pb-3 px-2">
             <t-form-group class="t-wide-form-group" [label]="'PostingDateTolerance' | translate">
-                <t-selector [(ngModel)]="postingDateTolerance" [choices]="postingDateToleranceChoices" [hideEmptyOption]="true">
+                <t-selector [(ngModel)]="postingDateTolerance" [choices]="postingDateToleranceChoices"
+                    [hideEmptyOption]="true">
                 </t-selector>
             </t-form-group>
             <t-form-group class="t-wide-form-group" [label]="'ExternalReferenceTolerance' | translate">
-                <t-selector [(ngModel)]="externalRefTolerance" [choices]="externalRefToleranceChoices"  [hideEmptyOption]="true">
+                <t-selector [(ngModel)]="externalRefTolerance" [choices]="externalRefToleranceChoices"
+                    [hideEmptyOption]="true">
                 </t-selector>
             </t-form-group>
         </div>

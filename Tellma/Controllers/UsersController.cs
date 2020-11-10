@@ -403,6 +403,14 @@ namespace Tellma.Controllers
                 Name3 = me.Name3?.Trim(),
                 PreferredLanguage = me.PreferredLanguage?.Trim(),
                 Image = me.Image,
+                ContactEmail = user.ContactEmail,
+                ContactMobile = user.ContactMobile,
+                EmailNewInboxItem = user.EmailNewInboxItem,
+                SmsNewInboxItem = user.SmsNewInboxItem,
+                PushNewInboxItem = user.PushNewInboxItem,
+                NormalizedContactMobile = user.NormalizedContactMobile,
+                PreferredChannel = user.PreferredChannel,
+                 
                 EntityMetadata = new EntityMetadata
                 {
                     [nameof(UserForSave.Id)] = FieldMetadata.Loaded,
@@ -411,7 +419,14 @@ namespace Tellma.Controllers
                     [nameof(UserForSave.Name2)] = FieldMetadata.Loaded,
                     [nameof(UserForSave.Name3)] = FieldMetadata.Loaded,
                     [nameof(UserForSave.PreferredLanguage)] = FieldMetadata.Loaded,
-                    [nameof(UserForSave.Image)] = FieldMetadata.Loaded
+                    [nameof(UserForSave.Image)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.ContactEmail)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.ContactMobile)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.EmailNewInboxItem)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.SmsNewInboxItem)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.PushNewInboxItem)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.NormalizedContactMobile)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.PreferredChannel)] = FieldMetadata.Loaded,
                 },
 
                 // The roles must remain the way they are
