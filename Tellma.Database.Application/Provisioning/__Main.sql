@@ -1,7 +1,6 @@
 ﻿:r .\000\a_Declarations.sql
-:r .\000\b_AdminUser.sql
 IF @OverwriteDb = 0 RETURN
-
+:r .\000\b_AdminUser.sql
 :r .\000\c_Currencies.sql
 :r .\000\d_Units.sql
 :r .\000\e_RuleTypes.sql

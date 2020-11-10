@@ -135,11 +135,11 @@ AS
 		SET @RowCount = @@ROWCOUNT;
 		-- IF no changes, exit the loop
 		IF @RowCount = 0 BREAK;
-		IF @RowCount = @PrevRowCount -- Stuck in a loop
-		BEGIN
-			RAISERROR(N'Stuck in infinite loop', 16, 1)
-			BREAK;
-		END;
+		IF @RowCount = @PrevRowCount BREAK;-- Stuck in a loop
+		--BEGIN
+		--	RAISERROR(N'Stuck in infinite loop', 16, 1)
+		--	BREAK;
+		--END;
 	
 		WITH CumBalances AS (
 			SELECT [Id],
