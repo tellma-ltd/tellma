@@ -6,13 +6,14 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountClassification", Plural = "AccountClassifications")]
-    public class AccountClassificationForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountClassificationForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
 
         [Display(Name = "TreeParent")]
         [AlwaysAccessible]
+        [SelfReferencing(nameof(ParentIndex))]
         public int? ParentId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
@@ -41,7 +42,7 @@ namespace Tellma.Entities
         public int? AccountTypeParentId { get; set; }
     }
 
-    public class AccountClassification : AccountClassificationForSave, ITreeEntity<int>
+    public class AccountClassification : AccountClassificationForSave
     {
         [AlwaysAccessible]
         public short? Level { get; set; }

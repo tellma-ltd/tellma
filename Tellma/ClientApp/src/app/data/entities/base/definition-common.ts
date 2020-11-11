@@ -174,6 +174,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'history',
           'holly-berry',
           'home',
+          'hourglass-half',
           'id-badge',
           'image',
           'inbox',

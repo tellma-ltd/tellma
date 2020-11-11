@@ -6,13 +6,14 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "EntryType", Plural = "EntryTypes")]
-    public class EntryTypeForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class EntryTypeForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
 
         [Display(Name = "TreeParent")]
         [AlwaysAccessible]
+        [SelfReferencing(nameof(ParentIndex))]
         public int? ParentId { get; set; }
 
         [Display(Name = "Code")]
@@ -65,7 +66,7 @@ namespace Tellma.Entities
         public bool? IsAssignable { get; set; }
     }
 
-    public class EntryType : EntryTypeForSave, ITreeEntity<int>
+    public class EntryType : EntryTypeForSave
     {
         [AlwaysAccessible]
         public short? Level { get; set; }
