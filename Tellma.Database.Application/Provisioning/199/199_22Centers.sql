@@ -1,4 +1,4 @@
-﻿DELETE FROM @Centers;
+﻿/*DELETE FROM @Centers;
 INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES
 (0,NULL, N'SSIA', N'الجهاز الاستثماري', N'0', N'Abstract'),
 (1,0, N'Headquarters', N'المقر الرئيسي', N'1', N'BusinessUnit'),
@@ -177,3 +177,4 @@ DECLARE @107C_MehiraSchemeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHER
 DECLARE @107C_MehiraSchemeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - SGA');
 DECLARE @107C_MehiraSchemePhase1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - Phase 1');
 DECLARE @107C_MehiraSchemePhase2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Mehira Scheme - Phase 2');
+*/

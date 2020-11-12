@@ -562,8 +562,8 @@
     <Build Include="dbo\Tables\dbo.DocumentLineDefinitionEntries.sql" />
     <None Include="Provisioning\000\r_AccountClassifications.sql" />
     <None Include="Provisioning\199\00_Script.sql" />
-    <None Include="Provisioning\199\10_Users.sql" />
-    <None Include="Provisioning\199\11_Permissions.sql" />
+    <None Include="Provisioning\199\199_11Users.sql" />
+    <None Include="Provisioning\199\199_12Permissions.sql" />
     <None Include="Provisioning\199\199_21Lookups.sql" />
     <None Include="Provisioning\199\21_Units.sql" />
     <None Include="Provisioning\199\199_22Centers.sql" />
@@ -758,9 +758,10 @@
     <None Include="_Azure\Azure.201.Soreti.publish.xml" />
     <None Include="_Azure\Azure.199.BananSDDemos.publish.xml" />
     <None Include="201.Soreti.publish.xml" />
-    <None Include="Provisioning\199\30_Resources.sql" />
+    <None Include="Provisioning\199\199_24Resources.sql" />
     <None Include="Provisioning\000\u_Lookups.sql" />
     <None Include="_Azure\Azure.200.BananET.publish.xml" />
+    <None Include="_Azure\Azure.399.BananSADemos.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

@@ -12,7 +12,8 @@ BEGIN
 
 	WITH PPEAccountIds AS (
 		SELECT [Id] FROM dbo.[Accounts]
-		WHERE [AccountTypeId] IN (
+		WHERE [IsActive] = 1
+		AND [AccountTypeId] IN (
 			SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@PPENode) = 1
 		)
 	),
@@ -27,33 +28,44 @@ BEGIN
 		AND E.EntryTypeId = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DepreciationPropertyPlantAndEquipment')
 		GROUP BY E.[ResourceId]
 	),
+	LastCostCenters AS (
+		SELECT E.[ResourceId], MAX(CenterId) AS [CostCenter]
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON E.LineId = L.Id
+		JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+		JOIN LastDepreciationDates LDD ON E.[ResourceId] = LDD.[ResourceId] AND E.[Time2] = LDD.[LastDepreciationDate]
+		WHERE C.[IsLeaf] = 1
+		AND L.[State] = 4
+		AND E.UnitId <> @PureUnitId
+		GROUP BY E.[ResourceId]
+	),
 	DepreciablePPEs AS (
 		SELECT
-				E.[ResourceId], MIN(L.[PostingDate]) AS AcquisitionDate
+				E.[ResourceId], MIN(E.[Time1]) AS AcquisitionDate
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
 		LEFT JOIN LastDepreciationDates LDD ON E.[ResourceId] = LDD.[ResourceId]
 		WHERE L.[State] = 4
 		AND E.UnitId <> @PureUnitId
-		GROUP BY E.[ResourceId]
+		GROUP BY E.[ResourceId], LDD.LastDepreciationDate
 		HAVING SUM(E.[Direction] * E.[MonetaryValue]) > 0
+		AND (LDD.LastDepreciationDate IS NULL OR LDD.LastDepreciationDate < @DepreciationPeriodEnds)
 	)
 	INSERT INTO @WideLines([Index], [DefinitionId],
 		[DocumentIndex],[ResourceId1],
-		[UnitId1],
-		[Time10], --[Time20],
-		[CurrencyId0], [CurrencyId1])
+		[Time10],
+		[CurrencyId0], [CurrencyId1], [CenterId0]
+		)
 	SELECT ROW_NUMBER() OVER(ORDER BY R.[Id]) - 1, @LineDefinitionId,
 			@DocumentIndex, R.[Id],
-		--	IIF(U.[UnitType] = N'Time', )
-			R.[UnitId],
 			ISNULL(DATEADD(DAY, 1,LDD.LastDepreciationDate), DPPE.AcquisitionDate),
-			R.[CurrencyId], R.[CurrencyId]
+			R.[CurrencyId], R.[CurrencyId], LCC.[CostCenter]
 	FROM dbo.[Resources] R
 	JOIN dbo.Units U ON R.[UnitId] = U.[Id]
 	JOIN DepreciablePPEs DPPE ON R.[Id] = DPPE.[ResourceId]
 	LEFT JOIN LastDepreciationDates LDD ON DPPE.[ResourceId] = LDD.[ResourceId]
+	LEFT JOIN LastCostCenters LCC ON R.[Id] = LCC.[ResourceId]
 
 	SELECT * FROM @WideLines;
 END
