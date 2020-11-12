@@ -1,6 +1,6 @@
 <t-details collection="CustodyDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'CustodyDefinitions' | translate"
-    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[
+    [additionalSelect]="additionalSelect" [masterCrumb]="'CustodyDefinitions' | translate" [detailsCrumb]="detailsCrumb"
+    [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[
         { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeArchived, action: onMakeArchived, showAction: showMakeArchived, canAction: hasStatePermission, actionTooltip: stateTooltip }
@@ -62,7 +62,7 @@
                         <label class="small" for="code">{{ 'Code' | translate }}</label>
                         <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
                             #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" required/>
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: code, serverErrors: model.serverErrors?.Code }">
                         </ng-container>
@@ -76,7 +76,8 @@
                         <input class="form-control t-studio-input" id="titlesingular" type="text"
                             [(ngModel)]="model.TitleSingular"
                             (ngModelChange)="onDefinitionChange(model, 'TitleSingular')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel" required/>
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel"
+                            required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular, serverErrors: model.serverErrors?.TitleSingular }">
                         </ng-container>
@@ -118,7 +119,8 @@
                             for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="titleplural" type="text"
                             [(ngModel)]="model.TitlePlural" (ngModelChange)="onDefinitionChange(model, 'TitlePlural')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel" required/>
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel"
+                            required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titleplural, serverErrors: model.serverErrors?.TitlePlural }">
                         </ng-container>
@@ -208,7 +210,7 @@
                     </ng-container>
                     <ng-container
                         *ngTemplateOutlet="labeledProp; context: { prop: 'ExternalReference', propLower: 'externalreference', fieldName: 'Custody_ExternalReference' }">
-                    </ng-container>                    
+                    </ng-container>
 
                     <!-- Custodian -->
                     <ng-container
@@ -216,15 +218,12 @@
                     </ng-container>
                     <div class="form-group" *ngIf="isVisible(model.CustodianVisibility)"
                         [class.is-invalid]="invalid(defId, model?.serverErrors?.CustodianDefinitionId)">
-                        <label class="small"
-                            for="custodiandefinitionId">{{ ('Field0Definition' | translate: { '0': ('Custody_Custodian' | translate) }) }}</label>
+                        <label
+                            class="small">{{ ('Field0Definition' | translate: { '0': ('Custody_Custodian' | translate) }) }}</label>
 
-                        <select class="form-control t-studio-input" id="custodiandefinitionId"
-                            [(ngModel)]="model.CustodianDefinitionId" (ngModelChange)="onDefinitionChange(model)"
-                            #defId="ngModel">
-                            <option *ngFor="let c of relationDefinitionChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
+                        <t-relation-definitions-picker [(ngModel)]="model.CustodianDefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                        </t-relation-definitions-picker>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.CustodianDefinitionId }">
                         </ng-container>
@@ -317,15 +316,11 @@
                         <!-- DefinitionId -->
                         <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
                             [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
-                            <label class="small"
-                                for="{{propLower}}definitionId">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
-
-                            <select class="form-control t-studio-input" id="{{propLower}}definitionId"
-                                [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"
-                                #defId="ngModel">
-                                <option *ngFor="let c of lookupDefinitionChoices" value="{{c.value}}">
-                                    {{ c.name() }}</option>
-                            </select>
+                            <label
+                                class="small">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
+                            <t-lookup-definitions-picker [(ngModel)]="model[prop + 'DefinitionId']"
+                                (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                            </t-lookup-definitions-picker>
                             <ng-container
                                 *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: serverErrors(model, prop + 'DefinitionId') }">
                             </ng-container>

@@ -30,5 +30,7 @@
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
 	[JobId]						INT,
 	[BankAccountNumber]			NVARCHAR (34),
+	[Relation1Index]				INT,
+	[Relation1Id]				INT,
 	INDEX IX_AgentList__Code ([Code])
 );

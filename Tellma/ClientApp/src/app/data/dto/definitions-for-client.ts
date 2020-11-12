@@ -473,6 +473,13 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
 
     // Relation Only
 
+    // Relation 1
+    Relation1Label: string;
+    Relation1Label2: string;
+    Relation1Label3: string;
+    Relation1Visibility: Visibility;
+    Relation1DefinitionId: number;
+
     AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
     JobVisibility?: Visibility;

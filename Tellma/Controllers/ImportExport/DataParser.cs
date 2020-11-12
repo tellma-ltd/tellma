@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Services;
 
 namespace Tellma.Controllers.ImportExport
 {
@@ -18,14 +19,16 @@ namespace Tellma.Controllers.ImportExport
     public class DataParser
     {
         private readonly IStringLocalizer<Strings> _localizer;
+        private readonly IInstrumentationService _instrumentation;
         private readonly IServiceProvider _sp;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public DataParser(IServiceProvider sp, IStringLocalizer<Strings> localizer)
+        public DataParser(IServiceProvider sp, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation)
         {
             _localizer = localizer;
+            _instrumentation = instrumentation;
             _sp = sp;
         }
 
@@ -95,7 +98,7 @@ namespace Tellma.Controllers.ImportExport
 
             // Each set of foreign keys will result in an API query to retrieve the corresponding Ids for FK hydration
             // So we group foreign keys by the target type, the target definition Id and the key property (e.g. Code or Name)
-            var queryInfos = new List<(Type, int?, PropertyMetadata, HashSet<object>)>();
+            var queryInfos = new List<(Type navType, int? navDefId, PropertyMetadata keyPropMeta, HashSet<object> keysSet)>();
             foreach (var g in mapping.GetForeignKeys().Where(p => p.NotUsingIdAsKey)
                 .GroupBy(fk => (fk.TargetType, fk.TargetDefId, fk.KeyPropertyMetadata)))
             {
@@ -152,24 +155,35 @@ namespace Tellma.Controllers.ImportExport
             {
                 return null;
             }
+            using var _1 = _instrumentation.Block("Loading Related Entities");
+            using var _2 = _instrumentation.Disable();
 
             var result = new RelatedEntities();
             if (queryInfos.Any())
             {
                 // Load all related entities in parallel
-                await Task.WhenAll(queryInfos.Select(async queryInfo =>
+                // If they're the same type we load them in sequence because it will be the same controller instance and it might cause issues
+                await Task.WhenAll(queryInfos.GroupBy(e => e.navType).Select(async g =>
                 {
-                    var (navType, navDefId, keyPropMeta, keysSet) = queryInfo; // Deconstruct the queryInfo
-                    IFactWithIdService service = _sp.FactWithIdServiceByEntityType(navType.Name, navDefId);
+                    var navType = g.Key;
 
-                    var keyPropDesc = keyPropMeta.Descriptor;
-                    var keyPropName = keyPropDesc.Name;
-                    var args = new SelectExpandArguments { Select = keyPropName };
+                    foreach (var queryInfo in g)
+                    {
+                        var (_, navDefId, keyPropMeta, keysSet) = queryInfo; // Deconstruct the queryInfo
 
-                    var (data, _) = await service.GetByPropertyValues(keyPropName, keysSet, args, cancellation: default);
+                        var service = _sp.FactWithIdServiceByEntityType(navType.Name, navDefId);
+                        var keyPropDesc = keyPropMeta.Descriptor;
+                        var keyPropName = keyPropDesc.Name;
+                        var args = new SelectExpandArguments { Select = keyPropName };
 
-                    var grouped = data.GroupBy(e => keyPropDesc.GetValue(e)).ToDictionary(g => g.Key, g => (IEnumerable<EntityWithKey>)g);
-                    result.TryAdd((navType, navDefId, keyPropName), grouped);
+                        var (data, _) = await service.GetByPropertyValues(keyPropName, keysSet, args, cancellation: default);
+
+                        var grouped = data.GroupBy(e => keyPropDesc.GetValue(e)).ToDictionary(g => g.Key, g => (IEnumerable<EntityWithKey>)g);
+                        result.TryAdd((navType, navDefId, keyPropName), grouped);
+                    }
+
+                    // The code above might override the definition Id of the service calling it, here we fix that
+                    _sp.FactWithIdServiceByEntityType(navType.Name, mapping.Metadata.DefinitionId);
                 }));
             }
 

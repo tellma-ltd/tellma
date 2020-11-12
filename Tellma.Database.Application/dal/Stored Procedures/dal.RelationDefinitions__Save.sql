@@ -91,6 +91,12 @@ SET NOCOUNT ON;
 
 				[Script],
 				-----Properties applicable to relation only
+				[Relation1Label],
+				[Relation1Label2],
+				[Relation1Label3],
+				[Relation1Visibility],
+				[Relation1DefinitionId],
+
 				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
@@ -183,6 +189,13 @@ SET NOCOUNT ON;
 
 				t.[Script]				= s.[Script],
 				-----Properties applicable to relations only
+
+				t.[Relation1Label]		= s.[Relation1Label],
+				t.[Relation1Label2]		= s.[Relation1Label2],
+				t.[Relation1Label3]		= s.[Relation1Label3],
+				t.[Relation1Visibility]	= s.[Relation1Visibility],
+				t.[Relation1DefinitionId]	= s.[Relation1DefinitionId],
+
 				t.[AgentVisibility]		= s.[AgentVisibility],
 				t.[TaxIdentificationNumberVisibility]
 										= s.[TaxIdentificationNumberVisibility],
@@ -265,6 +278,12 @@ SET NOCOUNT ON;
 
 				[Script],
 				-----Properties applicable to relations only
+				[Relation1Label],
+				[Relation1Label2],
+				[Relation1Label3],
+				[Relation1Visibility],
+				[Relation1DefinitionId],
+
 				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
@@ -342,6 +361,12 @@ SET NOCOUNT ON;
 
 				s.[Script],
 				-----Properties applicable to relations only
+				s.[Relation1Label],
+				s.[Relation1Label2],
+				s.[Relation1Label3],
+				s.[Relation1Visibility],
+				s.[Relation1DefinitionId],
+
 				s.[AgentVisibility],
 				s.[TaxIdentificationNumberVisibility],
 
@@ -352,7 +377,19 @@ SET NOCOUNT ON;
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
-
+	
+	-- The following code is needed for bulk import, when the reliance is on Relation1DefinitionIndex
+	MERGE [dbo].[RelationDefinitions] As t
+	USING (
+		SELECT II.[Id], IIRelation1Definition.[Id] As Relation1DefinitionId
+		FROM @Entities O
+		JOIN @IndexedIds IIRelation1Definition ON IIRelation1Definition.[Index] = O.Relation1DefinitionIndex
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Relation1DefinitionId] = s.[Relation1DefinitionId];
+	
+	-- Reports
 	WITH CurrentDefinitionReportDefinitions AS (
 		SELECT *
 		FROM [dbo].[RelationDefinitionReportDefinitions]

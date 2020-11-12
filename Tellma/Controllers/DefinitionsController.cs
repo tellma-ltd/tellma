@@ -190,6 +190,11 @@ namespace Tellma.Controllers
                 Text2Visibility = MapVisibility(def.Text2Visibility),
 
                 // Relation Only
+                Relation1Label = def.Relation1Label,
+                Relation1Label2 = def.Relation1Label2,
+                Relation1Label3 = def.Relation1Label3,
+                Relation1Visibility = MapVisibility(def.Relation1Visibility),
+                Relation1DefinitionId = def.Relation1DefinitionId,
 
                 AgentVisibility = MapVisibility(def.AgentVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),

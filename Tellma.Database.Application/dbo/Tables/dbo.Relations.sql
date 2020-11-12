@@ -33,6 +33,7 @@
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs
 	[BankAccountNumber]			NVARCHAR (34),
+	[Relation1Id]				INT					CONSTRAINT [FK_Relations__RelationId] REFERENCES [dbo].[Relations] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

@@ -28,7 +28,7 @@
       </button>
     </ng-container>
     <div class="text-center">
-      <span>
+      <span [class.t-text-whitish]="isDark">
         <t-spinner *ngIf="showSpinner"></t-spinner>
       </span>
     </div>

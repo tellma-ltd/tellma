@@ -1,12 +1,12 @@
 ﻿using Tellma.Data;
 using Tellma.Services.MultiTenancy;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Tellma.Services.Sharding
 {
@@ -22,16 +22,16 @@ namespace Tellma.Services.Sharding
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private readonly ITenantIdAccessor _tenantIdProvider;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly AdminRepositoryLite _repo;
         private readonly IMemoryCache _cache;
         private readonly ShardResolverOptions _options;
         private readonly AdminRepositoryOptions _adminOptions;
 
-        public ShardResolver(ITenantIdAccessor tenantIdAccessor, IServiceProvider serviceProvider, 
+        public ShardResolver(ITenantIdAccessor tenantIdAccessor, AdminRepositoryLite repo,
             IMemoryCache cache, IOptions<ShardResolverOptions> options, IOptions<AdminRepositoryOptions> adminOptions)
         {
             _tenantIdProvider = tenantIdAccessor;
-            _serviceProvider = serviceProvider;
+            _repo = repo;
             _cache = cache;
             _adminOptions = adminOptions.Value;
             _options = options.Value;
@@ -73,11 +73,10 @@ namespace Tellma.Services.Sharding
                         bool isWindowsAuth = false;
 
                         // (1) retrieve the connection info of this database Id
-                        using (var scope = _serviceProvider.CreateScope())
+                        using (var _ = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                         {
-                            var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                            connectionInfo = await repo.GetDatabaseConnectionInfo(databaseId, cancellation);
-
+                            // Suppress any ambient transactions otherwise we might get promoted to a Distributed transaction which is not supported in .NET Core
+                            connectionInfo = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
                             dbName = connectionInfo?.DatabaseName;
                         }
 

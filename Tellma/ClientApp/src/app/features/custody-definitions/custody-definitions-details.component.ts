@@ -30,7 +30,8 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private custodyDefinitionsApi = this.api.custodyDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'ReportDefinitions/ReportDefinition';
+  public expand =  `ReportDefinitions/ReportDefinition,
+Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,CustodianDefinition`;
 
   create = () => {
     const result: CustodyDefinitionForSave = {};
@@ -327,46 +328,6 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return this._cardinalityChoices;
-  }
-
-  private _lookupDefinitionChoicesDef: DefinitionsForClient;
-  private _lookupDefinitionChoices: SelectorChoice[];
-  public get lookupDefinitionChoices(): SelectorChoice[] {
-    if (this._lookupDefinitionChoicesDef !== this.ws.definitions) {
-      this._lookupDefinitionChoicesDef = this.ws.definitions;
-      this._lookupDefinitionChoices = [];
-      const lookups = this.ws.definitions.Lookups;
-      for (const key of Object.keys(lookups)) {
-        const id = +key;
-        const lookupDef = lookups[id];
-        this._lookupDefinitionChoices.push({
-          value: id,
-          name: () => this.ws.getMultilingualValueImmediate(lookupDef, 'TitleSingular')
-        });
-      }
-    }
-
-    return this._lookupDefinitionChoices;
-  }
-
-  private _relationDefinitionChoicesDef: DefinitionsForClient;
-  private _relationDefinitionChoices: SelectorChoice[];
-  public get relationDefinitionChoices(): SelectorChoice[] {
-    if (this._relationDefinitionChoicesDef !== this.ws.definitions) {
-      this._relationDefinitionChoicesDef = this.ws.definitions;
-      this._relationDefinitionChoices = [];
-      const relations = this.ws.definitions.Relations;
-      for (const key of Object.keys(relations)) {
-        const id = +key;
-        const relationDef = relations[id];
-        this._relationDefinitionChoices.push({
-          value: id,
-          name: () => this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')
-        });
-      }
-    }
-
-    return this._relationDefinitionChoices;
   }
 
   public isVisible(visibility: DefinitionVisibility) {

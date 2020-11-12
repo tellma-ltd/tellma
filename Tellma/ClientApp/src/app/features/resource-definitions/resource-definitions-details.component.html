@@ -76,7 +76,8 @@
                         <input class="form-control t-studio-input" id="titlesingular" type="text"
                             [(ngModel)]="model.TitleSingular"
                             (ngModelChange)="onDefinitionChange(model, 'TitleSingular')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel" required />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel"
+                            required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular, serverErrors: model.serverErrors?.TitleSingular }">
                         </ng-container>
@@ -118,7 +119,8 @@
                             for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="titleplural" type="text"
                             [(ngModel)]="model.TitlePlural" (ngModelChange)="onDefinitionChange(model, 'TitlePlural')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel" required/>
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel"
+                            required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titleplural, serverErrors: model.serverErrors?.TitlePlural }">
                         </ng-container>
@@ -148,7 +150,7 @@
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: titleplural3, serverErrors: model.serverErrors?.TitlePlural3 }">
                         </ng-container>
-                    </div>                    
+                    </div>
 
                     <!-- ResourceDefinitionType -->
                     <div class="form-group"
@@ -186,7 +188,8 @@
                     </ng-container>
                     <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'Center', propLower: 'center' }">
                     </ng-container>
-                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'CostCenter', propLower: 'costcenter', fieldName: 'Resource_CostCenter' }">
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'CostCenter', propLower: 'costcenter', fieldName: 'Resource_CostCenter' }">
                     </ng-container>
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Image', propLower: 'image', fieldName: 'Image' }">
@@ -237,8 +240,9 @@
                         [class.is-invalid]="invalid(defaultvatrate, serverErrors(model, 'DefaultVatRate'))">
                         <label class="small"
                             for="defaultvatrate">{{ 'Field0Default' | translate: { '0': ('Resource_VatRate' | translate) } }}</label>
-                        <t-decimal-editor theme="dark" [(ngModel)]="model.DefaultVatRate" [minDecimalPlaces]="2" [maxDecimalPlaces]="4"
-                            (ngModelChange)="onDefinitionChange(model)" id="defaultvatrate" #defaultvatrate="ngModel" [isPercentage]="true">
+                        <t-decimal-editor theme="dark" [(ngModel)]="model.DefaultVatRate" [minDecimalPlaces]="2"
+                            [maxDecimalPlaces]="4" (ngModelChange)="onDefinitionChange(model)" id="defaultvatrate"
+                            #defaultvatrate="ngModel" [isPercentage]="true">
                         </t-decimal-editor>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: defaultvatrate, serverErrors: serverErrors(model, 'DefaultVatRate') }">
@@ -291,7 +295,8 @@
                         <label class="small"
                             for="defaultunitmassunit">{{ 'Field0Default' | translate: { '0': ('Resource_UnitMassUnit' | translate) } }}</label>
                         <t-units-picker theme="dark" [(ngModel)]="model.DefaultUnitMassUnitId"
-                            (ngModelChange)="onDefinitionChange(model)" id="defaultunitmassunit" #defaultunitmassunit="ngModel">
+                            (ngModelChange)="onDefinitionChange(model)" id="defaultunitmassunit"
+                            #defaultunitmassunit="ngModel">
                         </t-units-picker>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: defaultunitmassunit, serverErrors: serverErrors(model, 'DefaultUnitMassUnitId') }">
@@ -311,12 +316,9 @@
                         <label class="small"
                             for="participantdefinitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
 
-                        <select class="form-control t-studio-input" id="participantdefinitionId"
-                            [(ngModel)]="model.ParticipantDefinitionId" (ngModelChange)="onDefinitionChange(model)"
-                            #defId="ngModel">
-                            <option *ngFor="let c of relationDefinitionChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
+                        <t-relation-definitions-picker [(ngModel)]="model.ParticipantDefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                        </t-relation-definitions-picker>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.ParticipantDefinitionId }">
                         </ng-container>
@@ -409,15 +411,13 @@
                         <!-- DefinitionId -->
                         <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
                             [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
-                            <label class="small"
-                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
+                            <label
+                                class="small">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
 
-                            <select class="form-control t-studio-input" id="{{propLower}}definitionId"
-                                [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"
-                                #defId="ngModel">
-                                <option *ngFor="let c of lookupDefinitionChoices" value="{{c.value}}">
-                                    {{ c.name() }}</option>
-                            </select>
+                            <t-lookup-definitions-picker [(ngModel)]="model[prop + 'DefinitionId']"
+                                (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                            </t-lookup-definitions-picker>
+
                             <ng-container
                                 *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: serverErrors(model, prop + 'DefinitionId') }">
                             </ng-container>

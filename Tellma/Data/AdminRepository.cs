@@ -376,41 +376,6 @@ namespace Tellma.Data
 
         #region Directory Stuff
 
-        public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId, CancellationToken cancellation)
-        {
-            using var _ = _instrumentation.Block("AdminRepo." + nameof(GetDatabaseConnectionInfo));
-
-            DatabaseConnectionInfo result = null;
-
-            var conn = await GetRawConnectionAsync(cancellation);
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            cmd.Parameters.Add("@DatabaseId", databaseId);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
-
-            // Execute and Load
-            using var reader = await cmd.ExecuteReaderAsync(cancellation);
-            if (await reader.ReadAsync(cancellation))
-            {
-                int i = 0;
-
-                // The user Info
-                result = new DatabaseConnectionInfo
-                {
-                    ServerName = reader.String(i++),
-                    DatabaseName = reader.String(i++),
-                    UserName = reader.String(i++),
-                    PasswordKey = reader.String(i++),
-                };
-            }
-
-            return result;
-        }
-
         public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email, CancellationToken cancellation)
         {
             using var _ = _instrumentation.Block("AdminRepo." + nameof(GetAccessibleDatabaseIds));

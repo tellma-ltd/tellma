@@ -30,7 +30,8 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'ReportDefinitions/ReportDefinition';
+  public expand = `ReportDefinitions/ReportDefinition,
+Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Relation1Definition`;
 
   create = () => {
     const result: RelationDefinitionForSave = {};
@@ -227,6 +228,11 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Text2Visibility) ||
 
         // Relation Only
+        areServerErrors(model.serverErrors.Relation1Label) ||
+        areServerErrors(model.serverErrors.Relation1Label2) ||
+        areServerErrors(model.serverErrors.Relation1Label3) ||
+        areServerErrors(model.serverErrors.Relation1Visibility) ||
+        areServerErrors(model.serverErrors.Relation1DefinitionId) ||
         areServerErrors(model.serverErrors.AgentVisibility) ||
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
         areServerErrors(model.serverErrors.JobVisibility) ||
@@ -327,25 +333,25 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._cardinalityChoices;
   }
 
-  private _lookupDefinitionChoicesDef: DefinitionsForClient;
-  private _lookupDefinitionChoices: SelectorChoice[];
-  public get lookupDefinitionChoices(): SelectorChoice[] {
-    if (this._lookupDefinitionChoicesDef !== this.ws.definitions) {
-      this._lookupDefinitionChoicesDef = this.ws.definitions;
-      this._lookupDefinitionChoices = [];
-      const lookups = this.ws.definitions.Lookups;
-      for (const key of Object.keys(lookups)) {
-        const id = +key;
-        const lookupDef = lookups[id];
-        this._lookupDefinitionChoices.push({
-          value: id,
-          name: () => this.ws.getMultilingualValueImmediate(lookupDef, 'TitleSingular')
-        });
-      }
-    }
+  // private _lookupDefinitionChoicesDef: DefinitionsForClient;
+  // private _lookupDefinitionChoices: SelectorChoice[];
+  // public get lookupDefinitionChoices(): SelectorChoice[] {
+  //   if (this._lookupDefinitionChoicesDef !== this.ws.definitions) {
+  //     this._lookupDefinitionChoicesDef = this.ws.definitions;
+  //     this._lookupDefinitionChoices = [];
+  //     const lookups = this.ws.definitions.Lookups;
+  //     for (const key of Object.keys(lookups)) {
+  //       const id = +key;
+  //       const lookupDef = lookups[id];
+  //       this._lookupDefinitionChoices.push({
+  //         value: id,
+  //         name: () => this.ws.getMultilingualValueImmediate(lookupDef, 'TitleSingular')
+  //       });
+  //     }
+  //   }
 
-    return this._lookupDefinitionChoices;
-  }
+  //   return this._lookupDefinitionChoices;
+  // }
 
   public isVisible(visibility: DefinitionVisibility) {
     return visibility === 'Optional' || visibility === 'Required';

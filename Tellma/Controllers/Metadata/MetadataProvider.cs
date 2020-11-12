@@ -1100,6 +1100,11 @@ namespace Tellma.Controllers
                 //    break;
 
                 // Relations Only
+                case nameof(Relation.Relation1):
+                case nameof(Relation.Relation1Id):
+                    display = PropertyDisplay(settings, def.Relation1Visibility, def.Relation1Label, def.Relation1Label2, def.Relation1Label3, display);
+                    isRequired = def.Relation1Visibility == Visibility.Required;
+                    break;
 
                 case nameof(Relation.AgentId):
                 case nameof(Relation.Agent):
@@ -1133,6 +1138,7 @@ namespace Tellma.Controllers
                 nameof(Relation.Lookup3) => def.Lookup3DefinitionId,
                 nameof(Relation.Lookup4) => def.Lookup4DefinitionId,
                 //nameof(Relation.Lookup5) =>  def.Lookup5DefinitionId,
+                nameof(Relation.Relation1) => def.Relation1DefinitionId,
                 _ => null,
             };
 

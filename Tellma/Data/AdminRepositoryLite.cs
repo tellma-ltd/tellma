@@ -39,6 +39,45 @@ namespace Tellma.Data
 
         #endregion
 
+        #region Sharding
+
+        public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId, CancellationToken cancellation)
+        {
+            DatabaseConnectionInfo result = null;
+
+            // Connection
+            using var conn = new SqlConnection(_connectionString);
+
+            // Command
+            using var cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
+
+            // Parameters
+            cmd.Parameters.Add("@DatabaseId", databaseId);
+
+            // Execute
+            await conn.OpenAsync(cancellation);
+            using var reader = await cmd.ExecuteReaderAsync(cancellation);
+            if (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+
+                // The user Info
+                result = new DatabaseConnectionInfo
+                {
+                    ServerName = reader.String(i++),
+                    DatabaseName = reader.String(i++),
+                    UserName = reader.String(i++),
+                    PasswordKey = reader.String(i++),
+                };
+            }
+
+            return result;
+        }
+
+        #endregion
+
         #region Jobs
 
         public async Task Heartbeat(Guid instanceId, int keepAliveInSeconds, CancellationToken cancellation)

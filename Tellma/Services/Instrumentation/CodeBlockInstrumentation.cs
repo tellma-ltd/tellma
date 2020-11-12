@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace Tellma.Services.Instrumentation
         /// <summary>
         /// For fast retrieval
         /// </summary>
-        private readonly Dictionary<string, CodeBlockInstrumentation> _dic = new Dictionary<string, CodeBlockInstrumentation>();
+        private readonly ConcurrentDictionary<string, CodeBlockInstrumentation> _dic = new ConcurrentDictionary<string, CodeBlockInstrumentation>();
 
         /// <summary>
         ///  Ordered
@@ -43,17 +44,16 @@ namespace Tellma.Services.Instrumentation
         /// <param name="name">The name of the step</param>
         public CodeBlockInstrumentation AddSubBlock(string name)
         {
-            if (!_dic.TryGetValue(name, out CodeBlockInstrumentation instrumentation))
+            return _dic.GetOrAdd(name, (name) =>
             {
-                instrumentation = new CodeBlockInstrumentation { N = name };
-                _dic.Add(name, instrumentation);
+                var instrumentation = new CodeBlockInstrumentation { N = name };
 
                 // Add to the breakdown
                 _breakdown ??= new List<CodeBlockInstrumentation>();
                 _breakdown.Add(instrumentation);
-            }
 
-            return instrumentation;
+                return instrumentation;
+            });
         }
     }
 }

@@ -10,5 +10,11 @@ namespace Tellma.Services
         void NextMiddleware(string name);
 
         InstrumentationReport GetReport();
+
+        /// <summary>
+        /// Temporarily disables instrumentation until the returned <see cref="IDisposable"/> is invoked
+        /// </summary>
+        /// <returns></returns>
+        IDisposable Disable();
     }
 }

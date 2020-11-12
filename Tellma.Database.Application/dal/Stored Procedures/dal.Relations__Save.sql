@@ -45,7 +45,8 @@ SET NOCOUNT ON;
 				[AgentId],
 				[TaxIdentificationNumber],
 				[JobId],
-				[BankAccountNumber]
+				[BankAccountNumber],
+				[Relation1Id]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -81,6 +82,7 @@ SET NOCOUNT ON;
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 				t.[JobId]					= s.[JobId],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
+				t.[Relation1Id]				= s.[Relation1Id],
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -114,7 +116,8 @@ SET NOCOUNT ON;
 				[AgentId],
 				[TaxIdentificationNumber],
 				[JobId],
-				[BankAccountNumber]
+				[BankAccountNumber],
+				[Relation1Id]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -145,11 +148,24 @@ SET NOCOUNT ON;
 				s.[AgentId],
 				s.[TaxIdentificationNumber],
 				s.[JobId],
-				s.[BankAccountNumber]
+				s.[BankAccountNumber],
+				s.[Relation1Id]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	-- The following code is needed for bulk import, when the reliance is on Relation1Index
+	MERGE [dbo].[Relations] As t
+	USING (
+		SELECT II.[Id], IIRelation1.[Id] As Relation1Id
+		FROM @Entities O
+		JOIN @IndexedIds IIRelation1 ON IIRelation1.[Index] = O.Relation1Index
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Relation1Id] = s.[Relation1Id];
+
+	-- Relation Users
 	WITH AU AS (
 		SELECT * FROM dbo.[RelationUsers] RU
 		WHERE RU.[RelationId] IN (SELECT [Id] FROM @IndexedIds)

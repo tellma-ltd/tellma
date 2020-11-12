@@ -338,6 +338,20 @@
     <t-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }"
       [required]="BankAccountNumber_isRequired">
     </t-text-editor>
+  </t-form-group>  
+
+  <!-- Relation 1 -->
+  <t-form-group class="t-form-group" [label]="Relation1_label" *ngIf="Relation1_isVisible"
+    [serverErrors]="model?.serverErrors?.Relation1Id">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Relation1">
+      <t-view-link [link]="'../../../relations/' + ws.get('Relation', model.Relation1Id)?.DefinitionId"
+        [itemId]="model?.Relation1Id">
+        {{ ws.getMultilingualValue('Relation', model.Relation1Id, 'Name') }}
+      </t-view-link>
+    </t-restricted>
+    <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.Relation1Id" [definitionIds]="Relation1_DefinitionIds"
+      [required]="Relation1_isRequired">
+    </t-relations-picker>
   </t-form-group>
 
   <!-- Is Active -->

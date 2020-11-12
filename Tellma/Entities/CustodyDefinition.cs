@@ -332,5 +332,25 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
+        [ForeignKey(nameof(Lookup1DefinitionId))]
+        public LookupDefinition Lookup1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
+        [ForeignKey(nameof(Lookup2DefinitionId))]
+        public LookupDefinition Lookup2Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup3")]
+        [ForeignKey(nameof(Lookup3DefinitionId))]
+        public LookupDefinition Lookup3Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
+        [ForeignKey(nameof(Lookup4DefinitionId))]
+        public LookupDefinition Lookup4Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Custody_Custodian")]
+        [ForeignKey(nameof(CustodianDefinitionId))]
+        public RelationDefinition CustodianDefinition { get; set; }
     }
 }

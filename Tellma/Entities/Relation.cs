@@ -123,6 +123,13 @@ namespace Tellma.Entities
         [StringLength(34)]
         public string BankAccountNumber { get; set; }
 
+        [NotMapped]
+        public int? Relation1Index { get; set; }
+
+        [Display(Name = "Relation_Relation1")]
+        [SelfReferencing(nameof(Relation1Index))]
+        public int? Relation1Id { get; set; }
+
         [Display(Name = "Relation_Users")]
         [ForeignKey(nameof(RelationUser.RelationId))]
         public List<TRelationUser> Users { get; set; }
@@ -211,6 +218,10 @@ namespace Tellma.Entities
         [Display(Name = "Relation_Agent")]
         [ForeignKey(nameof(AgentId))]
         public Agent Agent { get; set; }
+
+        [Display(Name = "Relation_Relation1")]
+        [ForeignKey(nameof(Relation1Id))]
+        public Relation Relation1 { get; set; }
 
         #endregion
     }

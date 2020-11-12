@@ -132,6 +132,8 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
         TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Relation_TaxIdentificationNumber') },
         JobId: { control: 'number', label: () => `${trx.instant('Relation_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         BankAccountNumber: { control: 'text', label: () => trx.instant('Relation_BankAccountNumber') },
+        Relation1Id: { control: 'number', label: () => `${trx.instant('Relation_Relation1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Relation1: { control: 'navigation', label: () => trx.instant('Relation_Relation1'), type: 'Relation', foreignKeyName: 'Relation1Id' },
 
         // Standard
 
@@ -216,7 +218,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Navigation properties with definition Id
-      for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
+      for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf).concat(['Relation1'])) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
               delete entityDesc.properties[propName + 'Id'];
