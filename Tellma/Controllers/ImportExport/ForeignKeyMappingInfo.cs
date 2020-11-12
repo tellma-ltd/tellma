@@ -57,5 +57,15 @@ namespace Tellma.Controllers.ImportExport
         /// Syntactic sugar for: KeyPropertyMetadata.Descriptor.Name != "Id"
         /// </summary>
         public bool NotUsingIdAsKey => KeyPropertyMetadata.Descriptor.Name != "Id";
+
+        /// <summary>
+        /// Syntactic sugar for: Metadata.Descriptor.IsSelfReferencing
+        /// </summary>
+        public bool IsSelfReferencing => Metadata.Descriptor.IsSelfReferencing;
+
+        /// <summary>
+        /// For self referencing properties, stores the index of matches in <see cref="Entities.EntityMetadata.MatchPairs"/>
+        /// </summary>
+        public int EntityMetadataMatchesIndex { get; set; }
     }
 }

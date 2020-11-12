@@ -141,6 +141,8 @@ namespace Tellma.Controllers.ImportExport
             {
                 e.Index = i;
             }
-        }        
+        }
+
+        public bool IsRoot { get; set; }
     }
 }

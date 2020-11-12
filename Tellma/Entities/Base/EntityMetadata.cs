@@ -22,15 +22,31 @@ namespace Tellma.Entities
         public int RowNumber { get; set; }
 
         /// <summary>
-        /// Stores the code or name of the parent, used by the import logic when
-        /// an entity's user key may refer to another entity in the imported list
+        /// Stores the code or name of the related entity, used by the import logic when
+        /// an entity's user key may refer to another entity in the imported list (self referencing FKs)
         /// </summary>
-        public object ParentUserKey { get; set; }
+        public (object userKeyValue, IEnumerable<EntityWithKey> matches)[] MatchPairs { get; set; }
 
         /// <summary>
-        /// Used by the import logic
+        /// Returns true if matches were set at this index
         /// </summary>
-        public IEnumerable<EntityWithKey> ParentMatches { get; set; }
+        /// <param name="index"></param>
+        /// <param name="matchPair"></param>
+        /// <returns></returns>
+        public bool TryGetMatchPairs(int index, out (object userKeyValue, IEnumerable<EntityWithKey> matches) matchPair)
+        {
+            if (MatchPairs != null && MatchPairs.Length > index)
+            {
+                matchPair = MatchPairs[index];
+                if (matchPair != default)
+                {
+                    return true;
+                }
+            }
+
+            matchPair = default;
+            return false;
+        }
 
         /// <summary>
         /// Used by the flatten and trim logic to remember which entities have already been flattened and trimmed

@@ -7,13 +7,14 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave<TCustodyDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountTypeForSave<TCustodyDef, TResourceDef> : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
 
         [Display(Name = "TreeParent")]
         [AlwaysAccessible]
+        [SelfReferencing(nameof(ParentIndex))]
         public int? ParentId { get; set; }
 
         [Display(Name = "Code")]
@@ -180,7 +181,7 @@ namespace Tellma.Entities
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
+    public class AccountType : AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeResourceDefinition>
     {
         [AlwaysAccessible]
         public string Path { get; set; }

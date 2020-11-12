@@ -264,7 +264,7 @@ namespace Tellma.Data.Queries
 
                         return peek != "(" &&
                             (
-                                peek == "not" || peekInfo.Precedence < opInfo.Precedence ||
+                                peek == "not" || peekInfo.Precedence > opInfo.Precedence ||
                                 (peekInfo.Precedence == opInfo.Precedence && peekInfo.IsLeftAssociative)
                             );
                     }
