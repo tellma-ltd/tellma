@@ -307,7 +307,6 @@ namespace Tellma.Entities.Descriptors
                     }
                     else
                     {
-
                         #region MaxLength
 
                         int maxLength = -1;
@@ -319,8 +318,36 @@ namespace Tellma.Entities.Descriptors
 
                         #endregion
 
+                        #region IndexPropertyName
+
+                        // (e, v) => e.Name = (string)v
+                        Action<Entity, int?> indexPropSetter = null;
+                        var selfRefAttribute = propInfo.GetCustomAttribute<SelfReferencingAttribute>(inherit: true);
+                        if (selfRefAttribute != null)
+                        {
+                            var indexPropInfo = entityType.GetProperty(selfRefAttribute.IndexPropertyName);
+                            if (indexPropInfo == null || indexPropInfo.PropertyType != typeof(int?))
+                            {
+                                // Developer mistake
+                                throw new InvalidOperationException($"Bug: Self referencing property {propInfo.Name} on type {entityType.Name} is adorned with an index property that doesn't exist or isn't of type nullable int.");
+                            }
+
+                            {
+                                var entityParam = Expression.Parameter(typeof(Entity), "e"); // e
+                                var valueParam = Expression.Parameter(typeof(int?), "v"); // v
+                                var castEntity = Expression.Convert(entityParam, entityType); // (Account)e
+                                var propertyAccess = Expression.MakeMemberAccess(castEntity, indexPropInfo); // ((Account)e).ParentIndex
+                                var assignment = Expression.Assign(propertyAccess, valueParam); // ((Account)e).ParentIndex = v
+                                var lambdaExp = Expression.Lambda<Action<Entity, int?>>(assignment, entityParam, valueParam); // (e, v) => ((Account)e).ParentIndex = v
+
+                                indexPropSetter = lambdaExp.Compile();
+                            }
+                        }
+
+                        #endregion
+
                         // Simple
-                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, maxLength);
+                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, indexPropSetter, maxLength);
                     }
 
                     propertiesDic.Add(propInfo.Name, propDesc);

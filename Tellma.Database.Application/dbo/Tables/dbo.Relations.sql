@@ -16,18 +16,36 @@
 	[Description3]				NVARCHAR (2048),
 	[Location]					GEOGRAPHY,
 	[LocationJson]				NVARCHAR (MAX),
-	[FromDate]					DATE,
-	[ToDate]					DATE,
+	[FromDate]					DATE,			-- Joining Date
+	[ToDate]					DATE,			-- Terination Date
+	--
+	[DateOfBirth]				DATE,
+	[ContactEmail]				NVARCHAR (255),
+	[ContactMobile]				NVARCHAR (50),
+	[NormalizedContactMobile]	NVARCHAR (50),
+	[ContactAddress]			NVARCHAR (255),
+	[Date1]				DATE, -- Visa
+	[Date2]				DATE, -- Passport
+	[Date3]				DATE, -- Medical Insurance
+	[Date4]				DATE, -- ..
+	--
 	[Decimal1]					DECIMAL (19,4),
 	[Decimal2]					DECIMAL (19,4),
 	[Int1]						INT,
 	[Int2]						INT,
-	[Lookup1Id]					INT					CONSTRAINT [FK_Relations__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]),
-	[Lookup2Id]					INT					CONSTRAINT [FK_Relations__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),
-	[Lookup3Id]					INT					CONSTRAINT [FK_Relations__Lookup3Id] REFERENCES [dbo].[Lookups] ([Id]),
-	[Lookup4Id]					INT					CONSTRAINT [FK_Relations__Lookup4Id] REFERENCES [dbo].[Lookups] ([Id]),
-	[Text1]						NVARCHAR (50),
-	[Text2]						NVARCHAR (50),
+	[Lookup1Id]					INT					CONSTRAINT [FK_Relations__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]), -- citizenship
+	[Lookup2Id]					INT					CONSTRAINT [FK_Relations__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]), -- religion
+	[Lookup3Id]					INT					CONSTRAINT [FK_Relations__Lookup3Id] REFERENCES [dbo].[Lookups] ([Id]), -- Marital Status
+	[Lookup4Id]					INT					CONSTRAINT [FK_Relations__Lookup4Id] REFERENCES [dbo].[Lookups] ([Id]), -- Salary Bank
+	[Lookup5Id]					INT					CONSTRAINT [FK_Relations__Lookup5Id] REFERENCES [dbo].[Lookups] ([Id]), -- Gender
+	[Lookup6Id]					INT					CONSTRAINT [FK_Relations__Lookup6Id] REFERENCES [dbo].[Lookups] ([Id]), -- Profession (as in Id)
+	[Lookup7Id]					INT					CONSTRAINT [FK_Relations__Lookup7Id] REFERENCES [dbo].[Lookups] ([Id]), -- Educational Status
+	[Lookup8Id]					INT					CONSTRAINT [FK_Relations__Lookup8Id] REFERENCES [dbo].[Lookups] ([Id]), -- 
+--	
+	[Text1]						NVARCHAR (255), -- Permanent Address
+	[Text2]						NVARCHAR (255), -- 
+	[Text3]						NVARCHAR (255), -- 
+	[Text4]						NVARCHAR (255), -- 
 
 	[AgentId]					INT					CONSTRAINT [FK_Relations__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[TaxIdentificationNumber]	NVARCHAR (18),

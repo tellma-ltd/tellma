@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,13 +49,18 @@ namespace Tellma.Controllers.ImportExport
             mapping.ClearEntitiesAndLists();
             mapping.List = new List<TEntityForSave>(); // This root list will contain the final result
 
-            // If there a parent Id property, pop it
-            ForeignKeyMappingInfo parentIdProp = mapping.ParentIdProperty();
+            // Set some values on the root mapping infor for handling self referencing FKs
+            mapping.IsRoot = true;
+            int matchesIndex = 0;
+            foreach (var prop in mapping.SimpleProperties.OfType<ForeignKeyMappingInfo>().Where(p => p.IsSelfReferencing))
+            {
+                prop.EntityMetadataMatchesIndex = matchesIndex++;
+            }
 
             int rowNumber = 2;
             foreach (var dataRow in dataWithoutHeader) // Foreach row
             {
-                bool keepGoing = ParseRow(dataRow, rowNumber, mapping, relatedEntities, errors, parentIdProp); // Recursive function
+                bool keepGoing = ParseRow(dataRow, rowNumber, mapping, relatedEntities, errors, matchesIndex); // Recursive function
                 if (!keepGoing)
                 {
                     // This means the errors collection is full, no need to keep going
@@ -67,114 +73,13 @@ namespace Tellma.Controllers.ImportExport
             // Grab the result from the root mapping
             var result = mapping.List.Cast<TEntityForSave>();
 
-            // Hydrate the tree property if any, this property is not hydrated in ParseRow()
-            // Since it requires all the imported entities to be created and all their other
+            // Hydrate self referencing FKs if any, these properties are not hydrated in ParseRow()
+            // Since they requires all the imported entities to be created and all their other
             // properties already hydrated
-            if (parentIdProp != null)
-            {
-                HydrateParentIds(result, errors, parentIdProp);
-            }
+            HydrateSelfReferencingForeignKeys(result, mapping, errors);
 
             // Return the result
             return result;
-        }
-
-        /// <summary>
-        /// ParentId property is skipped in the regular parsing and hydration, since it relies
-        /// on the complete list of imported entities to be hydrated first.
-        /// This method does the needful and hydrates the ParentIds
-        /// </summary>
-        private void HydrateParentIds<TEntityForSave>(IEnumerable<TEntityForSave> result, ImportErrors errors, ForeignKeyMappingInfo parentIdProp) where TEntityForSave : Entity
-        {
-            // Prepare the getValue method to retrieve the user codes from the uploaded list
-            if (!result.Any())
-            {
-                return;
-            }
-
-            var resultType = result.FirstOrDefault().GetType();
-            var resultTypeDesc = Entities.Descriptors.TypeDescriptor.Get(resultType);
-            var userKeyPropName = parentIdProp.KeyPropertyMetadata.Descriptor.Name;
-            var prop = resultTypeDesc.Property(userKeyPropName);
-            if (prop == null)
-            {
-                throw new InvalidOperationException($"Bug: Expected property {userKeyPropName} on type {resultType.Name}");
-            }
-
-            Func<Entity, object> getUserKey = prop.GetValue;
-
-            // Prepare a dictionary mapping every user key value in the uploaded list to the indices of their entities
-            var indicesDic = result
-                .Where(e => getUserKey(e) != null)
-                .Select((entity, index) => (entity, index))
-                .GroupBy(pair => getUserKey(pair.entity))
-                .ToDictionary(g => g.Key, g => g.Select(e => e.index));
-
-            // Hydrate the entities one by one
-            foreach (var entity in result.Where(e => e.EntityMetadata.ParentUserKey != null))
-            {
-                indicesDic.TryGetValue(entity.EntityMetadata.ParentUserKey, out IEnumerable<int> indices);
-                if (indices == null || indices.Count() == 0)
-                {
-                    // No matches from the imported list, fallback to the db matches
-                    var matches = entity.EntityMetadata.ParentMatches;
-                    if (matches == null || !matches.Any())
-                    {
-                        // No matches from the db list => error
-                        var typeDisplay = parentIdProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
-                        var propDisplay = parentIdProp.KeyPropertyMetadata.Display();
-                        var stringField = entity.EntityMetadata.ParentUserKey.ToString();
-                        if (!errors.AddImportError(entity.EntityMetadata.RowNumber, parentIdProp.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, propDisplay, stringField]))
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        // More than 1 match in the db list => error                        
-                        if (matches.Skip(1).Any())
-                        {
-                            var typeDisplay = parentIdProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
-                            var keyPropDisplay = parentIdProp.KeyPropertyMetadata.Display();
-                            var stringField = entity.EntityMetadata.ParentUserKey.ToString();
-                            if (!errors.AddImportError(entity.EntityMetadata.RowNumber, parentIdProp.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
-                            {
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            var single = matches.Single();
-                            var id = single.GetId();
-                            parentIdProp.Metadata.Descriptor.SetValue(entity, id);
-                        }
-                    }
-                }
-                else if (indices.Count() > 1)
-                {
-                    // More than one match in the uploaded list => error
-                    var typeDisplay = parentIdProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
-                    var keyPropDisplay = parentIdProp.KeyPropertyMetadata.Display();
-                    var stringField = entity.EntityMetadata.ParentUserKey.ToString();
-                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, parentIdProp.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    // Match from the uploaded list, use its index in ParentIndex
-                    if (entity is IParentIndex treeEntity)
-                    {
-                        treeEntity.ParentIndex = indices.Single();
-                    }
-                    else
-                    {
-                        var typeDisplay = parentIdProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
-                        throw new InvalidOperationException($"Bug: type {typeDisplay} has a ParentId property but doesn't implement {nameof(IParentIndex)}");
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -251,8 +156,10 @@ namespace Tellma.Controllers.ImportExport
             var result = new RelatedEntities();
             if (queryInfos.Any())
             {
-                foreach (var (navType, navDefId, keyPropMeta, keysSet) in queryInfos)
+                // Load all related entities in parallel
+                await Task.WhenAll(queryInfos.Select(async queryInfo =>
                 {
+                    var (navType, navDefId, keyPropMeta, keysSet) = queryInfo; // Deconstruct the queryInfo
                     IFactWithIdService service = _sp.FactWithIdServiceByEntityType(navType.Name, navDefId);
 
                     var keyPropDesc = keyPropMeta.Descriptor;
@@ -262,8 +169,8 @@ namespace Tellma.Controllers.ImportExport
                     var (data, _) = await service.GetByPropertyValues(keyPropName, keysSet, args, cancellation: default);
 
                     var grouped = data.GroupBy(e => keyPropDesc.GetValue(e)).ToDictionary(g => g.Key, g => (IEnumerable<EntityWithKey>)g);
-                    result.Add((navType, navDefId, keyPropName), grouped);
-                }
+                    result.TryAdd((navType, navDefId, keyPropName), grouped);
+                }));
             }
 
             return result;
@@ -281,7 +188,7 @@ namespace Tellma.Controllers.ImportExport
         /// <param name="entities">All related entities that are referenced by user keys in the raw data</param>
         /// <param name="errors">Any validation errors are added to this collection</param>
         /// <returns>False if the <see cref="ImportErrors"/> dictionary has been maxed out, true otherwise.</returns>
-        private bool ParseRow(string[] dataRow, int rowNumber, MappingInfo mapping, RelatedEntities entities, ImportErrors errors, ForeignKeyMappingInfo parentIdProp = null)
+        private bool ParseRow(string[] dataRow, int rowNumber, MappingInfo mapping, RelatedEntities entities, ImportErrors errors, int selfRefPropertiesCount = 0)
         {
             bool entityCreated = false;
             foreach (var prop in mapping.SimpleProperties)
@@ -319,16 +226,16 @@ namespace Tellma.Controllers.ImportExport
                         var dic = entities[(fkProp.TargetType, fkProp.TargetDefId, fkProp.KeyPropertyMetadata.Descriptor.Name)];
                         dic.TryGetValue(userKeyValue, out IEnumerable<EntityWithKey> matches);
 
-                        // ParentId requires special handling, we simply store the user key value and
+                        // Self Referencing FKs require special handling, we simply store the user key value and
                         // the matches from the database in a the entity metadata.
                         // Later, after all the entities have been hydrated, we check the hydrated
-                        // list of entities for parent matches, if there are they take precedent over the
-                        // matches from the database entities, this allows users to specify one of the
-                        // other items in the imported sheet as parent
-                        if (fkProp == parentIdProp)
+                        // list of entities for matches, if there are they take precedent over the
+                        // matches from the database entities, this allows users to refer to one of the
+                        // other items in the imported sheet in the self referencing FK
+                        if (IsSelfReferencing(fkProp, mapping))
                         {
-                            mapping.Entity.EntityMetadata.ParentUserKey = userKeyValue;
-                            mapping.Entity.EntityMetadata.ParentMatches = matches;
+                            var matchPairsArray = mapping.Entity.EntityMetadata.MatchPairs ??= new (object userKey, IEnumerable<EntityWithKey> matches)[selfRefPropertiesCount];
+                            matchPairsArray[fkProp.EntityMetadataMatchesIndex] = (userKeyValue, matches);
                             continue;
                         }
                         else if (matches == null || !matches.Any()) // No matches at all -> Problem
@@ -402,12 +309,120 @@ namespace Tellma.Controllers.ImportExport
             return true;
         }
 
+        /// <summary>
+        /// Self Referencing FKs are skipped in the regular parsing and hydration, since they rely
+        /// on the complete list of imported entities to be hydrated first.
+        /// This method does the needful and hydrates all self referencing FKs
+        /// </summary>
+        private void HydrateSelfReferencingForeignKeys<TEntityForSave>(IEnumerable<TEntityForSave> result, MappingInfo mapping, ImportErrors errors) where TEntityForSave : Entity
+        {
+            // Prepare the getValue method to retrieve the user codes from the uploaded list
+            if (!result.Any())
+            {
+                return;
+            }
+
+            var resultType = result.FirstOrDefault().GetType();
+            var resultTypeDesc = Entities.Descriptors.TypeDescriptor.Get(resultType);
+
+            foreach (var selfRefProp in mapping.SimpleProperties.OfType<ForeignKeyMappingInfo>().Where(fkProp => IsSelfReferencing(fkProp, mapping)))
+            {
+                // Get the user key descriptor
+                var userKeyPropName = selfRefProp.KeyPropertyMetadata.Descriptor.Name;
+                var userKeyProp = resultTypeDesc.Property(userKeyPropName);
+                if (userKeyProp == null)
+                {
+                    throw new InvalidOperationException($"Bug: Expected property {userKeyPropName} on type {resultType.Name}.");
+                }
+
+                // Prepare a dictionary mapping every user key value in the uploaded list to the indices of their entities
+                var indicesDic = result
+                    .Select((entity, index) => (entity, index)) // This should come before the call to "Where"
+                    .Where(e => userKeyProp.GetValue(e.entity) != null)
+                    .GroupBy(pair => userKeyProp.GetValue(pair.entity))
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.index));
+
+                // Hydrate the entities one by one
+                foreach (var entity in result)
+                {
+                    if (entity.EntityMetadata.TryGetMatchPairs(selfRefProp.EntityMetadataMatchesIndex, out (object, IEnumerable<EntityWithKey>) matchesPair))
+                    {
+                        var (userKey, matches) = matchesPair;
+
+                        indicesDic.TryGetValue(userKey, out IEnumerable<int> indices);
+                        if (indices == null || indices.Count() == 0)
+                        {
+                            // No matches from the imported list, fallback to the db matches
+                            if (matches == null || !matches.Any())
+                            {
+                                // No matches from the db list => error
+                                var typeDisplay = selfRefProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
+                                var propDisplay = selfRefProp.KeyPropertyMetadata.Display();
+                                var stringField = userKey.ToString();
+                                if (!errors.AddImportError(entity.EntityMetadata.RowNumber, selfRefProp.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, propDisplay, stringField]))
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                // More than 1 match in the db list => error                        
+                                if (matches.Skip(1).Any())
+                                {
+                                    var typeDisplay = selfRefProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
+                                    var keyPropDisplay = selfRefProp.KeyPropertyMetadata.Display();
+                                    var stringField = userKey.ToString();
+                                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, selfRefProp.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
+                                    {
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    var single = matches.Single();
+                                    var id = single.GetId();
+                                    selfRefProp.Metadata.Descriptor.SetValue(entity, id);
+                                }
+                            }
+                        }
+                        else if (indices.Count() > 1)
+                        {
+                            // More than one match in the uploaded list => error
+                            var typeDisplay = selfRefProp.NavPropertyMetadata.TargetTypeMetadata.SingularDisplay();
+                            var keyPropDisplay = selfRefProp.KeyPropertyMetadata.Display();
+                            var stringField = userKey.ToString();
+                            if (!errors.AddImportError(entity.EntityMetadata.RowNumber, selfRefProp.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Single match from the uploaded list, set it in the index
+                            selfRefProp.Metadata.Descriptor.SetIndexProperty(entity, indices.Single());
+                        }
+                    }
+                }
+            }
+        }
+
         #region Helper Classes 
+
+        /// <summary>
+        /// A property is self referencing if it lives in the root entity type being uploaded AND it is adoned with <see cref="SelfReferencingAttribute"/> 
+        /// AND it  targets a null definition Id or a definition Id that matches the one of the uploaded list
+        /// </summary>
+        private static bool IsSelfReferencing(ForeignKeyMappingInfo fkProp, MappingInfo mapping)
+        {
+            // A property is self referencing if it lives in the root entity type being uploaded AND it is adoned with SelfReferencingAttribute, and it has a matching definition Id as the target type it references
+            return mapping.IsRoot && fkProp.IsSelfReferencing &&
+                (fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == null || fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == mapping.Metadata.DefinitionId);
+        }
 
         /// <summary>
         /// Data structure for storing and efficiently retrieving preloaded related entities which are referenced by foreign keys in the imported list
         /// </summary>
-        private class RelatedEntities : Dictionary<(Type Type, int? DefId, string PropName), Dictionary<object, IEnumerable<EntityWithKey>>>
+        private class RelatedEntities : ConcurrentDictionary<(Type Type, int? DefId, string PropName), Dictionary<object, IEnumerable<EntityWithKey>>>
         {
         }
 

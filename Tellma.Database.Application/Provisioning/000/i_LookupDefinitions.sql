@@ -13,7 +13,8 @@
 (11, N'BankAccountType', N'Bank Account Type', N'Bank Account Types', N'ellipsis-h', N'Administration',12),
 (12, N'Bank', N'Bank', N'Banks', N'university', N'Administration',12),
 (13, N'MarketSegment', N'Market Segment', N'Market Segments', N'search-dollar', N'Administration',13),
-(14, N'LoanType', N'Loan Type', N'Loan Types', N'clipboard-list', N'HumanCapital',35);
+(14, N'LoanType', N'Loan Type', N'Loan Types', N'clipboard-list', N'HumanCapital',35),
+(15, N'Citizenship', N'Citizenship', N'Citizenships', N'globe', N'Administration',14);
 
 EXEC api.LookupDefinitions__Save
 	@Entities = @LookupDefinitions,
@@ -41,3 +42,4 @@ DECLARE @BankAccountTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE 
 DECLARE @BankLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Bank');
 DECLARE @MarketSegmentLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'MarketSegment');
 DECLARE @LoanTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'LoanType');
+DECLARE @CitizenshipLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Citizenship');

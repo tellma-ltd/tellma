@@ -15,6 +15,17 @@
 	[LocationWkb]				VARBINARY(MAX),
 	[FromDate]					DATE,
 	[ToDate]					DATE,
+	[DateOfBirth]				DATE,
+	[ContactEmail]				NVARCHAR (255),
+	[ContactMobile]				NVARCHAR (50),
+	[NormalizedContactMobile]	NVARCHAR (50),
+	[ContactAddress]			NVARCHAR (255),
+	[Date1]						DATE, -- Visa
+	[Date2]						DATE, -- Passport
+	[Date3]						DATE, -- Medical Insurance
+	[Date4]						DATE, -- ..
+
+
 	[Decimal1]					DECIMAL (19,4),
 	[Decimal2]					DECIMAL (19,4),
 	[Int1]						INT,
@@ -23,8 +34,14 @@
 	[Lookup2Id]					INT,
 	[Lookup3Id]					INT,
 	[Lookup4Id]					INT,
-	[Text1]						NVARCHAR (50),
-	[Text2]						NVARCHAR (50), 
+	[Lookup5Id]					INT,
+	[Lookup6Id]					INT,
+	[Lookup7Id]					INT,
+	[Lookup8Id]					INT,
+	[Text1]						NVARCHAR (255),
+	[Text2]						NVARCHAR (255),
+	[Text3]						NVARCHAR (255), -- 
+	[Text4]						NVARCHAR (255), -- 
 	
 	[AgentId]					INT,	
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters

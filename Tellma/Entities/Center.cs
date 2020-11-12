@@ -6,13 +6,14 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Center", Plural = "Centers")]
-    public class CenterForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class CenterForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
 
         [Display(Name = "TreeParent")]
         [AlwaysAccessible]
+        [SelfReferencing(nameof(ParentIndex))]
         public int? ParentId { get; set; }
 
         [Display(Name = "Center_CenterType")]
@@ -70,7 +71,7 @@ namespace Tellma.Entities
         public string Code { get; set; }
     }
 
-    public class Center : CenterForSave, ITreeEntity<int>
+    public class Center : CenterForSave
     {
         [Display(Name = "Center_IsSegment")]
         public bool? IsSegment { get; set; }
