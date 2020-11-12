@@ -1,13 +1,32 @@
 ﻿-- Setup
-	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'admin@tellma.com';
+	DECLARE @DeployEmail NVARCHAR(255)				= N'$(DeployEmail)';-- N'admin@tellma.com';
 	DECLARE @ShortCompanyName NVARCHAR(255)			= N'$(ShortCompanyName)';
 	DECLARE @ShortCompanyName2 NVARCHAR(255) 		= N'$(ShortCompanyName2)';
 	DECLARE @ShortCompanyName3 NVARCHAR(255)		= N'$(ShortCompanyName3)';
 	DECLARE @PrimaryLanguageId NVARCHAR(5)			= N'$(PrimaryLanguageId)'; --N'en';
 	DECLARE @SecondaryLanguageId NVARCHAR(5)		= N'$(SecondaryLanguageId)'; --N'en';
 	DECLARE @TernaryLanguageId NVARCHAR(5)			= N'$(TernaryLanguageId)'; --N'en';
-	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
-	DECLARE @OverwriteDb BIT						=CAST(N'$(OverwriteDB)' AS BIT);
+	DECLARE @FunctionalCurrencyId NCHAR(3)			= N'$(FunctionalCurrency)'; --N'ETB'
+	DECLARE @OverwriteDb BIT						= CAST(N'$(OverwriteDB)' AS BIT);
+
+	-- Country selection defines functional currency, tax laws, labor laws, secondary language, and account classification
+	-- It also defines what attributes are critical in relations definitions, and resource definitions
+	DECLARE @Country NCHAR(2); 
+	-- While custody definitions and relation definitions are mostly common, 
+	-- for each of the following industry, we decide which:
+	-- 1) Account types to activate
+	-- 2) Sample accounts to include
+	-- 3) Lookup Definitions, Resource definitions, Line Definitions, Decument Definitions
+	DECLARE @Industry_HCM BIT;
+	DECLARE @Industry_Import BIT;
+	DECLARE @Industry_Export BIT;
+	DECLARE @Industry_RealEstateRental BIT;
+	DECLARE @Industry_RealEstateSale BIT;
+	DECLARE @Industry_VehicleAssembly BIT;
+	DECLARE @Industry_Pharmaceutical BIT;
+	DECLARE @Industry_SAAS BIT;
+	DECLARE @Industry_SoftwareDevelopment BIT;
+
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
 -- Because there is no way to pass the NULL value to 

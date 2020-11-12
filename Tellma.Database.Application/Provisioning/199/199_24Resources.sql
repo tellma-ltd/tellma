@@ -1,4 +1,5 @@
-﻿DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+﻿/*
+DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 INSERT INTO @Resources([Index],
 [Code],     [Name],			[Name2],			[Decimal1], [CurrencyId]) VALUES(
 0,N'107L1', N'Soba 51 Land', N'أرض سوبا 51',	50000,      @USD);
@@ -79,3 +80,4 @@ BEGIN
 	Print '107 Motor Vehicles: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+*/

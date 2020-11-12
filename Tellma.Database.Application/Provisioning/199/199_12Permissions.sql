@@ -12,7 +12,10 @@ SELECT	1,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Mohamad Akra'
 UNION
 SELECT	2,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Ahmad Akra'
 UNION
-SELECT	3,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Administrator';
+SELECT	3,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Abu Bakr elHadi'
+UNION
+SELECT	4,		@AdministratorRL,	Id FROM dbo.Users WHERE [Name] = N'Administrator'
+;
 
 INSERT INTO @Permissions([Index], [HeaderIndex], [Id], [View], [Action], [Criteria], [Mask], [Memo])
 SELECT [Id], [RoleId], [Id], [View], [Action], [Criteria], [Mask], [Memo]

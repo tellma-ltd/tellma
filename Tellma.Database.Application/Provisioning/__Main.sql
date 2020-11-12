@@ -102,20 +102,20 @@ BEGIN
 
 	:r .\199\00_Script.sql
 
-	:r .\199\10_Users.sql
-	:r .\199\11_Permissions.sql
+	:r .\199\199_11Users.sql
+	:r .\199\199_12Permissions.sql
 
 	:r .\199\199_21Lookups.sql
 	:r .\199\21_Units.sql
 	:r .\199\199_22Centers.sql
 
-	:r .\199\30_Resources.sql
+	:r .\199\199_24Resources.sql
 	
 	:r .\199\40_Agents.sql
-	:r .\199\50_Contracts.sql
+--	:r .\199\50_Contracts.sql
 
-	:r .\199\60_AccountClassifications.sql
-	:r .\199\61_Accounts.sql
+	--:r .\199\60_AccountClassifications.sql
+	--:r .\199\61_Accounts.sql
 END
 
 --UPDATE Settings SET DefinitionsVersion = NewId()
