@@ -97,15 +97,18 @@ namespace Tellma.Data
             return table;
         }
 
-        public static DataTable DataTableWithParentIndex<T>(IEnumerable<T> entities, Func<T, int?> parentIndexFunc) where T : Entity
+        public static DataTable DataTableWithSelfRefIndex<T>(IEnumerable<T> entities, Func<T, int?> selfRefIndexFunc, string selfRefNameWithoutId = "Parent") where T : Entity
         {
+            string selfRefName = selfRefNameWithoutId + "Id";
+            string selfRefIndexName = selfRefNameWithoutId + "Index";
+
             DataTable table = new DataTable();
 
             // The column order MUST match the column order in the user-defined table type
             table.Columns.Add(new DataColumn("Index", typeof(int)));
-            table.Columns.Add(new DataColumn("ParentIndex", typeof(int)));
+            // table.Columns.Add(new DataColumn("ParentIndex", typeof(int)));
 
-            var props = AddColumnsFromProperties<T>(table);
+            var props = AddColumnsFromProperties<T>(table, selfRefName, selfRefIndexName);
 
             int index = 0;
             foreach (var entity in entities)
@@ -114,11 +117,17 @@ namespace Tellma.Data
 
                 // We add an index properties since SQL works with un-ordered sets
                 row["Index"] = index++;
-                row["ParentIndex"] = (object)parentIndexFunc(entity) ?? DBNull.Value;
+                // row["ParentIndex"] = (object)selfRefIndexFunc(entity) ?? DBNull.Value;
 
                 // Add the remaining properties
                 foreach (var prop in props)
                 {
+                    if (prop.Name == selfRefName)
+                    {
+                        object indexValue = selfRefIndexFunc(entity);
+                        row[selfRefIndexName] = indexValue ?? DBNull.Value;
+                    }
+
                     var propValue = prop.GetValue(entity);
                     row[prop.Name] = propValue ?? DBNull.Value;
                 }
@@ -251,7 +260,7 @@ namespace Tellma.Data
             DataTable lineDefinitionGenerateParameters,
             DataTable lineDefinitionStateReasons,
             DataTable workflows,
-            DataTable workflowSignatures) 
+            DataTable workflowSignatures)
             DataTableFromLineDefinitions(IEnumerable<LineDefinitionForSave> lineDefinitions)
         {
             DataTable lineDefinitionsTable = new DataTable();
@@ -493,8 +502,8 @@ namespace Tellma.Data
             }
 
             return (
-                lineDefinitionsTable, 
-                lineDefinitionEntriesTable, 
+                lineDefinitionsTable,
+                lineDefinitionEntriesTable,
                 lineDefinitionEntryCustodyDefinitionsTable,
                 lineDefinitionEntryResourceDefinitionsTable,
                 lineDefinitionColumnsTable,
@@ -505,11 +514,19 @@ namespace Tellma.Data
                 );
         }
 
-        private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table) where T : Entity
+        private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table, string selfRefName = null, string selfRefIndexName = null) where T : Entity
         {
             var props = TypeDescriptor.Get<T>().SimpleProperties;
             foreach (var prop in props)
             {
+                // If it's a self referencing FK column, add the index first (by convention the index column immediate precedes the self ref FK column
+                if (prop.Name == selfRefName)
+                {
+                    var indexColumn = new DataColumn(selfRefIndexName, typeof(int));
+                    table.Columns.Add(indexColumn);
+                }
+
+                // Add the column itself
                 var propType = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
                 var column = new DataColumn(prop.Name, propType);
                 if (propType == typeof(string))

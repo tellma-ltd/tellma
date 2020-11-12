@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { TranslateService } from '@ngx-translate/core';
-import { NumberPropDescriptor, ChoicePropDescriptor, StatePropDescriptor } from './metadata';
+import { NumberPropDescriptor, ChoicePropDescriptor, StatePropDescriptor, NavigationPropDescriptor } from './metadata';
 import { TenantWorkspace } from '../../workspace.service';
 
 // tslint:disable:max-line-length
@@ -55,12 +55,21 @@ export function statePropDescriptor(trx: TranslateService): StatePropDescriptor 
     };
 }
 
-export function lookupDefinitionIdPropDescriptor(name: string, ws: TenantWorkspace, trx: TranslateService): ChoicePropDescriptor {
+export function lookupDefinitionIdPropDescriptor(name: string, trx: TranslateService): NumberPropDescriptor {
     return {
-        control: 'choice',
+        control: 'number',
+        label: () => `${trx.instant('Field0Definition', { 0: trx.instant(name) })} (${trx.instant('Id')})`,
+        minDecimalPlaces: 0,
+        maxDecimalPlaces: 0
+    };
+}
+
+export function lookupDefinitionPropDescriptor(name: string, fkName: string, trx: TranslateService): NavigationPropDescriptor {
+    return {
+        control: 'navigation',
         label: () => trx.instant('Field0Definition', { 0: trx.instant(name) }),
-        choices: Object.keys(ws.definitions.Lookups).map(stringDefId => +stringDefId),
-        format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Lookups[defId], 'TitlePlural')
+        type: 'LookupDefinition',
+        foreignKeyName: fkName
     };
 }
 
@@ -157,7 +166,6 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'file',
           'filter',
           'fist-raised',
-          'flag',
           'folder-minus',
           'folder-plus',
           'folder',
@@ -165,7 +173,6 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'funnel-dollar',
           'gas-pump',
           'gifts',
-          'globe',
           'grin-hearts',
           'hammer',
           'hand-holding-usd',

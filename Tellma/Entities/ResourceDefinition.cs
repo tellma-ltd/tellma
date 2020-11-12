@@ -413,5 +413,25 @@ namespace Tellma.Entities
         [DefaultDisplay(Name = "Resource_UnitMassUnit")]
         [ForeignKey(nameof(DefaultUnitMassUnitId))]
         public Unit DefaultUnitMassUnit { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
+        [ForeignKey(nameof(Lookup1DefinitionId))]
+        public LookupDefinition Lookup1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
+        [ForeignKey(nameof(Lookup2DefinitionId))]
+        public LookupDefinition Lookup2Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup3")]
+        [ForeignKey(nameof(Lookup3DefinitionId))]
+        public LookupDefinition Lookup3Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
+        [ForeignKey(nameof(Lookup4DefinitionId))]
+        public LookupDefinition Lookup4Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
+        [ForeignKey(nameof(ParticipantDefinitionId))]
+        public RelationDefinition ParticipantDefinition { get; set; }
     }
 }

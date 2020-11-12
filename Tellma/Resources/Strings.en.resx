@@ -778,6 +778,9 @@
   <data name="Entity_Lookup5" xml:space="preserve">
     <value>Lookup Attribute 5</value>
   </data>
+  <data name="Entity_Relation1" xml:space="preserve">
+    <value>Relation Attribute 1</value>
+  </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>Text Attribute 1</value>
   </data>
@@ -2208,6 +2211,9 @@
   </data>
   <data name="Relation_Job" xml:space="preserve">
     <value>Job</value>
+  </data>
+  <data name="Relation_Relation1" xml:space="preserve">
+    <value>Relation</value>
   </data>
   <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
     <value>Tax Identification Number</value>

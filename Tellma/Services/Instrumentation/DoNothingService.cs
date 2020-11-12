@@ -10,6 +10,11 @@ namespace Tellma.Services.Instrumentation
             return _doNothing;
         }
 
+        public IDisposable Disable()
+        {
+            return _doNothing;
+        }
+
         public InstrumentationReport GetReport()
         {
             return null;

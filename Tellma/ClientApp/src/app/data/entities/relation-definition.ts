@@ -6,7 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, DefinitionCardinality, lookupDefinitionIdPropDescriptor, cardinalityPropDescriptor, statePropDescriptor } from './base/definition-common';
+import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, DefinitionCardinality, lookupDefinitionIdPropDescriptor, cardinalityPropDescriptor, statePropDescriptor, lookupDefinitionPropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { RelationDefinitionReportDefinition, RelationDefinitionReportDefinitionForSave } from './relation-definition-report-definition';
 
@@ -87,6 +87,11 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     Script?: string;
 
     // Relation Definition Only
+    Relation1Label?: string;
+    Relation1Label2?: string;
+    Relation1Label3?: string;
+    Relation1Visibility?: Visibility;
+    Relation1DefinitionId?: number;
 
     AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
@@ -181,22 +186,26 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Lookup1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.secondaryPostfix },
                 Lookup1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.ternaryPostfix },
                 Lookup1Visibility: visibilityPropDescriptor('Entity_Lookup1', trx),
-                Lookup1DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup1', ws, trx),
+                Lookup1DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup1', trx),
+                Lookup1Definition: lookupDefinitionPropDescriptor('Entity_Lookup1', 'Lookup1DefinitionId', trx),
                 Lookup2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.primaryPostfix },
                 Lookup2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.secondaryPostfix },
                 Lookup2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.ternaryPostfix },
                 Lookup2Visibility: visibilityPropDescriptor('Entity_Lookup2', trx),
-                Lookup2DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup2', ws, trx),
+                Lookup2DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup2', trx),
+                Lookup2Definition: lookupDefinitionPropDescriptor('Entity_Lookup2', 'Lookup2DefinitionId', trx),
                 Lookup3Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup3') }) + ws.primaryPostfix },
                 Lookup3Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup3') }) + ws.secondaryPostfix },
                 Lookup3Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup3') }) + ws.ternaryPostfix },
                 Lookup3Visibility: visibilityPropDescriptor('Entity_Lookup3', trx),
-                Lookup3DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup3', ws, trx),
+                Lookup3DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup3', trx),
+                Lookup3Definition: lookupDefinitionPropDescriptor('Entity_Lookup3', 'Lookup3DefinitionId', trx),
                 Lookup4Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup4') }) + ws.primaryPostfix },
                 Lookup4Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup4') }) + ws.secondaryPostfix },
                 Lookup4Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup4') }) + ws.ternaryPostfix },
                 Lookup4Visibility: visibilityPropDescriptor('Entity_Lookup4', trx),
-                Lookup4DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup4', ws, trx),
+                Lookup4DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup4', trx),
+                Lookup4Definition: lookupDefinitionPropDescriptor('Entity_Lookup4', 'Lookup4DefinitionId', trx),
                 Text1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.primaryPostfix },
                 Text1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.secondaryPostfix },
                 Text1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.ternaryPostfix },
@@ -206,6 +215,13 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.ternaryPostfix },
                 Text2Visibility: visibilityPropDescriptor('Entity_Text2', trx),
                 Script: { control: 'text', label: () => trx.instant('Definition_Script') },
+
+                Relation1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.primaryPostfix },
+                Relation1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.secondaryPostfix },
+                Relation1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.ternaryPostfix },
+                Relation1Visibility: visibilityPropDescriptor('Entity_Relation1', trx),
+                Relation1DefinitionId: { control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Relation1Definition: { control: 'navigation', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') }), type: 'RelationDefinition', foreignKeyName: 'Relation1DefinitionId' },
 
                 AgentVisibility: visibilityPropDescriptor('Relation_Agent', trx),
                 TaxIdentificationNumberVisibility: visibilityPropDescriptor('Relation_TaxIdentificationNumber', trx),

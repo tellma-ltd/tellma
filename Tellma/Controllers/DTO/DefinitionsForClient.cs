@@ -524,6 +524,14 @@ namespace Tellma.Controllers.Dto
         public string BankAccountNumberVisibility { get; set; }
         public string UserCardinality { get; set; }
 
+
+        // Relation 1
+        public string Relation1Label { get; set; }
+        public string Relation1Label2 { get; set; }
+        public string Relation1Label3 { get; set; }
+        public string Relation1Visibility { get; set; }
+        public int? Relation1DefinitionId { get; set; }
+
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 

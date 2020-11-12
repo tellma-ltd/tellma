@@ -1758,7 +1758,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1Index, nameof(Relation.Relation1));
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(Relation)}List]",
@@ -1794,7 +1794,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1Index, nameof(Relation.Relation1));
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Relation)}List]",
@@ -1944,8 +1944,9 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1DefinitionIndex, nameof(RelationDefinition.Relation1Definition));
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
@@ -1980,7 +1981,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1DefinitionIndex, nameof(RelationDefinition.Relation1Definition));
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
@@ -3422,7 +3423,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
@@ -3449,7 +3450,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
@@ -3640,7 +3641,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(AccountType)}List]",
@@ -3683,7 +3684,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(AccountType)}List]",
@@ -4090,7 +4091,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(Center)}List]",
@@ -4117,7 +4118,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Center)}List]",
@@ -4314,7 +4315,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(EntryType)}List]",
@@ -4341,7 +4342,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(EntryType)}List]",

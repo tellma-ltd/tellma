@@ -133,6 +133,13 @@
 
 	[Script]							NVARCHAR (MAX),
 	-----Properties applicable to contracts only
+	[Relation1Label]					NVARCHAR (50),
+	[Relation1Label2]					NVARCHAR (50),
+	[Relation1Label3]					NVARCHAR (50),
+	[Relation1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Relation1Visibility] IN (N'None', N'Required', N'Optional')),
+	[Relation1DefinitionIndex]			INT,
+	[Relation1DefinitionId]				INT,
+
 	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
 

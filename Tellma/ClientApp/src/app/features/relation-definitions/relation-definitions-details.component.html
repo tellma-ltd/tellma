@@ -208,6 +208,27 @@
                     </ng-container>
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text2', propLower: 'text2' }">
                     </ng-container>
+
+                    <!-- Relation1 Visiblity + Labels -->
+                    <ng-container
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Relation1', propLower: 'relation1' }">
+                    </ng-container>
+
+                    <!-- Relation1DefinitionId -->
+                    <div class="form-group" *ngIf="isVisible(model.Relation1Visibility)"
+                        [class.is-invalid]="invalid(relation1defId, model.serverErrors?.Relation1DefinitionId)">
+                        <label
+                            class="small">{{ ('Field0Definition' | translate: { '0': ('Entity_Relation1' | translate) }) }}</label>
+
+                        <t-relation-definitions-picker [(ngModel)]="model.Relation1DefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #relation1defId="ngModel" theme="dark">
+                        </t-relation-definitions-picker>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: relation1defId, serverErrors: model.serverErrors?.Relation1DefinitionId }">
+                        </ng-container>
+                    </div>
+
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Agent', propLower: 'agent', fieldName: 'Relation_Agent' }">
                     </ng-container>
@@ -324,15 +345,12 @@
                         <!-- DefinitionId -->
                         <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
                             [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
-                            <label class="small"
-                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
+                            <label
+                                class="small">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
 
-                            <select class="form-control t-studio-input" id="{{propLower}}definitionId"
-                                [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"
-                                #defId="ngModel">
-                                <option *ngFor="let c of lookupDefinitionChoices" value="{{c.value}}">
-                                    {{ c.name() }}</option>
-                            </select>
+                            <t-lookup-definitions-picker [(ngModel)]="model[prop + 'DefinitionId']"
+                                (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                            </t-lookup-definitions-picker>
                             <ng-container
                                 *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: serverErrors(model, prop + 'DefinitionId') }">
                             </ng-container>

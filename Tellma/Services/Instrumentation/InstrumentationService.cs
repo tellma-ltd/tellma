@@ -13,7 +13,6 @@ namespace Tellma.Services.Instrumentation
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="options"></param>
         public InstrumentationService(IOptions<InstrumentationOptions> options)
         {
             _threshold = options?.Value?.ThresholdInMilliseconds ?? 500L; // Default to 500 milliseconds
@@ -24,6 +23,7 @@ namespace Tellma.Services.Instrumentation
         private readonly Stopwatch _lifetimeSw = new Stopwatch();
         private readonly Stopwatch _middlewareSw = new Stopwatch();
         private readonly List<CodeBlockInstrumentation> _middlewareInstrumentation = new List<CodeBlockInstrumentation>();
+        private readonly DoNothingScope _doNothing = new DoNothingScope();
 
         /// <summary>
         /// This measures the overhead of collecting the instrumentation, to ensure it's not too much
@@ -42,6 +42,8 @@ namespace Tellma.Services.Instrumentation
         /// </summary>
         private CodeBlockInstrumentation _current = new CodeBlockInstrumentation(); // The root
 
+        private bool _isDisabled = false;
+
         /// <summary>
         /// Called at the beginning of a code block that we intend to measure the performance of,
         /// the returned <see cref="IDisposable"/> should be called at the end of that code block
@@ -50,25 +52,39 @@ namespace Tellma.Services.Instrumentation
         /// </summary>
         public IDisposable Block(string name)
         {
-            _overhead.Start();
-
-            // Add (or retrieve) a sub-block
-            var subBlock = _current.AddSubBlock(name);
-
-            // Push the state in the stack
-            _stack.Push(_current);
-            _current = subBlock;
-
-            var scope = new CodeBlockScope(_overhead, onDispose: (long time) =>
+            if (_isDisabled)
             {
-                subBlock.T += time;
+                return _doNothing;
+            }
+            else
+            {
+                _overhead.Start();
 
-                // Pop the stack when we're done with a block
-                _current = _stack.Pop();
-            });
+                // Add (or retrieve) a sub-block
+                var subBlock = _current.AddSubBlock(name);
 
-            _overhead.Stop();
-            return scope;
+                // Push the state in the stack
+                _stack.Push(_current);
+                _current = subBlock;
+
+                var scope = new CodeBlockScope(_overhead, onDispose: (long time) =>
+                {
+                    subBlock.T += time;
+
+                    // Pop the stack when we're done with a block
+                    _current = _stack.Pop();
+                });
+
+                _overhead.Stop();
+                return scope;
+            }
+        }
+
+        public IDisposable Disable()
+        {
+            _isDisabled = true;
+
+            return new DisableInstrumentationDisposable(onDispose: () => _isDisabled = false);
         }
 
         /// <summary>
@@ -112,5 +128,27 @@ namespace Tellma.Services.Instrumentation
                 T = milliseconds
             });
         }
+
+        #region Helper Classes
+
+        public class DisableInstrumentationDisposable : IDisposable
+        {
+            private readonly Action _onDispose;
+
+            public DisableInstrumentationDisposable(Action onDispose)
+            {
+                _onDispose = onDispose;
+            }
+
+            public void Dispose()
+            {
+                if (_onDispose != null)
+                {
+                    _onDispose();
+                }
+            }
+        }
+
+        #endregion
     }
 }

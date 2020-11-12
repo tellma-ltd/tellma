@@ -266,6 +266,28 @@ namespace Tellma.Entities
 
         #region Relation Only
 
+        [DefinitionLabelDisplay(Name = "Entity_Relation1", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Relation1Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Relation1", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Relation1Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Relation1", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Relation1Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Relation1"), VisibilityChoiceList]
+        public string Relation1Visibility { get; set; }
+
+        [NotMapped]
+        public int? Relation1DefinitionIndex { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Relation1")]
+        [SelfReferencing(nameof(Relation1DefinitionIndex))]
+        public int? Relation1DefinitionId { get; set; }
+
         [VisibilityDisplay(Name = "Relation_Agent"), VisibilityChoiceList]
         public string AgentVisibility { get; set; }
 
@@ -324,6 +346,26 @@ namespace Tellma.Entities
         public int? SavedById { get; set; }
 
         // For Query
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
+        [ForeignKey(nameof(Lookup1DefinitionId))]
+        public LookupDefinition Lookup1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
+        [ForeignKey(nameof(Lookup2DefinitionId))]
+        public LookupDefinition Lookup2Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup3")]
+        [ForeignKey(nameof(Lookup3DefinitionId))]
+        public LookupDefinition Lookup3Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
+        [ForeignKey(nameof(Lookup4DefinitionId))]
+        public LookupDefinition Lookup4Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Relation1")]
+        [ForeignKey(nameof(Relation1DefinitionId))]
+        public LookupDefinition Relation1Definition { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

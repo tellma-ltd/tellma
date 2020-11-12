@@ -40,7 +40,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
-  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent,Users/User';
+  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Relation1,Agent,Users/User';
 
   create = () => {
     const result: RelationForSave = {};
@@ -422,6 +422,28 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
   public get BankAccountNumber_isRequired(): boolean {
     return this.definition.BankAccountNumberVisibility === 'Required';
+  }
+
+  public get Relation1_isVisible(): boolean {
+    return !!this.definition.Relation1Visibility;
+  }
+
+  public get Relation1_isRequired(): boolean {
+    return this.definition.Relation1Visibility === 'Required';
+  }
+
+  public get Relation1_label(): string {
+    return !!this.definition.Relation1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Relation1Label') :
+      this.translate.instant('Entity_Relation1');
+  }
+
+  public get Relation1_DefinitionIds(): number[] {
+    if (!!this.definition.Relation1DefinitionId) {
+      return [this.definition.Relation1DefinitionId];
+    } else {
+      return [];
+    }
   }
 
   public get User_isVisible(): boolean {
