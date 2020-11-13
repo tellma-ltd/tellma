@@ -400,6 +400,35 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     ToDateLabel3: string;
     ToDateVisibility: Visibility;
 
+    DateOfBirthVisibility?: Visibility;
+    ContactEmailVisibility?: Visibility;
+    ContactMobileVisibility?: Visibility;
+    ContactAddressVisibility?: Visibility;
+
+    // Date 1
+    Date1Label?: string;
+    Date1Label2?: string;
+    Date1Label3?: string;
+    Date1Visibility?: Visibility;
+
+    // Date 2
+    Date2Label?: string;
+    Date2Label2?: string;
+    Date2Label3?: string;
+    Date2Visibility?: Visibility;
+
+    // Date 3
+    Date3Label?: string;
+    Date3Label2?: string;
+    Date3Label3?: string;
+    Date3Visibility?: Visibility;
+
+    // Date 4
+    Date4Label?: string;
+    Date4Label2?: string;
+    Date4Label3?: string;
+    Date4Visibility?: Visibility;
+
     // Decimal 1
     Decimal1Label: string;
     Decimal1Label2: string;
@@ -452,12 +481,33 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup4Visibility: Visibility;
     Lookup4DefinitionId: number;
 
-    //// Lookup 5
-    // Lookup5Label: string;
-    // Lookup5Label2: string;
-    // Lookup5Label3: string;
-    // Lookup5Visibility: Visibility;
-    // Lookup5DefinitionId: number;
+    // Lookup 5
+    Lookup5Label: string;
+    Lookup5Label2: string;
+    Lookup5Label3: string;
+    Lookup5Visibility: Visibility;
+    Lookup5DefinitionId: number;
+
+    // Lookup 6
+    Lookup6Label: string;
+    Lookup6Label2: string;
+    Lookup6Label3: string;
+    Lookup6Visibility: Visibility;
+    Lookup6DefinitionId: number;
+
+    // Lookup 7
+    Lookup7Label: string;
+    Lookup7Label2: string;
+    Lookup7Label3: string;
+    Lookup7Visibility: Visibility;
+    Lookup7DefinitionId: number;
+
+    // Lookup 8
+    Lookup8Label: string;
+    Lookup8Label2: string;
+    Lookup8Label3: string;
+    Lookup8Visibility: Visibility;
+    Lookup8DefinitionId: number;
 
     // Text 1
     Text1Label: string;
@@ -470,6 +520,18 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     Text2Label2: string;
     Text2Label3: string;
     Text2Visibility: Visibility;
+
+    // Text 3
+    Text3Label: string;
+    Text3Label2: string;
+    Text3Label3: string;
+    Text3Visibility: Visibility;
+
+    // Text 4
+    Text4Label: string;
+    Text4Label2: string;
+    Text4Label3: string;
+    Text4Visibility: Visibility;
 
     // Relation Only
 

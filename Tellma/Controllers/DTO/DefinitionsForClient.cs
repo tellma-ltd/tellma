@@ -444,6 +444,36 @@ namespace Tellma.Controllers.Dto
         public string ToDateLabel3 { get; set; }
         public string ToDateVisibility { get; set; }
 
+        public string DateOfBirthVisibility { get; set; }
+        public string ContactEmailVisibility { get; set; }
+        public string ContactMobileVisibility { get; set; }
+        public string NormalizedContactMobileVisibility { get; set; }
+        public string ContactAddressVisibility { get; set; }
+
+        // Date 1
+        public string Date1Label { get; set; }
+        public string Date1Label2 { get; set; }
+        public string Date1Label3 { get; set; }
+        public string Date1Visibility { get; set; }
+
+        // Date 2
+        public string Date2Label { get; set; }
+        public string Date2Label2 { get; set; }
+        public string Date2Label3 { get; set; }
+        public string Date2Visibility { get; set; }
+
+        // Date 3
+        public string Date3Label { get; set; }
+        public string Date3Label2 { get; set; }
+        public string Date3Label3 { get; set; }
+        public string Date3Visibility { get; set; }
+
+        // Date 4
+        public string Date4Label { get; set; }
+        public string Date4Label2 { get; set; }
+        public string Date4Label3 { get; set; }
+        public string Date4Visibility { get; set; }
+
         // Decimal 1
         public string Decimal1Label { get; set; }
         public string Decimal1Label2 { get; set; }
@@ -496,13 +526,34 @@ namespace Tellma.Controllers.Dto
         public string Lookup4Visibility { get; set; }
         public int? Lookup4DefinitionId { get; set; }
 
-        //// Lookup 5
-        //public string Lookup5Label { get; set; }
-        //public string Lookup5Label2 { get; set; }
-        //public string Lookup5Label3 { get; set; }
-        //public string Lookup5Visibility { get; set; }
-        //public int? Lookup5DefaultValue { get; set; }
-        //public int? Lookup5DefinitionId { get; set; }
+
+        // Lookup 5
+        public string Lookup5Label { get; set; }
+        public string Lookup5Label2 { get; set; }
+        public string Lookup5Label3 { get; set; }
+        public string Lookup5Visibility { get; set; }
+        public int? Lookup5DefinitionId { get; set; }
+
+        // Lookup 6
+        public string Lookup6Label { get; set; }
+        public string Lookup6Label2 { get; set; }
+        public string Lookup6Label3 { get; set; }
+        public string Lookup6Visibility { get; set; }
+        public int? Lookup6DefinitionId { get; set; }
+
+        // Lookup 7
+        public string Lookup7Label { get; set; }
+        public string Lookup7Label2 { get; set; }
+        public string Lookup7Label3 { get; set; }
+        public string Lookup7Visibility { get; set; }
+        public int? Lookup7DefinitionId { get; set; }
+
+        // Lookup 8
+        public string Lookup8Label { get; set; }
+        public string Lookup8Label2 { get; set; }
+        public string Lookup8Label3 { get; set; }
+        public string Lookup8Visibility { get; set; }
+        public int? Lookup8DefinitionId { get; set; }
 
         // Text 1
         public string Text1Label { get; set; }
@@ -516,7 +567,17 @@ namespace Tellma.Controllers.Dto
         public string Text2Label3 { get; set; }
         public string Text2Visibility { get; set; }
 
+        // Text 3
+        public string Text3Label { get; set; }
+        public string Text3Label2 { get; set; }
+        public string Text3Label3 { get; set; }
+        public string Text3Visibility { get; set; }
 
+        // Text 4
+        public string Text4Label { get; set; }
+        public string Text4Label2 { get; set; }
+        public string Text4Label3 { get; set; }
+        public string Text4Visibility { get; set; }
 
         public string AgentVisibility { get; set; }
         public string TaxIdentificationNumberVisibility { get; set; }

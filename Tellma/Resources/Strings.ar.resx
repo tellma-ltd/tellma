@@ -739,8 +739,29 @@
   <data name="Entity_Center" xml:space="preserve">
     <value>المركز</value>
   </data>
+  <data name="Entity_ContactAddress" xml:space="preserve">
+    <value>عنوان السكن</value>
+  </data>
+  <data name="Entity_ContactEmail" xml:space="preserve">
+    <value>البريد الإلكتروني للتواصل</value>
+  </data>
+  <data name="Entity_ContactMobile" xml:space="preserve">
+    <value>رقم الهاتف المحمول</value>
+  </data>
   <data name="Entity_Currency" xml:space="preserve">
     <value>العملة</value>
+  </data>
+  <data name="Entity_Date1" xml:space="preserve">
+    <value>التاريخ 1</value>
+  </data>
+  <data name="Entity_Date2" xml:space="preserve">
+    <value>التاريخ 2</value>
+  </data>
+  <data name="Entity_Date3" xml:space="preserve">
+    <value>التاريخ 3</value>
+  </data>
+  <data name="Entity_Date4" xml:space="preserve">
+    <value>التاريخ 4</value>
   </data>
   <data name="Entity_Decimal1" xml:space="preserve">
     <value>الصفة العشرية 1</value>
@@ -778,6 +799,18 @@
   <data name="Entity_Lookup5" xml:space="preserve">
     <value>الصفة 5</value>
   </data>
+  <data name="Entity_Lookup6" xml:space="preserve">
+    <value>الصفة 6</value>
+  </data>
+  <data name="Entity_Lookup7" xml:space="preserve">
+    <value>الصفة 7</value>
+  </data>
+  <data name="Entity_Lookup8" xml:space="preserve">
+    <value>الصفة 8</value>
+  </data>
+  <data name="Entity_NormalizedContactMobile" xml:space="preserve">
+    <value>رقم الهاتف المحمول (مطبع)</value>
+  </data>
   <data name="Entity_Relation1" xml:space="preserve">
     <value>العلاقة 1</value>
   </data>
@@ -786,6 +819,12 @@
   </data>
   <data name="Entity_Text2" xml:space="preserve">
     <value>الصفة النصية 2</value>
+  </data>
+  <data name="Entity_Text3" xml:space="preserve">
+    <value>الصفة النصية 3</value>
+  </data>
+  <data name="Entity_Text4" xml:space="preserve">
+    <value>الصفة النصية 4</value>
   </data>
   <data name="Entity_ToDate" xml:space="preserve">
     <value>إلى تاريخ</value>
@@ -2209,6 +2248,9 @@
   <data name="Relation_BankAccountNumber" xml:space="preserve">
     <value>رقم حساب البنك</value>
   </data>
+  <data name="Relation_DateOfBirth" xml:space="preserve">
+    <value>تاريخ الولادة</value>
+  </data>
   <data name="Relation_Job" xml:space="preserve">
     <value>الوظيفة</value>
   </data>
@@ -2977,12 +3019,6 @@
   <data name="User_Companies" xml:space="preserve">
     <value>الشركات</value>
   </data>
-  <data name="User_ContactEmail" xml:space="preserve">
-    <value>البريد الإلكتروني للتواصل</value>
-  </data>
-  <data name="User_ContactMobile" xml:space="preserve">
-    <value>رقم الهاتف المحمول</value>
-  </data>
   <data name="User_Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
   </data>
@@ -2997,9 +3033,6 @@
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>عضو</value>
-  </data>
-  <data name="User_NormalizedContactMobile" xml:space="preserve">
-    <value>رقم الهاتف المحمول (مطبع)</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>الأذونات</value>

@@ -40,7 +40,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
-  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Relation1,Agent,Users/User';
+  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,Relation1,Agent,Users/User';
 
   create = () => {
     const result: RelationForSave = {};
@@ -230,6 +230,62 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entity_ToDate');
   }
 
+  public get Date1_isVisible(): boolean {
+    return !!this.definition.Date1Visibility;
+  }
+
+  public get Date1_isRequired(): boolean {
+    return this.definition.Date1Visibility === 'Required';
+  }
+
+  public get Date1_label(): string {
+    return !!this.definition.Date1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date1Label') :
+      this.translate.instant('Entity_Date1');
+  }
+
+  public get Date2_isVisible(): boolean {
+    return !!this.definition.Date2Visibility;
+  }
+
+  public get Date2_isRequired(): boolean {
+    return this.definition.Date2Visibility === 'Required';
+  }
+
+  public get Date2_label(): string {
+    return !!this.definition.Date2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date2Label') :
+      this.translate.instant('Entity_Date2');
+  }
+
+  public get Date3_isVisible(): boolean {
+    return !!this.definition.Date3Visibility;
+  }
+
+  public get Date3_isRequired(): boolean {
+    return this.definition.Date3Visibility === 'Required';
+  }
+
+  public get Date3_label(): string {
+    return !!this.definition.Date3Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date3Label') :
+      this.translate.instant('Entity_Date3');
+  }
+
+  public get Date4_isVisible(): boolean {
+    return !!this.definition.Date4Visibility;
+  }
+
+  public get Date4_isRequired(): boolean {
+    return this.definition.Date4Visibility === 'Required';
+  }
+
+  public get Date4_label(): string {
+    return !!this.definition.Date4Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date4Label') :
+      this.translate.instant('Entity_Date4');
+  }
+
   public get Decimal1_isVisible(): boolean {
     return !!this.definition.Decimal1Visibility;
   }
@@ -358,9 +414,77 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.Lookup4DefinitionId;
   }
 
-  // public get Lookup5_DefinitionId(): number {
-  //   return this.definition.Lookup5DefinitionId;
-  // }
+  public get Lookup5_isVisible(): boolean {
+    return !!this.definition.Lookup5Visibility;
+  }
+
+  public get Lookup5_isRequired(): boolean {
+    return this.definition.Lookup5Visibility === 'Required';
+  }
+
+  public get Lookup5_label(): string {
+    return !!this.definition.Lookup5Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup5Label') :
+      this.translate.instant('Entity_Lookup5');
+  }
+
+  public get Lookup5_DefinitionId(): number {
+    return this.definition.Lookup5DefinitionId;
+  }
+
+  public get Lookup6_isVisible(): boolean {
+    return !!this.definition.Lookup6Visibility;
+  }
+
+  public get Lookup6_isRequired(): boolean {
+    return this.definition.Lookup6Visibility === 'Required';
+  }
+
+  public get Lookup6_label(): string {
+    return !!this.definition.Lookup6Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup6Label') :
+      this.translate.instant('Entity_Lookup6');
+  }
+
+  public get Lookup6_DefinitionId(): number {
+    return this.definition.Lookup6DefinitionId;
+  }
+
+  public get Lookup7_isVisible(): boolean {
+    return !!this.definition.Lookup7Visibility;
+  }
+
+  public get Lookup7_isRequired(): boolean {
+    return this.definition.Lookup7Visibility === 'Required';
+  }
+
+  public get Lookup7_label(): string {
+    return !!this.definition.Lookup7Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup7Label') :
+      this.translate.instant('Entity_Lookup7');
+  }
+
+  public get Lookup7_DefinitionId(): number {
+    return this.definition.Lookup7DefinitionId;
+  }
+
+  public get Lookup8_isVisible(): boolean {
+    return !!this.definition.Lookup8Visibility;
+  }
+
+  public get Lookup8_isRequired(): boolean {
+    return this.definition.Lookup8Visibility === 'Required';
+  }
+
+  public get Lookup8_label(): string {
+    return !!this.definition.Lookup8Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup8Label') :
+      this.translate.instant('Entity_Lookup8');
+  }
+
+  public get Lookup8_DefinitionId(): number {
+    return this.definition.Lookup8DefinitionId;
+  }
 
   public get Text1_isVisible(): boolean {
     return !!this.definition.Text1Visibility;
@@ -388,6 +512,34 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.Text2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Text2Label') :
       this.translate.instant('Entity_Text2');
+  }
+
+  public get Text3_isVisible(): boolean {
+    return !!this.definition.Text3Visibility;
+  }
+
+  public get Text3_isRequired(): boolean {
+    return this.definition.Text3Visibility === 'Required';
+  }
+
+  public get Text3_label(): string {
+    return !!this.definition.Text3Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Text3Label') :
+      this.translate.instant('Entity_Text3');
+  }
+
+  public get Text4_isVisible(): boolean {
+    return !!this.definition.Text4Visibility;
+  }
+
+  public get Text4_isRequired(): boolean {
+    return this.definition.Text4Visibility === 'Required';
+  }
+
+  public get Text4_label(): string {
+    return !!this.definition.Text4Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Text4Label') :
+      this.translate.instant('Entity_Text4');
   }
 
   // Relation Only
@@ -422,6 +574,38 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
 
   public get BankAccountNumber_isRequired(): boolean {
     return this.definition.BankAccountNumberVisibility === 'Required';
+  }
+
+  public get DateOfBirth_isVisible(): boolean {
+    return !!this.definition.DateOfBirthVisibility;
+  }
+
+  public get DateOfBirth_isRequired(): boolean {
+    return this.definition.DateOfBirthVisibility === 'Required';
+  }
+
+  public get ContactEmail_isVisible(): boolean {
+    return !!this.definition.ContactEmailVisibility;
+  }
+
+  public get ContactEmail_isRequired(): boolean {
+    return this.definition.ContactEmailVisibility === 'Required';
+  }
+
+  public get ContactMobile_isVisible(): boolean {
+    return !!this.definition.ContactMobileVisibility;
+  }
+
+  public get ContactMobile_isRequired(): boolean {
+    return this.definition.ContactMobileVisibility === 'Required';
+  }
+
+  public get ContactAddress_isVisible(): boolean {
+    return !!this.definition.ContactAddressVisibility;
+  }
+
+  public get ContactAddress_isRequired(): boolean {
+    return this.definition.ContactAddressVisibility === 'Required';
   }
 
   public get Relation1_isVisible(): boolean {

@@ -114,6 +114,50 @@
     </t-centers-picker>
   </t-form-group>
 
+  <!-- DateOfBirth -->
+  <t-form-group *ngIf="DateOfBirth_isVisible" class="t-form-group" [label]="'Relation_DateOfBirth' | translate"
+    [serverErrors]="model?.serverErrors?.DateOfBirth">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DateOfBirth">
+      <div>{{ model?.DateOfBirth | date:'yyyy-MM-dd' }}</div>
+    </t-restricted>
+    <t-date-picker *ngIf="isEdit" [(ngModel)]="model.DateOfBirth" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="DateOfBirth_isRequired">
+    </t-date-picker>
+  </t-form-group>
+
+  <!-- ContactEmail -->
+  <t-form-group *ngIf="ContactEmail_isVisible" class="t-form-group" [label]="'Entity_ContactEmail' | translate"
+    [serverErrors]="model?.serverErrors?.ContactEmail">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ContactEmail">
+      <div>{{ model?.ContactEmail }}</div>
+    </t-restricted>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ContactEmail" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="ContactEmail_isRequired">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- ContactMobile -->
+  <t-form-group *ngIf="ContactMobile_isVisible" class="t-form-group" [label]="'Entity_ContactMobile' | translate"
+    [serverErrors]="model?.serverErrors?.ContactMobile">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ContactMobile">
+      <div>{{ model?.ContactMobile }}</div>
+    </t-restricted>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ContactMobile" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="ContactMobile_isRequired">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- ContactAddress -->
+  <t-form-group *ngIf="ContactAddress_isVisible" class="t-form-group" [label]="'Entity_ContactAddress' | translate"
+    [serverErrors]="model?.serverErrors?.ContactAddress">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ContactAddress">
+      <div>{{ model?.ContactAddress }}</div>
+    </t-restricted>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ContactAddress" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="ContactAddress_isRequired">
+    </t-text-editor>
+  </t-form-group>
+
   <!-- Lookup 1 -->
   <t-form-group class="t-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup1Id">
@@ -174,18 +218,107 @@
   </t-form-group>
 
   <!-- Lookup 5 -->
-  <!-- <t-form-group class="t-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
-        [serverErrors]="model?.serverErrors?.Lookup5Id">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup5">
-        <t-view-link [link]="'../../../lookups/' + Lookup5_DefinitionId" [itemId]="model?.Lookup5Id">
-            {{ ws.getMultilingualValue('Lookup', model.Lookup5Id, 'Name') }}
-        </t-view-link>
-        </t-restricted>
+  <t-form-group class="t-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
+    [serverErrors]="model?.serverErrors?.Lookup5Id">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup5">
+      <t-view-link [link]="'../../../lookups/' + ws.get('Lookup', model.Lookup5Id)?.DefinitionId"
+        [itemId]="model?.Lookup5Id">
+        {{ ws.getMultilingualValue('Lookup', model.Lookup5Id, 'Name') }}
+      </t-view-link>
+    </t-restricted>
+    <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup5Id" [definitionId]="Lookup5_DefinitionId"
+      [required]="Lookup5_isRequired">
+    </t-lookups-picker>
+  </t-form-group>
 
-        <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup5Id" [definitionId]="Lookup5_DefinitionId"
-            [required]="Lookup5_isRequired">
-        </t-lookups-picker>
-    </t-form-group> -->
+  <!-- Lookup 6 -->
+  <t-form-group class="t-form-group" [label]="Lookup6_label" *ngIf="Lookup6_isVisible"
+    [serverErrors]="model?.serverErrors?.Lookup6Id">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup6">
+      <t-view-link [link]="'../../../lookups/' + ws.get('Lookup', model.Lookup6Id)?.DefinitionId"
+        [itemId]="model?.Lookup6Id">
+        {{ ws.getMultilingualValue('Lookup', model.Lookup6Id, 'Name') }}
+      </t-view-link>
+    </t-restricted>
+
+    <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup6Id" [definitionId]="Lookup6_DefinitionId"
+      [required]="Lookup6_isRequired">
+    </t-lookups-picker>
+  </t-form-group>
+
+  <!-- Lookup 7 -->
+  <t-form-group class="t-form-group" [label]="Lookup7_label" *ngIf="Lookup7_isVisible"
+    [serverErrors]="model?.serverErrors?.Lookup7Id">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup7">
+      <t-view-link [link]="'../../../lookups/' + ws.get('Lookup', model.Lookup7Id)?.DefinitionId"
+        [itemId]="model?.Lookup7Id">
+        {{ ws.getMultilingualValue('Lookup', model.Lookup7Id, 'Name') }}
+      </t-view-link>
+    </t-restricted>
+
+    <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup7Id" [definitionId]="Lookup7_DefinitionId"
+      [required]="Lookup7_isRequired">
+    </t-lookups-picker>
+  </t-form-group>
+
+  <!-- Lookup 8 -->
+  <t-form-group class="t-form-group" [label]="Lookup8_label" *ngIf="Lookup8_isVisible"
+    [serverErrors]="model?.serverErrors?.Lookup8Id">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup8">
+      <t-view-link [link]="'../../../lookups/' + ws.get('Lookup', model.Lookup8Id)?.DefinitionId"
+        [itemId]="model?.Lookup8Id">
+        {{ ws.getMultilingualValue('Lookup', model.Lookup8Id, 'Name') }}
+      </t-view-link>
+    </t-restricted>
+
+    <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup8Id" [definitionId]="Lookup8_DefinitionId"
+      [required]="Lookup8_isRequired">
+    </t-lookups-picker>
+  </t-form-group>
+
+  <!-- Date 1 -->
+  <t-form-group *ngIf="Date1_isVisible" class="t-form-group" [label]="Date1_label"
+    [serverErrors]="model?.serverErrors?.Date1">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date1">
+      <div>{{ model?.Date1 | date:'yyyy-MM-dd' }}</div>
+    </t-restricted>
+    <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date1" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="Date1_isRequired">
+    </t-date-picker>
+  </t-form-group>
+
+  <!-- Date 2 -->
+  <t-form-group *ngIf="Date2_isVisible" class="t-form-group" [label]="Date2_label"
+    [serverErrors]="model?.serverErrors?.Date2">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date2">
+      <div>{{ model?.Date2 | date:'yyyy-MM-dd' }}</div>
+    </t-restricted>
+    <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date2" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="Date2_isRequired">
+    </t-date-picker>
+  </t-form-group>
+
+  <!-- Date 3 -->
+  <t-form-group *ngIf="Date3_isVisible" class="t-form-group" [label]="Date3_label"
+    [serverErrors]="model?.serverErrors?.Date3">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date3">
+      <div>{{ model?.Date3 | date:'yyyy-MM-dd' }}</div>
+    </t-restricted>
+    <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date3" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="Date3_isRequired">
+    </t-date-picker>
+  </t-form-group>
+
+  <!-- Date 4 -->
+  <t-form-group *ngIf="Date4_isVisible" class="t-form-group" [label]="Date4_label"
+    [serverErrors]="model?.serverErrors?.Date4">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date4">
+      <div>{{ model?.Date4 | date:'yyyy-MM-dd' }}</div>
+    </t-restricted>
+    <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date4" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="Date4_isRequired">
+    </t-date-picker>
+  </t-form-group>
 
   <!-- Decimal 1 -->
   <t-form-group *ngIf="Decimal1_isVisible" class="t-form-group" [label]="Decimal1_label"
@@ -250,6 +383,28 @@
     </t-restricted>
     <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text2" [ngModelOptions]="{ updateOn: 'blur' }"
       [required]="Text2_isRequired">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- Text 3 -->
+  <t-form-group *ngIf="Text3_isVisible" class="t-form-group" [label]="Text3_label"
+    [serverErrors]="model?.serverErrors?.Text3">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text3">
+      <div>{{ model?.Text3 }}</div>
+    </t-restricted>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text3" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="Text3_isRequired">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- Text 4 -->
+  <t-form-group *ngIf="Text4_isVisible" class="t-form-group" [label]="Text4_label"
+    [serverErrors]="model?.serverErrors?.Text4">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text4">
+      <div>{{ model?.Text4 }}</div>
+    </t-restricted>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text4" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="Text4_isRequired">
     </t-text-editor>
   </t-form-group>
 
@@ -338,7 +493,7 @@
     <t-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }"
       [required]="BankAccountNumber_isRequired">
     </t-text-editor>
-  </t-form-group>  
+  </t-form-group>
 
   <!-- Relation 1 -->
   <t-form-group class="t-form-group" [label]="Relation1_label" *ngIf="Relation1_isVisible"

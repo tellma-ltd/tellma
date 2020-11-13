@@ -41,7 +41,6 @@ SET NOCOUNT ON;
 				[DateOfBirthVisibility],
 				[ContactEmailVisibility],
 				[ContactMobileVisibility],
-				[NormalizedContactMobileVisibility],
 				[ContactAddressVisibility],
 
 				[Date1Label],
@@ -196,7 +195,6 @@ SET NOCOUNT ON;
 				t.[DateOfBirthVisibility]= s.[DateOfBirthVisibility],
 				t.[ContactEmailVisibility]=s.[ContactEmailVisibility],
 				t.[ContactMobileVisibility]=s.[ContactMobileVisibility],
-				t.[NormalizedContactMobileVisibility]=s.[NormalizedContactMobileVisibility],
 				t.[ContactAddressVisibility]=s.[ContactAddressVisibility],
 
 				t.[Date1Label]			=s.[Date1Label],
@@ -342,7 +340,6 @@ SET NOCOUNT ON;
 				[DateOfBirthVisibility],
 				[ContactEmailVisibility],
 				[ContactMobileVisibility],
-				[NormalizedContactMobileVisibility],
 				[ContactAddressVisibility],
 
 				[Date1Label],
@@ -481,7 +478,6 @@ SET NOCOUNT ON;
 				s.[DateOfBirthVisibility],
 				s.[ContactEmailVisibility],
 				s.[ContactMobileVisibility],
-				s.[NormalizedContactMobileVisibility],
 				s.[ContactAddressVisibility],
 
 				s.[Date1Label],

@@ -739,23 +739,44 @@
   <data name="Entity_Center" xml:space="preserve">
     <value>Center</value>
   </data>
+  <data name="Entity_ContactAddress" xml:space="preserve">
+    <value>Contact Address</value>
+  </data>
+  <data name="Entity_ContactEmail" xml:space="preserve">
+    <value>Contact Email</value>
+  </data>
+  <data name="Entity_ContactMobile" xml:space="preserve">
+    <value>Contact Mobile</value>
+  </data>
   <data name="Entity_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="Entity_Date1" xml:space="preserve">
+    <value>Date 1</value>
+  </data>
+  <data name="Entity_Date2" xml:space="preserve">
+    <value>Date 2</value>
+  </data>
+  <data name="Entity_Date3" xml:space="preserve">
+    <value>Date 3</value>
+  </data>
+  <data name="Entity_Date4" xml:space="preserve">
+    <value>Date 4</value>
+  </data>
   <data name="Entity_Decimal1" xml:space="preserve">
-    <value>Decimal Attribute 1</value>
+    <value>Decimal 1</value>
   </data>
   <data name="Entity_Decimal2" xml:space="preserve">
-    <value>Decimal Attribute 2</value>
+    <value>Decimal 2</value>
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>From Date</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
-    <value>Integer Attribute 1</value>
+    <value>Integer 1</value>
   </data>
   <data name="Entity_Int2" xml:space="preserve">
-    <value>Integer Attribute 2</value>
+    <value>Integer 2</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>Location</value>
@@ -764,28 +785,46 @@
     <value>Location (GeoJSON)</value>
   </data>
   <data name="Entity_Lookup1" xml:space="preserve">
-    <value>Lookup Attribute 1</value>
+    <value>Lookup 1</value>
   </data>
   <data name="Entity_Lookup2" xml:space="preserve">
-    <value>Lookup Attribute 2</value>
+    <value>Lookup 2</value>
   </data>
   <data name="Entity_Lookup3" xml:space="preserve">
-    <value>Lookup Attribute 3</value>
+    <value>Lookup 3</value>
   </data>
   <data name="Entity_Lookup4" xml:space="preserve">
-    <value>Lookup Attribute 4</value>
+    <value>Lookup 4</value>
   </data>
   <data name="Entity_Lookup5" xml:space="preserve">
-    <value>Lookup Attribute 5</value>
+    <value>Lookup 5</value>
+  </data>
+  <data name="Entity_Lookup6" xml:space="preserve">
+    <value>Lookup 6</value>
+  </data>
+  <data name="Entity_Lookup7" xml:space="preserve">
+    <value>Lookup 7</value>
+  </data>
+  <data name="Entity_Lookup8" xml:space="preserve">
+    <value>Lookup 8</value>
+  </data>
+  <data name="Entity_NormalizedContactMobile" xml:space="preserve">
+    <value>Contact Mobile (Normalized)</value>
   </data>
   <data name="Entity_Relation1" xml:space="preserve">
-    <value>Relation Attribute 1</value>
+    <value>Relation 1</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
-    <value>Text Attribute 1</value>
+    <value>Text 1</value>
   </data>
   <data name="Entity_Text2" xml:space="preserve">
-    <value>Text Attribute 2</value>
+    <value>Text 2</value>
+  </data>
+  <data name="Entity_Text3" xml:space="preserve">
+    <value>Text 3</value>
+  </data>
+  <data name="Entity_Text4" xml:space="preserve">
+    <value>Text 4</value>
   </data>
   <data name="Entity_ToDate" xml:space="preserve">
     <value>To Date</value>
@@ -1649,10 +1688,10 @@
     <value>Line</value>
   </data>
   <data name="Line_Boolean1" xml:space="preserve">
-    <value>Boolean Attribute 1</value>
+    <value>Boolean 1</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
-    <value>Decimal Attribute 1</value>
+    <value>Decimal 1</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>Definition</value>
@@ -1697,7 +1736,7 @@
     <value>Template</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
-    <value>Text Attribute 1</value>
+    <value>Text 1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
@@ -2208,6 +2247,9 @@
   </data>
   <data name="Relation_BankAccountNumber" xml:space="preserve">
     <value>Bank Account Number</value>
+  </data>
+  <data name="Relation_DateOfBirth" xml:space="preserve">
+    <value>Date of Birth</value>
   </data>
   <data name="Relation_Job" xml:space="preserve">
     <value>Job</value>
@@ -2977,12 +3019,6 @@
   <data name="User_Companies" xml:space="preserve">
     <value>Companies</value>
   </data>
-  <data name="User_ContactEmail" xml:space="preserve">
-    <value>Contact Email</value>
-  </data>
-  <data name="User_ContactMobile" xml:space="preserve">
-    <value>Contact Mobile</value>
-  </data>
   <data name="User_Email" xml:space="preserve">
     <value>Email</value>
   </data>
@@ -2997,9 +3033,6 @@
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>Member</value>
-  </data>
-  <data name="User_NormalizedContactMobile" xml:space="preserve">
-    <value>Contact Mobile (Normalized)</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>Permissions</value>

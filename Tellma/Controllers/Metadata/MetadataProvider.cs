@@ -1035,6 +1035,39 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
                     isRequired = def.ToDateVisibility == Visibility.Required;
                     break;
+                case nameof(Relation.DateOfBirth):
+                    display = PropertyDisplay(def.DateOfBirthVisibility, display);
+                    isRequired = def.DateOfBirthVisibility == Visibility.Required;
+                    break;
+                case nameof(Relation.ContactEmail):
+                    display = PropertyDisplay(def.ContactEmailVisibility, display);
+                    isRequired = def.ContactEmailVisibility == Visibility.Required;
+                    break;
+                case nameof(Relation.ContactMobile):
+                case nameof(Relation.NormalizedContactMobile):
+                    display = PropertyDisplay(def.ContactMobileVisibility, display);
+                    isRequired = def.ContactMobileVisibility == Visibility.Required;
+                    break;
+                case nameof(Relation.ContactAddress):
+                    display = PropertyDisplay(def.ContactAddressVisibility, display);
+                    isRequired = def.ContactAddressVisibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Date1):
+                    display = PropertyDisplay(settings, def.Date1Visibility, def.Date1Label, def.Date1Label2, def.Date1Label3, display);
+                    isRequired = def.Date1Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Date2):
+                    display = PropertyDisplay(settings, def.Date2Visibility, def.Date2Label, def.Date2Label2, def.Date2Label3, display);
+                    isRequired = def.Date2Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Date3):
+                    display = PropertyDisplay(settings, def.Date3Visibility, def.Date3Label, def.Date3Label2, def.Date3Label3, display);
+                    isRequired = def.Date3Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Date4):
+                    display = PropertyDisplay(settings, def.Date4Visibility, def.Date4Label, def.Date4Label2, def.Date4Label3, display);
+                    isRequired = def.Date4Visibility == Visibility.Required;
+                    break;
                 case nameof(Relation.Decimal1):
                     display = PropertyDisplay(settings, def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
                     isRequired = def.Decimal1Visibility == Visibility.Required;
@@ -1050,14 +1083,6 @@ namespace Tellma.Controllers
                 case nameof(Relation.Int2):
                     display = PropertyDisplay(settings, def.Int2Visibility, def.Int2Label, def.Int2Label2, def.Int2Label3, display);
                     isRequired = def.Int2Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Text1):
-                    display = PropertyDisplay(settings, def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
-                    isRequired = def.Text1Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Text2):
-                    display = PropertyDisplay(settings, def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
-                    isRequired = def.Text2Visibility == Visibility.Required;
                     break;
                 case nameof(Relation.Currency):
                 case nameof(Relation.CurrencyId):
@@ -1089,15 +1114,42 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
                     isRequired = def.Lookup4Visibility == Visibility.Required;
                     break;
-
-                //case nameof(Relation.Lookup5):
-                //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
-                //    isRequired = def.Lookup5Visibility == Visibility.Required;
-                //    break;
-                //case nameof(Relation.Lookup5Id):
-                //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
-                //    isRequired = def.Lookup5Visibility == Visibility.Required;
-                //    break;
+                case nameof(Relation.Lookup5):
+                case nameof(Relation.Lookup5Id):
+                    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
+                    isRequired = def.Lookup5Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Lookup6):
+                case nameof(Relation.Lookup6Id):
+                    display = PropertyDisplay(settings, def.Lookup6Visibility, def.Lookup6Label, def.Lookup6Label2, def.Lookup6Label3, display);
+                    isRequired = def.Lookup6Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Lookup7):
+                case nameof(Relation.Lookup7Id):
+                    display = PropertyDisplay(settings, def.Lookup7Visibility, def.Lookup7Label, def.Lookup7Label2, def.Lookup7Label3, display);
+                    isRequired = def.Lookup7Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Lookup8):
+                case nameof(Relation.Lookup8Id):
+                    display = PropertyDisplay(settings, def.Lookup8Visibility, def.Lookup8Label, def.Lookup8Label2, def.Lookup8Label3, display);
+                    isRequired = def.Lookup8Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Text1):
+                    display = PropertyDisplay(settings, def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
+                    isRequired = def.Text1Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Text2):
+                    display = PropertyDisplay(settings, def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
+                    isRequired = def.Text2Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Text3):
+                    display = PropertyDisplay(settings, def.Text3Visibility, def.Text3Label, def.Text3Label2, def.Text3Label3, display);
+                    isRequired = def.Text3Visibility == Visibility.Required;
+                    break;
+                case nameof(Relation.Text4):
+                    display = PropertyDisplay(settings, def.Text4Visibility, def.Text4Label, def.Text4Label2, def.Text4Label3, display);
+                    isRequired = def.Text4Visibility == Visibility.Required;
+                    break;
 
                 // Relations Only
                 case nameof(Relation.Relation1):

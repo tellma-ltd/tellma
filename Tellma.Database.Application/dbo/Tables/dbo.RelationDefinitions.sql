@@ -27,7 +27,6 @@
 	[DateOfBirthVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([DateOfBirthVisibility] IN (N'None', N'Optional', N'Required')),
 	[ContactEmailVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ContactEmailVisibility] IN (N'None', N'Optional', N'Required')),
 	[ContactMobileVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ContactMobileVisibility] IN (N'None', N'Optional', N'Required')),
-	[NormalizedContactMobileVisibility]	NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([NormalizedContactMobileVisibility] IN (N'None', N'Optional', N'Required')),
 	[ContactAddressVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ContactAddressVisibility] IN (N'None', N'Optional', N'Required')),
 
 	[Date1Label]						NVARCHAR (50),
