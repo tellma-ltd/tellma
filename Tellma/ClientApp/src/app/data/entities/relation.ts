@@ -23,6 +23,15 @@ export interface RelationForSave<TRelationUser = RelationUserForSave> extends En
   LocationJson?: string;
   FromDate?: string;
   ToDate?: string;
+  DateOfBirth?: string;
+  ContactEmail?: string;
+  ContactMobile?: string;
+  NormalizedContactMobile?: string;
+  ContactAddress?: string;
+  Date1?: string;
+  Date2?: string;
+  Date3?: string;
+  Date4?: string;
   Decimal1?: number;
   Decimal2?: number;
   Int1?: number;
@@ -31,9 +40,14 @@ export interface RelationForSave<TRelationUser = RelationUserForSave> extends En
   Lookup2Id?: number;
   Lookup3Id?: number;
   Lookup4Id?: number;
-  // Lookup5Id?: number;
+  Lookup5Id?: number;
+  Lookup6Id?: number;
+  Lookup7Id?: number;
+  Lookup8Id?: number;
   Text1?: string;
   Text2?: string;
+  Text3?: string;
+  Text4?: string;
   Image?: string;
 
   AgentId?: number;
@@ -105,9 +119,18 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
         Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         LocationJson: { control: 'text', label: () => trx.instant('Entity_LocationJson') },
-
         FromDate: { control: 'date', label: () => trx.instant('Entity_FromDate') },
         ToDate: { control: 'date', label: () => trx.instant('Entity_ToDate') },
+
+        DateOfBirth: { control: 'date', label: () => trx.instant('Relation_DateOfBirth') },
+        ContactEmail: { control: 'text', label: () => trx.instant('Entity_ContactEmail') },
+        ContactMobile: { control: 'text', label: () => trx.instant('Entity_ContactMobile') },
+        NormalizedContactMobile: { control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
+        ContactAddress: { control: 'text', label: () => trx.instant('Entity_ContactAddress') },
+        Date1: { control: 'date', label: () => trx.instant('Entity_Date1') },
+        Date2: { control: 'date', label: () => trx.instant('Entity_Date2') },
+        Date3: { control: 'date', label: () => trx.instant('Entity_Date3') },
+        Date4: { control: 'date', label: () => trx.instant('Entity_Date4') },
         Decimal1: { control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
         Decimal2: { control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
         Int1: { control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -120,10 +143,18 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
         Lookup3: { control: 'navigation', label: () => trx.instant('Entity_Lookup3'), type: 'Lookup', foreignKeyName: 'Lookup3Id' },
         Lookup4Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Lookup4: { control: 'navigation', label: () => trx.instant('Entity_Lookup4'), type: 'Lookup', foreignKeyName: 'Lookup4Id' },
-        // Lookup5Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup5')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        // Lookup5: { control: 'navigation', label: () => trx.instant('Entity_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
+        Lookup5Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup5')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup5: { control: 'navigation', label: () => trx.instant('Entity_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
+        Lookup6Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup6')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup6: { control: 'navigation', label: () => trx.instant('Entity_Lookup6'), type: 'Lookup', foreignKeyName: 'Lookup6Id' },
+        Lookup7Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup7')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup7: { control: 'navigation', label: () => trx.instant('Entity_Lookup7'), type: 'Lookup', foreignKeyName: 'Lookup7Id' },
+        Lookup8Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup8')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup8: { control: 'navigation', label: () => trx.instant('Entity_Lookup8'), type: 'Lookup', foreignKeyName: 'Lookup8Id' },
         Text1: { control: 'text', label: () => trx.instant('Entity_Text1') },
         Text2: { control: 'text', label: () => trx.instant('Entity_Text2') },
+        Text3: { control: 'text', label: () => trx.instant('Entity_Text3') },
+        Text4: { control: 'text', label: () => trx.instant('Entity_Text4') },
 
         // Relation Only
 
@@ -185,14 +216,19 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Simple properties Visibility
-      for (const propName of ['TaxIdentificationNumber', 'BankAccountNumber']) {
+      for (const propName of ['TaxIdentificationNumber', 'BankAccountNumber', 'DateOfBirth', 'ContactEmail', 'ContactMobile', 'ContactAddress']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
           }
       }
 
+      // Special case
+      if (!definition.ContactMobileVisibility) {
+        delete entityDesc.properties.NormalizedContactMobile;
+      }
+
       // Simple properties Visibility + Label
-      for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
+      for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Text3', 'Text4', 'Date1', 'Date2', 'Date3', 'Date4', 'Identifier']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
           } else {
@@ -218,7 +254,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Navigation properties with definition Id
-      for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf).concat(['Relation1'])) {
+      for (const propName of ['1', '2', '3', '4', '5', '6', '7', '8'].map(pf => 'Lookup' + pf).concat(['Relation1'])) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
               delete entityDesc.properties[propName + 'Id'];

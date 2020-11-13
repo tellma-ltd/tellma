@@ -167,7 +167,7 @@
           <div class="row m-0 pt-2 pt-sm-3">
 
             <!-- ContactEmail -->
-            <t-form-group class="t-form-group" [label]="'User_ContactEmail' | translate"
+            <t-form-group class="t-form-group" [label]="'Entity_ContactEmail' | translate"
               [serverErrors]="model?.serverErrors?.ContactEmail" *ngIf="showEmail">
               <div *ngIf="!isEdit">{{ model?.ContactEmail }}</div>
               <ng-container *ngIf="isEdit">
@@ -179,7 +179,7 @@
             </t-form-group>
 
             <!-- ContactMobile -->
-            <t-form-group class="t-form-group" [label]="'User_ContactMobile' | translate"
+            <t-form-group class="t-form-group" [label]="'Entity_ContactMobile' | translate"
               [serverErrors]="model?.serverErrors?.ContactMobile" *ngIf="showSms">
               <div *ngIf="!isEdit">{{ model?.ContactMobile }}</div>
               <ng-container *ngIf="isEdit">

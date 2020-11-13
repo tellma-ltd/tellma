@@ -30,8 +30,8 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `ReportDefinitions/ReportDefinition,
-Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Relation1Definition`;
+  public expand = `ReportDefinitions/ReportDefinition,Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,
+  Lookup5Definition,Lookup6Definition,Lookup7Definition,Lookup8Definition,Relation1Definition`;
 
   create = () => {
     const result: RelationDefinitionForSave = {};
@@ -178,10 +178,30 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Relation
         areServerErrors(model.serverErrors.FromDateLabel2) ||
         areServerErrors(model.serverErrors.FromDateLabel3) ||
         areServerErrors(model.serverErrors.FromDateVisibility) ||
-        areServerErrors(model.serverErrors.ToDateTillLabel) ||
-        areServerErrors(model.serverErrors.ToDateTillLabel2) ||
-        areServerErrors(model.serverErrors.ToDateTillLabel3) ||
-        areServerErrors(model.serverErrors.ToDateTillVisibility) ||
+        areServerErrors(model.serverErrors.ToDateLabel) ||
+        areServerErrors(model.serverErrors.ToDateLabel2) ||
+        areServerErrors(model.serverErrors.ToDateLabel3) ||
+        areServerErrors(model.serverErrors.ToDateVisibility) ||
+        areServerErrors(model.serverErrors.DateOfBirthVisibility) ||
+        areServerErrors(model.serverErrors.ContactEmailVisibility) ||
+        areServerErrors(model.serverErrors.ContactMobileVisibility) ||
+        areServerErrors(model.serverErrors.ContactAddressVisibility) ||
+        areServerErrors(model.serverErrors.Date1Label) ||
+        areServerErrors(model.serverErrors.Date1Label2) ||
+        areServerErrors(model.serverErrors.Date1Label3) ||
+        areServerErrors(model.serverErrors.Date1Visibility) ||
+        areServerErrors(model.serverErrors.Date2Label) ||
+        areServerErrors(model.serverErrors.Date2Label2) ||
+        areServerErrors(model.serverErrors.Date2Label3) ||
+        areServerErrors(model.serverErrors.Date2Visibility) ||
+        areServerErrors(model.serverErrors.Date3Label) ||
+        areServerErrors(model.serverErrors.Date3Label2) ||
+        areServerErrors(model.serverErrors.Date3Label3) ||
+        areServerErrors(model.serverErrors.Date3Visibility) ||
+        areServerErrors(model.serverErrors.Date4Label) ||
+        areServerErrors(model.serverErrors.Date4Label2) ||
+        areServerErrors(model.serverErrors.Date4Label3) ||
+        areServerErrors(model.serverErrors.Date4Visibility) ||
         areServerErrors(model.serverErrors.Decimal1Label) ||
         areServerErrors(model.serverErrors.Decimal1Label2) ||
         areServerErrors(model.serverErrors.Decimal1Label3) ||
@@ -218,6 +238,26 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Relation
         areServerErrors(model.serverErrors.Lookup4Label3) ||
         areServerErrors(model.serverErrors.Lookup4Visibility) ||
         areServerErrors(model.serverErrors.Lookup4DefinitionId) ||
+        areServerErrors(model.serverErrors.Lookup5Label) ||
+        areServerErrors(model.serverErrors.Lookup5Label2) ||
+        areServerErrors(model.serverErrors.Lookup5Label3) ||
+        areServerErrors(model.serverErrors.Lookup5Visibility) ||
+        areServerErrors(model.serverErrors.Lookup5DefinitionId) ||
+        areServerErrors(model.serverErrors.Lookup6Label) ||
+        areServerErrors(model.serverErrors.Lookup6Label2) ||
+        areServerErrors(model.serverErrors.Lookup6Label3) ||
+        areServerErrors(model.serverErrors.Lookup6Visibility) ||
+        areServerErrors(model.serverErrors.Lookup6DefinitionId) ||
+        areServerErrors(model.serverErrors.Lookup7Label) ||
+        areServerErrors(model.serverErrors.Lookup7Label2) ||
+        areServerErrors(model.serverErrors.Lookup7Label3) ||
+        areServerErrors(model.serverErrors.Lookup7Visibility) ||
+        areServerErrors(model.serverErrors.Lookup7DefinitionId) ||
+        areServerErrors(model.serverErrors.Lookup8Label) ||
+        areServerErrors(model.serverErrors.Lookup8Label2) ||
+        areServerErrors(model.serverErrors.Lookup8Label3) ||
+        areServerErrors(model.serverErrors.Lookup8Visibility) ||
+        areServerErrors(model.serverErrors.Lookup8DefinitionId) ||
         areServerErrors(model.serverErrors.Text1Label) ||
         areServerErrors(model.serverErrors.Text1Label2) ||
         areServerErrors(model.serverErrors.Text1Label3) ||
@@ -226,6 +266,14 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Relation
         areServerErrors(model.serverErrors.Text2Label2) ||
         areServerErrors(model.serverErrors.Text2Label3) ||
         areServerErrors(model.serverErrors.Text2Visibility) ||
+        areServerErrors(model.serverErrors.Text3Label) ||
+        areServerErrors(model.serverErrors.Text3Label2) ||
+        areServerErrors(model.serverErrors.Text3Label3) ||
+        areServerErrors(model.serverErrors.Text3Visibility) ||
+        areServerErrors(model.serverErrors.Text4Label) ||
+        areServerErrors(model.serverErrors.Text4Label2) ||
+        areServerErrors(model.serverErrors.Text4Label3) ||
+        areServerErrors(model.serverErrors.Text4Visibility) ||
 
         // Relation Only
         areServerErrors(model.serverErrors.Relation1Label) ||

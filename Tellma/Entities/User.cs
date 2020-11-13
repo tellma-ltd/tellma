@@ -42,17 +42,17 @@ namespace Tellma.Entities
         [CultureChoiceList]
         public string PreferredLanguage { get; set; }
 
-        [Display(Name = "User_ContactEmail")]
+        [Display(Name = "Entity_ContactEmail")]
         [EmailAddress]
         [StringLength(255)]
         public string ContactEmail { get; set; }
 
-        [Display(Name = "User_ContactMobile")]
+        [Display(Name = "Entity_ContactMobile")]
         [Phone]
         [StringLength(50)]
         public string ContactMobile { get; set; }
 
-        [Display(Name = "User_NormalizedContactMobile")]
+        [Display(Name = "Entity_NormalizedContactMobile")]
         [Phone]
         [StringLength(50)]
         public string NormalizedContactMobile { get; set; }

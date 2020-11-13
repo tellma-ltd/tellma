@@ -97,6 +97,78 @@ namespace Tellma.Entities
         [VisibilityDisplay(Name = "Entity_ToDate"), VisibilityChoiceList]
         public string ToDateVisibility { get; set; }
 
+        [VisibilityDisplay(Name = "Relation_DateOfBirth"), VisibilityChoiceList]
+        public string DateOfBirthVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_ContactEmail"), VisibilityChoiceList]
+        public string ContactEmailVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_ContactMobile"), VisibilityChoiceList]
+        public string ContactMobileVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_ContactAddress"), VisibilityChoiceList]
+        public string ContactAddressVisibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date1", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Date1Label { get; set; }
+        
+        [DefinitionLabelDisplay(Name = "Entity_Date1", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Date1Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date1", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Date1Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date1"), VisibilityChoiceList]
+        public string Date1Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date2", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Date2Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date2", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Date2Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date2", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Date2Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date2"), VisibilityChoiceList]
+        public string Date2Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date3", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Date3Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date3", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Date3Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date3", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Date3Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date3"), VisibilityChoiceList]
+        public string Date3Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date4", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Date4Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date4", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Date4Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date4", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Date4Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date4"), VisibilityChoiceList]
+        public string Date4Visibility { get; set; }
+
         [DefinitionLabelDisplay(Name = "Entity_Decimal1", Language = Language.Primary)]
         [StringLength(50)]
         public string Decimal1Label { get; set; }
@@ -229,6 +301,78 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
         public int? Lookup4DefinitionId { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Lookup5", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Lookup5Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup5", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Lookup5Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup5", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Lookup5Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Lookup5"), VisibilityChoiceList]
+        public string Lookup5Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup5")]
+        public int? Lookup5DefinitionId { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup6", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Lookup6Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup6", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Lookup6Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup6", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Lookup6Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Lookup6"), VisibilityChoiceList]
+        public string Lookup6Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup6")]
+        public int? Lookup6DefinitionId { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup7", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Lookup7Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup7", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Lookup7Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup7", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Lookup7Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Lookup7"), VisibilityChoiceList]
+        public string Lookup7Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup7")]
+        public int? Lookup7DefinitionId { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup8", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Lookup8Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup8", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Lookup8Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup8", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Lookup8Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Lookup8"), VisibilityChoiceList]
+        public string Lookup8Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup8")]
+        public int? Lookup8DefinitionId { get; set; }
+
         [DefinitionLabelDisplay(Name = "Entity_Text1", Language = Language.Primary)]
         [StringLength(50)]
         public string Text1Label { get; set; }
@@ -258,6 +402,36 @@ namespace Tellma.Entities
 
         [VisibilityDisplay(Name = "Entity_Text2"), VisibilityChoiceList]
         public string Text2Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Text3", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Text3Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Text3", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Text3Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Text3", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Text3Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Text3"), VisibilityChoiceList]
+        public string Text3Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Text4", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Text4Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Text4", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Text4Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Text4", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Text4Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Text4"), VisibilityChoiceList]
+        public string Text4Visibility { get; set; }
 
         [Display(Name = "Definition_Script")]
         public string Script { get; set; }
@@ -362,6 +536,22 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
         [ForeignKey(nameof(Lookup4DefinitionId))]
         public LookupDefinition Lookup4Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup5")]
+        [ForeignKey(nameof(Lookup5DefinitionId))]
+        public LookupDefinition Lookup5Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup6")]
+        [ForeignKey(nameof(Lookup6DefinitionId))]
+        public LookupDefinition Lookup6Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup7")]
+        [ForeignKey(nameof(Lookup7DefinitionId))]
+        public LookupDefinition Lookup7Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup8")]
+        [ForeignKey(nameof(Lookup8DefinitionId))]
+        public LookupDefinition Lookup8Definition { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Relation1")]
         [ForeignKey(nameof(Relation1DefinitionId))]

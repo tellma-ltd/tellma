@@ -972,19 +972,19 @@ namespace Tellma.Controllers
             // This sequence checks for all potential problems that could occur locally
             if (string.IsNullOrWhiteSpace(emailAddress))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["User_ContactEmail"]];
+                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["Entity_ContactEmail"]];
                 throw new BadRequestException(errorMsg);
             }
 
             if (!emailAtt.IsValid(emailAddress))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsNotValidEmail, _localizer["User_ContactEmail"]];
+                var errorMsg = _localizer[Constants.Error_Field0IsNotValidEmail, _localizer["Entity_ContactEmail"]];
                 throw new BadRequestException(errorMsg);
             }
 
             if (emailAddress.Length > EmailValidation.MaximumEmailAddressLength)
             {
-                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["User_ContactEmail"], EmailValidation.MaximumEmailAddressLength];
+                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactEmail"], EmailValidation.MaximumEmailAddressLength];
                 throw new BadRequestException(errorMsg);
             }
 
@@ -1017,20 +1017,20 @@ namespace Tellma.Controllers
             // This sequence checks for all potential problems that could occur locally
             if (string.IsNullOrWhiteSpace(phone))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["User_ContactMobile"]];
+                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["Entity_ContactMobile"]];
                 throw new BadRequestException(errorMsg);
             }
 
             if (!phoneAtt.IsValid(phone))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsNotValidPhone, _localizer["User_ContactMobile"]];
+                var errorMsg = _localizer[Constants.Error_Field0IsNotValidPhone, _localizer["Entity_ContactMobile"]];
                 throw new BadRequestException(errorMsg);
             }
 
             var normalizedPhone = ControllerUtilities.ToE164(phone);
             if (normalizedPhone.Length > SmsValidation.MaximumPhoneNumberLength)
             {
-                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["User_ContactMobile"], SmsValidation.MaximumPhoneNumberLength];
+                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactMobile"], SmsValidation.MaximumPhoneNumberLength];
                 throw new BadRequestException(errorMsg);
             }
 

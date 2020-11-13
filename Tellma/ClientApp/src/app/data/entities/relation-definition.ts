@@ -33,7 +33,26 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     ToDateLabel2?: string;
     ToDateLabel3?: string;
     ToDateVisibility?: Visibility;
-
+    DateOfBirthVisibility?: Visibility;
+    ContactEmailVisibility?: Visibility;
+    ContactMobileVisibility?: Visibility;
+    ContactAddressVisibility?: Visibility;
+    Date1Label?: string;
+    Date1Label2?: string;
+    Date1Label3?: string;
+    Date1Visibility?: Visibility;
+    Date2Label?: string;
+    Date2Label2?: string;
+    Date2Label3?: string;
+    Date2Visibility?: Visibility;
+    Date3Label?: string;
+    Date3Label2?: string;
+    Date3Label3?: string;
+    Date3Visibility?: Visibility;
+    Date4Label?: string;
+    Date4Label2?: string;
+    Date4Label3?: string;
+    Date4Visibility?: Visibility;
     Decimal1Label?: string;
     Decimal1Label2?: string;
     Decimal1Label3?: string;
@@ -70,11 +89,26 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     Lookup4Label3?: string;
     Lookup4Visibility?: Visibility;
     Lookup4DefinitionId?: number;
-    // Lookup5Label?: string;
-    // Lookup5Label2?: string;
-    // Lookup5Label3?: string;
-    // Lookup5Visibility?: Visibility;
-    // Lookup5DefinitionId?: number;
+    Lookup5Label?: string;
+    Lookup5Label2?: string;
+    Lookup5Label3?: string;
+    Lookup5Visibility?: Visibility;
+    Lookup5DefinitionId?: number;
+    Lookup6Label?: string;
+    Lookup6Label2?: string;
+    Lookup6Label3?: string;
+    Lookup6Visibility?: Visibility;
+    Lookup6DefinitionId?: number;
+    Lookup7Label?: string;
+    Lookup7Label2?: string;
+    Lookup7Label3?: string;
+    Lookup7Visibility?: Visibility;
+    Lookup7DefinitionId?: number;
+    Lookup8Label?: string;
+    Lookup8Label2?: string;
+    Lookup8Label3?: string;
+    Lookup8Visibility?: Visibility;
+    Lookup8DefinitionId?: number;
     Text1Label?: string;
     Text1Label2?: string;
     Text1Label3?: string;
@@ -83,6 +117,14 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     Text2Label2?: string;
     Text2Label3?: string;
     Text2Visibility?: Visibility;
+    Text3Label?: string;
+    Text3Label2?: string;
+    Text3Label3?: string;
+    Text3Visibility?: Visibility;
+    Text4Label?: string;
+    Text4Label2?: string;
+    Text4Label3?: string;
+    Text4Visibility?: Visibility;
 
     Script?: string;
 
@@ -166,6 +208,28 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 ToDateLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ToDate') }) + ws.secondaryPostfix },
                 ToDateLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ToDate') }) + ws.ternaryPostfix },
                 ToDateVisibility: visibilityPropDescriptor('Entity_ToDate', trx),
+
+                DateOfBirthVisibility: visibilityPropDescriptor('Relation_DateOfBirth', trx),
+                ContactEmailVisibility: visibilityPropDescriptor('Entity_ContactEmail', trx),
+                ContactMobileVisibility: visibilityPropDescriptor('Entity_ContactMobile', trx),
+                ContactAddressVisibility: visibilityPropDescriptor('Entity_ContactAddress', trx),
+                Date1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date1') }) + ws.primaryPostfix },
+                Date1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date1') }) + ws.secondaryPostfix },
+                Date1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date1') }) + ws.ternaryPostfix },
+                Date1Visibility: visibilityPropDescriptor('Entity_Date1', trx),
+                Date2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date2') }) + ws.primaryPostfix },
+                Date2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date2') }) + ws.secondaryPostfix },
+                Date2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date2') }) + ws.ternaryPostfix },
+                Date2Visibility: visibilityPropDescriptor('Entity_Date2', trx),
+                Date3Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date3') }) + ws.primaryPostfix },
+                Date3Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date3') }) + ws.secondaryPostfix },
+                Date3Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date3') }) + ws.ternaryPostfix },
+                Date3Visibility: visibilityPropDescriptor('Entity_Date3', trx),
+                Date4Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date4') }) + ws.primaryPostfix },
+                Date4Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date4') }) + ws.secondaryPostfix },
+                Date4Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Date4') }) + ws.ternaryPostfix },
+                Date4Visibility: visibilityPropDescriptor('Entity_Date4', trx),
+
                 Decimal1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal1') }) + ws.primaryPostfix },
                 Decimal1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal1') }) + ws.secondaryPostfix },
                 Decimal1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal1') }) + ws.ternaryPostfix },
@@ -206,6 +270,30 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Lookup4Visibility: visibilityPropDescriptor('Entity_Lookup4', trx),
                 Lookup4DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup4', trx),
                 Lookup4Definition: lookupDefinitionPropDescriptor('Entity_Lookup4', 'Lookup4DefinitionId', trx),
+                Lookup5Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup5') }) + ws.primaryPostfix },
+                Lookup5Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup5') }) + ws.secondaryPostfix },
+                Lookup5Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup5') }) + ws.ternaryPostfix },
+                Lookup5Visibility: visibilityPropDescriptor('Entity_Lookup5', trx),
+                Lookup5DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup5', trx),
+                Lookup5Definition: lookupDefinitionPropDescriptor('Entity_Lookup5', 'Lookup5DefinitionId', trx),
+                Lookup6Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup6') }) + ws.primaryPostfix },
+                Lookup6Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup6') }) + ws.secondaryPostfix },
+                Lookup6Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup6') }) + ws.ternaryPostfix },
+                Lookup6Visibility: visibilityPropDescriptor('Entity_Lookup6', trx),
+                Lookup6DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup6', trx),
+                Lookup6Definition: lookupDefinitionPropDescriptor('Entity_Lookup6', 'Lookup6DefinitionId', trx),
+                Lookup7Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup7') }) + ws.primaryPostfix },
+                Lookup7Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup7') }) + ws.secondaryPostfix },
+                Lookup7Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup7') }) + ws.ternaryPostfix },
+                Lookup7Visibility: visibilityPropDescriptor('Entity_Lookup7', trx),
+                Lookup7DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup7', trx),
+                Lookup7Definition: lookupDefinitionPropDescriptor('Entity_Lookup7', 'Lookup7DefinitionId', trx),
+                Lookup8Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup8') }) + ws.primaryPostfix },
+                Lookup8Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup8') }) + ws.secondaryPostfix },
+                Lookup8Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup8') }) + ws.ternaryPostfix },
+                Lookup8Visibility: visibilityPropDescriptor('Entity_Lookup8', trx),
+                Lookup8DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup8', trx),
+                Lookup8Definition: lookupDefinitionPropDescriptor('Entity_Lookup8', 'Lookup8DefinitionId', trx),
                 Text1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.primaryPostfix },
                 Text1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.secondaryPostfix },
                 Text1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.ternaryPostfix },
@@ -214,6 +302,14 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Text2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.secondaryPostfix },
                 Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.ternaryPostfix },
                 Text2Visibility: visibilityPropDescriptor('Entity_Text2', trx),
+                Text3Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text3') }) + ws.primaryPostfix },
+                Text3Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text3') }) + ws.secondaryPostfix },
+                Text3Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text3') }) + ws.ternaryPostfix },
+                Text3Visibility: visibilityPropDescriptor('Entity_Text3', trx),
+                Text4Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.primaryPostfix },
+                Text4Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.secondaryPostfix },
+                Text4Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.ternaryPostfix },
+                Text4Visibility: visibilityPropDescriptor('Entity_Text4', trx),
                 Script: { control: 'text', label: () => trx.instant('Definition_Script') },
 
                 Relation1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.primaryPostfix },
@@ -242,9 +338,12 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
 
         // Remove multi-lingual properties if the tenant doesn't define the language
         const multiLangProps = ['TitleSingular', 'TitlePlural',
-            'FromDateLabel', 'ToDateLabel', 'Decimal1Label', 'Decimal2Label',
-            'Int1Label', 'Int2Label', 'Lookup1Label', 'Lookup2Label', 'Lookup3Label', 'Lookup4Label',
-            'Text1Label', 'Text2Label'];
+            'FromDateLabel', 'ToDateLabel',
+            'Date1Label', 'Date2Label', 'Date3Label', 'Date4Label',
+            'Decimal1Label', 'Decimal2Label',
+            'Int1Label', 'Int2Label',
+            'Lookup1Label', 'Lookup2Label', 'Lookup3Label', 'Lookup4Label', 'Lookup5Label', 'Lookup6Label', 'Lookup7Label', 'Lookup8Label',
+            'Text1Label', 'Text2Label', 'Text3Label', 'Text4Label'];
 
         for (const prop of multiLangProps) {
             if (!ws.settings.SecondaryLanguageId) {

@@ -739,8 +739,29 @@
   <data name="Entity_Center" xml:space="preserve">
     <value>ማዕከል የወጪ</value>
   </data>
+  <data name="Entity_ContactAddress" xml:space="preserve">
+    <value>የተጠሪ አድራሻ</value>
+  </data>
+  <data name="Entity_ContactEmail" xml:space="preserve">
+    <value>የዕውቂያ ኢሜይል</value>
+  </data>
+  <data name="Entity_ContactMobile" xml:space="preserve">
+    <value>የእውቂያ ሞባይል</value>
+  </data>
   <data name="Entity_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
+  </data>
+  <data name="Entity_Date1" xml:space="preserve">
+    <value>ቀን 1</value>
+  </data>
+  <data name="Entity_Date2" xml:space="preserve">
+    <value>ቀን 2</value>
+  </data>
+  <data name="Entity_Date3" xml:space="preserve">
+    <value>ቀን 3</value>
+  </data>
+  <data name="Entity_Date4" xml:space="preserve">
+    <value>ቀን 4</value>
   </data>
   <data name="Entity_Decimal1" xml:space="preserve">
     <value>አስርዮሽ መገለጫ ባህሪ 1</value>
@@ -778,14 +799,32 @@
   <data name="Entity_Lookup5" xml:space="preserve">
     <value>አይነታ 5</value>
   </data>
+  <data name="Entity_Lookup6" xml:space="preserve">
+    <value>አይነታ 6</value>
+  </data>
+  <data name="Entity_Lookup7" xml:space="preserve">
+    <value>አይነታ 7</value>
+  </data>
+  <data name="Entity_Lookup8" xml:space="preserve">
+    <value>አይነታ 8</value>
+  </data>
+  <data name="Entity_NormalizedContactMobile" xml:space="preserve">
+    <value>የእውቂያ ተንቀሳቃሽ (መደበኛ)</value>
+  </data>
   <data name="Entity_Relation1" xml:space="preserve">
-    <value>ግንኙነት መገለጫ ባህሪ 1</value>
+    <value>ግንኙነት 1</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 1</value>
   </data>
   <data name="Entity_Text2" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 2</value>
+  </data>
+  <data name="Entity_Text3" xml:space="preserve">
+    <value>የጽሑፍ መገለጫ ባህሪ 3</value>
+  </data>
+  <data name="Entity_Text4" xml:space="preserve">
+    <value>የጽሑፍ መገለጫ ባህሪ 4</value>
   </data>
   <data name="Entity_ToDate" xml:space="preserve">
     <value>ድረስ ይገኛል</value>
@@ -1649,10 +1688,10 @@
     <value>መሥመር</value>
   </data>
   <data name="Line_Boolean1" xml:space="preserve">
-    <value>ቡሊያን መገለጫ ባህሪ 1</value>
+    <value>ቡሊያን 1</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
-    <value>አስርዮሽ መገለጫ ባህሪ 1</value>
+    <value>አስርዮሽ 1</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>መግለጫ</value>
@@ -1697,7 +1736,7 @@
     <value>የአብነት</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
-    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
+    <value>ጽሑፍ 1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>
@@ -2208,6 +2247,9 @@
   </data>
   <data name="Relation_BankAccountNumber" xml:space="preserve">
     <value>የባንክ ሂሳብ ቁጥር</value>
+  </data>
+  <data name="Relation_DateOfBirth" xml:space="preserve">
+    <value>የትውልድ ቀን</value>
   </data>
   <data name="Relation_Job" xml:space="preserve">
     <value>ሥራ</value>
@@ -2977,12 +3019,6 @@
   <data name="User_Companies" xml:space="preserve">
     <value>ኩባንያዎች</value>
   </data>
-  <data name="User_ContactEmail" xml:space="preserve">
-    <value>የዕውቂያ ኢሜይል</value>
-  </data>
-  <data name="User_ContactMobile" xml:space="preserve">
-    <value>የእውቂያ ሞባይል</value>
-  </data>
   <data name="User_Email" xml:space="preserve">
     <value>ኢሜይል</value>
   </data>
@@ -2997,9 +3033,6 @@
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>ተረጋግጧል</value>
-  </data>
-  <data name="User_NormalizedContactMobile" xml:space="preserve">
-    <value>የእውቂያ ተንቀሳቃሽ (መደበኛ)</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>ፍቃዶች</value>

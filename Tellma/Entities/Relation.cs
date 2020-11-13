@@ -66,6 +66,38 @@ namespace Tellma.Entities
         [Display(Name = "Entity_ToDate")]
         public DateTime? ToDate { get; set; }
 
+        [Display(Name = "Relation_DateOfBirth")]
+        public DateTime? DateOfBirth { get; set; }
+
+        [Display(Name = "Entity_ContactEmail")]
+        [EmailAddress]
+        [StringLength(255)]
+        public string ContactEmail { get; set; }
+
+        [Display(Name = "Entity_ContactMobile")]
+        [Phone]
+        [StringLength(50)]
+        public string ContactMobile { get; set; }
+
+        [Display(Name = "Entity_NormalizedContactMobile")]
+        public string NormalizedContactMobile { get; set; }
+
+        [Display(Name = "Entity_ContactAddress")]
+        [StringLength(255)]
+        public string ContactAddress { get; set; }
+
+        [Display(Name = "Entity_Date1")]
+        public DateTime? Date1 { get; set; }
+
+        [Display(Name = "Entity_Date2")]
+        public DateTime? Date2 { get; set; }
+
+        [Display(Name = "Entity_Date3")]
+        public DateTime? Date3 { get; set; }
+
+        [Display(Name = "Entity_Date4")]
+        public DateTime? Date4 { get; set; }
+
         [Display(Name = "Entity_Decimal1")]
         public decimal? Decimal1 { get; set; }
 
@@ -90,8 +122,17 @@ namespace Tellma.Entities
         [Display(Name = "Entity_Lookup4")]
         public int? Lookup4Id { get; set; }
 
-        //[Display(Name = "Entity_Lookup5")]
-        //public int? Lookup5Id { get; set; }
+        [Display(Name = "Entity_Lookup5")]
+        public int? Lookup5Id { get; set; }
+
+        [Display(Name = "Entity_Lookup6")]
+        public int? Lookup6Id { get; set; }
+
+        [Display(Name = "Entity_Lookup7")]
+        public int? Lookup7Id { get; set; }
+
+        [Display(Name = "Entity_Lookup8")]
+        public int? Lookup8Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
         [StringLength(50)]
@@ -100,6 +141,14 @@ namespace Tellma.Entities
         [Display(Name = "Entity_Text2")]
         [StringLength(50)]
         public string Text2 { get; set; }
+
+        [Display(Name = "Entity_Text3")]
+        [StringLength(50)]
+        public string Text3 { get; set; }
+
+        [Display(Name = "Entity_Text4")]
+        [StringLength(50)]
+        public string Text4 { get; set; }
 
         [NotMapped]
         [Display(Name = "Image")]
@@ -139,7 +188,6 @@ namespace Tellma.Entities
 
     public class RelationForSave : RelationForSaveBase<RelationUserForSave>
     {
-
     }
 
     public class Relation : RelationForSaveBase<RelationUser>, ILocationEntity, IEntityWithImage
@@ -207,9 +255,21 @@ namespace Tellma.Entities
         [ForeignKey(nameof(Lookup4Id))]
         public Lookup Lookup4 { get; set; }
 
-        //[Display(Name = "Entity_Lookup5")]
-        //[ForeignKey(nameof(Lookup5Id))]
-        //public Lookup Lookup5 { get; set; }
+        [Display(Name = "Entity_Lookup5")]
+        [ForeignKey(nameof(Lookup5Id))]
+        public Lookup Lookup5 { get; set; }
+
+        [Display(Name = "Entity_Lookup6")]
+        [ForeignKey(nameof(Lookup6Id))]
+        public Lookup Lookup6 { get; set; }
+
+        [Display(Name = "Entity_Lookup7")]
+        [ForeignKey(nameof(Lookup7Id))]
+        public Lookup Lookup7 { get; set; }
+
+        [Display(Name = "Entity_Lookup8")]
+        [ForeignKey(nameof(Lookup8Id))]
+        public Lookup Lookup8 { get; set; }
 
         #endregion
 

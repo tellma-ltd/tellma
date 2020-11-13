@@ -177,10 +177,10 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Custodia
         areServerErrors(model.serverErrors.FromDateLabel2) ||
         areServerErrors(model.serverErrors.FromDateLabel3) ||
         areServerErrors(model.serverErrors.FromDateVisibility) ||
-        areServerErrors(model.serverErrors.ToDateTillLabel) ||
-        areServerErrors(model.serverErrors.ToDateTillLabel2) ||
-        areServerErrors(model.serverErrors.ToDateTillLabel3) ||
-        areServerErrors(model.serverErrors.ToDateTillVisibility) ||
+        areServerErrors(model.serverErrors.ToDateLabel) ||
+        areServerErrors(model.serverErrors.ToDateLabel2) ||
+        areServerErrors(model.serverErrors.ToDateLabel3) ||
+        areServerErrors(model.serverErrors.ToDateVisibility) ||
         areServerErrors(model.serverErrors.Decimal1Label) ||
         areServerErrors(model.serverErrors.Decimal1Label2) ||
         areServerErrors(model.serverErrors.Decimal1Label3) ||

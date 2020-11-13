@@ -135,6 +135,31 @@ namespace Tellma.Controllers
                 ToDateLabel3 = def.ToDateLabel3,
                 ToDateVisibility = MapVisibility(def.ToDateVisibility),
 
+
+                DateOfBirthVisibility = MapVisibility(def.DateOfBirthVisibility),
+                ContactEmailVisibility = MapVisibility(def.ContactEmailVisibility),
+                ContactMobileVisibility = MapVisibility(def.ContactMobileVisibility),
+                ContactAddressVisibility = MapVisibility(def.ContactAddressVisibility),
+
+                Date1Label = def.Date1Label,
+                Date1Label2 = def.Date1Label2,
+                Date1Label3 = def.Date1Label3,
+                Date1Visibility = MapVisibility(def.Date1Visibility),
+                Date2Label = def.Date2Label,
+                Date2Label2 = def.Date2Label2,
+                Date2Label3 = def.Date2Label3,
+                Date2Visibility = MapVisibility(def.Date2Visibility),
+                Date3Label = def.Date3Label,
+                Date3Label2 = def.Date3Label2,
+                Date3Label3 = def.Date3Label3,
+                Date3Visibility = MapVisibility(def.Date3Visibility),
+                Date4Label = def.Date4Label,
+                Date4Label2 = def.Date4Label2,
+                Date4Label3 = def.Date4Label3,
+                Date4Visibility = MapVisibility(def.Date4Visibility),
+
+
+
                 Decimal1Label = def.Decimal1Label,
                 Decimal1Label2 = def.Decimal1Label2,
                 Decimal1Label3 = def.Decimal1Label3,
@@ -179,6 +204,30 @@ namespace Tellma.Controllers
                 Lookup4Visibility = MapVisibility(def.Lookup4Visibility),
                 Lookup4DefinitionId = def.Lookup4DefinitionId,
 
+                Lookup5Label = def.Lookup5Label,
+                Lookup5Label2 = def.Lookup5Label2,
+                Lookup5Label3 = def.Lookup5Label3,
+                Lookup5Visibility = MapVisibility(def.Lookup5Visibility),
+                Lookup5DefinitionId = def.Lookup5DefinitionId,
+
+                Lookup6Label = def.Lookup6Label,
+                Lookup6Label2 = def.Lookup6Label2,
+                Lookup6Label3 = def.Lookup6Label3,
+                Lookup6Visibility = MapVisibility(def.Lookup6Visibility),
+                Lookup6DefinitionId = def.Lookup6DefinitionId,
+
+                Lookup7Label = def.Lookup7Label,
+                Lookup7Label2 = def.Lookup7Label2,
+                Lookup7Label3 = def.Lookup7Label3,
+                Lookup7Visibility = MapVisibility(def.Lookup7Visibility),
+                Lookup7DefinitionId = def.Lookup7DefinitionId,
+
+                Lookup8Label = def.Lookup8Label,
+                Lookup8Label2 = def.Lookup8Label2,
+                Lookup8Label3 = def.Lookup8Label3,
+                Lookup8Visibility = MapVisibility(def.Lookup8Visibility),
+                Lookup8DefinitionId = def.Lookup8DefinitionId,
+
                 Text1Label = def.Text1Label,
                 Text1Label2 = def.Text1Label2,
                 Text1Label3 = def.Text1Label3,
@@ -188,6 +237,16 @@ namespace Tellma.Controllers
                 Text2Label2 = def.Text2Label2,
                 Text2Label3 = def.Text2Label3,
                 Text2Visibility = MapVisibility(def.Text2Visibility),
+
+                Text3Label = def.Text3Label,
+                Text3Label2 = def.Text3Label2,
+                Text3Label3 = def.Text3Label3,
+                Text3Visibility = MapVisibility(def.Text3Visibility),
+
+                Text4Label = def.Text4Label,
+                Text4Label2 = def.Text4Label2,
+                Text4Label3 = def.Text4Label3,
+                Text4Visibility = MapVisibility(def.Text4Visibility),
 
                 // Relation Only
                 Relation1Label = def.Relation1Label,

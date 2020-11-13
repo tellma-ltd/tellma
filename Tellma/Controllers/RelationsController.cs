@@ -190,10 +190,27 @@ namespace Tellma.Controllers
 
             // ... Any definition defaults will go here
 
-            entities.ForEach(e =>
+            entities.ForEach(entity =>
             {
                 // Makes everything that follows easier
-                e.Users ??= new List<RelationUserForSave>();
+                entity.Users ??= new List<RelationUserForSave>();
+
+                // Contact Email
+                if (string.IsNullOrWhiteSpace(entity.ContactEmail))
+                {
+                    entity.ContactEmail = null;
+                }
+                else
+                {
+                    entity.ContactEmail = entity.ContactEmail.ToLower();
+                }
+
+                // Contact mobile
+                if (string.IsNullOrWhiteSpace(entity.ContactMobile))
+                {
+                    entity.ContactMobile = null;
+                }
+                entity.NormalizedContactMobile = ControllerUtilities.ToE164(entity.ContactMobile);
             });
 
             // Users
