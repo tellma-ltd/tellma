@@ -386,6 +386,34 @@ WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS
 UPDATE  @AccountTypes
 	SET [Time1Label] = N'From Date', Time2Label = N'To Date'
 WHERE [Concept] IN (
+	N'Land',
+	N'Buildings',
+	N'Machinery',
+	N'Ships',
+	N'Aircraft',
+	N'MotorVehicles',
+	N'FixturesAndFittings',
+	N'OfficeEquipment',
+	N'BearerPlants',
+	N'TangibleExplorationAndEvaluationAssets',
+	N'MiningAssets',
+	N'OilAndGasAssets',
+	N'ConstructionInProgress',
+	N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel',
+	N'OtherPropertyPlantAndEquipment',
+	N'InvestmentPropertyCompleted',
+	N'InvestmentPropertyUnderConstructionOrDevelopment',
+	N'BrandNames',
+	N'IntangibleExplorationAndEvaluationAssets',
+	N'MastheadsAndPublishingTitles',
+	N'ComputerSoftware',
+	N'LicencesAndFranchises',
+	N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights',
+	N'RecipesFormulaeModelsDesignsAndPrototypes',
+	N'IntangibleAssetsUnderDevelopment',
+	N'OtherIntangibleAssets',
+	N'NoncurrentBiologicalAssets',
+	N'RevenueFromRenderingOfPeriodOfTimeServices',
 	N'InsuranceExpense',
 	N'UtilitiesExpense',
 	N'WagesAndSalaries',
@@ -393,7 +421,10 @@ WHERE [Concept] IN (
 	N'OtherShorttermEmployeeBenefits',
 	N'DepreciationExpense',
 	N'AmortisationExpense',
-	N'TaxExpenseOtherThanIncomeTaxExpense'
+	N'TaxExpenseOtherThanIncomeTaxExpense',
+	N'CustomerPerformanceObligationsAtAPointInTimeControlExtension',
+	N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension',
+	N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension'
 );
 
 UPDATE  @AccountTypes
