@@ -2,7 +2,7 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, onCodeTextareaKeydown } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,7 +10,7 @@ import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metad
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { RelationDefinitionForSave, metadata_RelationDefinition, RelationDefinition } from '~/app/data/entities/relation-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
-import { RelationDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
@@ -27,6 +27,9 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   @ViewChild('reportDefinitionModal', { static: true })
   reportDefinitionModal: TemplateRef<any>;
+
+  @ViewChild('scriptModal', { static: true })
+  scriptModal: TemplateRef<any>;
 
   private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
@@ -139,6 +142,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _sections: { [key: string]: boolean } = {
     Title: true,
     Fields: false,
+    Scripts: false,
     Reports: false,
     MainMenu: false
   };
@@ -286,6 +290,11 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.JobVisibility) ||
         areServerErrors(model.serverErrors.BankAccountNumberVisibility) ||
         areServerErrors(model.serverErrors.UserCardinality)
+      ));
+    } else if (section === 'Scripts') {
+      return (!!model.serverErrors && (
+        areServerErrors(model.serverErrors.PreprocessScript) ||
+        areServerErrors(model.serverErrors.ValidateScript)
       ));
     } else if (section === 'Reports') {
       return !!model.ReportDefinitions &&
@@ -494,5 +503,26 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
     moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
+
+  // Scripts
+
+  public script: string;
+  public scriptModalLabel: () => string;
+  public onEditScript(scriptName: string, model: RelationDefinition) {
+    // Prep
+    this.script = model[scriptName]; // Copy the script
+    this.scriptModalLabel = () => this.translate.instant('Definition_' + scriptName);
+
+    // Launch the modal
+    this.modalService.open(this.scriptModal, { windowClass: 't-dark-theme t-details-modal' }).result.then((apply: boolean) => {
+      if (apply) {
+        model[scriptName] = this.script;
+      }
+    }, (_: any) => { });
+  }
+
+  public onScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent) {
+    onCodeTextareaKeydown(elem, $event, v => this.script = v);
   }
 }

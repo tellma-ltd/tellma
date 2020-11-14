@@ -145,7 +145,8 @@ SET NOCOUNT ON;
 				[Text4Label3],	
 				[Text4Visibility],
 
-				[Script],
+				[PreprocessScript],
+				[ValidateScript],
 				-----Properties applicable to relation only
 				[Relation1Label],
 				[Relation1Label2],
@@ -299,7 +300,8 @@ SET NOCOUNT ON;
 				t.[Text4Label3]			= s.[Text4Label3],
 				t.[Text4Visibility]		= s.[Text4Visibility],
 
-				t.[Script]				= s.[Script],
+				t.[PreprocessScript]	= s.[PreprocessScript],
+				t.[ValidateScript]		= s.[ValidateScript],
 				-----Properties applicable to relations only
 
 				t.[Relation1Label]		= s.[Relation1Label],
@@ -443,7 +445,8 @@ SET NOCOUNT ON;
 				[Text4Label3],	
 				[Text4Visibility],
 
-				[Script],
+				[PreprocessScript],
+				[ValidateScript],
 				-----Properties applicable to relations only
 				[Relation1Label],
 				[Relation1Label2],
@@ -581,7 +584,8 @@ SET NOCOUNT ON;
 				s.[Text4Label3],	
 				s.[Text4Visibility],
 
-				s.[Script],
+				s.[PreprocessScript],
+				s.[ValidateScript],
 				-----Properties applicable to relations only
 				s.[Relation1Label],
 				s.[Relation1Label2],

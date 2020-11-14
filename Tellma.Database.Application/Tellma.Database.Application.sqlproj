@@ -729,6 +729,8 @@
     <Build Include="map\map.CustodyDefinitionReportDefinitions.sql" />
     <Build Include="map\map.LookupDefinitionReportDefinitions.sql" />
     <Build Include="map\map.ResourceDefinitionReportDefinitions.sql" />
+    <Build Include="bll\Stored Procedures\bll.Relations__Preprocess.sql" />
+    <Build Include="bll\Stored Procedures\bll.Custodies__Preprocess.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

@@ -421,14 +421,14 @@
   <data name="Definition_Hide" xml:space="preserve">
     <value>Hide</value>
   </data>
+  <data name="Definition_PreprocessScript" xml:space="preserve">
+    <value>Preprocess Script</value>
+  </data>
   <data name="Definition_ReportDefinition" xml:space="preserve">
     <value>Report Definition</value>
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
-  </data>
-  <data name="Definition_Script" xml:space="preserve">
-    <value>Script</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>Show</value>
@@ -444,6 +444,9 @@
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>Visible</value>
+  </data>
+  <data name="Definition_ValidateScript" xml:space="preserve">
+    <value>Validate Script</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
@@ -1759,14 +1762,8 @@
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>Generate Script</value>
   </data>
-  <data name="LineDefinition_PreprocessScript" xml:space="preserve">
-    <value>Preprocess Script</value>
-  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>State Reasons</value>
-  </data>
-  <data name="LineDefinition_ValidateScript" xml:space="preserve">
-    <value>Validate Script</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>View Defaults To Form</value>

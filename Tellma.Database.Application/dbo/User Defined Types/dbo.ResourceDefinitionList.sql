@@ -90,8 +90,9 @@
 	[Text2Label2]						NVARCHAR (50),
 	[Text2Label3]						NVARCHAR (50),		
 	[Text2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Text2Visibility] IN (N'None', N'Optional', N'Required')),
-
-	[Script]							NVARCHAR (MAX),
+	
+	[PreprocessScript]					NVARCHAR (MAX),
+	[ValidateScript]					NVARCHAR (MAX),
 	-----Properties applicable to resources only
 	-- Resource properties
 	[IdentifierLabel]					NVARCHAR (50), -- searchable, unique index

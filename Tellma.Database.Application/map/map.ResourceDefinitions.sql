@@ -85,7 +85,8 @@ RETURN (
 		[Text2Label2],
 		[Text2Label3],	
 
-		[Script],
+		[PreprocessScript],
+		[ValidateScript],
 
 		-- Resource properties
 		[IdentifierVisibility],

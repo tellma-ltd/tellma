@@ -6,6 +6,37 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	
+	-- Grab the script
+	DECLARE @ValidateScript NVARCHAR(MAX) = (SELECT [ValidateScript] FROM map.[RelationDefinitions]() WHERE [Id] = @DefinitionId)
+
+	-- Execute it if not null
+	IF (@ValidateScript IS NOT NULL)
+	BEGIN
+		-- (1) Prepare the full Script
+		DECLARE @Script NVARCHAR(MAX) = N'
+			SET NOCOUNT ON
+			DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+			------
+			' 
+			+ @ValidateScript + 
+			N'
+			-----
+			SELECT TOP (@Top) * FROM @ValidationErrors;
+			';
+
+		-- (2) Run the full Script
+		INSERT INTO @ValidationErrors
+		EXECUTE	sp_executesql @Script, N'
+			@DefinitionId INT,
+			@Entities [dbo].[RelationList] READONLY, 
+			@RelationUsers [dbo].[RelationUserList] READONLY,
+			@Top INT', 
+			@DefinitionId = @DefinitionId,
+			@Entities = @Entities,
+			@RelationUsers = @RelationUsers,
+			@Top = @Top;
+	END
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

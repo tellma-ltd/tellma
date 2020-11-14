@@ -1373,6 +1373,48 @@ namespace Tellma.Data
 
         #region Custodies
 
+        public async Task Custodies__Preprocess(int definitionId, List<CustodyForSave> entities)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Preprocess));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Custody)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(entitiesTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Custodies__Preprocess)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            var props = TypeDescriptor.Get<CustodyForSave>().SimpleProperties;
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var entity = entities[index];
+
+                foreach (var prop in props)
+                {
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(entity, propValue);
+                }
+            }
+        }
+
         public async Task<IEnumerable<ValidationError>> Custodies_Validate__Save(int definitionId, List<CustodyForSave> entities, int top)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Custodies_Validate__Save));
@@ -1750,6 +1792,48 @@ namespace Tellma.Data
         #endregion
 
         #region Relations
+
+        public async Task Relations__Preprocess(int definitionId, List<RelationForSave> entities)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Relations__Preprocess));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1Index, nameof(Relation.Relation1));
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Relation)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(entitiesTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Relations__Preprocess)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            var props = TypeDescriptor.Get<RelationForSave>().SimpleProperties;
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var entity = entities[index];
+
+                foreach (var prop in props)
+                {
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(entity, propValue);
+                }
+            }
+        }
 
         public async Task<IEnumerable<ValidationError>> Relations_Validate__Save(int definitionId, List<RelationForSave> entities, int top)
         {
@@ -3191,8 +3275,8 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+            
             // Parameters
-
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {

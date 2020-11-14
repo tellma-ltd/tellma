@@ -92,7 +92,8 @@ SET NOCOUNT ON;
 				[Text2Label3],	
 				[Text2Visibility],
 
-				[Script],
+				[PreprocessScript],
+				[ValidateScript],
 				-----Properties applicable to resources only
 				[IdentifierLabel],
 				[IdentifierLabel2],
@@ -195,7 +196,8 @@ SET NOCOUNT ON;
 				t.[Text2Label3]				= s.[Text2Label3],
 				t.[Text2Visibility]			= s.[Text2Visibility],
 
-				t.[Script]					= s.[Script],
+				t.[PreprocessScript]		= s.[PreprocessScript],
+				t.[ValidateScript]			= s.[ValidateScript],
 				-----Properties applicable to resources only
 				t.[IdentifierLabel]			= s.[IdentifierLabel],
 				t.[IdentifierLabel2]		= s.[IdentifierLabel2],
@@ -288,7 +290,8 @@ SET NOCOUNT ON;
 				[Text2Label3],	
 				[Text2Visibility],
 
-				[Script],
+				[PreprocessScript],
+				[ValidateScript],
 
 				[IdentifierLabel],
 				[IdentifierLabel2],
@@ -380,8 +383,9 @@ SET NOCOUNT ON;
 				s.[Text2Label2],
 				s.[Text2Label3],	
 				s.[Text2Visibility],
-
-				s.[Script],
+				
+				s.[PreprocessScript],
+				s.[ValidateScript],
 
 				s.[IdentifierLabel],
 				s.[IdentifierLabel2],

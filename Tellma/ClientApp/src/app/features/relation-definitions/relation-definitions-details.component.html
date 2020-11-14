@@ -395,6 +395,58 @@
                     </ng-template>
                 </div>
 
+                <!-- Scripts Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Scripts')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Scripts'))"
+                        [rotate]="rotateIcon(showSection('Scripts'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Scripts' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                        *ngIf="sectionErrors('Scripts', model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Scripts')">
+
+                    <!-- PreprocessScript -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(preprocessscript, model.serverErrors?.PreprocessScript)">
+                        <label class="small"
+                            for="preprocessscript">{{ 'Definition_PreprocessScript' | translate }}</label>&nbsp;
+                        <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                            (click)="onEditScript('PreprocessScript', model)" [title]="'Expand' | translate">
+                            <fa-icon icon="expand"></fa-icon>
+                        </button>
+                        <textarea class="form-control t-studio-input t-no-resize t-code" rows="6" id="preprocessscript"
+                            type="text" [(ngModel)]="model.PreprocessScript" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            #preprocessscript="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: preprocessscript, serverErrors: model.serverErrors?.PreprocessScript }">
+                        </ng-container>
+                    </div>
+
+
+                    <!-- ValidateScript -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(validatescript, model.serverErrors?.ValidateScript)">
+                        <label class="small" for="validatescript">{{ 'Definition_ValidateScript' | translate }}
+                        </label>&nbsp;
+                        <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                            (click)="onEditScript('ValidateScript', model)" [title]="'Expand' | translate">
+                            <fa-icon icon="expand"></fa-icon>
+                        </button>
+                        <textarea class="form-control t-studio-input t-no-resize t-code" rows="6" id="validatescript"
+                            type="text" [(ngModel)]="model.ValidateScript" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            #validatescript="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: validatescript, serverErrors: model.serverErrors?.ValidateScript }">
+                        </ng-container>
+                    </div>
+                </div>
+
                 <!-- Reports Section -->
                 <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Reports')">
                     &nbsp;
@@ -642,6 +694,42 @@
             &nbsp;{{ 'Apply' | translate }}
         </button>
         <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Scripts Modal -->
+<ng-template #scriptModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header t-dark t-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ scriptModalLabel() }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="t-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col t-less-dark t-text-whitish">
+        <div class="row h-100 t-much-less-dark">
+            <textarea class="w-100 h-100 form-control t-studio-input text-nowrap t-code" autocomplete="off"
+                autocorrect="off" autocapitalize="off" spellcheck="false" [(ngModel)]="script" #scriptnmodel="ngModel"
+                #pstextarea (keydown)="onScriptKeydown(pstextarea, $event)" ngbAutoFocus>
+                </textarea>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close(true);">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Apply' | translate }}
+        </button>
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();">
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Cancel' | translate }}
         </button>

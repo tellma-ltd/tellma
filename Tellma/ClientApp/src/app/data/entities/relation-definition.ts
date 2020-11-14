@@ -126,7 +126,8 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     Text4Label3?: string;
     Text4Visibility?: Visibility;
 
-    Script?: string;
+    PreprocessScript?: string;
+    ValidateScript?: string;
 
     // Relation Definition Only
     Relation1Label?: string;
@@ -310,7 +311,9 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Text4Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.secondaryPostfix },
                 Text4Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.ternaryPostfix },
                 Text4Visibility: visibilityPropDescriptor('Entity_Text4', trx),
-                Script: { control: 'text', label: () => trx.instant('Definition_Script') },
+
+                PreprocessScript: { control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
+                ValidateScript: { control: 'text', label: () => trx.instant('Definition_ValidateScript') },
 
                 Relation1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.primaryPostfix },
                 Relation1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.secondaryPostfix },

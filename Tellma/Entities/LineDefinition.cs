@@ -79,10 +79,10 @@ namespace Tellma.Entities
         [Display(Name = "LineDefinition_GenerateScript")]
         public string GenerateScript { get; set; }
 
-        [Display(Name = "LineDefinition_PreprocessScript")]
+        [Display(Name = "Definition_PreprocessScript")]
         public string PreprocessScript { get; set; }
 
-        [Display(Name = "LineDefinition_ValidateScript")]
+        [Display(Name = "Definition_ValidateScript")]
         public string ValidateScript { get; set; }
 
         [Display(Name = "LineDefinition_Entries")]

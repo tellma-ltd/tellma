@@ -74,8 +74,9 @@
 	[Text2Label2]						NVARCHAR (50),
 	[Text2Label3]						NVARCHAR (50),		
 	[Text2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Text2Visibility] IN (N'None', N'Optional', N'Required')),
-
-	[Script]							NVARCHAR (MAX),
+	
+	[PreprocessScript]					NVARCHAR (MAX),
+	[ValidateScript]					NVARCHAR (MAX),
 
 	[CustodianVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CustodianVisibility] IN (N'None', N'Optional', N'Required')),
 	[CustodianDefinitionId]				INT,
