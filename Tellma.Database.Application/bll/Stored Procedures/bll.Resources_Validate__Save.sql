@@ -1,11 +1,43 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Save]
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
-	@ResourceUnits dbo.ResourceUnitList READONLY,
+	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+			
+	-- Grab the script
+	DECLARE @ValidateScript NVARCHAR(MAX) = (SELECT [ValidateScript] FROM map.[ResourceDefinitions]() WHERE [Id] = @DefinitionId)
+
+	-- Execute it if not null
+	IF (@ValidateScript IS NOT NULL)
+	BEGIN
+		-- (1) Prepare the full Script
+		DECLARE @Script NVARCHAR(MAX) = N'
+			SET NOCOUNT ON
+			DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+			------
+			' 
+			+ @ValidateScript + 
+			N'
+			-----
+			SELECT TOP (@Top) * FROM @ValidationErrors;
+			';
+
+		-- (2) Run the full Script
+		INSERT INTO @ValidationErrors
+		EXECUTE	sp_executesql @Script, N'
+			@DefinitionId INT,
+			@Entities [dbo].[ResourceList] READONLY, 
+			@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+			@Top INT', 
+			@DefinitionId = @DefinitionId,
+			@Entities = @Entities,
+			@ResourceUnits = @ResourceUnits,
+			@Top = @Top;
+	END
+
 	DECLARE @TitleSingular NVARCHAR (50);
 	SELECT @TitleSingular = dbo.fn_Localize(TitleSingular, TitleSingular2, TitleSingular3)
 	FROM dbo.ResourceDefinitions

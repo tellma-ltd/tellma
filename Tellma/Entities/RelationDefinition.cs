@@ -433,8 +433,11 @@ namespace Tellma.Entities
         [VisibilityDisplay(Name = "Entity_Text4"), VisibilityChoiceList]
         public string Text4Visibility { get; set; }
 
-        [Display(Name = "Definition_Script")]
-        public string Script { get; set; }
+        [Display(Name = "Definition_PreprocessScript")]
+        public string PreprocessScript { get; set; }
+
+        [Display(Name = "Definition_ValidateScript")]
+        public string ValidateScript { get; set; }
 
         #endregion
 

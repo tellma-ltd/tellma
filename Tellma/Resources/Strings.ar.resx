@@ -421,14 +421,14 @@
   <data name="Definition_Hide" xml:space="preserve">
     <value>إخفاء</value>
   </data>
+  <data name="Definition_PreprocessScript" xml:space="preserve">
+    <value>كود الحفظ</value>
+  </data>
   <data name="Definition_ReportDefinition" xml:space="preserve">
     <value>تعريف التقرير</value>
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>تعريفات التقارير</value>
-  </data>
-  <data name="Definition_Script" xml:space="preserve">
-    <value>كود</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>إظهار</value>
@@ -444,6 +444,9 @@
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>ظاهر</value>
+  </data>
+  <data name="Definition_ValidateScript" xml:space="preserve">
+    <value>كود التحقق</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>البيان</value>
@@ -1759,14 +1762,8 @@
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>كود الإنشاء التلقائي</value>
   </data>
-  <data name="LineDefinition_PreprocessScript" xml:space="preserve">
-    <value>كود الحفظ</value>
-  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>أسباب التوقيع</value>
-  </data>
-  <data name="LineDefinition_ValidateScript" xml:space="preserve">
-    <value>كود التحقق</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>يعرض على شكل استمارة</value>

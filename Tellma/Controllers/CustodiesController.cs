@@ -178,7 +178,7 @@ namespace Tellma.Controllers
             return CustodyServiceUtil.SearchImpl(query, args);
         }
 
-        protected override Task<List<CustodyForSave>> SavePreprocessAsync(List<CustodyForSave> entities)
+        protected override async Task<List<CustodyForSave>> SavePreprocessAsync(List<CustodyForSave> entities)
         {
             var def = Definition();
 
@@ -200,7 +200,9 @@ namespace Tellma.Controllers
 
             entities.ForEach(ControllerUtilities.SynchronizeWkbWithJson);
 
-            return base.SavePreprocessAsync(entities);
+            // SQL Preprocessing
+            await _repo.Custodies__Preprocess(DefinitionId.Value, entities);
+            return entities;
         }
 
         private bool IsVisible(string visibility)

@@ -28,7 +28,7 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { moveItemInArray, CdkDragDrop, DropListOrientation } from '@angular/cdk/drag-drop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 't-application-shell',
@@ -508,8 +508,26 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     }
   }
 
+  private removeUrlPrefix(url: string): string {
+    if (!!url && url.startsWith('/app/')) {
+      const pieces = url.split('/');
+      pieces.shift();
+      pieces.shift();
+      pieces.shift();
+
+      return '/' + pieces.join('/');
+    }
+
+    return url;
+  }
+
+  private get urlPrefix(): string {
+    const tenantId = this.workspace.ws.tenantId;
+    return `/app/${tenantId}`;
+  }
+
   public onAddFavorite() {
-    const url = this.storage.getItem('last_visited_url');
+    const url = this.removeUrlPrefix(this.router.url);
     if (!url) {
       return;
     }
@@ -598,6 +616,9 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   }
 
   public onClickFavorite(url: string) {
+    // For backwards compatibility
+    url = this.urlPrefix + this.removeUrlPrefix(url);
+
     this.onCollapse();
     this.router.navigateByUrl(url);
   }

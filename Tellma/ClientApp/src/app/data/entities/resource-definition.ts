@@ -88,7 +88,8 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
     Text2Label3?: string;
     Text2Visibility?: Visibility;
 
-    Script?: string;
+    PreprocessScript?: string;
+    ValidateScript?: string;
 
     // Resources Only
 
@@ -247,7 +248,9 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 Text2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.secondaryPostfix },
                 Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.ternaryPostfix },
                 Text2Visibility: visibilityPropDescriptor('Entity_Text2', trx),
-                Script: { control: 'text', label: () => trx.instant('Definition_Script') },
+
+                PreprocessScript: { control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
+                ValidateScript: { control: 'text', label: () => trx.instant('Definition_ValidateScript') },
 
                 // Resource Only
 

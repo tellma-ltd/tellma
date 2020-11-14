@@ -74,8 +74,10 @@
 	[Text2Label2]						NVARCHAR (50),
 	[Text2Label3]						NVARCHAR (50),		
 	[Text2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Text2Visibility] IN (N'None', N'Optional', N'Required')),
+	
+	[PreprocessScript]					NVARCHAR (MAX),
+	[ValidateScript]					NVARCHAR (MAX),
 
-	[Script]							NVARCHAR (MAX),
 	-----Properties applicable to custodies only
 	[CustodianVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CustodianVisibility] IN (N'None', N'Optional', N'Required')),
 	[CustodianDefinitionId]				INT				CONSTRAINT [FK_CustodyDefinitions__CustodianDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),

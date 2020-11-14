@@ -2,7 +2,7 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, onCodeTextareaKeydown } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +27,9 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   @ViewChild('reportDefinitionModal', { static: true })
   reportDefinitionModal: TemplateRef<any>;
+
+  @ViewChild('scriptModal', { static: true })
+  scriptModal: TemplateRef<any>;
 
   private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
@@ -139,6 +142,7 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
   private _sections: { [key: string]: boolean } = {
     Title: true,
     Fields: false,
+    Scripts: false,
     Reports: false,
     MainMenu: false
   };
@@ -240,6 +244,11 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
         areServerErrors(model.serverErrors.DefaultUnitMassUnitId) ||
         areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
         false
+      ));
+    } else if (section === 'Scripts') {
+      return (!!model.serverErrors && (
+        areServerErrors(model.serverErrors.PreprocessScript) ||
+        areServerErrors(model.serverErrors.ValidateScript)
       ));
     } else if (section === 'Reports') {
       return !!model.ReportDefinitions &&
@@ -449,5 +458,26 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
 
   public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
     moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
+
+  // Scripts
+
+  public script: string;
+  public scriptModalLabel: () => string;
+  public onEditScript(scriptName: string, model: ResourceDefinition) {
+    // Prep
+    this.script = model[scriptName]; // Copy the script
+    this.scriptModalLabel = () => this.translate.instant('Definition_' + scriptName);
+
+    // Launch the modal
+    this.modalService.open(this.scriptModal, { windowClass: 't-dark-theme t-details-modal' }).result.then((apply: boolean) => {
+      if (apply) {
+        model[scriptName] = this.script;
+      }
+    }, (_: any) => { });
+  }
+
+  public onScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent) {
+    onCodeTextareaKeydown(elem, $event, v => this.script = v);
   }
 }

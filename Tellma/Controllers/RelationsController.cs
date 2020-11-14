@@ -177,7 +177,7 @@ namespace Tellma.Controllers
             return RelationServiceUtil.SearchImpl(query, args);
         }
 
-        protected override Task<List<RelationForSave>> SavePreprocessAsync(List<RelationForSave> entities)
+        protected override async Task<List<RelationForSave>> SavePreprocessAsync(List<RelationForSave> entities)
         {
             var def = Definition();
 
@@ -245,7 +245,9 @@ namespace Tellma.Controllers
 
             entities.ForEach(ControllerUtilities.SynchronizeWkbWithJson);
 
-            return base.SavePreprocessAsync(entities);
+            // SQL Preprocessing
+            await _repo.Relations__Preprocess(DefinitionId.Value, entities);
+            return entities;
         }
 
         private bool IsVisible(string visibility)

@@ -7,4 +7,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="SmsEnabled" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="5191b83c-37c0-4b44-b04c-ac8e7fd0a1a8" ChangeDateTime="11/14/2020 06:39:30">
+    <Property Name="ElementName" Value="[dbo].[RelationDefinitions].[Script]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RelationDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PreprocessScript]" />
+  </Operation>
 </Operations>

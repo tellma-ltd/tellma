@@ -421,14 +421,14 @@
   <data name="Definition_Hide" xml:space="preserve">
     <value>ደብቅ</value>
   </data>
+  <data name="Definition_PreprocessScript" xml:space="preserve">
+    <value>የቅድመ-ዝግጅት ስክሪፕት</value>
+  </data>
   <data name="Definition_ReportDefinition" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
-  </data>
-  <data name="Definition_Script" xml:space="preserve">
-    <value>ስክሪፕት</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>አሳይ</value>
@@ -444,6 +444,9 @@
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>የሚታይ</value>
+  </data>
+  <data name="Definition_ValidateScript" xml:space="preserve">
+    <value>ትክክለኛ ስክሪፕት</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>መግለጫ</value>
@@ -1759,14 +1762,8 @@
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>ስክሪፕት አመንጭ</value>
   </data>
-  <data name="LineDefinition_PreprocessScript" xml:space="preserve">
-    <value>የቅድመ-ዝግጅት ስክሪፕት</value>
-  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>የሁኔታው ምክንያቶች</value>
-  </data>
-  <data name="LineDefinition_ValidateScript" xml:space="preserve">
-    <value>ትክክለኛ ስክሪፕት</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>ቅጽ ይመልከቱ ነባሪዎችን</value>

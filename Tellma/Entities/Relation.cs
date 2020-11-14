@@ -135,19 +135,19 @@ namespace Tellma.Entities
         public int? Lookup8Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text1 { get; set; }
 
         [Display(Name = "Entity_Text2")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text2 { get; set; }
 
         [Display(Name = "Entity_Text3")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text3 { get; set; }
 
         [Display(Name = "Entity_Text4")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text4 { get; set; }
 
         [NotMapped]

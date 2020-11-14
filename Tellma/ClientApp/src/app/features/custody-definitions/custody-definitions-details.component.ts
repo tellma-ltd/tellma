@@ -2,7 +2,7 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, onCodeTextareaKeydown } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -28,9 +28,12 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
   @ViewChild('reportDefinitionModal', { static: true })
   reportDefinitionModal: TemplateRef<any>;
 
+  @ViewChild('scriptModal', { static: true })
+  scriptModal: TemplateRef<any>;
+
   private custodyDefinitionsApi = this.api.custodyDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand =  `ReportDefinitions/ReportDefinition,
+  public expand = `ReportDefinitions/ReportDefinition,
 Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,CustodianDefinition`;
 
   create = () => {
@@ -138,6 +141,7 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Custodia
   private _sections: { [key: string]: boolean } = {
     Title: true,
     Fields: false,
+    Scripts: false,
     Reports: false,
     MainMenu: false
   };
@@ -233,6 +237,11 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Custodia
         areServerErrors(model.serverErrors.ExternalReferenceLabel2) ||
         areServerErrors(model.serverErrors.ExternalReferenceLabel3) ||
         areServerErrors(model.serverErrors.ExternalReferenceVisibility)
+      ));
+    } else if (section === 'Scripts') {
+      return (!!model.serverErrors && (
+        areServerErrors(model.serverErrors.PreprocessScript) ||
+        areServerErrors(model.serverErrors.ValidateScript)
       ));
     } else if (section === 'Reports') {
       return !!model.ReportDefinitions &&
@@ -423,5 +432,26 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Custodia
 
   public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
     moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
+
+  // Scripts
+
+  public script: string;
+  public scriptModalLabel: () => string;
+  public onEditScript(scriptName: string, model: CustodyDefinition) {
+    // Prep
+    this.script = model[scriptName]; // Copy the script
+    this.scriptModalLabel = () => this.translate.instant('Definition_' + scriptName);
+
+    // Launch the modal
+    this.modalService.open(this.scriptModal, { windowClass: 't-dark-theme t-details-modal' }).result.then((apply: boolean) => {
+      if (apply) {
+        model[scriptName] = this.script;
+      }
+    }, (_: any) => { });
+  }
+
+  public onScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent) {
+    onCodeTextareaKeydown(elem, $event, v => this.script = v);
   }
 }

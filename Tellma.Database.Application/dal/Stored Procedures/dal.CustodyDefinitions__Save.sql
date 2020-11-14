@@ -88,8 +88,9 @@ SET NOCOUNT ON;
 				[Text2Label2],
 				[Text2Label3],	
 				[Text2Visibility],
-
-				[Script],
+				
+				[PreprocessScript],
+				[ValidateScript],
 				-----Properties applicable to Custody only
 				[CustodianVisibility],
 				[CustodianDefinitionId],
@@ -186,7 +187,8 @@ SET NOCOUNT ON;
 				t.[Text2Label3]				= s.[Text2Label3],
 				t.[Text2Visibility]			= s.[Text2Visibility],
 
-				t.[Script]					= s.[Script],
+				t.[PreprocessScript]		= s.[PreprocessScript],
+				t.[ValidateScript]			= s.[ValidateScript],
 
 				t.[CustodianVisibility]		= s.[CustodianVisibility],
 				t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
@@ -272,7 +274,8 @@ SET NOCOUNT ON;
 				[Text2Label3],	
 				[Text2Visibility],
 
-				[Script],
+				[PreprocessScript],
+				[ValidateScript],
 				-----Properties applicable to Custodys only
 				[CustodianVisibility],
 				[CustodianDefinitionId],
@@ -353,7 +356,8 @@ SET NOCOUNT ON;
 				s.[Text2Label3],	
 				s.[Text2Visibility],
 
-				s.[Script],
+				s.[PreprocessScript],
+				s.[ValidateScript],
 				-----Properties applicable to Custodys only
 				s.[CustodianVisibility],
 				s.[CustodianDefinitionId],

@@ -96,8 +96,9 @@
 	[Text2Label]						NVARCHAR (50),
 	[Text2Label2]						NVARCHAR (50),
 	[Text2Label3]						NVARCHAR (50),		
-
-	[Script]							NVARCHAR (MAX),
+	
+	[PreprocessScript]					NVARCHAR (MAX),
+	[ValidateScript]					NVARCHAR (MAX),
 
 	-----Properties applicable to resources only
 	-- Resource properties
