@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[CenterList] AS TABLE (
 	[Index]				INT					PRIMARY KEY,
-	[ParentIndex]		INT,
 	[Id]				INT					NOT NULL DEFAULT 0,
+	[ParentIndex]		INT,
 	[ParentId]			INT,  
 	[CenterType]		NVARCHAR (255)		CHECK (
 													[CenterType] IN (

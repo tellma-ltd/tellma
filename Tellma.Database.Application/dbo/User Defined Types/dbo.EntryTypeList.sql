@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[EntryTypeList] AS TABLE (
 	[Index]				INT				PRIMARY KEY ,
-	[ParentIndex]		INT,
 	[Id]				INT				NOT NULL DEFAULT 0,
+	[ParentIndex]		INT,
 	[ParentId]			INT,
 	[Code]				NVARCHAR (50)	NOT NULL UNIQUE,
 	[Concept]			NVARCHAR (255)	NOT NULL UNIQUE,

@@ -131,6 +131,7 @@ SET NOCOUNT ON;
 				[Location], -- 4326 = World Geodetic System, used by Google Maps
 				[LocationJson],
 				[FromDate],
+				[ToDate],
 				[DateOfBirth],
 				[ContactEmail],
 				[ContactMobile],
@@ -140,7 +141,6 @@ SET NOCOUNT ON;
 				[Date2],
 				[Date3],
 				[Date4],
-				[ToDate],
 				[Decimal1],
 				[Decimal2],
 				[Int1],

@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[AccountClassificationList] AS TABLE (
 	[Index]					INT				PRIMARY KEY ,
-	[ParentIndex]			INT,
 	[Id]					INT				NOT NULL DEFAULT 0,
+	[ParentIndex]			INT,
 	[ParentId]				INT,
 	[Name]					NVARCHAR (255)	NOT NULL,
 	[Name2]					NVARCHAR (255),

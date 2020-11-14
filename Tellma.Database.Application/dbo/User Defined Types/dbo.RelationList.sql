@@ -24,8 +24,6 @@
 	[Date2]						DATE, -- Passport
 	[Date3]						DATE, -- Medical Insurance
 	[Date4]						DATE, -- ..
-
-
 	[Decimal1]					DECIMAL (19,4),
 	[Decimal2]					DECIMAL (19,4),
 	[Int1]						INT,
