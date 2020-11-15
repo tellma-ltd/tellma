@@ -276,7 +276,7 @@
   "Emails": "بريد إلكتروني",
   "EmptyInboxMessage": "أحسنت، صندوق بريدك فارغ.",
   "Entity_Center": "المركز",
-  "Entity_ContactAddress": "عنوان السكن",
+  "Entity_ContactAddress": "العنوان الحالي",
   "Entity_ContactEmail": "البريد الإلكتروني للتواصل",
   "Entity_ContactMobile": "رقم الهاتف المحمول",
   "Entity_Currency": "العملة",

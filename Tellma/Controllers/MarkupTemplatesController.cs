@@ -282,10 +282,14 @@ namespace Tellma.Controllers
                         if (definitionedCollections.Contains(entity.Collection))
                         {
                             // DefinitionId is required when querying by Id
-                            if (entity.DefinitionId == null)
+                            if (entity.Usage == MarkupTemplateConst.QueryById && entity.DefinitionId == null)
                             {
                                 ModelState.AddModelError($"[{index}].DefinitionId", _localizer[Constants.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
                             }
+                        } 
+                        else
+                        {
+                            entity.DefinitionId = null;
                         }
                     }
                 }

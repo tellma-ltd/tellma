@@ -743,7 +743,7 @@
     <value>المركز</value>
   </data>
   <data name="Entity_ContactAddress" xml:space="preserve">
-    <value>عنوان السكن</value>
+    <value>العنوان الحالي</value>
   </data>
   <data name="Entity_ContactEmail" xml:space="preserve">
     <value>البريد الإلكتروني للتواصل</value>
