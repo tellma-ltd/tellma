@@ -126,6 +126,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'city',
           'clipboard-check',
           'clipboard',
+          'clipboard-list',
           'code-branch',
           'code',
           'cog',

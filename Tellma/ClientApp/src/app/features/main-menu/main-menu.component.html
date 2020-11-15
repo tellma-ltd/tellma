@@ -19,11 +19,11 @@
         <span>{{ 'Menu_QuickAccess' | translate }}</span></div>
       <a class="t-menu-item btn m-1" [id]="getId(0, i)" (focus)="onFocus(0, i)" [class.d-none]="!showItem(item)"
         (blur)="onBlur()" *ngFor="let item of quickAccess; let i = index;" [routerLink]="linkArray(item)"
-        (click)="onMenuItemClick(item)">
+        (click)="onMenuItemClick(item)" [title]="item.label">
         <div class="pt-4 pb-1 t-menu-item-icon">
           <fa-icon [icon]="item.icon"></fa-icon>
         </div>
-        <div class="px-2 t-menu-item-label">
+        <div class="px-2 t-menu-item-label" ellipsis>
           {{ item.label | translate }}
         </div>
       </a>
@@ -38,11 +38,11 @@
         </div>
         <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"
           [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;" [routerLink]="linkArray(item)"
-          (click)="onMenuItemClick(item)">
+          (click)="onMenuItemClick(item)" [title]="item.label">
           <div class="pt-4 pb-1 t-menu-item-icon">
             <fa-icon [icon]="item.icon"></fa-icon>
           </div>
-          <div class="px-2 t-menu-item-label">
+          <div class="px-2 t-menu-item-label" ellipsis>
             {{ item.label }}
           </div>
         </a>
