@@ -1,9 +1,9 @@
 ﻿INSERT INTO @MarkupTemplates([Index],
 [Name],                 [Code],             [Usage],        [Collection],   [DefinitionId], [MarkupLanguage],   [SupportsPrimaryLanguage],
 [SupportsSecondaryLanguage],    [SupportsTernaryLanguage],  [DownloadName],
-[Body]) VALUES(
+[IsDeployed], [Body]) VALUES(
 0,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
-1,                              0,                          N'JV Cover Letter',
+1,                              0,                          N'JV Cover Letter', 1,
 N'
 <!DOCTYPE html>
 <html lang="{{ $Lang }}">
