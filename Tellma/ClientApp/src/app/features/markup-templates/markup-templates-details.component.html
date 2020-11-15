@@ -171,7 +171,7 @@
 
                 <!-- DownloadName -->
                 <div class="form-group" [class.is-invalid]="invalid(downloadName, model.serverErrors?.DownloadName)">
-                    <label class="small" for="downloadName">{{ 'MarkupTemplate_DownloadName' | translate }}</label>
+                    <label class="small" for="downloadName">{{ 'MarkupTemplate_DownloadName' | translate }} ({{ 'Visibility_Optional' | translate }})</label>
                     <input class="form-control t-studio-input" id="downloadName" type="text"
                         [(ngModel)]="model.DownloadName" #downloadName="ngModel"
                         (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -316,6 +316,12 @@
                                             <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="id"
                                                 (ngModelChange)="onParameterChange(model)" [showCreate]="false">
                                             </t-agents-picker>
+
+                                            <t-documents-picker *ngSwitchCase="'Document'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [definitionIds]="[model.DefinitionId]"
+                                                [showCreate]="false">
+                                            </t-documents-picker>
 
                                             <t-relations-picker *ngSwitchCase="'Relation'" [(ngModel)]="id"
                                                 [definitionIds]="[model.DefinitionId]"

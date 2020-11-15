@@ -324,7 +324,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     }
     this.url = undefined;
     if (!!this.iframe) {
-      (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(undefined);
+      (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace('about:blank');
     }
     this.contenType = undefined;
     this.fileSizeDisplay = undefined;
@@ -600,11 +600,14 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
   private _currentModel: MarkupTemplateForSave;
   public watch(model: MarkupTemplateForSave): boolean {
-    // If it's a different model thant last time, reset the params and refetch
+    // If it's a different model than last time, reset the params and refetch
     const s = this.state.detailsState;
-    if (s.modelId !== (model.Id || null)) {
-      s.modelId = model.Id || null;
+    if (s.modelCollection !== (model.Collection || null) ||
+      s.modelDefinitionId !== (model.DefinitionId || null)) {
+      s.modelCollection = model.Collection || null;
+      s.modelDefinitionId = model.DefinitionId || null;
 
+      // Current state might be inconsistent with the new collection and defId
       this.resetState();
       this.fetch(model);
 

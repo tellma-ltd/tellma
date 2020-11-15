@@ -411,10 +411,10 @@ namespace Tellma.Controllers
 
             // Apply search
             query = Search(query, args);
-            
+
             // Apply filter
             query = query.Filter(filter);
-            
+
             // Apply orderby
             query = OrderBy(query, orderby);
 
@@ -439,7 +439,7 @@ namespace Tellma.Controllers
             if (args.CountEntities)
             {
                 (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
-            } 
+            }
             else
             {
                 data = await query.ToListAsync(cancellation);
@@ -536,7 +536,11 @@ namespace Tellma.Controllers
             }
 
             // Onto the printing itself
-            var templates = new string[] { template.DownloadName, template.Body };
+            var templates = new (string, string)[] {
+                (template.DownloadName, MimeTypes.Text),
+                (template.Body, template.MarkupLanguage)
+            };
+
             var tenantInfo = _tenantInfo.GetCurrentInfo();
             var culture = TemplateUtil.GetCulture(args, tenantInfo);
 

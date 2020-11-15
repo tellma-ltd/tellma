@@ -82,4 +82,15 @@ JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryResourceDefinitions])
 
 -- Get deployed markup templates
-SELECT * FROM [dbo].[MarkupTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports
+SELECT 
+	[Id],
+	[Name],
+	[Name2],
+	[Name3],
+	[SupportsPrimaryLanguage],
+	[SupportsSecondaryLanguage],
+	[SupportsTernaryLanguage],
+	[Usage],
+	[Collection],
+	[DefinitionId]
+FROM [dbo].[MarkupTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports

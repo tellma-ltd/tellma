@@ -1167,21 +1167,23 @@ namespace Tellma.Data
                 }
 
                 // Markup templates
-                var markupTemplateProps = TypeDescriptor.Get<MarkupTemplate>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new MarkupTemplate();
-                    foreach (var prop in markupTemplateProps)
+                    int i = 0;
+                    markupTemplates.Add(new MarkupTemplate
                     {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(entity, propValue);
-                    }
-
-                    markupTemplates.Add(entity);
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        SupportsPrimaryLanguage = reader.GetBoolean(i++),
+                        SupportsSecondaryLanguage = reader.GetBoolean(i++),
+                        SupportsTernaryLanguage = reader.GetBoolean(i++),
+                        Usage = reader.String(i++),
+                        Collection = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+                    });
                 }
             }
 

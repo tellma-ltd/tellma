@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Tellma.Services.Utilities;
@@ -20,7 +21,7 @@ namespace Tellma.Controllers.Templating
             return AsyncUtil.Empty<Path>();
         }
 
-        public override Task GenerateOutput(StringBuilder builder, EvaluationContext ctx)
+        public override Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
             builder.Append(Content);
             return Task.CompletedTask;

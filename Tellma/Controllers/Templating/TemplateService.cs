@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
@@ -45,7 +47,7 @@ namespace Tellma.Controllers.Templating
         /// <param name="cancellation">Cancellation token for async calls</param>
         /// <returns>An array, equal in size to the supplied templates array, where each output is matched to each input by the array index</returns>
         public async Task<string[]> GenerateMarkup(
-            string[] templates,
+            (string template, string language)[] templates,
             Dictionary<string, object> inputVariables,
             QueryInfo preloadedQuery, // Optional, instructs the template service to preload this query in the $ variable
             CultureInfo culture,
@@ -55,7 +57,7 @@ namespace Tellma.Controllers.Templating
             TemplateTree[] trees = new TemplateTree[templates.Length];
             for (int i = 0; i < templates.Length; i++)
             {
-                trees[i] = TemplateTree.Parse(templates[i]);
+                trees[i] = TemplateTree.Parse(templates[i].template);
             }
 
             // Prepare the evaluation context
@@ -230,8 +232,14 @@ namespace Tellma.Controllers.Templating
                 if (trees[i] != null)
                 {
                     StringBuilder builder = new StringBuilder();
-                    await trees[i].GenerateOutput(builder, ctx);
+                    Func<string, string> encodeFunc = templates[i].language switch
+                    {
+                        MimeTypes.Html => HtmlEncoder.Default.Encode,
+                        MimeTypes.Text => s => s, // No need to encode anything for a text output
+                        _ => s => s,
+                    };
 
+                    await trees[i].GenerateOutput(builder, ctx, encodeFunc);
                     outputs[i] = builder.ToString();
                 }
             }
