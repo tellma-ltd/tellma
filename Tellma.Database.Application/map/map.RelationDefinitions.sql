@@ -133,7 +133,8 @@ RETURN (
 		[Text4Label3],		
 		[Text4Visibility],
 
-		[Script],
+		[PreprocessScript],
+		[ValidateScript],
 
 		[Relation1Label],
 		[Relation1Label2],
