@@ -1906,6 +1906,9 @@
   <data name="MarkupTemplate_DownloadName" xml:space="preserve">
     <value>اسم الملف للتحميل</value>
   </data>
+  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
+    <value>مفعل؟</value>
+  </data>
   <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
     <value>لغة القالب</value>
   </data>

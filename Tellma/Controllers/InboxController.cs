@@ -50,17 +50,14 @@ namespace Tellma.Controllers
     public class InboxService : FactWithIdServiceBase<InboxRecord, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly InboxNotificationsService _inboxService;
 
         public InboxService(
             ApplicationRepository repo,
-            ITenantIdAccessor tenantIdAccessor,
             InboxNotificationsService inboxService,
             IServiceProvider sp) : base(sp)
         {
             _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
             _inboxService = inboxService;
         }
 

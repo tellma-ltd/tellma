@@ -1,5 +1,5 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
-import { LineState, PositiveLineState } from '../entities/line';
+import { PositiveLineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
@@ -13,6 +13,7 @@ export interface DefinitionsForClient {
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
+    MarkupTemplates: MarkupTemplateForClient[];
 
     ManualJournalVouchersDefinitionId: number;
     ManualLinesDefinitionId: number;
@@ -170,10 +171,9 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CanReachState3?: boolean;
     HasWorkflow?: boolean;
     LineDefinitions?: DocumentDefinitionLineDefinitionForClient[];
-    MarkupTemplates?: DocumentDefinitionMarkupTemplateForClient[];
 }
 
-export interface DocumentDefinitionMarkupTemplateForClient {
+export interface MarkupTemplateForClient {
     MarkupTemplateId?: number;
     Name?: string;
     Name2?: string;
@@ -182,6 +182,8 @@ export interface DocumentDefinitionMarkupTemplateForClient {
     SupportsSecondaryLanguage?: boolean;
     SupportsTernaryLanguage?: boolean;
     Usage?: MarkupTemplateUsage;
+    Collection?: string;
+    DefinitionId?: number;
 }
 
 export interface DocumentDefinitionLineDefinitionForClient {

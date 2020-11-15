@@ -564,59 +564,6 @@ export class ApiService {
         );
         return obs$;
       },
-      printByFilter: (templateId: number, args: GenerateMarkupByFilterArguments) => {
-        const paramsArray: string[] = [
-        ];
-
-        if (!!args.filter) {
-          paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
-        }
-
-        if (!!args.orderby) {
-          paramsArray.push(`orderby=${encodeURIComponent(args.orderby)}`);
-        }
-
-        if (!!args.skip || args.skip === 0) {
-          paramsArray.push(`skip=${args.skip}`);
-        }
-
-        if (!!args.top || args.top === 0) {
-          paramsArray.push(`top=${args.top}`);
-        }
-
-        if (!!args.i) {
-          args.i.forEach(id => {
-            paramsArray.push(`i=${encodeURIComponent(id)}`);
-          });
-        }
-
-        const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/documents/${definitionId}/print/${templateId}?${params}`;
-
-        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
-          catchError((error) => {
-            const friendlyError = friendlify(error, this.trx);
-            return throwError(friendlyError);
-          }),
-          takeUntil(cancellationToken$),
-        );
-        return obs$;
-      },
-      printById: (docId: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
-        const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
-        const params: string = paramsArray.join('&');
-
-        const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/print/${templateId}?${params}`;
-
-        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
-          catchError((error) => {
-            const friendlyError = friendlify(error, this.trx);
-            return throwError(friendlyError);
-          }),
-          takeUntil(cancellationToken$),
-        );
-        return obs$;
-      },
       autoGenerate: (lineDefId: number, args: { [key: string]: any }) => {
 
         const paramsArray: string[] = [];
@@ -1449,20 +1396,59 @@ export class ApiService {
         return obs$;
       },
 
-      // exportSelected: (args: ExportSelectedArguments) => {
-      //   const paramsArray = this.stringifyGetArguments(args);
+      printByFilter: (templateId: number, args: GenerateMarkupByFilterArguments) => {
+        const paramsArray: string[] = [
+        ];
 
-      //   const params: string = paramsArray.join('&');
-      //   const url = appsettings.apiAddress + `api/${endpoint}/export-selected?${params}`;
-      //   const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
-      //     catchError((error) => {
-      //       const friendlyError = friendlify(error, this.trx);
-      //       return throwError(friendlyError);
-      //     }),
-      //     takeUntil(cancellationToken$),
-      //   );
-      //   return obs$;
-      // }
+        if (!!args.filter) {
+          paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!args.orderby) {
+          paramsArray.push(`orderby=${encodeURIComponent(args.orderby)}`);
+        }
+
+        if (!!args.skip || args.skip === 0) {
+          paramsArray.push(`skip=${args.skip}`);
+        }
+
+        if (!!args.top || args.top === 0) {
+          paramsArray.push(`top=${args.top}`);
+        }
+
+        if (!!args.i) {
+          args.i.forEach(id => {
+            paramsArray.push(`i=${encodeURIComponent(id)}`);
+          });
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/print/${templateId}?${params}`;
+
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+      printById: (id: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
+        const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
+        const params: string = paramsArray.join('&');
+
+        const url = appsettings.apiAddress + `api/${endpoint}/${id}/print/${templateId}?${params}`;
+
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
     };
   }
 

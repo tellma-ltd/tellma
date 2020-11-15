@@ -482,6 +482,28 @@ namespace Tellma.Controllers.Utilities
 
             return e164.ToString();
         }
+
+        /// <summary>
+        /// Attempts to intelligently guess the content mime type from the file name
+        /// </summary>
+        public static string ContentType(string fileName)
+        {
+            var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(fileName, out string contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            return contentType;
+        }
+
+        /// <summary>
+        /// Retrieves the collection name from the Entity type
+        /// </summary>
+        public static string GetCollectionName(Type entityType)
+        {
+            return entityType.GetRootType().Name;
+        }
     }
 
     /// <summary>

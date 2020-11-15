@@ -53,7 +53,7 @@ namespace Tellma.Controllers
                 using var _ = _instrumentation.Block("GetAttachment");
 
                 var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
-                var contentType = ContentType(fileName);
+                var contentType = ControllerUtilities.ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);
             }, _logger);
         }
@@ -201,28 +201,6 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        [HttpGet("{docId}/print/{templateId}")]
-        public async Task<ActionResult> PrintById(int docId, int templateId, [FromQuery] GenerateMarkupByIdArguments args, CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var (fileBytes, fileName) = await _service.PrintById(docId, templateId, args, cancellation);
-                var contentType = ContentType(fileName);
-                return File(fileContents: fileBytes, contentType: contentType, fileName);
-            }, _logger);
-        }
-
-        [HttpGet("print/{templateId}")]
-        public async Task<ActionResult> PrintByFilter(int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var (fileBytes, fileName) = await _service.PrintByFilter(templateId, args, cancellation);
-                var contentType = ContentType(fileName);
-                return File(fileContents: fileBytes, contentType: contentType, fileName);
-            }, _logger);
-        }
-
         [HttpGet("generate-lines/{lineDefId}")]
         public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
@@ -234,14 +212,14 @@ namespace Tellma.Controllers
                 // Related entitiess
                 var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
                 {
-                    { GetCollectionName(typeof(Account)), accounts },
-                    { GetCollectionName(typeof(Custody)), custodies },
-                    { GetCollectionName(typeof(Resource)), resources },
-                    { GetCollectionName(typeof(Relation)), relations },
-                    { GetCollectionName(typeof(EntryType)), entryTypes },
-                    { GetCollectionName(typeof(Center)), centers },
-                    { GetCollectionName(typeof(Currency)), currencies },
-                    { GetCollectionName(typeof(Unit)), units }
+                    { ControllerUtilities.GetCollectionName(typeof(Account)), accounts },
+                    { ControllerUtilities.GetCollectionName(typeof(Custody)), custodies },
+                    { ControllerUtilities.GetCollectionName(typeof(Resource)), resources },
+                    { ControllerUtilities.GetCollectionName(typeof(Relation)), relations },
+                    { ControllerUtilities.GetCollectionName(typeof(EntryType)), entryTypes },
+                    { ControllerUtilities.GetCollectionName(typeof(Center)), centers },
+                    { ControllerUtilities.GetCollectionName(typeof(Currency)), currencies },
+                    { ControllerUtilities.GetCollectionName(typeof(Unit)), units }
                 };
 
                 // Prepare the result in a response object
@@ -277,25 +255,12 @@ namespace Tellma.Controllers
 
             return extras;
         }
-
-        private string ContentType(string fileName)
-        {
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(fileName, out string contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-
-            return contentType;
-        }
     }
 
     public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int>
     {
-        private readonly TemplateService _templateService;
         private readonly ClientAppAddressResolver _clientAppResolver;
         private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ISettingsCache _settingsCache;
@@ -356,17 +321,14 @@ namespace Tellma.Controllers
             });
         }
 
-        public DocumentsService(TemplateService templateService, ClientAppAddressResolver clientAppResolver,
+        public DocumentsService(ClientAppAddressResolver clientAppResolver,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
             ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, ExternalNotificationsService notificationsSerice, InboxNotificationsService inboxService,
             IHttpContextAccessor contextAccessor, EmailTemplatesProvider emailTemplates) : base(sp)
         {
-            _templateService = templateService;
             _clientAppResolver = clientAppResolver;
             _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
-            _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
@@ -775,188 +737,6 @@ namespace Tellma.Controllers
             {
                 throw new NotFoundException<int>(attachmentId);
             }
-        }
-
-        public async Task<(byte[] FileBytes, string FileName)> PrintByFilter([FromRoute] int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
-        {
-            var collection = "Document";
-            var defId = DefinitionId;
-            var def = Definition();
-
-            if (def.MarkupTemplates == null || !def.MarkupTemplates.Any(e => e.MarkupTemplateId == templateId))
-            {
-                // A proper UI will only allow the user to use supported template
-                throw new BadRequestException($"The requested templateId {templateId} is not one of the supported templates for document definition {DefinitionId}");
-            }
-
-            var template = await _repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
-            if (template == null)
-            {
-                // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new BadRequestException($"The template with Id {templateId} does not exist");
-            }
-
-            // The errors below should be prevented through SQL validation, but just to be safe
-            if (template.Usage != MarkupTemplateConst.QueryByFilter)
-            {
-                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
-            }
-
-            if (template.MarkupLanguage != MimeTypes.Html)
-            {
-                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
-            }
-
-            if (template.Collection != collection)
-            {
-                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
-            }
-
-            if (template.DefinitionId != defId)
-            {
-                throw new BadRequestException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
-            }
-
-            // Onto the printing itself
-            var templates = new string[] { template.DownloadName, template.Body };
-            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
-
-            var preloadedQuery = new QueryByFilterInfo(collection, defId, args.Filter, args.OrderBy, args.Top, args.Skip, args.I);
-            var inputVariables = new Dictionary<string, object>
-            {
-                ["$Source"] = $"{collection}/{defId}",
-                ["$Filter"] = args.Filter,
-                ["$OrderBy"] = args.Filter,
-                ["$Top"] = args.Filter,
-                ["$Skip"] = args.Filter,
-                ["$Ids"] = args.I
-            };
-
-            // Generate the output
-            string[] outputs;
-            try
-            {
-                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
-            }
-            catch (TemplateException ex)
-            {
-                throw new BadRequestException(ex.Message);
-            }
-
-            var downloadName = outputs[0];
-            var body = outputs[1];
-
-            // Change the body to bytes
-            var bodyBytes = Encoding.UTF8.GetBytes(body);
-
-            // Do some sanitization of the downloadName
-            if (string.IsNullOrWhiteSpace(downloadName))
-            {
-                var tenantInfo = await _repo.GetTenantInfoAsync(cancellation);
-                var titlePlural = tenantInfo.Localize(def.TitlePlural, def.TitlePlural2, def.TitlePlural3);
-                if (args.I != null && args.I.Count > 0)
-                {
-                    downloadName = $"{titlePlural} ({args.I.Count})";
-                }
-                else
-                {
-                    int from = args.Skip + 1;
-                    int to = Math.Max(from, args.Skip + args.Top);
-                    downloadName = $"{titlePlural} {from}-{to}";
-                }
-            }
-
-            if (!downloadName.ToLower().EndsWith(".html"))
-            {
-                downloadName += ".html";
-            }
-
-            // Return as a file
-            return (bodyBytes, downloadName);
-        }
-
-        public async Task<(byte[] FileBytes, string FileName)> PrintById(int docId, int templateId, [FromQuery] GenerateMarkupArguments args, CancellationToken cancellation)
-        {
-            var collection = "Document";
-            var defId = DefinitionId;
-            var def = Definition();
-
-            if (def.MarkupTemplates == null || !def.MarkupTemplates.Any(e => e.MarkupTemplateId == templateId))
-            {
-                // A proper UI will only allow the user to use supported template
-                throw new BadRequestException($"The requested templateId {templateId} is not one of the supported templates for document definition {DefinitionId}");
-            }
-
-            var template = await _repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
-            if (template == null)
-            {
-                // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new BadRequestException($"The template with Id {templateId} does not exist");
-            }
-
-            // The errors below should be prevented through SQL validation, but just to be safe
-            if (template.Usage != MarkupTemplateConst.QueryById)
-            {
-                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
-            }
-
-            if (template.MarkupLanguage != MimeTypes.Html)
-            {
-                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
-            }
-
-            if (template.Collection != collection)
-            {
-                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
-            }
-
-            if (template.DefinitionId != defId)
-            {
-                throw new BadRequestException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
-            }
-
-            // Onto the printing itself
-
-            var templates = new string[] { template.DownloadName, template.Body };
-            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
-
-            var preloadedQuery = new QueryByIdInfo(collection, defId, docId.ToString());
-            var inputVariables = new Dictionary<string, object>
-            {
-                ["$Source"] = $"{collection}/{defId}",
-                ["$Id"] = docId
-            };
-
-            // Generate the output
-            string[] outputs;
-            try
-            {
-                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
-            }
-            catch (TemplateException ex)
-            {
-                throw new BadRequestException(ex.Message);
-            }
-
-            var downloadName = outputs[0];
-            var body = outputs[1];
-
-            // Change the body to bytes
-            var bodyBytes = Encoding.UTF8.GetBytes(body);
-
-            // Do some sanitization of the downloadName
-            if (string.IsNullOrWhiteSpace(downloadName))
-            {
-                downloadName = docId.ToString();
-            }
-
-            if (!downloadName.ToLower().EndsWith(".html"))
-            {
-                downloadName += ".html";
-            }
-
-            // Return as a file
-            return (bodyBytes, downloadName);
         }
 
         public override async Task<(Document, Extras)> GetById(int id, GetByIdArguments args, CancellationToken cancellation)

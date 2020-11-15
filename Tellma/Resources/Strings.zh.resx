@@ -1906,6 +1906,9 @@
   <data name="MarkupTemplate_DownloadName" xml:space="preserve">
     <value>下载名称</value>
   </data>
+  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
+    <value>部署？</value>
+  </data>
   <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
     <value>标记语言</value>
   </data>

@@ -1906,6 +1906,9 @@
   <data name="MarkupTemplate_DownloadName" xml:space="preserve">
     <value>Download Name</value>
   </data>
+  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
+    <value>Deployed?</value>
+  </data>
   <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
     <value>Markup Language</value>
   </data>

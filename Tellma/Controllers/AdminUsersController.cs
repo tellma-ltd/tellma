@@ -126,7 +126,7 @@ namespace Tellma.Controllers
             return new GetByIdResponse<AdminUser>
             {
                 Result = me,
-                CollectionName = GetCollectionName(typeof(AdminUser)),
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(AdminUser)),
                 RelatedEntities = relatedEntities
             };
         }

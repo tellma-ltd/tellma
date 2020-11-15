@@ -48,7 +48,7 @@ namespace Tellma.Controllers
                 {
                     Result = entities,
                     RelatedEntities = relatedEntities,
-                    CollectionName = GetCollectionName(typeof(TEntity)),
+                    CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
                     Extras = extras,
                     ServerTime = serverTime,
                 };
@@ -76,7 +76,7 @@ namespace Tellma.Controllers
             {
                 Result = data,
                 RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity)),
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
                 Extras = TransformExtras(extras, cancellation),
                 ServerTime = serverTime,
             };

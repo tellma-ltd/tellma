@@ -72,7 +72,6 @@ namespace Tellma.Controllers
     public class RelationsService : CrudServiceBase<RelationForSave, Relation, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IDefinitionsCache _definitionsCache;
@@ -124,11 +123,10 @@ namespace Tellma.Controllers
         private string View => $"{RelationsController.BASE_ADDRESS}{DefinitionId}";
 
         public RelationsService(ApplicationRepository repo,
-            ITenantIdAccessor tenantIdAccessor, IBlobService blobService, IHttpContextAccessor contextAccessor,
+            IBlobService blobService, IHttpContextAccessor contextAccessor,
             IDefinitionsCache definitionsCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
             _contextAccessor = contextAccessor;
             _definitionsCache = definitionsCache;

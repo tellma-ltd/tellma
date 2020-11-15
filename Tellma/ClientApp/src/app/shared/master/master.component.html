@@ -1,7 +1,7 @@
 <div class="h-100 d-flex flex-column">
 
   <div class="row border-bottom justify-content-between flex-row" [class.bg-white]="isLight"
-  [class.t-less-dark]="isDark" [class.t-dark-border]="isDark" *ngIf="isPopupMode">
+    [class.t-less-dark]="isDark" [class.t-dark-border]="isDark" *ngIf="isPopupMode">
 
     <!-- Breadcrumb -->
     <div class="p-2">
@@ -40,8 +40,8 @@
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
           <button class="btn btn-sm d-flex t-no-arrow t-filter-button" ngbDropdownToggle
-            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark }"
-            type="button" title="{{ 'Filter' | translate }}">
+            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark }" type="button"
+            title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
             <div class="bg-danger t-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
@@ -288,9 +288,23 @@
           </div>
         </div>
 
-        <ng-container
-          *ngTemplateOutlet="multiselectToolbarTemplate">
-        </ng-container>
+        <!-- Print Dropdown -->
+        <div *ngIf="showPrint" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
+          <button type="button"
+            class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle" ngbDropdownToggle>
+            <fa-icon *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
+            <ng-template #spinner>
+              <t-spinner></t-spinner>
+            </ng-template>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
+          </button>
+          <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+            <button type="button" class="dropdown-item t-transparent-background btn-light"
+              *ngFor="let template of printingTemplates" ngbDropdownItem (click)="onPrint(template)">
+              {{ template.name() }}
+            </button>
+          </div>
+        </div>
 
         <!-- Cancel -->
         <button class="btn btn-sm t-toolbar-button"
@@ -317,9 +331,10 @@
           <ng-container *ngIf="isFlatMode">
             <div class="t-tile-container p-0 p-sm-1" [class.t-popup-tile-container]="isPopupMode"
               *ngFor="let id of flatIds; trackBy: trackById">
-              <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark" [class.t-text-whitish]="isDark"
-                [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onChoose(id)"
-                [tContextMenu]="recordContextMenu" [tContext]="id" [tDisableMenu]="disableContextMenu">
+              <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark"
+                [class.t-text-whitish]="isDark" [class.t-dark-border]="isDark"
+                [class.t-highlight]="isRecentlyViewed(id)" (click)="onChoose(id)" [tContextMenu]="recordContextMenu"
+                [tContext]="id" [tDisableMenu]="disableContextMenu">
                 <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
                 </ng-container>
               </div>

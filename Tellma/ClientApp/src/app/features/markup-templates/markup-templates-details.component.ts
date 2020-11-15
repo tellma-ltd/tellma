@@ -4,7 +4,7 @@ import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor, getChoices, metadata } from '~/app/data/entities/base/metadata';
+import { ChoicePropDescriptor, collectionsWithEndpoint, getChoices, metadata } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { MarkupTemplateForSave, metadata_MarkupTemplate, MarkupTemplate } from '~/app/data/entities/markup-template';
 import { NgControl } from '@angular/forms';
@@ -28,6 +28,9 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   private markupChanged$ = new Subject<MarkupTemplateForSave>();
   private markupTemplatesApi = this.api.markupTemplatesApi(this.notifyDestruct$); // for intellisense
   private localState = new MasterDetailsStore();  // Used in popup mode
+
+  @ViewChild('iframe')
+  iframe: ElementRef;
 
   private _sections: { [key: string]: boolean } = {
     Metadata: false,
@@ -57,6 +60,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       result.Name3 = this.initialText;
     }
 
+    result.IsDeployed = false;
     result.SupportsPrimaryLanguage = true;
     result.SupportsSecondaryLanguage = !!this.workspace.currentTenant.settings.SecondaryLanguageId;
     result.SupportsTernaryLanguage = !!this.workspace.currentTenant.settings.TernaryLanguageId;
@@ -417,7 +421,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
         return of();
       }
 
-      if (!template.DefinitionId) {
+      if (this.showDefinitionIdSelector(template) && !template.DefinitionId) {
         this.message = 'Please specify the definition in Metadata.';
         this.loading = false;
         return of();
@@ -485,7 +489,9 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     );
   }
 
-  @ViewChild('iframe') iframe: ElementRef;
+  public get allCollections(): SelectorChoice[] {
+    return collectionsWithEndpoint(this.workspace, this.translate);
+  }
 
   public showDefinitionIdSelector(model: MarkupTemplateForSave): boolean {
     return !!model && !!model.Collection && !!metadata[model.Collection](this.workspace, this.translate, null).definitionIds;

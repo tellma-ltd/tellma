@@ -79,6 +79,9 @@ namespace Tellma.Entities
         [Display(Name = "MarkupTemplate_Body")]
         [StringLength(1024 * 255)]
         public string Body { get; set; }
+
+        [Display(Name = "MarkupTemplate_IsDeployed")]
+        public bool? IsDeployed { get; set; }
     }
 
     public class MarkupTemplate : MarkupTemplateForSave

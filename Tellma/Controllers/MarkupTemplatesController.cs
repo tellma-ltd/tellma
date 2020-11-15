@@ -97,17 +97,14 @@ namespace Tellma.Controllers
     public class MarkupTemplatesService : CrudServiceBase<MarkupTemplateForSave, MarkupTemplate, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly TemplateService _templateService;
 
         private string View => MarkupTemplatesController.BASE_ADDRESS;
 
         public MarkupTemplatesService(
             ApplicationRepository repo,
-            TemplateService templateService,
             IServiceProvider sp) : base(sp)
         {
             _repo = repo;
-            _templateService = templateService;
         }
 
         public async Task<(string Body, string DownloadName)> Preview(MarkupPreviewTemplate entity, GenerateMarkupArguments args, CancellationToken cancellation)
@@ -148,7 +145,7 @@ namespace Tellma.Controllers
             // Return as a file
             return (body, downloadName);
         }
-        
+
         public async Task<(string Body, string DownloadName)> PreviewById(string id, MarkupPreviewTemplate entity, GenerateMarkupByIdArguments args, CancellationToken cancellation)
         {
             // Everything to input in the template service
@@ -263,6 +260,15 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<MarkupTemplateForSave> entities)
         {
+            var definitionedCollections = new string[]
+            {
+                ControllerUtilities.GetCollectionName(typeof(Document)),
+                ControllerUtilities.GetCollectionName(typeof(Resource)),
+                ControllerUtilities.GetCollectionName(typeof(Custody)),
+                ControllerUtilities.GetCollectionName(typeof(Relation)),
+                ControllerUtilities.GetCollectionName(typeof(Lookup))
+            };
+
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
                 if (entity.Usage == MarkupTemplateConst.QueryByFilter || entity.Usage == MarkupTemplateConst.QueryById)
@@ -271,13 +277,15 @@ namespace Tellma.Controllers
                     {
                         ModelState.AddModelError($"[{index}].Collection", _localizer[Constants.Error_Field0IsRequired, _localizer["MarkupTemplate_Collection"]]);
                     }
-
-                    if (entity.Usage == MarkupTemplateConst.QueryById)
+                    else
                     {
-                        // DefinitionId is required when querying by Id
-                        if (entity.DefinitionId == null)
+                        if (definitionedCollections.Contains(entity.Collection))
                         {
-                            ModelState.AddModelError($"[{index}].DefinitionId", _localizer[Constants.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
+                            // DefinitionId is required when querying by Id
+                            if (entity.DefinitionId == null)
+                            {
+                                ModelState.AddModelError($"[{index}].DefinitionId", _localizer[Constants.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
+                            }
                         }
                     }
                 }

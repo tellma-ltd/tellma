@@ -73,7 +73,6 @@ namespace Tellma.Controllers
     public class CustodiesService : CrudServiceBase<CustodyForSave, Custody, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IDefinitionsCache _definitionsCache;
@@ -125,11 +124,10 @@ namespace Tellma.Controllers
         private string View => $"{CustodiesController.BASE_ADDRESS}{DefinitionId}";
 
         public CustodiesService(ApplicationRepository repo,
-            ITenantIdAccessor tenantIdAccessor, IBlobService blobService, IHttpContextAccessor contextAccessor,
+            IBlobService blobService, IHttpContextAccessor contextAccessor,
             IDefinitionsCache definitionsCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
             _contextAccessor = contextAccessor;
             _definitionsCache = definitionsCache;

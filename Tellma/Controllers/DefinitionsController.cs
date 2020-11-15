@@ -706,18 +706,6 @@ namespace Tellma.Controllers
                     IsVisibleByDefault = d.IsVisibleByDefault ?? false
                 })?.ToList() ?? new List<DocumentDefinitionLineDefinitionForClient>(),
 
-                MarkupTemplates = def.MarkupTemplates?.Select(d => new DocumentDefinitionMarkupTemplateForClient
-                {
-                    MarkupTemplateId = d.MarkupTemplateId.Value,
-                    Name = d.MarkupTemplate?.Name,
-                    Name2 = d.MarkupTemplate?.Name2,
-                    Name3 = d.MarkupTemplate?.Name3,
-                    SupportsPrimaryLanguage = d.MarkupTemplate?.SupportsPrimaryLanguage ?? false,
-                    SupportsSecondaryLanguage = d.MarkupTemplate?.SupportsSecondaryLanguage ?? false,
-                    SupportsTernaryLanguage = d.MarkupTemplate?.SupportsTernaryLanguage ?? false,
-                    Usage = d.MarkupTemplate?.Usage
-                })?.ToList() ?? new List<DocumentDefinitionMarkupTemplateForClient>(),
-
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
@@ -973,6 +961,23 @@ namespace Tellma.Controllers
             return result;
         }
 
+        private static MarkupTemplateForClient MapMarkupTemplate(MarkupTemplate d)
+        {
+            return new MarkupTemplateForClient
+            {
+                MarkupTemplateId = d.Id,
+                Name = d.Name,
+                Name2 = d.Name2,
+                Name3 = d.Name3,
+                SupportsPrimaryLanguage = d.SupportsPrimaryLanguage.Value,
+                SupportsSecondaryLanguage = d.SupportsSecondaryLanguage.Value,
+                SupportsTernaryLanguage = d.SupportsTernaryLanguage.Value,
+                Usage = d.Usage,
+                Collection = d.Collection,
+                DefinitionId = d.DefinitionId
+            };
+        }
+
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
@@ -984,6 +989,7 @@ namespace Tellma.Controllers
                 reportDefs,
                 docDefs,
                 lineDefs,
+                markupTemplates,
                 entryCustodianDefs,
                 entryCustodyDefs,
                 entryParticipantDefs,
@@ -997,7 +1003,8 @@ namespace Tellma.Controllers
                 Custodies = custodyDefs.ToDictionary(def => def.Id, def => MapCustodyDefinition(def)),
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs))
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs)),
+                MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
             };
 
             // Map Lines and Documents (Special handling)

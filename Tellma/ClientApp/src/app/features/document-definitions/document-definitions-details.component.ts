@@ -16,7 +16,6 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { DocumentDefinitionLineDefinition } from '~/app/data/entities/document-definition-line-definition';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DocumentDefinitionMarkupTemplate } from '~/app/data/entities/document-definition-markup-template';
 
 @Component({
   selector: 't-document-definitions-details',
@@ -28,12 +27,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
   @ViewChild('lineDefinitionModal', { static: true })
   lineDefinitionModal: TemplateRef<any>;
 
-  @ViewChild('markupTemplateModal', { static: true })
-  markupTemplateModal: TemplateRef<any>;
-
   private documentDefinitionsApi = this.api.documentDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'LineDefinitions/LineDefinition,MarkupTemplates/MarkupTemplate';
+  public expand = 'LineDefinitions/LineDefinition';
 
   create = () => {
     const result: DocumentDefinitionForSave = {};
@@ -51,7 +47,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     result.CodeWidth = 4;
     result.DocumentType = 2;
     result.LineDefinitions = [];
-    result.MarkupTemplates = [];
 
     return result;
   }
@@ -63,11 +58,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
       if (!!clone.LineDefinitions) {
         clone.LineDefinitions.forEach(e => {
-          e.Id = null;
-        });
-      }
-      if (!!clone.MarkupTemplates) {
-        clone.MarkupTemplates.forEach(e => {
           e.Id = null;
         });
       }
@@ -160,11 +150,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.CodeWidth) ||
         areServerErrors(model.serverErrors.MemoVisibility) ||
         areServerErrors(model.serverErrors.ClearanceVisibility) ||
-        areServerErrors(model.serverErrors.LineDefinitions) ||
-        areServerErrors(model.serverErrors.MarkupTemplates)
+        areServerErrors(model.serverErrors.LineDefinitions)
       )) ||
-        (!!model.LineDefinitions && model.LineDefinitions.some(e => this.weakEntityErrors(e))) ||
-        (!!model.MarkupTemplates && model.MarkupTemplates.some(e => this.weakEntityErrors(e)));
+        (!!model.LineDefinitions && model.LineDefinitions.some(e => this.weakEntityErrors(e)));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MainMenuIcon) ||
@@ -241,9 +229,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.CanReachState2 = false;
       result.CanReachState3 = false;
       result.HasWorkflow = false;
-
-      // Not needed for preview
-      result.MarkupTemplates = [];
 
       result.ParticipantDefinitionIds = [];
 
@@ -536,36 +521,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public get canApplyLineDefinition(): boolean {
     return !!this.lineDefinitionToEdit && !!this.lineDefinitionToEdit.LineDefinitionId;
-  }
-
-  // Markup Templates
-
-  public markupTemplateToEdit: DocumentDefinitionMarkupTemplate;
-
-  public onCreateMarkupTemplate(model: DocumentDefinition) {
-    const itemToEdit: DocumentDefinitionMarkupTemplate = {};
-    this.markupTemplateToEdit = itemToEdit; // Create new
-    this.modalService.open(this.markupTemplateModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
-      if (apply) {
-        model.MarkupTemplates.push(itemToEdit);
-      }
-    }, (_: any) => { });
-  }
-
-  public onConfigureMarkupTemplate(index: number, model: DocumentDefinition) {
-    this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.MarkupTemplates[index] } as DocumentDefinitionMarkupTemplate;
-    this.markupTemplateToEdit = itemToEdit;
-    this.modalService.open(this.markupTemplateModal, { windowClass: 't-dark-theme' }).result.then((apply: boolean) => {
-      if (apply && this.itemToEditHasChanged) {
-        model.MarkupTemplates[index] = itemToEdit;
-      }
-    }, (_: any) => { });
-  }
-
-  public onDeleteMarkupTemplate(index: number, model: DocumentDefinition) {
-    model.MarkupTemplates.splice(index, 1);
-    this.onDefinitionChange(model);
   }
 }
 

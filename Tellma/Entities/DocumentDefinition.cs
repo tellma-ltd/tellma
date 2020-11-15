@@ -6,7 +6,7 @@ using Tellma.Services.Utilities;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "DocumentDefinition", Plural = "DocumentDefinitions")]
-    public class DocumentDefinitionForSave<TLineDefinition, TMarkupTemplate> : EntityWithKey<int>
+    public class DocumentDefinitionForSave<TLineDefinition> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [Required]
@@ -104,18 +104,13 @@ namespace Tellma.Entities
         [Display(Name = "DocumentDefinition_LineDefinitions")]
         [ForeignKey(nameof(DocumentDefinitionLineDefinition.DocumentDefinitionId))]
         public List<TLineDefinition> LineDefinitions { get; set; }
-
-        [Display(Name = "DocumentDefinition_MarkupTemplates")]
-        [ForeignKey(nameof(DocumentDefinitionMarkupTemplate.DocumentDefinitionId))]
-        public List<TMarkupTemplate> MarkupTemplates { get; set; }
     }
 
-    public class DocumentDefinitionForSave : DocumentDefinitionForSave<DocumentDefinitionLineDefinitionForSave, DocumentDefinitionMarkupTemplateForSave>
+    public class DocumentDefinitionForSave : DocumentDefinitionForSave<DocumentDefinitionLineDefinitionForSave>
     {
-
     }
 
-    public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition, DocumentDefinitionMarkupTemplate>
+    public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition>
     {
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },

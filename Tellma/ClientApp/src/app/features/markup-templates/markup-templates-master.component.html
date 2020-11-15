@@ -1,10 +1,14 @@
-<t-master collection="MarkupTemplate" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" theme="dark"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'MarkupTemplates' | translate"
+<t-master collection="MarkupTemplate" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+    theme="dark" [additionalSelect]="additionalSelect" [masterCrumb]="'MarkupTemplates' | translate"
     [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-    selectDefault="Code" selectForTiles="Code" [multiselectActions]="[
+    selectDefault="Code,IsDeployed" selectForTiles="Code" [multiselectActions]="[
           ]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
+            ],
+            'IsDeployed': [
+                { template: deployed, expression: 'IsDeployed eq true'},    
+                { template: notdeployed, expression: 'IsDeployed eq false'}
             ]
           }">
 </t-master>
@@ -31,3 +35,6 @@
 
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #deployed> {{ 'Deployed' | translate }} </ng-template>
+<ng-template #notdeployed> {{ 'NotDeployed' | translate }} </ng-template>

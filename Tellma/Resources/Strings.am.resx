@@ -1906,6 +1906,9 @@
   <data name="MarkupTemplate_DownloadName" xml:space="preserve">
     <value>አውርድ ስም</value>
   </data>
+  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
+    <value>የተተገበሩ?</value>
+  </data>
   <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
     <value>ለውጥ ያዥ ቋንቋ</value>
   </data>

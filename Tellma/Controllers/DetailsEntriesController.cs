@@ -48,7 +48,7 @@ namespace Tellma.Controllers
                     OpeningQuantity = openingQuantity,
                     OpeningMonetaryValue = openingMonetaryValue,
                     TotalCount = count,
-                    CollectionName = GetCollectionName(typeof(DetailsEntry)),
+                    CollectionName = ControllerUtilities.GetCollectionName(typeof(DetailsEntry)),
                     RelatedEntities = relatedEntities,
                     Result = data,
                     ServerTime = serverTime,

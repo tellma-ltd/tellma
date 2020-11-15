@@ -211,18 +211,12 @@ namespace Tellma.Controllers
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
-        private readonly MetadataProvider _metadata;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IServiceProvider _sp;
 
         public CrudServiceBase(IServiceProvider sp) : base(sp)
         {
-            _metadata = sp.GetRequiredService<MetadataProvider>();
-            _tenantIdAccessor = sp.GetRequiredService<ITenantIdAccessor>();
             _sp = sp;
         }
-
-        protected virtual int? DefinitionId => null;
 
         #region Save
 
@@ -1351,15 +1345,6 @@ namespace Tellma.Controllers
             return result;
         }
 
-        protected TypeMetadata GetMetadata()
-        {
-            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
-            int? definitionId = DefinitionId;
-            Type type = typeof(TEntity);
-
-            return _metadata.GetMetadata(tenantId, type, definitionId);
-        }
-
         protected TypeMetadata GetMetadataForSave()
         {
             int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
@@ -1693,7 +1678,7 @@ namespace Tellma.Controllers
                     throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets []");
                 }
 
-                var rootIndexString = firstStep.Remove(firstStep.Length - 1).Substring(1);
+                var rootIndexString = firstStep.Remove(firstStep.Length - 1)[1..]; // = Substring(1)
                 if (!int.TryParse(rootIndexString, out int rootIndex))
                 {
                     throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer");

@@ -7,12 +7,12 @@ import {
 import { ActivatedRoute, ParamMap, Router, Params, NavigationExtras } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { catchError, switchMap, tap, skip } from 'rxjs/operators';
+import { catchError, switchMap, tap, skip, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker, FriendlyError } from '~/app/data/util';
+import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker, FriendlyError, printBlob } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService, MAXIMUM_COUNT } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
@@ -20,6 +20,9 @@ import { EntityDescriptor, metadata } from '~/app/data/entities/base/metadata';
 import { environment } from '~/environments/environment';
 import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
 import { SaveArguments } from '~/app/data/dto/save-arguments';
+import { SettingsForClient } from '~/app/data/dto/settings-for-client';
+import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 export interface DropdownAction {
   template: TemplateRef<any>;
@@ -540,7 +543,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     // Some components wish to track whether the entity was manually refreshed from the details screen
     const model = this.viewModel;
     if (!!model) {
-      model.EntityMetadata = model.EntityMetadata || { };
+      model.EntityMetadata = model.EntityMetadata || {};
       const meta = model.EntityMetadata;
       meta.$refresh = meta.$refresh || 0;
       meta.$refresh++;
@@ -588,7 +591,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     }
   }
 
-  public displayModalError(errorMessage: string) {
+  public displayErrorModal(errorMessage: string) {
     // shows the error message in a dismissable modal
     this._modalErrorMessage = errorMessage;
     this.modalService.open(this.errorModal);
@@ -638,7 +641,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       errorMessage = friendlyError.error as string;
     }
 
-    this.displayModalError(errorMessage);
+    this.displayErrorModal(errorMessage);
   }
 
   /**
@@ -966,7 +969,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
             this.apply422ErrorsToModel(friendlyError.error);
             this._serverErrors = friendlyError.error;
           } else {
-            this.displayModalError(friendlyError.error);
+            this.displayErrorModal(friendlyError.error);
           }
         }
       );
@@ -1189,6 +1192,125 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       return '';
     }
   }
+
+  // Printing Stuff
+  // tslint:disable:member-ordering
+
+  public get showPrint(): boolean {
+    return this.printingTemplates.length > 0;
+  }
+
+  private _printingTemplatesDefinitions: DefinitionsForClient;
+  private _printingTemplatesSettings: SettingsForClient;
+  private _printingTemplatesCollection: string;
+  private _printingTemplatesDefinitionId: number;
+  private _printingTemplatesResult: PrintingTemplate[];
+
+  public get printingTemplates(): PrintingTemplate[] {
+    if (!this.workspace.isApp) { // Printing is not supported in admin atm
+      return [];
+    }
+
+    const ws = this.workspace.currentTenant;
+    const collection = this.collection;
+    const defId = this.definitionId;
+    if (this._printingTemplatesDefinitions !== ws.definitions ||
+      this._printingTemplatesSettings !== ws.settings ||
+      this._printingTemplatesCollection !== collection ||
+      this._printingTemplatesDefinitionId !== defId) {
+
+      this._printingTemplatesDefinitions = ws.definitions;
+      this._printingTemplatesSettings = ws.settings;
+      this._printingTemplatesCollection = collection;
+      this._printingTemplatesDefinitionId = defId;
+
+      const result: PrintingTemplate[] = [];
+
+      const settings = ws.settings;
+      const def = ws.definitions;
+      const templates = def.MarkupTemplates
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'QueryById');
+
+      for (const template of templates) {
+        const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
+          + (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId ? 1 : 0)
+          + (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId ? 1 : 0);
+
+        if (template.SupportsPrimaryLanguage) {
+          const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.PrimaryLanguageId
+          });
+        }
+
+        if (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId) {
+          const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.SecondaryLanguageId
+          });
+        }
+
+        if (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId) {
+          const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.TernaryLanguageId
+          });
+        }
+      }
+
+      this._printingTemplatesResult = result;
+    }
+
+    return this._printingTemplatesResult;
+  }
+
+  private printingSubscription: Subscription;
+
+  public onPrint(template: PrintingTemplate): void {
+    const entity = this.activeModel;
+    if (!entity || !entity.Id || !template) {
+      return;
+    }
+
+    // Cancel any existing printing query
+    if (!!this.printingSubscription) {
+      this.printingSubscription.unsubscribe();
+    }
+
+    // New printing query
+    this.printingSubscription = this.crud
+      .printById(entity.Id, template.templateId, { culture: template.culture })
+      .pipe(
+        tap(blob => {
+          this.printingSubscription = null;
+          printBlob(blob);
+        }),
+        catchError(friendlyError => {
+          this.printingSubscription = null;
+          this.displayErrorModal(friendlyError.error);
+          return of();
+        }),
+        finalize(() => {
+          this.printingSubscription = null;
+        })
+      ).subscribe();
+  }
+
+  public get isPrinting(): boolean {
+    return !!this.printingSubscription;
+  }
+}
+
+export interface PrintingTemplate {
+  name: () => string;
+  templateId: number;
+  culture: string;
 }
 
 export function applyServerErrors(

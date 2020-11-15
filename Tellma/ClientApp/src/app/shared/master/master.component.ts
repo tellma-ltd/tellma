@@ -10,7 +10,7 @@ import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finaliz
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { addToWorkspace, downloadBlob, isSpecified, csvPackage, composeEntitiesFromResponse, ColumnDescriptor } from '~/app/data/util';
+import { addToWorkspace, downloadBlob, isSpecified, csvPackage, composeEntitiesFromResponse, ColumnDescriptor, printBlob } from '~/app/data/util';
 import {
   MasterDetailsStore,
   MasterStatus,
@@ -35,6 +35,9 @@ import { ImportResult } from '~/app/data/dto/import-result';
 import { ImportMode, ImportArguments_Mode } from '~/app/data/dto/import-arguments';
 import { Entity } from '~/app/data/entities/base/entity';
 import { SelectorChoice } from '../selector/selector.component';
+import { GenerateMarkupByFilterArguments } from '~/app/data/dto/generate-markup-arguments';
+import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 
 enum SearchView {
   tiles = 'tiles',
@@ -69,9 +72,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   tileTemplate: TemplateRef<any>;
-
-  @Input()
-  multiselectToolbarTemplate: TemplateRef<any>;
 
   @Input()
   tableSummaryColumnTemplate: TemplateRef<any>;
@@ -2042,8 +2042,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     this.saveParentIdsToUserSettings([]);
 
-      // Sometimes the user collapses during load because
-      // the original expanded query is taking forever
+    // Sometimes the user collapses during load because
+    // the original expanded query is taking forever
     if (this.showSpinner) {
       this.fetch();
     }
@@ -2052,6 +2052,135 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public get disableContextMenu(): boolean {
     return this.isPopupMode || (!this.showDelete && !this.showCreate);
   }
+
+
+  // Printing Stuff
+
+  public get showPrint(): boolean {
+    return this.printingTemplates.length > 0;
+  }
+
+  private _printingTemplatesDefinitions: DefinitionsForClient;
+  private _printingTemplatesSettings: SettingsForClient;
+  private _printingTemplatesCollection: string;
+  private _printingTemplatesDefinitionId: number;
+  private _printingTemplatesResult: PrintingTemplate[];
+
+  public get printingTemplates(): PrintingTemplate[] {
+    if (!this.workspace.isApp) { // Printing is not supported in admin atm
+      return [];
+    }
+
+    const ws = this.workspace.currentTenant;
+    const collection = this.collection;
+    const defId = this.definitionId;
+    if (this._printingTemplatesDefinitions !== ws.definitions ||
+      this._printingTemplatesSettings !== ws.settings ||
+      this._printingTemplatesCollection !== collection ||
+      this._printingTemplatesDefinitionId !== defId) {
+
+      this._printingTemplatesDefinitions = ws.definitions;
+      this._printingTemplatesSettings = ws.settings;
+      this._printingTemplatesCollection = collection;
+      this._printingTemplatesDefinitionId = defId;
+
+      const result: PrintingTemplate[] = [];
+
+      const settings = ws.settings;
+      const def = ws.definitions;
+      const templates = def.MarkupTemplates
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'QueryByFilter');
+
+      for (const template of templates) {
+        const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
+          + (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId ? 1 : 0)
+          + (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId ? 1 : 0);
+
+        if (template.SupportsPrimaryLanguage) {
+          const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.PrimaryLanguageId
+          });
+        }
+
+        if (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId) {
+          const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.SecondaryLanguageId
+          });
+        }
+
+        if (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId) {
+          const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.TernaryLanguageId
+          });
+        }
+      }
+
+      this._printingTemplatesResult = result;
+    }
+
+    return this._printingTemplatesResult;
+  }
+
+  private printingSubscription: Subscription;
+
+  public onPrint(template: PrintingTemplate) {
+    const checkedIds = this.checkedIds;
+    if (!!checkedIds && checkedIds.length > 0) {
+      // Print
+
+      // Cancel any existing printing query
+      if (!!this.printingSubscription) {
+        this.printingSubscription.unsubscribe();
+      }
+
+      const args: GenerateMarkupByFilterArguments = {
+        i: checkedIds,
+        culture: template.culture
+      };
+
+      // New printing query
+      this.printingSubscription = this.crud
+        .printByFilter(template.templateId, args)
+        .pipe(
+          tap(blob => {
+            this.printingSubscription = null;
+            this.cdr.markForCheck();
+            printBlob(blob);
+          }),
+          catchError(friendlyError => {
+            this.printingSubscription = null;
+            this.cdr.markForCheck();
+            this.displayErrorModal(friendlyError.error);
+            return of();
+          }),
+          finalize(() => {
+            this.printingSubscription = null;
+            this.cdr.markForCheck();
+          })
+        ).subscribe();
+
+      this.cdr.markForCheck();
+    }
+  }
+
+  public get isPrinting(): boolean {
+    return !!this.printingSubscription;
+  }
+}
+
+export interface PrintingTemplate {
+  name: () => string;
+  templateId: number;
+  culture: string;
 }
 
 // function metadataFactory(collection: string) {

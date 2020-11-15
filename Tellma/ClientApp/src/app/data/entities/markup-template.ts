@@ -28,6 +28,7 @@ export interface MarkupTemplateForSave extends EntityForSave {
     SupportsTernaryLanguage?: boolean;
     DownloadName?: string;
     Body?: string;
+    IsDeployed?: boolean;
 }
 
 export interface MarkupTemplate extends MarkupTemplateForSave {
@@ -91,6 +92,7 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                 SupportsTernaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.ternaryPostfix },
                 DownloadName: { control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
                 Body: { control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
+                IsDeployed: { control: 'boolean', label: () => trx.instant('MarkupTemplate_IsDeployed') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
                 ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },

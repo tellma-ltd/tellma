@@ -44,6 +44,11 @@ namespace Tellma.Controllers.Dto
         public Dictionary<int, ReportDefinitionForClient> Reports { get; set; }
 
         /// <summary>
+        /// A collection of markup templates
+        /// </summary>
+        public IEnumerable<MarkupTemplateForClient> MarkupTemplates { get; set; }
+
+        /// <summary>
         /// The Id of the built-int manual journal vouchers document definition
         /// </summary>
         public int ManualJournalVouchersDefinitionId { get; set; }
@@ -220,7 +225,6 @@ namespace Tellma.Controllers.Dto
         public bool CanReachState3 { get; set; }
         public bool HasWorkflow { get; set; }
         public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
-        public List<DocumentDefinitionMarkupTemplateForClient> MarkupTemplates { get; set; }
     }
 
     public class DocumentDefinitionLineDefinitionForClient
@@ -229,7 +233,7 @@ namespace Tellma.Controllers.Dto
         public bool IsVisibleByDefault { get; set; }
     }
 
-    public class DocumentDefinitionMarkupTemplateForClient
+    public class MarkupTemplateForClient
     {
         public int MarkupTemplateId { get; set; }
         public string Name { get; set; }
@@ -239,6 +243,8 @@ namespace Tellma.Controllers.Dto
         public bool SupportsSecondaryLanguage { get; set; }
         public bool SupportsTernaryLanguage { get; set; }
         public string Usage { get; set; }
+        public string Collection { get; set; }
+        public int? DefinitionId { get; set; }
     }
 
     public class LineDefinitionForClient // related entity for document definition

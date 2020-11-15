@@ -17,5 +17,6 @@
 	[SupportsSecondaryLanguage] BIT NOT NULL,
 	[SupportsTernaryLanguage] BIT NOT NULL,
 	[DownloadName]		NVARCHAR (1024),
-	[Body]				NVARCHAR (MAX)
+	[Body]				NVARCHAR (MAX),
+	[IsDeployed]		BIT NOT NULL
 )

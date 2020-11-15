@@ -290,13 +290,9 @@ INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitio
 */
 
 
-INSERT INTO @DocumentDefinitionMarkupTemplates([Index], [HeaderIndex], [MarkupTemplateId]) VALUES
-(0, 0, @JVCoverLetterMT);
-
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
-	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions,
-    @DocumentDefinitionMarkupTemplates = @DocumentDefinitionMarkupTemplates;
+	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions;
 	
 --Declarations
 DECLARE @ManualJournalVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');

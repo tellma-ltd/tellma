@@ -213,7 +213,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     const details = this.details;
     this.usersApi.testEmail(email).subscribe(
       (msg: { Message: string }) => details.displayModalMessage(msg.Message),
-      (friendly: FriendlyError) => details.displayModalError(friendly.error)
+      (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
       );
   }
 
@@ -221,7 +221,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     const details = this.details;
     this.usersApi.testPhone(phone).subscribe(
       (msg: { Message: string }) => details.displayModalMessage(msg.Message),
-      (friendly: FriendlyError) => details.displayModalError(friendly.error)
+      (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
       );
   }
 }

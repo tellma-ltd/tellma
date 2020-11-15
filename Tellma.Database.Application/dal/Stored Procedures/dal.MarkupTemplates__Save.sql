@@ -8,6 +8,10 @@ SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
+	-- IF any deployed templates have been modified, signal everyone to refresh their caches
+	IF (EXISTS (SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND IsDeployed = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE IsDeployed = 1))
+		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
@@ -30,7 +34,8 @@ SET NOCOUNT ON;
 				[SupportsSecondaryLanguage],
 				[SupportsTernaryLanguage],
 				[DownloadName],
-				[Body]
+				[Body],
+				[IsDeployed]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -52,7 +57,7 @@ SET NOCOUNT ON;
 				t.[SupportsTernaryLanguage]	= s.[SupportsTernaryLanguage],
 				t.[DownloadName]			= s.[DownloadName],
 				t.[Body]					= s.[Body],
-
+				t.[IsDeployed]				= s.[IsDeployed],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -72,7 +77,8 @@ SET NOCOUNT ON;
 				[SupportsSecondaryLanguage],
 				[SupportsTernaryLanguage],
 				[DownloadName],
-				[Body]
+				[Body],
+				[IsDeployed]
 				)
 			VALUES (
 				s.[Name], 
@@ -90,13 +96,11 @@ SET NOCOUNT ON;
 				s.[SupportsSecondaryLanguage],
 				s.[SupportsTernaryLanguage],
 				s.[DownloadName],
-				s.[Body]
+				s.[Body],
+				s.[IsDeployed]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
-	
-	-- Signal clients to refresh their cache
-	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;

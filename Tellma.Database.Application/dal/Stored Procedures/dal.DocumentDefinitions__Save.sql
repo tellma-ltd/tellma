@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[DocumentDefinitions__Save]
 	@Entities dbo.[DocumentDefinitionList] READONLY,
 	@DocumentDefinitionLineDefinitions [DocumentDefinitionLineDefinitionList] READONLY,
-	@DocumentDefinitionMarkupTemplates [DocumentDefinitionMarkupTemplateList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -88,37 +87,6 @@ SET NOCOUNT ON;
 			[Index], [DocumentDefinitionId],	[LineDefinitionId], [IsVisibleByDefault]
 		) VALUES (
 			[Index], s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault]
-		);
-
-	WITH CurrentDocumentDefinitionMarkupTemplates AS (
-		SELECT *
-		FROM [dbo].[DocumentDefinitionMarkupTemplates]
-		WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @Entities)
-	)
-	MERGE CurrentDocumentDefinitionMarkupTemplates AS t
-	USING (
-		SELECT
-			DDMT.[Index],
-			DDMT.[Id],
-			II.[Id] AS [DocumentDefinitionId],
-			DDMT.[MarkupTemplateId]
-		FROM @Entities DD
-		JOIN @IndexedIds II ON DD.[Index] = II.[Index]
-		JOIN @DocumentDefinitionMarkupTemplates DDMT ON DD.[Index] = DDMT.[HeaderIndex]
-	) AS s
-	ON s.Id = t.Id
-	WHEN MATCHED THEN
-		UPDATE SET
-			t.[Index]				= s.[Index],
-			t.[MarkupTemplateId]	= s.[MarkupTemplateId],
-			t.[SavedById]			= @UserId
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE
-	WHEN NOT MATCHED BY TARGET THEN
-		INSERT (
-			[Index], [DocumentDefinitionId],	[MarkupTemplateId]
-		) VALUES (
-			[Index], s.[DocumentDefinitionId], s.[MarkupTemplateId]
 		);
 	
 -- Signal clients to refresh their cache

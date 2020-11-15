@@ -102,9 +102,10 @@ namespace Tellma.Services.Instrumentation
             }
 
             // Keep popping until you hit the root
-            while (_stack.Count > 0)
+            if (_stack.Count > 0)
             {
-                throw new InvalidOperationException("Bug: Some instrumentation scopes have not been disposed");
+                // throw new InvalidOperationException("Bug: Some instrumentation scopes have not been disposed");
+                return null;
             }
 
             // Return the result
@@ -142,10 +143,7 @@ namespace Tellma.Services.Instrumentation
 
             public void Dispose()
             {
-                if (_onDispose != null)
-                {
-                    _onDispose();
-                }
+                _onDispose?.Invoke();
             }
         }
 

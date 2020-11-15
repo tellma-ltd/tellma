@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.Templating;
 using Tellma.Controllers.Utilities;
 using Tellma.Data.Queries;
 using Tellma.Entities;
@@ -46,11 +48,24 @@ namespace Tellma.Controllers
                 {
                     Result = entity,
                     RelatedEntities = relatedEntities,
-                    CollectionName = GetCollectionName(typeof(TEntity)),
+                    CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
                     Extras = TransformExtras(extras, cancellation),
                     ServerTime = serverTime,
                 };
                 return Ok(result);
+            }, _logger);
+        }
+
+
+        [HttpGet("{id}/print/{templateId}")]
+        public async Task<ActionResult> PrintById(TKey id, int templateId, [FromQuery] GenerateMarkupByIdArguments args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var service = GetFactGetByIdService();
+                var (fileBytes, fileName) = await service.PrintById(id, templateId, args, cancellation);
+                var contentType = ControllerUtilities.ContentType(fileName);
+                return File(fileContents: fileBytes, contentType: contentType, fileName);
             }, _logger);
         }
 
@@ -95,6 +110,92 @@ namespace Tellma.Controllers
             // Return
             return (entity, extras);
         }
+
+        public async Task<(byte[] FileBytes, string FileName)> PrintById(TKey id, int templateId, [FromQuery] GenerateMarkupArguments args, CancellationToken cancellation)
+        {
+            var collection = ControllerUtilities.GetCollectionName(typeof(TEntity));
+            var defId = DefinitionId;
+            var repo = GetRepository();
+
+            var template = await repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
+            if (template == null)
+            {
+                // Shouldn't happen in theory cause of previous check, but just to be extra safe
+                throw new BadRequestException($"The template with Id {templateId} does not exist");
+            }
+
+            if (!(template.IsDeployed ?? false))
+            {
+                // A proper UI will only allow the user to use supported template
+                throw new BadRequestException($"The template with Id {templateId} is not deployed");
+            }
+
+            // The errors below should be prevented through SQL validation, but just to be safe
+            if (template.Usage != MarkupTemplateConst.QueryById)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
+            }
+
+            if (template.MarkupLanguage != MimeTypes.Html)
+            {
+                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
+            }
+
+            if (template.Collection != collection)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
+            }
+
+            if (template.DefinitionId != null && template.DefinitionId != defId)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
+            }
+
+            // Onto the printing itself
+
+            var templates = new string[] { template.DownloadName, template.Body };
+            var tenantInfo = _tenantInfo.GetCurrentInfo();
+            var culture = TemplateUtil.GetCulture(args, tenantInfo);
+
+            var preloadedQuery = new QueryByIdInfo(collection, defId, id.ToString());
+            var inputVariables = new Dictionary<string, object>
+            {
+                ["$Source"] = $"{collection}/{defId}",
+                ["$Id"] = id
+            };
+
+            // Generate the output
+            string[] outputs;
+            try
+            {
+                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
+            }
+            catch (TemplateException ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Do some sanitization of the downloadName
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                downloadName = id.ToString();
+            }
+
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return (bodyBytes, downloadName);
+        }
+
 
         async Task<(EntityWithKey, Extras)> IFactGetByIdServiceBase.GetById(object id, GetByIdArguments args, CancellationToken cancellation)
         {

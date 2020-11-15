@@ -34,8 +34,6 @@ INSERT INTO @DocDefIds ([Id]) SELECT [Id] FROM [map].[DocumentDefinitions]() WHE
 
 SELECT * FROM [map].[DocumentDefinitions]() WHERE [Id] IN (SELECT [Id] FROM @DocDefIds);
 SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @DocDefIds) ORDER BY [Index];
-SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [MarkupTemplateId] FROM [dbo].[DocumentDefinitionMarkupTemplates])
-SELECT * FROM [dbo].[DocumentDefinitionMarkupTemplates] WHERE [DocumentDefinitionId] IN (SELECT [Id] FROM @DocDefIds) ORDER BY [Index];
 
 -- Load relevant information from Account Types
 SELECT T.[Id], T.[EntryTypeParentId] FROM [map].[AccountTypes]() T 
@@ -82,3 +80,6 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryResourceDefinitions])
+
+-- Get deployed markup templates
+SELECT * FROM [dbo].[MarkupTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports

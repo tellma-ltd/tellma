@@ -258,45 +258,6 @@
                         </span>
                     </div>
 
-                    <!-- Markup Templates -->
-                    <div class="form-group">
-                        <label class="small">{{ 'DocumentDefinition_MarkupTemplates' | translate }}</label>&nbsp;
-                        <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                            (click)="onCreateMarkupTemplate(model)" [title]="'Create' | translate">
-                            <fa-icon icon="plus"></fa-icon>
-                        </button>
-                        <div class="t-studio-drop-area border t-dark-border" cdkDropList
-                            (cdkDropListDropped)="rowDrop($event, model.MarkupTemplates)">
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let markupTemplate of model.MarkupTemplates; let i = index;" cdkDrag
-                                cdkDragLockAxis="y">
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                                        *ngIf="weakEntityErrors(markupTemplate)">
-                                    </fa-icon>
-                                    <span class="flex-grow-1 text-truncate">
-                                        {{ ws.getMultilingualValue('MarkupTemplate', markupTemplate.MarkupTemplateId, 'Name') }}
-                                    </span>
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureMarkupTemplate(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                    &nbsp;
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onDeleteMarkupTemplate(i, model)" [title]="'Delete' | translate">
-                                        <fa-icon icon="times"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                        <span class="small t-light-danger px-1" *ngFor="let e of model.serverErrors?.MarkupTemplates">
-                            {{ e }}
-                        </span>
-                    </div>
-
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Clearance', propLower: 'clearance', fieldName: 'Document_Clearance' }">
                     </ng-container>
@@ -515,51 +476,6 @@
     <div class="modal-footer t-dark t-text-whitish border-0 p-2">
         <button class="btn t-text-whitish font-weight-normal" (click)="modal.close(true);"
             [disabled]="!canApplyLineDefinition">
-            <fa-icon icon="check"></fa-icon>
-            &nbsp;{{ 'Apply' | translate }}
-        </button>
-        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
-            <fa-icon icon="times"></fa-icon>
-            &nbsp;{{ 'Cancel' | translate }}
-        </button>
-    </div>
-</ng-template>
-
-<!-- Markup Template Modal -->
-<ng-template #markupTemplateModal let-modal>
-
-    <!-- header -->
-    <div class="modal-header t-dark t-text-whitish border-0">
-        <h5 class="modal-title font-weight-light">
-            {{ 'Configure' | translate }}
-        </h5>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-            <span class="t-text-whitish" aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <!-- body -->
-    <div class="modal-body col t-less-dark t-text-whitish">
-        <div class="row">
-            <!-- Markup Template -->
-            <div class="form-group col-12 col-sm-6"
-                [class.is-invalid]="invalid(markuptemplatemodel, markupTemplateToEdit.serverErrors?.MarkupTemplateId)">
-                <label class="small">{{ 'DocumentDefinitionMarkupTemplate_MarkupTemplate' | translate }}</label>
-                <t-markup-templates-picker theme="dark" [(ngModel)]="markupTemplateToEdit.MarkupTemplateId"
-                    (ngModelChange)="onItemToEditChange()" required #markuptemplatemodel="ngModel"
-                    filter="Collection eq 'Document' and MarkupLanguage eq 'text/html' and (Usage eq 'QueryById' or Usage eq 'QueryByFilter')">
-                </t-markup-templates-picker>
-                <ng-container
-                    *ngTemplateOutlet="errorsTemplate;context: { control: markuptemplatemodel, serverErrors: markupTemplateToEdit.serverErrors?.MarkupTemplateId }">
-                </ng-container>
-            </div>
-        </div>
-    </div>
-
-    <!-- footer -->
-    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
-        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close(true);"
-            [disabled]="!markupTemplateToEdit.MarkupTemplateId">
             <fa-icon icon="check"></fa-icon>
             &nbsp;{{ 'Apply' | translate }}
         </button>

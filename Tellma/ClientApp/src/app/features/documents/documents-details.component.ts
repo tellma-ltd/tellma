@@ -1532,7 +1532,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Make sure total size of selected files doesn't exceed maximum size
     if (totalSize > this._maxAttachmentSize) {
-      this.details.displayModalError(this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
+      this.details.displayErrorModal(this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
         { size: fileSizeDisplay(this._maxAttachmentSize) }));
 
       return;
@@ -1545,7 +1545,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       .reduce((total, v) => total + v, 0);
 
     if (sumOfAttachmentSizesPendingSave + totalSize > this._maxAttachmentSize) {
-      this.details.displayModalError(this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
+      this.details.displayErrorModal(this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
         { size: fileSizeDisplay(this._maxAttachmentSize) }));
       return;
     }
@@ -3536,9 +3536,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                   0: this.ws.getMultilingualValue('Currency', currencyId, 'Name'),
                   1: formatDate(date, 'yyyy-MM-dd', 'en-GB')
                 });
-                this.details.displayModalError(message);
+                this.details.displayErrorModal(message);
               } else {
-                this.details.displayModalError(error.error);
+                this.details.displayErrorModal(error.error);
               }
 
               return of(null);
@@ -3784,104 +3784,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get functionalName() {
     return this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName');
   }
-
-  public get showPrint(): boolean {
-    return this.printingTemplates.length > 0;
-  }
-
-  private _printingTemplatesSettings: SettingsForClient;
-  private _printingTemplatesDefinitions: DefinitionsForClient;
-  private _printingTemplatesResult: PrintingTemplate[];
-
-  public get printingTemplates(): PrintingTemplate[] {
-    const ws = this.ws;
-    if (this._printingTemplatesDefinitions !== ws.definitions ||
-      this._printingTemplatesSettings !== ws.settings) {
-      this._printingTemplatesDefinitions = ws.definitions;
-      this._printingTemplatesSettings = ws.settings;
-      const result: PrintingTemplate[] = [];
-
-      const settings = ws.settings;
-      const def = this.definition;
-      for (const template of def.MarkupTemplates.filter(e => e.Usage === 'QueryById')) {
-        const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
-          + (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId ? 1 : 0)
-          + (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId ? 1 : 0);
-
-        if (template.SupportsPrimaryLanguage) {
-          const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
-          result.push({
-            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
-            culture: settings.PrimaryLanguageId
-          });
-        }
-
-        if (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId) {
-          const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
-          result.push({
-            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
-            culture: settings.SecondaryLanguageId
-          });
-        }
-
-        if (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId) {
-          const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
-          result.push({
-            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
-            culture: settings.TernaryLanguageId
-          });
-        }
-      }
-
-      this._printingTemplatesResult = result;
-    }
-
-    return this._printingTemplatesResult;
-  }
-
-  private printingSubscription: Subscription;
-
-  public onPrint(doc: Document, template: PrintingTemplate): void {
-    if (!doc || !doc.Id || !template) {
-      return;
-    }
-
-    // Cancel any existing printing query
-    if (!!this.printingSubscription) {
-      this.printingSubscription.unsubscribe();
-    }
-
-    // New printing query
-    this.printingSubscription = this.documentsApi
-      .printById(doc.Id, template.templateId, { culture: template.culture })
-      .pipe(
-        tap(blob => {
-          this.printingSubscription = null;
-          printBlob(blob);
-        }),
-        catchError(friendlyError => {
-          this.printingSubscription = null;
-          this.details.displayModalError(friendlyError.error);
-          return of();
-        }),
-        finalize(() => {
-          this.printingSubscription = null;
-        })
-      ).subscribe();
-  }
-
-  public get isPrinting(): boolean {
-    return !!this.printingSubscription;
-  }
-}
-
-export interface PrintingTemplate {
-  name: () => string;
-  templateId: number;
-  culture: string;
 }
 
 /* Rules for showing and hiding chart states

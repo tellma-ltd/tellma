@@ -145,8 +145,8 @@
                         <select class="form-control t-studio-input" id="collection" [(ngModel)]="model.Collection"
                             #collection="ngModel" (ngModelChange)="onCollectionChange(model)" required>
                             <option value=""></option>
-                            <option value="Document">{{ 'Documents' | translate }}</option>
-                            <option value="Relation">{{ 'Relations' | translate }}</option>
+                            <option *ngFor="let collection of allCollections" value="{{collection.value}}">
+                                {{ collection.name() }}</option>
                         </select>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: collection, serverErrors: model.serverErrors?.Collection }">
@@ -205,6 +205,13 @@
                     <label class="custom-control-label"
                         for="supportsTernaryLanguage">{{ ('MarkupTemplate_Supports' | translate) + ws.ternaryPostfix }}</label>
                 </div>
+
+                <!-- IsDeployed -->
+                <div class="custom-control custom-checkbox mt-3">
+                    <input type="checkbox" class="custom-control-input" id="isdeployed" [(ngModel)]="model.IsDeployed">
+                    <label class="custom-control-label"
+                        for="isdeployed">{{ 'MarkupTemplate_IsDeployed' | translate }}</label>
+                </div>
             </div>
         </div>
 
@@ -234,8 +241,8 @@
 
                 <!-- Editor Content -->
                 <div class="flex-grow-1">
-                    <textarea class="w-100 h-100 form-control t-studio-input text-nowrap border-0 t-code" spellcheck="false"
-                        [ngModel]="model.Body" (ngModelChange)="onBodyChange($event, model)"
+                    <textarea class="w-100 h-100 form-control t-studio-input text-nowrap border-0 t-code"
+                        spellcheck="false" [ngModel]="model.Body" (ngModelChange)="onBodyChange($event, model)"
                         #textarea (keydown)="onKeydown(textarea, $event, model)"></textarea>
                     <!-- <ace class="w-100 h-100" [config]="config" [value]="model.Body"
                         (valueChange)="onAceValueChange($event, model)"></ace> -->
@@ -287,18 +294,103 @@
                                     </t-form-group>
                                 </ng-container>
                                 <ng-container *ngIf="showQueryByIdParams(model)">
-                                    <t-form-group class="t-form-group col" [label]="detailsPickerLabel(model)"
-                                        *ngIf="model.Collection === 'Document'">
-                                        <t-documents-picker [(ngModel)]="id" [definitionIds]="[model.DefinitionId]"
-                                            (ngModelChange)="onParameterChange(model)" [showCreate]="false">
-                                        </t-documents-picker>
-                                    </t-form-group>
-                                    <t-form-group class="t-form-group col" [label]="detailsPickerLabel(model)"
-                                        *ngIf="model.Collection === 'Relation'">
-                                        <t-relations-picker [(ngModel)]="id" [definitionIds]="[model.DefinitionId]"
-                                            (ngModelChange)="onParameterChange(model)" [showCreate]="false">
-                                        </t-relations-picker>
-                                    </t-form-group>
+                                    <ng-container [ngSwitch]="model.Collection">
+                                        <t-form-group class="t-form-group col" [label]="detailsPickerLabel(model)">
+                                            <t-account-classifications-picker *ngSwitchCase="'AccountClassification'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [showCreate]="false">
+                                            </t-account-classifications-picker>
+
+                                            <t-ifrs-concepts-picker *ngSwitchCase="'IfrsConcept'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-ifrs-concepts-picker>
+
+                                            <t-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-account-types-picker>
+
+                                            <t-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-accounts-picker>
+
+                                            <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-agents-picker>
+
+                                            <t-relations-picker *ngSwitchCase="'Relation'" [(ngModel)]="id"
+                                                [definitionIds]="[model.DefinitionId]"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-relations-picker>
+
+                                            <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-currencies-picker>
+
+                                            <t-entry-types-picker *ngSwitchCase="'EntryType'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-entry-types-picker>
+
+                                            <t-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="id"
+                                                [definitionId]="model.DefinitionId"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-lookups-picker>
+
+                                            <t-units-picker *ngSwitchCase="'Unit'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-units-picker>
+
+                                            <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="id"
+                                                [definitionIds]="[model.DefinitionId]"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-custodies-picker>
+
+                                            <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="id"
+                                                [definitionIds]="[model.DefinitionId]"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-resources-picker>
+
+                                            <t-centers-picker *ngSwitchCase="'Center'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-centers-picker>
+
+                                            <t-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-roles-picker>
+
+                                            <t-users-picker *ngSwitchCase="'User'" [(ngModel)]="id"
+                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
+                                            </t-users-picker>
+
+                                            <t-relation-definitions-picker *ngSwitchCase="'RelationDefinition'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [showCreate]="false">
+                                            </t-relation-definitions-picker>
+
+                                            <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [showCreate]="false">
+                                            </t-custody-definitions-picker>
+
+                                            <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [showCreate]="false">
+                                            </t-resource-definitions-picker>
+
+                                            <t-lookup-definitions-picker *ngSwitchCase="'LookupDefinition'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [showCreate]="false">
+                                            </t-lookup-definitions-picker>
+
+                                            <t-document-definitions-picker *ngSwitchCase="'DocumentDefinition'"
+                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
+                                                [showCreate]="false">
+                                            </t-document-definitions-picker>
+                                            
+                                            <div class="text-danger font-weight-bold" *ngSwitchDefault>
+                                                TODO: control for '{{ model.Collection }}''
+                                            </div>
+                                        </t-form-group>
+                                    </ng-container>
                                 </ng-container>
                             </div>
                         </div>

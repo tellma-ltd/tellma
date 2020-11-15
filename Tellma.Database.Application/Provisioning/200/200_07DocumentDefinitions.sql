@@ -21,8 +21,7 @@ INSERT @DocumentDefinitionLineDefinitions([Index],
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
-	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions,
-	@DocumentDefinitionMarkupTemplates = @DocumentDefinitionMarkupTemplates;
+	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions;
 
 DELETE FROM @DocumentDefinitionIds
 INSERT INTO @DocumentDefinitionIds([Id]) SELECT [Id] FROM @DocumentDefinitions

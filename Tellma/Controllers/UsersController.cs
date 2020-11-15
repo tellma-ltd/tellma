@@ -177,7 +177,7 @@ namespace Tellma.Controllers
             return new GetByIdResponse<User>
             {
                 Result = me,
-                CollectionName = GetCollectionName(typeof(User)),
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(User)),
                 RelatedEntities = relatedEntities
             };
         }
@@ -196,7 +196,6 @@ namespace Tellma.Controllers
 
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
         private readonly MetadataProvider _metadataProvider;
         private readonly ExternalNotificationsService _notifications;
@@ -238,14 +237,12 @@ namespace Tellma.Controllers
             IServiceProvider serviceProvider,
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
-            ITenantIdAccessor tenantIdAccessor,
             IBlobService blobService,
             MetadataProvider metadataProvider,
             ExternalNotificationsService notifications) : base(serviceProvider)
         {
             _appRepo = appRepo;
             _adminRepo = adminRepo;
-            _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
             _metadataProvider = metadataProvider;
             _notifications = notifications;

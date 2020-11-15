@@ -9,12 +9,10 @@ import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, statePropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { DocumentDefinitionLineDefinitionForSave, DocumentDefinitionLineDefinition } from './document-definition-line-definition';
-import { DocumentDefinitionMarkupTemplateForSave, DocumentDefinitionMarkupTemplate } from './document-definition-markup-template';
 
 export type DefinitionDocumentType = 0 | 1 | 2 | 3;
 
-export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionLineDefinitionForSave,
-    TMarkupTemplate = DocumentDefinitionMarkupTemplateForSave> extends EntityForSave {
+export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionLineDefinitionForSave> extends EntityForSave {
     Code?: string;
     IsOriginalDocument?: boolean;
     DocumentType?: DefinitionDocumentType;
@@ -40,10 +38,9 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
     MainMenuSortKey?: number;
 
     LineDefinitions?: TLineDefinition[];
-    MarkupTemplates?: TMarkupTemplate[];
 }
 
-export interface DocumentDefinition extends DocumentDefinitionForSave<DocumentDefinitionLineDefinition, DocumentDefinitionMarkupTemplate> {
+export interface DocumentDefinition extends DocumentDefinitionForSave<DocumentDefinitionLineDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
 }

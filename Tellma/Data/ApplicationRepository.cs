@@ -26,7 +26,6 @@ namespace Tellma.Data
     /// SQL: Tables, Views, Stored Procedures etc.., it contains no logic of its own.
     /// By default it connects to the tenant Id supplied in the headers 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class ApplicationRepository : IDisposable, IRepository
     {
         private SqlConnection _conn;
@@ -257,7 +256,6 @@ namespace Tellma.Data
                 nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
                 nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
                 nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
-                nameof(DocumentDefinitionMarkupTemplate) => "[map].[DocumentDefinitionMarkupTemplates]()",
                 nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
                 nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
                 nameof(EmailForQuery) => "[map].[Emails]()",
@@ -606,6 +604,7 @@ namespace Tellma.Data
             IEnumerable<ReportDefinition>,
             IEnumerable<DocumentDefinition>,
             IEnumerable<LineDefinition>,
+            IEnumerable<MarkupTemplate>,
             Dictionary<int, List<int>>,
             Dictionary<int, List<int>>,
             Dictionary<int, List<int>>,
@@ -622,6 +621,7 @@ namespace Tellma.Data
             var reportDefinitions = new List<ReportDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
             var lineDefinitions = new List<LineDefinition>();
+            var markupTemplates = new List<MarkupTemplate>();
 
             Dictionary<int, List<int>> entryCustodianDefs = new Dictionary<int, List<int>>();
             Dictionary<int, List<int>> entryCustodyDefs = new Dictionary<int, List<int>>();
@@ -969,48 +969,6 @@ namespace Tellma.Data
                     documentDefinition.LineDefinitions.Add(entity);
                 }
 
-                // Load the markup templates
-                var markupTemplates = new Dictionary<int, MarkupTemplate>();
-                var markupTemplateProps = TypeDescriptor.Get<MarkupTemplate>().SimpleProperties;
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    var entity = new MarkupTemplate();
-                    foreach (var prop in markupTemplateProps)
-                    {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(entity, propValue);
-                    }
-
-                    markupTemplates.Add(entity.Id, entity);
-                }
-
-                // Document Definitions Markup Templates
-                var documentDefinitionMarkupTemplateProps = TypeDescriptor.Get<DocumentDefinitionMarkupTemplate>().SimpleProperties;
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    var entity = new DocumentDefinitionMarkupTemplate();
-                    foreach (var prop in documentDefinitionMarkupTemplateProps)
-                    {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(entity, propValue);
-                    }
-
-                    // Link with the markup template
-                    entity.MarkupTemplate = markupTemplates[entity.MarkupTemplateId.Value];
-
-                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId.Value];
-                    documentDefinition.MarkupTemplates ??= new List<DocumentDefinitionMarkupTemplate>();
-                    documentDefinition.MarkupTemplates.Add(entity);
-                }
-
                 documentDefinitions = documentDefinitionsDic.Values.ToList();
 
                 // Next load account types
@@ -1207,9 +1165,27 @@ namespace Tellma.Data
 
                     defIds.Add(defId);
                 }
+
+                // Markup templates
+                var markupTemplateProps = TypeDescriptor.Get<MarkupTemplate>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new MarkupTemplate();
+                    foreach (var prop in markupTemplateProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    markupTemplates.Add(entity);
+                }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
+            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
         }
 
         #endregion
@@ -7001,16 +6977,8 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
-            DataTable markupsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.MarkupTemplates);
-            var markupsTvp = new SqlParameter("@DocumentDefinitionMarkupTemplates", markupsTable)
-            {
-                TypeName = $"[dbo].[{nameof(DocumentDefinitionMarkupTemplate)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
             cmd.Parameters.Add(entitiesTvp);
             cmd.Parameters.Add(linesTvp);
-            cmd.Parameters.Add(markupsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -7044,16 +7012,8 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable markupsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.MarkupTemplates);
-                var markupsTvp = new SqlParameter("@DocumentDefinitionMarkupTemplates", markupsTable)
-                {
-                    TypeName = $"[dbo].[{nameof(DocumentDefinitionMarkupTemplate)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(linesTvp);
-                cmd.Parameters.Add(markupsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;

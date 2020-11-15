@@ -80,7 +80,6 @@ namespace Tellma.Controllers
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
         private readonly IBlobService _blobService;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly ISettingsCache _settingsCache;
         private readonly IHttpContextAccessor _contextAccessor;
 
@@ -134,7 +133,6 @@ namespace Tellma.Controllers
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
             IBlobService blobService,
-            ITenantIdAccessor tenantIdAccessor,
             ISettingsCache settingsCache,
             IHttpContextAccessor contextAccessor,
             IServiceProvider sp) : base(sp)
@@ -142,7 +140,6 @@ namespace Tellma.Controllers
             _repo = repo;
             _definitionsCache = definitionsCache;
             _blobService = blobService;
-            _tenantIdAccessor = tenantIdAccessor;
             _settingsCache = settingsCache;
             _contextAccessor = contextAccessor;
         }

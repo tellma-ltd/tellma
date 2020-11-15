@@ -22,6 +22,9 @@ using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Tellma.Controllers.Templating;
+using System.Text;
+using Tellma.Services.MultiTenancy;
 
 namespace Tellma.Controllers
 {
@@ -81,7 +84,7 @@ namespace Tellma.Controllers
                     IsPartial = isPartial,
                     Result = data,
                     RelatedEntities = relatedEntities,
-                    CollectionName = GetCollectionName(typeof(TEntity)),
+                    CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
                     Extras = TransformExtras(extras, cancellation),
                     ServerTime = serverTime
                 };
@@ -120,6 +123,18 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
+        [HttpGet("print/{templateId}")]
+        public async Task<ActionResult> PrintByFilter(int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var service = GetFactService();
+                var (fileBytes, fileName) = await service.PrintByFilter(templateId, args, cancellation);
+                var contentType = ControllerUtilities.ContentType(fileName);
+                return File(fileContents: fileBytes, contentType: contentType, fileName);
+            }, _logger);
+        }
+
         #region Export Stuff
 
         //[HttpGet("export")]
@@ -141,6 +156,9 @@ namespace Tellma.Controllers
 
         #endregion
 
+
+
+
         protected abstract FactServiceBase<TEntity> GetFactService();
 
         /// <summary>
@@ -156,14 +174,6 @@ namespace Tellma.Controllers
             where T : Entity
         {
             return ControllerUtilities.FlattenAndTrim(resultEntities, cancellation);
-        }
-
-        /// <summary>
-        /// Retrieves the collection name from the Entity type
-        /// </summary>
-        protected static string GetCollectionName(Type entityType)
-        {
-            return entityType.GetRootType().Name;
         }
 
         protected virtual Extras TransformExtras(Extras extras, CancellationToken cancellation)
@@ -318,11 +328,21 @@ namespace Tellma.Controllers
     {
         protected readonly IStringLocalizer _localizer;
         protected readonly IInstrumentationService _instrumentation;
+        protected readonly TemplateService _templateService;
+        protected readonly ITenantInfoAccessor _tenantInfo;
+        protected readonly ITenantIdAccessor _tenantIdAccessor;
+        protected readonly MetadataProvider _metadata;
+
+        protected virtual int? DefinitionId => null;
 
         public FactServiceBase(IServiceProvider sp)
         {
             _localizer = sp.GetRequiredService<IStringLocalizer<Strings>>();
             _instrumentation = sp.GetRequiredService<IInstrumentationService>();
+            _tenantInfo = sp.GetRequiredService<ITenantInfoAccessor>();
+            _templateService = sp.GetRequiredService<TemplateService>();
+            _tenantIdAccessor = sp.GetRequiredService<ITenantIdAccessor>();
+            _metadata = sp.GetRequiredService<MetadataProvider>();
         }
 
         /// <summary>
@@ -474,6 +494,106 @@ namespace Tellma.Controllers
             // Return
             return (data, isPartial);
         }
+
+        public async Task<(byte[] FileBytes, string FileName)> PrintByFilter([FromRoute] int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
+        {
+            var collection = ControllerUtilities.GetCollectionName(typeof(TEntity));
+            var defId = DefinitionId;
+            var repo = GetRepository();
+
+            var template = await repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
+            if (template == null)
+            {
+                // Shouldn't happen in theory cause of previous check, but just to be extra safe
+                throw new BadRequestException($"The template with Id {templateId} does not exist");
+            }
+
+            if (!(template.IsDeployed ?? false))
+            {
+                // A proper UI will only allow the user to use supported template
+                throw new BadRequestException($"The template with Id {templateId} is not deployed");
+            }
+
+            // The errors below should be prevented through SQL validation, but just to be safe
+            if (template.Usage != MarkupTemplateConst.QueryByFilter)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
+            }
+
+            if (template.MarkupLanguage != MimeTypes.Html)
+            {
+                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
+            }
+
+            if (template.Collection != collection)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
+            }
+
+            if (template.DefinitionId != null && template.DefinitionId != defId)
+            {
+                throw new BadRequestException($"The template with Id {templateId} has an incompatible DefinitionId = '{defId}'");
+            }
+
+            // Onto the printing itself
+            var templates = new string[] { template.DownloadName, template.Body };
+            var tenantInfo = _tenantInfo.GetCurrentInfo();
+            var culture = TemplateUtil.GetCulture(args, tenantInfo);
+
+            var preloadedQuery = new QueryByFilterInfo(collection, defId, args.Filter, args.OrderBy, args.Top, args.Skip, args.I);
+            var inputVariables = new Dictionary<string, object>
+            {
+                ["$Source"] = $"{collection}/{defId}",
+                ["$Filter"] = args.Filter,
+                ["$OrderBy"] = args.OrderBy,
+                ["$Top"] = args.Top,
+                ["$Skip"] = args.Skip,
+                ["$Ids"] = args.I
+            };
+
+            // Generate the output
+            string[] outputs;
+            try
+            {
+                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
+            }
+            catch (TemplateException ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Do some sanitization of the downloadName
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                var meta = GetMetadata();
+                var titlePlural = meta.PluralDisplay();
+                if (args.I != null && args.I.Count > 0)
+                {
+                    downloadName = $"{titlePlural} ({args.I.Count})";
+                }
+                else
+                {
+                    int from = args.Skip + 1;
+                    int to = Math.Max(from, args.Skip + args.Top);
+                    downloadName = $"{titlePlural} {from}-{to}";
+                }
+            }
+
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return (bodyBytes, downloadName);
+        }
+
 
         /// <summary>
         /// Select argument may get huge and unweildly in certain cases, this method offers a chance
@@ -699,6 +819,21 @@ namespace Tellma.Controllers
             return Task.FromResult<Extras>(null);
         }
 
+        /// <summary>
+        /// Retrieves the metadata of the entity
+        /// </summary>
+        /// <returns></returns>
+        protected TypeMetadata GetMetadata()
+        {
+            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
+            int? definitionId = DefinitionId;
+            Type type = typeof(TEntity);
+
+            return _metadata.GetMetadata(tenantId, type, definitionId);
+        }
+
+        #region IFactSericeBase Implementation
+
         async Task<(List<Entity> Data, Extras Extras, bool IsPartial, int? Count)> IFactServiceBase.GetFact(GetArguments args, CancellationToken cancellation)
         {
             var (data, extras, isPartial, count) = await GetFact(args, cancellation);
@@ -711,6 +846,8 @@ namespace Tellma.Controllers
         {
             return GetAggregate(args, cancellation);
         }
+
+        #endregion
     }
 
     public interface IFactServiceBase
