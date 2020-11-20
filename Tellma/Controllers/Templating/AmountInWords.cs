@@ -71,7 +71,7 @@ namespace Tellma.Controllers.Templating
             // Capitalize
             if (result.Length > 0)
             {
-                result = char.ToUpper(result[0]) + result.Substring(1);
+                result = char.ToUpper(result[0]) + result[1..];
             }
 
             // Return
