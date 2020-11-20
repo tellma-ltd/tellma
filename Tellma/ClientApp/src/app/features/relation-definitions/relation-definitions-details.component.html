@@ -294,6 +294,33 @@
                         </ng-container>
                     </div>
 
+                    <!-- HasAttachments -->
+                    <div class="form-group">
+                        <label class="small" for="hasattachments">{{ 'Definition_HasAttachments' | translate }}</label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="hasattachments"
+                                [(ngModel)]="model.HasAttachments" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label"
+                                for="hasattachments"></label>
+                        </div>
+                    </div>
+
+                    <!-- AttachmentsCategoryDefinitionId -->
+                    <!-- <div class="form-group" *ngIf="model.HasAttachments"
+                        [class.is-invalid]="invalid(attachmentscategorydefinitionid, model.serverErrors?.AttachmentsCategoryDefinitionId)">
+                        <label
+                            class="small">{{ 'RelationDefinition_AttachmentsCategoryDefinition' | translate }}</label>
+
+                        <t-lookup-definitions-picker [(ngModel)]="model.AttachmentsCategoryDefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #attachmentscategorydefinitionid="ngModel"
+                            theme="dark">
+                        </t-lookup-definitions-picker>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: attachmentscategorydefinitionid, serverErrors: model.serverErrors?.AttachmentsCategoryDefinitionId }">
+                        </ng-container>
+                    </div> -->
+
                     <!-- Visibility Field Template -->
                     <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 

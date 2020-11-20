@@ -141,6 +141,8 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     JobVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;
+    HasAttachments?: boolean;
+    AttachmentsCategoryDefinitionId?: number;
 
     // Main Menu
 
@@ -327,6 +329,9 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 JobVisibility: visibilityPropDescriptor('Relation_Job', trx),
                 BankAccountNumberVisibility: visibilityPropDescriptor('Relation_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('RelationDefinition_UserCardinality', trx),
+                HasAttachments: { control: 'boolean', label: () => trx.instant('Definition_HasAttachments') },
+                AttachmentsCategoryDefinitionId: { control: 'number', label: () => `${trx.instant('RelationDefinition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AttachmentsCategoryDefinition: { control: 'navigation', label: () => trx.instant('RelationDefinition_AttachmentsCategoryDefinition'), type: 'LookupDefinition', foreignKeyName: 'AttachmentsCategoryDefinitionId' },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

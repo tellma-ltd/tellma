@@ -637,8 +637,111 @@
           </div>
         </ng-template>
       </ng-container>
+
+      <!-- Attachments -->
+      <li ngbNavItem="attachments">
+        <a ngbNavLink>
+          <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
+            <fa-icon icon="exclamation-triangle">
+            </fa-icon>&nbsp;
+          </span>
+          <span
+            class="small t-slightly-bold">{{ ('Relation_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '') }}</span>
+        </a>
+        <ng-template ngbNavContent>
+          <!-- No Attachments Message -->
+          <div class="p-3 font-italic font-weight-light2 text-muted" *ngIf="!model?.Attachments?.length && !isEdit">
+            <span>{{ 'NoItemsFound' | translate }}</span>
+          </div>
+
+          <!-- Attachments List -->
+          <div class="w-100 mx-0 mb-1 p-2 p-sm-3 overflow-auto" style="max-height: 450px;" *ngIf="!!model?.Attachments?.length">
+            <div class="text-nowrap" *ngFor="let w of attachmentWrappers(model); let i = index;"
+              [class.bg-light]="i % 2 === 1000">
+              <div class="border-bottom d-flex align-items-center">
+                <!-- Icon -->
+                <div class="px-3 pt-1 pb-2">
+                  <fa-icon [style.color]="colorFromExtension(w.attachment.FileExtension)" style="font-size: 200%;"
+                    [icon]="iconFromExtension(w.attachment.FileExtension)">
+                  </fa-icon>
+                </div>
+
+                <!-- Everything Right of Icon -->
+                <div class="d-flex flex-column justify-content-center flex-grow-1 px-1" style="min-width: 0px;">
+                  <!-- Top Row -->
+                  <div class="d-flex align-items-stretch" style="max-width: 750px;"
+                    *ngIf="!isEdit; else editAttachment">
+                    <button type="button"
+                      class="btn btn-link p-0 text-primary border-top-0 border-left-0 border-right-0 text-truncate"
+                      (click)="onDownloadAttachment(model, i)">{{ fileName(w) }}</button>
+                    <div class="mx-2 flex-grow-1" *ngIf="w.downloading" style="min-width: 0;">
+                      <t-spinner class="text-black"></t-spinner>
+                    </div>
+                  </div>
+                  <ng-template #editAttachment>
+                    <div style="max-width: 500px;">
+                      <t-form-group [serverErrors]="w.attachment?.serverErrors?.FileName">
+                        <t-text-editor [(ngModel)]="w.attachment.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
+                          required>
+                        </t-text-editor>
+                      </t-form-group>
+                    </div>
+                  </ng-template>
+                  <!-- Bottom Row -->
+                  <div class="d-flex align-items-stretch">
+                    <!-- Audit info and Size -->
+                    <div class="flex-grow-1 small text-muted text-truncate" style="min-width: 0px;">
+                      <span *ngIf="w.attachment.CreatedById">{{ 'AttachmentAudit' | translate: { 
+                                              '0': ( w.attachment.CreatedAt | date:'yyyy-MM-dd HH:mm'),
+                                              '1': ws.getMultilingualValue('User', w.attachment.CreatedById, 'Name')
+                                              }
+                                          }}&nbsp;</span>
+                      <span>({{ size(w) }})</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Commands -->
+                <div *ngIf="isEdit" class="mx-1">
+                  <!-- Download Button -->
+                  <button *ngIf="!w.downloading; else spinner"
+                    class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                    (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                    <fa-icon icon="download"></fa-icon>
+                  </button>
+
+                  <!-- Spinner -->
+                  <ng-template #spinner>
+                    <div class="px-1 t-toolbar-button d-inline t-vertical-align-middle">
+                      <t-spinner class="text-black"></t-spinner>
+                    </div>
+                  </ng-template>
+
+                  <!-- Delete button -->
+                  <button class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                    (click)="onDeleteAttachment(model, i)" [title]="'Delete' | translate">
+                    <fa-icon icon="trash"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Button -->
+          <div class="py-2 px-3 col-12 d-flex align-items-center justify-content-end" *ngIf="isEdit">
+            <button class="btn btn-sm btn-primary text-primary2 btn-light2 t-white-button2" (click)="fileInput.click()">
+              <fa-icon icon="upload"></fa-icon>
+              &nbsp;&nbsp;{{ (model?.Attachments?.length > 0 ? 'UploadMore' : 'Upload') | translate }}
+            </button>
+          </div>
+
+          <!-- for the file dialog -->
+          <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" multiple />
+        </ng-template>
+      </li>
     </ul>
-    <div class="w-100" [ngbNavOutlet]="tabs"></div>
+    <div class="w-100" [ngbNavOutlet]="tabs"></div>    
+
   </ng-container>
 
 </ng-template>

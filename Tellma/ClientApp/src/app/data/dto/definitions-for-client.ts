@@ -549,6 +549,8 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     JobVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;
+    HasAttachments?: boolean;
+    AttachmentsCategoryDefinitionId?: number;
 
     ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }

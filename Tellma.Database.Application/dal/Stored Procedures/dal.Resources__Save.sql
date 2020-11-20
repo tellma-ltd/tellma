@@ -2,14 +2,20 @@
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits dbo.ResourceUnitList READONLY,
-	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
-	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	
+	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
+	INSERT INTO @DeletedImageIds ([Id])
+	SELECT [ImageId] FROM dbo.[Resources] E
+	WHERE E.[ImageId] IS NOT NULL 
+		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
 
+	-- Save entities
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
@@ -52,7 +58,8 @@ SET NOCOUNT ON;
 				[UnitMass],
 				[UnitMassUnitId],
 				[MonetaryValue],
-				[ParticipantId]
+				[ParticipantId],
+				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -94,6 +101,7 @@ SET NOCOUNT ON;
 				t.[UnitMassUnitId]			= s.[UnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
 				t.[ParticipantId]			= s.[ParticipantId],
+				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -132,7 +140,8 @@ SET NOCOUNT ON;
 				[UnitMass],
 				[UnitMassUnitId],
 				[MonetaryValue],
-				[ParticipantId]
+				[ParticipantId],
+				[ImageId]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -169,7 +178,8 @@ SET NOCOUNT ON;
 				s.[UnitMass],
 				s.[UnitMassUnitId],
 				s.[MonetaryValue],
-				s.[ParticipantId]
+				s.[ParticipantId],
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -202,14 +212,10 @@ SET NOCOUNT ON;
 			s.[UnitId]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
+		DELETE;		
 
-	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
-	UPDATE R --dbo.[Resources]
-	SET R.ImageId = L.ImageId
-	FROM dbo.[Resources] R
-	JOIN @IndexedIds II ON R.Id = II.[Id]
-	JOIN @ImageIds L ON II.[Index] = L.[Index]
+	-- Return overwritten Image Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedImageIds;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

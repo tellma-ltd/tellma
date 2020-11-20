@@ -34,7 +34,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
   private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `ReportDefinitions/ReportDefinition,Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,
-  Lookup5Definition,Lookup6Definition,Lookup7Definition,Lookup8Definition,Relation1Definition`;
+  Lookup5Definition,Lookup6Definition,Lookup7Definition,Lookup8Definition,Relation1Definition,AttachmentsCategoryDefinition`;
 
   create = () => {
     const result: RelationDefinitionForSave = {};
@@ -53,6 +53,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.UserCardinality = 'None';
+    result.HasAttachments = false;
     result.ReportDefinitions = [];
 
     return result;
@@ -289,7 +290,9 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
         areServerErrors(model.serverErrors.JobVisibility) ||
         areServerErrors(model.serverErrors.BankAccountNumberVisibility) ||
-        areServerErrors(model.serverErrors.UserCardinality)
+        areServerErrors(model.serverErrors.UserCardinality) ||
+        areServerErrors(model.serverErrors.HasAttachments) ||
+        areServerErrors(model.serverErrors.AttachmentsCategoryDefinitionId)
       ));
     } else if (section === 'Scripts') {
       return (!!model.serverErrors && (

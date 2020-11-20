@@ -417,7 +417,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const label = () => !!measureDef.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(measureDef, 'Label') :
         this.translate.instant('DefaultAggregationMeasure', {
           aggregation: this.translate.instant('ReportDefinition_Aggregation_' + aggregation),
-          measure: desc.label()
+          measure: !!desc ? desc.label() : propDesc.label()
         });
 
       return { key, desc, aggregation, label };

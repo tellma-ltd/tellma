@@ -157,6 +157,21 @@ namespace Tellma.Controllers
             return query;
         }
 
+        protected override Task<List<RelationDefinitionForSave>> SavePreprocessAsync(List<RelationDefinitionForSave> entities)
+        {
+            entities.ForEach(e =>
+            {
+                e.HasAttachments ??= false;
+
+                if (!e.HasAttachments.Value)
+                {
+                    e.AttachmentsCategoryDefinitionId = null;
+                }
+            });
+
+            return base.SavePreprocessAsync(entities);
+        }
+
         protected override async Task SaveValidateAsync(List<RelationDefinitionForSave> entities)
         {
             // SQL validation

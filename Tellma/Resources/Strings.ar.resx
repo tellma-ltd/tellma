@@ -223,6 +223,9 @@
   <data name="Attachment" xml:space="preserve">
     <value>مرفق</value>
   </data>
+  <data name="Attachment_Category" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>امتداد الملف</value>
   </data>
@@ -417,6 +420,9 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>أرشفة</value>
+  </data>
+  <data name="Definition_HasAttachments" xml:space="preserve">
+    <value>يدعم المرفقات</value>
   </data>
   <data name="Definition_Hide" xml:space="preserve">
     <value>إخفاء</value>
@@ -2245,6 +2251,9 @@
   <data name="Relation_Agent" xml:space="preserve">
     <value>الذمة</value>
   </data>
+  <data name="Relation_Attachments" xml:space="preserve">
+    <value>المرفقات</value>
+  </data>
   <data name="Relation_BankAccountNumber" xml:space="preserve">
     <value>رقم حساب البنك</value>
   </data>
@@ -2268,6 +2277,9 @@
   </data>
   <data name="RelationDefinition" xml:space="preserve">
     <value>تعريف عقد</value>
+  </data>
+  <data name="RelationDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>تعريف تصنيفات المرفقات</value>
   </data>
   <data name="RelationDefinition_UserCardinality" xml:space="preserve">
     <value>عدد المستخدمين</value>

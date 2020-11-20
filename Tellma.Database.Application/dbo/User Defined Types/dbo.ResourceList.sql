@@ -36,7 +36,10 @@
 	[UnitMassUnitId]			INT,
 --	[ParentId]					INT,
 	[MonetaryValue]				DECIMAL (19,4),
-	[ParticipantId]				INT
+	[ParticipantId]				INT,
+
+	-- Extra Columns not in Resource.cs
+	[ImageId]					NVARCHAR (50)
 
 	INDEX IX_ResourceList__Code ([Code])
 );

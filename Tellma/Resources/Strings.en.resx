@@ -223,6 +223,9 @@
   <data name="Attachment" xml:space="preserve">
     <value>Attachment</value>
   </data>
+  <data name="Attachment_Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>File Extension</value>
   </data>
@@ -417,6 +420,9 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>Archive</value>
+  </data>
+  <data name="Definition_HasAttachments" xml:space="preserve">
+    <value>Has Attachments</value>
   </data>
   <data name="Definition_Hide" xml:space="preserve">
     <value>Hide</value>
@@ -2245,6 +2251,9 @@
   <data name="Relation_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
+  <data name="Relation_Attachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
   <data name="Relation_BankAccountNumber" xml:space="preserve">
     <value>Bank Account Number</value>
   </data>
@@ -2268,6 +2277,9 @@
   </data>
   <data name="RelationDefinition" xml:space="preserve">
     <value>Relation Definition</value>
+  </data>
+  <data name="RelationDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>Attachments Category Definition</value>
   </data>
   <data name="RelationDefinition_UserCardinality" xml:space="preserve">
     <value>User Cardinality</value>

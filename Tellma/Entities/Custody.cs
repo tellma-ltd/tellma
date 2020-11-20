@@ -6,7 +6,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Custody", Plural = "Custodies")]
-    public class CustodyForSaveBase : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
+    public class CustodyForSaveBase : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -123,7 +123,7 @@ namespace Tellma.Entities
 
     }
 
-    public class Custody : CustodyForSaveBase, ILocationEntity, IEntityWithImage
+    public class Custody : CustodyForSaveBase, ILocationEntity
     {
         #region Common with Resource
 

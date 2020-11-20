@@ -8,8 +8,9 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { RelationUserForSave, RelationUser } from './relation-user';
 import { EntityForSave } from './base/entity-for-save';
+import { RelationAttachment, RelationAttachmentForSave } from './relation-attachment';
 
-export interface RelationForSave<TRelationUser = RelationUserForSave> extends EntityForSave {
+export interface RelationForSave<TRelationUser = RelationUserForSave, TAttachment = RelationAttachmentForSave> extends EntityForSave {
   // Common with Resource
   Name?: string;
   Name2?: string;
@@ -55,9 +56,10 @@ export interface RelationForSave<TRelationUser = RelationUserForSave> extends En
   JobId?: number;
   BankAccountNumber?: number;
   Users?: TRelationUser[];
+  Attachments?: TAttachment[];
 }
 
-export interface Relation extends RelationForSave<RelationUser> {
+export interface Relation extends RelationForSave<RelationUser, RelationAttachment> {
   DefinitionId?: number;
   ImageId?: string;
   IsActive?: boolean;

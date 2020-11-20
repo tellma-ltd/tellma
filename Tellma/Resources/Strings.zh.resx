@@ -223,6 +223,9 @@
   <data name="Attachment" xml:space="preserve">
     <value>附件</value>
   </data>
+  <data name="Attachment_Category" xml:space="preserve">
+    <value>类别</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>文件扩展名</value>
   </data>
@@ -417,6 +420,9 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>档案</value>
+  </data>
+  <data name="Definition_HasAttachments" xml:space="preserve">
+    <value>有附件</value>
   </data>
   <data name="Definition_Hide" xml:space="preserve">
     <value>隐藏</value>
@@ -2245,6 +2251,9 @@
   <data name="Relation_Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
+  <data name="Relation_Attachments" xml:space="preserve">
+    <value>附件</value>
+  </data>
   <data name="Relation_BankAccountNumber" xml:space="preserve">
     <value>银行帐号</value>
   </data>
@@ -2268,6 +2277,9 @@
   </data>
   <data name="RelationDefinition" xml:space="preserve">
     <value>关系定义</value>
+  </data>
+  <data name="RelationDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>附件类别定义</value>
   </data>
   <data name="RelationDefinition_UserCardinality" xml:space="preserve">
     <value>用户基数</value>

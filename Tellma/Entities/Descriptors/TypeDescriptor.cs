@@ -321,11 +321,14 @@ namespace Tellma.Entities.Descriptors
                         #region IndexPropertyName
 
                         // (e, v) => e.Name = (string)v
+                        string indexPropName = null;
                         Action<Entity, int?> indexPropSetter = null;
+                        Func<Entity, int?> indexPropGetter = null;
                         var selfRefAttribute = propInfo.GetCustomAttribute<SelfReferencingAttribute>(inherit: true);
                         if (selfRefAttribute != null)
                         {
-                            var indexPropInfo = entityType.GetProperty(selfRefAttribute.IndexPropertyName);
+                            indexPropName = selfRefAttribute.IndexPropertyName;
+                            var indexPropInfo = entityType.GetProperty(indexPropName);
                             if (indexPropInfo == null || indexPropInfo.PropertyType != typeof(int?))
                             {
                                 // Developer mistake
@@ -335,19 +338,28 @@ namespace Tellma.Entities.Descriptors
                             {
                                 var entityParam = Expression.Parameter(typeof(Entity), "e"); // e
                                 var valueParam = Expression.Parameter(typeof(int?), "v"); // v
-                                var castEntity = Expression.Convert(entityParam, entityType); // (Account)e
-                                var propertyAccess = Expression.MakeMemberAccess(castEntity, indexPropInfo); // ((Account)e).ParentIndex
-                                var assignment = Expression.Assign(propertyAccess, valueParam); // ((Account)e).ParentIndex = v
-                                var lambdaExp = Expression.Lambda<Action<Entity, int?>>(assignment, entityParam, valueParam); // (e, v) => ((Account)e).ParentIndex = v
+                                var castEntity = Expression.Convert(entityParam, entityType); // (Center)e
+                                var propertyAccess = Expression.MakeMemberAccess(castEntity, indexPropInfo); // ((Center)e).ParentIndex
+                                var assignment = Expression.Assign(propertyAccess, valueParam); // ((Center)e).ParentIndex = v
+                                var lambdaExp = Expression.Lambda<Action<Entity, int?>>(assignment, entityParam, valueParam); // (e, v) => ((Center)e).ParentIndex = v
 
                                 indexPropSetter = lambdaExp.Compile();
+                            }
+
+                            {
+                                var entityParam = Expression.Parameter(typeof(Entity), "e"); // e
+                                var castEntity = Expression.Convert(entityParam, entityType); // (Center)e
+                                var propertyAccess = Expression.MakeMemberAccess(castEntity, indexPropInfo); // ((Center)e).ParentIndex
+                                var lambdaExp = Expression.Lambda<Func<Entity, int?>>(propertyAccess, entityParam); // (e) => ((Center)e).ParentIndex
+
+                                indexPropGetter = lambdaExp.Compile();
                             }
                         }
 
                         #endregion
 
                         // Simple
-                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, indexPropSetter, maxLength);
+                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, indexPropName, indexPropSetter, indexPropGetter, maxLength);
                     }
 
                     propertiesDic.Add(propInfo.Name, propDesc);

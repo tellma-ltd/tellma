@@ -1,14 +1,19 @@
 ﻿CREATE PROCEDURE [dal].[Custodies__Save]
 	@DefinitionId INT,
 	@Entities [CustodyList] READONLY,
-	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
 	@ReturnIds BIT = 0
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	
+	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
+	INSERT INTO @DeletedImageIds ([Id])
+	SELECT [ImageId] FROM dbo.[Custodies] E
+	WHERE E.[ImageId] IS NOT NULL 
+		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -45,7 +50,8 @@ SET NOCOUNT ON;
 				--[AgentId],
 				--[TaxIdentificationNumber],
 				--[JobId],
-				[ExternalReference]
+				[ExternalReference],
+				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -82,6 +88,7 @@ SET NOCOUNT ON;
 				--t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 				--t.[JobId]					= s.[JobId],
 				t.[ExternalReference]		= s.[ExternalReference],
+				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -116,7 +123,8 @@ SET NOCOUNT ON;
 				--[AgentId],
 				--[TaxIdentificationNumber],
 				--[JobId],
-				[ExternalReference]
+				[ExternalReference],
+				[ImageId]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -148,17 +156,14 @@ SET NOCOUNT ON;
 				--s.[AgentId],
 				--s.[TaxIdentificationNumber],
 				--s.[JobId],
-				s.[ExternalReference]
+				s.[ExternalReference],
+				s.[ImageId]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
-	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
-	UPDATE A
-	SET A.ImageId = L.ImageId
-	FROM dbo.[Custodies] A
-	JOIN @IndexedIds II ON A.Id = II.[Id]
-	JOIN @ImageIds L ON II.[Index] = L.[Index]
+	-- Return overwritten Image Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedImageIds;
 
 	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;

@@ -260,11 +260,14 @@ namespace Tellma.Controllers.Templating
                 [nameof(Filter)] = Filter(),
                 [nameof(OrderBy)] = OrderBy(),
                 [nameof(Count)] = Count(),
+                [nameof(Max)] = Max(),
+                [nameof(Min)] = Min(),
                 [nameof(SelectMany)] = SelectMany(),
                 [nameof(StartsWith)] = StartsWith(),
                 [nameof(EndsWith)] = EndsWith(),
                 [nameof(Localize)] = Localize(env),
                 [nameof(Format)] = Format(),
+                [nameof(ConvertCalendar)] = ConvertCalendar(),
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
@@ -961,6 +964,107 @@ namespace Tellma.Controllers.Templating
 
         #endregion
 
+        #region Max + Min
+
+        private TemplateFunction Max()
+        {
+            return new TemplateFunction(
+                functionAsync: (object[] args, EvaluationContext ctx) => MaxMinImpl(args, ctx, "Max"),
+                additionalSelectResolver: MaxMinSelect);
+        }
+
+        private TemplateFunction Min()
+        {
+            return new TemplateFunction(
+                functionAsync: (object[] args, EvaluationContext ctx) => MaxMinImpl(args, ctx, "Min"),
+                additionalSelectResolver: MaxMinSelect);
+        }
+
+        private async Task<object> MaxMinImpl(object[] args, EvaluationContext ctx, string funcName)
+        {
+            // Get arguments
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{funcName}' expects {argCount} arguments");
+            }
+
+            if (!(args[0] is IList items))
+            {
+                throw new TemplateException($"Function '{funcName}' expects a 1st argument list of type List");
+            }
+
+            if (!(args[1] is string valueSelectorString))
+            {
+                throw new TemplateException($"Function '{funcName}' expects a 2nd argument selector of type string");
+            }
+
+            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+                throw new TemplateException($"Function '{funcName}' 2nd parameter cannot be an empty string");
+
+            IComparable result = null;
+            foreach (var item in items)
+            {
+                // Clone an empty context and set a single local variable
+                var scopedCtx = ctx.CloneWithoutLocals();
+                scopedCtx.SetLocalVariable("$", new TemplateVariable(value: item));
+
+                var valueObj = await valueSelectorExp.Evaluate(scopedCtx);
+                if (valueObj is IComparable value)
+                {
+                    if (result == null || (funcName == "Max" && value.CompareTo(result) > 0) || (funcName == "Min" && value.CompareTo(result) < 0))
+                    {
+                        result = value;
+                    }
+                }
+                else
+                {
+                    throw new TemplateException($"Function '{funcName}' expects a list of values that support comparison");
+                }
+            }
+
+            return result;
+        }
+
+        private async IAsyncEnumerable<Path> MaxMinSelect(ExpressionBase[] args, EvaluationContext ctx)
+        {
+            // Get arguments
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Max)}' expects {argCount} arguments");
+            }
+
+            // Get the list expression
+            var listExp = args[0];
+
+            // Get and parse the value selector expression
+            var valueSelectorParameterExp = args[1];
+            var valueSelectorObj = await valueSelectorParameterExp.Evaluate(ctx);
+            if (!(valueSelectorObj is string valueSelectorString))
+            {
+                throw new TemplateException($"Function '{nameof(Max)}' expects a 2nd argument selector of type string");
+            }
+
+            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+                throw new TemplateException($"Function '{nameof(Max)}' 2nd parameter cannot be an empty string");
+
+
+            // Remove local variables and functions and add one $ variable
+            var scopedCtx = ctx.CloneWithoutLocals();
+            scopedCtx.SetLocalVariable("$", new TemplateVariable(
+                    eval: TemplateUtil.VariableThatThrows("$"),
+                    pathsResolver: () => listExp.ComputePaths(ctx))); // Use the paths of listExp as the paths of the $ variable
+
+            // Return the selects of the inner expression
+            await foreach (var path in valueSelectorExp.ComputeSelect(scopedCtx))
+            {
+                yield return path;
+            }
+        }
+
+        #endregion
+
         #region Count
 
         private TemplateFunction Count()
@@ -1028,6 +1132,66 @@ namespace Tellma.Controllers.Templating
         }
 
         #endregion,
+
+        #region ConvertCalendar
+
+        private TemplateFunction ConvertCalendar()
+        {
+            return new TemplateFunction(ConvertCalendarImpl);
+        }
+
+        private CustomCalendarDate ConvertCalendarImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != 2)
+            {
+                throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects {argCount} arguments");
+            }
+
+            var toConvertObj = args[0];
+            if (toConvertObj is null)
+            {
+                return null; // Null propagation
+            }
+
+            int year;
+            int month;
+            int day;
+
+            if (toConvertObj is DateTime toConvertDt)
+            {
+                year = toConvertDt.Year;
+                month = toConvertDt.Month;
+                day = toConvertDt.Day;
+            }
+            else if (toConvertObj is DateTimeOffset toConvertDto)
+            {
+                year = toConvertDto.Year;
+                month = toConvertDto.Month;
+                day = toConvertDto.Day;
+            } 
+            else
+            {
+                throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects a 1st parameter 'toConvert' of type DateTime or DateTimeOffset");
+            }
+
+            var calendarObj = args[1];
+            if (!(calendarObj is string calendar))
+            {
+                throw new TemplateException($"Function '{nameof(Format)} expects a 2nd parameter 'calendarCode' of type string'");
+            }
+
+            var (cDay, cMonth, cYear) = (calendar.ToUpper()) switch
+            {
+                CalendarUtilities.GregorianCode => (day, month, year),
+                CalendarUtilities.EthiopianCode => CalendarUtilities.GregorianToEthiopian(day, month, year),
+                _ => throw new TemplateException($"Function '{nameof(Format)} 2nd parameter 'calendarCode' must be one of the supported calendar codes: '{string.Join("', '", CalendarUtilities.AllCalendarCodes)}'"),
+            };
+
+            return new CustomCalendarDate(cDay, cMonth, cYear);
+        }
+
+        #endregion
 
         #region If
 
@@ -1122,7 +1286,7 @@ namespace Tellma.Controllers.Templating
             int? decimals = null;
             if (args.Length >= 3 && args[2] != null)
             {
-                object decimalsObj = args[2]; 
+                object decimalsObj = args[2];
                 try
                 {
                     decimals = Convert.ToInt32(decimalsObj);
@@ -1343,6 +1507,62 @@ namespace Tellma.Controllers.Templating
         {
             public CultureInfo Culture { get; set; }
             public CancellationToken Cancellation { get; set; }
+        }
+    }
+
+    // TODO: Temporarily until we add custom Calendar support
+    public class CustomCalendarDate : IFormattable, IComparable
+    {
+        public int Day { get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
+
+        public CustomCalendarDate(int day, int month, int year)
+        {
+            Day = day;
+            Month = month;
+            Year = year;
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            format ??= "dd/MM/yyyy";
+
+            StringBuilder bldr = new StringBuilder(format);
+            bldr.Replace("yyyy", Year.ToString("D4"))
+                .Replace("yyy", Year.ToString("D3"))
+                .Replace("yy", Year.ToString("D2"))
+                .Replace("MMMM", Month.ToString()) // TODO
+                .Replace("MMMM", Month.ToString()) // TODO
+                .Replace("MM", Month.ToString("D2")) // TODO
+                .Replace("M", Month.ToString("D")) // TODO
+                .Replace("dd", Day.ToString("D2")) // TODO
+                .Replace("d", Day.ToString("D")); // TODO
+
+            return bldr.ToString();
+        }
+
+        public int CompareTo(object obj)
+        {
+            var left = this;
+            if (obj is CustomCalendarDate right)
+            {
+                var result = left.Year - right.Year;
+                if (result == 0)
+                {
+                    result = left.Month - right.Month;
+                    if (result == 0)
+                    {
+                        result = left.Day - right.Day;
+                    }
+                }
+
+                return result;
+            }
+            else
+            {
+                throw new InvalidCastException($"Cannot convert {obj?.GetType()?.Name} to {nameof(CustomCalendarDate)}");
+            }
         }
     }
 }

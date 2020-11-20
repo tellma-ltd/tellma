@@ -146,7 +146,9 @@
 	[JobVisibility]						NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([JobVisibility] IN (N'None', N'Optional', N'Required')),
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
-	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),
+	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),	
+	[HasAttachments]					BIT				NOT NULL DEFAULT 0,
+	[AttachmentsCategoryDefinitionId]	INT,
 
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),

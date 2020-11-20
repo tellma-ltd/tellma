@@ -143,7 +143,7 @@ namespace Tellma.Controllers
             if (imageId != null)
             {
                 // Get the bytes
-                string blobName = BlobName(imageId);
+                string blobName = ImageBlobName(imageId);
                 var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                 return (imageId, imageBytes);
@@ -154,7 +154,7 @@ namespace Tellma.Controllers
             }
         }
 
-        private string BlobName(string guid)
+        private string ImageBlobName(string guid)
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
             return $"{tenantId}/Custodies/{guid}";
@@ -240,17 +240,17 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<CustodyForSave> entities, bool returnIds)
         {
-            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Custody, CustodyForSave>(_repo, entities, BlobName);
-
-            _blobsToDelete = blobsToDelete;
-            _blobsToSave = blobsToSave;
+            // The new images
+            _blobsToSave = ImageUtilities.ExtractImages(entities, ImageBlobName).ToList();
 
             // Save the custodies
-            var ids = await _repo.Custodies__Save(
+            var (deletedImageIds, ids) = await _repo.Custodies__Save(
                 DefinitionId.Value,
                 entities: entities,
-                imageIds: imageIds,
                 returnIds: returnIds);
+
+            // Add any attachment Ids that we must delete
+            _blobsToDelete = deletedImageIds.Select(imageId => ImageBlobName(imageId)).ToList();
 
             return ids;
         }
@@ -290,7 +290,7 @@ namespace Tellma.Controllers
                 .ToListAsync(cancellation: default);
 
             var blobsToDelete = dbEntitiesWithImageIds
-                .Select(e => BlobName(e.ImageId))
+                .Select(e => ImageBlobName(e.ImageId))
                 .ToList();
 
             try

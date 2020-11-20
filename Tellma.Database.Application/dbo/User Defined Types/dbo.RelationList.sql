@@ -47,5 +47,9 @@
 	[BankAccountNumber]			NVARCHAR (34),
 	[Relation1Index]				INT,
 	[Relation1Id]				INT,
-	INDEX IX_AgentList__Code ([Code])
+	INDEX IX_AgentList__Code ([Code]),
+
+	-- Extra Columns not in Relation.cs
+	[ImageId]					NVARCHAR (50),
+	[UpdateAttachments]			BIT
 );

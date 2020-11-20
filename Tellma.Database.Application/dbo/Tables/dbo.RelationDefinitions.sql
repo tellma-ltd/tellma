@@ -133,7 +133,7 @@
 
 	[PreprocessScript]					NVARCHAR (MAX),
 	[ValidateScript]					NVARCHAR (MAX),
-	-----Properties applicable to contracts only
+	-----Properties applicable to relations only
 	[Relation1Label]					NVARCHAR (50),
 	[Relation1Label2]					NVARCHAR (50),
 	[Relation1Label3]					NVARCHAR (50),
@@ -147,6 +147,8 @@
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
 	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),
+	[HasAttachments]					BIT				NOT NULL DEFAULT 0,
+	[AttachmentsCategoryDefinitionId]	INT				CONSTRAINT [FK_RelationDefinitions__AttachmentsCategoryDefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 
 	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),

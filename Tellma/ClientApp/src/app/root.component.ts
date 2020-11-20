@@ -97,11 +97,10 @@ export class RootComponent {
       this.showNewUpdateIsAvailable = true;
     });
 
-    // show a message if the user opens the app for the first time on Internet Explorer
+    // show a message if the user opens the app on Internet Explorer
     // tslint:disable-next-line:no-string-literal
     const isIE = (/*@cc_on!@*/false) || (document['documentMode']);
-    const dismissedBefore = this.storage.getItem('ie_warning_dismissed');
-    this.showIEWarning = isIE && !dismissedBefore;
+    this.showIEWarning = isIE;
 
     // Callback after the new app culture is loaded
     this.translate.onLangChange.subscribe((_: any) => {
@@ -126,11 +125,6 @@ export class RootComponent {
 
   public onRefresh() {
     this.document.location.reload();
-  }
-
-  public onDismissIEWarning() {
-    this.showIEWarning = false;
-    this.storage.setItem('ie_warning_dismissed', 'true');
   }
 
   private getUrlUiCulture(): string {

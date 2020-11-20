@@ -1,9 +1,9 @@
 // tslint:disable:member-ordering
 import { Component, Input, OnInit } from '@angular/core';
-import { tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Relation, RelationForSave } from '~/app/data/entities/relation';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, colorFromExtension, downloadBlob, fileSizeDisplay, iconFromExtension, onFileSelected } from '~/app/data/util';
 import { ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,6 +14,8 @@ import {
 } from '~/app/data/dto/definitions-for-client';
 import { LatLngLiteral } from '@agm/core';
 import { ReportView } from '../report-results/report-results.component';
+import { RelationAttachment, RelationAttachmentForSave } from '~/app/data/entities/relation-attachment';
+import { of } from 'rxjs';
 
 @Component({
   selector: 't-relations-details',
@@ -40,7 +42,8 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
-  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,Relation1,Agent,Users/User';
+  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,
+Relation1,Agent,Users/User,Attachments/Category,Attachments/CreatedBy`;
 
   create = () => {
     const result: RelationForSave = {};
@@ -55,6 +58,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     // TODO Set defaults from definition
 
     result.Users = [];
+    result.Attachments = [];
     return result;
   }
 
@@ -63,6 +67,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as Relation;
       clone.Id = null;
+      clone.Attachments = []; // Attachments can't be cloned
 
       if (!!clone.Users) {
         clone.Users.forEach(e => {
@@ -630,6 +635,12 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+
+  public showTabs(isEdit: boolean, model: Relation): boolean {
+    return this.Users_isVisible || this.Location_isVisible || this.Attachments_isVisible
+      || (this.reports.length > 0 && this.showReports(isEdit, model));
+  }
+
   public get User_isVisible(): boolean {
     return this.definition.UserCardinality === 'Single';
   }
@@ -664,8 +675,18 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
   }
 
-  public showTabs(isEdit: boolean, model: Relation): boolean {
-    return this.Users_isVisible || this.Location_isVisible || (this.reports.length > 0 && this.showReports(isEdit, model));
+  // Attachments
+
+  public get Attachments_isVisible(): boolean {
+    return !!this.definition.HasAttachments;
+  }
+
+  public Attachments_count(model: RelationForSave): number {
+    return !!model && !!model.Attachments ? model.Attachments.length : 0;
+  }
+
+  public Attachments_showError(model: RelationForSave): boolean {
+    return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
   }
 
   // Location + Map stuff
@@ -766,6 +787,9 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     return this.locationView === view;
   }
 
+  // Attachments
+
+
   // Embedded Reports
 
   public showReports(isEdit: boolean, model: Relation) {
@@ -812,6 +836,8 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
     if (!miscState[key]) {
       if (this.Users_isVisible) {
         miscState[key] = 'users';
+      } else if (this.Attachments_isVisible) {
+        miscState[key] = 'attachments';
       } else if (this.Location_isVisible) {
         miscState[key] = 'location';
       } else if (this.reports.length > 0) {
@@ -831,4 +857,116 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   public onExpandReport(reportId: number, model: Relation) {
     this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
   }
+
+  /////////////// Attachments - START
+
+  private _maxAttachmentSize = 20 * 1024 * 1024;
+  private _pristineModel: string;
+
+  public showAttachmentsErrors(model: RelationForSave) {
+    return !!model && !!model.Attachments &&
+      model.Attachments.some(att => !!att.serverErrors);
+  }
+
+  private _attachmentsAttachments: RelationAttachmentForSave[];
+  private _attachmentsResult: AttachmentWrapper[];
+
+  public attachmentWrappers(model: RelationForSave) {
+    if (!model || !model.Attachments) {
+      return [];
+    }
+
+    if (this._attachmentsAttachments !== model.Attachments) {
+      this._attachmentsAttachments = model.Attachments;
+
+      this._attachmentsResult = model.Attachments.map(attachment => ({ attachment }));
+    }
+
+    return this._attachmentsResult;
+  }
+
+  public onFileSelected(input: HTMLInputElement, model: RelationForSave) {
+
+    const pendingFileSize = this.attachmentWrappers(model)
+      .map(a => !!a.file ? a.file.size : 0)
+      .reduce((total, v) => total + v, 0);
+
+    onFileSelected(input, pendingFileSize, this.translate).subscribe(wrapper => {
+      // Push it in both the model attachments and the wrapper collection
+      model.Attachments.push(wrapper.attachment);
+      this.attachmentWrappers(model).push(wrapper);
+    }, (errorMsg) => {
+      this.details.displayErrorModal(errorMsg);
+    });
+  }
+
+  public onDeleteAttachment(model: RelationForSave, index: number) {
+    this.attachmentWrappers(model).splice(index, 1);
+    model.Attachments.splice(index, 1);
+  }
+
+  public onDownloadAttachment(model: RelationForSave, index: number) {
+    const docId = model.Id;
+    const wrapper = this.attachmentWrappers(model)[index];
+
+    if (!!wrapper.attachment.Id) {
+      wrapper.downloading = true; // show a little spinner
+      this.relationsApi.getAttachment(docId, wrapper.attachment.Id).pipe(
+        tap(blob => {
+          delete wrapper.downloading;
+          downloadBlob(blob, this.fileName(wrapper));
+        }),
+        catchError(friendlyError => {
+          delete wrapper.downloading;
+          this.details.handleActionError(friendlyError);
+          return of(null);
+        }),
+        finalize(() => {
+          delete wrapper.downloading;
+        })
+      ).subscribe();
+
+    } else if (!!wrapper.file) {
+      downloadBlob(wrapper.file, this.fileName(wrapper));
+    }
+  }
+
+  public fileName(wrapper: AttachmentWrapper) {
+    const att = wrapper.attachment;
+    return !!att.FileName && !!att.FileExtension ? `${att.FileName}.${att.FileExtension}` :
+      (att.FileName || (!!wrapper.file ? wrapper.file.name : 'Attachment'));
+  }
+
+  public size(wrapper: AttachmentWrapper): string {
+    const att = wrapper.attachment;
+    return fileSizeDisplay(att.Size || (!!wrapper.file ? wrapper.file.size : null));
+  }
+
+  public colorFromExtension(extension: string): string {
+    return colorFromExtension(extension);
+  }
+
+  public iconFromExtension(extension: string): string {
+    return iconFromExtension(extension);
+  }
+
+  public registerPristineFunc = (pristineModel: RelationForSave) => {
+    this._pristineModel = JSON.stringify(pristineModel);
+  }
+
+  public isDirtyFunc = (model: RelationForSave) => {
+    if (!!model && !!model.Attachments && model.Attachments.some(e => !!e.File)) {
+      return true; // Optimization so as not to JSON.stringify large files sized in the megabytes every change detector cycle
+    }
+
+    return this._pristineModel !== JSON.stringify(model);
+  }
+
+  /////////////// Attachments - END
+}
+
+interface AttachmentWrapper {
+  attachment: RelationAttachment;
+  file?: File;
+  downloading?: boolean;
 }

@@ -149,6 +149,8 @@ RETURN (
 		[BankAccountNumberVisibility],
 
 		[UserCardinality],
+		[HasAttachments],
+		[AttachmentsCategoryDefinitionId],
 
 		[State],
 		[MainMenuIcon],

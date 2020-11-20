@@ -13,9 +13,10 @@ namespace Tellma.Data
     {
         /// <summary>
         /// Constructs a SQL data table containing all the public properties of the 
-        /// entities' type and populates the data table with the provided entities
+        /// entities' type and populates the data table with the provided entities.
+        /// This function automatically adds index columns for self referencing properties
         /// </summary>
-        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false) where T : Entity
+        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false, IEnumerable<ExtraColumn<T>> extraColumns = null) where T : Entity
         {
             DataTable table = new DataTable();
             if (addIndex)
@@ -24,7 +25,7 @@ namespace Tellma.Data
                 table.Columns.Add(new DataColumn("Index", typeof(int)));
             }
 
-            var props = AddColumnsFromProperties<T>(table);
+            var props = AddColumnsFromProperties(table, extraColumns);
 
             int index = 0;
             foreach (var entity in entities)
@@ -42,8 +43,24 @@ namespace Tellma.Data
                     // Add the remaining properties
                     foreach (var prop in props)
                     {
+                        if (prop.IsSelfReferencing)
+                        {
+                            object indexValue = prop.GetIndexProperty(entity);
+                            row[prop.IndexPropertyName] = indexValue ?? DBNull.Value;
+                        }
+
                         var propValue = prop.GetValue(entity);
                         row[prop.Name] = propValue ?? DBNull.Value;
+                    }
+
+                    // Custom columns
+                    if (extraColumns != null)
+                    {
+                        foreach (var extra in extraColumns)
+                        {
+                            var propValue = extra.GetValue(entity);
+                            row[extra.Name] = propValue ?? DBNull.Value;
+                        }
                     }
 
                     table.Rows.Add(row);
@@ -52,10 +69,12 @@ namespace Tellma.Data
                 index++;
             }
 
+
+
             return table;
         }
 
-        public static DataTable DataTableWithHeaderIndex<THeader, TLines>(IEnumerable<THeader> entities, Func<THeader, List<TLines>> linesFunc) where THeader : Entity where TLines : Entity
+        public static DataTable DataTableWithHeaderIndex<THeader, TLines>(IEnumerable<THeader> entities, Func<THeader, List<TLines>> linesFunc, IEnumerable<ExtraColumn<TLines>> extraColumns = null) where THeader : Entity where TLines : Entity
         {
             DataTable table = new DataTable();
 
@@ -63,7 +82,7 @@ namespace Tellma.Data
             table.Columns.Add(new DataColumn("Index", typeof(int)));
             table.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
 
-            var props = AddColumnsFromProperties<TLines>(table);
+            var props = AddColumnsFromProperties(table, extraColumns);
 
             int headerIndex = 0;
             foreach (var entity in entities)
@@ -83,8 +102,25 @@ namespace Tellma.Data
                         // Add the remaining properties
                         foreach (var prop in props)
                         {
+                            if (prop.IsSelfReferencing)
+                            {
+                                // This will probably never be used, we don't have self referencing properties on weak entities
+                                object indexValue = prop.GetIndexProperty(entity);
+                                row[prop.IndexPropertyName] = indexValue ?? DBNull.Value;
+                            }
+
                             var propValue = prop.GetValue(line);
                             row[prop.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        // Custom columns
+                        if (extraColumns != null)
+                        {
+                            foreach (var extra in extraColumns)
+                            {
+                                var propValue = extra.GetValue(line);
+                                row[extra.Name] = propValue ?? DBNull.Value;
+                            }
                         }
 
                         table.Rows.Add(row);
@@ -97,53 +133,13 @@ namespace Tellma.Data
             return table;
         }
 
-        public static DataTable DataTableWithSelfRefIndex<T>(IEnumerable<T> entities, Func<T, int?> selfRefIndexFunc, string selfRefNameWithoutId = "Parent") where T : Entity
-        {
-            string selfRefName = selfRefNameWithoutId + "Id";
-            string selfRefIndexName = selfRefNameWithoutId + "Index";
-
-            DataTable table = new DataTable();
-
-            // The column order MUST match the column order in the user-defined table type
-            table.Columns.Add(new DataColumn("Index", typeof(int)));
-            // table.Columns.Add(new DataColumn("ParentIndex", typeof(int)));
-
-            var props = AddColumnsFromProperties<T>(table, selfRefName, selfRefIndexName);
-
-            int index = 0;
-            foreach (var entity in entities)
-            {
-                DataRow row = table.NewRow();
-
-                // We add an index properties since SQL works with un-ordered sets
-                row["Index"] = index++;
-                // row["ParentIndex"] = (object)selfRefIndexFunc(entity) ?? DBNull.Value;
-
-                // Add the remaining properties
-                foreach (var prop in props)
-                {
-                    if (prop.Name == selfRefName)
-                    {
-                        object indexValue = selfRefIndexFunc(entity);
-                        row[selfRefIndexName] = indexValue ?? DBNull.Value;
-                    }
-
-                    var propValue = prop.GetValue(entity);
-                    row[prop.Name] = propValue ?? DBNull.Value;
-                }
-
-                table.Rows.Add(row);
-            }
-
-            return table;
-        }
-
-        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries) DataTableFromDocuments(IEnumerable<DocumentForSave> documents)
+        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries, DataTable attachments) DataTableFromDocuments(IEnumerable<DocumentForSave> documents, bool includeAttachments = true)
         {
             // Prepare the documents table skeleton
             DataTable docsTable = new DataTable();
             docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
             var docsProps = AddColumnsFromProperties<DocumentForSave>(docsTable);
+            docsTable.Columns.Add(new DataColumn("UpdateAttachments", typeof(bool)));
 
             // Prepare the line definition entries table skeleton
             DataTable lineDefinitionEntriesTable = new DataTable();
@@ -164,6 +160,13 @@ namespace Tellma.Data
             entriesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
             var entriesProps = AddColumnsFromProperties<EntryForSave>(entriesTable);
 
+            // Prepare the attachments table skeleton
+            DataTable attachmentsTable = new DataTable();
+            attachmentsTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var attachmentsProps = AddColumnsFromProperties<AttachmentForSave>(attachmentsTable);
+            attachmentsTable.Columns.Add(new DataColumn("FileId", typeof(string)));
+            attachmentsTable.Columns.Add(new DataColumn("FileSize", typeof(long)));
+
             // Add the docs
             int docsIndex = 0;
             foreach (var doc in documents)
@@ -178,15 +181,16 @@ namespace Tellma.Data
                     docsRow[docsProp.Name] = docsPropValue ?? DBNull.Value;
                 }
 
+                docsRow["UpdateAttachments"] = doc.Attachments != null; // Instructs the SP whether to update the attachments or not
+
                 // Add line definition entries if any
                 if (doc.LineDefinitionEntries != null)
                 {
-                    int lineDefinitionEntryIndex = 0;
                     doc.LineDefinitionEntries.ForEach(lineDefinitionEntry =>
                     {
                         DataRow lineDefinitionEntriesRow = lineDefinitionEntriesTable.NewRow();
 
-                        lineDefinitionEntriesRow["Index"] = lineDefinitionEntryIndex;
+                        lineDefinitionEntriesRow["Index"] = lineDefinitionEntry.EntityMetadata.OriginalIndex; // This collection gets culled, so we rely on the preserved index here
                         lineDefinitionEntriesRow["DocumentIndex"] = docsIndex;
 
                         foreach (var lineDefinitionEntryProp in lineDefinitionEntriesProps)
@@ -196,7 +200,6 @@ namespace Tellma.Data
                         }
 
                         lineDefinitionEntriesTable.Rows.Add(lineDefinitionEntriesRow);
-                        lineDefinitionEntryIndex++;
                     });
                 }
 
@@ -244,11 +247,33 @@ namespace Tellma.Data
                     });
                 }
 
+                // Add the attachments if any
+                if (doc.Attachments != null)
+                {
+                    doc.Attachments.ForEach(attachment =>
+                    {
+                        DataRow attachmentsRow = attachmentsTable.NewRow();
+
+                        attachmentsRow["DocumentIndex"] = docsIndex;
+
+                        foreach (var attachmentsProp in attachmentsProps)
+                        {
+                            var attachmentsPropValue = attachmentsProp.GetValue(attachment);
+                            attachmentsRow[attachmentsProp.Name] = attachmentsPropValue ?? DBNull.Value;
+                        }
+
+                        attachmentsRow["FileId"] = attachment.EntityMetadata?.FileId;
+                        attachmentsRow["FileSize"] = attachment.EntityMetadata?.FileSize;
+
+                        attachmentsTable.Rows.Add(attachmentsRow);
+                    });
+                }
+
                 docsTable.Rows.Add(docsRow);
                 docsIndex++;
             }
 
-            return (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable);
+            return (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable);
         }
 
         public static (
@@ -514,15 +539,15 @@ namespace Tellma.Data
                 );
         }
 
-        private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table, string selfRefName = null, string selfRefIndexName = null) where T : Entity
+        private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table, IEnumerable<ExtraColumn<T>> extras = null) where T : Entity
         {
             var props = TypeDescriptor.Get<T>().SimpleProperties;
             foreach (var prop in props)
             {
                 // If it's a self referencing FK column, add the index first (by convention the index column immediate precedes the self ref FK column
-                if (prop.Name == selfRefName)
+                if (prop.IsSelfReferencing)
                 {
-                    var indexColumn = new DataColumn(selfRefIndexName, typeof(int));
+                    var indexColumn = new DataColumn(prop.IndexPropertyName, typeof(int));
                     table.Columns.Add(indexColumn);
                 }
 
@@ -543,7 +568,26 @@ namespace Tellma.Data
                 table.Columns.Add(column);
             }
 
+            if (extras != null)
+            {
+                foreach (var extra in extras)
+                {
+                    var column = new DataColumn(extra.Name, extra.Type);
+                    table.Columns.Add(column);
+                }
+            }
+
             return props;
+        }
+
+        public static ExtraColumn<T> Column<T>(string name, Type type, Func<T, object> getValue)
+        {
+            return new ExtraColumn<T>
+            {
+                Name = name,
+                Type = type,
+                GetValue = getValue
+            };
         }
 
 
@@ -691,5 +735,23 @@ namespace Tellma.Data
 
             return result;
         }
+    }
+
+    public class ExtraColumn<T>
+    {
+        /// <summary>
+        /// Column name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Column type (don't use nullable).
+        /// </summary>
+        public Type Type { get; set; }
+
+        /// <summary>
+        /// Function that gets the value
+        /// </summary>
+        public Func<T, object> GetValue { get; set; }
     }
 }

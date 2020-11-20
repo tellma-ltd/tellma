@@ -404,7 +404,11 @@ BEGIN
 
 	WITH BA AS (
 		SELECT * FROM dbo.[Attachments]
-		WHERE [DocumentId] IN (SELECT [Id] FROM @DocumentsIndexedIds)
+		WHERE [DocumentId] IN (		
+			SELECT II.[Id] FROM @DocumentsIndexedIds II 
+			JOIN @Documents E ON II.[Index] = E.[Index]
+			WHERE E.[UpdateAttachments] = 1 -- Is this correct ?
+		)
 	)
 	INSERT INTO @DeletedFileIds([Id])
 	SELECT x.[DeletedFileId]
