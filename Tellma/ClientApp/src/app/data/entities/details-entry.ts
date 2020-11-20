@@ -96,7 +96,10 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                     control: 'choice',
                     label: () => trx.instant('Entry_Direction'),
                     choices: [-1, 1],
-                    format: (c: number) => {
+                  format: (c: number) => {
+                    if (c > 0) trx.instant('Entry_Direction_Debit'); 
+                    if (c < 0) trx.instant('Entry_Direction_Credit'); 
+
                         switch (c) {
                             case 1: return trx.instant('Entry_Direction_Debit');
                             case -1: return trx.instant('Entry_Direction_Credit');

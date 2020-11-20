@@ -11,6 +11,9 @@
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	-- With any entry Index
+	[CenterId]						INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CenterId] REFERENCES dbo.[Centers]([Id]), 
+	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
+
 	[ParticipantId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ParticipantId] REFERENCES dbo.[Relations]([Id]), 
 	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
 
@@ -19,16 +22,12 @@
 
 	[CustodyId]						INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CustodyId] REFERENCES dbo.[Custodies]([Id]), 
 	[CustodyIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[ResourceId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__DebitResourceId] REFERENCES dbo.[Resources]([Id]), 
+	[ResourceId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ResourceId] REFERENCES dbo.[Resources]([Id]), 
 	[ResourceIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[Quantity]						DECIMAL (19,4)	NULL,
 	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[UnitId]						INT CONSTRAINT [FK_DocumentLineDefinitionEntries__UnitId] REFERENCES dbo.[Units]([Id]),
 	[UnitIsCommon]					BIT				NOT NULL DEFAULT 0,
-
-	[CenterId]						INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CenterId] REFERENCES dbo.[Centers]([Id]), 
-	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
-
 	[Time1]							DATETIME2 (2),
 	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),
