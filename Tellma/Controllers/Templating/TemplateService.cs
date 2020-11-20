@@ -1010,7 +1010,11 @@ namespace Tellma.Controllers.Templating
                 scopedCtx.SetLocalVariable("$", new TemplateVariable(value: item));
 
                 var valueObj = await valueSelectorExp.Evaluate(scopedCtx);
-                if (valueObj is IComparable value)
+                if (valueObj is null)
+                {
+                    continue; // Null propagation
+                }
+                else if (valueObj is IComparable value)
                 {
                     if (result == null || (funcName == "Max" && value.CompareTo(result) > 0) || (funcName == "Min" && value.CompareTo(result) < 0))
                     {
