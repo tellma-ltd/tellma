@@ -153,7 +153,11 @@ namespace Tellma.Controllers
 
             // Onto the printing itself
 
-            var templates = new string[] { template.DownloadName, template.Body };
+            var templates = new (string, string)[] {
+                (template.DownloadName, MimeTypes.Text),
+                (template.Body, template.MarkupLanguage)
+            };
+
             var tenantInfo = _tenantInfo.GetCurrentInfo();
             var culture = TemplateUtil.GetCulture(args, tenantInfo);
 

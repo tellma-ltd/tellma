@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,10 +96,15 @@ namespace Tellma.Controllers.Templating
         /// Appends to the <see cref="StringBuilder"/> the output markup evaluated
         /// according to the supplied <see cref="EvaluationContext"/>
         /// </summary>
-        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx)
+        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
+            encodeFunc ??= s => s; // Encoding for nothing by default
+
             var value = await Evaluate(ctx);
-            builder.Append(ToString(value));
+            var stringValue = ToString(value);
+            var encodedStringValue = encodeFunc(stringValue);
+
+            builder.Append(encodedStringValue);
         }
 
         public string ToString(object value)

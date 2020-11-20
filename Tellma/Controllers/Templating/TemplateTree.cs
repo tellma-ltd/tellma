@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,14 +28,11 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx)
+        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
             foreach (var item in Contents.Where(e => e != null))
             {
-                if (item != null)
-                {
-                    await item.GenerateOutput(builder, ctx);
-                }
+                await item.GenerateOutput(builder, ctx, encodeFunc);
             }
         }
 

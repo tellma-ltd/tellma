@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx)
+        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
             if (ListCandidate != null)
             {
@@ -75,12 +76,12 @@ namespace Tellma.Controllers.Templating
                                 ));
 
                         // Run the template again on that context
-                        await Template.GenerateOutput(builder, scopedCtx);
+                        await Template.GenerateOutput(builder, scopedCtx, encodeFunc);
                     }
                 }
                 else
                 {
-                    throw new TemplateException($"Foreach expression could not be applied. Expression ({ListCandidate.ToString()}) does not evaluate to a list");
+                    throw new TemplateException($"Foreach expression could not be applied. Expression ({ListCandidate}) does not evaluate to a list");
                 }
             }
         }

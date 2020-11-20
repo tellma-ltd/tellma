@@ -110,7 +110,7 @@ namespace Tellma.Controllers
         public async Task<(string Body, string DownloadName)> Preview(MarkupPreviewTemplate entity, GenerateMarkupArguments args, CancellationToken cancellation)
         {
             // Everything to input in the template service
-            var templates = new string[] { entity.DownloadName, entity.Body };
+            var templates = new (string, string)[] { (entity.DownloadName, MimeTypes.Text), (entity.Body, entity.MarkupLanguage) };
             var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
 
             // Generate the output
@@ -134,7 +134,7 @@ namespace Tellma.Controllers
                 ["$Skip"] = args.Skip
             };
             var preloadedQuery = new QueryByFilterInfo(entity.Collection, entity.DefinitionId, args.Filter, args.OrderBy, args.Top, args.Skip, ids: args.I);
-            var templates = new string[] { entity.DownloadName, entity.Body };
+            var templates = new (string, string)[] { (entity.DownloadName, MimeTypes.Text), (entity.Body, entity.MarkupLanguage) };
             var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
 
             // Generate the output
@@ -155,7 +155,7 @@ namespace Tellma.Controllers
                 ["$Id"] = id ?? throw new BadRequestException("The id argument is required")
             };
             var preloadedQuery = new QueryByIdInfo(entity.Collection, entity.DefinitionId, id);
-            var templates = new string[] { entity.DownloadName, entity.Body };
+            var templates = new (string, string)[] { (entity.DownloadName, MimeTypes.Text), (entity.Body, entity.MarkupLanguage) };
             var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
 
             // Generate the output

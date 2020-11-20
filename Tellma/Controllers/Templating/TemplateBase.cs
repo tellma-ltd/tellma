@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,11 +25,11 @@ namespace Tellma.Controllers.Templating
 
         /// <summary>
         /// Appends the final output to the provided <see cref="StringBuilder"/>, any function and variables
-        /// used in the expressionswill be evaluated based on the supplied <see cref="EvaluationContext"/>
+        /// used in the expressions will be evaluated based on the supplied <see cref="EvaluationContext"/>
         /// </summary>
         /// <param name="builder">The <see cref="StringBuilder"/> to append the output to</param>
-        /// <param name="ctx"></param>
-        /// <returns></returns>
-        public abstract Task GenerateOutput(StringBuilder builder, EvaluationContext ctx);
+        /// <param name="ctx">The evaluation context containing all referenced variables and functions</param>
+        /// <param name="encodeFunc">Optional function that encodes the resulting strings of interpolation expressions before adding them to the final output</param>
+        public abstract Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null);
     }
 }

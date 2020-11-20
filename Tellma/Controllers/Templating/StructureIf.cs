@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx)
+        public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
             if (ConditionCandidate != null)
             {
@@ -39,7 +40,7 @@ namespace Tellma.Controllers.Templating
                 {
                     if (condition)
                     {
-                        await Template.GenerateOutput(builder, ctx);
+                        await Template.GenerateOutput(builder, ctx, encodeFunc);
                     }
                 }
                 else

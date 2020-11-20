@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { EllipsisModule } from 'ngx-ellipsis';
 import { SharedModule } from '../shared/shared.module';
 import { ApplicationShellComponent } from './application-shell/application-shell.component';
 import { UnitsMasterComponent } from './units/units-master.component';
@@ -178,9 +179,9 @@ import {
   faEquals,
   faEnvelope,
   faSms,
-  faHourglassHalf
+  faHourglassHalf,
+  faClipboardList
 } from '@fortawesome/free-solid-svg-icons';
-import { faStar as faStarAlternative } from '@fortawesome/free-regular-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
 import { ResourcesMasterComponent } from './resources/resources-master.component';
@@ -785,6 +786,7 @@ const routes: Routes = [
   imports: [
     SharedModule,
     RouterModule.forChild(routes),
+    EllipsisModule,
     AgmCoreModule.forRoot({
       apiKey: '<Google API Key goes here>'
     })
@@ -827,6 +829,7 @@ export class ApplicationModule {
       faChevronUp,
       faCity,
       faClipboard,
+      faClipboardList,
       faClone,
       faCode,
       faCodeBranch,
