@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "User", Plural = "Users")]
-    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImageForSave
+    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImage
     {
         [NotMapped]
         [Display(Name = "Image")]
@@ -78,7 +78,7 @@ namespace Tellma.Entities
 
     public class UserForSave : UserForSave<RoleMembershipForSave> { }
 
-    public class User : UserForSave<RoleMembership>, IEntityWithImage
+    public class User : UserForSave<RoleMembership>
     {
         [NotMapped]
         public string PushEndpoint { get; set; }

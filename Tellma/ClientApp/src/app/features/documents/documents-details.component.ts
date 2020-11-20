@@ -8,25 +8,25 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  DefinitionsForClient, LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName
+  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
-  addToWorkspace, getDataURL, downloadBlob,
+  addToWorkspace, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError, printBlob, isSpecified
+  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected
 } from '~/app/data/util';
-import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
+import { tap, catchError, finalize, skip } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { of, throwError, Observable, Subscription } from 'rxjs';
+import { of, Observable, Subscription } from 'rxjs';
 import { Account, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Relation } from '~/app/data/entities/relation';
 import { AccountType } from '~/app/data/entities/account-type';
-import { Attachment } from '~/app/data/entities/attachment';
+import { Attachment, AttachmentForSave } from '~/app/data/entities/attachment';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -35,7 +35,6 @@ import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
-import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 
@@ -1509,272 +1508,108 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_NotedDate');
   }
 
+  /////////////// Attachments - START
+
+  public showAttachmentsErrors(model: Document) {
+    return !!model && !!model.Attachments &&
+      model.Attachments.some(att => !!att.serverErrors);
+  }
+
+  private _attachmentsAttachments: AttachmentForSave[];
+  private _attachmentsResult: AttachmentWrapper[];
+
+  public attachmentWrappers(model: DocumentForSave) {
+    if (!model || !model.Attachments) {
+      return [];
+    }
+
+    if (this._attachmentsAttachments !== model.Attachments) {
+      this._attachmentsAttachments = model.Attachments;
+
+      this._attachmentsResult = model.Attachments.map(attachment => ({ attachment }));
+    }
+
+    return this._attachmentsResult;
+  }
+
   public onFileSelected(input: HTMLInputElement, model: DocumentForSave) {
-    const files = input.files as FileList;
-    if (!files) {
-      return;
-    }
 
-    // Convert the FileList to an array
-    const filesArray: File[] = [];
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < files.length; i++) {
-      filesArray.push(files[i]);
-    }
-
-    // Clear the input field
-    input.value = '';
-
-    // Calculate total size of files
-    const totalSize = filesArray
-      .map(e => e.size || 0)
-      .reduce((total, v) => total + v, 0);
-
-    // Make sure total size of selected files doesn't exceed maximum size
-    if (totalSize > this._maxAttachmentSize) {
-      this.details.displayErrorModal(this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
-        { size: fileSizeDisplay(this._maxAttachmentSize) }));
-
-      return;
-    }
-
-    // Make sure pending attachments don't exceed maximum size
-    model.Attachments = model.Attachments || [];
-    const sumOfAttachmentSizesPendingSave = model.Attachments
+    const pendingFileSize = this.attachmentWrappers(model)
       .map(a => !!a.file ? a.file.size : 0)
       .reduce((total, v) => total + v, 0);
 
-    if (sumOfAttachmentSizesPendingSave + totalSize > this._maxAttachmentSize) {
-      this.details.displayErrorModal(this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
-        { size: fileSizeDisplay(this._maxAttachmentSize) }));
-      return;
-    }
-
-    for (const file of filesArray) {
-
-      getDataURL(file).pipe(
-        takeUntil(this.notifyDestruct$),
-        tap(dataUrl => {
-
-          // Get the base64 value from the data URL
-          const commaIndex = dataUrl.indexOf(',');
-          const fileBytes = dataUrl.substr(commaIndex + 1);
-          const fileNamePieces = file.name.split('.');
-          const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
-          const fileName = fileNamePieces.join('.') || '???';
-          model.Attachments.push({
-            Id: 0,
-            File: fileBytes,
-            FileName: fileName,
-            FileExtension: extension,
-            file,
-
-            toJSON() {
-              return {
-                Id: this.Id,
-                File: this.File,
-                FileName: this.FileName,
-                FileExtension: this.FileExtension
-              };
-            }
-          });
-        }),
-        catchError(err => {
-          console.error(err);
-          return throwError(err);
-        })
-      ).subscribe();
-    }
+    onFileSelected(input, pendingFileSize, this.translate).subscribe(wrapper => {
+      // Push it in both the model attachments and the wrapper collection
+      model.Attachments.push(wrapper.attachment);
+      this.attachmentWrappers(model).push(wrapper);
+    }, (errorMsg) => {
+      this.details.displayErrorModal(errorMsg);
+    });
   }
 
   public onDeleteAttachment(model: DocumentForSave, index: number) {
+    this.attachmentWrappers(model).splice(index, 1);
     model.Attachments.splice(index, 1);
   }
 
   public onDownloadAttachment(model: DocumentForSave, index: number) {
     const docId = model.Id;
-    const att = model.Attachments[index];
+    const wrapper = this.attachmentWrappers(model)[index];
 
-    if (!!att.Id) {
-      att.downloading = true; // show a little spinner
-      this.documentsApi.getAttachment(docId, att.Id).pipe(
+    if (!!wrapper.attachment.Id) {
+      wrapper.downloading = true; // show a little spinner
+      this.documentsApi.getAttachment(docId, wrapper.attachment.Id).pipe(
         tap(blob => {
-          delete att.downloading;
-          downloadBlob(blob, this.fileName(att));
+          delete wrapper.downloading;
+          downloadBlob(blob, this.fileName(wrapper));
         }),
         catchError(friendlyError => {
-          delete att.downloading;
+          delete wrapper.downloading;
           this.details.handleActionError(friendlyError);
           return of(null);
         }),
         finalize(() => {
-          delete att.downloading;
+          delete wrapper.downloading;
         })
       ).subscribe();
 
-    } else if (!!att.file) {
-      downloadBlob(att.file, this.fileName(att));
+    } else if (!!wrapper.file) {
+      downloadBlob(wrapper.file, this.fileName(wrapper));
     }
   }
 
-  private fileName(att: Attachment) {
+  public fileName(wrapper: AttachmentWrapper) {
+    const att = wrapper.attachment;
     return !!att.FileName && !!att.FileExtension ? `${att.FileName}.${att.FileExtension}` :
-      (att.FileName || (!!att.file ? att.file.name : 'Attachment'));
+      (att.FileName || (!!wrapper.file ? wrapper.file.name : 'Attachment'));
   }
 
-  public size(att: Attachment): string {
-    return fileSizeDisplay(att.Size || (!!att.file ? att.file.size : null));
+  public size(wrapper: AttachmentWrapper): string {
+    const att = wrapper.attachment;
+    return fileSizeDisplay(att.Size || (!!wrapper.file ? wrapper.file.size : null));
   }
 
   public colorFromExtension(extension: string): string {
-    const icon = this.iconFromExtension(extension);
-    switch (icon) {
-      case 'file-pdf': return '#CA342B';
-      case 'file-word': return '#345692';
-      case 'file-excel': return '#316F3E';
-      case 'file-powerpoint': return '#BD4D2D';
-      case 'file-archive': return '#E5BE36';
-      case 'file-image': return '#3E7A7E';
-      case 'file-video': return '#A12F5E'; // CC5747
-      case 'file-audio': return '#BA7D27';
-
-      case 'file-alt': // text files
-      case 'file': return '#6c757d';
-    }
-
-    return null;
+    return colorFromExtension(extension);
   }
 
   public iconFromExtension(extension: string): string {
-    if (!extension) {
-      return 'file';
-    } else {
-      extension = extension.toLowerCase();
-      switch (extension) {
-        case 'pdf':
-          return 'file-pdf';
-
-        case 'doc':
-        case 'docx':
-          return 'file-word';
-
-        case 'xls':
-        case 'xlsx':
-          return 'file-excel';
-
-        case 'ppt':
-        case 'pptx':
-          return 'file-powerpoint';
-
-        case 'txt':
-        case 'rtf':
-          return 'file-alt';
-
-        case 'zip':
-        case 'rar':
-        case '7z':
-        case 'tar':
-          return 'file-archive';
-
-        case 'jpg':
-        case 'jpeg':
-        case 'jpe':
-        case 'jif':
-        case 'jfif':
-        case 'jfi':
-        case 'png':
-        case 'ico':
-        case 'gif':
-        case 'webp':
-        case 'tiff':
-        case 'tif':
-        case 'psd':
-        case 'raw':
-        case 'arw':
-        case 'cr2':
-        case 'nrw':
-        case 'k25':
-        case 'bmp':
-        case 'dib':
-        case 'heif':
-        case 'heic':
-        case 'ind':
-        case 'indd':
-        case 'indt':
-        case 'jp2':
-        case 'j2k':
-        case 'jpf':
-        case 'jpx':
-        case 'jpm':
-        case 'mj2':
-        case 'svg':
-        case 'svgz':
-        case 'ai':
-        case 'eps':
-          return 'file-image';
-
-        case 'mpg':
-        case 'mp2':
-        case 'mpeg':
-        case 'mpe':
-        case 'mpv':
-        case 'ogg':
-        case 'mp4':
-        case 'm4p':
-        case 'm4v':
-        case 'avi':
-        case 'wmv':
-        case 'mov':
-        case 'qt':
-        case 'flv':
-        case 'swf':
-          return 'file-video';
-
-        case 'mp3':
-        case 'aac':
-        case 'wma':
-        case 'flac':
-        case 'alac':
-        case 'wav':
-        case 'aiff':
-          return 'file-audio';
-
-        default:
-          return 'file';
-      }
-    }
+    return iconFromExtension(extension);
   }
 
-  public registerPristineFunc = (pristineDoc: DocumentForSave) => {
-    const tracked = this.removeUntrackedProperties(pristineDoc);
-    this._pristineDocJson = JSON.stringify(tracked);
+  public registerPristineFunc = (pristineModel: DocumentForSave) => {
+    this._pristineDocJson = JSON.stringify(pristineModel);
   }
 
   public isDirtyFunc = (model: DocumentForSave) => {
-    return this._pristineDocJson !== JSON.stringify(this.removeUntrackedProperties(model));
-  }
-
-  private removeUntrackedProperties(doc: Document): Document {
-    if (!doc) {
-      return doc;
+    if (!!model && !!model.Attachments && model.Attachments.some(e => !!e.File)) {
+      return true; // Optimization so as not to JSON.stringify large files sized in the megabytes every change detector cycle
     }
 
-    // These properties and collections are not edited directly
-    // and therefore need not be compared for dirty checking
-    const copy = { ...doc } as Document;
-    delete copy.AssignmentsHistory;
-    if (!!doc.Attachments) {
-      copy.Attachments = doc.Attachments.map(att => {
-        const attCopy = { ...att } as Attachment;
-        delete attCopy.file;
-        delete attCopy.File;
-        delete attCopy.downloading;
-        return attCopy;
-      });
-    }
-
-    return copy;
+    return this._pristineDocJson !== JSON.stringify(model);
   }
+
+  /////////////// Attachments - END
 
   public extraParams = { includeRequiredSignatures: true };
 
@@ -2547,11 +2382,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lines = this.lines(lineDefId, model);
     return (!!tabEntries && tabEntries.some(tabEntry => !!tabEntry.serverErrors)) ||
       (!!lines && lines.some(line => !!line.serverErrors || (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
-  }
-
-  public showAttachmentsErrors(model: Document) {
-    return !!model && !!model.Attachments &&
-      model.Attachments.some(att => !!att.serverErrors);
   }
 
   public manualColumnPaths(model: DocumentForSave, bookkeeping = false): string[] {
@@ -3784,6 +3614,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get functionalName() {
     return this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName');
   }
+}
+
+interface AttachmentWrapper {
+  attachment: Attachment;
+  file?: File;
+  downloading?: boolean;
 }
 
 /* Rules for showing and hiding chart states

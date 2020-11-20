@@ -4,12 +4,13 @@ import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Observer } from 'rxjs';
+import { from, Observable, Observer, of, throwError, zip } from 'rxjs';
 import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 import { insert, set, getSelection } from 'text-field-edit';
-import { TextAttribute } from '@angular/compiler/src/render3/r3_ast';
+import { Attachment } from './entities/attachment';
+import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -142,28 +143,156 @@ function mergeArrays(freshArray: EntityWithKey[], staleArray: EntityWithKey[]): 
   return freshArray;
 }
 
+function safeToOpenDirectly(blob: Blob): boolean {
+  switch (blob.type) {
+    case 'application/pdf':
+    case 'image/jpeg':
+    case 'image/png':
+      return true;
+  }
+  return false;
+}
+
 export function downloadBlob(blob: Blob, fileName: string) {
   // Helper function to download a blob from memory to the user's computer,
   // Without having to open a new window first
   if (window.navigator && window.navigator.msSaveOrOpenBlob) {
     // To support IE and Edge
-    window.navigator.msSaveOrOpenBlob(blob, fileName);
+    if (safeToOpenDirectly(blob)) {
+      window.navigator.msSaveOrOpenBlob(blob, fileName);
+    } else {
+      window.navigator.msSaveBlob(blob, fileName);
+    }
   } else {
 
     // Create an in memory url for the blob, further reading:
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
     const url = window.URL.createObjectURL(blob);
 
-    // Below is a trick for downloading files without opening
-    // a new window. This is a more elegant user experience
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName || 'file';
-    a.click();
+    if (safeToOpenDirectly(blob)) {
+      // Opens the file in a new browser tab
+      window.open(url);
+
+      // const win = window.open();
+
+      // // Title
+      // const title = win.document.createElement('title');
+      // title.appendChild(win.document.createTextNode(fileName));
+
+      // // Icon
+      // const link = win.document.createElement('link');
+      // link.rel = 'icon';
+      // // link.type = 'image/x-icon';
+      // link.href = 'favicon.ico';
+
+
+      // // Body
+      // const iframe = win.document.createElement('iframe');
+      // iframe.src = url;
+      // iframe.width = '100%';
+      // iframe.height = '100%';
+      // iframe.style.border = 'none';
+
+      // win.document.head.appendChild(title);
+      // win.document.head.appendChild(link);
+      // win.document.body.appendChild(iframe);
+      // win.document.body.style.margin = '0';
+
+    } else {
+      console.log(blob.type);
+
+      // Below is a trick for downloading files without opening a new browser tab
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName || 'file';
+      a.click();
+    }
 
     // Best practice to prevent a memory leak, especially in a SPA
     window.URL.revokeObjectURL(url);
   }
+}
+
+const _maxAttachmentSize = 20 * 1024 * 1024;
+
+export function onFileSelected(
+    input: HTMLInputElement,
+    pendingFilesSize: number,
+    translate: TranslateService) {
+  const files = input.files as FileList;
+  if (!files) {
+    return;
+  }
+
+  // Convert the FileList to an array
+  const filesArray: File[] = [];
+  // tslint:disable-next-line:prefer-for-of
+  for (let i = 0; i < files.length; i++) {
+    filesArray.push(files[i]);
+  }
+
+  // Clear the input field
+  input.value = '';
+
+  // Calculate total size of files
+  const totalSize = filesArray
+    .map(e => e.size || 0)
+    .reduce((total, v) => total + v, 0);
+
+  // Make sure total size of selected files doesn't exceed maximum size
+  if (totalSize > _maxAttachmentSize) {
+    const msg = translate.instant('Error_FileSizeExceedsMaximumSizeOf0', { size: fileSizeDisplay(_maxAttachmentSize) });
+    return throwError(msg);
+  }
+
+  if (pendingFilesSize + totalSize > _maxAttachmentSize) {
+    const msg = translate.instant('Error_PendingFilesExceedMaximumSizeOf0', { size: fileSizeDisplay(_maxAttachmentSize) });
+    return throwError(msg);
+  }
+
+  return from(filesArray).pipe(
+    map(file => getDataURL(file).pipe(map(dataUrl => ({ file, dataUrl })))),
+    concatMap(obs => obs),
+    map(({ file, dataUrl }) => {
+      // Get the base64 value from the data URL
+      const commaIndex = dataUrl.indexOf(',');
+      const fileBytes = dataUrl.substr(commaIndex + 1);
+      const fileNamePieces = file.name.split('.');
+      const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
+      const fileName = fileNamePieces.join('.') || '???';
+
+      const attachment = {
+        Id: null,
+        File: fileBytes,
+        FileName: fileName,
+        FileExtension: extension,
+      };
+
+      return { attachment, file };
+    })
+  );
+
+  // const observables = filesArray.map(file => getDataURL(file).pipe(
+  //   map(dataUrl => {
+  //     // Get the base64 value from the data URL
+  //     const commaIndex = dataUrl.indexOf(',');
+  //     const fileBytes = dataUrl.substr(commaIndex + 1);
+  //     const fileNamePieces = file.name.split('.');
+  //     const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
+  //     const fileName = fileNamePieces.join('.') || '???';
+
+  //     const attachment = {
+  //       Id: null,
+  //       File: fileBytes,
+  //       FileName: fileName,
+  //       FileExtension: extension,
+  //     };
+
+  //     return { attachment, file };
+  //   })
+  // ));
+
+  // return zip(observables);
 }
 
 export enum Key {
@@ -267,7 +396,7 @@ export function fileSizeDisplay(fileSize: number): string {
     fileSize /= stepSize;
     unitIndex++;
   }
-  return (unitIndex ? fileSize.toFixed(1) + ' ' : fileSize) + ' KMGTPEZY'[unitIndex] + 'B';
+  return (unitIndex ? fileSize.toFixed(1) : fileSize) + ' KMGTPEZY'[unitIndex] + 'B';
 }
 
 export function computeSelectForDetailsPicker(desc: EntityDescriptor, additionalSelect: string): string {
@@ -757,4 +886,123 @@ export function getEditDistance(a: string, b: string, cap: number = 10000000000)
   }
 
   return matrix[b.length][a.length];
+}
+
+export function colorFromExtension(extension: string): string {
+  const icon = iconFromExtension(extension);
+  switch (icon) {
+    case 'file-pdf': return '#CA342B';
+    case 'file-word': return '#345692';
+    case 'file-excel': return '#316F3E';
+    case 'file-powerpoint': return '#BD4D2D';
+    case 'file-archive': return '#E5BE36';
+    case 'file-image': return '#3E7A7E';
+    case 'file-video': return '#A12F5E'; // CC5747
+    case 'file-audio': return '#BA7D27';
+
+    case 'file-alt': // text files
+    case 'file': return '#6c757d';
+  }
+
+  return null;
+}
+
+export function iconFromExtension(extension: string): string {
+  if (!extension) {
+    return 'file';
+  } else {
+    extension = extension.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'file-pdf';
+
+      case 'doc':
+      case 'docx':
+        return 'file-word';
+
+      case 'xls':
+      case 'xlsx':
+        return 'file-excel';
+
+      case 'ppt':
+      case 'pptx':
+        return 'file-powerpoint';
+
+      case 'txt':
+      case 'rtf':
+        return 'file-alt';
+
+      case 'zip':
+      case 'rar':
+      case '7z':
+      case 'tar':
+        return 'file-archive';
+
+      case 'jpg':
+      case 'jpeg':
+      case 'jpe':
+      case 'jif':
+      case 'jfif':
+      case 'jfi':
+      case 'png':
+      case 'ico':
+      case 'gif':
+      case 'webp':
+      case 'tiff':
+      case 'tif':
+      case 'psd':
+      case 'raw':
+      case 'arw':
+      case 'cr2':
+      case 'nrw':
+      case 'k25':
+      case 'bmp':
+      case 'dib':
+      case 'heif':
+      case 'heic':
+      case 'ind':
+      case 'indd':
+      case 'indt':
+      case 'jp2':
+      case 'j2k':
+      case 'jpf':
+      case 'jpx':
+      case 'jpm':
+      case 'mj2':
+      case 'svg':
+      case 'svgz':
+      case 'ai':
+      case 'eps':
+        return 'file-image';
+
+      case 'mpg':
+      case 'mp2':
+      case 'mpeg':
+      case 'mpe':
+      case 'mpv':
+      case 'ogg':
+      case 'mp4':
+      case 'm4p':
+      case 'm4v':
+      case 'avi':
+      case 'wmv':
+      case 'mov':
+      case 'qt':
+      case 'flv':
+      case 'swf':
+        return 'file-video';
+
+      case 'mp3':
+      case 'aac':
+      case 'wma':
+      case 'flac':
+      case 'alac':
+      case 'wav':
+      case 'aiff':
+        return 'file-audio';
+
+      default:
+        return 'file';
+    }
+  }
 }

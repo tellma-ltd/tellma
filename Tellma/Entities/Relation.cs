@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Relation", Plural = "Relations")]
-    public class RelationForSaveBase<TRelationUser> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
+    public class RelationForSave<TRelationUser, TAttachment> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -183,14 +183,18 @@ namespace Tellma.Entities
         [ForeignKey(nameof(RelationUser.RelationId))]
         public List<TRelationUser> Users { get; set; }
 
+        [Display(Name = "Relation_Attachments")]
+        [ForeignKey(nameof(RelationAttachment.RelationId))]
+        public List<TAttachment> Attachments { get; set; }
+
         #endregion
     }
 
-    public class RelationForSave : RelationForSaveBase<RelationUserForSave>
+    public class RelationForSave : RelationForSave<RelationUserForSave, RelationAttachmentForSave>
     {
     }
 
-    public class Relation : RelationForSaveBase<RelationUser>, ILocationEntity, IEntityWithImage
+    public class Relation : RelationForSave<RelationUser, RelationAttachment>, ILocationEntity
     {
         #region Common with Resource
 

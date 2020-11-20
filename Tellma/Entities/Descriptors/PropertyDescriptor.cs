@@ -11,6 +11,7 @@ namespace Tellma.Entities.Descriptors
         private readonly Action<Entity, object> _setter;
         private readonly Func<Entity, object> _getter;
         private readonly Action<Entity, int?> _indexPropertySetter;
+        private readonly Func<Entity, int?> _indexPropertyGetter;
 
         /// <summary>
         /// The type of proprety value
@@ -26,6 +27,11 @@ namespace Tellma.Entities.Descriptors
         /// The name of the property
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The name of the associated index property (if this is a self reference property)
+        /// </summary>
+        public string IndexPropertyName { get; }
 
         /// <summary>
         /// Sets the value of the property on the given entity to the given value
@@ -63,9 +69,17 @@ namespace Tellma.Entities.Descriptors
         public void SetIndexProperty(Entity entity, int index) => _indexPropertySetter(entity, index);
 
         /// <summary>
+        /// For self referencing foreign keys like ParentId (FKs that reference the same entity type),
+        /// there should always be an associated index property ParentIndex, to allow for referecing 
+        /// another entity in the saved list (may not have an ID yet) while saving such entities in bulk.
+        /// This method sets that property to a given integer index
+        /// </summary>
+        public int? GetIndexProperty(Entity entity) => _indexPropertyGetter(entity);
+
+        /// <summary>
         /// Syntactic sugar for _indexPropertySetter != null;
         /// </summary>
-        public bool IsSelfReferencing => _indexPropertySetter != null;
+        public bool IsSelfReferencing => IndexPropertyName != null;
 
         /// <summary>
         /// For <see cref="NavigationPropertyDescriptor"/>s, returns the entity descriptor of the property type.
@@ -97,7 +111,9 @@ namespace Tellma.Entities.Descriptors
             string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
+            string indexPropName = null,
             Action<Entity, int?> indexPropSetter = null,
+            Func<Entity, int?> indexPropGetter = null,
             int maxLength = -1)
         {
             PropertyInfo = propInfo ?? throw new ArgumentNullException(nameof(propInfo));
@@ -105,7 +121,13 @@ namespace Tellma.Entities.Descriptors
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _setter = setter ?? throw new ArgumentNullException(nameof(setter));
             _getter = getter ?? throw new ArgumentNullException(nameof(getter));
-            _indexPropertySetter = indexPropSetter;
+
+            if (indexPropName != null)
+            {
+                IndexPropertyName = indexPropName;
+                _indexPropertySetter = indexPropSetter ?? throw new ArgumentNullException(nameof(indexPropSetter));
+                _indexPropertyGetter = indexPropGetter ?? throw new ArgumentNullException(nameof(indexPropGetter));
+            }
 
             IsHierarchyId = Type == typeof(HierarchyId);
             IsGeography = Type == typeof(Geography);

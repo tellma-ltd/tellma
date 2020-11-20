@@ -320,7 +320,18 @@ export class ApiService {
   public relationsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Relation>(`relations/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Relation>(`relations/${definitionId}`, cancellationToken$)
+      deactivate: this.deactivateFactory<Relation>(`relations/${definitionId}`, cancellationToken$),
+      getAttachment: (relationId: string | number, attachmentId: string | number) => {
+        const url = appsettings.apiAddress + `api/relations/${definitionId}/${relationId}/attachments/${attachmentId}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
     };
   }
 

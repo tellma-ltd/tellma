@@ -13,5 +13,8 @@
 	[PreferredChannel]		NVARCHAR (255) DEFAULT N'Email',
 	[EmailNewInboxItem]		BIT DEFAULT 0,
 	[SmsNewInboxItem]		BIT DEFAULT 0,
-	[PushNewInboxItem]		BIT DEFAULT 0
+	[PushNewInboxItem]		BIT DEFAULT 0,
+
+	-- Extra Columns not in User.cs
+	[ImageId]					NVARCHAR (50)
 )

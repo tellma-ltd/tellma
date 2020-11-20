@@ -1,13 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[Users__Save]
 	@Entities [dbo].[UserList] READONLY,
-	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
 	@Roles [dbo].[RoleMembershipList] READONLY,
 	@ReturnIds BIT = 0
 AS
 BEGIN
 SET NOCOUNT ON;
 
-	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT;
 
@@ -20,6 +19,13 @@ SET NOCOUNT ON;
 		
 	SET @UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	
+	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
+	INSERT INTO @DeletedImageIds ([Id])
+	SELECT [ImageId] FROM dbo.[Users] E
+	WHERE E.[ImageId] IS NOT NULL 
+		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
+
+	
 	-- Users
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -27,7 +33,22 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Users] AS t
 		USING (
-			SELECT [Index], [Id], [Email], [Name], [Name2], [Name3], [PreferredLanguage], [ContactEmail], [ContactMobile], [NormalizedContactMobile], [PreferredChannel], [EmailNewInboxItem], [SmsNewInboxItem], [PushNewInboxItem]
+			SELECT 
+				[Index], 
+				[Id], 
+				[Email], 
+				[Name], 
+				[Name2], 
+				[Name3], 
+				[PreferredLanguage], 
+				[ContactEmail], 
+				[ContactMobile], 
+				[NormalizedContactMobile], 
+				[PreferredChannel], 
+				[EmailNewInboxItem], 
+				[SmsNewInboxItem], 
+				[PushNewInboxItem],
+				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -46,6 +67,7 @@ SET NOCOUNT ON;
 				t.[EmailNewInboxItem]	= s.[EmailNewInboxItem],
 				t.[SmsNewInboxItem]		= s.[SmsNewInboxItem],
 				t.[PushNewInboxItem]	= s.[PushNewInboxItem],
+				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 
 
 				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
@@ -53,8 +75,35 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Name], [Name2], [Name3], [Email], [PreferredLanguage], [ContactEmail], [ContactMobile], [NormalizedContactMobile], [PreferredChannel], [EmailNewInboxItem], [SmsNewInboxItem], [PushNewInboxItem])
-			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Email], s.[PreferredLanguage], s.[ContactEmail], s.[ContactMobile], s.[NormalizedContactMobile], s.[PreferredChannel], s.[EmailNewInboxItem], s.[SmsNewInboxItem], s.[PushNewInboxItem])
+			INSERT (
+				[Name], 
+				[Name2], 
+				[Name3], 
+				[Email], 
+				[PreferredLanguage], 
+				[ContactEmail], 
+				[ContactMobile], 
+				[NormalizedContactMobile], 
+				[PreferredChannel], 
+				[EmailNewInboxItem], 
+				[SmsNewInboxItem], 
+				[PushNewInboxItem],
+				[ImageId])
+			VALUES (
+				s.[Name], 
+				s.[Name2], 
+				s.[Name3], 
+				s.[Email], 
+				s.[PreferredLanguage], 
+				s.[ContactEmail], 
+				s.[ContactMobile],
+				s.[NormalizedContactMobile],
+				s.[PreferredChannel], 
+				s.[EmailNewInboxItem], 
+				s.[SmsNewInboxItem], 
+				s.[PushNewInboxItem],
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
+				)
 		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x
 	OPTION (RECOMPILE);
@@ -81,12 +130,8 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	-- Images
-	UPDATE U
-	SET U.ImageId = L.ImageId
-	FROM [dbo].[Users] U
-	JOIN @IndexedIds II ON U.Id = II.[Id]
-	JOIN @ImageIds L ON II.[Index] = L.[Index]
+	-- Return overwritten Image Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedImageIds;
 
 	-- Return the results if needed
 	IF @ReturnIds = 1

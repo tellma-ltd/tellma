@@ -99,6 +99,8 @@ namespace Tellma.Controllers
 
                         case nameof(Relation):
                         case nameof(RelationForSave):
+                        case nameof(RelationAttachment):
+                        case nameof(RelationAttachmentForSave):
                             if (!defs.Relations.TryGetValue(definitionId.Value, out RelationDefinitionForClient relationDef))
                             {
                                 var msg = _localizer[$"Error_RelationDefinition0CouldNotBeFound"];
@@ -258,8 +260,11 @@ namespace Tellma.Controllers
                             nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
                             nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
 
-                            nameof(Relation) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
-                            nameof(RelationForSave) => RelationPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
+                            nameof(Relation) => RelationPropertyOverrides(definitionId, def as RelationDefinitionForClient, settings, propInfo, display),
+                            nameof(RelationForSave) => RelationPropertyOverrides(definitionId, def as RelationDefinitionForClient, settings, propInfo, display),
+
+                            nameof(RelationAttachment) => RelationAttachmentPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
+                            nameof(RelationAttachmentForSave) => RelationAttachmentPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
 
                             nameof(Custody) => CustodyPropertyOverrides(def as CustodyDefinitionForClient, defs, settings, propInfo, display),
                             nameof(CustodyForSave) => CustodyPropertyOverrides(def as CustodyDefinitionForClient, defs, settings, propInfo, display),
@@ -998,12 +1003,47 @@ namespace Tellma.Controllers
             };
         }
 
+        private static DefinitionPropOverrides RelationAttachmentPropertyOverrides(
+            RelationDefinitionForClient def,
+            SettingsForClient settings,
+            PropertyInfo propInfo,
+            Func<string> display
+            )
+        {
+            bool isRequired = false;
+            int? targetDefId = null;
+
+            switch (propInfo.Name)
+            {
+                case nameof(RelationAttachment.CategoryId):
+                case nameof(RelationAttachment.Category):
+                    if (def.AttachmentsCategoryDefinitionId == null)
+                    {
+                        display = null;
+                    } 
+                    else
+                    {
+                        isRequired = true;
+                        targetDefId = def.AttachmentsCategoryDefinitionId;
+                    }
+                    break;
+            }
+
+            return new DefinitionPropOverrides
+            {
+                Display = display,
+                IsRequired = isRequired,
+                DefinitionId = targetDefId,
+            };
+        }
+
         /// <summary>
         /// Specifies any overriding changes to a relation property metadata that stem from the definition. 
         /// In particular: the property display, whether it's visible or not, whether it's required or not, 
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
         private static DefinitionPropOverrides RelationPropertyOverrides(
+            int? defId,
             RelationDefinitionForClient def,
             SettingsForClient settings,
             PropertyInfo propInfo,
@@ -1181,6 +1221,12 @@ namespace Tellma.Controllers
                         display = null;
                     }
                     break;
+                case nameof(Relation.Attachments):
+                    if (!(def.HasAttachments ?? false))
+                    {
+                        display = null;
+                    }
+                    break;
             }
 
             int? targetDefId = propInfo.Name switch
@@ -1189,8 +1235,12 @@ namespace Tellma.Controllers
                 nameof(Relation.Lookup2) => def.Lookup2DefinitionId,
                 nameof(Relation.Lookup3) => def.Lookup3DefinitionId,
                 nameof(Relation.Lookup4) => def.Lookup4DefinitionId,
-                //nameof(Relation.Lookup5) =>  def.Lookup5DefinitionId,
+                nameof(Relation.Lookup5) => def.Lookup5DefinitionId,
+                nameof(Relation.Lookup6) => def.Lookup6DefinitionId,
+                nameof(Relation.Lookup7) => def.Lookup7DefinitionId,
+                nameof(Relation.Lookup8) => def.Lookup8DefinitionId,
                 nameof(Relation.Relation1) => def.Relation1DefinitionId,
+                nameof(Relation.Attachments) => defId,
                 _ => null,
             };
 
@@ -1201,8 +1251,6 @@ namespace Tellma.Controllers
                 DefinitionId = targetDefId,
             };
         }
-
-
 
         /// <summary>
         /// Specifies any overriding changes to a Custody property metadata that stem from the definition. 

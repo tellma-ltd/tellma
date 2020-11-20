@@ -154,7 +154,7 @@ namespace Tellma.Controllers
             if (imageId != null)
             {
                 // Get the bytes
-                string blobName = BlobName(imageId);
+                string blobName = ImageBlobName(imageId);
                 var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                 return (imageId, imageBytes);
@@ -165,7 +165,7 @@ namespace Tellma.Controllers
             }
         }
 
-        private string BlobName(string guid)
+        private string ImageBlobName(string guid)
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
             return $"{tenantId}/Resources/{guid}";
@@ -303,19 +303,20 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
+
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {
-            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Resource, ResourceForSave>(_repo, entities, BlobName);
-
-            _blobsToDelete = blobsToDelete;
-            _blobsToSave = blobsToSave;
+            // The new images
+            _blobsToSave = ImageUtilities.ExtractImages(entities, ImageBlobName).ToList();
 
             // Save the Resources
-            var ids = await _repo.Resources__Save(
+            var (deletedImageIds, ids) = await _repo.Resources__Save(
                 DefinitionId.Value,
-                entities,
-                imageIds: imageIds,
+                entities: entities,
                 returnIds: returnIds);
+
+            // Add any attachment Ids that we must delete
+            _blobsToDelete = deletedImageIds.Select(imageId => ImageBlobName(imageId)).ToList();
 
             return ids;
         }
@@ -355,7 +356,7 @@ namespace Tellma.Controllers
                 .ToListAsync(cancellation: default);
 
             var blobsToDelete = dbEntitiesWithImageIds
-                .Select(e => BlobName(e.ImageId))
+                .Select(e => ImageBlobName(e.ImageId))
                 .ToList();
 
             try

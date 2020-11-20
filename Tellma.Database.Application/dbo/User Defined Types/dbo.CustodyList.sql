@@ -31,5 +31,9 @@
 	--[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
 	--[JobId]						INT,
 	[ExternalReference]			NVARCHAR (34),
+
+	-- Extra Columns not in Custody.cs
+	[ImageId]					NVARCHAR (50),
+
 	INDEX IX_AgentList__Code ([Code])
 );

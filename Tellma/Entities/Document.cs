@@ -308,6 +308,8 @@ namespace Tellma.Entities
             .Concat(CurrencyPaths(nameof(Account.Currency)))
             .Concat(CustodyPaths(nameof(Account.Custody)))
             .Concat(ResourcePaths(nameof(Account.Resource)))
+            .Concat(RelationPaths(nameof(Account.Participant)))
+            .Concat(RelationPaths(nameof(Account.Custodian)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
             .Concat(EntryTypeParentPaths(nameof(AccountType.EntryTypeParent)))

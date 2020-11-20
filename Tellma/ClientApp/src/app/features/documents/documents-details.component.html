@@ -396,8 +396,8 @@
                         {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
                 </ng-template>
 
-                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index" let-update="update"
-                    let-isForm="isForm" let-isEdit="isEdit">
+                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index"
+                    let-update="update" let-isForm="isForm" let-isEdit="isEdit">
                     <t-form-group-cell *ngIf="!isForm" class="t-form-group"
                         [serverErrors]="lineEntryServerErrors(lineDefId, columnIndex, line)">
                         <ng-container
@@ -413,8 +413,8 @@
                     </t-form-group>
                 </ng-template>
 
-                <ng-template #formGroupContent let-columnIndex="columnIndex" let-rowIndex="rowIndex" let-update="update" let-line="line"
-                    let-isForm="isForm">
+                <ng-template #formGroupContent let-columnIndex="columnIndex" let-rowIndex="rowIndex" let-update="update"
+                    let-line="line" let-isForm="isForm">
                     <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                         <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
@@ -648,7 +648,8 @@
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
                                 [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                 id="standardandpure{{ rowIndex }}">
-                            <label class="custom-control-label t-pointer" for="standardandpure{{ rowIndex }}">&zwnj;</label>
+                            <label class="custom-control-label t-pointer"
+                                for="standardandpure{{ rowIndex }}">&zwnj;</label>
                         </div>
                         <t-decimal-editor *ngSwitchCase="'Decimal1'"
                             [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
@@ -977,66 +978,75 @@
                 </div>
 
                 <!-- Attachments List -->
-                <div class="w-100 mx-0 mb-1" *ngIf="!!model?.Attachments?.length">
-                    <div class="text-nowrap" *ngFor="let att of model?.Attachments; let i = index;">
-                        <div class="border bg-light mt-1 mt-sm-2 mb-0 d-flex align-items-stretch">
+                <div class="w-100 mx-0 mb-1 p-2 p-sm-3 overflow-auto" style="max-height: 450px;" *ngIf="!!model?.Attachments?.length">
+                    <div class="text-nowrap" *ngFor="let w of attachmentWrappers(model); let i = index;"
+                        [class.bg-light]="i % 2 === 1000">
+                        <div class="border-bottom d-flex align-items-center">
                             <!-- Icon -->
                             <div class="px-3 pt-1 pb-2">
-                                <fa-icon [style.color]="colorFromExtension(att.FileExtension)" style="font-size: 200%;"
-                                    [icon]="iconFromExtension(att.FileExtension)">
+                                <fa-icon [style.color]="colorFromExtension(w.attachment.FileExtension)"
+                                    style="font-size: 200%;" [icon]="iconFromExtension(w.attachment.FileExtension)">
                                 </fa-icon>
                             </div>
 
-                            <!-- Everything After Icon -->
+                            <!-- Everything Right of Icon -->
                             <div class="d-flex flex-column justify-content-center flex-grow-1 px-1"
                                 style="min-width: 0px;">
-                                <!-- Name -->
-                                <div class="mb-12 w-75" style="max-width: 500px;" [class.text-truncate]="!isEdit">
-                                    <span *ngIf="!isEdit">{{ att.FileName + '.' + att.FileExtension }}</span>
-                                    <t-form-group *ngIf="isEdit" [serverErrors]="att?.serverErrors?.FileName">
-                                        <t-text-editor [(ngModel)]="att.FileName"
-                                            [ngModelOptions]="{ updateOn: 'blur' }" required>
-                                        </t-text-editor>
-                                    </t-form-group>
-                                </div>
-                                <div class="d-flex align-items-baseline">
-
-                                    <!-- Size -->
-                                    <div style="direction: ltr;">
-                                        <span class="small text-muted">{{ size(att) }}</span>
-                                    </div>
-
-                                    <!-- Uploaded By and Uploaded At -->
-                                    <div class="flex-grow-1 text-truncate small text-muted" style="min-width: 0px;">
-                                        <ng-container *ngIf="att.CreatedById">
-                                            <span>&nbsp;&nbsp;&nbsp;</span>
-                                            <t-view-link link="../../../users" [itemId]="att.CreatedById"
-                                                *ngIf="!isEdit">
-                                                <span>{{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}</span>
-                                            </t-view-link>
-                                            <span
-                                                *ngIf="isEdit">{{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}</span>
-                                            <span>&nbsp;&nbsp;&nbsp;</span>
-                                            <span>{{ att.CreatedAt | date:'yyyy-MM-dd HH:mm' }}</span>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Commands -->
-                                    <button *ngIf="!att.downloading"
-                                        class="btn text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
-                                        (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
-                                        <fa-icon icon="download"></fa-icon>
-                                    </button>
-                                    <div class="px-1 t-toolbar-button" *ngIf="att.downloading">
+                                <!-- Top Row -->
+                                <div class="d-flex align-items-stretch" style="max-width: 750px;"
+                                    *ngIf="!isEdit; else editAttachment">
+                                    <button type="button"
+                                        class="btn btn-link p-0 text-primary border-top-0 border-left-0 border-right-0 text-truncate"
+                                        (click)="onDownloadAttachment(model, i)">{{ fileName(w) }}</button>
+                                    <div class="mx-2 flex-grow-1" *ngIf="w.downloading" style="min-width: 0;">
                                         <t-spinner class="text-black"></t-spinner>
                                     </div>
-                                    <button
-                                        class="btn btn-sm2 text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
-                                        *ngIf="isEdit" (click)="onDeleteAttachment(model, i)"
-                                        [title]="'Delete' | translate">
-                                        <fa-icon icon="trash"></fa-icon>
-                                    </button>
                                 </div>
+                                <ng-template #editAttachment>
+                                    <div style="max-width: 500px;">
+                                        <t-form-group [serverErrors]="w.attachment?.serverErrors?.FileName">
+                                            <t-text-editor [(ngModel)]="w.attachment.FileName"
+                                                [ngModelOptions]="{ updateOn: 'blur' }" required>
+                                            </t-text-editor>
+                                        </t-form-group>
+                                    </div>
+                                </ng-template>
+                                <!-- Bottom Row -->
+                                <div class="d-flex align-items-stretch">
+                                    <!-- Audit info and Size -->
+                                    <div class="flex-grow-1 small text-muted text-truncate" style="min-width: 0px;">
+                                        <span *ngIf="w.attachment.CreatedById">{{ 'AttachmentAudit' | translate: { 
+                                                '0': ( w.attachment.CreatedAt | date:'yyyy-MM-dd HH:mm'),
+                                                '1': ws.getMultilingualValue('User', w.attachment.CreatedById, 'Name')
+                                                }
+                                            }}&nbsp;</span>
+                                        <span>({{ size(w) }})</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Commands -->
+                            <div *ngIf="isEdit" class="mx-1">
+                                <!-- Download Button -->
+                                <button *ngIf="!w.downloading; else spinner"
+                                    class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                    (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                                    <fa-icon icon="download"></fa-icon>
+                                </button>
+
+                                <!-- Spinner -->
+                                <ng-template #spinner>
+                                    <div class="px-1 t-toolbar-button d-inline t-vertical-align-middle">
+                                        <t-spinner class="text-black"></t-spinner>
+                                    </div>
+                                </ng-template>
+
+                                <!-- Delete button -->
+                                <button
+                                    class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                    (click)="onDeleteAttachment(model, i)" [title]="'Delete' | translate">
+                                    <fa-icon icon="trash"></fa-icon>
+                                </button>
                             </div>
                         </div>
                     </div>

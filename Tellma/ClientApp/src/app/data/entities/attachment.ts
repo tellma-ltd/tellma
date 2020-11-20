@@ -4,11 +4,6 @@ export interface AttachmentForSave extends EntityForSave {
     FileName?: string;
     FileExtension?: string;
     File?: string;
-
-    // Only for client side
-    toJSON?: () => AttachmentForSave;
-    file?: File;
-    downloading?: boolean;
 }
 
 export interface Attachment extends AttachmentForSave {

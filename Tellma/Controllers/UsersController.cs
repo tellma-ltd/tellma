@@ -491,7 +491,7 @@ namespace Tellma.Controllers
             if (imageId != null)
             {
                 // Get the bytes
-                string blobName = BlobName(imageId);
+                string blobName = ImageBlobName(imageId);
                 var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                 return (imageId, imageBytes);
@@ -753,13 +753,12 @@ namespace Tellma.Controllers
             }
 
             // Step (3): Extract the images
-            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<User, UserForSave>(_appRepo, entities, BlobName);
-
-            _blobsToDelete = blobsToDelete;
-            _blobsToSave = blobsToSave;
+            _blobsToSave = ImageUtilities.ExtractImages(entities, ImageBlobName).ToList();
 
             // Step (4): Save the users in the app database
-            var ids = await _appRepo.Users__Save(entities, imageIds, returnIds);
+            var (deletedImageIds, ids) = await _appRepo.Users__Save(entities, returnIds);
+
+            _blobsToDelete = deletedImageIds.Select(imageId => ImageBlobName(imageId)).ToList();
 
             // TODO: Check if the user lost his/her admin permissions
 
@@ -898,7 +897,7 @@ namespace Tellma.Controllers
             return _appRepo.PermissionsFromCache(View, action, cancellation);
         }
 
-        private string BlobName(string guid)
+        private string ImageBlobName(string guid)
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
             return $"{tenantId}/Users/{guid}";

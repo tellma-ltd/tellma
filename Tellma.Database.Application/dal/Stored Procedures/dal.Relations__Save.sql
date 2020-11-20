@@ -1,16 +1,23 @@
 ﻿CREATE PROCEDURE [dal].[Relations__Save]
 	@DefinitionId INT,
-	@Entities [RelationList] READONLY,
+	@Entities dbo.[RelationList] READONLY,
 	@RelationUsers dbo.[RelationUserList] READONLY,
-	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
+	@Attachments [dbo].[RelationAttachmentList] READONLY,
 	@ReturnIds BIT = 0
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList], @DeletedAttachmentIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
+	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
+	INSERT INTO @DeletedImageIds ([Id])
+	SELECT [ImageId] FROM dbo.[Relations] E
+	WHERE E.[ImageId] IS NOT NULL 
+		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
+
+	-- Save the entities
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
@@ -61,7 +68,8 @@ SET NOCOUNT ON;
 				[TaxIdentificationNumber],
 				[JobId],
 				[BankAccountNumber],
-				[Relation1Id]
+				[Relation1Id],
+				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -114,6 +122,8 @@ SET NOCOUNT ON;
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
 				t.[Relation1Id]				= s.[Relation1Id],
 
+				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
+
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -161,7 +171,8 @@ SET NOCOUNT ON;
 				[TaxIdentificationNumber],
 				[JobId],
 				[BankAccountNumber],
-				[Relation1Id]
+				[Relation1Id],
+				[ImageId]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -207,7 +218,8 @@ SET NOCOUNT ON;
 				s.[TaxIdentificationNumber],
 				s.[JobId],
 				s.[BankAccountNumber],
-				s.[Relation1Id]
+				s.[Relation1Id],
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -254,13 +266,54 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
-	UPDATE A
-	SET A.ImageId = L.ImageId
-	FROM dbo.[Relations] A
-	JOIN @IndexedIds II ON A.Id = II.[Id]
-	JOIN @ImageIds L ON II.[Index] = L.[Index]
+	-- Attachments
+	WITH BA AS (
+		SELECT * FROM dbo.[RelationAttachments]
+		WHERE [RelationId] IN (
+			SELECT II.[Id] FROM @IndexedIds II 
+			JOIN @Entities E ON II.[Index] = E.[Index]
+			WHERE E.[UpdateAttachments] = 1 -- Is this correct ?
+		)
+	)
+	INSERT INTO @DeletedAttachmentIds([Id])
+	SELECT x.[DeletedFileId]
+	FROM
+	(
+		MERGE INTO BA AS t
+		USING (
+			SELECT
+				A.[Id],
+				DI.[Id] AS [RelationId],
+				A.[CategoryId],
+				A.[FileName],
+				A.[FileExtension],
+				A.[FileId],
+				A.[Size]
+			FROM @Attachments A 
+			JOIN @IndexedIds DI ON A.[HeaderIndex] = DI.[Index]
+		) AS s ON (t.Id = s.Id)
+		WHEN MATCHED THEN
+			UPDATE SET
+				t.[FileName]			= s.[FileName],
+				t.[CategoryId]			= s.[CategoryId],
+				t.[ModifiedAt]			= @Now,
+				t.[ModifiedById]		= @UserId
+		WHEN NOT MATCHED THEN
+			INSERT ([RelationId], [CategoryId], [FileName], [FileExtension], [FileId], [Size])
+			VALUES (s.[RelationId], s.[CategoryId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size])
+		WHEN NOT MATCHED BY SOURCE THEN
+			DELETE
+		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
+	) AS x
+	WHERE x.[InsertedFileId] IS NULL
+
+	
+	-- Return overwritten Image Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedImageIds;
+
+	-- Return deleted Attachment Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedAttachmentIds;
 
 	IF @ReturnIds = 1
-	SELECT * FROM @IndexedIds;
+		SELECT * FROM @IndexedIds;
 END

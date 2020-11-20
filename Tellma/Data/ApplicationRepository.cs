@@ -283,6 +283,7 @@ namespace Tellma.Data
                 nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
                 nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
                 nameof(RelationUser) => "[map].[RelationUsers]()",
+                nameof(RelationAttachment) => "[map].[RelationAttachments]()",
                 nameof(ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
                 nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
                 nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
@@ -1351,6 +1352,22 @@ namespace Tellma.Data
 
         #region Custodies
 
+        private SqlParameter CustodiesTvp(List<CustodyForSave> entities)
+        {
+            var extraColumns = new List<ExtraColumn<CustodyForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (CustodyForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId)
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Custody)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
         public async Task Custodies__Preprocess(int definitionId, List<CustodyForSave> entities)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Preprocess));
@@ -1359,12 +1376,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Custody)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = CustodiesTvp(entities);
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
@@ -1400,12 +1412,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Custody)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = CustodiesTvp(entities);
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
@@ -1419,32 +1426,21 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Custodies__Save(int definitionId, List<CustodyForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<(List<string> deletedImageIds, List<int> ids)> Custodies__Save(int definitionId, List<CustodyForSave> entities, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Save));
-            var result = new List<IndexedId>();
+            
+            var deletedImageIds = new List<string>();
+            var ids = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Custody)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
-                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
-                {
-                    TypeName = $"[dbo].[IndexedImageIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                var entitiesTvp = CustodiesTvp(entities);
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
@@ -1452,33 +1448,35 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Custodies__Save)}]";
 
                 // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedImageIds.Add(reader.String(0));
+                }
+
                 if (returnIds)
                 {
-                    using var reader = await cmd.ExecuteReaderAsync();
+                    await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         int i = 0;
-                        result.Add(new IndexedId
+                        ids.Add(new IndexedId
                         {
                             Index = reader.GetInt32(i++),
                             Id = reader.GetInt32(i++)
                         });
                     }
                 }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
             }
 
             // Return ordered result
             var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
+            ids.ForEach(e =>
             {
                 sortedResult[e.Index] = e.Id;
             });
 
-            return sortedResult.ToList();
+            return (deletedImageIds, sortedResult.ToList());
         }
 
         public async Task Custodies__Delete(IEnumerable<int> ids)
@@ -1771,6 +1769,52 @@ namespace Tellma.Data
 
         #region Relations
 
+        private SqlParameter RelationsTvp(List<RelationForSave> entities)
+        {
+            var extraRelationColumns = new List<ExtraColumn<RelationForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (RelationForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("UpdateAttachments", typeof(bool), (RelationForSave e) => e.Attachments != null),
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraRelationColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Relation)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
+        private SqlParameter RelationUsersTvp(List<RelationForSave> entities)
+        {
+            DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
+            var usersTvp = new SqlParameter("@RelationUsers", usersTable)
+            {
+                TypeName = $"[dbo].[{nameof(RelationUser)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return usersTvp;
+        }
+
+        private SqlParameter RelationAttachmentsTvp(List<RelationForSave> entities)
+        {
+            var extraAttachmentColumns = new List<ExtraColumn<RelationAttachmentForSave>> {
+                    RepositoryUtilities.Column("FileId", typeof(string), (RelationAttachmentForSave e) => e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("Size", typeof(long), (RelationAttachmentForSave e) => e.EntityMetadata?.FileSize)
+                };
+
+            DataTable attachmentsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Attachments, extraColumns: extraAttachmentColumns);
+            var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
+            {
+                TypeName = $"[dbo].[{nameof(RelationAttachment)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return attachmentsTvp;
+        }
+
         public async Task Relations__Preprocess(int definitionId, List<RelationForSave> entities)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Relations__Preprocess));
@@ -1779,12 +1823,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1Index, nameof(Relation.Relation1));
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Relation)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = RelationsTvp(entities);
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
@@ -1820,19 +1859,8 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1Index, nameof(Relation.Relation1));
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Relation)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
-            var usersTvp = new SqlParameter("@RelationUsers", usersTable)
-            {
-                TypeName = $"[dbo].[{nameof(RelationUser)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = RelationsTvp(entities);
+            var usersTvp = RelationUsersTvp(entities);
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
@@ -1847,40 +1875,25 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Relations__Save(int definitionId, List<RelationForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<(List<string> deletedImageIds, List<string> deletedAttachmentIds, List<int> ids)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Relations__Save));
-            var result = new List<IndexedId>();
+            var ids = new List<IndexedId>();
+            var deletedImageIds = new List<string>();
+            var deletedAttachmentIds = new List<string>();
 
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1Index, nameof(Relation.Relation1));
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Relation)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
-                var usersTvp = new SqlParameter("@RelationUsers", usersTable)
-                {
-                    TypeName = $"[dbo].[{nameof(RelationUser)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
-                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
-                {
-                    TypeName = $"[dbo].[IndexedImageIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                var entitiesTvp = RelationsTvp(entities);
+                var usersTvp = RelationUsersTvp(entities);
+                var attachmentsTvp = RelationAttachmentsTvp(entities);
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(usersTvp);
-                cmd.Parameters.Add(imageIdsTvp);
+                cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
@@ -1888,33 +1901,41 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Relations__Save)}]";
 
                 // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedImageIds.Add(reader.String(0));
+                }
+
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedAttachmentIds.Add(reader.String(0));
+                }
+
                 if (returnIds)
                 {
-                    using var reader = await cmd.ExecuteReaderAsync();
+                    await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         int i = 0;
-                        result.Add(new IndexedId
+                        ids.Add(new IndexedId
                         {
                             Index = reader.GetInt32(i++),
                             Id = reader.GetInt32(i++)
                         });
                     }
                 }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
             }
 
             // Return ordered result
             var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
+            ids.ForEach(e =>
             {
                 sortedResult[e.Index] = e.Id;
             });
 
-            return sortedResult.ToList();
+            return (deletedImageIds, deletedAttachmentIds, sortedResult.ToList());
         }
 
         public async Task Relations__Delete(IEnumerable<int> ids)
@@ -2008,7 +2029,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1DefinitionIndex, nameof(RelationDefinition.Relation1Definition));
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
@@ -2043,7 +2064,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.Relation1DefinitionIndex, nameof(RelationDefinition.Relation1Definition));
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
@@ -2364,6 +2385,22 @@ namespace Tellma.Data
 
         #region Users
 
+        private SqlParameter UsersTvp(List<UserForSave> entities)
+        {
+            var extraColumns = new List<ExtraColumn<UserForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (UserForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId)
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(User)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
         public async Task Users__SaveSettings(string key, string value)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Users__SaveSettings));
@@ -2394,13 +2431,9 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+            
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[UserList]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = UsersTvp(entities);
 
             DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
             var rolesTvp = new SqlParameter("@Roles", rolesTable)
@@ -2421,7 +2454,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Users__Save(List<UserForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<(List<string> deletedImageIds, List<int> ids)> Users__Save(List<UserForSave> entities, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Users__Save));
             entities.ForEach(e =>
@@ -2432,25 +2465,14 @@ namespace Tellma.Data
                 });
             });
 
-            var result = new List<IndexedId>();
+            var deletedImageIds = new List<string>();
+            var ids = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(User)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
-                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
-                {
-                    TypeName = $"[dbo].[IndexedImageIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                var entitiesTvp = UsersTvp(entities);
 
                 DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
                 var rolesTvp = new SqlParameter("@Roles", rolesTable)
@@ -2460,7 +2482,6 @@ namespace Tellma.Data
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add(rolesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
@@ -2468,27 +2489,37 @@ namespace Tellma.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__Save)}]";
 
+
                 // Execute
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    int i = 0;
-                    result.Add(new IndexedId
+                    deletedImageIds.Add(reader.String(0));
+                }
+
+                if (returnIds)
+                {
+                    await reader.NextResultAsync();
+                    while (await reader.ReadAsync())
                     {
-                        Index = reader.GetInt32(i++),
-                        Id = reader.GetInt32(i++)
-                    });
+                        int i = 0;
+                        ids.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
                 }
             }
 
             // Return ordered result
             var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
+            ids.ForEach(e =>
             {
                 sortedResult[e.Index] = e.Id;
             });
 
-            return sortedResult.ToList();
+            return (deletedImageIds, sortedResult.ToList());
         }
 
         public async Task<IEnumerable<ValidationError>> Users_Validate__Delete(List<int> ids, int top)
@@ -3247,20 +3278,31 @@ namespace Tellma.Data
 
         #region Resources
 
+        private SqlParameter ResourcesTvp(List<ResourceForSave> entities)
+        {
+            var extraColumns = new List<ExtraColumn<ResourceForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (ResourceForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId)
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Resource)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
         public async Task Resources__Preprocess(int definitionId, List<ResourceForSave> entities)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Resources__Preprocess));
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
-            
+
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Resource)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = ResourcesTvp(entities);
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
@@ -3297,12 +3339,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Resource)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
+            var entitiesTvp = ResourcesTvp(entities);
 
             DataTable unitsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Units);
             var unitsTvp = new SqlParameter("@ResourceUnits", unitsTable)
@@ -3324,21 +3361,17 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Resources__Save(int definitionId, List<ResourceForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<(List<string> deletedImageIds, List<int> ids)> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Resources__Save));
 
-            var result = new List<IndexedId>();
+            var deletedImageIds = new List<string>();
+            var ids = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Resource)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                var entitiesTvp = ResourcesTvp(entities);
 
                 DataTable unitsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Units);
                 var unitsTvp = new SqlParameter("@ResourceUnits", unitsTable)
@@ -3347,49 +3380,44 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
-                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
-                {
-                    TypeName = $"[dbo].[IndexedImageIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(unitsTvp);
-                cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Resources__Save)}]";
 
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedImageIds.Add(reader.String(0));
+                }
+
                 if (returnIds)
                 {
-                    using var reader = await cmd.ExecuteReaderAsync();
+                    await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         int i = 0;
-                        result.Add(new IndexedId
+                        ids.Add(new IndexedId
                         {
                             Index = reader.GetInt32(i++),
                             Id = reader.GetInt32(i++)
                         });
                     }
                 }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
             }
 
             // Return ordered result
             var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
+            ids.ForEach(e =>
             {
                 sortedResult[e.Index] = e.Id;
             });
 
-            return sortedResult.ToList();
+            return (deletedImageIds, sortedResult.ToList());
         }
 
         public async Task Resources__Activate(List<int> ids, bool isActive)
@@ -3485,7 +3513,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
@@ -3512,7 +3540,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
@@ -3703,7 +3731,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(AccountType)}List]",
@@ -3746,7 +3774,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(AccountType)}List]",
@@ -4153,7 +4181,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(Center)}List]",
@@ -4180,7 +4208,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Center)}List]",
@@ -4377,7 +4405,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(EntryType)}List]",
@@ -4404,7 +4432,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithSelfRefIndex(entities, e => e.ParentIndex);
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(EntryType)}List]",
@@ -4595,7 +4623,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(docs);
+            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, _) = RepositoryUtilities.DataTableFromDocuments(docs);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
@@ -4721,7 +4749,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+            var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, _) = RepositoryUtilities.DataTableFromDocuments(documents);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
@@ -4762,7 +4790,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(int definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
+        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(int definitionId, List<DocumentForSave> documents, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Documents__SaveAndRefresh));
 
@@ -4774,7 +4802,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents, includeAttachments: true);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
@@ -4800,7 +4828,6 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var attachmentsTable = RepositoryUtilities.DataTable(attachments);
                 var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
                 {
                     TypeName = $"[dbo].[{nameof(Attachment)}List]",

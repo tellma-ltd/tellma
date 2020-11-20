@@ -260,6 +260,8 @@ namespace Tellma.Controllers
                 JobVisibility = MapVisibility(def.JobVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
                 UserCardinality = MapCardinality(def.UserCardinality),
+                HasAttachments = def.HasAttachments,
+                AttachmentsCategoryDefinitionId = def.AttachmentsCategoryDefinitionId,
 
                 ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
                 {

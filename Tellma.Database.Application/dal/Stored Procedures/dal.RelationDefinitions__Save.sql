@@ -160,7 +160,9 @@ SET NOCOUNT ON;
 				[JobVisibility],
 				[BankAccountNumberVisibility],
 
-				[UserCardinality],
+				[UserCardinality],				
+				[HasAttachments],
+				[AttachmentsCategoryDefinitionId],
 
 				[MainMenuIcon],
 				[MainMenuSection],
@@ -317,6 +319,8 @@ SET NOCOUNT ON;
 				t.[BankAccountNumberVisibility]
 										= s.[BankAccountNumberVisibility],
 				t.[UserCardinality]		= s.[UserCardinality],
+				t.[HasAttachments]		= s.[HasAttachments],
+				t.[AttachmentsCategoryDefinitionId] = s.[AttachmentsCategoryDefinitionId],
 		
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
@@ -461,6 +465,9 @@ SET NOCOUNT ON;
 				[BankAccountNumberVisibility],
 
 				[UserCardinality],
+				[HasAttachments],
+				[AttachmentsCategoryDefinitionId],
+
 				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
 			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 				s.[CurrencyVisibility],
@@ -600,6 +607,9 @@ SET NOCOUNT ON;
 				s.[BankAccountNumberVisibility],
 
 				s.[UserCardinality],
+				s.[HasAttachments],
+				s.[AttachmentsCategoryDefinitionId],
+
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;

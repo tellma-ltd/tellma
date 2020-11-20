@@ -18,5 +18,8 @@
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 
 	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number
-	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0
+	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0,
+	
+	-- Extra Columns not in Document.cs
+	[UpdateAttachments]			BIT
 );

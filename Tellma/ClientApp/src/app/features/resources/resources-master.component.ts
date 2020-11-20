@@ -109,4 +109,8 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
       this.ws.getMultilingualValueImmediate(this.definition, 'TitleSingular') :
       this.translate.instant('Resource');
   }
+
+  public get Image_isVisible(): boolean {
+    return !!this.definition.ImageVisibility;
+  }
 }

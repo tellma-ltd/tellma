@@ -5,8 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "Attachment", Plural = "Attachments")]
-    public class AttachmentForSave : EntityWithKey<int>, IAttachment
+    public class RelationAttachmentForSave : EntityWithKey<int>, IAttachment
     {
+        [Display(Name = "Attachment_Category")]
+        public int? CategoryId { get; set; }
+
         [Display(Name = "Name")]
         [StringLength(255)]
         [Required]
@@ -22,9 +25,9 @@ namespace Tellma.Entities
         public byte[] File { get; set; }
     }
 
-    public class Attachment : AttachmentForSave
+    public class RelationAttachment : RelationAttachmentForSave
     {
-        public int? DocumentId { get; set; }
+        public int? RelationId { get; set; }
 
         public string FileId { get; set; } // Ref to blob storage
 
@@ -45,6 +48,10 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
+
+        [Display(Name = "Attachment_Category")]
+        [ForeignKey(nameof(CategoryId))]
+        public Lookup Category { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

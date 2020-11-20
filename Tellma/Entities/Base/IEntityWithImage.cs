@@ -1,14 +1,9 @@
 ﻿namespace Tellma.Entities
 {
-    public interface IEntityWithImageForSave
+    public interface IEntityWithImage
     {
         int Id { get; set; }
 
         byte[] Image { get; set; }
-    }
-
-    public interface IEntityWithImage : IEntityWithImageForSave
-    {
-        string ImageId { get; set; }
     }
 }

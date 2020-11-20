@@ -453,7 +453,6 @@ namespace Tellma.Controllers.Dto
         public string DateOfBirthVisibility { get; set; }
         public string ContactEmailVisibility { get; set; }
         public string ContactMobileVisibility { get; set; }
-        public string NormalizedContactMobileVisibility { get; set; }
         public string ContactAddressVisibility { get; set; }
 
         // Date 1
@@ -590,6 +589,8 @@ namespace Tellma.Controllers.Dto
         public string JobVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
         public string UserCardinality { get; set; }
+        public bool? HasAttachments { get; set; }
+        public int? AttachmentsCategoryDefinitionId { get; set; }
 
 
         // Relation 1

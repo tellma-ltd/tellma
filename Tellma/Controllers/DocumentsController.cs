@@ -274,7 +274,7 @@ namespace Tellma.Controllers
         // Used across multiple methods
         private List<(string, byte[])> _blobsToSave;
         private List<InboxNotificationInfo> _notificationInfos;
-        private List<string> _fileIdsToDelete;
+        private List<string> _blobsToDelete;
 
         /// <summary>
         /// This is used in preprocessing and validation when a tab entry is null
@@ -322,7 +322,7 @@ namespace Tellma.Controllers
         }
 
         public DocumentsService(ClientAppAddressResolver clientAppResolver,
-            ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
+            ApplicationRepository repo, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
             ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp, ExternalNotificationsService notificationsSerice, InboxNotificationsService inboxService,
             IHttpContextAccessor contextAccessor, EmailTemplatesProvider emailTemplates) : base(sp)
@@ -726,7 +726,7 @@ namespace Tellma.Controllers
             if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
             {
                 // Get the bytes
-                string blobName = BlobName(attachment.FileId);
+                string blobName = AttachmentBlobName(attachment.FileId);
                 var fileBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                 // Get the content type
@@ -926,7 +926,6 @@ namespace Tellma.Controllers
                 // Defaults that make the code simpler later
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
-                doc.Attachments ??= new List<AttachmentForSave>();
 
                 doc.Lines.ForEach(line =>
                 {
@@ -934,6 +933,14 @@ namespace Tellma.Controllers
                     line.Entries ??= new List<EntryForSave>();
                     line.Boolean1 ??= false;
                 });
+
+                if (doc.LineDefinitionEntries != null)
+                {
+                    foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Select((e, i) => (e, i)))
+                    {
+                        lineDefEntry.EntityMetadata.OriginalIndex = index;
+                    }
+                }
             });
 
             var lineDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
@@ -1750,25 +1757,28 @@ namespace Tellma.Controllers
                 }
 
                 ///////// Attachment Validation
-                for (var attIndex = 0; attIndex < doc.Attachments.Count; attIndex++)
+                if (doc.Attachments != null)
                 {
-                    var att = doc.Attachments[attIndex];
-
-                    if (att.Id != 0 && att.File != null)
+                    for (var attIndex = 0; attIndex < doc.Attachments.Count; attIndex++)
                     {
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
-                            _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
-                    }
+                        var att = doc.Attachments[attIndex];
 
-                    if (att.Id == 0 && att.File == null)
-                    {
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
-                            _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
-                    }
+                        if (att.Id != 0 && att.File != null)
+                        {
+                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                                _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
+                        }
 
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
+                        if (att.Id == 0 && att.File == null)
+                        {
+                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                                _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
+                        }
+
+                        if (ModelState.HasReachedMaxErrors)
+                        {
+                            break;
+                        }
                     }
                 }
 
@@ -1836,52 +1846,16 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> entities, bool returnIds)
         {
-            _blobsToSave = new List<(string, byte[])>();
-
-            // Prepare the list of attachments with extras
-            var attachments = new List<AttachmentWithExtras>();
-            foreach (var (doc, docIndex) in entities.Select((d, i) => (d, i)))
-            {
-                if (doc.Attachments != null)
-                {
-                    doc.Attachments.ForEach(att =>
-                    {
-                        var attWithExtras = new AttachmentWithExtras
-                        {
-                            Id = att.Id,
-                            FileName = att.FileName,
-                            FileExtension = att.FileExtension,
-                            DocumentIndex = docIndex,
-                        };
-
-                        // If new attachment 
-                        if (att.Id == 0)
-                        {
-                            // Add extras: file Id and size
-                            byte[] file = att.File;
-                            string fileId = Guid.NewGuid().ToString();
-                            attWithExtras.FileId = fileId;
-                            attWithExtras.Size = file.LongLength;
-
-                            // Also add to blobsToCreate
-                            string blobName = BlobName(fileId);
-                            _blobsToSave.Add((blobName, file));
-                        }
-
-                        attachments.Add(attWithExtras);
-                    });
-                }
-            }
+            _blobsToSave = AttachmentUtilities.ExtractAttachments(entities, e => e.Attachments, AttachmentBlobName).ToList();
 
             // Save the documents
             var (notificationInfos, fileIdsToDelete, ids) = await _repo.Documents__SaveAndRefresh(
                 DefinitionId.Value,
                 documents: entities,
-                attachments: attachments,
                 returnIds: returnIds);
 
             _notificationInfos = notificationInfos;
-            _fileIdsToDelete = fileIdsToDelete;
+            _blobsToDelete = fileIdsToDelete.Select(fileId => AttachmentBlobName(fileId)).ToList();
 
             // Return the new Ids
             return ids;
@@ -1897,10 +1871,9 @@ namespace Tellma.Controllers
             block.Dispose();
 
             // Delete the file Ids retrieved earlier if any
-            if (_fileIdsToDelete.Any())
+            if (_blobsToDelete.Any())
             {
-                var blobsToDelete = _fileIdsToDelete.Select(fileId => BlobName(fileId));
-                await _blobService.DeleteBlobsAsync(blobsToDelete);
+                await _blobService.DeleteBlobsAsync(_blobsToDelete);
             }
 
             // Save new blobs if any
@@ -1931,7 +1904,7 @@ namespace Tellma.Controllers
                 // Delete the file Ids retrieved earlier if any
                 if (fileIdsToDelete.Any())
                 {
-                    var blobsToDelete = fileIdsToDelete.Select(fileId => BlobName(fileId));
+                    var blobsToDelete = fileIdsToDelete.Select(fileId => AttachmentBlobName(fileId));
                     await _blobService.DeleteBlobsAsync(blobsToDelete);
                 }
             }
@@ -1950,7 +1923,7 @@ namespace Tellma.Controllers
             return OrderByExpression.Parse($"{nameof(Document.SerialNumber)} desc");
         }
 
-        private string BlobName(string guid)
+        private string AttachmentBlobName(string guid)
         {
             return $"{TenantId}/Attachments/{guid}";
         }

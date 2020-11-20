@@ -112,7 +112,7 @@ namespace Tellma.Entities
         [DefinitionLabelDisplay(Name = "Entity_Date1", Language = Language.Primary)]
         [StringLength(50)]
         public string Date1Label { get; set; }
-        
+
         [DefinitionLabelDisplay(Name = "Entity_Date1", Language = Language.Secondary)]
         [StringLength(50)]
         public string Date1Label2 { get; set; }
@@ -482,6 +482,12 @@ namespace Tellma.Entities
             new string[] { "Cardinality_None", "Cardinality_Single", "Cardinality_Multiple" })]
         public string UserCardinality { get; set; }
 
+        [Display(Name = "Definition_HasAttachments")]
+        public bool? HasAttachments { get; set; }
+
+        [Display(Name = "RelationDefinition_AttachmentsCategoryDefinition")]
+        public int? AttachmentsCategoryDefinitionId { get; set; }
+
         #endregion
 
         #region Main Menu
@@ -559,6 +565,10 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Entity_Relation1")]
         [ForeignKey(nameof(Relation1DefinitionId))]
         public LookupDefinition Relation1Definition { get; set; }
+
+        [Display(Name = "RelationDefinition_AttachmentsCategoryDefinition")]
+        [ForeignKey(nameof(AttachmentsCategoryDefinitionId))]
+        public LookupDefinition AttachmentsCategoryDefinition { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

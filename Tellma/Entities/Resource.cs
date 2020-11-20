@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Resource", Plural = "Resources")]
-    public class ResourceForSaveBase<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
+    public class ResourceForSaveBase<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -153,7 +153,7 @@ namespace Tellma.Entities
 
     }
 
-    public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity, IEntityWithImage
+    public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity
     {
         [Display(Name = "Definition")]
         public int? DefinitionId { get; set; }
