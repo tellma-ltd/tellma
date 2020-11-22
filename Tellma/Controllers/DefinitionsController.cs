@@ -395,6 +395,7 @@ namespace Tellma.Controllers
                 TitleSingular = def.TitleSingular,
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
+                ResourceDefinitionType = def.ResourceDefinitionType,
 
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 DescriptionVisibility = MapVisibility(def.DescriptionVisibility),

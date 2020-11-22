@@ -269,6 +269,8 @@ export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' |
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 
+    ResourceDefinitionType: string;
+
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;
     CostCenterVisibility: Visibility;

@@ -320,6 +320,7 @@ namespace Tellma.Controllers.Dto
 
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public string ResourceDefinitionType { get; set; }
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }
         public string CostCenterVisibility { get; set; }

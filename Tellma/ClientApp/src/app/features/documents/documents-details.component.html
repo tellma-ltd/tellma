@@ -270,7 +270,7 @@
     <ng-template #documentIsCommonMenu let-prop let-close="close">
         <div class="dropdown">
             <ul class="dropdown-menu show shadow-sm">
-                <li class="dropdown-item px-0 py-1" (click)="model[prop] = !model[prop]; close();">
+                <li class="dropdown-item px-0 py-1" (click)="onToggleDocumentIsCommon(model, prop); close();">
                     <div class="t-menu-icon">
                         <fa-icon [icon]="model[prop] ? 'expand' : 'compress'"></fa-icon>
                     </div>
@@ -317,17 +317,8 @@
                             </ng-container>
                         </div>
 
-                        <!-- Table -->
-                        <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
-                            [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
-                            [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
-                            [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
-                            [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
-                            (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
-                        </t-table>
-
                         <!-- Form -->
-                        <ng-container *ngIf="showAsForm(lineDefId, model)">
+                        <ng-container *ngIf="showAsForm(lineDefId, model); else table">
                             <div class="row m-0 pt-2 t-form" [style.background-color]="formColor(lineDefId, model)">
                                 <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
                                     <div class="col-12 d-flex justify-content-end">
@@ -354,10 +345,10 @@
                                             </button>
                                         </ng-container>
                                     </div>
-                                    <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, model, true)">
+                                    <ng-container *ngFor="let colIndex of smartColumnIndices(lineDefId, model)">
                                         <ng-container *ngTemplateOutlet="smartRow; context: { 
                                                     item: lines(lineDefId, model)[0], 
-                                                    argument: colPath, 
+                                                    argument: colIndex, 
                                                     index: 0, 
                                                     update: dummyUpdate, 
                                                     isForm: true }">
@@ -379,6 +370,41 @@
                                 </button>
                             </div>
                         </ng-container>
+
+                        <!-- Table -->
+                        <ng-template #table>
+                            <t-table [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
+                                [columnPaths]="smartColumnPathsForTable(lineDefId, model)"
+                                [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
+                                [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
+                                [onNewItem]="onNewSmartLineFactory(lineDefId)"
+                                (insert)="onInsertSmartLine($event, model)" (delete)="onDeleteSmartLine($event, model)"
+                                [highlightFunc]="highlightLineFactory(model)">
+                            </t-table>
+
+                            <!-- Totals -->
+                            <div class="d-flex justify-content-end mt-3"
+                                *ngIf=" smartTotalsColumnIndices(lineDefId, model, isEdit).length > 0">
+                                <table class="border-top border-bottom py-1">
+                                    <tr>
+                                        <td class="p-1" colspan="10"></td>
+                                    </tr>
+                                    <tr *ngFor="let columnIndex of smartTotalsColumnIndices(lineDefId, model, isEdit)">
+                                        <td style="width: 20px;"></td>
+                                        <td class="small font-weight-bold">
+                                            {{ ('Total0' | translate:{ '0': columnLabel(lineDefId, columnIndex) }) }}&nbsp;&nbsp;&nbsp;
+                                        </td>
+                                        <td style="text-align: right">
+                                            {{ smartTotal(lineDefId, columnIndex, model) | accounting:functional_format }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-1" colspan="10"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </ng-template>
+
                     </ng-container>
 
                     <!-- Manual Lines Tab -->
@@ -386,6 +412,30 @@
                         <ng-container *ngTemplateOutlet="manualLines">
 
                         </ng-container>
+
+                        <!-- Totals -->
+                        <div class="d-flex justify-content-end mt-3">
+                            <table class="border-top border-bottom">
+                                <tr>
+                                    <td style="width: 20px;"></td>
+                                    <td class="small font-weight-bold pb-12 pt-2">
+                                        {{ ('Total0' | translate:{ '0': ('Debit' | translate) }) + functionalPostfix }}&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                    <td class="px-1 pt-2" style="text-align: right">
+                                        {{ total(model, 1, true) | accounting:functional_format }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td class="small font-weight-bold pt-12 pb-2">
+                                        {{ ('Total0' | translate:{ '0': ('Credit' | translate) }) + functionalPostfix }}&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                    <td class="px-1 pb-2 align-right" style="text-align: right;">
+                                        {{ total(model, -1, true) | accounting:functional_format }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </ng-container>
                 </t-restricted>
 
@@ -415,7 +465,9 @@
 
                 <ng-template #formGroupContent let-columnIndex="columnIndex" let-rowIndex="rowIndex" let-update="update"
                     let-line="line" let-isForm="isForm">
-                    <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
+
+                    <!-- View Mode -->
+                    <ng-container *ngIf="!isEdit; else editMode" [ngSwitch]="columnName(lineDefId, columnIndex)">
                         <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
                             {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}
@@ -488,192 +540,246 @@
                             *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
                         <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                     </ng-container>
-                    <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
-                        <t-accounts-picker *ngSwitchCase="'AccountId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-accounts-picker>
-                        <t-currencies-picker *ngSwitchCase="'CurrencyId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)" additionalSelect="E"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-currencies-picker>
-                        <t-relations-picker *ngSwitchCase="'CustodianId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [definitionIds]="definitionIdsCustodian_Smart(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-relations-picker>
-                        <t-custodies-picker *ngSwitchCase="'CustodyId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [definitionIds]="definitionIdsCustody_Smart(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-custodies-picker>
-                        <t-relations-picker *ngSwitchCase="'ParticipantId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [definitionIds]="definitionIdsParticipant_Smart(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-relations-picker>
-                        <t-resources-picker *ngSwitchCase="'ResourceId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-resources-picker>
-                        <t-centers-picker *ngSwitchCase="'CenterId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-centers-picker>
-                        <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [filter]="entryTypeFilter(lineDefId, columnIndex)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-entry-types-picker>
-                        <t-decimal-editor *ngSwitchCase="'MonetaryValue'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }"
-                            [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                            [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                            [textAlignment]="isForm ? null : 'right'">
-                        </t-decimal-editor>
-                        <t-decimal-editor *ngSwitchCase="'Quantity'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
-                            [textAlignment]="isForm ? null : 'right'">
-                        </t-decimal-editor>
-                        <t-units-picker *ngSwitchCase="'UnitId'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            [filter]="getFilter(lineDefId, columnIndex)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                        </t-units-picker>
-                        <t-decimal-editor *ngSwitchCase="'Value'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="functional_decimals"
-                            [maxDecimalPlaces]="functional_decimals" [textAlignment]="isForm ? null : 'right'">
-                        </t-decimal-editor>
-                        <t-date-picker *ngSwitchCase="'Time1'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-date-picker>
-                        <t-date-picker *ngSwitchCase="'Time2'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-date-picker>
-                        <t-text-editor *ngSwitchCase="'ExternalReference'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-text-editor>
-                        <t-text-editor *ngSwitchCase="'AdditionalReference'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-text-editor>
-                        <t-text-editor *ngSwitchCase="'NotedAgentName'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-text-editor>
-                        <t-decimal-editor *ngSwitchCase="'NotedAmount'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }"
-                            [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                            [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                            [textAlignment]="isForm ? null : 'right'">
-                        </t-decimal-editor>
-                        <t-date-picker *ngSwitchCase="'NotedDate'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-date-picker>
-                        <t-text-editor *ngSwitchCase="'Memo'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-text-editor>
-                        <div *ngSwitchCase="'Boolean1'" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                                [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                                id="standardandpure{{ rowIndex }}">
-                            <label class="custom-control-label t-pointer"
-                                for="standardandpure{{ rowIndex }}">&zwnj;</label>
-                        </div>
-                        <t-decimal-editor *ngSwitchCase="'Decimal1'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
-                            [textAlignment]="isForm ? null : 'right'">
-                        </t-decimal-editor>
-                        <t-text-editor *ngSwitchCase="'Text1'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-text-editor>
-                        <t-date-picker *ngSwitchCase="'PostingDate'"
-                            [disabled]="isReadOnly(lineDefId, columnIndex, line, model)"
-                            [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                            [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                            (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-date-picker>
-                    </ng-container>
+                    <ng-template #editMode>
+                        <!-- Edit Mode: Readonly Field -->
+                        <ng-container
+                            *ngIf="isReadOnly(lineDefId, columnIndex, line, model); else editableFormGroupContent">
+                            <div class="w-100 t-disabled-background border-bottom" [ngSwitch]="columnName(lineDefId, columnIndex)">
+                                <span *ngSwitchCase="'AccountId'">
+                                    {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}
+                                </span>
+                                <span *ngSwitchCase="'CurrencyId'">
+                                    {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <span *ngSwitchCase="'CustodianId'">
+                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <span *ngSwitchCase="'CustodyId'">
+                                    {{ ws.getMultilingualValue('Custody', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <span *ngSwitchCase="'ParticipantId'">
+                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <span *ngSwitchCase="'ResourceId'">
+                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <span *ngSwitchCase="'CenterId'">
+                                    {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <span *ngSwitchCase="'EntryTypeId'">
+                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                </span>
+                                <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
+                                </div>
+                                <div *ngSwitchCase="'Quantity'" class="t-right-aligned">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4'  }}</span>
+                                </div>
+                                <span
+                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line, model), 'Name')  }}</span>
+                                <div *ngSwitchCase="'Value'" class="t-right-aligned">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}</span>
+                                </div>
+                                <span
+                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                <span
+                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                <span
+                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                <span
+                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                <span
+                                    *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
+                                </div>
+                                <span
+                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                <span
+                                    *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                <span
+                                    *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
+                                <span
+                                    *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
+                                <span
+                                    *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                <span
+                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+
+                            </div>
+                        </ng-container>
+
+                        <!-- Edit Mode: Editable Field -->
+                        <ng-template #editableFormGroupContent>
+                            <ng-container [ngSwitch]="columnName(lineDefId, columnIndex)">
+                                <t-accounts-picker *ngSwitchCase="'AccountId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    additionalSelect="CurrencyId"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-accounts-picker>
+                                <t-currencies-picker *ngSwitchCase="'CurrencyId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)" additionalSelect="E"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-currencies-picker>
+                                <t-relations-picker *ngSwitchCase="'CustodianId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [definitionIds]="definitionIdsCustodian_Smart(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-relations-picker>
+                                <t-custodies-picker *ngSwitchCase="'CustodyId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [definitionIds]="definitionIdsCustody_Smart(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    additionalSelect="CurrencyId"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-custodies-picker>
+                                <t-relations-picker *ngSwitchCase="'ParticipantId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [definitionIds]="definitionIdsParticipant_Smart(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-relations-picker>
+                                <t-resources-picker *ngSwitchCase="'ResourceId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    additionalSelect="CurrencyId"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-resources-picker>
+                                <t-centers-picker *ngSwitchCase="'CenterId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-centers-picker>
+                                <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [filter]="entryTypeFilter(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-entry-types-picker>
+                                <t-decimal-editor *ngSwitchCase="'MonetaryValue'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }"
+                                    [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-decimal-editor *ngSwitchCase="'Quantity'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0"
+                                    [maxDecimalPlaces]="4" [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-units-picker *ngSwitchCase="'UnitId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-units-picker>
+                                <t-decimal-editor *ngSwitchCase="'Value'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="functional_decimals"
+                                    [maxDecimalPlaces]="functional_decimals" [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-date-picker *ngSwitchCase="'Time1'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-date-picker *ngSwitchCase="'Time2'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-text-editor *ngSwitchCase="'ExternalReference'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-text-editor *ngSwitchCase="'AdditionalReference'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-text-editor *ngSwitchCase="'NotedAgentName'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-decimal-editor *ngSwitchCase="'NotedAmount'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }"
+                                    [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-date-picker *ngSwitchCase="'NotedDate'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-text-editor *ngSwitchCase="'Memo'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <div *ngSwitchCase="'Boolean1'"
+                                    class="custom-control custom-checkbox t-labelless-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                        [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                        (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                        [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                        id="standardandpure{{ rowIndex }}">
+                                    <label class="custom-control-label t-pointer"
+                                        for="standardandpure{{ rowIndex }}">&zwnj;</label>
+                                </div>
+                                <t-decimal-editor *ngSwitchCase="'Decimal1'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0"
+                                    [maxDecimalPlaces]="4" [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-text-editor *ngSwitchCase="'Text1'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-date-picker *ngSwitchCase="'PostingDate'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                            </ng-container>
+                        </ng-template>
+                    </ng-template>
                 </ng-template>
 
                 <!----------- Signatures ------------>
@@ -934,19 +1040,21 @@
 
                     <!-- Totals -->
                     <div class="d-flex justify-content-end mt-3">
-                        <table>
-                            <tr class="border-top">
+                        <table class="border-top border-bottom">
+                            <tr>
                                 <td style="width: 20px;"></td>
                                 <td class="small font-weight-bold pb-12 pt-2">
-                                    {{ ('TotalDebit' | translate) + functionalPostfix }}&nbsp;&nbsp;&nbsp;</td>
+                                    {{ ('Total0' | translate:{ '0': ('Debit' | translate) }) + functionalPostfix }}&nbsp;&nbsp;&nbsp;
+                                </td>
                                 <td class="px-1 pt-2" style="text-align: right">
                                     {{ total(model, 1) | accounting:functional_format }}
                                 </td>
                             </tr>
-                            <tr class="border-bottom">
+                            <tr>
                                 <td></td>
                                 <td class="small font-weight-bold pt-12 pb-2">
-                                    {{ ('TotalCredit' | translate) + functionalPostfix }}&nbsp;&nbsp;&nbsp;</td>
+                                    {{ ('Total0' | translate:{ '0': ('Credit' | translate) }) + functionalPostfix }}&nbsp;&nbsp;&nbsp;
+                                </td>
                                 <td class="px-1 pb-2 align-right" style="text-align: right;">
                                     {{ total(model, -1) | accounting:functional_format }}
                                 </td>
@@ -978,7 +1086,8 @@
                 </div>
 
                 <!-- Attachments List -->
-                <div class="w-100 mx-0 mb-1 p-2 p-sm-3 overflow-auto" style="max-height: 450px;" *ngIf="!!model?.Attachments?.length">
+                <div class="w-100 mx-0 mb-1 p-2 p-sm-3 overflow-auto" style="max-height: 450px;"
+                    *ngIf="!!model?.Attachments?.length">
                     <div class="text-nowrap" *ngFor="let w of attachmentWrappers(model); let i = index;"
                         [class.bg-light]="i % 2 === 1000">
                         <div class="border-bottom d-flex align-items-center">
@@ -1074,6 +1183,20 @@
 
     <!------------ Templates for Manual Lines ----------->
     <ng-template #manualLines>
+
+        <!-- Manual Entries Table -->
+        <t-table [dataSource]="manualEntries(model)" [isEdit]="isEdit" [itemSize]="70"
+            [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
+                            'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3 },
+                            'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
+                            'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
+                            'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 },
+                            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 },
+                            'Commands' : { headerTemplate: header_ManualEntryCommands, rowTemplate : row_ManualEntryCommands }
+                        }" [onNewItem]="onNewManualEntry" (insert)="onInsertManualEntry($event, model)"
+            (delete)="onDeleteManualEntry($event, model)">
+        </t-table>
+
         <!-- Manual Line Properties -->
         <div class="row m-0 py-2" *ngIf="showManualLineProps(model)">
             <!-- Posting Date -->
@@ -1098,19 +1221,6 @@
                 </t-text-editor>
             </t-form-group>
         </div>
-
-        <!-- Manual Entries Table -->
-        <t-table [dataSource]="manualEntries(model)" [isEdit]="isEdit" [itemSize]="70"
-            [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
-                            'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3 },
-                            'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
-                            'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
-                            'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 },
-                            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 },
-                            'Commands' : { headerTemplate: header_ManualEntryCommands, rowTemplate : row_ManualEntryCommands }
-                        }" [onNewItem]="onNewManualEntry" (insert)="onInsertManualEntry($event, model)"
-            (delete)="onDeleteManualEntry($event, model)">
-        </t-table>
     </ng-template>
 
     <!-- Account + Dynamic Properties -->

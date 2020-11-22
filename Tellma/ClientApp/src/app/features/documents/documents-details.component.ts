@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName
+  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName, DefinitionsForClient, ResourceDefinitionForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -1014,12 +1014,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
-  // private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
-  //   const resource = this.resource(entry);
-  //   const defId = !!resource ? resource.DefinitionId : null;
-  //   const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
-  //   return resourceDefinition;
-  // }
+  private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
+    const resource = this.resource(entry);
+    const defId = !!resource ? resource.DefinitionId : null;
+    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
+    return resourceDefinition;
+  }
 
   public accountDisplay(accountId: number) {
     const account = this.ws.get('Account', accountId);
@@ -1282,11 +1282,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public readonlyUnit(entry: Entry): boolean {
-    const resource = this.resource(entry);
-    const accountType = this.accountType(entry);
-    const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
-    return !!resourceDef && resourceDef.UnitCardinality === 'Single'
-      && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
+    const def = this.resourceDefinition(entry);
+    if (!!def && def.UnitCardinality === 'Single' &&
+      def.ResourceDefinitionType !== 'PropertyPlantAndEquipment' &&
+      def.ResourceDefinitionType !== 'InvestmentProperty' &&
+      def.ResourceDefinitionType !== 'IntangibleAssetsOtherThanGoodwill') {
+      const resource = this.resource(entry);
+      if (!!resource) {
+        return !!resource.UnitId;
+      }
+    }
+
+    return false;
   }
 
   public readonlyValueUnitId(entry: Entry): number {
@@ -2187,10 +2194,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public tabTitle(lineDefId: number, model: DocumentForSave): string {
-    const def = this.lineDefinition(lineDefId);
-    const isForm = this.showAsForm(lineDefId, model);
-    return !!def ? this.ws.getMultilingualValueImmediate(def, isForm ? 'TitleSingular' : 'TitlePlural')
-      : this.translate.instant('Undefined');
+    if (this.isJV && this.isManualLine(lineDefId)) {
+      return this.translate.instant('Entries');
+    } else {
+      const def = this.lineDefinition(lineDefId);
+      const isForm = this.showAsForm(lineDefId, model);
+      return !!def ? this.ws.getMultilingualValueImmediate(def, isForm ? 'TitleSingular' : 'TitlePlural')
+        : this.translate.instant('Undefined');
+    }
   }
 
   private _lines: { [defId: number]: LineForSave[] };
@@ -2403,60 +2414,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return paths;
   }
 
-  public smartTabHeaderColumnPaths(lineDefId: number, doc: Document): number[] {
-    // It is named smartTabHeaderColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
-
-    // All line definitions other than 'ManualLine'
-    const lineDef = this.lineDefinition(lineDefId);
-    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
-    if (!!doc.LineDefinitionEntries) {
-      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
-        tabEntries[tabEntry.EntryIndex] = tabEntry;
-      }
-    }
-
-    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
-      .map((column, index) => ({ column, index })) // Capture the index first thing
-      .filter(e => {
-        const col = e.column;
-
-        if (col.InheritsFromHeader >= 2 && (
-          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-          (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
-          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
-          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
-        )) {
-          // This column inherits from document header, hide it from the grid
-          return false;
-        } else if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1) {
-          switch (col.ColumnName) {
-            case 'Memo':
-            case 'PostingDate':
-            case 'ParticipantId':
-            case 'CurrencyId':
-            case 'CustodyId':
-            case 'ResourceId':
-            case 'Quantity':
-            case 'UnitId':
-            case 'CenterId':
-            case 'Time1':
-            case 'Time2':
-            case 'ExternalReference':
-            case 'AdditionalReference':
-              return true;
-          }
-        }
-
-        return false;
-      })
-      .map(e => e.index) : [];
-
-    return result;
-  }
-
   private _defaultTabEntry: DocumentLineDefinitionEntryForSave = {
     PostingDateIsCommon: true,
     MemoIsCommon: true,
@@ -2473,65 +2430,243 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     AdditionalReferenceIsCommon: true,
   };
 
-  public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
-    // It is named smartColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+  private _smartTabHeaderColumnPathsIsCommonHasChanged = false;
+  private _smartTabHeaderColumnPathsDefinitions: DefinitionsForClient;
+  private _smartTabHeaderColumnPathsModel: Document;
+  private _smartTabHeaderColumnPathsLineDefId: number;
+  private _smartTabHeaderColumnPathsResult: number[];
 
-    // All line definitions other than 'ManualLine'
-    const lineDef = this.lineDefinition(lineDefId);
-    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
-    if (!!doc.LineDefinitionEntries) {
-      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
-        tabEntries[tabEntry.EntryIndex] = tabEntry;
+  public smartTabHeaderColumnPaths(lineDefId: number, doc: Document): number[] {
+    // It is named smartTabHeaderColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+
+    if (this._smartTabHeaderColumnPathsIsCommonHasChanged ||
+      this._smartTabHeaderColumnPathsModel !== doc ||
+      this._smartTabHeaderColumnPathsLineDefId !== lineDefId ||
+      this._smartTabHeaderColumnPathsDefinitions !== this.ws.definitions) {
+
+      this._smartTabHeaderColumnPathsIsCommonHasChanged = false;
+      this._smartTabHeaderColumnPathsModel = doc;
+      this._smartTabHeaderColumnPathsLineDefId = lineDefId;
+      this._smartTabHeaderColumnPathsDefinitions = this.ws.definitions;
+
+      // All line definitions other than 'ManualLine'
+      const lineDef = this.lineDefinition(lineDefId);
+
+      const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+        .map((column, index) => ({ column, index })) // Capture the index first thing
+        .filter(e => {
+          const col = e.column;
+
+          if (col.InheritsFromHeader >= 2 && (
+            (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+            (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
+            (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+            (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+            (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+          )) {
+            // This column inherits from document header, hide it from the grid
+            return false;
+          } else if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1) {
+            switch (col.ColumnName) {
+              case 'Memo':
+              case 'PostingDate':
+              case 'ParticipantId':
+              case 'CurrencyId':
+              case 'CustodyId':
+              case 'ResourceId':
+              case 'Quantity':
+              case 'UnitId':
+              case 'CenterId':
+              case 'Time1':
+              case 'Time2':
+              case 'ExternalReference':
+              case 'AdditionalReference':
+                return true;
+            }
+          }
+
+          return false;
+        })
+        .map(e => e.index) : [];
+
+      this._smartTabHeaderColumnPathsResult = result;
+    }
+
+    return this._smartTabHeaderColumnPathsResult;
+  }
+
+  private _smartColumnIndicesIsCommonHasChanged = false;
+  private _smartColumnIndicesDefinitions: DefinitionsForClient;
+  private _smartColumnIndicesModel: Document;
+  private _smartColumnIndicesLineDefId: number;
+  private _smartColumnIndicesResult: number[];
+
+  public smartColumnIndices(lineDefId: number, doc: Document): number[] {
+    // Returns the smart column indices that are visible in the table or form
+    if (this._smartColumnIndicesIsCommonHasChanged ||
+      this._smartColumnIndicesModel !== doc ||
+      this._smartColumnIndicesLineDefId !== lineDefId ||
+      this._smartColumnIndicesDefinitions !== this.ws.definitions) {
+
+      this._smartColumnIndicesIsCommonHasChanged = false;
+      this._smartColumnIndicesModel = doc;
+      this._smartColumnIndicesLineDefId = lineDefId;
+      this._smartColumnIndicesDefinitions = this.ws.definitions;
+
+      // All line definitions other than 'ManualLine'
+      const lineDef = this.lineDefinition(lineDefId);
+      const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
+      if (!!doc.LineDefinitionEntries) {
+        for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
+          tabEntries[tabEntry.EntryIndex] = tabEntry;
+        }
+      }
+
+      const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+        .map((column, index) => ({ column, index })) // Capture the index first thing
+        .filter(e => {
+          const col = e.column;
+
+          if (col.InheritsFromHeader >= 2 && (
+            (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+            (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
+            (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+            (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+            (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+          )) {
+            // This column inherits from document header, hide it from the grid
+            return false;
+          } else {
+            const tabEntryIndex = this.tabEntryIndex(col);
+            const tab = tabEntries[tabEntryIndex] || this._defaultTabEntry;
+            if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
+              (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
+              (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+              (tab.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
+              (tab.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+              (tab.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
+              (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
+              (tab.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+              (tab.UnitIsCommon && col.ColumnName === 'UnitId') ||
+              (tab.CenterIsCommon && col.ColumnName === 'CenterId') ||
+              (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
+              (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
+              (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+              (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+            )) {
+              return false;
+            }
+          }
+
+          return true;
+        })
+        .map(e => e.index) : [];
+
+      this._smartColumnIndicesResult = result;
+    }
+
+    return this._smartColumnIndicesResult;
+
+  }
+
+  private _smartColumnPathsForTableNumberPaths: number[];
+  private _smartColumnPathsForTableResult: string[];
+
+  public smartColumnPathsForTable(lineDefId: number, doc: Document): string[] {
+    const numberPaths = this.smartColumnIndices(lineDefId, doc);
+    if (this._smartColumnPathsForTableNumberPaths !== numberPaths) {
+
+      this._smartColumnPathsForTableNumberPaths = numberPaths;
+
+      const result = this.smartColumnIndices(lineDefId, doc).map(e => e + '');
+      result.push('Commands');
+
+      this._smartColumnPathsForTableResult = result;
+    }
+
+    return this._smartColumnPathsForTableResult;
+  }
+
+  public smartTotalsColumnIndices(lineDefId: number, model: Document, isEdit: boolean): number[] {
+    const result: number[] = [];
+
+    for (const i of this.smartColumnIndices(lineDefId, model)) {
+      const colDef = this.columnDefinition(lineDefId, i);
+      const lines = this.lines(lineDefId, model);
+
+      switch (colDef.ColumnName) {
+        case 'Value':
+          result.push(i);
+          break;
+
+        case 'MonetaryValue':
+          if (!lines || lines.length <= 1) {
+            result.push(i);
+          } else {
+            const firstEntry = lines[0].Entries[colDef.EntryIndex];
+            const firstCurrencyId = isEdit ? this.readonlyValueCurrencyId(firstEntry) : firstEntry.CurrencyId;
+            if (lines.every(l => {
+              // IF the currency Id of a line cannot be determined yet (e.g. new line), assume conformity and show total
+              const currentEntry = l.Entries[colDef.EntryIndex];
+              const currentCurrencyId = isEdit ? this.readonlyValueCurrencyId(currentEntry) : currentEntry.CurrencyId;
+              return !currentCurrencyId || currentCurrencyId === firstCurrencyId;
+            })) {
+              result.push(i);
+            }
+          }
+          break;
+
+        case 'Quantity':
+          if (!lines || lines.length <= 1) {
+            result.push(i);
+          } else {
+            const firstEntry = lines[0].Entries[colDef.EntryIndex];
+            const firstUnitId = isEdit && this.readonlyUnit(firstEntry) ?
+              this.readonlyValueUnitId(firstEntry) : firstEntry.UnitId;
+
+            if (lines.every(l => {
+              // IF the unit Id of a line cannot be determined yet (e.g. new line), assume conformity and show total
+              const currentEntry = l.Entries[colDef.EntryIndex];
+              const currentUnitId = isEdit && this.readonlyUnit(currentEntry) ?
+                this.readonlyValueUnitId(currentEntry) : currentEntry.UnitId;
+
+              return !currentUnitId || currentUnitId === firstUnitId;
+            })) {
+              result.push(i);
+            }
+          }
+          break;
       }
     }
 
-    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
-      .map((column, index) => ({ column, index })) // Capture the index first thing
-      .filter(e => {
-        const col = e.column;
+    return result;
+  }
 
-        if (col.InheritsFromHeader >= 2 && (
-          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-          (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
-          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
-          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
-        )) {
-          // This column inherits from document header, hide it from the grid
-          return false;
-        } else {
-          const tabEntryIndex = this.tabEntryIndex(col);
-          const tab = tabEntries[tabEntryIndex] || this._defaultTabEntry;
-          if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
-            (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
-            (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-            (tab.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
-            (tab.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
-            (tab.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
-            (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
-            (tab.QuantityIsCommon && col.ColumnName === 'Quantity') ||
-            (tab.UnitIsCommon && col.ColumnName === 'UnitId') ||
-            (tab.CenterIsCommon && col.ColumnName === 'CenterId') ||
-            (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
-            (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
-            (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-            (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
-          )) {
-            return false;
-          }
-        }
+  public smartTotal(lineDefId: number, columnIndex: number, model: Document) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const entryIndex = colDef.EntryIndex;
 
-        return true;
-      })
-      .map(e => e.index + '') : [];
-
-    if (!isForm) {
-      result.push('Commands');
+    let getter: (e: Entry) => number;
+    switch (colDef.ColumnName) {
+      case 'Value':
+        getter = (e: Entry) => e.Value;
+        break;
+      case 'MonetaryValue':
+        getter = (e: Entry) => e.MonetaryValue;
+        break;
+      case 'Quantity':
+        getter = (e: Entry) => e.Quantity;
+        break;
     }
 
-    return result;
+    return this.lines(lineDefId, model)
+      .filter(line => (line.State || 0) >= 0)
+      .map(line => !!line.Entries ? getter(line.Entries[entryIndex]) || 0 : 0)
+      .reduce((total, v) => total + v, 0);
   }
 
   private _columnTemplatesLineDefId: number;
@@ -2804,6 +2939,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public onToggleDocumentIsCommon(model: Document, prop: string) {
+    if (!!model && !!prop) {
+      model[prop] = !model[prop];
+
+      this._smartTabHeaderColumnPathsIsCommonHasChanged = true;
+      this._smartColumnIndicesIsCommonHasChanged = true;
+    }
+  }
+
   public onToggleTabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): void {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this.addNewTabEntry(lineDefId, colDef, doc);
@@ -2811,6 +2955,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const isCommonPropName = this.isCommonPropertyName(colDef.ColumnName);
 
     tabEntry[isCommonPropName] = !tabEntry[isCommonPropName];
+
+    this._smartColumnIndicesIsCommonHasChanged = true;
   }
 
   public tabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): boolean {
@@ -3593,14 +3739,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return true;
   }
 
-  public total(doc: Document, direction: number) {
+  public total(doc: Document, direction: number, manualOnly = false) {
     direction = direction as 1 | -1; // To avoid an Angular template binding bug
 
     if (!doc || !doc.Lines) {
       return null;
     }
 
-    return direction * doc.Lines
+    let lines = doc.Lines;
+    if (manualOnly) {
+
+      const manualId = this.ws.definitions.ManualLinesDefinitionId;
+      lines = lines.filter(e => e.DefinitionId === manualId);
+    }
+
+    return direction * lines
       .filter(line => (line.State || 0) >= 0)
       .map(line => {
         return !!line.Entries ? line.Entries
