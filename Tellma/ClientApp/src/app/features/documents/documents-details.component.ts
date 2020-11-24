@@ -294,9 +294,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
-      result.ParticipantIsCommon = false;
       result.CurrencyIsCommon = false;
       result.CenterIsCommon = false;
+
+      result.CustodianIsCommon = false;
+      result.CustodyIsCommon = false;
+      result.ParticipantIsCommon = false;
+      result.ResourceIsCommon = false;
+
+      result.QuantityIsCommon = false;
+      result.UnitIsCommon = false;
+      result.Time1IsCommon = false;
+      result.Time2IsCommon = false;
+
       result.ExternalReferenceIsCommon = false;
       result.AdditionalReferenceIsCommon = false;
     } else {
@@ -310,9 +320,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
-      result.ParticipantIsCommon = true;
-      result.CenterIsCommon = true;
       result.CurrencyIsCommon = true;
+      result.CenterIsCommon = true;
+
+      result.CustodianIsCommon = true;
+      result.CustodyIsCommon = true;
+      result.ParticipantIsCommon = true;
+      result.ResourceIsCommon = true;
+
+      result.QuantityIsCommon = true;
+      result.UnitIsCommon = true;
+      result.Time1IsCommon = true;
+      result.Time2IsCommon = true;
+
       result.ExternalReferenceIsCommon = true;
       result.AdditionalReferenceIsCommon = true;
     }
@@ -2782,13 +2802,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _defaultTabEntry: DocumentLineDefinitionEntryForSave = {
     PostingDateIsCommon: true,
     MemoIsCommon: true,
-    ParticipantIsCommon: true,
     CurrencyIsCommon: true,
+    CenterIsCommon: true,
+    CustodianIsCommon: true,
     CustodyIsCommon: true,
+    ParticipantIsCommon: true,
     ResourceIsCommon: true,
     QuantityIsCommon: true,
     UnitIsCommon: true,
-    CenterIsCommon: true,
     Time1IsCommon: true,
     Time2IsCommon: true,
     ExternalReferenceIsCommon: true,
