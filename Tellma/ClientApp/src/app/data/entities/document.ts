@@ -22,13 +22,32 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     PostingDateIsCommon?: boolean;
     Memo?: string;
     MemoIsCommon?: boolean;
+
     SegmentId?: number;
-    CenterId?: number;
-    CenterIsCommon?: boolean;
-    ParticipantId?: number;
-    ParticipantIsCommon?: boolean;
+
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
+    CenterId?: number;
+    CenterIsCommon?: boolean;
+
+    CustodianId?: number;
+    CustodianIsCommon?: boolean;
+    CustodyId?: number;
+    CustodyIsCommon?: boolean;
+    ParticipantId?: number;
+    ParticipantIsCommon?: boolean;
+    ResourceId?: number;
+    ResourceIsCommon?: boolean;
+
+    Quantity?: number;
+    QuantityIsCommon?: boolean;
+    UnitId?: number;
+    UnitIsCommon?: boolean;
+    Time1?: number;
+    Time1IsCommon?: boolean;
+    Time2?: number;
+    Time2IsCommon?: boolean;
+
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
     AdditionalReference?: string;
@@ -98,32 +117,54 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
-                PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
-                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
                 Clearance: {
                     control: 'choice',
                     label: () => trx.instant('Document_Clearance'),
                     choices: [0, 1, 2],
                     format: (c: number) => trx.instant('Document_Clearance_' + c)
                 },
+                PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
+                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
-                ParticipantId: { control: 'number', label: () => `${trx.instant('Document_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { control: 'navigation', label: () => trx.instant('Document_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
-                ParticipantIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Participant') }) },
+
                 SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
+
+                CurrencyId: { control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
+                Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
+                CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Currency') }) },
                 CenterId: { control: 'number', label: () => `${trx.instant('Document_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { control: 'navigation', label: () => trx.instant('Document_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 CenterIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
-                CurrencyId: { control: 'text', label: () => `${trx.instant('Document_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('Document_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Currency') }) },
-                ExternalReference: { control: 'text', label: () => trx.instant('Document_ExternalReference') },
-                ExternalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_ExternalReference') }) },
-                AdditionalReference: { control: 'text', label: () => trx.instant('Document_AdditionalReference') },
-                AdditionalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_AdditionalReference') }) },
 
+                CustodianId: { control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { control: 'navigation', label: () => trx.instant('Entry_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
+                CustodianIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custodian') }) },
+                CustodyId: { control: 'number', label: () => `${trx.instant('Entry_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custody: { control: 'navigation', label: () => trx.instant('Entry_Custody'), type: 'Custody', foreignKeyName: 'CustodyId' },
+                CustodyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custody') }) },
+                ParticipantId: { control: 'number', label: () => `${trx.instant('Entry_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { control: 'navigation', label: () => trx.instant('Entry_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
+                ParticipantIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Participant') }) },
+                ResourceId: { control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
+                ResourceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Resource') }) },
+
+                Quantity: { control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Quantity') }) },
+                UnitId: { control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Unit: { control: 'navigation', label: () => trx.instant('Entry_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
+                UnitIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Unit') }) },
+                Time1: { control: 'date', label: () => trx.instant('Entry_Time1') },
+                Time1IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time1') }) },
+                Time2: { control: 'date', label: () => trx.instant('Entry_Time2'), },
+                Time2IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time2') }) },
+
+                ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
+                ExternalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ExternalReference') }) },
+                AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
+                AdditionalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_AdditionalReference') }) },
 
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
@@ -185,7 +226,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete props.Definition;
 
             // Simple properties whose label and visibility are overriden by the definition
-            for (const propName of ['Memo', 'PostingDate', 'AdditionalReference', 'ExternalReference']) {
+            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Time2', 'AdditionalReference', 'ExternalReference']) {
                 if (!definition[propName + 'Visibility']) {
                     delete props[propName];
                     delete props[propName + 'IsCommon'];
@@ -208,7 +249,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['Participant', 'Center', 'Currency']) {
+            for (const propName of ['Currency', 'Center', 'Custodian', 'Custody', 'Participant', 'Resource', 'Unit']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];
@@ -221,8 +262,10 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     const defaultLabel = propDesc.label;
                     propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
-                    if (definition[propName + 'DefinitionId']) {
-                        propDesc.definition = definition[propName + 'DefinitionId'];
+                    // Definition
+                    const defs = definition[propName + 'DefinitionIds'] as number[];
+                    if (!!defs && defs.length === 1) {
+                        propDesc.definition = defs[0];
                     }
 
                     // Foreign key property

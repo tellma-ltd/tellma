@@ -154,6 +154,42 @@
         </t-selector>
     </t-form-group>
 
+    <!-- Custodian -->
+    <t-form-group class="t-form-group" [label]="labelDocumentCustodian(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="CustodianIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CustodianId"
+        *ngIf="showDocumentCustodian(model)">
+        <ng-container *ngIf="model?.CustodianIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CustodianId">
+                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.CustodianId)?.DefinitionId"
+                    [itemId]="model?.CustodianId">
+                    {{ ws.getMultilingualValue('Relation', model?.CustodianId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId"
+                [definitionIds]="documentCustodianDefinitionIds(model)" [filter]="filterDocumentCustodian(model)"
+                [required]="requireDocumentCustodian(model)" [disabled]="readonlyDocumentCustodian(model)">
+            </t-relations-picker>
+        </ng-container>
+    </t-form-group>
+
+    <!-- Custody -->
+    <t-form-group class="t-form-group" [label]="labelDocumentCustody(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="CustodyIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CustodyId"
+        *ngIf="showDocumentCustody(model)">
+        <ng-container *ngIf="model?.CustodyIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CustodyId">
+                <t-view-link [link]="'../../../custodies/' + ws.get('Custody', model?.CustodyId)?.DefinitionId"
+                    [itemId]="model?.CustodyId">
+                    {{ ws.getMultilingualValue('Custody', model?.CustodyId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-custodies-picker *ngIf="isEdit" [(ngModel)]="model.CustodyId"
+                [definitionIds]="documentCustodyDefinitionIds(model)" [filter]="filterDocumentCustody(model)"
+                [required]="requireDocumentCustody(model)" [disabled]="readonlyDocumentCustody(model)">
+            </t-custodies-picker>
+        </ng-container>
+    </t-form-group>
+
     <!-- Participant -->
     <t-form-group class="t-form-group" [label]="labelDocumentParticipant(model)"
         [labelContextMenu]="documentIsCommonMenu" labelContext="ParticipantIsCommon" [disableLabelMenu]="!isEdit"
@@ -169,6 +205,24 @@
                 [definitionIds]="documentParticipantDefinitionIds(model)" [filter]="filterDocumentParticipant(model)"
                 [required]="requireDocumentParticipant(model)" [disabled]="readonlyDocumentParticipant(model)">
             </t-relations-picker>
+        </ng-container>
+    </t-form-group>
+
+    <!-- Resource -->
+    <t-form-group class="t-form-group" [label]="labelDocumentResource(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="ResourceIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.ResourceId"
+        *ngIf="showDocumentResource(model)">
+        <ng-container *ngIf="model?.ResourceIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResourceId">
+                <t-view-link [link]="'../../../resources/' + ws.get('Resource', model?.ResourceId)?.DefinitionId"
+                    [itemId]="model?.ResourceId">
+                    {{ ws.getMultilingualValue('Resource', model?.ResourceId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId"
+                [definitionIds]="documentResourceDefinitionIds(model)" [filter]="filterDocumentResource(model)"
+                [required]="requireDocumentResource(model)" [disabled]="readonlyDocumentResource(model)">
+            </t-resources-picker>
         </ng-container>
     </t-form-group>
 
@@ -217,6 +271,66 @@
         </ng-container>
     </t-form-group>
 
+    <!-- Quantity -->
+    <t-form-group class="t-form-group" [label]="labelDocumentQuantity(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="QuantityIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.Quantity"
+        *ngIf="showDocumentQuantity(model)">
+        <ng-container *ngIf="model?.QuantityIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Quantity">
+                {{ model?.Quantity | accounting:'1.0-4' }}
+            </t-restricted>
+            <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Quantity" [ngModelOptions]="{ updateOn: 'blur' }"
+                [minDecimalPlaces]="0" [maxDecimalPlaces]="4" [required]="requireDocumentQuantity(model)"
+                [disabled]="readonlyDocumentQuantity(model)">
+            </t-decimal-editor>
+        </ng-container>
+    </t-form-group>
+
+    <!-- Unit -->
+    <t-form-group class="t-form-group" [label]="labelDocumentUnit(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="UnitIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.UnitId"
+        *ngIf="showDocumentUnit(model)">
+        <ng-container *ngIf="model?.UnitIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.UnitId">
+                <t-view-link [link]="'../../../units/' + ws.get('Unit', model?.UnitId)?.DefinitionId"
+                    [itemId]="model?.UnitId">
+                    {{ ws.getMultilingualValue('Unit', model?.UnitId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-units-picker *ngIf="isEdit" [(ngModel)]="model.UnitId" [filter]="filterDocumentUnit(model)"
+                [required]="requireDocumentUnit(model)" [disabled]="readonlyDocumentUnit(model)">
+            </t-units-picker>
+        </ng-container>
+    </t-form-group>
+
+    <!-- Time1 -->
+    <t-form-group class="t-form-group" [label]="labelDocumentTime1(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="Time1IsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.Time1"
+        *ngIf="showDocumentTime1(model)">
+        <ng-container *ngIf="model?.Time1IsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time1">
+                {{ model?.Time1 | date:'yyyy-MM-dd' }}
+            </t-restricted>
+            <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Time1" [ngModelOptions]="{ updateOn: 'blur' }"
+                [required]="requireDocumentTime1(model)" [disabled]="readonlyDocumentTime1(model)">
+            </t-date-picker>
+        </ng-container>
+    </t-form-group>
+
+    <!-- Time2 -->
+    <t-form-group class="t-form-group" [label]="labelDocumentTime2(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="Time2IsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.Time2"
+        *ngIf="showDocumentTime2(model)">
+        <ng-container *ngIf="model?.Time2IsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time2">
+                {{ model?.Time2 | date:'yyyy-MM-dd' }}
+            </t-restricted>
+            <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Time2" [ngModelOptions]="{ updateOn: 'blur' }"
+                [required]="requireDocumentTime2(model)" [disabled]="readonlyDocumentTime2(model)">
+            </t-date-picker>
+        </ng-container>
+    </t-form-group>
+
     <!-- ExternalReference -->
     <t-form-group class="t-form-group" [label]="labelDocumentExternalReference(model)"
         [labelContextMenu]="documentIsCommonMenu" labelContext="ExternalReferenceIsCommon" [disableLabelMenu]="!isEdit"
@@ -225,8 +339,9 @@
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExternalReference">
                 {{ model?.ExternalReference }}
             </t-restricted>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReference"
-                [required]="requireDocumentExternalReference" [disabled]="readonlyDocumentExternalReference(model)">
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReference" [ngModelOptions]="{ updateOn: 'blur' }"
+                [required]="requireDocumentExternalReference(model)"
+                [disabled]="readonlyDocumentExternalReference(model)">
             </t-text-editor>
         </ng-container>
     </t-form-group>
@@ -241,7 +356,8 @@
                 {{ model?.AdditionalReference }}
             </t-restricted>
             <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReference"
-                [required]="requireDocumentAdditionalReference" [disabled]="readonlyDocumentAdditionalReference(model)">
+                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentAdditionalReference(model)"
+                [disabled]="readonlyDocumentAdditionalReference(model)">
             </t-text-editor>
         </ng-container>
     </t-form-group>

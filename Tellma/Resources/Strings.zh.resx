@@ -541,9 +541,6 @@
   <data name="Document" xml:space="preserve">
     <value>文献</value>
   </data>
-  <data name="Document_AdditionalReference" xml:space="preserve">
-    <value>其他参考</value>
-  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>在分配</value>
   </data>
@@ -560,7 +557,7 @@
     <value>附件</value>
   </data>
   <data name="Document_Center" xml:space="preserve">
-    <value>中央</value>
+    <value>业务部</value>
   </data>
   <data name="Document_Clearance" xml:space="preserve">
     <value>许可级别</value>
@@ -577,17 +574,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
-  <data name="Document_Currency" xml:space="preserve">
-    <value>货币</value>
-  </data>
-  <data name="Document_ExternalReference" xml:space="preserve">
-    <value>外部参考</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
-  </data>
-  <data name="Document_Participant" xml:space="preserve">
-    <value>参加者</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>

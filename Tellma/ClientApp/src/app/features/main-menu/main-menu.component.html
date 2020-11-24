@@ -9,7 +9,7 @@
   </div>
 
   <!-- Main Menu container -->
-  <div class="t-menu-container" *ngIf="initialized; else spinner" #contentDiv>
+  <div class="t-menu-container" #contentDiv>
 
     <!-- No items found -->
     <div *ngIf="showNoItemsFound"> {{ 'NoItemsFound' | translate }}</div>
@@ -30,23 +30,25 @@
       </a>
     </div>
 
-    <!-- Main Menu -->
-    <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
-      [class.d-none]="!showSection(section?.items)">
-      <div class="t-menu-section" (dblclick)="onSectionDoubleClick(section)">
-        <span>{{ section.label }}</span>
+    <ng-container  *ngIf="initialized; else spinner">
+      <!-- Main Menu -->
+      <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
+        [class.d-none]="!showSection(section?.items)">
+        <div class="t-menu-section" (dblclick)="onSectionDoubleClick(section)">
+          <span>{{ section.label }}</span>
+        </div>
+        <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"
+          [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;"
+          [routerLink]="linkArray(item)" (click)="onMenuItemClick(item)" [title]="item.label">
+          <div class="pt-4 pb-1 t-menu-item-icon">
+            <fa-icon [icon]="item.icon"></fa-icon>
+          </div>
+          <div class="px-2 t-menu-item-label" ellipsis>
+            {{ item.label }}
+          </div>
+        </a>
       </div>
-      <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"
-        [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;"
-        [routerLink]="linkArray(item)" (click)="onMenuItemClick(item)" [title]="item.label">
-        <div class="pt-4 pb-1 t-menu-item-icon">
-          <fa-icon [icon]="item.icon"></fa-icon>
-        </div>
-        <div class="px-2 t-menu-item-label" ellipsis>
-          {{ item.label }}
-        </div>
-      </a>
-    </div>
+    </ng-container>
   </div>
 
   <!-- Spinner for huge menu -->

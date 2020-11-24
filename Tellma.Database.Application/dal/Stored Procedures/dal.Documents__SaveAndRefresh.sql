@@ -29,16 +29,35 @@ BEGIN
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
 				[SegmentId],
-				[CenterId],
-				[CenterIsCommon],
-				[ParticipantId],
-				[ParticipantIsCommon],
+				
 				[CurrencyId],
 				[CurrencyIsCommon],
+				[CenterId],
+				[CenterIsCommon],
+
+				[CustodianId],
+				[CustodianIsCommon],
+				[CustodyId],
+				[CustodyIsCommon],
+				[ParticipantId],
+				[ParticipantIsCommon],
+				[ResourceId],
+				[ResourceIsCommon],
+				
+				[Quantity],
+				[QuantityIsCommon],
+				[UnitId],
+				[UnitIsCommon],
+				[Time1],
+				[Time1IsCommon],
+				[Time2],
+				[Time2IsCommon],
+
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
 				[AdditionalReference],
 				[AdditionalReferenceIsCommon],
+
 				ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
@@ -56,16 +75,35 @@ BEGIN
 				t.[Memo]						= s.[Memo],
 				t.[MemoIsCommon]				= s.[MemoIsCommon],
 				t.[SegmentId]					= s.[SegmentId],
-				t.[CenterId]					= s.[CenterId],
-				t.[CenterIsCommon]				= s.[CenterIsCommon],
-				t.[ParticipantId]				= s.[ParticipantId],
-				t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
+				
 				t.[CurrencyId]					= s.[CurrencyId],
 				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
+				t.[CenterId]					= s.[CenterId],
+				t.[CenterIsCommon]				= s.[CenterIsCommon],
+				
+				t.[CustodianId]					= s.[CustodianId],
+				t.[CustodianIsCommon]			= s.[CustodianIsCommon],
+				t.[CustodyId]					= s.[CustodyId],
+				t.[CustodyIsCommon]				= s.[CustodyIsCommon],
+				t.[ParticipantId]				= s.[ParticipantId],
+				t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
+				t.[ResourceId]					= s.[ResourceId],
+				t.[ResourceIsCommon]			= s.[ResourceIsCommon],
+								
+				t.[Quantity]					= s.[Quantity],
+				t.[QuantityIsCommon]			= s.[QuantityIsCommon],
+				t.[UnitId]						= s.[UnitId],
+				t.[UnitIsCommon]				= s.[UnitIsCommon],
+				t.[Time1]						= s.[Time1],
+				t.[Time1IsCommon]				= s.[Time1IsCommon],
+				t.[Time2]						= s.[Time2],
+				t.[Time2IsCommon]				= s.[Time2IsCommon],
+
 				t.[ExternalReference]			= s.[ExternalReference],
 				t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
 				t.[AdditionalReference]			= s.[AdditionalReference],
 				t.[AdditionalReferenceIsCommon]	= s.[AdditionalReferenceIsCommon],
+
 				t.[ModifiedAt]					= @Now,
 				t.[ModifiedById]				= @UserId
 		WHEN NOT MATCHED THEN
@@ -78,12 +116,30 @@ BEGIN
 				[Memo],
 				[MemoIsCommon],
 				[SegmentId],
-				[CenterId],
-				[CenterIsCommon],
-				[ParticipantId],
-				[ParticipantIsCommon],
+				
 				[CurrencyId],
 				[CurrencyIsCommon],
+				[CenterId],
+				[CenterIsCommon],
+
+				[CustodianId],
+				[CustodianIsCommon],
+				[CustodyId],
+				[CustodyIsCommon],
+				[ParticipantId],
+				[ParticipantIsCommon],
+				[ResourceId],
+				[ResourceIsCommon],
+				
+				[Quantity],
+				[QuantityIsCommon],
+				[UnitId],
+				[UnitIsCommon],
+				[Time1],
+				[Time1IsCommon],
+				[Time2],
+				[Time2IsCommon],
+
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
 				[AdditionalReference],
@@ -97,13 +153,31 @@ BEGIN
 				s.[Clearance],
 				s.[Memo],
 				s.[MemoIsCommon],
-				s.[SegmentId],
-				s.[CenterId],
-				s.[CenterIsCommon],
-				s.[ParticipantId],
-				s.[ParticipantIsCommon],		
+				s.[SegmentId],		
+
 				s.[CurrencyId],
 				s.[CurrencyIsCommon],
+				s.[CenterId],
+				s.[CenterIsCommon],
+
+				s.[CustodianId],
+				s.[CustodianIsCommon],
+				s.[CustodyId],
+				s.[CustodyIsCommon],
+				s.[ParticipantId],
+				s.[ParticipantIsCommon],
+				s.[ResourceId],
+				s.[ResourceIsCommon],
+				
+				s.[Quantity],
+				s.[QuantityIsCommon],
+				s.[UnitId],
+				s.[UnitIsCommon],
+				s.[Time1],
+				s.[Time1IsCommon],
+				s.[Time2],
+				s.[Time2IsCommon],
+
 				s.[ExternalReference],
 				s.[ExternalReferenceIsCommon],
 				s.[AdditionalReference],
@@ -127,20 +201,22 @@ BEGIN
 			LDE.[PostingDate], 
 			LDE.[PostingDateIsCommon],
 			LDE.[Memo],
-			LDE.[MemoIsCommon],
-	
-			LDE.[ParticipantId],
-			LDE.[ParticipantIsCommon],
-
-			LDE.[CenterId],
-			LDE.[CenterIsCommon],
+			LDE.[MemoIsCommon],	
+			
 			LDE.[CurrencyId],
 			LDE.[CurrencyIsCommon],
-
+			LDE.[CenterId],
+			LDE.[CenterIsCommon],
+			
+			LDE.[CustodianId],
+			LDE.[CustodianIsCommon],
 			LDE.[CustodyId],
 			LDE.[CustodyIsCommon],
+			LDE.[ParticipantId],
+			LDE.[ParticipantIsCommon],
 			LDE.[ResourceId],
 			LDE.[ResourceIsCommon],
+			
 			LDE.[Quantity],
 			LDE.[QuantityIsCommon],
 			LDE.[UnitId],
@@ -153,7 +229,6 @@ BEGIN
 
 			LDE.[ExternalReference],
 			LDE.[ExternalReferenceIsCommon],
-
 			LDE.[AdditionalReference],
 			LDE.[AdditionalReferenceIsCommon]
 		FROM @DocumentLineDefinitionEntries LDE
@@ -169,24 +244,25 @@ BEGIN
 			t.[PostingDateIsCommon]			= s.[PostingDateIsCommon],
 			t.[Memo]						= s.[Memo],
 			t.[MemoIsCommon]				= s.[MemoIsCommon],
-	
-			t.[ParticipantId]				= s.[ParticipantId],
-			t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
 
 			t.[CurrencyId]					= s.[CurrencyId],
 			t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
+			t.[CenterId]					= s.[CenterId],
+			t.[CenterIsCommon]				= s.[CenterIsCommon],
 
+			t.[CustodianId]					= s.[CustodianId],
+			t.[CustodianIsCommon]			= s.[CustodianIsCommon],
 			t.[CustodyId]					= s.[CustodyId],
 			t.[CustodyIsCommon]				= s.[CustodyIsCommon],
+			t.[ParticipantId]				= s.[ParticipantId],
+			t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
 			t.[ResourceId]					= s.[ResourceId],
 			t.[ResourceIsCommon]			= s.[ResourceIsCommon],
+
 			t.[Quantity]					= s.[Quantity],
 			t.[QuantityIsCommon]			= s.[QuantityIsCommon],
 			t.[UnitId]						= s.[UnitId],
 			t.[UnitIsCommon]				= s.[UnitIsCommon],
-
-			t.[CenterId]					= s.[CenterId],
-			t.[CenterIsCommon]				= s.[CenterIsCommon],
 
 			t.[Time1]						= s.[Time1],
 			t.[Time1IsCommon]				= s.[Time1IsCommon],
@@ -195,9 +271,9 @@ BEGIN
 
 			t.[ExternalReference]			= s.[ExternalReference],
 			t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
-
 			t.[AdditionalReference]			= s.[AdditionalReference],
 			t.[AdditionalReferenceIsCommon] = s.[AdditionalReferenceIsCommon],
+			
 			t.[ModifiedAt]					= @Now,
 			t.[ModifiedById]				= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
@@ -210,24 +286,25 @@ BEGIN
 			[PostingDateIsCommon],
 			[Memo],
 			[MemoIsCommon],
-	
-			[ParticipantId],
-			[ParticipantIsCommon],
 
 			[CurrencyId],
 			[CurrencyIsCommon],
-
+			[CenterId],
+			[CenterIsCommon],
+			
+			[CustodianId],
+			[CustodianIsCommon],
 			[CustodyId],
 			[CustodyIsCommon],
+			[ParticipantId],
+			[ParticipantIsCommon],
 			[ResourceId],
 			[ResourceIsCommon],
+
 			[Quantity],
 			[QuantityIsCommon],
 			[UnitId],
 			[UnitIsCommon],
-
-			[CenterId],
-			[CenterIsCommon],
 
 			[Time1],
 			[Time1IsCommon],
@@ -236,7 +313,6 @@ BEGIN
 
 			[ExternalReference],
 			[ExternalReferenceIsCommon],
-
 			[AdditionalReference],
 			[AdditionalReferenceIsCommon]
 		)
@@ -249,24 +325,25 @@ BEGIN
 			s.[PostingDateIsCommon],
 			s.[Memo],
 			s.[MemoIsCommon],
-	
-			s.[ParticipantId],
-			s.[ParticipantIsCommon],
 
 			s.[CurrencyId],
 			s.[CurrencyIsCommon],
-
+			s.[CenterId],
+			s.[CenterIsCommon],
+			
+			s.[CustodianId],
+			s.[CustodianIsCommon],
 			s.[CustodyId],
 			s.[CustodyIsCommon],
+			s.[ParticipantId],
+			s.[ParticipantIsCommon],
 			s.[ResourceId],
 			s.[ResourceIsCommon],
+
 			s.[Quantity],
 			s.[QuantityIsCommon],
 			s.[UnitId],
 			s.[UnitIsCommon],
-
-			s.[CenterId],
-			s.[CenterIsCommon],
 
 			s.[Time1],
 			s.[Time1IsCommon],
@@ -275,7 +352,6 @@ BEGIN
 
 			s.[ExternalReference],
 			s.[ExternalReferenceIsCommon],
-
 			s.[AdditionalReference],
 			s.[AdditionalReferenceIsCommon]
 		)

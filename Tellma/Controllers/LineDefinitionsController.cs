@@ -108,6 +108,29 @@ namespace Tellma.Controllers
                         column.VisibleState = LineState.Draft;
                         column.RequiredState = LineState.Draft;
                     }
+
+                    // 
+                    switch (column.ColumnName)
+                    {
+                        case "PostingDate":
+                        case "Memo":
+                        case "CurrencyId":
+                        case "CenterId":
+                        case "CustodianId":
+                        case "CustodyId":
+                        case "ParticipantId":
+                        case "ResourceId":
+                        case "Quantity":
+                        case "UnitId":
+                        case "Time1":
+                        case "Time2":
+                        case "ExternalReference":
+                        case "AdditionalReference":
+                            break;
+                        default:
+                            column.InheritsFromHeader = 0; // Other columns cannot inherit from header
+                            break;
+                    }
                 });
 
                 lineDefinition?.Workflows?.ForEach(workflow =>

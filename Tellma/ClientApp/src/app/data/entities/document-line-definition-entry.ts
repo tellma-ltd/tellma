@@ -7,20 +7,24 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     PostingDateIsCommon?: boolean;
     Memo?: string;
     MemoIsCommon?: boolean;
-    ParticipantId?: number;
-    ParticipantIsCommon?: boolean;
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
+    CenterId?: number;
+    CenterIsCommon?: boolean;
+
+    CustodianId?: number;
+    CustodianIsCommon?: boolean;
     CustodyId?: number;
     CustodyIsCommon?: boolean;
+    ParticipantId?: number;
+    ParticipantIsCommon?: boolean;
     ResourceId?: number;
     ResourceIsCommon?: boolean;
+
     Quantity?: number;
     QuantityIsCommon?: boolean;
     UnitId?: number;
     UnitIsCommon?: boolean;
-    CenterId?: number;
-    CenterIsCommon?: boolean;
     Time1?: string;
     Time1IsCommon?: boolean;
     Time2?: string;

@@ -185,8 +185,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     alignment: 'right'
                 },
-                Time1: { control: 'datetime', label: () => trx.instant('Entry_Time1') },
-                Time2: { control: 'datetime', label: () => trx.instant('Entry_Time2') },
+                Time1: { control: 'date', label: () => trx.instant('Entry_Time1') },
+                Time2: { control: 'date', label: () => trx.instant('Entry_Time2') },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
                 NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },

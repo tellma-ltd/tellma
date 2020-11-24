@@ -36,8 +36,17 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
+
         [Display(Name = "Document_Segment")]
         public int? SegmentId { get; set; }
+
+
+        [Display(Name = "Entry_Currency")]
+        [StringLength(3)]
+        public string CurrencyId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Currency")]
+        public bool? CurrencyIsCommon { get; set; }
 
         [Display(Name = "Document_Center")]
         public int? CenterId { get; set; }
@@ -45,32 +54,71 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Document_Center")]
         public bool? CenterIsCommon { get; set; }
 
-        [Display(Name = "Document_Participant")]
+
+        [Display(Name = "Entry_Custodian")]
+        public int? CustodianId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Custodian")]
+        public bool? CustodianIsCommon { get; set; }
+
+        [Display(Name = "Entry_Custody")]
+        public int? CustodyId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Custody")]
+        public bool? CustodyIsCommon { get; set; }
+
+        [Display(Name = "Entry_Participant")]
         public int? ParticipantId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_Participant")]
+        [IsCommonDisplay(Name = "Entry_Participant")]
         public bool? ParticipantIsCommon { get; set; }
 
-        [Display(Name = "Document_Currency")]
-        [StringLength(3)]
-        public string CurrencyId { get; set; }
+        [Display(Name = "Entryt_Resource")]
+        public int? ResourceId { get; set; }
 
-        [IsCommonDisplay(Name = "Document_Currency")]
-        public bool? CurrencyIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Entry_Resource")]
+        public bool? ResourceIsCommon { get; set; }
 
-        [Display(Name = "Document_ExternalReference")]
+
+        [Display(Name = "Entry_Quantity")]
+        public decimal? Quantity { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Quantity")]
+        public bool? QuantityIsCommon { get; set; }
+
+        [Display(Name = "Entry_Unit")]
+        public int? UnitId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Unit")]
+        public bool? UnitIsCommon { get; set; }
+
+        [Display(Name = "Entry_Time1")]
+        public DateTime? Time1 { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Time1")]
+        public bool? Time1IsCommon { get; set; }
+
+        [Display(Name = "Entry_Time2")]
+        public DateTime? Time2 { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Time2")]
+        public bool? Time2IsCommon { get; set; }
+
+
+        [Display(Name = "Entry_ExternalReference")]
         [StringLength(50)]
         public string ExternalReference { get; set; }
 
-        [IsCommonDisplay(Name = "Document_ExternalReference")]
+        [IsCommonDisplay(Name = "Entry_ExternalReference")]
         public bool? ExternalReferenceIsCommon { get; set; }
 
-        [Display(Name = "Document_AdditionalReference")]
+        [Display(Name = "Entry_AdditionalReference")]
         [StringLength(50)]
         public string AdditionalReference { get; set; }
 
-        [IsCommonDisplay(Name = "Document_AdditionalReference")]
+        [IsCommonDisplay(Name = "Entry_AdditionalReference")]
         public bool? AdditionalReferenceIsCommon { get; set; }
+
 
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
@@ -142,22 +190,45 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-
-        [Display(Name = "Document_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
-
+        
         [Display(Name = "Document_Segment")]
         [ForeignKey(nameof(SegmentId))]
         public Center Segment { get; set; }
+
+
+        [Display(Name = "Entry_Currency")]
+        [ForeignKey(nameof(CurrencyId))]
+        public Currency Currency { get; set; }
 
         [Display(Name = "Document_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
 
-        [Display(Name = "Document_Currency")]
-        [ForeignKey(nameof(CurrencyId))]
-        public Currency Currency { get; set; }
+
+
+        [Display(Name = "Entry_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
+
+        [Display(Name = "Entry_Custody")]
+        [ForeignKey(nameof(CustodyId))]
+        public Custody Custody { get; set; }
+
+        [Display(Name = "Entry_Participant")]
+        [ForeignKey(nameof(ParticipantId))]
+        public Relation Participant { get; set; }
+
+        [Display(Name = "Entry_Resource")]
+        [ForeignKey(nameof(ResourceId))]
+        public Resource Resource { get; set; }
+
+
+
+        [Display(Name = "Entry_Unit")]
+        [ForeignKey(nameof(UnitId))]
+        public Unit Unit { get; set; }
+
+
 
         [Display(Name = "Document_Assignee")]
         [ForeignKey(nameof(AssigneeId))]
@@ -211,25 +282,40 @@ namespace Tellma.Entities
         // ------------------------------------------------
 
         public static IEnumerable<string> DocumentPaths() => DocumentProps
+
+            // Weak Collections
             .Concat(LineDefinitionEntryPaths(nameof(Document.LineDefinitionEntries)))
             .Concat(LinePaths(nameof(Document.Lines)))
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
-            .Concat(RelationPaths(nameof(Document.Participant)))
+
+            // Navigation Properties
             .Concat(CenterPaths(nameof(Document.Segment)))
-            .Concat(CenterPaths(nameof(Document.Center)))
+
             .Concat(CurrencyPaths(nameof(Document.Currency)))
+            .Concat(CenterPaths(nameof(Document.Center)))
+
+            .Concat(RelationPaths(nameof(Document.Custodian)))
+            .Concat(CustodyPaths(nameof(Document.Custody)))
+            .Concat(RelationPaths(nameof(Document.Participant)))
+            .Concat(ResourcePaths(nameof(Document.Resource)))
+
+            .Concat(UnitPaths(nameof(Document.Unit)))
+
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))
             .Concat(UserPaths(nameof(Document.Assignee)));
 
         public static IEnumerable<string> LineDefinitionEntryPaths(string path = null) => LineDefinitionEntryProps
             .Concat(CurrencyPaths(nameof(DocumentLineDefinitionEntry.Currency)))
-            .Concat(CustodyPaths(nameof(DocumentLineDefinitionEntry.Custody)))
-            .Concat(TabEntryResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Participant)))
             .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
+
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Custodian)))
+            .Concat(CustodyPaths(nameof(DocumentLineDefinitionEntry.Custody)))
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Participant)))
+            .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
+
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
 
@@ -259,31 +345,24 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryCustodyPaths(string path = null) => CustodyPaths(path)
-            .Concat( // Entry Custody also adds the Currency and Center
-                CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}")
-            ).Concat(
-                CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}")
-            );
+            // Entry Custody also adds the Currency and Center
+            .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
+            .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> CustodyPaths(string path = null) => CustodyProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
-            .Concat( // Entry Resource also adds the Currency and Center
-                CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}")
-            ).Concat(
-                CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}")
-            ).Concat(
-                CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}/{p}")
-            );
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AccountResourcePaths(string path = null) => ResourcePaths(path)
             // This is used in account, it does not need currency or center, since they already come with the account
-            .Concat(UnitPaths(nameof(Resource.Unit)))
-            .Concat(ResourceUnitPaths(nameof(Resource.Units)))
-            .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> TabEntryResourcePaths(string path = null) => ResourceProps
-            // This one is for the tab header which does not require the units and resource units
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}/{p}"))
+            .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}/{p}"));
+        public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)
+            // Entry Resource also adds the Currency and Center
+            .Concat(CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
+            .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}"))
+            .Concat(CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
             .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -307,7 +386,7 @@ namespace Tellma.Entities
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
             .Concat(CustodyPaths(nameof(Account.Custody)))
-            .Concat(ResourcePaths(nameof(Account.Resource)))
+            .Concat(AccountResourcePaths(nameof(Account.Resource)))
             .Concat(RelationPaths(nameof(Account.Participant)))
             .Concat(RelationPaths(nameof(Account.Custodian)))
             .Select(p => path == null ? p : $"{path}/{p}");
