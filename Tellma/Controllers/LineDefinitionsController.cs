@@ -128,8 +128,13 @@ namespace Tellma.Controllers
                         case "AdditionalReference":
                             break;
                         default:
-                            column.InheritsFromHeader = 0; // Other columns cannot inherit from header
+                            column.InheritsFromHeader = 0; // Only listed columns can inherit
                             break;
+                    }
+
+                    if (column.ColumnName == null || !column.ColumnName.EndsWith("Id"))
+                    {
+                        column.Filter = null; // Only listed columns can inherit
                     }
                 });
 

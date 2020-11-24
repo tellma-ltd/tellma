@@ -194,6 +194,11 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return column.ColumnName === 'CenterId' || column.ColumnName === 'CurrencyId';
   }
 
+  public canFilter(column: LineDefinitionColumn) {
+    return !!column.ColumnName && column.ColumnName.endsWith('Id');
+  }
+
+
   public canInherit(column: LineDefinitionColumn) {
     // IMPORTANT: Keep in sync with LineDefinitionsController.cs
     switch (column.ColumnName) {
