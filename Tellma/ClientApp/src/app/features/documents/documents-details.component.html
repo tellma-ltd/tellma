@@ -22,7 +22,9 @@
 
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
-    <div class="mx-2 d-inline-block"></div>
+    <div class="mx-2 d-inline-block"
+        *ngIf="!isEdit && showClose(model, extras?.RequiredSignatures) || showClose(model, extras?.RequiredSignatures)">
+    </div>
 
     <!-- Open -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
@@ -544,7 +546,8 @@
                         <!-- Edit Mode: Readonly Field -->
                         <ng-container
                             *ngIf="isReadOnly(lineDefId, columnIndex, line, model); else editableFormGroupContent">
-                            <div class="w-100 t-disabled-background border-bottom" [ngSwitch]="columnName(lineDefId, columnIndex)">
+                            <div class="w-100 t-disabled-background border-bottom"
+                                [ngSwitch]="columnName(lineDefId, columnIndex)">
                                 <span *ngSwitchCase="'AccountId'">
                                     {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}
                                 </span>
@@ -616,8 +619,7 @@
                                 <t-accounts-picker *ngSwitchCase="'AccountId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                    [filter]="getFilter(lineDefId, columnIndex)"
-                                    additionalSelect="CurrencyId"
+                                    [filter]="getFilter(lineDefId, columnIndex)" additionalSelect="CurrencyId"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-accounts-picker>
                                 <t-currencies-picker *ngSwitchCase="'CurrencyId'"
@@ -637,8 +639,7 @@
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsCustody_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                    [filter]="getFilter(lineDefId, columnIndex)"
-                                    additionalSelect="CurrencyId"
+                                    [filter]="getFilter(lineDefId, columnIndex)" additionalSelect="CurrencyId"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-custodies-picker>
                                 <t-relations-picker *ngSwitchCase="'ParticipantId'"
@@ -652,8 +653,7 @@
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                    [filter]="getFilter(lineDefId, columnIndex)"
-                                    additionalSelect="CurrencyId"
+                                    [filter]="getFilter(lineDefId, columnIndex)" additionalSelect="CurrencyId,UnitId"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-resources-picker>
                                 <t-centers-picker *ngSwitchCase="'CenterId'"

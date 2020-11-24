@@ -1,4 +1,5 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
+// tslint:disable:member-ordering
+import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject, AfterViewChecked } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Key } from '~/app/data/util';
@@ -55,6 +56,83 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // the search field
   @ViewChild('searchInput', { static: true })
   searchInput: ElementRef;
+
+  // // the root div with the scroll bar
+  // @ViewChild('rootDiv', { static: true })
+  // rootDiv: ElementRef;
+
+  // private _contentDiv: ElementRef;
+
+  // // the huge div that is added after initialization
+  // get contentDiv(): ElementRef {
+  //   return this._contentDiv;
+  // }
+
+  // @ViewChild('contentDiv', { static: false })
+  // set contentDiv(v: ElementRef) {
+  //   if (this._contentDiv !== v) {
+  //     this._contentDiv = v;
+  //     if (!!v && this.contentDiv) {
+  //       setTimeout(() => {
+  //         this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
+  //       });
+  //     }
+  //   }
+  // }
+
+  //////////////////////// Lifecycle functions
+
+  // constructor
+  constructor(
+    private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
+    private translate: TranslateService, private workspace: WorkspaceService, private userSettings: CustomUserSettingsService) { }
+
+  // Angular lifecycle hooks
+  ngOnInit() {
+    const count = this.mainMenu.reduce((sum, obj) => sum + obj.items.length, 0);
+
+    // this adds a cool background to the main menu, unaffected by scrolling
+    this.document.body.classList.add('t-banner');
+
+    // if the main menu is enormous, it causes an uncomfortable lag before navigation
+    // we eliminate this lag by not rendering the menu items immediately if they are too many
+    if (count < 60) {
+      this.initialize();
+    }
+  }
+
+  ngAfterViewInit() {
+    if (!this.initialized) {
+      timer(1).subscribe(() => this.initialize());
+    }
+  }
+
+  ngOnDestroy() {
+    // // Remember the scroll position
+    // if (!!this.rootDiv) {
+    //   this.workspace.currentTenant.miscState.main_menu_scroll_position = this.rootDiv.nativeElement.scrollTop;
+    // }
+
+    // other screens have a simple grey background
+    this.document.body.classList.remove('t-banner');
+  }
+
+  initialize() {
+    this.initialized = true;
+    // setTimeout(() => {
+    //   this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
+    // });
+
+    // timer(0).subscribe(() => {
+    //   // this.rootDiv.nativeElement.scrollTo({
+    //   //   top: this.workspace.currentTenant.miscState.main_menu_scroll_position || 0,
+    //   //   behavior: 'smooth'
+    //   // });
+    //   this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
+    // });
+  }
+
+  //////////////////////// End - Lifecycle functions
 
   mainMenuBase: { [section: string]: MenuSectionInfo } = {
     Mail: {
@@ -466,39 +544,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         // }
       }
     }
-  }
-
-  // constructor
-  constructor(
-    private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
-    private translate: TranslateService, private workspace: WorkspaceService, private userSettings: CustomUserSettingsService) { }
-
-  // Angular lifecycle hooks
-  ngOnInit() {
-    const count = this.mainMenu.reduce((sum, obj) => sum + obj.items.length, 0);
-
-    // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.add('t-banner');
-
-    // if the main menu is enormous, it causes an uncomfortable lag before navigation
-    // we eliminate this lag by not rendering the menu items immediately if they are too many
-    if (count < 60) {
-      this.initialize();
-    }
-  }
-  ngAfterViewInit() {
-    if (!this.initialized) {
-      timer(1).subscribe(() => this.initialize());
-    }
-  }
-
-  ngOnDestroy() {
-    // other screens have a simple grey background
-    this.document.body.classList.remove('t-banner');
-  }
-
-  initialize() {
-    this.initialized = true;
   }
 
   // this captures all keydown events from the root document

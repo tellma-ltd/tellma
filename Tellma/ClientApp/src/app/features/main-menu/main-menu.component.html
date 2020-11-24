@@ -1,4 +1,4 @@
-<div class="pt-3 pt-md-4 t-menu-screen">
+<div class="pt-3 pt-md-4 t-menu-screen" #rootDiv>
 
   <!-- Search Bar -->
   <div class="t-menu-search-container mb-4">
@@ -7,8 +7,9 @@
     <input class="form-control t-menu-search" [(ngModel)]="search" #searchInput
       placeholder="{{ 'Search' | translate }}..." />
   </div>
+
   <!-- Main Menu container -->
-  <div class="t-menu-container">
+  <div class="t-menu-container" *ngIf="initialized; else spinner" #contentDiv>
 
     <!-- No items found -->
     <div *ngIf="showNoItemsFound"> {{ 'NoItemsFound' | translate }}</div>
@@ -30,30 +31,28 @@
     </div>
 
     <!-- Main Menu -->
-    <ng-container *ngIf="initialized; else spinner">
-      <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
-        [class.d-none]="!showSection(section?.items)">
-        <div class="t-menu-section" (dblclick)="onSectionDoubleClick(section)">
-          <span>{{ section.label }}</span>
+    <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
+      [class.d-none]="!showSection(section?.items)">
+      <div class="t-menu-section" (dblclick)="onSectionDoubleClick(section)">
+        <span>{{ section.label }}</span>
+      </div>
+      <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"
+        [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;"
+        [routerLink]="linkArray(item)" (click)="onMenuItemClick(item)" [title]="item.label">
+        <div class="pt-4 pb-1 t-menu-item-icon">
+          <fa-icon [icon]="item.icon"></fa-icon>
         </div>
-        <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"
-          [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;" [routerLink]="linkArray(item)"
-          (click)="onMenuItemClick(item)" [title]="item.label">
-          <div class="pt-4 pb-1 t-menu-item-icon">
-            <fa-icon [icon]="item.icon"></fa-icon>
-          </div>
-          <div class="px-2 t-menu-item-label" ellipsis>
-            {{ item.label }}
-          </div>
-        </a>
-      </div>
-    </ng-container>
-
-    <!-- Spinner for huge menu -->
-    <ng-template #spinner>
-      <div class="text-center">
-        <t-spinner [scale]="2"></t-spinner>
-      </div>
-    </ng-template>
+        <div class="px-2 t-menu-item-label" ellipsis>
+          {{ item.label }}
+        </div>
+      </a>
+    </div>
   </div>
+
+  <!-- Spinner for huge menu -->
+  <ng-template #spinner>
+    <div class="text-center pt-4">
+      <t-spinner [scale]="2"></t-spinner>
+    </div>
+  </ng-template>
 </div>

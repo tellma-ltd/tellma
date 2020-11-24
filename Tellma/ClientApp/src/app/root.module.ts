@@ -9,7 +9,7 @@ import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { StorageService } from './data/storage.service';
 import { ApiService } from './data/api.service';
-import { Router, RouterModule, Routes, PreloadAllModules } from '@angular/router';
+import { Router, RouterModule, Routes, PreloadAllModules, Scroll, NavigationStart, NavigationEnd } from '@angular/router';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -30,6 +30,8 @@ import { BaseAddressGuard } from './data/base-address.guard';
 import { CustomTranslationsLoader } from './data/custom-translations-loader';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { ViewportScroller } from '@angular/common';
+import { filter, tap } from 'rxjs/operators';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient, progress: ProgressOverlayService) {
@@ -165,14 +167,22 @@ export const routes: Routes = [
       useClass: RootHttpInterceptor,
       deps: [WorkspaceService, ApiService, StorageService, Router, OAuthStorage, CleanerService, TranslateService],
       multi: true
-    }
+    },
   ],
   bootstrap: [RootComponent]
 })
 export class RootModule {
 
-  constructor(library: FaIconLibrary) {
+  constructor(library: FaIconLibrary, router: Router, viewportScroller: ViewportScroller) {
     library.addIcons(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight, faWifi,
       faSyncAlt, faSearch, faCube, faCogs, faHands, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt);
+
+    // router.events.pipe(
+    //   filter((e) => e instanceof NavigationEnd),
+    //   tap(e => {
+    //     console.log(router);
+    //     console.log(e);
+    //   })
+    // ).subscribe();
   }
 }

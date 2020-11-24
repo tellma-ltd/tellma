@@ -1,7 +1,7 @@
 // tslint:disable:member-ordering
 import { Component, Input, TemplateRef, ViewChild, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace, MasterDetailsStore, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
@@ -3192,6 +3192,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public onDocumentState(
     doc: Document,
     fn: (ids: (number | string)[], args: ActionArguments, extras?: { [key: string]: any }) => Observable<EntitiesResponse<Document>>) {
+
+    if (!this.details || this.details.state.detailsStatus !== DetailsStatus.loaded) {
+      return; // Don't do anything unless the doc is loaded
+    }
+
     fn([doc.Id], {
       returnEntities: true,
       select: this.select,
