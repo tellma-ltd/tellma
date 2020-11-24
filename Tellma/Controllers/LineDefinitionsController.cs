@@ -109,7 +109,7 @@ namespace Tellma.Controllers
                         column.RequiredState = LineState.Draft;
                     }
 
-                    // 
+                    // IMPORTANT: Keep in sync with line-definitions-details.component.ts
                     switch (column.ColumnName)
                     {
                         case "PostingDate":

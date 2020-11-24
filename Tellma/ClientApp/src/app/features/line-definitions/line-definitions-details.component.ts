@@ -195,6 +195,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
   }
 
   public canInherit(column: LineDefinitionColumn) {
+    // IMPORTANT: Keep in sync with LineDefinitionsController.cs
     switch (column.ColumnName) {
       case 'PostingDate':
       case 'Memo':
