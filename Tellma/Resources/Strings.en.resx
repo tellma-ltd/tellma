@@ -541,9 +541,6 @@
   <data name="Document" xml:space="preserve">
     <value>Document</value>
   </data>
-  <data name="Document_AdditionalReference" xml:space="preserve">
-    <value>Additional Reference</value>
-  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>Assigned At</value>
   </data>
@@ -560,7 +557,7 @@
     <value>Attachments</value>
   </data>
   <data name="Document_Center" xml:space="preserve">
-    <value>Center</value>
+    <value>Business Unit</value>
   </data>
   <data name="Document_Clearance" xml:space="preserve">
     <value>Clearance Level</value>
@@ -577,17 +574,8 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
-  <data name="Document_Currency" xml:space="preserve">
-    <value>Currency</value>
-  </data>
-  <data name="Document_ExternalReference" xml:space="preserve">
-    <value>External Reference</value>
-  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
-  </data>
-  <data name="Document_Participant" xml:space="preserve">
-    <value>Participant</value>
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>

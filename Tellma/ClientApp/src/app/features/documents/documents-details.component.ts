@@ -1,14 +1,14 @@
 // tslint:disable:member-ordering
 import { Component, Input, TemplateRef, ViewChild, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace, MasterDetailsStore, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName
+  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName, DefinitionsForClient, ResourceDefinitionForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -294,9 +294,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
-      result.ParticipantIsCommon = false;
       result.CurrencyIsCommon = false;
       result.CenterIsCommon = false;
+
+      result.CustodianIsCommon = false;
+      result.CustodyIsCommon = false;
+      result.ParticipantIsCommon = false;
+      result.ResourceIsCommon = false;
+
+      result.QuantityIsCommon = false;
+      result.UnitIsCommon = false;
+      result.Time1IsCommon = false;
+      result.Time2IsCommon = false;
+
       result.ExternalReferenceIsCommon = false;
       result.AdditionalReferenceIsCommon = false;
     } else {
@@ -310,9 +320,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Is Common
       result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
-      result.ParticipantIsCommon = true;
-      result.CenterIsCommon = true;
       result.CurrencyIsCommon = true;
+      result.CenterIsCommon = true;
+
+      result.CustodianIsCommon = true;
+      result.CustodyIsCommon = true;
+      result.ParticipantIsCommon = true;
+      result.ResourceIsCommon = true;
+
+      result.QuantityIsCommon = true;
+      result.UnitIsCommon = true;
+      result.Time1IsCommon = true;
+      result.Time2IsCommon = true;
+
       result.ExternalReferenceIsCommon = true;
       result.AdditionalReferenceIsCommon = true;
     }
@@ -638,30 +658,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return getChoices(desc);
   }
 
-  // Document Memo
-
-  public showDocumentMemo(_: DocumentForSave): boolean {
-    return !!this.definition.MemoVisibility;
-  }
-
-  public showDocumentMemoIsCommon(_: DocumentForSave): boolean {
-    return this.definition.MemoIsCommonVisibility && !this.isJV;
-  }
-
-  public requireDocumentMemo(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this.definition.MemoVisibility === 'Required' || this._requireDocumentMemo;
-  }
-
-  public readonlyDocumentMemo(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentMemo;
-  }
-
-  public labelDocumentMemo(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
-  }
-
   // Posting Date
 
   public showDocumentPostingDate(_: DocumentForSave) {
@@ -687,94 +683,28 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Document_PostingDate');
   }
 
-  // External Reference
+  // Document Memo
 
-  public showDocumentExternalReference(_: DocumentForSave) {
-    return this.definition.ExternalReferenceVisibility;
+  public showDocumentMemo(_: DocumentForSave): boolean {
+    return !!this.definition.MemoVisibility;
   }
 
-  public requireDocumentExternalReference(doc: Document): boolean {
+  public showDocumentMemoIsCommon(_: DocumentForSave): boolean {
+    return this.definition.MemoIsCommonVisibility && !this.isJV;
+  }
+
+  public requireDocumentMemo(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentExternalReference;
+    return this.definition.MemoVisibility === 'Required' || this._requireDocumentMemo;
   }
 
-  public readonlyDocumentExternalReference(doc: Document): boolean {
+  public readonlyDocumentMemo(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentExternalReference;
+    return this._readonlyDocumentMemo;
   }
 
-  public labelDocumentExternalReference(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'ExternalReferenceLabel') ||
-      this.translate.instant('Document_ExternalReference');
-  }
-
-  // Additional Reference
-
-  public showDocumentAdditionalReference(_: DocumentForSave) {
-    return this.definition.AdditionalReferenceVisibility;
-  }
-
-  public requireDocumentAdditionalReference(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentAdditionalReference;
-  }
-
-  public readonlyDocumentAdditionalReference(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentAdditionalReference;
-  }
-
-  public labelDocumentAdditionalReference(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'AdditionalReferenceLabel') ||
-      this.translate.instant('Document_AdditionalReference');
-  }
-
-  // Participant
-
-  public showDocumentParticipant(_: DocumentForSave): boolean {
-    return this.definition.ParticipantVisibility;
-  }
-
-  public requireDocumentParticipant(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireParticipant;
-  }
-
-  public readonlyDocumentParticipant(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyParticipant;
-  }
-
-  public labelDocumentParticipant(_: DocumentForSave): string {
-    // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'ParticipantLabel');
-    if (!!label) {
-      return label;
-    }
-
-    // Second try the relation definition
-    if (this.definition.ParticipantDefinitionIds.length === 1) {
-      const relationDefId = this.definition.ParticipantDefinitionIds[0];
-      const relationDef = this.ws.definitions.Relations[relationDefId];
-      if (!!relationDef) {
-        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
-      }
-    }
-
-    // Last resort: generic label
-    if (!label) {
-      label = this.translate.instant('Document_Participant');
-    }
-
-    return label;
-  }
-
-  public documentParticipantDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.ParticipantDefinitionIds;
-  }
-
-  public filterDocumentParticipant(_: DocumentForSave): string {
-    return this.definition.ParticipantFilter;
+  public labelDocumentMemo(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
   }
 
   // Segment
@@ -791,6 +721,31 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public readonlyDocumentSegment(doc: Document): boolean {
     this.computeDocumentSettings(doc);
     return false; // TODO
+  }
+
+  // Currency
+
+  public showDocumentCurrency(_: DocumentForSave) {
+    return this.definition.CurrencyVisibility;
+  }
+
+  public requireDocumentCurrency(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentCurrency;
+  }
+
+  public readonlyDocumentCurrency(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentCurrency;
+  }
+
+  public labelDocumentCurrency(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') ||
+      this.translate.instant('Entry_Currency');
+  }
+
+  public filterDocumentCurrency(_: DocumentForSave): string {
+    return this.definition.CurrencyFilter;
   }
 
   // Center
@@ -818,43 +773,369 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.CenterFilter;
   }
 
-  // Currency
+  // Custodian
 
-  public showDocumentCurrency(_: DocumentForSave) {
-    return this.definition.CurrencyVisibility;
+  public showDocumentCustodian(_: DocumentForSave): boolean {
+    return this.definition.CustodianVisibility;
   }
 
-  public requireDocumentCurrency(doc: Document): boolean {
+  public requireDocumentCustodian(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentCurrency;
+    return this._requireDocumentCustodian;
   }
 
-  public readonlyDocumentCurrency(doc: Document): boolean {
+  public readonlyDocumentCustodian(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentCurrency;
+    return this._readonlyDocumentCustodian;
   }
 
-  public labelDocumentCurrency(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') ||
-      this.translate.instant('Document_Currency');
+  public labelDocumentCustodian(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CustodianLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the relation definition
+    if (this.definition.CustodianDefinitionIds.length === 1) {
+      const relationDefId = this.definition.CustodianDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Entry_Custodian');
+    }
+
+    return label;
   }
 
-  public filterDocumentCurrency(_: DocumentForSave): string {
-    return this.definition.CurrencyFilter;
+  public documentCustodianDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.CustodianDefinitionIds;
+  }
+
+  public filterDocumentCustodian(_: DocumentForSave): string {
+    return this.definition.CustodianFilter;
+  }
+
+  // Custody
+
+  public showDocumentCustody(_: DocumentForSave): boolean {
+    return this.definition.CustodyVisibility;
+  }
+
+  public requireDocumentCustody(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentCustody;
+  }
+
+  public readonlyDocumentCustody(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentCustody;
+  }
+
+  public labelDocumentCustody(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CustodyLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the custody definition
+    if (this.definition.CustodyDefinitionIds.length === 1) {
+      const custodyDefId = this.definition.CustodyDefinitionIds[0];
+      const custodyDef = this.ws.definitions.Custodies[custodyDefId];
+      if (!!custodyDef) {
+        label = this.ws.getMultilingualValueImmediate(custodyDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Entry_Custody');
+    }
+
+    return label;
+  }
+
+  public documentCustodyDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.CustodyDefinitionIds;
+  }
+
+  public filterDocumentCustody(_: DocumentForSave): string {
+    return this.definition.CustodyFilter;
+  }
+
+  // Participant
+
+  public showDocumentParticipant(_: DocumentForSave): boolean {
+    return this.definition.ParticipantVisibility;
+  }
+
+  public requireDocumentParticipant(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentParticipant;
+  }
+
+  public readonlyDocumentParticipant(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentParticipant;
+  }
+
+  public labelDocumentParticipant(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'ParticipantLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the relation definition
+    if (this.definition.ParticipantDefinitionIds.length === 1) {
+      const relationDefId = this.definition.ParticipantDefinitionIds[0];
+      const relationDef = this.ws.definitions.Relations[relationDefId];
+      if (!!relationDef) {
+        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Entry_Participant');
+    }
+
+    return label;
+  }
+
+  public documentParticipantDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.ParticipantDefinitionIds;
+  }
+
+  public filterDocumentParticipant(_: DocumentForSave): string {
+    return this.definition.ParticipantFilter;
+  }
+
+  // Resource
+
+  public showDocumentResource(_: DocumentForSave): boolean {
+    return this.definition.ResourceVisibility;
+  }
+
+  public requireDocumentResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentResource;
+  }
+
+  public readonlyDocumentResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentResource;
+  }
+
+  public labelDocumentResource(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'ResourceLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the resource definition
+    if (this.definition.ResourceDefinitionIds.length === 1) {
+      const resourceDefId = this.definition.ResourceDefinitionIds[0];
+      const resourceDef = this.ws.definitions.Resources[resourceDefId];
+      if (!!resourceDef) {
+        label = this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Entry_Resource');
+    }
+
+    return label;
+  }
+
+  public documentResourceDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.ResourceDefinitionIds;
+  }
+
+  public filterDocumentResource(_: DocumentForSave): string {
+    return this.definition.ResourceFilter;
+  }
+
+  // Quantity
+
+  public showDocumentQuantity(_: DocumentForSave) {
+    return this.definition.QuantityVisibility;
+  }
+
+  public requireDocumentQuantity(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentQuantity;
+  }
+
+  public readonlyDocumentQuantity(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentQuantity;
+  }
+
+  public labelDocumentQuantity(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'QuantityLabel') ||
+      this.translate.instant('Entry_Quantity');
+  }
+
+  // Unit
+
+  public showDocumentUnit(_: DocumentForSave): boolean {
+    return this.definition.UnitVisibility;
+  }
+
+  public requireDocumentUnit(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentUnit;
+  }
+
+  public readonlyDocumentUnit(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentUnit;
+  }
+
+  public labelDocumentUnit(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'UnitLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Entry_Unit');
+    }
+
+    return label;
+  }
+
+  public filterDocumentUnit(_: DocumentForSave): string {
+    return this.definition.UnitFilter;
+  }
+
+  // Time1
+
+  public showDocumentTime1(_: DocumentForSave) {
+    return this.definition.Time1Visibility;
+  }
+
+  public requireDocumentTime1(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentTime1;
+  }
+
+  public readonlyDocumentTime1(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentTime1;
+  }
+
+  public labelDocumentTime1(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'Time1Label') ||
+      this.translate.instant('Entry_Time1');
+  }
+
+  // Time2
+
+  public showDocumentTime2(_: DocumentForSave) {
+    return this.definition.Time2Visibility;
+  }
+
+  public requireDocumentTime2(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentTime2;
+  }
+
+  public readonlyDocumentTime2(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentTime2;
+  }
+
+  public labelDocumentTime2(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'Time2Label') ||
+      this.translate.instant('Entry_Time2');
+  }
+
+  // External Reference
+
+  public showDocumentExternalReference(_: DocumentForSave) {
+    return this.definition.ExternalReferenceVisibility;
+  }
+
+  public requireDocumentExternalReference(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentExternalReference;
+  }
+
+  public readonlyDocumentExternalReference(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentExternalReference;
+  }
+
+  public labelDocumentExternalReference(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'ExternalReferenceLabel') ||
+      this.translate.instant('Entry_ExternalReference');
+  }
+
+  // Additional Reference
+
+  public showDocumentAdditionalReference(_: DocumentForSave) {
+    return this.definition.AdditionalReferenceVisibility;
+  }
+
+  public requireDocumentAdditionalReference(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentAdditionalReference;
+  }
+
+  public readonlyDocumentAdditionalReference(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentAdditionalReference;
+  }
+
+  public labelDocumentAdditionalReference(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'AdditionalReferenceLabel') ||
+      this.translate.instant('Entry_AdditionalReference');
   }
 
   private _computeDocumentSettingsDoc: Document;
   private _computeDocumentSettingsDef: DocumentDefinitionForClient;
-  private _requireDocumentMemo: boolean;
-  private _readonlyDocumentMemo: boolean;
+
   private _requireDocumentPostingDate: boolean;
   private _readonlyDocumentPostingDate: boolean;
-  private _requireParticipant: boolean;
-  private _readonlyParticipant: boolean;
-  private _requireDocumentCenter: boolean;
-  private _readonlyDocumentCenter: boolean;
+  private _requireDocumentMemo: boolean;
+  private _readonlyDocumentMemo: boolean;
+
   private _requireDocumentCurrency: boolean;
   private _readonlyDocumentCurrency: boolean;
+  private _requireDocumentCenter: boolean;
+  private _readonlyDocumentCenter: boolean;
+
+  private _requireDocumentCustodian: boolean;
+  private _readonlyDocumentCustodian: boolean;
+  private _requireDocumentCustody: boolean;
+  private _readonlyDocumentCustody: boolean;
+  private _requireDocumentParticipant: boolean;
+  private _readonlyDocumentParticipant: boolean;
+  private _requireDocumentResource: boolean;
+  private _readonlyDocumentResource: boolean;
+
+  private _requireDocumentQuantity: boolean;
+  private _readonlyDocumentQuantity: boolean;
+  private _requireDocumentUnit: boolean;
+  private _readonlyDocumentUnit: boolean;
+  private _requireDocumentTime1: boolean;
+  private _readonlyDocumentTime1: boolean;
+  private _requireDocumentTime2: boolean;
+  private _readonlyDocumentTime2: boolean;
+
   private _requireDocumentExternalReference: boolean;
   private _readonlyDocumentExternalReference: boolean;
   private _requireDocumentAdditionalReference: boolean;
@@ -862,16 +1143,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private computeDocumentSettings(doc: Document): void {
     if (!doc || !doc.Lines) {
-      this._requireDocumentMemo = false;
-      this._readonlyDocumentMemo = false;
       this._requireDocumentPostingDate = false;
       this._readonlyDocumentPostingDate = false;
-      this._requireParticipant = false;
-      this._readonlyParticipant = false;
-      this._requireDocumentCenter = false;
-      this._readonlyDocumentCenter = false;
+      this._requireDocumentMemo = false;
+      this._readonlyDocumentMemo = false;
+
       this._requireDocumentCurrency = false;
       this._readonlyDocumentCurrency = false;
+      this._requireDocumentCenter = false;
+      this._readonlyDocumentCenter = false;
+
+      this._requireDocumentCustodian = false;
+      this._readonlyDocumentCustodian = false;
+      this._requireDocumentCustody = false;
+      this._readonlyDocumentCustody = false;
+      this._requireDocumentParticipant = false;
+      this._readonlyDocumentParticipant = false;
+      this._requireDocumentResource = false;
+      this._readonlyDocumentResource = false;
+
+      this._requireDocumentQuantity = false;
+      this._readonlyDocumentQuantity = false;
+      this._requireDocumentUnit = false;
+      this._readonlyDocumentUnit = false;
+      this._requireDocumentTime1 = false;
+      this._readonlyDocumentTime1 = false;
+      this._requireDocumentTime2 = false;
+      this._readonlyDocumentTime2 = false;
+
       this._requireDocumentExternalReference = false;
       this._readonlyDocumentExternalReference = false;
       this._requireDocumentAdditionalReference = false;
@@ -886,16 +1185,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._computeDocumentSettingsDoc = doc;
       this._computeDocumentSettingsDef = def;
 
-      this._requireDocumentMemo = def.MemoRequiredState === 0;
-      this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
       this._requireDocumentPostingDate = def.PostingDateRequiredState === 0;
       this._readonlyDocumentPostingDate = def.PostingDateReadOnlyState === 0;
-      this._requireParticipant = def.ParticipantRequiredState === 0;
-      this._readonlyParticipant = def.ParticipantReadOnlyState === 0;
-      this._requireDocumentCenter = def.CenterRequiredState === 0;
-      this._readonlyDocumentCenter = def.CenterReadOnlyState === 0;
+      this._requireDocumentMemo = def.MemoRequiredState === 0;
+      this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
+
       this._requireDocumentCurrency = def.CurrencyRequiredState === 0;
       this._readonlyDocumentCurrency = def.CurrencyReadOnlyState === 0;
+      this._requireDocumentCenter = def.CenterRequiredState === 0;
+      this._readonlyDocumentCenter = def.CenterReadOnlyState === 0;
+
+      this._requireDocumentCustodian = def.CustodianRequiredState === 0;
+      this._readonlyDocumentCustodian = def.CustodianReadOnlyState === 0;
+      this._requireDocumentCustody = def.CustodyRequiredState === 0;
+      this._readonlyDocumentCustody = def.CustodyReadOnlyState === 0;
+      this._requireDocumentParticipant = def.ParticipantRequiredState === 0;
+      this._readonlyDocumentParticipant = def.ParticipantReadOnlyState === 0;
+      this._requireDocumentResource = def.ResourceRequiredState === 0;
+      this._readonlyDocumentResource = def.ResourceReadOnlyState === 0;
+
+      this._requireDocumentQuantity = def.QuantityRequiredState === 0;
+      this._readonlyDocumentQuantity = def.QuantityRequiredState === 0;
+      this._requireDocumentUnit = def.UnitRequiredState === 0;
+      this._readonlyDocumentUnit = def.UnitRequiredState === 0;
+      this._requireDocumentTime1 = def.Time1RequiredState === 0;
+      this._readonlyDocumentTime1 = def.Time1RequiredState === 0;
+      this._requireDocumentTime2 = def.Time2RequiredState === 0;
+      this._readonlyDocumentTime2 = def.Time2RequiredState === 0;
+
       this._requireDocumentAdditionalReference = def.AdditionalReferenceRequiredState === 0;
       this._readonlyDocumentAdditionalReference = def.AdditionalReferenceReadOnlyState === 0;
       this._requireDocumentExternalReference = def.ExternalReferenceRequiredState === 0;
@@ -906,16 +1223,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader === 2)) {
 
           switch (colDef.ColumnName) {
-            case 'Memo':
-              if (!this._requireDocumentMemo &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentMemo = true;
-              }
-              if (!this._readonlyDocumentMemo &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentMemo = true;
-              }
-              break;
             case 'PostingDate':
               if (!this._requireDocumentPostingDate &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
@@ -927,14 +1234,24 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               }
               break;
 
-            case 'ParticipantId':
-              if (!this._requireParticipant &&
+            case 'Memo':
+              if (!this._requireDocumentMemo &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireParticipant = true;
+                this._requireDocumentMemo = true;
               }
-              if (!this._readonlyParticipant &&
+              if (!this._readonlyDocumentMemo &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyParticipant = true;
+                this._readonlyDocumentMemo = true;
+              }
+              break;
+            case 'CurrencyId':
+              if (!this._requireDocumentCurrency &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentCurrency = true;
+              }
+              if (!this._readonlyDocumentCurrency &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentCurrency = true;
               }
               break;
 
@@ -948,18 +1265,87 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._readonlyDocumentCenter = true;
               }
               break;
-
-            case 'CurrencyId':
-              if (!this._requireDocumentCurrency &&
+            case 'CustodianId':
+              if (!this._requireDocumentCustodian &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentCurrency = true;
+                this._requireDocumentCustodian = true;
               }
-              if (!this._readonlyDocumentCurrency &&
+              if (!this._readonlyDocumentCustodian &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentCurrency = true;
+                this._readonlyDocumentCustodian = true;
+              }
+              break;
+            case 'CustodyId':
+              if (!this._requireDocumentCustody &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentCustody = true;
+              }
+              if (!this._readonlyDocumentCustody &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentCustody = true;
+              }
+              break;
+            case 'ParticipantId':
+              if (!this._requireDocumentParticipant &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentParticipant = true;
+              }
+              if (!this._readonlyDocumentParticipant &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentParticipant = true;
+              }
+              break;
+            case 'ResourceId':
+              if (!this._requireDocumentResource &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentResource = true;
+              }
+              if (!this._readonlyDocumentResource &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentResource = true;
               }
               break;
 
+            case 'Quantity':
+              if (!this._requireDocumentQuantity &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentQuantity = true;
+              }
+              if (!this._readonlyDocumentQuantity &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentQuantity = true;
+              }
+              break;
+            case 'UnitId':
+              if (!this._requireDocumentUnit &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentUnit = true;
+              }
+              if (!this._readonlyDocumentUnit &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentUnit = true;
+              }
+              break;
+            case 'Time1':
+              if (!this._requireDocumentTime1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentTime1 = true;
+              }
+              if (!this._readonlyDocumentTime1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentTime1 = true;
+              }
+              break;
+            case 'Time2':
+              if (!this._requireDocumentTime2 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentTime2 = true;
+              }
+              if (!this._readonlyDocumentTime2 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentTime2 = true;
+              }
+              break;
             case 'ExternalReference':
               if (!this._requireDocumentExternalReference &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
@@ -970,7 +1356,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._readonlyDocumentExternalReference = true;
               }
               break;
-
             case 'AdditionalReference':
               if (!this._requireDocumentAdditionalReference &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
@@ -1014,12 +1399,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
-  // private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
-  //   const resource = this.resource(entry);
-  //   const defId = !!resource ? resource.DefinitionId : null;
-  //   const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
-  //   return resourceDefinition;
-  // }
+  private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
+    const resource = this.resource(entry);
+    const defId = !!resource ? resource.DefinitionId : null;
+    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
+    return resourceDefinition;
+  }
 
   public accountDisplay(accountId: number) {
     const account = this.ws.get('Account', accountId);
@@ -1282,11 +1667,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public readonlyUnit(entry: Entry): boolean {
-    const resource = this.resource(entry);
-    const accountType = this.accountType(entry);
-    const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
-    return !!resourceDef && resourceDef.UnitCardinality === 'Single'
-      && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
+    const def = this.resourceDefinition(entry);
+    if (!!def && def.UnitCardinality === 'Single' &&
+      def.ResourceDefinitionType !== 'PropertyPlantAndEquipment' &&
+      def.ResourceDefinitionType !== 'InvestmentProperty' &&
+      def.ResourceDefinitionType !== 'IntangibleAssetsOtherThanGoodwill') {
+      const resource = this.resource(entry);
+      if (!!resource) {
+        return !!resource.UnitId;
+      }
+    }
+
+    return false;
   }
 
   public readonlyValueUnitId(entry: Entry): number {
@@ -2187,10 +2579,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public tabTitle(lineDefId: number, model: DocumentForSave): string {
-    const def = this.lineDefinition(lineDefId);
-    const isForm = this.showAsForm(lineDefId, model);
-    return !!def ? this.ws.getMultilingualValueImmediate(def, isForm ? 'TitleSingular' : 'TitlePlural')
-      : this.translate.instant('Undefined');
+    if (this.isJV && this.isManualLine(lineDefId)) {
+      return this.translate.instant('Entries');
+    } else {
+      const def = this.lineDefinition(lineDefId);
+      const isForm = this.showAsForm(lineDefId, model);
+      return !!def ? this.ws.getMultilingualValueImmediate(def, isForm ? 'TitleSingular' : 'TitlePlural')
+        : this.translate.instant('Undefined');
+    }
   }
 
   private _lines: { [defId: number]: LineForSave[] };
@@ -2403,135 +2799,276 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return paths;
   }
 
-  public smartTabHeaderColumnPaths(lineDefId: number, doc: Document): number[] {
-    // It is named smartTabHeaderColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
-
-    // All line definitions other than 'ManualLine'
-    const lineDef = this.lineDefinition(lineDefId);
-    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
-    if (!!doc.LineDefinitionEntries) {
-      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
-        tabEntries[tabEntry.EntryIndex] = tabEntry;
-      }
-    }
-
-    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
-      .map((column, index) => ({ column, index })) // Capture the index first thing
-      .filter(e => {
-        const col = e.column;
-
-        if (col.InheritsFromHeader >= 2 && (
-          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-          (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
-          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
-          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
-        )) {
-          // This column inherits from document header, hide it from the grid
-          return false;
-        } else if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1) {
-          switch (col.ColumnName) {
-            case 'Memo':
-            case 'PostingDate':
-            case 'ParticipantId':
-            case 'CurrencyId':
-            case 'CustodyId':
-            case 'ResourceId':
-            case 'Quantity':
-            case 'UnitId':
-            case 'CenterId':
-            case 'Time1':
-            case 'Time2':
-            case 'ExternalReference':
-            case 'AdditionalReference':
-              return true;
-          }
-        }
-
-        return false;
-      })
-      .map(e => e.index) : [];
-
-    return result;
-  }
-
   private _defaultTabEntry: DocumentLineDefinitionEntryForSave = {
     PostingDateIsCommon: true,
     MemoIsCommon: true,
-    ParticipantIsCommon: true,
     CurrencyIsCommon: true,
+    CenterIsCommon: true,
+    CustodianIsCommon: true,
     CustodyIsCommon: true,
+    ParticipantIsCommon: true,
     ResourceIsCommon: true,
     QuantityIsCommon: true,
     UnitIsCommon: true,
-    CenterIsCommon: true,
     Time1IsCommon: true,
     Time2IsCommon: true,
     ExternalReferenceIsCommon: true,
     AdditionalReferenceIsCommon: true,
   };
 
-  public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
-    // It is named smartColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+  private _smartTabHeaderColumnPathsIsCommonHasChanged = false;
+  private _smartTabHeaderColumnPathsDefinitions: DefinitionsForClient;
+  private _smartTabHeaderColumnPathsModel: Document;
+  private _smartTabHeaderColumnPathsLineDefId: number;
+  private _smartTabHeaderColumnPathsResult: number[];
 
-    // All line definitions other than 'ManualLine'
-    const lineDef = this.lineDefinition(lineDefId);
-    const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
-    if (!!doc.LineDefinitionEntries) {
-      for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
-        tabEntries[tabEntry.EntryIndex] = tabEntry;
+  public smartTabHeaderColumnPaths(lineDefId: number, doc: Document): number[] {
+    // It is named smartTabHeaderColumnPaths to mirror manualColumnPaths, even though the returned array is just column indices
+
+    if (this._smartTabHeaderColumnPathsIsCommonHasChanged ||
+      this._smartTabHeaderColumnPathsModel !== doc ||
+      this._smartTabHeaderColumnPathsLineDefId !== lineDefId ||
+      this._smartTabHeaderColumnPathsDefinitions !== this.ws.definitions) {
+
+      this._smartTabHeaderColumnPathsIsCommonHasChanged = false;
+      this._smartTabHeaderColumnPathsModel = doc;
+      this._smartTabHeaderColumnPathsLineDefId = lineDefId;
+      this._smartTabHeaderColumnPathsDefinitions = this.ws.definitions;
+
+      // All line definitions other than 'ManualLine'
+      const lineDef = this.lineDefinition(lineDefId);
+
+      const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+        .map((column, index) => ({ column, index })) // Capture the index first thing
+        .filter(e => {
+          const col = e.column;
+
+          if (col.InheritsFromHeader >= 2 && (
+            (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+            (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+            (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+            (doc.CustodianIsCommon && col.ColumnName === 'CustodianId') ||
+            (doc.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
+            (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
+            (doc.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
+            (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+            (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
+            (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
+            (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
+            (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+          )) {
+            // This column inherits from document header, hide it from the tab header
+            return false;
+          } else if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1) {
+            switch (col.ColumnName) {
+              case 'PostingDate':
+              case 'Memo':
+              case 'CurrencyId':
+              case 'CenterId':
+              case 'CustodianId':
+              case 'CustodyId':
+              case 'ParticipantId':
+              case 'ResourceId':
+              case 'Quantity':
+              case 'UnitId':
+              case 'Time1':
+              case 'Time2':
+              case 'ExternalReference':
+              case 'AdditionalReference':
+                return true;
+            }
+          }
+
+          return false;
+        })
+        .map(e => e.index) : [];
+
+      this._smartTabHeaderColumnPathsResult = result;
+    }
+
+    return this._smartTabHeaderColumnPathsResult;
+  }
+
+  private _smartColumnIndicesIsCommonHasChanged = false;
+  private _smartColumnIndicesDefinitions: DefinitionsForClient;
+  private _smartColumnIndicesModel: Document;
+  private _smartColumnIndicesLineDefId: number;
+  private _smartColumnIndicesResult: number[];
+
+  public smartColumnIndices(lineDefId: number, doc: Document): number[] {
+    // Returns the smart column indices that are visible in the table or form
+    if (this._smartColumnIndicesIsCommonHasChanged ||
+      this._smartColumnIndicesModel !== doc ||
+      this._smartColumnIndicesLineDefId !== lineDefId ||
+      this._smartColumnIndicesDefinitions !== this.ws.definitions) {
+
+      this._smartColumnIndicesIsCommonHasChanged = false;
+      this._smartColumnIndicesModel = doc;
+      this._smartColumnIndicesLineDefId = lineDefId;
+      this._smartColumnIndicesDefinitions = this.ws.definitions;
+
+      // All line definitions other than 'ManualLine'
+      const lineDef = this.lineDefinition(lineDefId);
+      const tabEntries: DocumentLineDefinitionEntryForSave[] = [];
+      if (!!doc.LineDefinitionEntries) {
+        for (const tabEntry of doc.LineDefinitionEntries.filter(e => e.LineDefinitionId === lineDefId)) {
+          tabEntries[tabEntry.EntryIndex] = tabEntry;
+        }
+      }
+
+      const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+        .map((column, index) => ({ column, index })) // Capture the index first thing
+        .filter(e => {
+          const col = e.column;
+
+          if (col.InheritsFromHeader >= 2 && (
+            (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+            (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+            (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+            (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
+            (doc.CustodianIsCommon && col.ColumnName === 'CustodianId') ||
+            (doc.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
+            (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
+            (doc.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
+            (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+            (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
+            (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
+            (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
+            (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+          )) {
+            // This column inherits from document header, hide it from the grid
+            return false;
+          } else {
+            const tabEntryIndex = this.tabEntryIndex(col);
+            const tab = tabEntries[tabEntryIndex] || this._defaultTabEntry;
+            if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
+              (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
+              (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
+              (tab.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
+              (tab.CenterIsCommon && col.ColumnName === 'CenterId') ||
+              (tab.CustodianIsCommon && col.ColumnName === 'CustodianId') ||
+              (tab.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
+              (tab.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
+              (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
+              (tab.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+              (tab.UnitIsCommon && col.ColumnName === 'UnitId') ||
+              (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
+              (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
+              (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
+              (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+            )) {
+              return false;
+            }
+          }
+
+          return true;
+        })
+        .map(e => e.index) : [];
+
+      this._smartColumnIndicesResult = result;
+    }
+
+    return this._smartColumnIndicesResult;
+
+  }
+
+  private _smartColumnPathsForTableNumberPaths: number[];
+  private _smartColumnPathsForTableResult: string[];
+
+  public smartColumnPathsForTable(lineDefId: number, doc: Document): string[] {
+    const numberPaths = this.smartColumnIndices(lineDefId, doc);
+    if (this._smartColumnPathsForTableNumberPaths !== numberPaths) {
+
+      this._smartColumnPathsForTableNumberPaths = numberPaths;
+
+      const result = this.smartColumnIndices(lineDefId, doc).map(e => e + '');
+      result.push('Commands');
+
+      this._smartColumnPathsForTableResult = result;
+    }
+
+    return this._smartColumnPathsForTableResult;
+  }
+
+  public smartTotalsColumnIndices(lineDefId: number, model: Document, isEdit: boolean): number[] {
+    const result: number[] = [];
+
+    for (const i of this.smartColumnIndices(lineDefId, model)) {
+      const colDef = this.columnDefinition(lineDefId, i);
+      const lines = this.lines(lineDefId, model);
+
+      switch (colDef.ColumnName) {
+        case 'Value':
+          result.push(i);
+          break;
+
+        case 'MonetaryValue':
+          if (!lines || lines.length <= 1) {
+            result.push(i);
+          } else {
+            const firstEntry = lines[0].Entries[colDef.EntryIndex];
+            const firstCurrencyId = isEdit ? this.readonlyValueCurrencyId(firstEntry) : firstEntry.CurrencyId;
+            if (lines.every(l => {
+              // IF the currency Id of a line cannot be determined yet (e.g. new line), assume conformity and show total
+              const currentEntry = l.Entries[colDef.EntryIndex];
+              const currentCurrencyId = isEdit ? this.readonlyValueCurrencyId(currentEntry) : currentEntry.CurrencyId;
+              return !currentCurrencyId || currentCurrencyId === firstCurrencyId;
+            })) {
+              result.push(i);
+            }
+          }
+          break;
+
+        case 'Quantity':
+          if (!lines || lines.length <= 1) {
+            result.push(i);
+          } else {
+            const firstEntry = lines[0].Entries[colDef.EntryIndex];
+            const firstUnitId = isEdit && this.readonlyUnit(firstEntry) ?
+              this.readonlyValueUnitId(firstEntry) : firstEntry.UnitId;
+
+            if (lines.every(l => {
+              // IF the unit Id of a line cannot be determined yet (e.g. new line), assume conformity and show total
+              const currentEntry = l.Entries[colDef.EntryIndex];
+              const currentUnitId = isEdit && this.readonlyUnit(currentEntry) ?
+                this.readonlyValueUnitId(currentEntry) : currentEntry.UnitId;
+
+              return !currentUnitId || currentUnitId === firstUnitId;
+            })) {
+              result.push(i);
+            }
+          }
+          break;
       }
     }
 
-    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
-      .map((column, index) => ({ column, index })) // Capture the index first thing
-      .filter(e => {
-        const col = e.column;
+    return result;
+  }
 
-        if (col.InheritsFromHeader >= 2 && (
-          (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-          (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-          (doc.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
-          (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-          (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
-          (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-          (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
-        )) {
-          // This column inherits from document header, hide it from the grid
-          return false;
-        } else {
-          const tabEntryIndex = this.tabEntryIndex(col);
-          const tab = tabEntries[tabEntryIndex] || this._defaultTabEntry;
-          if (!lineDef.ViewDefaultsToForm && col.InheritsFromHeader >= 1 && (
-            (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
-            (tab.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
-            (tab.ParticipantIsCommon && col.ColumnName === 'ParticipantId') ||
-            (tab.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
-            (tab.CustodyIsCommon && col.ColumnName === 'CustodyId') ||
-            (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
-            (tab.QuantityIsCommon && col.ColumnName === 'Quantity') ||
-            (tab.UnitIsCommon && col.ColumnName === 'UnitId') ||
-            (tab.CenterIsCommon && col.ColumnName === 'CenterId') ||
-            (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
-            (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
-            (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-            (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
-          )) {
-            return false;
-          }
-        }
+  public smartTotal(lineDefId: number, columnIndex: number, model: Document) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const entryIndex = colDef.EntryIndex;
 
-        return true;
-      })
-      .map(e => e.index + '') : [];
-
-    if (!isForm) {
-      result.push('Commands');
+    let getter: (e: Entry) => number;
+    switch (colDef.ColumnName) {
+      case 'Value':
+        getter = (e: Entry) => e.Value;
+        break;
+      case 'MonetaryValue':
+        getter = (e: Entry) => e.MonetaryValue;
+        break;
+      case 'Quantity':
+        getter = (e: Entry) => e.Quantity;
+        break;
     }
 
-    return result;
+    return this.lines(lineDefId, model)
+      .filter(line => (line.State || 0) >= 0)
+      .map(line => !!line.Entries ? getter(line.Entries[entryIndex]) || 0 : 0)
+      .reduce((total, v) => total + v, 0);
   }
 
   private _columnTemplatesLineDefId: number;
@@ -2804,6 +3341,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public onToggleDocumentIsCommon(model: Document, prop: string) {
+    if (!!model && !!prop) {
+      model[prop] = !model[prop];
+
+      this._smartTabHeaderColumnPathsIsCommonHasChanged = true;
+      this._smartColumnIndicesIsCommonHasChanged = true;
+    }
+  }
+
   public onToggleTabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): void {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     const tabEntry = this.tabEntry(lineDefId, colDef, doc) || this.addNewTabEntry(lineDefId, colDef, doc);
@@ -2811,6 +3357,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const isCommonPropName = this.isCommonPropertyName(colDef.ColumnName);
 
     tabEntry[isCommonPropName] = !tabEntry[isCommonPropName];
+
+    this._smartColumnIndicesIsCommonHasChanged = true;
   }
 
   public tabIsCommon(lineDefId: number, columnIndex: number, doc: DocumentForSave): boolean {
@@ -3046,6 +3594,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public onDocumentState(
     doc: Document,
     fn: (ids: (number | string)[], args: ActionArguments, extras?: { [key: string]: any }) => Observable<EntitiesResponse<Document>>) {
+
+    if (!this.details || this.details.state.detailsStatus !== DetailsStatus.loaded) {
+      return; // Don't do anything unless the doc is loaded
+    }
+
     fn([doc.Id], {
       returnEntities: true,
       select: this.select,
@@ -3593,14 +4146,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return true;
   }
 
-  public total(doc: Document, direction: number) {
+  public total(doc: Document, direction: number, manualOnly = false) {
     direction = direction as 1 | -1; // To avoid an Angular template binding bug
 
     if (!doc || !doc.Lines) {
       return null;
     }
 
-    return direction * doc.Lines
+    let lines = doc.Lines;
+    if (manualOnly) {
+
+      const manualId = this.ws.definitions.ManualLinesDefinitionId;
+      lines = lines.filter(e => e.DefinitionId === manualId);
+    }
+
+    return direction * lines
       .filter(line => (line.State || 0) >= 0)
       .map(line => {
         return !!line.Entries ? line.Entries

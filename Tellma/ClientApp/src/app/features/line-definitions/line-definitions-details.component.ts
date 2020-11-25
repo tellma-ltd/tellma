@@ -194,6 +194,34 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return column.ColumnName === 'CenterId' || column.ColumnName === 'CurrencyId';
   }
 
+  public canFilter(column: LineDefinitionColumn) {
+    return !!column.ColumnName && column.ColumnName.endsWith('Id');
+  }
+
+
+  public canInherit(column: LineDefinitionColumn) {
+    // IMPORTANT: Keep in sync with LineDefinitionsController.cs
+    switch (column.ColumnName) {
+      case 'PostingDate':
+      case 'Memo':
+      case 'CurrencyId':
+      case 'CenterId':
+      case 'CustodianId':
+      case 'CustodyId':
+      case 'ParticipantId':
+      case 'ResourceId':
+      case 'Quantity':
+      case 'UnitId':
+      case 'Time1':
+      case 'Time2':
+      case 'ExternalReference':
+      case 'AdditionalReference':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   private _stateChoices: SelectorChoice[];
   public get stateChoices(): SelectorChoice[] {
     if (!this._stateChoices) {

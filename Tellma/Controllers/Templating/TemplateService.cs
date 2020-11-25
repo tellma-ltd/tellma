@@ -256,7 +256,7 @@ namespace Tellma.Controllers.Templating
             // Global Functions
             var globalFuncs = new EvaluationContext.FunctionsDictionary
             {
-                [nameof(Sum)] = Sum(env),
+                [nameof(Sum)] = Sum(),
                 [nameof(Filter)] = Filter(),
                 [nameof(OrderBy)] = OrderBy(),
                 [nameof(Count)] = Count(),
@@ -873,14 +873,14 @@ namespace Tellma.Controllers.Templating
 
         #region Sum
 
-        private TemplateFunction Sum(TemplateEnvironment env)
+        private TemplateFunction Sum()
         {
             return new TemplateFunction(
-                functionAsync: (object[] args, EvaluationContext ctx) => SumImpl(args, ctx, env),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => SumSelect(args, ctx, env));
+                functionAsync: SumImpl,
+                additionalSelectResolver: SumSelect);
         }
 
-        private async Task<object> SumImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        private async Task<object> SumImpl(object[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -925,7 +925,7 @@ namespace Tellma.Controllers.Templating
             return sum;
         }
 
-        private async IAsyncEnumerable<Path> SumSelect(ExpressionBase[] args, EvaluationContext ctx, TemplateEnvironment env)
+        private async IAsyncEnumerable<Path> SumSelect(ExpressionBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -1010,7 +1010,11 @@ namespace Tellma.Controllers.Templating
                 scopedCtx.SetLocalVariable("$", new TemplateVariable(value: item));
 
                 var valueObj = await valueSelectorExp.Evaluate(scopedCtx);
-                if (valueObj is IComparable value)
+                if (valueObj is null)
+                {
+                    continue; // Null propagation
+                }
+                else if (valueObj is IComparable value)
                 {
                     if (result == null || (funcName == "Max" && value.CompareTo(result) > 0) || (funcName == "Min" && value.CompareTo(result) < 0))
                     {

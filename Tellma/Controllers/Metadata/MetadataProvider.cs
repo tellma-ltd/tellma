@@ -1005,7 +1005,7 @@ namespace Tellma.Controllers
 
         private static DefinitionPropOverrides RelationAttachmentPropertyOverrides(
             RelationDefinitionForClient def,
-            SettingsForClient settings,
+            SettingsForClient _,
             PropertyInfo propInfo,
             Func<string> display
             )
@@ -1425,13 +1425,7 @@ namespace Tellma.Controllers
 
             switch (propInfo.Name)
             {
-                case nameof(Document.Memo):
-                    display = PropertyDisplay(settings, def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
-                    isRequired = def.MemoVisibility == Visibility.Required;
-                    break;
-                case nameof(Document.MemoIsCommon):
-                    display = PropertyDisplay(def.MemoIsCommonVisibility, display);
-                    break;
+                // TODO: Make PostingDate like Memo
                 case nameof(Document.PostingDate):
                     display = PropertyDisplay(settings, def.PostingDateVisibility, def.PostingDateLabel, def.PostingDateLabel2, def.PostingDateLabel3, display);
                     isRequired = def.PostingDateRequiredState == 0;
@@ -1439,13 +1433,22 @@ namespace Tellma.Controllers
                 case nameof(Document.PostingDateIsCommon):
                     display = PropertyDisplay(def.PostingDateVisibility, display);
                     break;
-                case nameof(Document.ParticipantId):
-                case nameof(Document.Participant):
-                    display = PropertyDisplay(settings, def.ParticipantVisibility, def.ParticipantLabel, def.ParticipantLabel2, def.ParticipantLabel3, display);
-                    isRequired = def.ParticipantRequiredState == 0;
+                case nameof(Document.Memo):
+                    display = PropertyDisplay(settings, def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
+                    isRequired = def.MemoVisibility == Visibility.Required;
                     break;
-                case nameof(Document.ParticipantIsCommon):
-                    display = PropertyDisplay(def.ParticipantVisibility, display);
+                case nameof(Document.MemoIsCommon):
+                    display = PropertyDisplay(def.MemoIsCommonVisibility, display);
+                    break;
+
+
+                case nameof(Document.CurrencyId):
+                case nameof(Document.Currency):
+                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
+                    isRequired = def.CurrencyRequiredState == 0;
+                    break;
+                case nameof(Document.CurrencyIsCommon):
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
                     break;
                 case nameof(Document.CenterId):
                 case nameof(Document.Center):
@@ -1455,18 +1458,72 @@ namespace Tellma.Controllers
                 case nameof(Document.CenterIsCommon):
                     display = PropertyDisplay(def.CenterVisibility, display);
                     break;
-                case nameof(Document.CurrencyId):
-                case nameof(Document.Currency):
-                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
-                    isRequired = def.CurrencyRequiredState == 0;
+
+
+                case nameof(Document.CustodianId):
+                case nameof(Document.Custodian):
+                    display = PropertyDisplay(settings, def.CustodianVisibility, def.CustodianLabel, def.CustodianLabel2, def.CustodianLabel3, display);
+                    isRequired = def.CustodianRequiredState == 0;
                     break;
-                case nameof(Document.CurrencyIsCommon):
-                    display = PropertyDisplay(def.CurrencyVisibility, display);
+                case nameof(Document.CustodianIsCommon):
+                    display = PropertyDisplay(def.CustodianVisibility, display);
                     break;
-                case nameof(Document.Clearance):
-                    display = PropertyDisplay(def.ClearanceVisibility, display);
-                    isRequired = def.ClearanceVisibility == Visibility.Required;
+                case nameof(Document.CustodyId):
+                case nameof(Document.Custody):
+                    display = PropertyDisplay(settings, def.CustodyVisibility, def.CustodyLabel, def.CustodyLabel2, def.CustodyLabel3, display);
+                    isRequired = def.CustodyRequiredState == 0;
                     break;
+                case nameof(Document.CustodyIsCommon):
+                    display = PropertyDisplay(def.CustodyVisibility, display);
+                    break;
+                case nameof(Document.ParticipantId):
+                case nameof(Document.Participant):
+                    display = PropertyDisplay(settings, def.ParticipantVisibility, def.ParticipantLabel, def.ParticipantLabel2, def.ParticipantLabel3, display);
+                    isRequired = def.ParticipantRequiredState == 0;
+                    break;
+                case nameof(Document.ParticipantIsCommon):
+                    display = PropertyDisplay(def.ParticipantVisibility, display);
+                    break;
+                case nameof(Document.ResourceId):
+                case nameof(Document.Resource):
+                    display = PropertyDisplay(settings, def.ResourceVisibility, def.ResourceLabel, def.ResourceLabel2, def.ResourceLabel3, display);
+                    isRequired = def.ResourceRequiredState == 0;
+                    break;
+                case nameof(Document.ResourceIsCommon):
+                    display = PropertyDisplay(def.ResourceVisibility, display);
+                    break;
+
+
+                case nameof(Document.Quantity):
+                    display = PropertyDisplay(settings, def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
+                    isRequired = def.QuantityRequiredState == 0;
+                    break;
+                case nameof(Document.QuantityIsCommon):
+                    display = PropertyDisplay(def.QuantityVisibility, display);
+                    break;
+                case nameof(Document.UnitId):
+                case nameof(Document.Unit):
+                    display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
+                    isRequired = def.UnitRequiredState == 0;
+                    break;
+                case nameof(Document.UnitIsCommon):
+                    display = PropertyDisplay(def.UnitVisibility, display);
+                    break;
+                case nameof(Document.Time1):
+                    display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
+                    isRequired = def.Time1RequiredState == 0;
+                    break;
+                case nameof(Document.Time1IsCommon):
+                    display = PropertyDisplay(def.Time1Visibility, display);
+                    break;
+                case nameof(Document.Time2):
+                    display = PropertyDisplay(settings, def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
+                    isRequired = def.Time2RequiredState == 0;
+                    break;
+                case nameof(Document.Time2IsCommon):
+                    display = PropertyDisplay(def.Time2Visibility, display);
+                    break;
+
                 case nameof(Document.ExternalReference):
                     display = PropertyDisplay(settings, def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
                     isRequired = def.ExternalReferenceRequiredState == 0;
@@ -1481,11 +1538,19 @@ namespace Tellma.Controllers
                 case nameof(Document.AdditionalReferenceIsCommon):
                     display = PropertyDisplay(def.AdditionalReferenceVisibility, display);
                     break;
+
+                case nameof(Document.Clearance):
+                    display = PropertyDisplay(def.ClearanceVisibility, display);
+                    isRequired = def.ClearanceVisibility == Visibility.Required;
+                    break;
             }
 
             int? targetDefId = propInfo.Name switch
             {
+                nameof(Document.Custodian) => def.CustodianDefinitionIds.Count == 1 ? (int?)def.CustodianDefinitionIds[0] : null,
+                nameof(Document.Custody) => def.CustodyDefinitionIds.Count == 1 ? (int?)def.CustodyDefinitionIds[0] : null,
                 nameof(Document.Participant) => def.ParticipantDefinitionIds.Count == 1 ? (int?)def.ParticipantDefinitionIds[0] : null,
+                nameof(Document.Resource) => def.ResourceDefinitionIds.Count == 1 ? (int?)def.ResourceDefinitionIds[0] : null,
                 _ => null,
             };
 

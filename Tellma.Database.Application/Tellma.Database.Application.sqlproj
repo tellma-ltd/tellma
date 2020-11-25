@@ -809,7 +809,4 @@
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
   </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
-  </ItemGroup>
 </Project>

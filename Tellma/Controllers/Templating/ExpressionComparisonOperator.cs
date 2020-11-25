@@ -84,11 +84,11 @@ namespace Tellma.Controllers.Templating
                     default: // The remaining comparison operators require numeric operands
                         if (!NumericUtil.IsNumericType(leftObj))
                         {
-                            throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Left.ToString()}) does not evaluate to a numeric value");
+                            throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Left}) does not evaluate to a numeric value");
                         }
                         else if (!NumericUtil.IsNumericType(rightObj))
                         {
-                            throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Right.ToString()}) does not evaluate to a numeric value");
+                            throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Right}) does not evaluate to a numeric value");
                         }
                         else
                         {

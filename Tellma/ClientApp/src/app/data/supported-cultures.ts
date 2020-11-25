@@ -3,5 +3,5 @@ export const supportedCultures: { [id: string]: string } = {
     ar : 'العربية',
     zh: '中文',
     am: 'አማርኛ',
-    om: 'Afaan Oromoo',
+    om: 'Oromoo',
 };

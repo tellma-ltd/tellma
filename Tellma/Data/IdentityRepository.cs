@@ -14,8 +14,6 @@ using Tellma.Services.Identity;
 
 namespace Tellma.Data
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", 
-        Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class IdentityRepository : IRepository, IDisposable
     {
         private readonly IExternalUserAccessor _externalUserAccessor;

@@ -789,8 +789,8 @@ const routes: Routes = [
     EllipsisModule,
     AgmCoreModule.forRoot({
       apiKey: '<Google API Key goes here>'
-    })
-  ]
+    }),
+  ],
 })
 export class ApplicationModule {
   constructor(library: FaIconLibrary) {

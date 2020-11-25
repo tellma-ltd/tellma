@@ -102,6 +102,14 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     Prefix?: string;
     CodeWidth?: number;
 
+    // Posting Date
+    PostingDateVisibility?: boolean;
+    PostingDateRequiredState?: PositiveLineState | 5;
+    PostingDateReadOnlyState?: PositiveLineState | 5;
+    PostingDateLabel?: string;
+    PostingDateLabel2?: string;
+    PostingDateLabel3?: string;
+
     // Memo
     MemoVisibility?: Visibility;
     MemoIsCommonVisibility?: boolean;
@@ -111,13 +119,43 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     MemoRequiredState?: PositiveLineState | 5;
     MemoReadOnlyState?: PositiveLineState | 5;
 
-    // Posting Date
-    PostingDateVisibility?: boolean;
-    PostingDateRequiredState?: PositiveLineState | 5;
-    PostingDateReadOnlyState?: PositiveLineState | 5;
-    PostingDateLabel?: string;
-    PostingDateLabel2?: string;
-    PostingDateLabel3?: string;
+    // Currency
+    CurrencyVisibility?: boolean;
+    CurrencyRequiredState?: PositiveLineState | 5;
+    CurrencyReadOnlyState?: PositiveLineState | 5;
+    CurrencyLabel?: string;
+    CurrencyLabel2?: string;
+    CurrencyLabel3?: string;
+    CurrencyFilter?: string;
+
+    // Center
+    CenterVisibility?: boolean;
+    CenterRequiredState?: PositiveLineState | 5;
+    CenterReadOnlyState?: PositiveLineState | 5;
+    CenterLabel?: string;
+    CenterLabel2?: string;
+    CenterLabel3?: string;
+    CenterFilter?: string;
+
+    // Custodian
+    CustodianVisibility?: boolean;
+    CustodianRequiredState?: PositiveLineState | 5;
+    CustodianReadOnlyState?: PositiveLineState | 5;
+    CustodianDefinitionIds?: number[];
+    CustodianLabel?: string;
+    CustodianLabel2?: string;
+    CustodianLabel3?: string;
+    CustodianFilter?: string;
+
+    // Custody
+    CustodyVisibility?: boolean;
+    CustodyRequiredState?: PositiveLineState | 5;
+    CustodyReadOnlyState?: PositiveLineState | 5;
+    CustodyDefinitionIds?: number[];
+    CustodyLabel?: string;
+    CustodyLabel2?: string;
+    CustodyLabel3?: string;
+    CustodyFilter?: string;
 
     // Participant
     ParticipantVisibility?: boolean;
@@ -129,26 +167,48 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ParticipantLabel3?: string;
     ParticipantFilter?: string;
 
-    // Center
-    CenterVisibility?: boolean;
-    CenterRequiredState?: PositiveLineState | 5;
-    CenterReadOnlyState?: PositiveLineState | 5;
-    CenterLabel?: string;
-    CenterLabel2?: string;
-    CenterLabel3?: string;
-    CenterFilter?: string;
+    // Resource
+    ResourceVisibility?: boolean;
+    ResourceRequiredState?: PositiveLineState | 5;
+    ResourceReadOnlyState?: PositiveLineState | 5;
+    ResourceDefinitionIds?: number[];
+    ResourceLabel?: string;
+    ResourceLabel2?: string;
+    ResourceLabel3?: string;
+    ResourceFilter?: string;
 
-    // Clearance
-    ClearanceVisibility?: Visibility;
+    // Quantity
+    QuantityVisibility?: boolean;
+    QuantityRequiredState?: PositiveLineState | 5;
+    QuantityReadOnlyState?: PositiveLineState | 5;
+    QuantityLabel?: string;
+    QuantityLabel2?: string;
+    QuantityLabel3?: string;
 
-    // Currency
-    CurrencyVisibility?: boolean;
-    CurrencyRequiredState?: PositiveLineState | 5;
-    CurrencyReadOnlyState?: PositiveLineState | 5;
-    CurrencyLabel?: string;
-    CurrencyLabel2?: string;
-    CurrencyLabel3?: string;
-    CurrencyFilter?: string;
+    // Unit
+    UnitVisibility?: boolean;
+    UnitRequiredState?: PositiveLineState | 5;
+    UnitReadOnlyState?: PositiveLineState | 5;
+    UnitLabel?: string;
+    UnitLabel2?: string;
+    UnitLabel3?: string;
+    UnitFilter?: string;
+
+    // Time1
+    Time1Visibility?: boolean;
+    Time1RequiredState?: PositiveLineState | 5;
+    Time1ReadOnlyState?: PositiveLineState | 5;
+    Time1Label?: string;
+    Time1Label2?: string;
+    Time1Label3?: string;
+
+    // Time2
+    Time2Visibility?: boolean;
+    Time2RequiredState?: PositiveLineState | 5;
+    Time2ReadOnlyState?: PositiveLineState | 5;
+    Time2Label?: string;
+    Time2Label2?: string;
+    Time2Label3?: string;
 
     // ExternalReference
     ExternalReferenceVisibility?: boolean;
@@ -165,6 +225,9 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     AdditionalReferenceLabel?: string;
     AdditionalReferenceLabel2?: string;
     AdditionalReferenceLabel3?: string;
+
+    // Clearance
+    ClearanceVisibility?: Visibility;
 
     CanReachState1?: boolean;
     CanReachState2?: boolean;
@@ -268,6 +331,8 @@ export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
+
+    ResourceDefinitionType: string;
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;

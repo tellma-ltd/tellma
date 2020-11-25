@@ -29,12 +29,6 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
-        [Display(Name = "Entry_Participant")]
-        public int? ParticipantId { get; set; }
-
-        [IsCommonDisplay(Name = "Entry_Participant")]
-        public bool? ParticipantIsCommon { get; set; }
-
         [Display(Name = "Entry_Currency")]
         [StringLength(3)]
         public string CurrencyId { get; set; }
@@ -42,11 +36,29 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_Currency")]
         public bool? CurrencyIsCommon { get; set; }
 
+        [Display(Name = "Entry_Center")]
+        public int? CenterId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Center")]
+        public bool? CenterIsCommon { get; set; }
+
+        [Display(Name = "Entry_Custodian")]
+        public int? CustodianId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Custodian")]
+        public bool? CustodianIsCommon { get; set; }
+
         [Display(Name = "Entry_Custody")]
         public int? CustodyId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Custody")]
         public bool? CustodyIsCommon { get; set; }
+
+        [Display(Name = "Entry_Participant")]
+        public int? ParticipantId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Participant")]
+        public bool? ParticipantIsCommon { get; set; }
 
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
@@ -65,12 +77,6 @@ namespace Tellma.Entities
 
         [IsCommonDisplay(Name = "Entry_Unit")]
         public bool? UnitIsCommon { get; set; }
-
-        [Display(Name = "Entry_Center")]
-        public int? CenterId { get; set; }
-
-        [IsCommonDisplay(Name = "Entry_Center")]
-        public bool? CenterIsCommon { get; set; }
 
         [Display(Name = "Entry_Time1")]
         public DateTime? Time1 { get; set; }
@@ -120,17 +126,21 @@ namespace Tellma.Entities
         [ForeignKey(nameof(LineDefinitionId))]
         public LineDefinition Definition { get; set; }
 
-        [Display(Name = "Entry_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
-
-        [Display(Name = "Document_Currency")]
+        [Display(Name = "Entry_Currency")]
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
+
+        [Display(Name = "Entry_Custodian")]
+        [ForeignKey(nameof(CustodianId))]
+        public Relation Custodian { get; set; }
 
         [Display(Name = "Entry_Custody")]
         [ForeignKey(nameof(CustodyId))]
         public Custody Custody { get; set; }
+
+        [Display(Name = "Entry_Participant")]
+        [ForeignKey(nameof(ParticipantId))]
+        public Relation Participant { get; set; }
 
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
