@@ -40,6 +40,7 @@
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
+--
 	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number

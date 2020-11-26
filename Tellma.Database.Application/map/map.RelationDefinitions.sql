@@ -33,7 +33,7 @@ RETURN (
 
 		[Date1Label],
 		[Date1Label2],
-		[Date1Label3],		
+		[Date1Label3],
 		[Date1Visibility],
 
 		[Date2Label],

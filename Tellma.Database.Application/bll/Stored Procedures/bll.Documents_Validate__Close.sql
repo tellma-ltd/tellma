@@ -25,8 +25,10 @@ SET NOCOUNT ON;
 		JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 		JOIN map.Documents() D ON FE.[Id] = D.[Id]
 		WHERE
-			LD.[HasWorkflow] = 1 AND L.[State] = D.[LastLineState]
-		OR	LD.[HasWorkflow] = 0 AND L.[State] = 0
+		--	LD.[HasWorkflow] = 1 AND L.[State] = D.[LastLineState]
+		--OR	LD.[HasWorkflow] = 0 AND L.[State] = 0
+			L.[State] = D.[LastLineState]
+		OR	LD.[HasWorkflow] = 0 AND L.[State] >= 0
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top) 
