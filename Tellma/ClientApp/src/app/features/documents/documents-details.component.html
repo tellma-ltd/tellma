@@ -665,7 +665,7 @@
                             <div class="w-100 t-disabled-background border-bottom"
                                 [ngSwitch]="columnName(lineDefId, columnIndex)">
                                 <span *ngSwitchCase="'AccountId'">
-                                    {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}
+                                    {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CurrencyId'">
                                     {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
@@ -725,7 +725,7 @@
                                 <span
                                     *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
                                 <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-
+                                &zwnj;
                             </div>
                         </ng-container>
 
