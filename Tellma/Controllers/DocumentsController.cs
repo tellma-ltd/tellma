@@ -991,6 +991,8 @@ namespace Tellma.Controllers
                     {
                         line.PostingDate = doc.PostingDate;
                         line.Memo = doc.Memo;
+                        // TODO: Add Center
+                        // TODO: also for smart screens
                     });
                 }
 

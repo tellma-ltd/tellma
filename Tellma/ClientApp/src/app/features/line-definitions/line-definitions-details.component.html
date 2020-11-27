@@ -447,11 +447,13 @@
                                 <td [class.p-0]="isEdit && canFilter(column)">
                                     <span *ngIf="!isEdit; else filtertemplate">{{ column.Filter }}</span>
                                     <ng-template #filtertemplate>
-                                        <input *ngIf="canFilter(column); else noFilter" class="form-control t-studio-input" type="text"
-                                            [(ngModel)]="column.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
-                                            autocomplete="off" #filtermodel="ngModel" />
-                                        <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: column?.serverErrors?.Filter }">
+                                        <ng-container *ngIf="canFilter(column); else noFilter">
+                                            <input class="form-control t-studio-input" type="text"
+                                                [(ngModel)]="column.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                                autocomplete="off" #filtermodel="ngModel" />
+                                            <ng-container
+                                                *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: column?.serverErrors?.Filter }">
+                                            </ng-container>
                                         </ng-container>
                                         <ng-template #noFilter>
                                             <span></span>
@@ -515,20 +517,23 @@
                                     <span
                                         *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader === 2 ? 'InheritsFrom_2' : column.InheritsFromHeader === 1 ? 'InheritsFrom_1' : 'InheritsFrom_0') | translate }}</span>
                                     <ng-template #inheritsfromheadertemplate>
-                                        <select class="form-control t-studio-input" *ngIf="canInherit(column); else inheritsFromNone"
-                                            [(ngModel)]="column.InheritsFromHeader" #inheritsfromheadermodel="ngModel">
-                                            <option value="0">
-                                                {{ 'InheritsFrom_0' | translate }}</option>
-                                            <option value="1">
-                                                {{ 'InheritsFrom_1' | translate }}</option>
-                                            <option value="2">
-                                                {{ 'InheritsFrom_2' | translate }}</option>
-                                        </select>
-                                        <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
+                                        <ng-container *ngIf="canInherit(column); else inheritsFromNone">
+                                            <select class="form-control t-studio-input"
+                                                [(ngModel)]="column.InheritsFromHeader"
+                                                #inheritsfromheadermodel="ngModel">
+                                                <option value="0">
+                                                    {{ 'InheritsFrom_0' | translate }}</option>
+                                                <option value="1">
+                                                    {{ 'InheritsFrom_1' | translate }}</option>
+                                                <option value="2">
+                                                    {{ 'InheritsFrom_2' | translate }}</option>
+                                            </select>
+                                            <ng-container
+                                                *ngTemplateOutlet="errorsTemplate;context: { control: inheritsfromheadermodel, serverErrors: column?.serverErrors?.InheritsFromHeader }">
+                                            </ng-container>
                                         </ng-container>
                                         <ng-template #inheritsFromNone>
-                                            <span>{{ 'InheritsFrom_0' | translate }}</span>    
+                                            <span>{{ 'InheritsFrom_0' | translate }}</span>
                                         </ng-template>
                                     </ng-template>
                                 </td>
