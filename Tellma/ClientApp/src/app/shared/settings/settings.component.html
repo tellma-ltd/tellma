@@ -1,0 +1,133 @@
+<div class="h-100 d-flex flex-column">
+    <!-- Breadcrumb and Toolbar -->
+    <div class="row border-bottom bg-white">
+
+        <!-- Breadcrumb -->
+        <div class="col-6 p-1">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ title }}
+                    <!-- Dirty Asterisk -->
+                    <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">&nbsp;*</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
+            <!-- View Toolbar -->
+            <div *ngIf="showViewToolbar">
+                <!-- Edit -->
+                <div class="d-inline-block" [placement]="placement" [ngbTooltip]="editTooltip" container="body">
+                    <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
+                        <fa-icon icon="pen"></fa-icon>&nbsp;&nbsp;{{ 'Edit' | translate }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Edit Toolbar -->
+            <div *ngIf="showEditToolbar">
+
+                <!-- Save -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onSave()">
+                    <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
+                </button>
+
+                <!-- Cancel -->
+                <button class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button" (click)="onCancel()">
+                    <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
+                </button>
+            </div>
+
+            <div>
+                <!-- Refresh -->
+                <button class="btn btn-light btn-sm t-white-button t-toolbar-button" *ngIf="showRefresh" type="button"
+                    title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="row t-rest-of-screen">
+        <div class="w-100 h-100 p-0 d-flex flex-column bg-white" *ngIf="showDocument">
+
+            <!-- Document -->
+            <ng-container *ngTemplateOutlet="template; context: { model: activeModel, isEdit: isEdit }">
+
+            </ng-container>
+        </div>
+
+        <!-- Spinner -->
+        <div class="w-100 mt-3" *ngIf="showSpinner">
+            <div class="w-100 p-2 d-flex justify-content-center">
+                <t-spinner [scale]="2"></t-spinner>
+            </div>
+        </div>
+
+        <!-- Error message -->
+        <div class="w-100 mt-3" *ngIf="showErrorMessage">
+            <t-error-message>
+                {{ errorMessage }}
+            </t-error-message>
+        </div>
+    </div>
+</div>
+
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ modalErrorMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Unsaved Changes Modal -->
+<ng-template #unsavedChangesModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ 'UnsavedChangesConfirmationMessage' | translate }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-danger" (click)="modal.close(true)">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Proceed' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>

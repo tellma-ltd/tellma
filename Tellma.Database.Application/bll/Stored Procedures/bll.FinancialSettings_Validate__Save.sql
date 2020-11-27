@@ -1,23 +1,12 @@
-﻿CREATE PROCEDURE [bll].[Settings_Validate__Save]
-	@ShortCompanyName NVARCHAR(255),
-	@ShortCompanyName2 NVARCHAR(255) = NULL,
-	@ShortCompanyName3 NVARCHAR(255) = NULL,
+﻿CREATE PROCEDURE [bll].[FinancialSettings_Validate__Save]
 	@FunctionalCurrencyId NCHAR(3),
-	@PrimaryLanguageId NVARCHAR(255),
-	@PrimaryLanguageSymbol NVARCHAR (5) = NULL,
-	@SecondaryLanguageId NVARCHAR(255) = NULL,
-	@SecondaryLanguageSymbol NVARCHAR (5) = NULL,
-	@TernaryLanguageId NVARCHAR(255) = NULL,
-	@TernaryLanguageSymbol NVARCHAR (5) = NULL,
-	@BrandColor NCHAR (7) = NULL,
-	@DefinitionsVersion UNIQUEIDENTIFIER,
-	@SettingsVersion UNIQUEIDENTIFIER,
 	@ArchiveDate DATE = '1900.01.01',
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	-- cannot change functional currency if there are valueable documents with finanlized lines
+
+	-- cannot change functional currency if there are valueable documents with finalized lines
 	IF dbo.fn_FunctionalCurrencyId() <> @FunctionalCurrencyId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
     SELECT DISTINCT TOP (@Top)

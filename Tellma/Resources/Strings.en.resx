@@ -1531,6 +1531,9 @@
   <data name="File" xml:space="preserve">
     <value>File</value>
   </data>
+  <data name="FinancialSettings" xml:space="preserve">
+    <value>Financial Settings</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>Forget This Browser</value>
   </data>
@@ -1545,6 +1548,12 @@
   </data>
   <data name="FromDate" xml:space="preserve">
     <value>From Date</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>General Settings</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>General Settings</value>
   </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>Generate Recovery Codes</value>
@@ -2616,9 +2625,6 @@
   </data>
   <data name="SetPasswordMessage" xml:space="preserve">
     <value>You do not have a local username/password for this application. Add a local password so you can log in without an external sign-in provider.</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
   </data>
   <data name="Settings_ArchiveDate" xml:space="preserve">
     <value>Archive Date</value>

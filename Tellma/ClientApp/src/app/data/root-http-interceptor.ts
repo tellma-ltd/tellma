@@ -143,7 +143,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.adminUserSettingsApi = this.api.adminUsersApi(this.cancellationToken$).getForClient;
 
     // Application
-    this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
+    this.settingsApi = this.api.generalSettingsApi(this.cancellationToken$).getForClient;
     this.definitionsApi = this.api.definitionsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;

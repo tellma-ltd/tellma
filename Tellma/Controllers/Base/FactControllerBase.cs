@@ -1,30 +1,25 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
+using Tellma.Controllers.Templating;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using Tellma.Services.ApiAuthentication;
-using Tellma.Services.ImportExport;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Collections;
-using Microsoft.Extensions.DependencyInjection;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
-using DocumentFormat.OpenXml.Drawing.ChartDrawing;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Tellma.Controllers.Templating;
-using System.Text;
+using Tellma.Services.ApiAuthentication;
 using Tellma.Services.MultiTenancy;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -617,7 +612,7 @@ namespace Tellma.Controllers
         protected abstract IRepository GetRepository();
 
         /// <summary>
-        /// Retrieves the user permissions for the current view and the specified level
+        /// Retrieves the user permissions for the current view and the specified action
         /// </summary>
         protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
 

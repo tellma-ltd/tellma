@@ -1,9 +1,10 @@
 ﻿CREATE TABLE [dbo].[Settings] ( -- TODO: Make it wide table, up to 30,0000 columns
---	IFRS [110000]
+	-- General Settings
+	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ShortCompanyName]				NVARCHAR (255)		NOT NULL,
 	[ShortCompanyName2]				NVARCHAR (255),
 	[ShortCompanyName3]				NVARCHAR (255),
-	[FunctionalCurrencyId]			NCHAR(3)			NOT NULL CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
 	[PrimaryLanguageId]				NVARCHAR (5)		NOT NULL,
 	[PrimaryLanguageSymbol]			NVARCHAR (5),
 	[SecondaryLanguageId]			NVARCHAR (5),
@@ -14,11 +15,14 @@
 	[SmsEnabled]					BIT					NOT NULL DEFAULT 0, -- SMS is expensive, this value is only editable from Tellma's admin console
 	[DefinitionsVersion]			UNIQUEIDENTIFIER	NOT NULL,
 	[SettingsVersion]				UNIQUEIDENTIFIER	NOT NULL,
-	[ArchiveDate]					DATE				NOT NULL DEFAULT ('1900.01.01'),
-	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__CreatedById] REFERENCES [dbo].[Users] ([Id]),
-	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[GeneralModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[GeneralModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__GeneralModifiedById] REFERENCES [dbo].[Users] ([Id]),
+
+	-- Financial Settings
+	[FunctionalCurrencyId]			NCHAR(3)			NOT NULL CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
+	[ArchiveDate]					DATE				NOT NULL DEFAULT ('1900.01.01'),	
+	[FinancialModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[FinancialModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 );
 --	IFRS [810000]
 	--[DomicileOfEntity]				NVARCHAR (255),

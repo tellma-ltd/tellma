@@ -1909,3 +1909,17 @@ tr.t-pale-b td.t-b {
 th.t-slimfit {
   width: 1px; // Used for table columns that fit their content
 }
+
+.t-settings-header {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.t-settings-section {
+  max-width: 1100px;
+  margin-bottom: 1.5rem;
+}
+
+.t-settings-section .t-form-group {
+  margin-bottom: 1.5rem !important;
+}

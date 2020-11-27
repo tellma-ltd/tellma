@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="8f1ed283-eded-491c-a539-c603cd997e5d" ChangeDateTime="11/27/2020 10:26:35">
+    <Property Name="ElementName" Value="[bll].[Settings_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GeneralSettings_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f19d45eb-d2af-465c-a43b-1f0e657cc210" ChangeDateTime="11/27/2020 13:04:34">
+    <Property Name="ElementName" Value="[dbo].[Settings].[ModifiedAt]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Settings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[GeneralModifiedAt]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2176f006-78d5-413d-81a6-e5a487f5a895" ChangeDateTime="11/27/2020 13:05:11">
+    <Property Name="ElementName" Value="[dbo].[Settings].[ModifiedById]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Settings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[GeneralModifiedById]" />
+  </Operation>
+</Operations>

@@ -2,7 +2,7 @@
 
 namespace Tellma.Controllers.Dto
 {
-    public class SaveSettingsResponse : GetEntityResponse<Settings>
+    public class SaveSettingsResponse<TSettings> : GetEntityResponse<TSettings>
     {
         public Versioned<SettingsForClient> SettingsForClient { get; set; }
     }

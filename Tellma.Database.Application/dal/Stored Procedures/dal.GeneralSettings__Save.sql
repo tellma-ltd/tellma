@@ -1,18 +1,17 @@
-﻿CREATE PROCEDURE [dal].[Settings__Save]
+﻿CREATE PROCEDURE [dal].[GeneralSettings__Save]
 	@ShortCompanyName NVARCHAR(255),
 	@ShortCompanyName2 NVARCHAR(255) = NULL,
 	@ShortCompanyName3 NVARCHAR(255) = NULL,
-	@FunctionalCurrencyId NCHAR(3),
 	@PrimaryLanguageId NVARCHAR(255),
 	@PrimaryLanguageSymbol NVARCHAR (5) = NULL,
 	@SecondaryLanguageId NVARCHAR(255) = NULL,
 	@SecondaryLanguageSymbol NVARCHAR (5) = NULL,
 	@TernaryLanguageId NVARCHAR(255) = NULL,
 	@TernaryLanguageSymbol NVARCHAR (5) = NULL,
-	@BrandColor NCHAR (7) = NULL,
-	@DefinitionsVersion UNIQUEIDENTIFIER,
-	@SettingsVersion UNIQUEIDENTIFIER,
-	@ArchiveDate DATE = '1900.01.01'
+	@BrandColor NCHAR (7) = NULL
+	-- Financial Settings
+	--@FunctionalCurrencyId NCHAR(3),
+	--@ArchiveDate DATE = '1900.01.01'
 AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
@@ -27,7 +26,6 @@ IF Exists(SELECT * FROM dbo.Settings)
 		[ShortCompanyName]		= @ShortCompanyName,
 		[ShortCompanyName2]		= @ShortCompanyName2,
 		[ShortCompanyName3]		= @ShortCompanyName3,
-		[FunctionalCurrencyId]	= @FunctionalCurrencyId,
 		[PrimaryLanguageId]		= @PrimaryLanguageId,
 		[PrimaryLanguageSymbol] = @PrimaryLanguageSymbol,
 		[SecondaryLanguageId]	= @SecondaryLanguageId,
@@ -35,41 +33,31 @@ IF Exists(SELECT * FROM dbo.Settings)
 		[TernaryLanguageId]		= @TernaryLanguageId,
 		[TernaryLanguageSymbol] = @TernaryLanguageSymbol,
 		[BrandColor]			= @BrandColor,
-		[DefinitionsVersion]	= @DefinitionsVersion,
-		[SettingsVersion]		= @SettingsVersion,
-		[ArchiveDate]			= @ArchiveDate,
-		[ModifiedAt]			= @Now,
-		[ModifiedById]			= @UserId
+		[SettingsVersion]		= NEWID(), -- To trigger cache refresh
+		[GeneralModifiedAt]		= @Now,
+		[GeneralModifiedById]	= @UserId
 ELSE
 	INSERT dbo.[Settings] (
 		[ShortCompanyName],
 		[ShortCompanyName2],
 		[ShortCompanyName3],
-		[FunctionalCurrencyId],
 		[PrimaryLanguageId],
 		[PrimaryLanguageSymbol],
 		[SecondaryLanguageId],
 		[SecondaryLanguageSymbol],
 		[TernaryLanguageId],
 		[TernaryLanguageSymbol],
-		[BrandColor],
-		[DefinitionsVersion], 
-		[SettingsVersion],
-		[ArchiveDate]
+		[BrandColor]
 	)
 	VALUES(
 		@ShortCompanyName,
 		@ShortCompanyName2,
 		@ShortCompanyName3,
-		@FunctionalCurrencyId,
 		@PrimaryLanguageId,
 		@PrimaryLanguageSymbol,
 		@SecondaryLanguageId,
 		@SecondaryLanguageSymbol,
 		@TernaryLanguageId,
 		@TernaryLanguageSymbol,
-		@BrandColor,
-		@DefinitionsVersion, 
-		@SettingsVersion,
-		@ArchiveDate
+		@BrandColor
 	);

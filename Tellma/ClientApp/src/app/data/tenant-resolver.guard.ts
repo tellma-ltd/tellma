@@ -118,7 +118,7 @@ export class TenantResolverGuard implements CanActivate {
     private notificationsService: ServerNotificationsService) {
 
     this.cancellationToken$ = new Subject<void>();
-    const settingsApi = this.api.settingsApi(this.cancellationToken$);
+    const settingsApi = this.api.generalSettingsApi(this.cancellationToken$);
     this.settingsApi = settingsApi.getForClient;
     this.ping = settingsApi.ping;
     this.definitionsApi = this.api.definitionsApi(this.cancellationToken$).getForClient;

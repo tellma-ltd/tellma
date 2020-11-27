@@ -95,6 +95,7 @@ import { SerialEditorComponent } from './serial-editor/serial-editor.component';
 import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.component';
 import { AccountingPipe } from './accounting/accounting.pipe';
 import { ContextMenuDirective } from '../data/context-menu.directive';
+import { SettingsComponent } from '../shared/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -128,7 +129,8 @@ import { ContextMenuDirective } from '../data/context-menu.directive';
     FormGroupCellComponent,
     MapBoundsFitterComponent,
     AccountingPipe,
-    ContextMenuDirective
+    ContextMenuDirective,
+    SettingsComponent
   ],
   imports: [
     CommonModule,
@@ -169,6 +171,7 @@ import { ContextMenuDirective } from '../data/context-menu.directive';
     BrandComponent,
     MasterComponent,
     DetailsComponent,
+    SettingsComponent,
     ErrorMessageComponent,
     SuccessMessageComponent,
     WarningMessageComponent,

@@ -19,7 +19,7 @@ BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors ValidationErrorList;
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[Settings_Validate__Save]
+	EXEC [bll].[GeneralSettings_Validate__Save]
 		@ShortCompanyName = @ShortCompanyName,
 		@ShortCompanyName2 = @ShortCompanyName2,
 		@ShortCompanyName3 = @ShortCompanyName3,

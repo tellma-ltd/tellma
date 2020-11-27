@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
-import { Entity } from './base/entity';
+import { SettingsBase } from './base/settings-base';
 
-export class SettingsForSave extends Entity {
+export interface GeneralSettingsForSave extends SettingsBase {
     ShortCompanyName: string;
     ShortCompanyName2: string;
     ShortCompanyName3: string;
@@ -14,7 +14,7 @@ export class SettingsForSave extends Entity {
     BrandColor: string;
 }
 
-export class Settings extends SettingsForSave {
+export interface GeneralSettings extends GeneralSettingsForSave {
     DefinitionsVersion: string;
     SettingsVersion: string;
     SmsEnabled: boolean;

@@ -259,8 +259,17 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "settings",
-                        Name = "Settings",
+                        Id = "general-settings",
+                        Name = "GeneralSettings",
+                        Actions = new ActionInfo[]
+                        {
+                            Li("Read", false),
+                            Li("Update", false)
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "financial-settings",
+                        Name = "FinancialSettings",
                         Actions = new ActionInfo[]
                         {
                             Li("Read", false),

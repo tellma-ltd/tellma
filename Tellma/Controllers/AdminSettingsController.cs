@@ -32,9 +32,9 @@ namespace Tellma.Controllers
 
         // Private fields
 
-        private readonly ILogger<SettingsController> _logger;
+        private readonly ILogger<GeneralSettingsController> _logger;
 
-        public AdminSettingsController(AdminSettingsService service, ILogger<SettingsController> logger)
+        public AdminSettingsController(AdminSettingsService service, ILogger<GeneralSettingsController> logger)
         {
             _service = service;
             _logger = logger;

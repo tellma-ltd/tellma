@@ -27,10 +27,10 @@ namespace Tellma.Controllers
     public class ReconciliationController : ControllerBase
     {
         private readonly ReconciliationService _service;
-        private readonly ILogger<SettingsController> _logger;
+        private readonly ILogger<GeneralSettingsController> _logger;
 
         public ReconciliationController(ReconciliationService service,
-            ILogger<SettingsController> logger)
+            ILogger<GeneralSettingsController> logger)
         {
             _service = service;
             _logger = logger;
@@ -59,7 +59,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPost("unreconciled")]
-        public async Task<ActionResult<SaveSettingsResponse>> SaveAndGetUnreconciled([FromBody] ReconciliationSavePayload payload, [FromQuery] ReconciliationGetUnreconciledArguments args)
+        public async Task<ActionResult<ReconciliationGetUnreconciledResponse>> SaveAndGetUnreconciled([FromBody] ReconciliationSavePayload payload, [FromQuery] ReconciliationGetUnreconciledArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -70,7 +70,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPost("reconciled")]
-        public async Task<ActionResult<SaveSettingsResponse>> SaveAndGetReconciled([FromBody] ReconciliationSavePayload payload, [FromQuery] ReconciliationGetReconciledArguments args)
+        public async Task<ActionResult<ReconciliationGetReconciledResponse>> SaveAndGetReconciled([FromBody] ReconciliationSavePayload payload, [FromQuery] ReconciliationGetReconciledArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {

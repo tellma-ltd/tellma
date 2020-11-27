@@ -1531,6 +1531,9 @@
   <data name="File" xml:space="preserve">
     <value>ፋይል</value>
   </data>
+  <data name="FinancialSettings" xml:space="preserve">
+    <value>የፋይናንስ ቅንብሮች</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>ይህ አሳሽ እርሳ</value>
   </data>
@@ -1545,6 +1548,12 @@
   </data>
   <data name="FromDate" xml:space="preserve">
     <value>ቀን ጀምሮ</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>ጠቅላላ ቅንብሮች</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>ጠቅላላ ቅንብሮች</value>
   </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>ማግኛ ኮዶችን መፍጠር</value>
@@ -2189,7 +2198,7 @@
     <value>ልዩ ልዩ</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
-    <value>ሌሎች ገንዘብ ነክ ንብረቶች</value>
+    <value>ሌሎች የገንዘብ ንብረቶች</value>
   </data>
   <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
     <value>ሌሎች የገንዘብ ተጠያቂነቶች</value>
@@ -2616,9 +2625,6 @@
   </data>
   <data name="SetPasswordMessage" xml:space="preserve">
     <value>ለዚህ መተግበሪያ አካባቢያዊ የተጠቃሚ ስም / ይለፍ ቃል የለዎትም. እርስዎ ውጫዊ የመግባት አቅራቢ ያለ መግባት ይችላሉ በአካባቢው የይለፍ ቃል ያክሉ.</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>ቅንብሮች</value>
   </data>
   <data name="Settings_ArchiveDate" xml:space="preserve">
     <value>የማህደር ቀን</value>

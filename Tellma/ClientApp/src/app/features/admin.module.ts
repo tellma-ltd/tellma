@@ -45,14 +45,6 @@ const routes: Routes = [
         component: AdminUsersDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
-
-      // // Settings
-      // {
-      //   path: 'settings',
-      //   component: SettingsComponent,
-      //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
-      // },
-      // Misc
       {
         path: 'main-menu',
         component: AdminMainMenuComponent,

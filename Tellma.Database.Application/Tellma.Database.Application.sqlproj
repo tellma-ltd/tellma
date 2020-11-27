@@ -194,7 +194,7 @@
     <Build Include="dal\Stored Procedures\dal.Lines__Sign.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Ready__Select.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines_State__Update.sql" />
-    <Build Include="dal\Stored Procedures\dal.Settings__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.GeneralSettings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineRoleList.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Assign.sql" />
@@ -337,7 +337,7 @@
     <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
     <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
-    <Build Include="bll\Stored Procedures\bll.Settings_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.GeneralSettings_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.Settings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.WideLines__Unpivot.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitionEntries__Pivot.sql" />
@@ -730,6 +730,10 @@
     <Build Include="dbo\Tables\dbo.RelationAttachments.sql" />
     <Build Include="dbo\User Defined Types\dbo.RelationAttachmentList.sql" />
     <Build Include="map\map.RelationAttachments.sql" />
+    <Build Include="map\map.GeneralSettings.sql" />
+    <Build Include="map\map.FinancialSettings.sql" />
+    <Build Include="bll\Stored Procedures\bll.FinancialSettings_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.FinancialSettings__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -808,5 +812,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
 import { Relation } from './entities/relation';
 import { Role } from './entities/role';
-import { Settings } from './entities/settings';
+import { GeneralSettings } from './entities/general-settings';
 import { SettingsForClient } from './dto/settings-for-client';
 import { Versioned } from './dto/versioned';
 import { PermissionsForClient } from './dto/permissions-for-client';
@@ -73,6 +73,8 @@ import {
   ReconciliationSavePayload
 } from './dto/reconciliation';
 import { ExternalEntryForSave } from './entities/external-entry';
+import { Entity } from './entities/base/entity';
+import { SelectExpandArguments } from './dto/select-expand-arguments';
 
 
 @Injectable({
@@ -954,32 +956,11 @@ export class ApiService {
     };
   }
 
-  public settingsApi(cancellationToken$: Observable<void>) {
+  public generalSettingsApi(cancellationToken$: Observable<void>) {
     return {
-      get: (args: GetByIdArguments) => {
-        args = args || {};
-        const paramsArray: string[] = [];
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
-        }
-
-        const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/settings?${params}`;
-
-        const obs$ = this.http.get<GetEntityResponse<Settings>>(url).pipe(
-          catchError(error => {
-            const friendlyError = friendlify(error, this.trx);
-            return throwError(friendlyError);
-          }),
-          takeUntil(cancellationToken$)
-        );
-
-        return obs$;
-      },
 
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/settings/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/general-settings/client?unobtrusive=true`;
         const obs$ = this.http.get<Versioned<SettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -992,41 +973,13 @@ export class ApiService {
       },
 
       ping: () => {
-        const url = appsettings.apiAddress + `api/settings/ping`;
+        const url = appsettings.apiAddress + `api/general-settings/ping`;
         const obs$ = this.http.get(url).pipe(
           takeUntil(cancellationToken$)
         );
 
         return obs$;
       },
-
-      save: (entity: Settings, args: SaveArguments) => {
-        this.showRotator = true;
-        args = args || {};
-        const paramsArray: string[] = [];
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
-        }
-
-        const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/settings?${params}`;
-
-        const obs$ = this.http.post<SaveSettingsResponse>(url, entity, {
-          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        }).pipe(
-          tap(() => this.showRotator = false),
-          catchError((error) => {
-            this.showRotator = false;
-            const friendlyError = friendlify(error, this.trx);
-            return throwError(friendlyError);
-          }),
-          takeUntil(cancellationToken$),
-          finalize(() => this.showRotator = false)
-        );
-
-        return obs$;
-      }
     };
   }
 
@@ -1092,6 +1045,73 @@ export class ApiService {
   public documentDefinitionsApi(cancellationToken$: Observable<void>) {
     return {
       updateState: this.updateDefinitionStateFactory('document-definitions', cancellationToken$)
+    };
+  }
+
+  public settingsFactory<TSettings extends Entity, TSettingsForSave extends Entity>(
+    endpoint: string, cancellationToken$: Observable<void>) {
+    return {
+      get: (args: SelectExpandArguments) => {
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
+
+        const obs$ = this.http.get<GetEntityResponse<TSettings>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      save: (entity: TSettingsForSave, args: SaveArguments) => {
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        if (args.returnEntities) {
+          paramsArray.push(`returnEntities=${encodeURIComponent(args.returnEntities)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.post<SaveSettingsResponse<TSettings>>(url, entity, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      }
     };
   }
 

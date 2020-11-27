@@ -1531,6 +1531,9 @@
   <data name="File" xml:space="preserve">
     <value>ملف</value>
   </data>
+  <data name="FinancialSettings" xml:space="preserve">
+    <value>إعدادات مالية</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>تناسى المتصفح الحالي</value>
   </data>
@@ -1545,6 +1548,12 @@
   </data>
   <data name="FromDate" xml:space="preserve">
     <value>من تاريخ</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>إعدادات عامة</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>إعدادات عامة</value>
   </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>توليد أكواد الاسترداد</value>
@@ -2616,9 +2625,6 @@
   </data>
   <data name="SetPasswordMessage" xml:space="preserve">
     <value>ليس لديك اسم مستخدم وكلمة مرور خاصين بهذا التطبيق، أضف كلمة مرور حتى يتسنى لك تسجيل دخولك من دون مسجل دخول خارجي.</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>إعدادات</value>
   </data>
   <data name="Settings_ArchiveDate" xml:space="preserve">
     <value>تاريخ الأِرشفة</value>

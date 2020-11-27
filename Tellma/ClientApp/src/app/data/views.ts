@@ -234,8 +234,15 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('State')
         ]
     },
-    'settings': {
-        name: 'Settings',
+    'general-settings': {
+        name: 'GeneralSettings',
+        actions: [
+            li('Read', false),
+            li('Update', false)
+        ]
+    },
+    'financial-settings': {
+        name: 'FinancialSettings',
         actions: [
             li('Read', false),
             li('Update', false)

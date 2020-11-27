@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    [EntityDisplay(Singular = "Settings", Plural = "Settings")]
-    public class SettingsForSave : Entity
+    [EntityDisplay(Singular = "GeneralSettings", Plural = "GeneralSettings")]
+    public class GeneralSettingsForSave : Entity
     {
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Primary)]
         [Required]
@@ -20,11 +20,6 @@ namespace Tellma.Entities
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Ternary)]
         [StringLength(255)]
         public string ShortCompanyName3 { get; set; }
-
-        [Display(Name = "Settings_FunctionalCurrency")]
-        [Required]
-        [StringLength(3)]
-        public string FunctionalCurrencyId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguage")]
         [Required]
@@ -59,14 +54,9 @@ namespace Tellma.Entities
         [Display(Name = "Settings_BrandColor")]
         [StringLength(7)]
         public string BrandColor { get; set; } // e.g. #0284AB
-
-        // Financial
-
-        [Display(Name = "Settings_ArchiveDate")]
-        public DateTime? ArchiveDate { get; set; }
     }
 
-    public class Settings : SettingsForSave
+    public class GeneralSettings : GeneralSettingsForSave
     {
         /// <summary>
         /// Changes whenever the client views and the specs change
@@ -88,23 +78,19 @@ namespace Tellma.Entities
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
-        public DateTimeOffset ModifiedAt { get; set; }
+        public DateTimeOffset GeneralModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
+        public int? GeneralModifiedById { get; set; }
 
         // For Query
-
-        [Display(Name = "Settings_FunctionalCurrency")]
-        [ForeignKey(nameof(FunctionalCurrencyId))]
-        public Currency FunctionalCurrency { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        [ForeignKey(nameof(GeneralModifiedById))]
+        public User GeneralModifiedBy { get; set; }
     }
 }

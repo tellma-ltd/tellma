@@ -171,6 +171,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'Centers', icon: 'object-group', link: '../centers',
           view: 'centers', sortKey: 600
         },
+        {
+          label: 'FinancialSettings', icon: 'cog', link: '../financial-settings',
+          view: 'financial-settings', sortKey: 700
+        },
       ]
     },
     Cash: {
@@ -250,8 +254,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
             this.canView('sms-messages'),
         },
         {
-          label: 'Settings', icon: 'cog', link: '../settings',
-          view: 'settings', sortKey: 700
+          label: 'GeneralSettings', icon: 'cog', link: '../general-settings',
+          view: 'general-settings', sortKey: 700
         },
       ]
     },

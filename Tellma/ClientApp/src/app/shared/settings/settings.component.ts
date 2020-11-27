@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, HostListener } from '@angular/core';
-import { Settings } from '~/app/data/entities/settings';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, HostListener, Input } from '@angular/core';
 import { Subject, Observable, of } from 'rxjs';
 import { WorkspaceService, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
@@ -8,33 +7,45 @@ import { TranslateService } from '@ngx-translate/core';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { mergeEntitiesInWorkspace } from '~/app/data/util';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
-import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
 import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
 import { GetEntityResponse } from '~/app/data/dto/get-entity-response';
-import { supportedCultures } from '~/app/data/supported-cultures';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
+import { applyServerErrors, clearServerErrors } from '../details/details.component';
+import { SettingsBase } from '~/app/data/entities/base/settings-base';
 
 @Component({
   selector: 't-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styles: []
 })
 export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
-  public _viewModel: Settings;
-  public _viewModelJson: string;
-  public _editModel: Settings;
 
-  private _cultures: SelectorChoice[];
-  private expand = '';
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
+  private crud = this.api.settingsFactory('', this.notifyDestruct$); // Just for intellisense
   private detailsStatus: DetailsStatus;
+
+  private _viewModel: SettingsBase;
+  private _viewModelJson: string;
+  private _editModel: SettingsBase;
+
   private _errorMessage: string; // in the document area itself
   private _modalErrorMessage: string; // in the modal
-  private _validationErrors: { [id: string]: string[] } = {}; // on the fields
-  private crud = this.api.settingsApi(this.notifyDestruct$); // Just for intellisense
+  private _unboundServerErrors: string[] = [];
+
+  @Input()
+  title: string;
+
+  @Input()
+  endpoint: string;
+
+  @Input()
+  expand: string;
+
+  @Input()
+  template: TemplateRef<any>;
 
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
@@ -62,59 +73,6 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     ).subscribe();
   }
 
-  private doFetch(): Observable<void> {
-    // clear the errors before refreshing
-    this.clearErrors();
-
-    // ELSE fetch the record from server
-    // first show the rotator
-    this.detailsStatus = DetailsStatus.loading;
-
-    // server call
-    return this.crud.get({ expand: this.expand }).pipe(
-      tap((response: GetEntityResponse<Settings>) => {
-
-        // add the settings locally
-        this._viewModel = response.Result;
-
-        // Add related items to the workspace
-        mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
-
-        // Notify everyone
-        this.workspace.notifyStateChanged();
-
-        // display the settings
-        this.detailsStatus = DetailsStatus.loaded;
-
-      }),
-      catchError((friendlyError) => {
-        this.detailsStatus = DetailsStatus.error;
-        this._errorMessage = friendlyError.error;
-        return of(null);
-      })
-    );
-  }
-
-  private clearErrors(): void {
-    this._errorMessage = null;
-    this._modalErrorMessage = null;
-    this._validationErrors = {};
-  }
-
-  private fetch() {
-    this.notifyFetch$.next(null);
-  }
-
-  public handleActionError = (friendlyError) => {
-
-    // This handles any errors caused by actions
-    if (friendlyError.status === 422) {
-      this._validationErrors = friendlyError.error;
-    } else {
-      this.displayModalError(friendlyError.error);
-    }
-  }
-
   public displayModalError(errorMessage: string) {
     // shows the error message in a dismissable modal
     this._modalErrorMessage = errorMessage;
@@ -126,7 +84,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.clearErrors();
 
     // initialize the API service
-    this.crud = this.api.settingsApi(this.notifyDestruct$);
+    this.crud = this.api.settingsFactory(this.endpoint, this.notifyDestruct$);
 
     // Fetch the data of the screen
     this.fetch();
@@ -136,7 +94,6 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     // Cancel any backend operations
     this.notifyDestruct$.next();
   }
-
 
   public canDeactivate(): boolean | Observable<boolean> {
     if (this.isDirty) {
@@ -163,22 +120,62 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  ////////// UI Bindings
-
-  get primaryPostfix(): string {
-    return this.workspace.currentTenant.primaryPostfix;
+  private clearErrors(): void {
+    this._errorMessage = null;
+    this._modalErrorMessage = null;
+    this._unboundServerErrors = [];
   }
 
-  get secondaryPostfix(): string {
-    return this.workspace.currentTenant.secondaryPostfix;
+  private fetch() {
+    this.notifyFetch$.next(null);
   }
 
-  get ternaryPostfix(): string {
-    return this.workspace.currentTenant.ternaryPostfix;
+  private doFetch(): Observable<void> {
+    // clear the errors before refreshing
+    this.clearErrors();
+
+    // ELSE fetch the record from server
+    // first show the rotator
+    this.detailsStatus = DetailsStatus.loading;
+
+    // server call
+    return this.crud.get({ expand: this.expand }).pipe(
+      tap((response: GetEntityResponse<SettingsBase>) => {
+
+        // add the settings locally
+        this._viewModel = response.Result;
+
+        // Add related items to the workspace
+        mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
+
+        // Notify everyone
+        this.workspace.notifyStateChanged();
+
+        // display the settings
+        this.detailsStatus = DetailsStatus.loaded;
+
+      }),
+      catchError((friendlyError) => {
+        this.detailsStatus = DetailsStatus.error;
+        this._errorMessage = friendlyError.error;
+        return of(null);
+      })
+    );
   }
 
-  public get ws() {
-    return this.workspace.currentTenant;
+  // UI Bindings
+
+  get isDirty(): boolean {
+    // TODO This may cause sluggishness for large DTOs, we'll look into ways of optimizing it later
+    return this.isEdit && this._viewModelJson !== JSON.stringify(this._editModel);
+  }
+
+  get isEdit(): boolean {
+    return this.detailsStatus === DetailsStatus.edit;
+  }
+
+  get placement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
   get errorMessage() {
@@ -189,11 +186,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this._modalErrorMessage;
   }
 
-  get validationErrors() {
-    return this._validationErrors;
-  }
-
-  get model(): Settings {
+  get activeModel(): SettingsBase {
     return this.isEdit ? this._editModel : this._viewModel;
   }
 
@@ -208,15 +201,6 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get showRefresh(): boolean {
     return !this.isEdit;
-  }
-
-  get isDirty(): boolean {
-    // TODO This may cause sluggishness for large DTOs, we'll look into ways of optimizing it later
-    return this.isEdit && this._viewModelJson !== JSON.stringify(this._editModel);
-  }
-
-  get isEdit(): boolean {
-    return this.detailsStatus === DetailsStatus.edit;
   }
 
   get showViewToolbar(): boolean {
@@ -265,40 +249,24 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this.canEditPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  get placement() {
-    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
-  }
-
-  public cultureName(culture: string): string {
-    return supportedCultures[culture];
-  }
-
-  get cultures(): SelectorChoice[] {
-
-    if (!this._cultures) {
-      this._cultures = Object.keys(supportedCultures)
-        .map(key => ({ name: () => supportedCultures[key], value: key }));
-    }
-
-    return this._cultures;
-  }
-
   onSave(): void {
     // if it's new the user expects a save to happen even if there is no red asterisk
     if (!this.isDirty) {
       // since no changes, don't save to the database
       // just go back to view mode
       this.clearErrors();
+      clearServerErrors(this._editModel);
       this._editModel = null;
       this.detailsStatus = DetailsStatus.loaded;
     } else {
 
       // clear any errors displayed
       this.clearErrors();
+      clearServerErrors(this._editModel);
 
       // prepare the save observable
       this.crud.save(this._editModel, { expand: this.expand, returnEntities: true }).subscribe(
-        (response: SaveSettingsResponse) => {
+        (response: SaveSettingsResponse<SettingsBase>) => {
 
           // update the workspace with the DTO from the server
           this._viewModel = response.Result;
@@ -320,7 +288,21 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
           this._editModel = null;
 
         },
-        (friendlyError) => this.handleActionError(friendlyError)
+        (friendlyError) => {
+          if (this.workspace.current.unauthorized) {
+            // The user will be redirected away from the tenant anyways
+            // and the screen they're taken to will show an appropriate
+            // error message, so no need to show a modal here
+            return;
+          }
+
+          if (friendlyError.status === 422) {
+            // This handles 422 ModelState errors
+            this.apply422ErrorsToModel(friendlyError.error);
+          } else {
+            this.displayModalError(friendlyError.error);
+          }
+        }
       );
     }
   }
@@ -348,8 +330,19 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.detailsStatus = DetailsStatus.loaded;
   }
 
-  public get flip() {
-    // this is to flip the UI icons in RTL
-    return this.workspace.ws.isRtl ? 'horizontal' : null;
+  /**
+   * Handles 422 Unprocessible Entity errors from a save operation, it distributes the
+   * errors on the entity that was saved and all its related weak entities, by parsing
+   * the paths and adding the messages in the serverErrors dictionary of the target entity
+   */
+  private apply422ErrorsToModel(errors: { [path: string]: string[] }) {
+    this._unboundServerErrors = [];
+    const serverErrors = applyServerErrors(this._editModel, errors);
+    const keys = Object.keys(serverErrors);
+    keys.forEach(key => {
+      serverErrors[key].forEach(error => {
+        this._unboundServerErrors.push(error);
+      });
+    });
   }
 }

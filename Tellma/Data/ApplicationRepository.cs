@@ -194,7 +194,8 @@ namespace Tellma.Data
 
         #region Queries
 
-        public Query<Settings> Settings => Query<Settings>();
+        public Query<FinancialSettings> FinancialSettings => Query<FinancialSettings>();
+        public Query<GeneralSettings> GeneralSettings => Query<GeneralSettings>();
         public Query<User> Users => Query<User>();
         public Query<Relation> Relations => Query<Relation>();
         public Query<Custody> Custodies => Query<Custody>();
@@ -239,72 +240,73 @@ namespace Tellma.Data
         {
             var result = t.Name switch
             {
-                nameof(Account) => "[map].[Accounts]()",
-                nameof(AccountClassification) => "[map].[AccountClassifications]()",
-                nameof(AccountType) => "[map].[AccountTypes]()",
-                nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
-                nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
-                nameof(Agent) => "[map].[Agents]()",
-                nameof(Attachment) => "[map].[Attachments]()",
-                nameof(Center) => "[map].[Centers]()",
-                nameof(Currency) => "[map].[Currencies]()",
-                nameof(Custody) => "[map].[Custodies]()",
-                nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
-                nameof(CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
-                nameof(DetailsEntry) => "[map].[DetailsEntries]()",
-                nameof(Document) => "[map].[Documents]()",
-                nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
-                nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
-                nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
-                nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
-                nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
-                nameof(EmailForQuery) => "[map].[Emails]()",
-                nameof(Entry) => "[map].[Entries]()",
-                nameof(EntryType) => "[map].[EntryTypes]()",
-                nameof(ExchangeRate) => "[map].[ExchangeRates]()",
-                nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
-                nameof(InboxRecord) => "[map].[Inbox]()",
-                nameof(Line) => "[map].[Lines]()",
-                nameof(LineDefinition) => "[map].[LineDefinitions]()",
-                nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
-                nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
-                nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
-                nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
-                nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
-                nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
-                nameof(LineForQuery) => "[map].[Lines]()",
-                nameof(Lookup) => "[map].[Lookups]()",
-                nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
-                nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
-                nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
-                nameof(OutboxRecord) => "[map].[Outbox]()",
-                nameof(Permission) => "[dbo].[Permissions]",
-                nameof(Relation) => "[map].[Relations]()",
-                nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
-                nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
-                nameof(RelationUser) => "[map].[RelationUsers]()",
-                nameof(RelationAttachment) => "[map].[RelationAttachments]()",
-                nameof(ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
-                nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
-                nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
-                nameof(ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
-                nameof(ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
-                nameof(ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
-                nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
-                nameof(Resource) => "[map].[Resources]()",
-                nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
-                nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
-                nameof(ResourceUnit) => "[map].[ResourceUnits]()",
-                nameof(Role) => "[dbo].[Roles]",
-                nameof(RoleMembership) => "[dbo].[RoleMemberships]",
-                nameof(Entities.Settings) => "[dbo].[Settings]",
-                nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
-                nameof(SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
-                nameof(Unit) => "[map].[Units]()",
-                nameof(User) => "[map].[Users]()",
-                nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
-                nameof(Workflow) => "[map].[Workflows]()",
-                nameof(WorkflowSignature) => "[map].[WorkflowSignatures]()",
+                nameof(Entities.Account) => "[map].[Accounts]()",
+                nameof(Entities.AccountClassification) => "[map].[AccountClassifications]()",
+                nameof(Entities.AccountType) => "[map].[AccountTypes]()",
+                nameof(Entities.AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
+                nameof(Entities.AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
+                nameof(Entities.Agent) => "[map].[Agents]()",
+                nameof(Entities.Attachment) => "[map].[Attachments]()",
+                nameof(Entities.Center) => "[map].[Centers]()",
+                nameof(Entities.Currency) => "[map].[Currencies]()",
+                nameof(Entities.Custody) => "[map].[Custodies]()",
+                nameof(Entities.CustodyDefinition) => "[map].[CustodyDefinitions]()",
+                nameof(Entities.CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
+                nameof(Entities.DetailsEntry) => "[map].[DetailsEntries]()",
+                nameof(Entities.Document) => "[map].[Documents]()",
+                nameof(Entities.DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
+                nameof(Entities.DocumentDefinition) => "[map].[DocumentDefinitions]()",
+                nameof(Entities.DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
+                nameof(Entities.DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
+                nameof(Entities.DocumentStateChange) => "[map].[DocumentStatesHistory]()",
+                nameof(Entities.EmailForQuery) => "[map].[Emails]()",
+                nameof(Entities.Entry) => "[map].[Entries]()",
+                nameof(Entities.EntryType) => "[map].[EntryTypes]()",
+                nameof(Entities.ExchangeRate) => "[map].[ExchangeRates]()",
+                nameof(Entities.GeneralSettings) => "[map].[GeneralSettings]()",
+                nameof(Entities.FinancialSettings) => "[map].[FinancialSettings]()",
+                nameof(Entities.IfrsConcept) => "[map].[IfrsConcepts]()",
+                nameof(Entities.InboxRecord) => "[map].[Inbox]()",
+                nameof(Entities.Line) => "[map].[Lines]()",
+                nameof(Entities.LineDefinition) => "[map].[LineDefinitions]()",
+                nameof(Entities.LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
+                nameof(Entities.LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
+                nameof(Entities.LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
+                nameof(Entities.LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
+                nameof(Entities.LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
+                nameof(Entities.LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
+                nameof(Entities.LineForQuery) => "[map].[Lines]()",
+                nameof(Entities.Lookup) => "[map].[Lookups]()",
+                nameof(Entities.LookupDefinition) => "[map].[LookupDefinitions]()",
+                nameof(Entities.LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+                nameof(Entities.MarkupTemplate) => "[map].[MarkupTemplates]()",
+                nameof(Entities.OutboxRecord) => "[map].[Outbox]()",
+                nameof(Entities.Permission) => "[dbo].[Permissions]",
+                nameof(Entities.Relation) => "[map].[Relations]()",
+                nameof(Entities.RelationDefinition) => "[map].[RelationDefinitions]()",
+                nameof(Entities.RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
+                nameof(Entities.RelationUser) => "[map].[RelationUsers]()",
+                nameof(Entities.RelationAttachment) => "[map].[RelationAttachments]()",
+                nameof(Entities.ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
+                nameof(Entities.ReportDefinition) => "[map].[ReportDefinitions]()",
+                nameof(Entities.ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
+                nameof(Entities.ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
+                nameof(Entities.ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
+                nameof(Entities.ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
+                nameof(Entities.RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+                nameof(Entities.Resource) => "[map].[Resources]()",
+                nameof(Entities.ResourceDefinition) => "[map].[ResourceDefinitions]()",
+                nameof(Entities.ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
+                nameof(Entities.ResourceUnit) => "[map].[ResourceUnits]()",
+                nameof(Entities.Role) => "[dbo].[Roles]",
+                nameof(Entities.RoleMembership) => "[dbo].[RoleMemberships]",
+                nameof(Entities.SmsMessageForQuery) => "[map].[SmsMessages]()",
+                nameof(Entities.SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
+                nameof(Entities.Unit) => "[map].[Units]()",
+                nameof(Entities.User) => "[map].[Users]()",
+                nameof(Entities.VoucherBooklet) => "[dbo].[VoucherBooklets]",
+                nameof(Entities.Workflow) => "[map].[Workflows]()",
+                nameof(Entities.WorkflowSignature) => "[map].[WorkflowSignatures]()",
                 _ => throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries"),
             };
             return result;
@@ -474,7 +476,7 @@ namespace Tellma.Data
             return (version, user, customSettings);
         }
 
-        public async Task<(bool isMultiSegment, Settings settings)> Settings__Load(CancellationToken cancellation)
+        public async Task<(bool isMultiSegment, GeneralSettings gSettings, FinancialSettings fSettings)> Settings__Load(CancellationToken cancellation)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Settings__Load));
 
@@ -483,7 +485,8 @@ namespace Tellma.Data
             // (2) the settings with the functional currency expanded
 
             bool isMultiSegment = false;
-            Settings settings = new Settings();
+            GeneralSettings gSettings = new GeneralSettings();
+            FinancialSettings fSettings = new FinancialSettings();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -510,14 +513,24 @@ namespace Tellma.Data
 
                 if (await reader.ReadAsync(cancellation))
                 {
-                    var props = TypeDescriptor.Get<Settings>().SimpleProperties;
-                    foreach (var prop in props)
+                    var gProps = TypeDescriptor.Get<GeneralSettings>().SimpleProperties;
+                    foreach (var prop in gProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
                         propValue = propValue == DBNull.Value ? null : propValue;
 
-                        prop.SetValue(settings, propValue);
+                        prop.SetValue(gSettings, propValue);
+                    }
+
+                    var fProps = TypeDescriptor.Get<FinancialSettings>().SimpleProperties;
+                    foreach (var prop in fProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(fSettings, propValue);
                     }
                 }
                 else
@@ -531,7 +544,7 @@ namespace Tellma.Data
 
                 if (await reader.ReadAsync(cancellation))
                 {
-                    settings.FunctionalCurrency = new Currency();
+                    fSettings.FunctionalCurrency = new Currency();
                     var props = TypeDescriptor.Get<Currency>().SimpleProperties;
                     foreach (var prop in props)
                     {
@@ -539,7 +552,7 @@ namespace Tellma.Data
                         var propValue = reader[prop.Name];
                         propValue = propValue == DBNull.Value ? null : propValue;
 
-                        prop.SetValue(settings.FunctionalCurrency, propValue);
+                        prop.SetValue(fSettings.FunctionalCurrency, propValue);
                     }
                 }
                 else
@@ -549,7 +562,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (isMultiSegment, settings);
+            return (isMultiSegment, gSettings, fSettings);
         }
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
@@ -2936,11 +2949,39 @@ namespace Tellma.Data
 
         #endregion
 
-        #region Settings
+        #region GeneralSettings
 
-        public async Task Settings__Save(SettingsForSave settingsForSave)
+        public async Task<IEnumerable<ValidationError>> GeneralSettings_Validate__Save(GeneralSettingsForSave settingsForSave, int top)
         {
-            using var _ = Instrumentation.Block("Repo." + nameof(Settings__Save));
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            var mappedProps = TypeDescriptor.Get<GeneralSettingsForSave>().SimpleProperties;
+            foreach (var prop in mappedProps)
+            {
+                var propName = prop.Name;
+                var key = $"@{propName}";
+                var value = prop.GetValue(settingsForSave);
+
+                cmd.Parameters.Add(key, value);
+            }
+
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(GeneralSettings_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task GeneralSettings__Save(GeneralSettingsForSave settingsForSave)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(GeneralSettings__Save));
 
             if (settingsForSave is null)
             {
@@ -2949,12 +2990,9 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
-            // Arguments
-            var mappedProps = TypeDescriptor.Get<SettingsForSave>().SimpleProperties;
 
-            var sqlBuilder = new System.Text.StringBuilder();
-            sqlBuilder.AppendLine("UPDATE [dbo].[Settings] SET");
-
+            // Parameters
+            var mappedProps = TypeDescriptor.Get<GeneralSettingsForSave>().SimpleProperties;
             foreach (var prop in mappedProps)
             {
                 var propName = prop.Name;
@@ -2962,15 +3000,74 @@ namespace Tellma.Data
                 var value = prop.GetValue(settingsForSave);
 
                 cmd.Parameters.Add(key, value);
-                sqlBuilder.AppendLine($"{propName} = {key},");
             }
 
-            sqlBuilder.AppendLine($"ModifiedAt = SYSDATETIMEOFFSET(),");
-            sqlBuilder.AppendLine($"ModifiedById = CONVERT(INT, SESSION_CONTEXT(N'UserId')),");
-            sqlBuilder.AppendLine($"SettingsVersion = NEWID()");
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GeneralSettings__Save)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        #endregion
+
+        #region FinancialSettings
+
+        public async Task<IEnumerable<ValidationError>> FinancialSettings_Validate__Save(FinancialSettingsForSave settingsForSave, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Currencies_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            var mappedProps = TypeDescriptor.Get<FinancialSettingsForSave>().SimpleProperties;
+            foreach (var prop in mappedProps)
+            {
+                var propName = prop.Name;
+                var key = $"@{propName}";
+                var value = prop.GetValue(settingsForSave);
+
+                cmd.Parameters.Add(key, value);
+            }
+
+            cmd.Parameters.Add("@Top", top);
 
             // Command
-            cmd.CommandText = sqlBuilder.ToString();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(FinancialSettings_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task FinancialSettings__Save(FinancialSettingsForSave settingsForSave)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(FinancialSettings__Save));
+
+            if (settingsForSave is null)
+            {
+                return;
+            }
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            var mappedProps = TypeDescriptor.Get<FinancialSettingsForSave>().SimpleProperties;
+            foreach (var prop in mappedProps)
+            {
+                var propName = prop.Name;
+                var key = $"@{propName}";
+                var value = prop.GetValue(settingsForSave);
+
+                cmd.Parameters.Add(key, value);
+            }
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(FinancialSettings__Save)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();

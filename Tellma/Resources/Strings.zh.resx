@@ -1531,6 +1531,9 @@
   <data name="File" xml:space="preserve">
     <value>文件</value>
   </data>
+  <data name="FinancialSettings" xml:space="preserve">
+    <value>财务设置</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>忘记这个浏览器</value>
   </data>
@@ -1545,6 +1548,12 @@
   </data>
   <data name="FromDate" xml:space="preserve">
     <value>从日期</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>通用设置</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>通用设置</value>
   </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>生成恢复代码</value>
@@ -2616,9 +2625,6 @@
   </data>
   <data name="SetPasswordMessage" xml:space="preserve">
     <value>你不必为这个应用程序的本地用户名/密码。添加本地密码，这样你就可以登录，无需外部登录提供商。</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>设置</value>
   </data>
   <data name="Settings_ArchiveDate" xml:space="preserve">
     <value>存档日期</value>

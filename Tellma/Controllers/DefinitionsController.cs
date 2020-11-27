@@ -21,9 +21,9 @@ namespace Tellma.Controllers
     public class DefinitionsController : ControllerBase
     {
         private readonly IDefinitionsCache _definitionsCache;
-        private readonly ILogger<SettingsController> _logger;
+        private readonly ILogger<GeneralSettingsController> _logger;
 
-        public DefinitionsController(IDefinitionsCache definitionsCache, ILogger<SettingsController> logger)
+        public DefinitionsController(IDefinitionsCache definitionsCache, ILogger<GeneralSettingsController> logger)
         {
             _definitionsCache = definitionsCache;
             _logger = logger;
