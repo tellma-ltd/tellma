@@ -668,64 +668,63 @@
                                     {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CurrencyId'">
-                                    {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CustodianId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CustodyId'">
-                                    {{ ws.getMultilingualValue('Custody', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Custody', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'ParticipantId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'ResourceId'">
-                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CenterId'">
-                                    {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'EntryTypeId'">
-                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
-                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}&zwnj;</span>
                                 </div>
                                 <div *ngSwitchCase="'Quantity'" class="t-right-aligned">
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4'  }}</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line, model), 'Name')  }}</span>
+                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;</span>
                                 <div *ngSwitchCase="'Value'" class="t-right-aligned">
-                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}</span>
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
-                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
+                                    *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
+                                    *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
-                                <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-                                &zwnj;
+                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>                                
                             </div>
                         </ng-container>
 
