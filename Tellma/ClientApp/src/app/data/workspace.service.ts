@@ -351,6 +351,11 @@ export class TenantWorkspace extends SpecificWorkspace {
   mdLastKey: string;
 
   /**
+   * Main menu search is remembered here upon backward navigation
+   */
+  mainMenuSearch: string;
+
+  /**
    * Any misc. state that screens may wish to preserve across the session
    */
   miscState: { [key: string]: any } = {};

@@ -30,7 +30,7 @@
       </a>
     </div>
 
-    <ng-container  *ngIf="initialized; else spinner">
+    <ng-container  *ngIf="rendered; else spinner">
       <!-- Main Menu -->
       <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
         [class.d-none]="!showSection(section?.items)">

@@ -1,10 +1,10 @@
 // tslint:disable:member-ordering
 import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject, AfterViewChecked } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Router, ActivatedRoute, Params, ParamMap } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Key } from '~/app/data/util';
-import { WorkspaceService } from '~/app/data/workspace.service';
-import { timer } from 'rxjs';
+import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
+import { Subscription, timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
@@ -48,10 +48,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private currentSection = -1;
   private currentItem = -1;
   private currentXMemory = -1;
+  private _subscriptions: Subscription;
 
   // public fields
-  public search = '';
-  public initialized = false;
+  public rendered = false;
 
   // the search field
   @ViewChild('searchInput', { static: true })
@@ -97,13 +97,30 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     // if the main menu is enormous, it causes an uncomfortable lag before navigation
     // we eliminate this lag by not rendering the menu items immediately if they are too many
     if (count < 60) {
-      this.initialize();
+      this.render();
     }
+
+    // Handle the one and only URL parameter: search
+    this._subscriptions = new Subscription();
+    this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
+      // This parameter does not set the search term in workspace
+      // It only confirms its value so we don't delete it
+      const urlSearch = params.get('search') || undefined;
+      const wsSearch = this.search;
+      if (wsSearch !== urlSearch) {
+        // Not a back or forward navigation, clear the search term
+        this.search = undefined;
+      } else if (!!wsSearch) {
+        // This is a back or forward navigation, keep the search term and render
+        // the main menu immediately since it feels smoother that way
+        this.render();
+      }
+    }));
   }
 
   ngAfterViewInit() {
-    if (!this.initialized) {
-      timer(1).subscribe(() => this.initialize());
+    if (!this.rendered) {
+      timer(1).subscribe(() => this.render());
     }
   }
 
@@ -115,10 +132,14 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // other screens have a simple grey background
     this.document.body.classList.remove('t-banner');
+
+    if (!!this._subscriptions) {
+      this._subscriptions.unsubscribe();
+    }
   }
 
-  initialize() {
-    this.initialized = true;
+  render() {
+    this.rendered = true;
     // setTimeout(() => {
     //   this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
     // });
@@ -323,6 +344,30 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     }
   };
+
+  private urlStateChanged() {
+    const params: Params = { };
+    const search = this.search;
+    if (!!search) {
+      params.search = search;
+    }
+    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+  }
+
+  public get ws(): TenantWorkspace {
+    return this.workspace.currentTenant;
+  }
+
+  public get search() {
+    return this.ws.mainMenuSearch;
+  }
+
+  public set search(v: string) {
+    if (this.ws.mainMenuSearch !== v) {
+      this.ws.mainMenuSearch = v;
+      this.urlStateChanged();
+    }
+  }
 
   public get mainMenu(): MenuSectionInfo[] {
     this.initializeMainMenu();
