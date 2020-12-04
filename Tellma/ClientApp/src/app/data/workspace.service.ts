@@ -365,31 +365,37 @@ export class TenantWorkspace extends SpecificWorkspace {
   User: EntityWorkspace<User>;
   Agent: EntityWorkspace<Agent>;
   Relation: EntityWorkspace<Relation>;
+
   Custody: EntityWorkspace<Custody>;
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
   AccountClassification: EntityWorkspace<AccountClassification>;
+
   IfrsConcept: EntityWorkspace<IfrsConcept>;
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
   Center: EntityWorkspace<Center>;
+
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
   LineForQuery: EntityWorkspace<Line>;
   ExchangeRate: EntityWorkspace<ExchangeRate>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
+
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
   MarkupTemplate: EntityWorkspace<MarkupTemplate>;
   RelationDefinition: EntityWorkspace<RelationDefinition>;
   CustodyDefinition: EntityWorkspace<CustodyDefinition>;
+
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
   LookupDefinition: EntityWorkspace<LookupDefinition>;
   LineDefinition: EntityWorkspace<LineDefinition>;
   DocumentDefinition: EntityWorkspace<DocumentDefinition>;
   EmailForQuery: EntityWorkspace<EmailForQuery>;
+
   SmsMessageForQuery: EntityWorkspace<SmsMessageForQuery>;
 
   constructor(private workspaceService: WorkspaceService) {
@@ -407,31 +413,37 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.User = {};
     this.Agent = {};
     this.Relation = {};
+
     this.Custody = {};
     this.Lookup = {};
     this.Currency = {};
     this.Resource = {};
     this.AccountClassification = {};
+
     this.IfrsConcept = {};
     this.AccountType = {};
     this.Account = {};
     this.ReportDefinition = {};
     this.Center = {};
+
     this.EntryType = {};
     this.Document = {};
     this.LineForQuery = {};
     this.ExchangeRate = {};
     this.DetailsEntry = {};
+
     this.MarkupTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};
     this.RelationDefinition = {};
     this.CustodyDefinition = {};
+
     this.ResourceDefinition = {};
     this.LookupDefinition = {};
     this.LineDefinition = {};
     this.DocumentDefinition = {};
     this.EmailForQuery = {};
+
     this.SmsMessageForQuery = {};
 
     this.notifyStateChanged();

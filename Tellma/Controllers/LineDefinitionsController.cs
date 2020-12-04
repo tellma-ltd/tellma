@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Tellma.Services.Utilities;
+using System.Linq;
+using Tellma.Entities.Descriptors;
+using System.Reflection;
 
 namespace Tellma.Controllers
 {
@@ -29,6 +32,7 @@ namespace Tellma.Controllers
         {
             return _service;
         }
+
         protected override Task OnSuccessfulSave(List<LineDefinition> data, Extras extras)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
@@ -94,7 +98,17 @@ namespace Tellma.Controllers
         {
             entities.ForEach(lineDefinition =>
             {
-                lineDefinition?.Columns?.ForEach(column =>
+                lineDefinition.AllowSelectiveSigning ??= false;
+                lineDefinition.ViewDefaultsToForm ??= false;
+                lineDefinition.BarcodeBeepsEnabled ??= false;
+
+                lineDefinition.Columns ??= new List<LineDefinitionColumnForSave>();
+                lineDefinition.Entries ??= new List<LineDefinitionEntryForSave>();
+                lineDefinition.GenerateParameters ??= new List<LineDefinitionGenerateParameterForSave>();
+                lineDefinition.StateReasons ??= new List<LineDefinitionStateReasonForSave>();
+                lineDefinition.Workflows ??= new List<WorkflowForSave>();
+
+                lineDefinition?.Columns.ForEach(column =>
                 {
                     // Those two are required in the sql table, so they cannot be null
                     if (column.ColumnName == nameof(Entry.CenterId))
@@ -138,7 +152,7 @@ namespace Tellma.Controllers
                     }
                 });
 
-                lineDefinition?.Workflows?.ForEach(workflow =>
+                lineDefinition?.Workflows.ForEach(workflow =>
                 {
                     workflow?.Signatures?.ForEach(signature =>
                     {
@@ -183,8 +197,9 @@ namespace Tellma.Controllers
             int lineDefinitionIndex = 0;
             entities.ForEach(lineDefinition =>
             {
+                // Columns
                 int columnIndex = 0;
-                lineDefinition.Columns?.ForEach(column =>
+                lineDefinition.Columns.ForEach(column =>
                 {
                     int index = column.EntryIndex.Value;
                     if (index < 0)
@@ -214,8 +229,22 @@ namespace Tellma.Controllers
                     columnIndex++;
                 });
 
+                // GenerateScript
+                if (!string.IsNullOrWhiteSpace(lineDefinition.GenerateScript))
+                {
+                    // If auto-generate script is specified, DefaultsToForm must be false
+                    if (lineDefinition.ViewDefaultsToForm.Value)
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.GenerateScript)}";
+                        string msg = _localizer["Error_CannotHaveGenerateScriptWithDefaultsToForm"];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+                }
+
+                // Workflows
                 int workflowIndex = 0;
-                lineDefinition.Workflows?.ForEach(workflow =>
+                lineDefinition.Workflows.ForEach(workflow =>
                 {
                     int signatureIndex = 0;
                     workflow.Signatures?.ForEach(signature =>
@@ -314,6 +343,161 @@ namespace Tellma.Controllers
 
                     workflowIndex++;
                 });
+
+                // Barcode
+                if (lineDefinition.BarcodeColumnIndex != null)
+                {
+                    // If barcode is enabled, BarcodeProperty must be specified
+                    if (string.IsNullOrWhiteSpace(lineDefinition.BarcodeProperty))
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeProperty)}";
+                        string msg = _localizer[Constants.Error_Field0IsRequired, _localizer["LineDefinition_BarcodeProperty"]];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+
+                    // If barcode is enabled, BarcodeExistingItemHandling must be specified
+                    if (string.IsNullOrWhiteSpace(lineDefinition.BarcodeExistingItemHandling))
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
+                        string msg = _localizer[Constants.Error_Field0IsRequired, _localizer["LineDefinition_BarcodeExistingItemHandling"]];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+
+                    // If barcode is enabled, DefaultsToForm must be false
+                    if (lineDefinition.ViewDefaultsToForm.Value)
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
+                        string msg = _localizer["Error_CannotHaveBarcodeWithDefaultsToForm"];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+
+                    // BarcodeColumnIndex must be within Columns range
+                    var colIndex = lineDefinition.BarcodeColumnIndex.Value;
+                    if (colIndex >= lineDefinition.Columns.Count)
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
+                        string msg = _localizer["Error_BarcodeColumnIndexOutOfRange"];
+
+                        ModelState.AddModelError(path, msg);
+                    }
+                    else
+                    {
+                        // Barcode Column cannot inherit from headers
+                        var colDef = lineDefinition.Columns[colIndex];
+                        if (colDef.InheritsFromHeader > 0)
+                        {
+                            string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
+                            string msg = _localizer["Error_BarcodeColumnCannotInheritFromHeaders"];
+
+                            ModelState.AddModelError(path, msg);
+                        }
+
+                        // Barcode Column must be visible from DRAFT
+                        if (colDef.VisibleState > 0)
+                        {
+                            string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
+                            string msg = _localizer["Error_BarcodeColumnMustBeVisibleFromDraft"];
+
+                            ModelState.AddModelError(path, msg);
+                        }
+
+                        // Barcode Column must be editable from DRAFT
+                        if (colDef.ReadOnlyState == 0)
+                        {
+                            string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
+                            string msg = _localizer["Error_BarcodeColumnCannotBeReadOnlyFromDraft"];
+
+                            ModelState.AddModelError(path, msg);
+                        }
+
+                        Dictionary<string, Type> acceptableColumnNames = new Dictionary<string, Type> {
+                            { "CustodianId", typeof(Relation) },
+                            { "CustodyId", typeof(Custody) },
+                            { "ParticipantId", typeof(Relation) },
+                            { "ResourceId", typeof(Resource) }
+                        };
+
+                        if (string.IsNullOrWhiteSpace(colDef.ColumnName))
+                        {
+                            // Error handled earlier
+                        }
+                        else if (!acceptableColumnNames.TryGetValue(colDef.ColumnName, out Type colType))
+                        {
+                            // Barcode Column must have on of the supported column names
+                            string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
+                            string names = string.Join(", ", acceptableColumnNames.Keys.Select(e => _localizer["Entry_" + e[0..^2]]));
+                            string msg = _localizer["Error_BarcodeColumnWrongColumnNameAcceptableAre0", names];
+
+                            ModelState.AddModelError(path, msg);
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(lineDefinition.BarcodeProperty))
+                            {
+                                // Barcode Property must be a valid property on the column type
+                                var propDesc = TypeDescriptor.Get(colType).Property(lineDefinition.BarcodeProperty);
+                                if (propDesc == null)
+                                {
+                                    string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeProperty)}";
+                                    string msg = _localizer["Error_BarcodeProperty0IsNotAValidFieldOnType1", lineDefinition.BarcodeProperty, colType];
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+                                // Barcode Property must be string or int
+                                else if ((propDesc.Type != typeof(string) && propDesc.Type != typeof(int) && propDesc.Type != typeof(int?))
+                                    || propDesc.PropertyInfo.GetCustomAttribute<ChoiceListAttribute>(inherit: true) != null)
+                                {
+                                    string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeProperty)}";
+                                    string msg = _localizer["Error_BarcodePropertyShouldBeOfTypeStringOrInt"];
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+                            }
+                        }
+
+                        if (lineDefinition.BarcodeExistingItemHandling == "IncrementQuantity")
+                        {
+                            // If handling is Increment Quantity, then a quantity column with the same entry index must be visible, and editable
+                            var quantityColumn = lineDefinition.Columns.FirstOrDefault(col => col.ColumnName == "Quantity" && col.EntryIndex == colDef.EntryIndex);
+                            if (quantityColumn == null)
+                            {
+                                string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
+                                string msg = _localizer["Error_QuantityColumnWithSameEntryIndexMustBeAdded"];
+
+                                ModelState.AddModelError(path, msg);
+                            }
+                            else
+                            {
+                                if (quantityColumn.InheritsFromHeader > 0)
+                                {
+                                    string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
+                                    string msg = _localizer["Error_QuantityColumnCannotInheritFromHeaders"];
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+
+                                if (quantityColumn.VisibleState > 0)
+                                {
+                                    string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
+                                    string msg = _localizer["Error_QuantityColumnMustBeVisibleFromDraft"];
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+
+                                if (quantityColumn.ReadOnlyState == 0)
+                                {
+                                    string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
+                                    string msg = _localizer["Error_QuantityColumnCannotBeReadOnlyFromDraft"];
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 lineDefinitionIndex++;
             });

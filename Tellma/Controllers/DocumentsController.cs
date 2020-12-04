@@ -478,11 +478,11 @@ namespace Tellma.Controllers
                     string linkUrl;
                     if (ids.Count == 1)
                     {
-                        linkUrl = $"{clientAppUrl}app/{TenantId}/documents/{DefinitionId}/{ids[0]}";
+                        linkUrl = $"{clientAppUrl}a/{TenantId}/d/{DefinitionId}/{ids[0]}";
                     }
                     else
                     {
-                        linkUrl = $"{clientAppUrl}app/{TenantId}/inbox";
+                        linkUrl = $"{clientAppUrl}a/{TenantId}/inbox";
                     }
 
                     // Email notification
@@ -964,7 +964,7 @@ namespace Tellma.Controllers
                 // All fields that aren't marked as common, set them to
                 // null, the UI makes them invisible anyways
                 doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null; // TODO: like Memo
-                
+
                 doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
                 doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null; // TODO: like Memo
 
@@ -2081,28 +2081,39 @@ namespace Tellma.Controllers
 
         protected override SelectExpression ParseSelect(string select)
         {
-            // We provide a shorthand notation for common and huge select
-            // strings, this one is usually requested from the document details
-            // screen and it contains over 260 atoms
-            var shorthand = "$Details";
             if (select == null)
             {
                 return null;
             }
-            else if (select.Trim() == shorthand)
+
+            // We provide a shorthand notation for common and huge select
+            // strings, this one is usually requested from the document details
+            // screen and it contains hundreds of atoms
+            string shorthand = "$Details";
+            SelectExpression result;
+            if (select.Contains(shorthand))
             {
-                return _detailsSelectExpression;
+                // Use the built in expansion for shorthand
+                result = _detailsSelectExpression.Clone();
+                select = select.Replace(shorthand, "");
+
+                // Add any additional atoms
+                SelectExpression remainderExpression = base.ParseSelect(select);
+                if (remainderExpression != null)
+                {
+                    result.AddAll(remainderExpression);
+                }
             }
             else
             {
-                select = select.Replace(shorthand, _detailsSelect);
-                return base.ParseSelect(select);
+                result = base.ParseSelect(select);
             }
+
+            return result;
         }
 
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
         private static readonly SelectExpression _detailsSelectExpression = new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
-
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]

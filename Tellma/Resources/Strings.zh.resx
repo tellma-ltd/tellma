@@ -1750,6 +1750,18 @@
   <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
     <value>允许选择性签名</value>
   </data>
+  <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
+    <value>条码蜂鸣声启用</value>
+  </data>
+  <data name="LineDefinition_BarcodeColumnIndex" xml:space="preserve">
+    <value>条形码列</value>
+  </data>
+  <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
+    <value>现有的货物处理</value>
+  </data>
+  <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
+    <value>条形码域</value>
+  </data>
   <data name="LineDefinition_Columns" xml:space="preserve">
     <value>列</value>
   </data>
@@ -1764,6 +1776,18 @@
   </data>
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>生成脚本</value>
+  </data>
+  <data name="LineDefinition_Handling_AddNewLine" xml:space="preserve">
+    <value>添加新行</value>
+  </data>
+  <data name="LineDefinition_Handling_DoNothing" xml:space="preserve">
+    <value>没做什么</value>
+  </data>
+  <data name="LineDefinition_Handling_IncrementQuantity" xml:space="preserve">
+    <value>增量数量</value>
+  </data>
+  <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
+    <value>投掷错误</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>说明理由</value>

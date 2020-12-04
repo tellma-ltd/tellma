@@ -4,9 +4,9 @@ import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { getChoices } from '~/app/data/entities/base/metadata';
+import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { LineDefinitionForSave, LineDefinition } from '~/app/data/entities/line-definition';
+import { LineDefinitionForSave, LineDefinition, metadata_LineDefinition } from '~/app/data/entities/line-definition';
 import { DefinitionVisibility, visibilityPropDescriptor } from '~/app/data/entities/base/definition-common';
 import { entryColumnNames, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
@@ -19,7 +19,7 @@ import { RuleType, ruleTypes, WorkflowSignature, PredicateType, predicateTypes }
 import { PositiveLineState } from '~/app/data/entities/line';
 import { LineDefinitionStateReason } from '~/app/data/entities/line-definition-state-reason';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
-import { onCodeTextareaKeydown } from '~/app/data/util';
+import { isSpecified, onCodeTextareaKeydown } from '~/app/data/util';
 
 @Component({
   selector: 't-line-definitions-details',
@@ -49,6 +49,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
     result.AllowSelectiveSigning = false;
     result.ViewDefaultsToForm = false;
+    result.BarcodeBeepsEnabled = true;
     result.Columns = [];
     result.Entries = [];
     result.GenerateParameters = [];
@@ -484,6 +485,42 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     collection.push(item);
   }
 
+
+  public column_rowDrop(event: CdkDragDrop<any[]>, model: LineDefinition) {
+    this.rowDrop(event, model.Columns);
+
+    this.choicesBarcodeColumnIndexChanged = true;
+
+    // Adjust the barcode column index
+    if (model.BarcodeColumnIndex === event.previousIndex) {
+      model.BarcodeColumnIndex = event.currentIndex;
+    } else if (event.previousIndex < model.BarcodeColumnIndex && event.currentIndex >= model.BarcodeColumnIndex) {
+      model.BarcodeColumnIndex--;
+    } else if (event.previousIndex > model.BarcodeColumnIndex && event.currentIndex <= model.BarcodeColumnIndex) {
+      model.BarcodeColumnIndex++;
+    }
+  }
+
+  public column_onDeleteRow(colIndex: number, model: LineDefinition) {
+    const row = model.Columns[colIndex];
+    this.onDeleteRow(row, model.Columns);
+
+    this.choicesBarcodeColumnIndexChanged = true;
+
+    // Adjust the barcode column index
+    if (model.BarcodeColumnIndex === colIndex) {
+      delete model.BarcodeColumnIndex;
+    } else if (model.BarcodeColumnIndex > colIndex) {
+      model.BarcodeColumnIndex--;
+    }
+  }
+
+  public column_onInsertRow(model: LineDefinition) {
+    this.onInsertRow(model.Columns, this.createColumn);
+
+    this.choicesBarcodeColumnIndexChanged = true;
+  }
+
   // Errors
 
   public invalid(control: NgControl, serverErrors: string[]): boolean {
@@ -602,6 +639,17 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     }
   }
 
+  // Advanced
+
+  public showAdvancedError(model: LineDefinition): boolean {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.BarcodeColumnIndex) ||
+      areServerErrors(model.serverErrors.BarcodeProperty) ||
+      areServerErrors(model.serverErrors.BarcodeExistingItemHandling) ||
+      areServerErrors(model.serverErrors.BarcodeBeepsEnabled)
+    );
+  }
+
   // Tabs
   public get activeTab(): string {
     return this.ws.miscState.lineDefinition_activeTab || 'general';
@@ -629,5 +677,45 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
 
   public onGenerateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
     onCodeTextareaKeydown(elem, $event, v => model.GenerateScript = v);
+  }
+
+  // Barcode stuff
+
+  public isBarcodeColumnIndexSpecified(model: LineDefinition) {
+    return isSpecified(model.BarcodeColumnIndex);
+  }
+
+  public display_BarcodeColumnIndex(model: LineDefinition) {
+    const index = model.BarcodeColumnIndex;
+    if (isSpecified(index)) {
+      const col = model.Columns[index];
+      if (!!col) {
+        return this.ws.getMultilingualValueImmediate(col, 'Label') || col.ColumnName;
+      }
+    }
+
+    return '';
+  }
+
+  public choicesBarcodeColumnIndexChanged = true;
+  public choicesBarcodeColumnIndexModel: LineDefinition;
+  private choicesBarcodeColumnIndexResult: SelectorChoice[];
+  public choices_BarcodeColumnIndex(model: LineDefinition): SelectorChoice[] {
+
+    if (this.choicesBarcodeColumnIndexChanged || this.choicesBarcodeColumnIndexModel !== model) {
+      this.choicesBarcodeColumnIndexChanged = false;
+      this.choicesBarcodeColumnIndexModel = model;
+      this.choicesBarcodeColumnIndexResult = model.Columns.map((col, index) => ({
+        name: () => this.ws.getMultilingualValueImmediate(col, 'Label') || col.ColumnName,
+        value: index
+      }));
+    }
+
+    return this.choicesBarcodeColumnIndexResult;
+  }
+
+  display_BarcodeExistingItemHandling(model: LineDefinition) {
+    const prop = metadata_LineDefinition(this.workspace, this.translate).properties.BarcodeExistingItemHandling as ChoicePropDescriptor;
+    return prop.format(model.BarcodeExistingItemHandling);
   }
 }

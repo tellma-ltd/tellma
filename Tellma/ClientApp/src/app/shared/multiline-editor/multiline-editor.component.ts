@@ -2,26 +2,17 @@ import { Component, ViewChild, ElementRef, Input, HostBinding, AfterViewInit, Ou
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 't-text-editor',
-  templateUrl: './text-editor.component.html',
-  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: TextEditorComponent }]
+  selector: 't-multiline-editor',
+  templateUrl: './multiline-editor.component.html',
+  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: MultilineEditorComponent }]
 })
-export class TextEditorComponent implements ControlValueAccessor, AfterViewInit {
+export class MultilineEditorComponent implements ControlValueAccessor {
 
   // A simple text editor, instead of using input directly in all the screens, this allows
   // us to change the bahvior of all inputs in the application since they all use this control
 
   @Input()
   placeholder = '';
-
-  @Input()
-  focusIf: boolean;
-
-  @Input()
-  type = 'text';
-
-  @Output()
-  enter = new EventEmitter();
 
   @HostBinding('class.w-100')
   w100 = true;
@@ -30,11 +21,8 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   @ViewChild('input', { static: true })
   input: ElementRef;
 
-  private triggerTouch = true;
-  public isDisabled = false;
   public onChangeFn: (val: any) => void = _ => { };
   public onTouchedFn: () => void = () => { };
-  public onValidatorChange: () => void = () => { };
 
   public focus(): void {
     if (this.input.nativeElement) {
@@ -63,40 +51,15 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   }
 
   setDisabledState?(isDisabled: boolean): void {
-    this.isDisabled = isDisabled;
+    this.input.nativeElement.disabled = isDisabled;
   }
 
-  onTouched() {
-    if (this.triggerTouch) {
-      this.onTouchedFn();
-    } else {
-      this.triggerTouch = true;
-    }
-  }
 
   onChange(val: any) {
-    this.triggerTouch = true;
     if (!val) {
       this.onChangeFn(undefined);
     } else {
       this.onChangeFn(val);
-    }
-  }
-
-  ///////////////// Implementation of AfterViewInit
-  ngAfterViewInit() {
-    if (this.focusIf && this.input) {
-      this.input.nativeElement.focus();
-
-      // when the field is auto-focused, don't trigger touch as
-      // soon as the user moves the focus away the first time
-      this.triggerTouch = false;
-    }
-  }
-
-  public onKeyup(e: KeyboardEvent) {
-    if (e.key === 'Enter') {
-      this.enter.emit();
     }
   }
 }

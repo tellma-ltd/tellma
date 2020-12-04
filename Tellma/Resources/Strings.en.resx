@@ -946,6 +946,27 @@
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>A user with email '{0}' could not be found.</value>
   </data>
+  <data name="Error_BarcodeColumnCannotBeReadOnlyFromDraft" xml:space="preserve">
+    <value>Barcode column cannot be readonly from state Draft.</value>
+  </data>
+  <data name="Error_BarcodeColumnCannotInheritFromHeaders" xml:space="preserve">
+    <value>Barcode Column cannot inherit from headers.</value>
+  </data>
+  <data name="Error_BarcodeColumnIndexOutOfRange" xml:space="preserve">
+    <value>Barcode Column Index is out of range.</value>
+  </data>
+  <data name="Error_BarcodeColumnMustBeVisibleFromDraft" xml:space="preserve">
+    <value>Barcode column must be visible from state Draft.</value>
+  </data>
+  <data name="Error_BarcodeColumnWrongColumnNameAcceptableAre0" xml:space="preserve">
+    <value>Barcode column must have one of the supported column names: {0}.</value>
+  </data>
+  <data name="Error_BarcodeProperty0IsNotAValidFieldOnType1" xml:space="preserve">
+    <value>Barcode Property '{0}' is not a valid field on type {1}.</value>
+  </data>
+  <data name="Error_BarcodePropertyShouldBeOfTypeStringOrInt" xml:space="preserve">
+    <value>Barcode Property should be of type string or int.</value>
+  </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>Cannot assign a {0} document.</value>
   </data>
@@ -966,6 +987,12 @@
   </data>
   <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
     <value>Closed documents cannot be modified.</value>
+  </data>
+  <data name="Error_CannotHaveBarcodeWithDefaultsToForm" xml:space="preserve">
+    <value>Barcode is not supported with View Defaults To Form = Yes.</value>
+  </data>
+  <data name="Error_CannotHaveGenerateScriptWithDefaultsToForm" xml:space="preserve">
+    <value>Auto-Generate is not supported with View Defaults To Form = Yes.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>Cannot modify an inactive item.</value>
@@ -1170,6 +1197,18 @@
   </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path.</value>
+  </data>
+  <data name="Error_QuantityColumnCannotBeReadOnlyFromDraft" xml:space="preserve">
+    <value>The quantity column cannot be readonly from state Draft.</value>
+  </data>
+  <data name="Error_QuantityColumnCannotInheritFromHeaders" xml:space="preserve">
+    <value>The quantity column cannot inherit from headers.</value>
+  </data>
+  <data name="Error_QuantityColumnMustBeVisibleFromDraft" xml:space="preserve">
+    <value>The quantity column must be visible from state Draft.</value>
+  </data>
+  <data name="Error_QuantityColumnWithSameEntryIndexMustBeAdded" xml:space="preserve">
+    <value>A quantity column must be added with the same entry index as the barcode column.</value>
   </data>
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>Readonly State cannot be before Required State.</value>
@@ -1750,6 +1789,18 @@
   <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
     <value>Allow Selective Signing</value>
   </data>
+  <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
+    <value>Barcode Beeps Enabled</value>
+  </data>
+  <data name="LineDefinition_BarcodeColumnIndex" xml:space="preserve">
+    <value>Barcode Column</value>
+  </data>
+  <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
+    <value>Existing Item Handling</value>
+  </data>
+  <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
+    <value>Barcode Field</value>
+  </data>
   <data name="LineDefinition_Columns" xml:space="preserve">
     <value>Columns</value>
   </data>
@@ -1764,6 +1815,18 @@
   </data>
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>Generate Script</value>
+  </data>
+  <data name="LineDefinition_Handling_AddNewLine" xml:space="preserve">
+    <value>Add new line</value>
+  </data>
+  <data name="LineDefinition_Handling_DoNothing" xml:space="preserve">
+    <value>Do nothing</value>
+  </data>
+  <data name="LineDefinition_Handling_IncrementQuantity" xml:space="preserve">
+    <value>Increment quantity</value>
+  </data>
+  <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
+    <value>Throw error</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>State Reasons</value>

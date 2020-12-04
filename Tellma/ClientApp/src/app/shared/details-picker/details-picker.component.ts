@@ -112,9 +112,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private _definitionId: number;
   // private _cacheMode = false;
   private _idString = 'new';
-  private api = this.apiService.crudFactory('', null); // for intellisense
+  public api = this.apiService.crudFactory('', null); // for intellisense
 
-  private get additionalSelectKey(): string {
+  public get additionalSelectKey(): string {
     if (!!this.additionalSelect) {
       return `__${this.additionalSelect}`;
     } else {
@@ -469,7 +469,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.entityDescriptor(definitionId).inactiveFilter;
   }
 
-  ////////////////// UI Bindings
+  public get querySelect(): string {
+    return computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect);
+  }
 
   public get queryFilter(): string {
     // IF this is a definitioned API and the definition id is ambigious
@@ -511,6 +513,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     return result;
   }
+
+  ////////////////// UI Bindings
 
   get searchResults(): (string | number)[] {
     return this._searchResults;

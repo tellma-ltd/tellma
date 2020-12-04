@@ -322,6 +322,12 @@ namespace Tellma.Controllers.Dto
         public string TitlePlural3 { get; set; }
         public bool AllowSelectiveSigning { get; set; }
         public bool ViewDefaultsToForm { get; set; }
+
+        public int? BarcodeColumnIndex { get; set; }
+        public string BarcodeProperty { get; set; }
+        public string BarcodeExistingItemHandling { get; set; }
+        public bool BarcodeBeepsEnabled { get; set; }
+
         public bool GenerateScript { get; set; }
         public string GenerateLabel { get; set; }
         public string GenerateLabel2 { get; set; }

@@ -1,6 +1,7 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
   Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy, Output,
-  EventEmitter, SimpleChanges, OnChanges
+  EventEmitter, SimpleChanges, OnChanges, ViewChild
 } from '@angular/core';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
@@ -60,11 +61,30 @@ export class TableComponent implements OnInit, OnChanges {
   @Input()
   highlightFunc: (entity: EntityForSave) => true;
 
+  @Input()
+  attentionItem: any; // The row representing this item will be highlighted light green
+
   @Output()
   insert = new EventEmitter<EntityForSave>();
 
   @Output()
   delete = new EventEmitter<EntityForSave>();
+
+  @ViewChild(CdkVirtualScrollViewport, { static: true })
+  viewPort: CdkVirtualScrollViewport;
+
+  // public functions
+  public scrollTo(index: number) {
+    if (!!this.viewPort) {
+      const offset = this.HEADER_HEIGHT + (this.itemSize * index);
+      this.viewPort.scrollToOffset(offset);
+    }
+  }
+
+  // public functions
+  public scrollToEnd() {
+    this.scrollTo(this.dataSourceCopy.length - 1);
+  }
 
   constructor() { }
 

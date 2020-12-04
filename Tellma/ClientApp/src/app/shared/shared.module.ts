@@ -96,6 +96,7 @@ import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.
 import { AccountingPipe } from './accounting/accounting.pipe';
 import { ContextMenuDirective } from '../data/context-menu.directive';
 import { SettingsComponent } from '../shared/settings/settings.component';
+import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-editor.component';
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { SettingsComponent } from '../shared/settings/settings.component';
     SpinnerComponent,
     SuccessMessageComponent,
     TextEditorComponent,
+    MultilineEditorComponent,
     WarningMessageComponent,
     DatePickerComponent,
     TableComponent,
@@ -176,6 +178,7 @@ import { SettingsComponent } from '../shared/settings/settings.component';
     SuccessMessageComponent,
     WarningMessageComponent,
     TextEditorComponent,
+    MultilineEditorComponent,
     FormGroupComponent,
     FormGroupSettingsComponent,
     FormGroupDynamicComponent,

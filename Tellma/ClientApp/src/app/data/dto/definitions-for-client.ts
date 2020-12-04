@@ -3,6 +3,7 @@ import { PositiveLineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
+import { ExistingItemHandling } from '../entities/line-definition';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -264,6 +265,12 @@ export interface LineDefinitionForClient {
     TitlePlural3: string;
     AllowSelectiveSigning: boolean;
     ViewDefaultsToForm: boolean;
+
+    BarcodeColumnIndex: number;
+    BarcodeProperty: string;
+    BarcodeExistingItemHandling: ExistingItemHandling;
+    BarcodeBeepsEnabled: boolean;
+
     GenerateScript: boolean;
     GenerateLabel: string;
     GenerateLabel2: string;

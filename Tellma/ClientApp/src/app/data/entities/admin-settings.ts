@@ -1,11 +1,12 @@
 // tslint:disable:variable-name
 import { Entity } from './base/entity';
 
-export class AdminSettingsForSave extends Entity {
+// tslint:disable-next-line:no-empty-interface
+export interface AdminSettingsForSave extends Entity {
 
 }
 
-export class AdminSettings extends AdminSettingsForSave {
+export interface AdminSettings extends AdminSettingsForSave {
     SettingsVersion: string;
     CreatedAt: string;
     CreatedById: number | string;

@@ -1750,6 +1750,18 @@
   <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
     <value>يسمح بالتوقيع الجزئي</value>
   </data>
+  <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
+    <value>تفعيل زمارة الباركود</value>
+  </data>
+  <data name="LineDefinition_BarcodeColumnIndex" xml:space="preserve">
+    <value>عمود الباركود</value>
+  </data>
+  <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
+    <value>معاجلة السطر الموجود</value>
+  </data>
+  <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
+    <value>حقل الباركود</value>
+  </data>
   <data name="LineDefinition_Columns" xml:space="preserve">
     <value>الأعمدة</value>
   </data>
@@ -1764,6 +1776,18 @@
   </data>
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>كود الإنشاء التلقائي</value>
+  </data>
+  <data name="LineDefinition_Handling_AddNewLine" xml:space="preserve">
+    <value>أضف في سطر جديد</value>
+  </data>
+  <data name="LineDefinition_Handling_DoNothing" xml:space="preserve">
+    <value>تجاهل</value>
+  </data>
+  <data name="LineDefinition_Handling_IncrementQuantity" xml:space="preserve">
+    <value>أضف إلى الكمية</value>
+  </data>
+  <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
+    <value>عامله كخطأ</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>أسباب التوقيع</value>

@@ -106,6 +106,10 @@ export const routes: Routes = [
         data: { preload: true }
       },
       {
+        path: 'a',
+        redirectTo: 'app'
+      },
+      {
         path: 'admin',
         canActivate: [AuthGuard],
         loadChildren: LoadAdminModule,

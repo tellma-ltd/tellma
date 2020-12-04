@@ -1,2 +1,2 @@
-<input class="form-control t-input" type="text" [type]="type" #input autocomplete="off" [placeholder]="placeholder"
-    (input)="onChange($event.target.value)" (blur)="onTouched();" [disabled]="isDisabled" />
+<input class="form-control t-input" [type]="type" #input autocomplete="off" [placeholder]="placeholder"
+    (input)="onChange($event.target.value)" (blur)="onTouched();" [disabled]="isDisabled" (keyup)="onKeyup($event)" />

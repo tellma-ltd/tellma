@@ -1750,6 +1750,18 @@
   <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
     <value>የሚመርጥ መፈረም ፍቀድ</value>
   </data>
+  <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
+    <value>የአሞሌ Beeps ነቅቷል</value>
+  </data>
+  <data name="LineDefinition_BarcodeColumnIndex" xml:space="preserve">
+    <value>የአሞሌ አምድ</value>
+  </data>
+  <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
+    <value>አሁን ያለው ንጥል አያያዝ</value>
+  </data>
+  <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
+    <value>የአሞሌ መስክ</value>
+  </data>
   <data name="LineDefinition_Columns" xml:space="preserve">
     <value>አምዶች</value>
   </data>
@@ -1764,6 +1776,18 @@
   </data>
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>ስክሪፕት አመንጭ</value>
+  </data>
+  <data name="LineDefinition_Handling_AddNewLine" xml:space="preserve">
+    <value>አዲስ መስመር ያክሉ</value>
+  </data>
+  <data name="LineDefinition_Handling_DoNothing" xml:space="preserve">
+    <value>አትጸልዩ ምንም</value>
+  </data>
+  <data name="LineDefinition_Handling_IncrementQuantity" xml:space="preserve">
+    <value>ጨምር የብዛት</value>
+  </data>
+  <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
+    <value>ውርወራ ስህተት</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>የሁኔታው ምክንያቶች</value>
@@ -2198,7 +2222,7 @@
     <value>ልዩ ልዩ</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
-    <value>ሌሎች የገንዘብ ንብረቶች</value>
+    <value>ሌሎች ገንዘብ ነክ ንብረቶች</value>
   </data>
   <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
     <value>ሌሎች የገንዘብ ተጠያቂነቶች</value>

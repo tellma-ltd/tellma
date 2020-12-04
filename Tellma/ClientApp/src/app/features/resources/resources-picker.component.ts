@@ -13,18 +13,4 @@ export class ResourcesPickerComponent extends PickerBaseComponent {
   @Input()
   definitionIds: number[];
 
-  // writeValue(obj: any): void {
-  //   this.picker.writeValue(obj);
-  //   console.log(obj);
-  // }
-  // registerOnChange(fn: any): void {
-  //   this.picker.registerOnChange(fn);
-  // }
-  // registerOnTouched(fn: any): void {
-  //   this.picker.registerOnTouched(fn);
-  // }
-  // setDisabledState?(isDisabled: boolean): void {
-  //   this.picker.setDisabledState(isDisabled);
-  // }
-
 }

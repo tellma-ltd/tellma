@@ -43,7 +43,7 @@ export interface LineForQuery extends Line {
 
 export interface LineFlags {
     isModified?: boolean;
-    isHighlighted?: boolean;
+    isHighlighted?: boolean; // Yellow highlighted line
 }
 
 let _settings: SettingsForClient;

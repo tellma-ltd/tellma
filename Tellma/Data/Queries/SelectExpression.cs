@@ -37,6 +37,25 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
+        /// Add the given <see cref="SelectAtom"/>s to the atoms comprising this <see cref="SelectExpression"/>
+        /// </summary>
+        public void AddAll(IEnumerable<SelectAtom> atoms)
+        {
+            foreach (var atom in atoms)
+            {
+                _atoms.Add(atom);
+            }
+        }
+
+        /// <summary>
+        /// Returns a shallow clone of this current <see cref="SelectExpression"/>
+        /// </summary>
+        public SelectExpression Clone()
+        {
+            return new SelectExpression(this);
+        }
+
+        /// <summary>
         /// Returns the number of atoms currently contained in this <see cref="SelectExpression"/>
         /// </summary>
         public int Count
