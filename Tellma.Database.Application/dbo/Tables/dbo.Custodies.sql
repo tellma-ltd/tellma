@@ -30,9 +30,6 @@
 	[Text2]						NVARCHAR (50),
 
 	[CustodianId]				INT					CONSTRAINT [FK_Custodies__CustodianId] REFERENCES [dbo].[Relations] ([Id]),
-	--[AgentId]					INT					CONSTRAINT [FK_Custodies__AgentId] REFERENCES [dbo].[Agents] ([Id]),
-	--[TaxIdentificationNumber]	NVARCHAR (18),
-	--[JobId]						INT, -- FK to table Jobs
 	[ExternalReference]			NVARCHAR (34),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,

@@ -22,7 +22,7 @@
 	[FunctionalCurrencyId]			NCHAR(3)			NOT NULL CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
 	[ArchiveDate]					DATE				NOT NULL DEFAULT ('1900.01.01'),	
 	[FinancialModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[FinancialModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	[FinancialModifiedById]			INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 );
 --	IFRS [810000]
 	--[DomicileOfEntity]				NVARCHAR (255),
