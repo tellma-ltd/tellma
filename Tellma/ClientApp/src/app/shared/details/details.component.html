@@ -202,7 +202,8 @@
 
   <!-- Content Area -->
   <div class="row t-rest-of-screen" [class.t-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
-    [class.t-rest-of-screen2]="isScreenMode" [class.t-much-less-dark]="isDark" [class.t-dark-border]="isDark">
+    [class.t-much-less-dark]="isDark" [class.t-dark-border]="isDark" [tScrollMemory]="'details_' + collection + '_' + (definitionId || 'default')"
+    [tScrollMemoryTrigger]="activeModel">
     <div class="w-100 " [class.t-main-document]="showSidebar" [class.h-100]="!showSidebar">
 
       <!-- Document content -->

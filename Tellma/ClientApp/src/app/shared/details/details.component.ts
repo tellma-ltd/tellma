@@ -22,7 +22,6 @@ import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
 import { SaveArguments } from '~/app/data/dto/save-arguments';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 export interface DropdownAction {
   template: TemplateRef<any>;

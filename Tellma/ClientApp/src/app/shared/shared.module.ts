@@ -97,6 +97,7 @@ import { AccountingPipe } from './accounting/accounting.pipe';
 import { ContextMenuDirective } from '../data/context-menu.directive';
 import { SettingsComponent } from '../shared/settings/settings.component';
 import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-editor.component';
+import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.directive';
 
 @NgModule({
   declarations: [
@@ -132,7 +133,8 @@ import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-e
     MapBoundsFitterComponent,
     AccountingPipe,
     ContextMenuDirective,
-    SettingsComponent
+    SettingsComponent,
+    ScrollMemoryDirective
   ],
   imports: [
     CommonModule,
@@ -199,7 +201,8 @@ import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-e
     LabelPipe,
     MapBoundsFitterComponent,
     AccountingPipe,
-    ContextMenuDirective
+    ContextMenuDirective,
+    ScrollMemoryDirective
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

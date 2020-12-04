@@ -177,16 +177,13 @@ export const routes: Routes = [
 })
 export class RootModule {
 
-  constructor(library: FaIconLibrary, router: Router, viewportScroller: ViewportScroller) {
+  constructor(library: FaIconLibrary, router: Router, workspace: WorkspaceService) {
     library.addIcons(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight, faWifi,
       faSyncAlt, faSearch, faCube, faCogs, faHands, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt);
 
-    // router.events.pipe(
-    //   filter((e) => e instanceof NavigationEnd),
-    //   tap(e => {
-    //     console.log(router);
-    //     console.log(e);
-    //   })
-    // ).subscribe();
+    router.events.pipe(
+      filter((e) => e instanceof NavigationStart),
+      tap((e: NavigationStart) => workspace.lastNavigation = e.navigationTrigger),
+    ).subscribe();
   }
 }

@@ -48,37 +48,14 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private currentSection = -1;
   private currentItem = -1;
   private currentXMemory = -1;
-  private _subscriptions: Subscription;
 
   // public fields
+  public search: string;
   public rendered = false;
 
   // the search field
   @ViewChild('searchInput', { static: true })
   searchInput: ElementRef;
-
-  // // the root div with the scroll bar
-  // @ViewChild('rootDiv', { static: true })
-  // rootDiv: ElementRef;
-
-  // private _contentDiv: ElementRef;
-
-  // // the huge div that is added after initialization
-  // get contentDiv(): ElementRef {
-  //   return this._contentDiv;
-  // }
-
-  // @ViewChild('contentDiv', { static: false })
-  // set contentDiv(v: ElementRef) {
-  //   if (this._contentDiv !== v) {
-  //     this._contentDiv = v;
-  //     if (!!v && this.contentDiv) {
-  //       setTimeout(() => {
-  //         this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
-  //       });
-  //     }
-  //   }
-  // }
 
   //////////////////////// Lifecycle functions
 
@@ -100,22 +77,12 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.render();
     }
 
-    // Handle the one and only URL parameter: search
-    this._subscriptions = new Subscription();
-    this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
-      // This parameter does not set the search term in workspace
-      // It only confirms its value so we don't delete it
-      const urlSearch = params.get('search') || undefined;
-      const wsSearch = this.search;
-      if (wsSearch !== urlSearch) {
-        // Not a back or forward navigation, clear the search term
-        this.search = undefined;
-      } else if (!!wsSearch) {
-        // This is a back or forward navigation, keep the search term and render
-        // the main menu immediately since it feels smoother that way
+    if (this.workspace.lastNavigation === 'popstate') {
+      this.search = this.ws.mainMenuSearch;
+      if (!!this.search) {
         this.render();
       }
-    }));
+    }
   }
 
   ngAfterViewInit() {
@@ -125,32 +92,14 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // // Remember the scroll position
-    // if (!!this.rootDiv) {
-    //   this.workspace.currentTenant.miscState.main_menu_scroll_position = this.rootDiv.nativeElement.scrollTop;
-    // }
-
     // other screens have a simple grey background
     this.document.body.classList.remove('t-banner');
 
-    if (!!this._subscriptions) {
-      this._subscriptions.unsubscribe();
-    }
+    this.ws.mainMenuSearch = this.search;
   }
 
   render() {
     this.rendered = true;
-    // setTimeout(() => {
-    //   this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
-    // });
-
-    // timer(0).subscribe(() => {
-    //   // this.rootDiv.nativeElement.scrollTo({
-    //   //   top: this.workspace.currentTenant.miscState.main_menu_scroll_position || 0,
-    //   //   behavior: 'smooth'
-    //   // });
-    //   this.rootDiv.nativeElement.scrollTop = this.workspace.currentTenant.miscState.main_menu_scroll_position || 0;
-    // });
   }
 
   //////////////////////// End - Lifecycle functions
@@ -345,28 +294,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  private urlStateChanged() {
-    const params: Params = { };
-    const search = this.search;
-    if (!!search) {
-      params.search = search;
-    }
-    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
-  }
-
   public get ws(): TenantWorkspace {
     return this.workspace.currentTenant;
-  }
-
-  public get search() {
-    return this.ws.mainMenuSearch;
-  }
-
-  public set search(v: string) {
-    if (this.ws.mainMenuSearch !== v) {
-      this.ws.mainMenuSearch = v;
-      this.urlStateChanged();
-    }
   }
 
   public get mainMenu(): MenuSectionInfo[] {

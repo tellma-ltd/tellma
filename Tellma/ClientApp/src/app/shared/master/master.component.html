@@ -321,7 +321,8 @@
   </div>
 
   <!-- The search results -->
-  <div class="row t-rest-of-screen" [class.t-much-less-dark]="isDark">
+  <div class="row t-rest-of-screen" [class.t-much-less-dark]="isDark"
+    [tScrollMemory]="'master_' + collection + '_' + (definitionId || 'default')" [tScrollMemoryTrigger]="isTreeMode ? treeNodes : flatIds">
     <div class="w-100">
 
       <!-- Tiles -->

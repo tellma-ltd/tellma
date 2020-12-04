@@ -277,6 +277,12 @@ export class AdminWorkspace extends SpecificWorkspace {
    */
   mdLastKey: string;
 
+  /**
+   * Remembers scroll positions across navigation
+   */
+  scrollPositions: { [key: string]: number } = {};
+  scrollTriggers: { [key: string]: any } = {};
+
   AdminUser: EntityWorkspace<AdminUser>;
   IdentityServerUser: EntityWorkspace<IdentityServerUser>;
 
@@ -359,6 +365,12 @@ export class TenantWorkspace extends SpecificWorkspace {
    * Any misc. state that screens may wish to preserve across the session
    */
   miscState: { [key: string]: any } = {};
+
+  /**
+   * Remembers scroll positions across navigation
+   */
+  scrollPositions: { [key: string]: number } = {};
+  scrollTriggers: { [key: string]: any } = {};
 
   /**
    * Keeps the state of every report widget
@@ -1097,6 +1109,12 @@ export class WorkspaceService {
    * To communicate to a details component that it should clone the provided Id
    */
   public cloneId?: number | string;
+
+  /**
+   * Tracks whether the most recent router navigation was imperative (e.g. clicking a link)
+   * or popstate (browser back and forward navigation)
+   */
+  public lastNavigation: 'imperative' | 'popstate' | 'hashchange' = 'imperative';
 
   /**
    * Notifies that something has changed in workspace.

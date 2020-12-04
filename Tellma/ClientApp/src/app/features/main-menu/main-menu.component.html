@@ -1,4 +1,4 @@
-<div class="pt-3 pt-md-4 t-menu-screen" #rootDiv>
+<div class="pt-3 pt-md-4 t-menu-screen" #rootDiv tScrollMemory="main-menu" [tScrollMemoryTrigger]="rendered + (search || '')">
 
   <!-- Search Bar -->
   <div class="t-menu-search-container mb-4">

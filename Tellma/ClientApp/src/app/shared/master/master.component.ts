@@ -10,7 +10,15 @@ import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finaliz
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { addToWorkspace, downloadBlob, isSpecified, csvPackage, composeEntitiesFromResponse, ColumnDescriptor, printBlob } from '~/app/data/util';
+import {
+  addToWorkspace,
+  downloadBlob,
+  isSpecified,
+  csvPackage,
+  composeEntitiesFromResponse,
+  ColumnDescriptor,
+  printBlob
+} from '~/app/data/util';
 import {
   MasterDetailsStore,
   MasterStatus,
