@@ -10,6 +10,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 
+export type ExistingItemHandling = 'AddNewLine'| 'IncrementQuantity'| 'ThrowError'| 'DoNothing';
+const existingItemHandlingChoices: ExistingItemHandling[] = ['AddNewLine', 'IncrementQuantity', 'ThrowError', 'DoNothing'];
+
 export interface LineDefinitionForSave<
         TEntry = LineDefinitionEntryForSave,
         TColumn = LineDefinitionColumnForSave,
@@ -29,6 +32,13 @@ export interface LineDefinitionForSave<
     TitlePlural3?: string;
     AllowSelectiveSigning?: boolean;
     ViewDefaultsToForm?: boolean;
+
+    // New barcode stuff
+    BarcodeColumnIndex?: number;
+    BarcodeProperty?: string;
+    BarcodeExistingItemHandling?: ExistingItemHandling;
+    BarcodeBeepsEnabled?: boolean;
+
     GenerateLabel?: string;
     GenerateLabel2?: string;
     GenerateLabel3?: string;
@@ -84,6 +94,18 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
                 AllowSelectiveSigning: { control: 'boolean', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
                 ViewDefaultsToForm: { control: 'boolean', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
+
+                // New barcode stuff
+                BarcodeColumnIndex: {  control: 'number', label: () => trx.instant('LineDefinition_BarcodeColumnIndex'), minDecimalPlaces: 0, maxDecimalPlaces: 0  },
+                BarcodeProperty: { control: 'text', label: () => trx.instant('LineDefinition_BarcodeProperty') },
+                BarcodeExistingItemHandling: {
+                    control: 'choice',
+                    label: () => trx.instant('LineDefinition_BarcodeExistingItemHandling'),
+                    choices: existingItemHandlingChoices,
+                    format: (choice: string) => !!choice ? trx.instant('LineDefinition_Handling_' + choice) : ''
+                },
+                BarcodeBeepsEnabled: { control: 'boolean', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
+
                 GenerateLabel: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.primaryPostfix },
                 GenerateLabel2: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.secondaryPostfix },
                 GenerateLabel3: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.ternaryPostfix },

@@ -1,5 +1,5 @@
-<t-details collection="AccountType" [idString]="idString" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
-  [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
+<t-details collection="AccountType" [idString]="idString" [createFunc]="create" [cloneFunc]="clone" [expand]="expand"
+  [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
   [documentTemplate]="document" [isInactive]="isInactive" [actions]="[
           { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -93,12 +93,14 @@
 
   <!-- Participant Definition -->
   <t-form-group class="t-form-group" *ngIf="showParticipantDefinition(model)"
-    [label]="'AccountType_ParticipantDefinition' | translate" [serverErrors]="model?.serverErrors?.ParticipantDefinitionId">
+    [label]="'AccountType_ParticipantDefinition' | translate"
+    [serverErrors]="model?.serverErrors?.ParticipantDefinitionId">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ParticipantDefinition">
       <t-view-link link="../../relation-definitions" [itemId]="model?.ParticipantDefinitionId">{{
         ws.getMultilingualValue('RelationDefinition', model?.ParticipantDefinitionId, 'TitleSingular') }}</t-view-link>
     </t-restricted>
-    <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantDefinitionId" filter="State ne 'Hidden'">
+    <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantDefinitionId"
+      filter="State ne 'Hidden'">
     </t-relation-definitions-picker>
   </t-form-group>
 
@@ -170,27 +172,27 @@
           <!-- Description -->
           <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.Description">
-            <div *ngIf="!isEdit">{{ model?.Description }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            <div *ngIf="!isEdit" class="t-multiline">{{ model?.Description }}</div>
+            <t-multiline-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-multiline-editor>
           </t-form-group>
 
           <!-- Description2 -->
           <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
             [label]="('Description' | translate) + ws.secondaryPostfix"
             [serverErrors]="model?.serverErrors?.Description2">
-            <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            <div *ngIf="!isEdit" class="t-multiline">{{ model?.Description2 }}</div>
+            <t-multiline-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-multiline-editor>
           </t-form-group>
 
           <!-- Description3 -->
           <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
             [label]="('Description' | translate) + ws.ternaryPostfix"
             [serverErrors]="model?.serverErrors?.Description3">
-            <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            <div *ngIf="!isEdit" class="t-multiline">{{ model?.Description3 }}</div>
+            <t-multiline-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-multiline-editor>
           </t-form-group>
         </div>
       </ng-template>
@@ -463,7 +465,8 @@
               {{ getMultilingualValue(ws.ResourceDefinition[item.ResourceDefinitionId], 'TitleSingular', ws) }}
             </t-view-link>
             <t-resource-definitions-picker *ngIf="isEdit" [(ngModel)]="item.ResourceDefinitionId"
-              (ngModelChange)="update.call(null, item)" [required]="!item.PH" [filter]="resourceDefinitionFilter(model)">
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH"
+              [filter]="resourceDefinitionFilter(model)">
             </t-resource-definitions-picker>
           </t-form-group-cell>
         </ng-template>

@@ -473,6 +473,15 @@ const routes: Routes = [
         component: DocumentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
+      // Those redirects help shorten notification links (especially SMS)
+      {
+        path: 'd/:definitionId',
+        redirectTo: 'documents/:definitionId'
+      },
+      {
+        path: 'd/:definitionId/:id',
+        redirectTo: 'documents/:definitionId/:id'
+      },
       {
         path: 'inbox',
         component: InboxComponent,

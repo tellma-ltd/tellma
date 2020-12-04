@@ -607,6 +607,13 @@ namespace Tellma.Controllers
                 // Data
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
                 ViewDefaultsToForm = def.ViewDefaultsToForm ?? false,
+
+                // Barcode stuff
+                BarcodeColumnIndex = def.BarcodeColumnIndex,
+                BarcodeProperty = def.BarcodeProperty,
+                BarcodeExistingItemHandling = def.BarcodeExistingItemHandling,
+                BarcodeBeepsEnabled = def.BarcodeBeepsEnabled ?? false,
+
                 GenerateScript = !string.IsNullOrWhiteSpace(def.GenerateScript),
                 GenerateLabel = def.GenerateLabel,
                 GenerateLabel2 = def.GenerateLabel2,

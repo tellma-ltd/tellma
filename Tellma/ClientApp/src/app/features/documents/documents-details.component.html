@@ -418,25 +418,10 @@
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
 
                     <!-- Smart Tab -->
-                    <ng-container *ngIf="!isManualLine(lineDefId)">
-                        <!-- Tab Header -->
-                        <div class="row m-0 pt-2 pb-3 t-form border-bottom" *ngIf="showTabHeader(lineDefId, model)">
-                            <ng-container *ngFor="let columnIndex of smartTabHeaderColumnPaths(lineDefId, model)">
-                                <t-form-group class="t-form-group" [labelContextMenu]="tabIsCommonMenu"
-                                    [labelContext]="columnIndex" [disableLabelMenu]="!isEdit"
-                                    [serverErrors]="tabHeaderServerErrors(lineDefId, columnIndex, model)"
-                                    [label]="columnLabel(lineDefId, columnIndex)">
-                                    <ng-container *ngIf="tabIsCommon(lineDefId, columnIndex, model); else perLine">
-                                        <ng-container
-                                            *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, update: dummyUpdate, isForm: true }">
-                                        </ng-container>
-                                    </ng-container>
-                                </t-form-group>
-                            </ng-container>
-                        </div>
+                    <ng-template #smartTab>
 
                         <!-- Form -->
-                        <ng-container *ngIf="showAsForm(lineDefId, model); else table">
+                        <ng-container *ngIf="showAsForm(lineDefId, model); else tableTab">
                             <div class="row m-0 pt-2 t-form" [style.background-color]="formColor(lineDefId, model)">
                                 <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
                                     <div class="col-12 d-flex justify-content-end">
@@ -490,14 +475,52 @@
                         </ng-container>
 
                         <!-- Table -->
-                        <ng-template #table>
-                            <t-table [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
+                        <ng-template #tableTab>
+
+                            <!-- Tab Header -->
+                            <div *ngIf="showTabHeader(lineDefId, model, isEdit)"
+                                class="row m-0 pt-2 pb-3 t-form border-bottom">
+                                <ng-container *ngFor="let columnIndex of smartTabHeaderColumnPaths(lineDefId, model)">
+                                    <t-form-group class="t-form-group" [labelContextMenu]="tabIsCommonMenu"
+                                        [labelContext]="columnIndex" [disableLabelMenu]="!isEdit"
+                                        [serverErrors]="tabHeaderServerErrors(lineDefId, columnIndex, model)"
+                                        [label]="columnLabel(lineDefId, columnIndex)">
+                                        <ng-container *ngIf="tabIsCommon(lineDefId, columnIndex, model); else perLine">
+                                            <ng-container
+                                                *ngTemplateOutlet="formGroupContent; context: { columnIndex: columnIndex, update: dummyUpdate, isForm: true }">
+                                            </ng-container>
+                                        </ng-container>
+                                    </t-form-group>
+                                </ng-container>
+
+                                <div class="w-100"></div>
+
+                                <!-- Barcode scanner -->
+                                <t-form-group *ngIf="showBarcodeField(lineDefId, isEdit)" class="t-form-group">
+                                    <t-text-editor [ngModel]="getBarcode(lineDefId, model)"
+                                        (ngModelChange)="setBarcode(lineDefId, model, $event)"
+                                        [placeholder]="barcodeFieldPlaceholder(lineDefId)"
+                                        (enter)="onBarcodeEnter(lineDefId, model, tableComponent)">
+                                    </t-text-editor>
+                                </t-form-group>
+                                <div class="t-form-group" *ngIf="isBarcodeLoading(lineDefId, model)">
+                                    <t-spinner></t-spinner>
+                                </div>
+                                <div class="w-100 pt-3" *ngIf="showBarcodeError(lineDefId, model)">
+                                    <t-error-message dismissable="true"
+                                        (dismiss)="clearBarcodeError()">
+                                        {{ getBarcodeError(lineDefId, model) }} </t-error-message>
+                                </div>
+                            </div>
+
+                            <!-- Smart Table -->
+                            <t-table #tableComponent [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
                                 [columnPaths]="smartColumnPathsForTable(lineDefId, model)"
                                 [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
                                 [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
                                 [onNewItem]="onNewSmartLineFactory(lineDefId)"
                                 (insert)="onInsertSmartLine($event, model)" (delete)="onDeleteSmartLine($event, model)"
-                                [highlightFunc]="highlightLineFactory(model)">
+                                [highlightFunc]="highlightLineFactory(model)" [attentionItem]="attentionItem">
                             </t-table>
 
                             <!-- Totals -->
@@ -523,12 +546,11 @@
                             </div>
                         </ng-template>
 
-                    </ng-container>
+                    </ng-template>
 
-                    <!-- Manual Lines Tab -->
-                    <ng-container *ngIf="isManualLine(lineDefId)">
+                    <!-- Manual Tab -->
+                    <ng-container *ngIf="isManualLine(lineDefId); else smartTab">
                         <ng-container *ngTemplateOutlet="manualLines">
-
                         </ng-container>
 
                         <!-- Totals -->
@@ -668,64 +690,64 @@
                                     {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line, model)) }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CurrencyId'">
-                                    {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CustodianId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CustodyId'">
-                                    {{ ws.getMultilingualValue('Custody', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Custody', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'ParticipantId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'ResourceId'">
-                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CenterId'">
-                                    {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'EntryTypeId'">
-                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}
+                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;
                                 </span>
                                 <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
-                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}&zwnj;</span>
                                 </div>
                                 <div *ngSwitchCase="'Quantity'" class="t-right-aligned">
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4'  }}</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line, model), 'Name')  }}</span>
+                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;</span>
                                 <div *ngSwitchCase="'Value'" class="t-right-aligned">
-                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}</span>
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
-                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
+                                    *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
+                                    *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                                    *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
-                                <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-                                &zwnj;
+                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                <span
+                                    *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                             </div>
                         </ng-container>
 
@@ -749,13 +771,15 @@
                                     [definitionIds]="definitionIdsCustodian_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     [filter]="getFilter(lineDefId, columnIndex)"
+                                    [additionalSelect]="additionalSelectCustodian_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-relations-picker>
                                 <t-custodies-picker *ngSwitchCase="'CustodyId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsCustody_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                    [filter]="getFilter(lineDefId, columnIndex)" additionalSelect="CurrencyId"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    [additionalSelect]="additionalSelectCustody_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-custodies-picker>
                                 <t-relations-picker *ngSwitchCase="'ParticipantId'"
@@ -763,13 +787,15 @@
                                     [definitionIds]="definitionIdsParticipant_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     [filter]="getFilter(lineDefId, columnIndex)"
+                                    [additionalSelect]="additionalSelectParticipant_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-relations-picker>
                                 <t-resources-picker *ngSwitchCase="'ResourceId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                    [filter]="getFilter(lineDefId, columnIndex)" additionalSelect="CurrencyId,UnitId"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    [additionalSelect]="additionalSelectResource_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-resources-picker>
                                 <t-centers-picker *ngSwitchCase="'CenterId'"

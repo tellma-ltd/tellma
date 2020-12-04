@@ -22,7 +22,7 @@
     <!-- Body -->
     <tbody>
       <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
-        <tr [style.height.px]="itemSize" [class.t-biege]="i % 2 === 0"
+        <tr [class.t-draw-attention]="item === attentionItem" [style.height.px]="itemSize" [class.t-biege]="i % 2 === 0"
           [style.background-color]="highlight(item) ? '#eeff44' : null">
           <td class="text-muted">
             <div class="text-center">

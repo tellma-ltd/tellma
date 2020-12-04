@@ -18,9 +18,9 @@ import {
   fileSizeDisplay, mergeEntitiesInWorkspace,
   toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected
 } from '~/app/data/util';
-import { tap, catchError, finalize, skip } from 'rxjs/operators';
+import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { of, Observable, Subscription } from 'rxjs';
+import { of, Observable, Subscription, timer } from 'rxjs';
 import { Account, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
@@ -32,11 +32,13 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { getChoices, ChoicePropDescriptor, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
+import { GetArguments } from '~/app/data/dto/get-arguments';
+import { AudioService } from '~/app/data/audio.service';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -105,7 +107,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private documentsApi = this.api.documentsApi(null, this.notifyDestruct$); // for intellisense
   private _definitionId: number;
-  private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineDocJson: string;
   private localState = new MasterDetailsStore();  // Used in popup mode
 
@@ -140,7 +141,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public confirmationMessage: string;
 
-  public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
+  public selectBase = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
   public additionalSelectAccount = '$DocumentDetails';
   public additionalSelectResource = '$DocumentDetails';
   public additionalSelectCustody = '$DocumentDetails';
@@ -148,7 +149,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private route: ActivatedRoute, private modalService: NgbModal) {
+    private route: ActivatedRoute, private modalService: NgbModal, private audio: AudioService) {
     super();
   }
 
@@ -2462,6 +2463,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public onInsertSmartLine(line: LineForSave, model: Document): void {
     model.Lines.push(line);
     this._computeEntriesModel = null; // Force refresh the entries view
+    this._linesModel = null; // Force refresh the UI grids
   }
 
   public onDeleteSmartLine(line: LineForSave, model: Document): void {
@@ -3129,7 +3131,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!lineDef && !!lineDef.Entries && !!colDef ? lineDef.Entries[colDef.EntryIndex] : null;
   }
 
-  public columnName(lineDefId: number, columnIndex: number): string {
+  public columnName(lineDefId: number, columnIndex: number): EntryColumnName {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     return !!colDef ? colDef.ColumnName : null;
   }
@@ -3469,23 +3471,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public showTabHeader(lineDefId: number, doc: DocumentForSave) {
-    // TODO Optimize
-    const paths = this.smartTabHeaderColumnPaths(lineDefId, doc);
-    return paths.length > 0;
+  public showTabHeader(lineDefId: number, doc: DocumentForSave, isEdit: boolean) {
+    return this.smartTabHeaderColumnPaths(lineDefId, doc).length > 0 ||
+      this.showBarcodeField(lineDefId, isEdit);
   }
 
   public dummyUpdate = () => { };
 
   public onCreateForm(lineDefId: number, model: DocumentForSave) {
-    if (!model) {
-      return;
-    }
-
-    let newLine: LineForSave = {};
-    newLine = this.onNewSmartLineFactory(lineDefId)(newLine);
-    this.lines(lineDefId, model).push(newLine);
-    this.onInsertSmartLine(newLine, model);
+    this.onAddNewLine(lineDefId, model);
   }
 
   public onDeleteForm(lineDefId: number, model: DocumentForSave) {
@@ -3498,6 +3492,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const line = lines.pop();
       this.onDeleteSmartLine(line, model);
     }
+  }
+
+  private onAddNewLine(lineDefId: number, model: DocumentForSave): LineForSave {
+    // (1) Adds a new default line to the document (with the specified number of entries)
+    // (2) Updates the UI grids
+    // (3) Updates the smart entries grid
+    if (!model) {
+      return;
+    }
+
+    let newLine: LineForSave = {};
+    newLine = this.onNewSmartLineFactory(lineDefId)(newLine);
+    this.lines(lineDefId, model).push(newLine);
+    this.onInsertSmartLine(newLine, model);
+
+    return newLine;
   }
 
   public get actionsDropdownPlacement(): Placement {
@@ -4174,6 +4184,533 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get functionalName() {
     return this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName');
   }
+
+  ////////////////// Barcode stuff
+
+  private barcodeColumnCollection(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
+    if (!!colDef) {
+      switch (colDef.ColumnName) {
+        case 'CustodianId':
+        case 'ParticipantId':
+          return 'Relation';
+
+        case 'CustodyId':
+          return 'Custody';
+
+        case 'ResourceId':
+          return 'Resource';
+      }
+    } else {
+      // Server validation should prevent this
+      console.error(`BarcodeColumnIndex ${lineDef.BarcodeColumnIndex} is out of range`);
+    }
+  }
+
+  private barcodeColumnIndex(lineDefId: number): number {
+    const lineDef = this.lineDefinition(lineDefId);
+    return lineDef.BarcodeColumnIndex;
+  }
+
+  private barcodeQuantityColumnIndexDefinition: LineDefinitionForClient;
+  private barcodeQuantityColumnIndexResult: number;
+
+  private barcodeQuantityColumnIndex(lineDefId: number): number {
+    const lineDef = this.lineDefinition(lineDefId);
+    if (this.barcodeQuantityColumnIndexDefinition !== lineDef) {
+      this.barcodeQuantityColumnIndexDefinition = lineDef;
+      const barcodeColumn = lineDef.Columns[lineDef.BarcodeColumnIndex];
+      if (!!barcodeColumn) {
+        this.barcodeQuantityColumnIndexResult = lineDef.Columns
+          .findIndex(c => c.ColumnName === 'Quantity' && c.EntryIndex === barcodeColumn.EntryIndex);
+      } else {
+        console.error('Could not find suitable quantity column for barcode');
+      }
+    }
+
+    return this.barcodeQuantityColumnIndexResult;
+  }
+
+  public showBarcodeField(lineDefId: number, isEdit: boolean): boolean {
+    if (!isEdit) {
+      return false;
+    }
+
+    const def = this.lineDefinition(lineDefId);
+    return isSpecified(def.BarcodeColumnIndex);
+  }
+
+  public barcodeFieldPlaceholder(lineDefId: number): string {
+    const columnIndex = this.barcodeColumnIndex(lineDefId);
+    const columnLabel = this.columnLabel(lineDefId, columnIndex);
+    return this.translate.instant('Scan0', { 0: columnLabel });
+  }
+
+  private barcodeModel: Document;
+  private barcodeLineDefId: number;
+  private barcode: string;
+
+  public getBarcode(lineDefId: number, model: Document): string {
+    if (this.barcodeModel !== model || this.barcodeLineDefId !== lineDefId) {
+      this.barcodeModel = model;
+      this.barcodeLineDefId = lineDefId;
+
+      this.barcode = null;
+    }
+
+    return this.barcode;
+  }
+
+  public setBarcode(lineDefId: number, model: Document, barcode: string): void {
+    if (this.barcodeModel !== model || this.barcodeLineDefId !== lineDefId) {
+      this.barcodeModel = model;
+      this.barcodeLineDefId = lineDefId;
+
+      this.barcode = null;
+    }
+
+    if (this.barcode !== barcode) {
+      this.barcode = barcode;
+      this.clearBarcodeError();
+    }
+  }
+
+  // Scroll to a line and make it flash a light green color
+
+  public attentionItem: LineForSave = null;
+  private drawAttentionToLine(line: LineForSave, lineIndex: number, table: TableComponent) {
+    this.attentionItem = line;
+    setTimeout(() => this.attentionItem = null, 250);
+
+    if (lineIndex === null) {
+      setTimeout(() => table.scrollToEnd(), 50);
+    } else {
+      setTimeout(() => table.scrollTo(lineIndex), 50);
+    }
+  }
+
+  // Barcode error
+
+  private onBarcodeSuccess(lineDef: LineDefinitionForClient): void {
+    // The user scanning the items will be more productive if he doesn't have to look at the screen
+    // We play a success beep when a scanned barcode is found and processed
+    if (lineDef.BarcodeBeepsEnabled) {
+      this.audio.beep(100, 920, 150); // high pitch beep to signal a successful scan
+    }
+  }
+
+  private barcodeErrorsModel: Document;
+  private barcodeErrorsLineDefId: number;
+  private barcodeError: () => string;
+
+  public getBarcodeError(lineDefId: number, model: Document): string {
+    if (this.barcodeErrorsModel !== model || this.barcodeErrorsLineDefId !== lineDefId) {
+      this.barcodeErrorsModel = model;
+      this.barcodeErrorsLineDefId = lineDefId;
+
+      this.clearBarcodeError();
+    }
+
+    if (!!this.barcodeError) {
+      return this.barcodeError();
+    } else {
+      return null;
+    }
+  }
+
+  public showBarcodeError(lineDefId: number, model: Document): boolean {
+    if (this.barcodeErrorsModel !== model || this.barcodeErrorsLineDefId !== lineDefId) {
+      this.barcodeErrorsModel = model;
+      this.barcodeErrorsLineDefId = lineDefId;
+
+      this.clearBarcodeError();
+    }
+
+    return !!this.barcodeError;
+  }
+
+  private onBarcodeError(lineDef: LineDefinitionForClient, errorFunc: () => string) {
+    this.barcodeError = errorFunc;
+
+    // The user scanning the items will be more productive if she doesn't have to look at the screen
+    // We play a distinctive error beep when a problem occurs
+    if (lineDef.BarcodeBeepsEnabled) {
+      this.audio.beep(999, 150, 300); // low pitch beep to signal a failed scan
+    }
+  }
+
+  public clearBarcodeError() {
+    this.barcodeError = null;
+  }
+
+  // These functions handle when users scan the same barcode multiple times before the first scan has loaded
+
+  private _barcodeScanCountModel: Document;
+  private _barcodeScanCount: { [key: string]: number } = {};
+
+  private getBarcodeScanCount(lineDefId: number, model: Document, barcode: string): number {
+    if (this._barcodeScanCountModel !== model) {
+      this._barcodeScanCountModel = model;
+      this._barcodeScanCount = {};
+    }
+
+    const key = `${lineDefId}/${barcode}`;
+    return this._barcodeScanCount[key] || 0;
+  }
+
+  private incrementBarcodeScanCount(lineDefId: number, model: Document, barcode: string): void {
+    if (this._barcodeScanCountModel !== model) {
+      this._barcodeScanCountModel = model;
+      this._barcodeScanCount = {};
+    }
+
+    // To handle subsequent scans of the same barcode
+    const key = `${lineDefId}/${barcode}`;
+    if (!this._barcodeScanCount[key]) {
+      this._barcodeScanCount[key] = 1;
+    } else {
+      this._barcodeScanCount[key] = this._barcodeScanCount[key] + 1;
+    }
+  }
+
+  private clearBarcodeScanCount(lineDefId: number, model: Document, barcode: string): number {
+    if (this._barcodeScanCountModel !== model) {
+      this._barcodeScanCountModel = model;
+      this._barcodeScanCount = {};
+    }
+
+    const key = `${lineDefId}/${barcode}`;
+    const n = this._barcodeScanCount[key];
+    delete this._barcodeScanCount[key];
+    return n;
+  }
+
+  // The barcode loading spinner
+  private _isBarcodeLoadingModel: Document;
+  public _isBarcodeLoading: { [lineDefId: number]: number } = {};
+
+  public isBarcodeLoading(lineDefId: number, model: Document): boolean {
+    if (this._isBarcodeLoadingModel !== model) {
+      this._isBarcodeLoadingModel = model;
+      this._isBarcodeLoading = {};
+    }
+
+    return this._isBarcodeLoading[lineDefId] > 0;
+  }
+
+  private onBarcodeStartLoading(lineDefId: number, model: Document, barcode: string) {
+    if (this._isBarcodeLoadingModel !== model) {
+      this._isBarcodeLoadingModel = model;
+      this._isBarcodeLoading = {};
+    }
+
+    // To show the spinner
+    if (!this._isBarcodeLoading[lineDefId]) {
+      this._isBarcodeLoading[lineDefId] = 1;
+    } else {
+      this._isBarcodeLoading[lineDefId] = this._isBarcodeLoading[lineDefId] + 1;
+    }
+
+    this.incrementBarcodeScanCount(lineDefId, model, barcode);
+  }
+
+  private onBarcodeFinishedLoading(lineDefId: number, model: Document, barcode: string): number {
+    if (this._isBarcodeLoadingModel !== model) {
+      this._isBarcodeLoadingModel = model;
+      this._isBarcodeLoading = {};
+    }
+
+    // To hide the spinner
+    if (!!this._isBarcodeLoading[lineDefId]) {
+      this._isBarcodeLoading[lineDefId] = Math.max(0, this._isBarcodeLoading[lineDefId] - 1);
+    }
+
+    return this.clearBarcodeScanCount(lineDefId, model, barcode);
+  }
+
+  public onBarcodeEnter(lineDefId: number, model: Document, table: TableComponent): void {
+    const barcode = this.getBarcode(lineDefId, model);
+    if (!!barcode) {
+      // Empty the barcode field in preparation for the next scan
+      this.setBarcode(lineDefId, model, null);
+
+      // Calculate some basics
+      const lineDef = this.lineDefinition(lineDefId);
+      const barcodeColumnCollection = this.barcodeColumnCollection(lineDefId); // The column index of the barcoded column;
+      const barcodeColumnIndex = this.barcodeColumnIndex(lineDefId); // The column index of the barcoded column;
+      const barcodeProperty = lineDef.BarcodeProperty; // The column index of the barcoded column;
+
+      // This function handles the situation when a line is found that already has a record with the scanned barcode
+      const handleExistingLine = (existingLine: LineForSave, existingLineIndex: number) => {
+        if (lineDef.BarcodeExistingItemHandling === 'IncrementQuantity') {
+          // Increment Quantity column by 1
+          const quantityColumnIndex = this.barcodeQuantityColumnIndex(lineDefId);
+          const quantity = this.getFieldValue(lineDefId, quantityColumnIndex, existingLine, model) || 0;
+          this.setFieldValue(lineDefId, quantityColumnIndex, existingLine, model, quantity + 1);
+
+          this.drawAttentionToLine(existingLine, existingLineIndex, table);
+          this.onBarcodeSuccess(lineDef);
+
+        } else if (lineDef.BarcodeExistingItemHandling === 'AddNewLine') {
+          // Add a new line with the same record Id
+          const newLine = this.onAddNewLine(lineDefId, model);
+          const barcodeRecordId = this.getFieldValue(lineDefId, barcodeColumnIndex, existingLine, model);
+          this.setFieldValue(lineDefId, barcodeColumnIndex, newLine, model, barcodeRecordId);
+
+          this.drawAttentionToLine(newLine, null, table);
+          this.onBarcodeSuccess(lineDef);
+
+        } else if (lineDef.BarcodeExistingItemHandling === 'ThrowError') {
+          this.drawAttentionToLine(existingLine, existingLineIndex, table);
+
+          const errorFunc = () => this.translate.instant('Error_Barcode0AlreadyAdded', { 0: barcode });
+          this.onBarcodeError(lineDef, errorFunc);
+        } else if (lineDef.BarcodeExistingItemHandling === 'DoNothing') {
+          this.drawAttentionToLine(existingLine, existingLineIndex, table);
+          this.onBarcodeSuccess(lineDef);
+
+        } else {
+          // Future proofing
+          console.error(`Unknown value '${lineDef.BarcodeExistingItemHandling}' for BarcodeExistingItemHandling`);
+        }
+      };
+
+      // (1) Try to find a line that already has a record with that barcode
+      const lines = this.lines(lineDefId, model);
+      const matchingLineIndex = lines.findIndex(line => {
+        const barcodeRecordId = this.getFieldValue(lineDefId, barcodeColumnIndex, line, model);
+        const barcodeRecord = this.ws.get(barcodeColumnCollection, barcodeRecordId);
+        return !!barcodeRecord && barcodeRecord[barcodeProperty] === barcode;
+      });
+
+      const matchingLine = lines[matchingLineIndex];
+      if (!!matchingLine) {
+        handleExistingLine(matchingLine, matchingLineIndex);
+      } else if (this.getBarcodeScanCount(lineDefId, model, barcode) > 0) {
+        this.incrementBarcodeScanCount(lineDefId, model, barcode);
+      } else {
+        // Calculate select
+        let defIds: number[];
+        let defId: number; // Single or default
+        let desc: EntityDescriptor;
+        let select: string;
+
+        const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
+        switch (colDef.ColumnName) {
+          case 'CustodianId':
+            defIds = this.definitionIdsCustodian_Smart(lineDefId, barcodeColumnIndex);
+            defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
+            desc = metadata_Relation(this.workspace, this.translate, defId);
+            select = desc.select + ',' + this.additionalSelectCustodian_Smart(lineDefId);
+            break;
+          case 'CustodyId':
+            defIds = this.definitionIdsCustody_Smart(lineDefId, barcodeColumnIndex);
+            defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
+            desc = metadata_Custody(this.workspace, this.translate, defId);
+            select = desc.select + ',' + this.additionalSelectCustody_Smart(lineDefId);
+            break;
+          case 'ParticipantId':
+            defIds = this.definitionIdsParticipant_Smart(lineDefId, barcodeColumnIndex);
+            defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
+            desc = metadata_Relation(this.workspace, this.translate, defId);
+            select = desc.select + ',' + this.additionalSelectParticipant_Smart(lineDefId);
+            break;
+          case 'ResourceId':
+            defIds = this.definitionIdsResource_Smart(lineDefId, barcodeColumnIndex);
+            defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
+            desc = metadata_Resource(this.workspace, this.translate, defId);
+            select = desc.select + ',' + this.additionalSelectResource_Smart(lineDefId);
+            break;
+        }
+
+        // Calculate filter
+        const barcodePropDescriptor = desc.properties[barcodeProperty];
+        if (!barcodePropDescriptor) {
+          // Server validation should prevent this
+          console.error(`Barcode Property '${barcodeProperty}' could not be found`);
+          return;
+        }
+
+        const barcodeForFilter = barcodePropDescriptor.control === 'text' ? `'${barcode.replace(`'`, `''`)}'` : barcode.toString();
+        const barcodeFilter = `${barcodeProperty} eq ${barcodeForFilter}`;
+        const activeFilter = ' and IsActive eq true';
+        const baseFilter = this.getFilter(lineDefId, barcodeColumnIndex);
+        const defFilter = defIds.length > 1 ? defIds.map(e => `DefinitionId eq ${e}`).reduce((a, b) => `${a} or ${b}`) : null;
+        const filter = barcodeFilter + activeFilter +
+          (!!baseFilter ? ` and (${baseFilter})` : '') +
+          (!!defFilter ? ` and (${defFilter})` : '');
+
+        // Prepare arguments
+        const args: GetArguments = {
+          select,
+          filter,
+          top: 2,
+          skip: 0,
+        };
+
+        this.onBarcodeStartLoading(lineDefId, model, barcode);
+        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getFact(args).pipe(
+          tap(results => {
+            // Hide the spinner and get the number of same scans that happaned while this barcode was loading
+            const scanCount = this.onBarcodeFinishedLoading(lineDefId, model, barcode);
+            if (!!results && !!results.Result && results.Result.length > 0) {
+              if (results.Result.length > 1) {
+                // The barcode is not uniquegetBarcodeError
+                const errorFunc = () => this.translate.instant('Error_MoreThanOneRecordWithBarcode0', { 0: barcode });
+                this.onBarcodeError(lineDef, errorFunc);
+              } else {
+                const recordId = addToWorkspace(results, this.workspace)[0];
+
+                // SQL queries have a more lose sense of string equality, for example N'a' == N'A'
+                // Ao we check for barcode equality again to make sure the strings match exactly
+                const record = this.ws.get(results.CollectionName, recordId);
+                if (record[barcodeProperty] !== barcode) {
+                  const errorFunc = () => this.translate.instant('Error_CouldNotFindBarcode0', { 0: barcode });
+                  this.onBarcodeError(lineDef, errorFunc);
+                } else {
+                  // If the user scans an item's barcode, changes its barcode from another browser tab and scans the new barcode
+                  // Here we handle this edge case
+                  const lines2 = this.lines(lineDefId, model);
+                  const matchingLine2Index = lines2.findIndex(line =>
+                    recordId === this.getFieldValue(lineDefId, barcodeColumnIndex, line, model));
+                  const matchingLine2 = lines2[matchingLine2Index];
+                  if (!!matchingLine2) {
+                    handleExistingLine(matchingLine2, matchingLine2Index);
+                  } else {
+                    // All is good: add a new line
+                    const newLine = this.onAddNewLine(lineDefId, model);
+                    this.setFieldValue(lineDefId, barcodeColumnIndex, newLine, model, recordId);
+
+                    if (lineDef.BarcodeExistingItemHandling === 'IncrementQuantity') {
+                      // Set the quantity to 1 if the column is visible
+                      const quantityColumnIndex = this.barcodeQuantityColumnIndex(lineDefId);
+                      this.setFieldValue(lineDefId, quantityColumnIndex, newLine, model, 1);
+                    }
+
+                    // Highlight it
+                    this.drawAttentionToLine(newLine, null, table);
+                    this.onBarcodeSuccess(lineDef);
+
+                    // If the user scanned the same barcode multiple times during the server call, we handle them here
+                    if (scanCount > 1) {
+                      // Handle as if it were an existing line
+                      for (let i = 1; i < scanCount; i++) {
+                        const gapInMs = 160; // Gap between successive handlings, so that successive beeps are heard
+                        timer(gapInMs * i).pipe(
+                          tap(() => handleExistingLine(newLine, null)),
+                          takeUntil(this.notifyDestruct$)
+                        ).subscribe();
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              const errorFunc = () => this.translate.instant('Error_CouldNotFindBarcode0', { 0: barcode });
+              this.onBarcodeError(lineDef, errorFunc);
+            }
+          }),
+          catchError(friendlyError => {
+            const errorFunc = () => friendlyError.error;
+            this.onBarcodeError(lineDef, errorFunc);
+            this.onBarcodeFinishedLoading(lineDefId, model, barcode);
+            return of(null);
+          }),
+          takeUntil(this.notifyDestruct$)
+        ).subscribe();
+      }
+    }
+  }
+
+  private selectDefinition: DocumentDefinitionForClient;
+  private selectResult: string;
+
+  public get select(): string {
+    const def = this.definition;
+    if (this.selectDefinition !== def) {
+      this.selectDefinition = def;
+
+      const tracker = {};
+
+      for (const lineDefId of def.LineDefinitions.map(e => e.LineDefinitionId)) {
+        const lineDef = this.ws.definitions.Lines[lineDefId];
+        if (isSpecified(lineDef.BarcodeColumnIndex) && !!lineDef.BarcodeProperty) {
+          const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
+          if (!!colDef) {
+            switch (colDef.ColumnName) {
+              case 'CustodianId':
+                tracker[`Lines/Entries/Custodian/${lineDef.BarcodeProperty}`] = true;
+                break;
+              case 'ParticipantId':
+                tracker[`Lines/Entries/Participant/${lineDef.BarcodeProperty}`] = true;
+                break;
+              case 'CustodyId':
+                tracker[`Lines/Entries/Custody/${lineDef.BarcodeProperty}`] = true;
+                break;
+              case 'ResourceId':
+                tracker[`Lines/Entries/Resource/${lineDef.BarcodeProperty}`] = true;
+                break;
+            }
+          }
+        }
+      }
+
+      // Construct the select result
+      let result = this.selectBase;
+      for (const s of Object.keys(tracker)) {
+        result += ',' + s;
+      }
+
+      this.selectResult = result;
+    }
+
+    return this.selectResult;
+  }
+
+  public additionalSelectCustodian_Smart(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    return lineDef.BarcodeProperty;
+  }
+
+  public additionalSelectCustody_Smart(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    return `CurrencyId,${lineDef.BarcodeProperty}`;
+  }
+
+  public additionalSelectParticipant_Smart(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    return lineDef.BarcodeProperty;
+  }
+
+  public additionalSelectResource_Smart(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    return `CurrencyId,UnitId,${lineDef.BarcodeProperty}`;
+  }
+}
+
+interface InputComponent {
+  /**
+   * Focuses the input
+   */
+  focus: () => void;
+
+  /**
+   * Selects all the text in the input
+   */
+  select: () => void;
+}
+
+interface TableComponent {
+  /**
+   * Scrolls to the given index
+   */
+  scrollTo: (index: number) => void;
+
+  /**
+   * Scrolls to the end of the table
+   */
+  scrollToEnd: () => void;
 }
 
 interface AttachmentWrapper {

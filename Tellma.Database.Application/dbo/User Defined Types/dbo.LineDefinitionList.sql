@@ -13,6 +13,13 @@
 	[TitlePlural3]				NVARCHAR (100),
 	[AllowSelectiveSigning]		BIT DEFAULT 0,
 	[ViewDefaultsToForm]		BIT DEFAULT 0,
+
+	-- New barcode stuff
+	[BarcodeColumnIndex]		INT,
+	[BarcodeProperty]			NVARCHAR (50),
+	[BarcodeExistingItemHandling] NVARCHAR (50),
+	[BarcodeBeepsEnabled]		BIT NOT NULL DEFAULT 1,
+
 	[GenerateLabel]				NVARCHAR (50),
 	[GenerateLabel2]			NVARCHAR (50),
 	[GenerateLabel3]			NVARCHAR (50),

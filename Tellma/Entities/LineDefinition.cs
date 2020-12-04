@@ -64,6 +64,23 @@ namespace Tellma.Entities
 
         [Display(Name = "LineDefinition_ViewDefaultsToForm")]
         public bool? ViewDefaultsToForm { get; set; }
+
+        [Display(Name = "LineDefinition_BarcodeColumnIndex")]
+        public int? BarcodeColumnIndex { get; set; }
+
+        [Display(Name = "LineDefinition_BarcodeProperty")]
+        [StringLength(50)]
+        public string BarcodeProperty { get; set; }
+
+        [Display(Name = "LineDefinition_BarcodeExistingItemHandling")]
+        [StringLength(50)]
+        [ChoiceList(new object[] { "AddNewLine", "IncrementQuantity", "ThrowError", "DoNothing" },
+            new string[] { "LineDefinition_Handling_AddNewLine", "LineDefinition_Handling_IncrementQuantity", "LineDefinition_Handling_ThrowError", "LineDefinition_Handling_DoNothing" })]
+        public string BarcodeExistingItemHandling { get; set; }
+
+        [Display(Name = "LineDefinition_BarcodeBeepsEnabled")]
+        public bool? BarcodeBeepsEnabled { get; set; }
+
         [MultilingualDisplay(Name = "LineDefinition_GenerateLabel", Language = Language.Primary)]
         [StringLength(50)]
         public string GenerateLabel { get; set; }

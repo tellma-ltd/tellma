@@ -1867,6 +1867,11 @@ td .t-studio-input {
   height: 1.75rem;
 }
 
+// Used for showing text with newline characters
+.t-multiline {
+  white-space: pre-wrap !important;
+}
+
 .t-code {
   font-family: monospace;
   white-space: pre !important;
@@ -1922,4 +1927,8 @@ th.t-slimfit {
 
 .t-settings-section .t-form-group {
   margin-bottom: 1.5rem !important;
+}
+
+tr.t-draw-attention {
+  background: lightgreen;
 }

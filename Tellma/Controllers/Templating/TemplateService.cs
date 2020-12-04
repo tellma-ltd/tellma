@@ -270,6 +270,7 @@ namespace Tellma.Controllers.Templating
                 [nameof(ConvertCalendar)] = ConvertCalendar(),
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
+                [nameof(Barcode)] = Barcode(),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight()
             };
@@ -1173,7 +1174,7 @@ namespace Tellma.Controllers.Templating
                 year = toConvertDto.Year;
                 month = toConvertDto.Month;
                 day = toConvertDto.Day;
-            } 
+            }
             else
             {
                 throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects a 1st parameter 'toConvert' of type DateTime or DateTimeOffset");
@@ -1400,6 +1401,139 @@ namespace Tellma.Controllers.Templating
             else
             {
                 throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 1st argument text of type string");
+            }
+        }
+
+        #endregion
+
+        #region Barcode
+
+        private TemplateFunction Barcode()
+        {
+            return new TemplateFunction(BarcodeImpl);
+        }
+
+        private object BarcodeImpl(object[] args, EvaluationContext ctx)
+        {
+            // Validation
+            int minArgCount = 1;
+            int maxArgCount = 5;
+            if (args.Length < minArgCount || args.Length > maxArgCount)
+            {
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
+            }
+
+            // Amount
+            string barcodeValue = args[0]?.ToString();
+            if (string.IsNullOrWhiteSpace(barcodeValue))
+            {
+                return "";
+            }
+
+            var barcodeType = BarcodeLib.TYPE.CODE128; // Default
+            if (args.Length >= 2)
+            {
+                // Some of the most widely used 1D barcodes according to https://www.dynamsoft.com/blog/insights/the-comprehensive-guide-to-1d-and-2d-barcodes/
+                string barcodeTypeString = args[1]?.ToString();
+                barcodeType = barcodeTypeString switch
+                {
+                    "UPC-A" => BarcodeLib.TYPE.UPCA,
+                    "UPC-E" => BarcodeLib.TYPE.UPCE,
+                    "EAN-8" => BarcodeLib.TYPE.EAN8,
+                    "EAN-13" => BarcodeLib.TYPE.EAN13,
+                    "Industrial 2 of 5" => BarcodeLib.TYPE.Industrial2of5,
+                    "Interleaved 2 of 5" => BarcodeLib.TYPE.Interleaved2of5,
+                    "Codabar" => BarcodeLib.TYPE.Codabar,
+                    "Code 11" => BarcodeLib.TYPE.CODE11,
+                    "Code 39" => BarcodeLib.TYPE.CODE39,
+                    "Code 93" => BarcodeLib.TYPE.CODE93,
+                    "Code 128" => BarcodeLib.TYPE.CODE128,
+                    null => barcodeType,
+                    _ => throw new TemplateException($"Unknown barcode standard '{barcodeTypeString}'"),
+                };
+            }
+
+            bool includeLabel = true;
+            if (args.Length >= 3)
+            {
+                var includeLabelObj = args[2] ?? false;
+                if (includeLabelObj is bool includeLabelBool)
+                {
+                    includeLabel = includeLabelBool;
+                }
+                else if (includeLabelObj is null)
+                {
+                    // Fine
+                }
+                else
+                {
+                    throw new TemplateException($"Function '{nameof(Barcode)}': 3rd argument includeLabel must be a boolean");
+                }
+            }
+
+            int? height = null;
+            if (args.Length >= 4)
+            {
+                var heightObj = args[3];
+                if (heightObj is int heightInt)
+                {
+                    height = heightInt;
+                }
+                else if (heightObj is null)
+                {
+                    // Fine
+                }
+                else
+                {
+                    throw new TemplateException($"Function '{nameof(Barcode)}': 4th argument height must be an int");
+                }
+            }
+
+
+            int? barWidth = null;
+            if (args.Length >= 5)
+            {
+                var barWidthObj = args[4];
+                if (barWidthObj is int barWidthInt)
+                {
+                    barWidth = barWidthInt;
+                }
+                else if (barWidthObj is null)
+                {
+                    // Fine
+                }
+                else
+                {
+                    throw new TemplateException($"Function '{nameof(Barcode)}': 5th argument barWidth must be an int");
+                }
+            }
+
+            try
+            {
+                var barcodeEncoder = new BarcodeLib.Barcode(barcodeValue, barcodeType)
+                {
+                    IncludeLabel = includeLabel,
+                    StandardizeLabel = true,
+                };
+
+                if (height != null)
+                {
+                    barcodeEncoder.Height = height.Value;
+                }
+
+                if (barWidth != null)
+                {
+                    barcodeEncoder.BarWidth = barWidth;
+                }
+
+                var img = barcodeEncoder.Encode(barcodeType, barcodeValue);
+                using var memoryStream = new System.IO.MemoryStream();
+                img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
+            }
+            catch (Exception e)
+            {
+                throw new TemplateException(e.Message);
             }
         }
 

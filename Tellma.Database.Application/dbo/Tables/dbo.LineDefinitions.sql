@@ -12,6 +12,13 @@
 	[TitlePlural3]				NVARCHAR (100),
 	[AllowSelectiveSigning]		BIT				NOT NULL DEFAULT 0,
 	[ViewDefaultsToForm]		BIT				NOT NULL DEFAULT 0,
+
+	-- New Barcode Stuff
+	[BarcodeColumnIndex]		INT,
+	[BarcodeProperty]			NVARCHAR (50),
+	[BarcodeExistingItemHandling] NVARCHAR (50) CONSTRAINT [CK_LineDefinitions__BarcodeExistingItemHandling] CHECK ([BarcodeExistingItemHandling] IN (N'AddNewLine', N'IncrementQuantity', N'ThrowError', N'DoNothing')),
+	[BarcodeBeepsEnabled]		BIT				NOT NULL DEFAULT 1,
+
 	[GenerateLabel]				NVARCHAR (50),
 	[GenerateLabel2]			NVARCHAR (50),
 	[GenerateLabel3]			NVARCHAR (50),

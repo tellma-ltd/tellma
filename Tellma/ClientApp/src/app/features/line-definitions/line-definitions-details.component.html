@@ -374,8 +374,8 @@
                             </tr>
                         </thead>
                         <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
-                            (cdkDropListDropped)="rowDrop($event, model.Columns)">
-                            <tr *ngFor="let column of model.Columns" cdkDrag cdkDragLockAxis="y">
+                            (cdkDropListDropped)="column_rowDrop($event, model)">
+                            <tr *ngFor="let column of model.Columns; let colIndex = index" cdkDrag cdkDragLockAxis="y">
                                 <ng-container *cdkDragPlaceholder>
                                     <td>&zwnj;</td>
                                 </ng-container>
@@ -389,6 +389,7 @@
                                         *ngIf="!isEdit; else columnnametemplate">{{ columnNameDisplay(column.ColumnName) }}</span>
                                     <ng-template #columnnametemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="column.ColumnName"
+                                            (ngModelChange)="choicesBarcodeColumnIndexChanged = true"
                                             #columnnamemodel="ngModel">
                                             <option *ngFor="let c of columnNameChoices" value="{{c.value}}">
                                                 {{ c.name() }}</option>
@@ -414,8 +415,10 @@
                                     <span *ngIf="!isEdit; else labeltemplate">{{ column.Label }}</span>
                                     <ng-template #labeltemplate>
                                         <input class="form-control t-studio-input" type="text"
-                                            [(ngModel)]="column.Label" [ngModelOptions]="{ updateOn: 'blur' }"
-                                            autocomplete="off" #labelmodel="ngModel" />
+                                            [(ngModel)]="column.Label"
+                                            (ngModelChange)="choicesBarcodeColumnIndexChanged = true"
+                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                            #labelmodel="ngModel" />
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: labelmodel, serverErrors: column?.serverErrors?.Label }">
                                         </ng-container>
@@ -425,6 +428,7 @@
                                     <span *ngIf="!isEdit; else label2template">{{ column.Label2 }}</span>
                                     <ng-template #label2template>
                                         <input class="form-control t-studio-input" type="text"
+                                            (ngModelChange)="choicesBarcodeColumnIndexChanged = true"
                                             [(ngModel)]="column.Label2" [ngModelOptions]="{ updateOn: 'blur' }"
                                             autocomplete="off" #label2model="ngModel" />
                                         <ng-container
@@ -436,6 +440,7 @@
                                     <span *ngIf="!isEdit; else label3template">{{ column.Label3 }}</span>
                                     <ng-template #label3template>
                                         <input class="form-control t-studio-input" type="text"
+                                            (ngModelChange)="choicesBarcodeColumnIndexChanged = true"
                                             [(ngModel)]="column.Label3" [ngModelOptions]="{ updateOn: 'blur' }"
                                             autocomplete="off" #label3model="ngModel" />
                                         <ng-container
@@ -540,7 +545,7 @@
                                 <td *ngIf="isEdit">
                                     <button
                                         class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
-                                        (click)="onDeleteRow(column, model.Columns)">
+                                        (click)="column_onDeleteRow(colIndex, model)">
                                         <fa-icon icon="trash">
                                         </fa-icon>
                                     </button>
@@ -552,7 +557,7 @@
                         {{ 'NoItemsFound' | translate }}
                     </div>
                     <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
-                        (click)="onInsertRow(model.Columns, createColumn)">
+                        (click)="column_onInsertRow(model)">
                         <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                     </button>
                 </div>
@@ -1204,6 +1209,105 @@
             </ng-template>
         </li>
 
+        <!-- Advanced -->
+        <li ngbNavItem="advanced">
+            <a ngbNavLink>
+                <span *ngIf="showAdvancedError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'Advanced' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <!-- Barcode -->
+                <div class="row m-0 pt-2 pt-sm-3">
+
+                    <!-- BarcodeColumnIndex -->
+                    <div class="form-group t-form-group t-text-whitish">
+                        <label class="small"
+                            for="barcodecolumnindex">{{ ('LineDefinition_BarcodeColumnIndex' | translate) }}</label>
+                        <div *ngIf="!isEdit; else barcodecolumnindextemplate">
+                            {{ display_BarcodeColumnIndex(model) }}</div>
+                        <ng-template #barcodecolumnindextemplate>
+                            <select class="form-control t-studio-input" [(ngModel)]="model.BarcodeColumnIndex"
+                                #barcodecolumnindexmodel="ngModel">
+                                <option value=""></option>
+                                <option *ngFor="let c of choices_BarcodeColumnIndex(model)" value="{{c.value}}">
+                                    {{ c.name() }}</option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: barcodecolumnindexmodel, serverErrors: model?.serverErrors?.BarcodeColumnIndex }">
+                            </ng-container>
+                        </ng-template>
+                    </div>
+
+                    <ng-container *ngIf="isBarcodeColumnIndexSpecified(model)">
+
+                        <!-- BarcodeProperty -->
+                        <div class="form-group t-form-group t-text-whitish">
+                            <label class="small"
+                                for="barcodeproperty">{{ ('LineDefinition_BarcodeProperty' | translate) }}</label>
+                            <div *ngIf="!isEdit; else barcodepropertytemplate">{{ model.BarcodeProperty }}</div>
+                            <ng-template #barcodepropertytemplate>
+                                <input class="form-control t-studio-input" id="barcodeproperty" type="text"
+                                    [(ngModel)]="model.BarcodeProperty" [ngModelOptions]="{ updateOn: 'blur' }"
+                                    autocomplete="off" #barcodepropertymodel="ngModel" required />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: barcodepropertymodel, serverErrors: model?.serverErrors?.BarcodeProperty }">
+                                </ng-container>
+                            </ng-template>
+                        </div>
+
+                        <!-- BarcodeExistingItemHandling -->
+                        <div class="form-group t-form-group t-text-whitish">
+                            <label class="small"
+                                for="barcodeexistingitemhandling">{{ ('LineDefinition_BarcodeExistingItemHandling' | translate) }}</label>
+                            <div *ngIf="!isEdit; else barcodeexistingitemhandlingtemplate">
+                                {{ display_BarcodeExistingItemHandling(model) }}</div>
+                            <ng-template #barcodeexistingitemhandlingtemplate>
+                                <select class="form-control t-studio-input"
+                                    [(ngModel)]="model.BarcodeExistingItemHandling"
+                                    #barcodeexistingitemhandlingmodel="ngModel" required>
+                                    <option value=""></option>
+                                    <option value="AddNewLine">
+                                        {{ 'LineDefinition_Handling_AddNewLine' | translate }}</option>
+                                    <option value="IncrementQuantity">
+                                        {{ 'LineDefinition_Handling_IncrementQuantity' | translate }}</option>
+                                    <option value="ThrowError">
+                                        {{ 'LineDefinition_Handling_ThrowError' | translate }}</option>
+                                    <option value="DoNothing">
+                                        {{ 'LineDefinition_Handling_DoNothing' | translate }}</option>
+                                </select>
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: barcodeexistingitemhandlingmodel, serverErrors: model?.serverErrors?.BarcodeExistingItemHandling }">
+                                </ng-container>
+                            </ng-template>
+                        </div>
+
+                        <!-- BarcodeBeepsEnabled -->
+                        <div class="form-group t-form-group t-text-whitish">
+                            <label class="small"
+                                for="barcodebeepsenabled">{{ ('LineDefinition_BarcodeBeepsEnabled' | translate) }}</label>
+                            <div *ngIf="!isEdit; else barcodebeepsenabledtemplate">
+                                {{ (model.BarcodeBeepsEnabled ? 'Yes' : 'No') | translate }}</div>
+                            <ng-template #barcodebeepsenabledtemplate>
+                                <select class="form-control t-studio-input" [(ngModel)]="model.BarcodeBeepsEnabled"
+                                    #barcodebeepsenabledmodel="ngModel" required>
+                                    <option value="true">
+                                        {{ 'Yes' | translate }}</option>
+                                    <option value="false">
+                                        {{ 'No' | translate }}</option>
+                                </select>
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: barcodebeepsenabledmodel, serverErrors: model?.serverErrors?.BarcodeBeepsEnabled }">
+                                </ng-container>
+                            </ng-template>
+                        </div>
+
+                    </ng-container>
+                </div>
+            </ng-template>
+        </li>
     </ul>
     <div class="w-100 overflow-auto" [ngbNavOutlet]="tabs"></div>
 </ng-template>
