@@ -27,4 +27,15 @@ SET NOCOUNT ON;
 	JOIN dbo.[AccountTypeCustodyDefinitions] ADRD ON ADRD.[CustodyDefinitionId] = FE.[Id]
 	JOIN dbo.[AccountTypes] AD ON AD.[Id] = ADRD.[AccountTypeId]
 
+	-- Check that Definition is not used in Accounts
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP (@Top)
+		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheCustodyDefinition0IsUsedInAccount1',
+		dbo.fn_Localize(D.[TitleSingular], D.[TitleSingular2], D.[TitleSingular3]) AS [Definition],
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account]
+	FROM @Ids FE
+	JOIN dbo.[CustodyDefinitions] D ON D.[Id] = FE.[Id]
+	JOIN dbo.[Accounts] A ON A.[CustodyDefinitionId] = D.[Id]
+
 	SELECT TOP(@Top) * FROM @ValidationErrors;

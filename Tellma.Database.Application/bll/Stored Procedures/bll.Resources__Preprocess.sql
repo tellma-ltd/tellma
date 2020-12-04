@@ -56,6 +56,12 @@ IF (SELECT UnitCardinality FROM dbo.ResourceDefinitions WHERE [Id] = @Definition
 UPDATE @PreprocessedEntities
 SET UnitId = (SELECT MIN([Id]) FROM dbo.Units WHERE UnitType = N'Pure')
 
+
+-- Set unique items to unit pure
+IF (SELECT CurrencyVisibility FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId) = N'None'
+UPDATE @PreprocessedEntities
+SET CurrencyId = dbo.fn_FunctionalCurrencyId()
+
 -- Handled by C#
 --UPDATE @PreprocessedEntities
 --SET
