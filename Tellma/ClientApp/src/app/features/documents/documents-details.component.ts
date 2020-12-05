@@ -4670,22 +4670,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public additionalSelectCustodian_Smart(lineDefId: number): string {
     const lineDef = this.lineDefinition(lineDefId);
-    return lineDef.BarcodeProperty;
+    return lineDef.BarcodeProperty || '';
   }
 
   public additionalSelectCustody_Smart(lineDefId: number): string {
     const lineDef = this.lineDefinition(lineDefId);
-    return `CurrencyId,${lineDef.BarcodeProperty}`;
+    return `CurrencyId,${lineDef.BarcodeProperty || ''}`;
   }
 
   public additionalSelectParticipant_Smart(lineDefId: number): string {
     const lineDef = this.lineDefinition(lineDefId);
-    return lineDef.BarcodeProperty;
+    return lineDef.BarcodeProperty || '';
   }
 
   public additionalSelectResource_Smart(lineDefId: number): string {
     const lineDef = this.lineDefinition(lineDefId);
-    return `CurrencyId,UnitId,${lineDef.BarcodeProperty}`;
+    return `CurrencyId,UnitId,${lineDef.BarcodeProperty || ''}`;
   }
 }
 
