@@ -1847,6 +1847,67 @@ namespace Tellma.Controllers
                             }
                         }
 
+                        // CenterId is required in Entries table
+                        if (entry.CenterId == null)
+                        {
+                            string fieldLabel = null;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                fieldLabel = _localizer["Entry_Center"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                            }
+
+                            var entryPath = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
+                            if (fieldLabel != null)
+                            {
+                                ModelState.AddModelError(entryPath,
+                                    _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                            }
+                            else
+                            {
+                                // This means the center field is not visible on the screen, if it remains null then it's a bug, do not report it as 422
+                                throw new BadRequestException($"[Bug] the CenterId for {entryPath} was never set.");
+                            }
+                        }
+
+                        // CurrencyId is required in Entries table
+                        if (entry.CurrencyId == null)
+                        {
+                            string fieldLabel = null;
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                // Manaul JV will always show the currency field if it could not be determined from account, resource or custody
+                                fieldLabel = _localizer["Entry_Currency"];
+                            }
+                            else
+                            {
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId));
+                                if (columnDef != null)
+                                {
+                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                }
+                            }
+
+                            var entryPath = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
+                            if (fieldLabel != null)
+                            {
+                                ModelState.AddModelError(entryPath,
+                                    _localizer[Constants.Error_Field0IsRequired, fieldLabel]);
+                            }
+                            else
+                            {
+                                // This means the currency field is not visible on the screen, if it remains null then it's a bug, do not report it as 422
+                                throw new BadRequestException($"[Bug] the CurrencyId for {entryPath} was never set.");
+                            }
+                        }
+
                         // If the currency is functional, value must equal monetary value
                         if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
                         {
@@ -1921,22 +1982,6 @@ namespace Tellma.Controllers
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
-        }
-
-        private void AddReadOnlyError(int docIndex, string propName)
-        {
-            if (ModelState.HasReachedMaxErrors)
-            {
-                return;
-            }
-
-            var key = $"[{docIndex}].{propName}";
-            if (!ModelState.ContainsKey(key))
-            {
-                var meta = GetMetadataForSave();
-                var propDisplayName = meta.Property(propName)?.Display();
-                ModelState.AddModelError(key, _localizer["Error_TheField0IsReadOnly", propDisplayName]);
-            }
         }
 
         private string FormatSerial(int serial, string prefix, int codeWidth)

@@ -52,7 +52,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Title' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Title', model)">
                     </fa-icon>
                 </div>
@@ -177,7 +177,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Fields' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Fields', model)">
                     </fa-icon>
                 </div>
@@ -434,7 +434,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Scripts' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Scripts', model)">
                     </fa-icon>
                 </div>
@@ -486,7 +486,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Reports' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Reports', model)">
                     </fa-icon>
                 </div>
@@ -504,7 +504,7 @@
                                 *ngFor="let reportDefinition of model.ReportDefinitions; let i = index;" cdkDrag
                                 cdkDragLockAxis="y">
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(reportDefinition)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -540,7 +540,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Menu' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Menu', model)">
                     </fa-icon>
                 </div>

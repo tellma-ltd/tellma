@@ -7701,6 +7701,7 @@ namespace Tellma.Data
                         DocumentId = reader.GetInt32(i++),
                         DocumentDefinitionId = reader.GetInt32(i++),
                         DocumentSerialNumber = reader.GetInt32(i++),
+                        IsReconciledLater = reader.GetBoolean(i++),
                     });
                 }
 

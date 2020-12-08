@@ -644,7 +644,7 @@
     <value>印刷模板</value>
   </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
-    <value>串行前缀</value>
+    <value>#VALUE!</value>
   </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>文档定义行定义</value>

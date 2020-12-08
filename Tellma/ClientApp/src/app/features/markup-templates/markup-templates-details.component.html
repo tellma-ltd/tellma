@@ -21,7 +21,7 @@
             </div>
             <span>{{ 'Metadata' | translate }}
                 &nbsp;
-                <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="metadataPaneErrors(model)">
+                <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="metadataPaneErrors(model)">
                 </fa-icon>
             </span>
         </div>
@@ -35,7 +35,7 @@
                 (click)="onToggleMetadata()">
                 <div>
                     <span>{{ 'Metadata' | translate }}</span>&nbsp;
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="metadataPaneErrors(model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="metadataPaneErrors(model)">
                     </fa-icon>
                 </div>
                 <div class="text-center">

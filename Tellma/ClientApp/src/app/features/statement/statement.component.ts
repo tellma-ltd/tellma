@@ -4,7 +4,7 @@ import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef, OnChanges,
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { WorkspaceService, ReportStore, ReportStatus } from '~/app/data/workspace.service';
+import { WorkspaceService, ReportStore, ReportStatus, MAXIMUM_COUNT } from '~/app/data/workspace.service';
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
@@ -13,7 +13,7 @@ import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
 import { DetailsEntry } from '~/app/data/entities/details-entry';
-import { formatDate } from '@angular/common';
+import { formatDate, formatNumber } from '@angular/common';
 import { LineForQuery } from '~/app/data/entities/line';
 import { Document, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
@@ -657,6 +657,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.state.total;
   }
 
+  get totalDisplay(): string {
+    const total = this.total;
+    if (total >= MAXIMUM_COUNT) {
+      return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
+    } else {
+      return formatNumber(total, 'en-GB');
+    }
+  }
+
   onPreviousPage() {
     const s = this.state;
     s.skip = Math.max(s.skip - this.DEFAULT_PAGE_SIZE, 0);
@@ -850,17 +859,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showCustodianParameter(): boolean {
     const at = this.accountType();
-    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+    return !!at && !!at.CustodianDefinitionId;
   }
 
   public get readonlyCustodian_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodianId;
+    const custody = this.custody();
+    return (!!account && !!account.CustodianId) || (!!custody && !!custody.CustodianId);
   }
 
   public get readonlyValueCustodianId_Manual(): number {
     const account = this.account();
-    return !!account ? account.CustodianId : null;
+    const custody = this.custody();
+    return !!account ? account.CustodianId : !!custody ? custody.CustodianId : null;
   }
 
   public get labelCustodian_Manual(): string {
@@ -969,17 +980,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showParticipantParameter(): boolean {
     const at = this.accountType();
-    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+    return !!at && !!at.ParticipantDefinitionId;
   }
 
   public get readonlyParticipant_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.ParticipantId;
+    const resource = this.resource();
+    return (!!account && !!account.ParticipantId) || (!!resource && !!resource.ParticipantId);
   }
 
   public get readonlyValueParticipantId_Manual(): number {
     const account = this.account();
-    return !!account ? account.ParticipantId : null;
+    const resource = this.resource();
+    return !!account ? account.CustodianId : !!resource ? resource.ParticipantId : null;
   }
 
   public get labelParticipant_Manual(): string {

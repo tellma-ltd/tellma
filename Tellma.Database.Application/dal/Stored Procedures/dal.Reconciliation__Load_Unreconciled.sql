@@ -56,7 +56,7 @@ AS
 	AND E.[PostingDate] <= @AsOfDate
 	
 	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber],
-			IIF(E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries), 1, 0) AS IsReconciledLater
+			CAST(IIF(E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
@@ -64,15 +64,15 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND E.[Id] NOT IN (
-		SELECT [EntryId] FROM dbo.ReconciliationEntries
-		--SELECT DISTINCT RE.[EntryId]
-		--FROM dbo.ReconciliationEntries RE
-		--JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
-		--JOIN dbo.ReconciliationExternalEntries REE ON REE.ReconciliationId = R.Id
-		--JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
-		--WHERE EE.PostingDate <=  @AsOfDate	
-		--AND EE.[AccountId] = @AccountId
-		--AND EE.[CustodyId] = @CustodyId
+		-- SELECT [EntryId] FROM dbo.ReconciliationEntries
+		SELECT DISTINCT RE.[EntryId]
+		FROM dbo.ReconciliationEntries RE
+		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
+		JOIN dbo.ReconciliationExternalEntries REE ON REE.ReconciliationId = R.Id
+		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
+		WHERE EE.PostingDate <=  @AsOfDate	
+		AND EE.[AccountId] = @AccountId
+		AND EE.[CustodyId] = @CustodyId
 	)
 	AND L.[PostingDate] <= @AsOfDate
 	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]

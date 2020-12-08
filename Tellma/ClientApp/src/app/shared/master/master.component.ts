@@ -905,7 +905,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     if (total >= MAXIMUM_COUNT) {
       return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
     } else {
-      return total.toString();
+      return formatNumber(total, 'en-GB');
     }
   }
 

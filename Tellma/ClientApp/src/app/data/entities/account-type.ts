@@ -66,9 +66,6 @@ export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefini
   IsBusinessUnit?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
-
-  CustodyDefinitionsCount?: number;
-  ResourceDefinitionsCount?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

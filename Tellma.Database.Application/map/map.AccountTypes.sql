@@ -60,9 +60,6 @@ SELECT
     [Node].GetLevel() AS [Level],
     [Node].ToString() AS [Path],
     (SELECT COUNT(*) FROM [dbo].[AccountTypes] WHERE [IsActive] = 1 AND [Node].IsDescendantOf(Q.[Node]) = 1) As [ActiveChildCount],
-    (SELECT COUNT(*) FROM [dbo].[AccountTypes] WHERE [Node].IsDescendantOf(Q.[Node]) = 1) As [ChildCount],
-    (SELECT COUNT(*) FROM [dbo].[AccountTypeCustodyDefinitions] WHERE [AccountTypeId] = Q.[Id]) As [CustodyDefinitionsCount],
-    IIF([Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'IncomeStatementAbstract')) = 1, 0,
-    (SELECT COUNT(*) FROM [dbo].[AccountTypeResourceDefinitions] WHERE [AccountTypeId] = Q.[Id])) As [ResourceDefinitionsCount]
+    (SELECT COUNT(*) FROM [dbo].[AccountTypes] WHERE [Node].IsDescendantOf(Q.[Node]) = 1) As [ChildCount]
  FROM [dbo].[AccountTypes] Q
 );

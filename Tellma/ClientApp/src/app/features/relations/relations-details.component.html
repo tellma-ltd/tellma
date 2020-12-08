@@ -524,7 +524,7 @@
       <li ngbNavItem="users" *ngIf="Users_isVisible">
         <a ngbNavLink>
           <span *ngIf="Users_showError(model)" class="text-danger">
-            <fa-icon icon="exclamation-triangle">
+            <fa-icon icon="exclamation">
             </fa-icon>&nbsp;
           </span>
           <span
@@ -556,7 +556,7 @@
       <li ngbNavItem="location" *ngIf="Location_isVisible">
         <a ngbNavLink>
           <span *ngIf="Map_showError(model)" class="text-danger">
-            <fa-icon icon="exclamation-triangle">
+            <fa-icon icon="exclamation">
             </fa-icon>&nbsp;
           </span>
           <span class="small t-slightly-bold">{{ 'Entity_Location' | translate }}</span>
@@ -644,7 +644,7 @@
       <li ngbNavItem="attachments">
         <a ngbNavLink>
           <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
-            <fa-icon icon="exclamation-triangle">
+            <fa-icon icon="exclamation">
             </fa-icon>&nbsp;
           </span>
           <span

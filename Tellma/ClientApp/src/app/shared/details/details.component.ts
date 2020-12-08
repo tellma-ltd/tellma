@@ -1121,7 +1121,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     if (total >= MAXIMUM_COUNT) {
       return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
     } else {
-      return total.toString();
+      return formatNumber(total, 'en-GB');
     }
   }
 

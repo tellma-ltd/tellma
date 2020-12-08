@@ -209,10 +209,6 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 
-        public int? CustodyDefinitionsCount { get; set; }
-
-        public int? ResourceDefinitionsCount { get; set; }
-
         // For Query
 
         [AlwaysAccessible]

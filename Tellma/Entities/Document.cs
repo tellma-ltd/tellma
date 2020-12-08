@@ -344,22 +344,26 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> EntryCustodyPaths(string path = null) => CustodyPaths(path)
-            // Entry Custody also adds the Currency and Center
-            .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
-            .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> CustodyPaths(string path = null) => CustodyProps
             .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AccountCustodyPaths(string path = null) => CustodyPaths(path)
+            // This is used in account, it does not need currency or center, since they already come with the account
+            .Concat(RelationPaths(nameof(Custody.Custodian)).Select(p => path == null ? p : $"{path}/{p}"));
+        public static IEnumerable<string> EntryCustodyPaths(string path = null) => AccountCustodyPaths(path)
+            // Entry Custody also adds the Custodian, Currency and Center
+            .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
+            .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountResourcePaths(string path = null) => ResourcePaths(path)
             // This is used in account, it does not need currency or center, since they already come with the account
+            .Concat(RelationPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)
-            // Entry Resource also adds the Currency and Center
+            // Entry Resource also adds the Currency, Center, cost center and participant
             .Concat(CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}/{p}"));
@@ -444,8 +448,6 @@ namespace Tellma.Entities
             // Definitions
             nameof(AccountType.CustodianDefinitionId),
             nameof(AccountType.ParticipantDefinitionId),
-            nameof(AccountType.CustodyDefinitionsCount),
-            nameof(AccountType.ResourceDefinitionsCount),
 
             // Labels
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),

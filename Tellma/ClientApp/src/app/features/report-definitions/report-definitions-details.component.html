@@ -132,7 +132,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Data' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="dataSectionErrors(model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="dataSectionErrors(model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Data')">
@@ -170,7 +170,7 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getRows(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -207,7 +207,7 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getColumns(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -244,7 +244,7 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getMeasures(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -299,7 +299,7 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getSelect(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -356,7 +356,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Filter' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="filterSectionErrors(model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="filterSectionErrors(model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Filter')">
@@ -381,7 +381,7 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let param of getParameters(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(param)">
                                     </fa-icon>
                                     <fa-icon icon="lock" *ngIf="!!getParameterDescriptor(param.Key, model)"
@@ -413,7 +413,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Chart' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="chartSectionErrors(model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="chartSectionErrors(model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Chart')"
@@ -451,7 +451,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Title' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="titleSectionErrors(model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="titleSectionErrors(model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
@@ -545,7 +545,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'MainMenu' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="mainMenuSectionErrors(model)">
                     </fa-icon>
                 </div>

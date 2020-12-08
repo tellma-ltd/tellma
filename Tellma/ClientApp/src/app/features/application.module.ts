@@ -258,7 +258,8 @@ import {
   faEnvelope,
   faSms,
   faHourglassHalf,
-  faClipboardList
+  faClipboardList,
+  faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 
@@ -865,6 +866,7 @@ export class ApplicationModule {
       faEuroSign,
       faExchangeAlt,
       faExclamation,
+      faExclamationCircle,
       faExpand,
       faFax,
       faFemale,

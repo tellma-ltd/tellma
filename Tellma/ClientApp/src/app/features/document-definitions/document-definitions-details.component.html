@@ -52,7 +52,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'General' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('General', model)">
                     </fa-icon>
                 </div>
@@ -197,7 +197,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Definition' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Definition', model)">
                     </fa-icon>
                 </div>
@@ -232,7 +232,7 @@
                                 *ngFor="let lineDef of model.LineDefinitions; let i = index;" cdkDrag
                                 cdkDragLockAxis="y">
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(lineDef)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -326,7 +326,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Menu' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                         *ngIf="sectionErrors('Menu', model)">
                     </fa-icon>
                 </div>
