@@ -24,5 +24,6 @@ namespace Tellma.Entities
         public int? DocumentId { get; set; }
         public int? DocumentDefinitionId { get; set; }
         public int? DocumentSerialNumber { get; set; }
+        public bool? IsReconciledLater { get; set; }
     }
 }

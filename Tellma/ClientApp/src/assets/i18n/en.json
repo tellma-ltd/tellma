@@ -330,6 +330,7 @@
   "Entry_Time2": "Time 2",
   "Entry_Unit": "Unit",
   "Entry_Value": "Value",
+  "EntryReconciledAfter0": "The entry is reconciled after {{0}}.",
   "EntryType": "Entry Type",
   "EntryType_Concept": "Concept",
   "EntryTypes": "Entry Types",

@@ -981,9 +981,12 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       // (3) Auto-Reconcile (e = entry, ex = external entry)
       // Get the rows that contain unreconciled entries, and unreconciled external entries
       const entryRows = this.rows
-        .filter(r => !!r.entry && isSpecified(r.entry.MonetaryValue) && r.entry.PostingDate && !r.entryReconciliation);
+        .filter(r => !!r.entry && !r.entry.IsReconciledLater &&
+          isSpecified(r.entry.MonetaryValue) && r.entry.PostingDate && !r.entryReconciliation);
+
       const exEntryRows = this.rows
-        .filter(r => !!r.exEntry && isSpecified(r.exEntry.MonetaryValue) && r.exEntry.PostingDate && !r.exEntryReconciliation);
+        .filter(r => !!r.exEntry &&
+          isSpecified(r.exEntry.MonetaryValue) && r.exEntry.PostingDate && !r.exEntryReconciliation);
 
       // Hash the amounts of entries rows
       const eAmountsHash: { [amount: number]: ReconciliationRow[] } = {};

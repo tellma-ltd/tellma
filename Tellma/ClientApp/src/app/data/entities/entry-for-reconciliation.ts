@@ -10,4 +10,5 @@ export interface EntryForReconciliation extends EntityForSave {
     DocumentId?: number;
     DocumentDefinitionId?: number;
     DocumentSerialNumber?: number;
+    IsReconciledLater?: boolean;
 }

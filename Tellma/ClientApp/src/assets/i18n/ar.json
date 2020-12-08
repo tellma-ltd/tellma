@@ -330,6 +330,7 @@
   "Entry_Time2": "الزمن 2",
   "Entry_Unit": "الوحدة",
   "Entry_Value": "القيمة",
+  "EntryReconciledAfter0": "هذا السطر مطابق بعد تاريخ {{0}}.",
   "EntryType": "نوع السطر",
   "EntryType_Concept": "المفهوم",
   "EntryTypes": "أنواع الأسطر",

@@ -236,7 +236,7 @@
   "DocumentDefinition_IsOriginalDocument": "是原始文档",
   "DocumentDefinition_LineDefinitions": "行定义",
   "DocumentDefinition_MarkupTemplates": "印刷模板",
-  "DocumentDefinition_Prefix": "串行前缀",
+  "DocumentDefinition_Prefix": "#VALUE!",
   "DocumentDefinitionLineDefinition": "文档定义行定义",
   "DocumentDefinitionLineDefinition_IsVisibleByDefault": "可见默认",
   "DocumentDefinitionLineDefinition_LineDefinition": "行定义",

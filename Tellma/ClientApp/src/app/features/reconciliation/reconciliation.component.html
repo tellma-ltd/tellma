@@ -379,28 +379,19 @@
 
                                 <!-- Clone and Reconcile -->
                                 <td class="text-center t-a">
-                                    <ng-container *ngIf="row.entry">
+                                    <ng-container *ngIf="row.entry && !row.entry.IsReconciledLater">
                                         <button (click)="onCloneAndReconcile(row)"
                                             *ngIf="!row.entryReconciliation && !row.entryIsChecked"
                                             [title]="'Clone' | translate"
                                             class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
                                             <fa-icon icon="clone" tabindex="-1"></fa-icon>
                                         </button>
-                                        <!-- <ng-template #cancelAndDeleteButton>
-                                            <button (click)="onUndoCloneAndReconcile(row)"
-                                                (mouseenter)="onReconciledEntryMouseEnter(row)"
-                                                (mouseleave)="onReconciledEntryMouseLeave(row)"
-                                                [title]="'UnreconcileAndDelete' | translate"
-                                                class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline d-none2">
-                                                <fa-icon icon="undo" tabindex="-1"></fa-icon>
-                                            </button>
-                                        </ng-template> -->
                                     </ng-container>
                                 </td>
 
                                 <!-- Checkbox #1 -->
                                 <td class="text-center t-a">
-                                    <ng-container *ngIf="row.entry">
+                                    <ng-container *ngIf="row.entry && !row.entry.IsReconciledLater">
                                         <!-- Checkbox -->
                                         <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
                                             *ngIf="!row.entryReconciliation; else cancelButton">
@@ -421,6 +412,21 @@
                                                 </span></button>
                                         </ng-template>
                                     </ng-container>
+                                    <div class="mx-2" *ngIf="row.entry && row.entry.IsReconciledLater"
+                                        [ngbPopover]="reconciledLaterInfo" container="body"
+                                        triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement">
+                                        <fa-icon class="text-muted" icon="exclamation-circle"></fa-icon>
+                                    </div>
+
+                                    <ng-template #reconciledLaterInfo>
+                                        <div style="width: 250px;">
+                                            <p class="m-0 p-0">
+                                                <fa-icon icon="exclamation-circle"></fa-icon>
+                                                &nbsp;
+                                                {{ 'EntryReconciledAfter0' | translate: { '0': (toDate | date:'yyyy-MM-dd') } }}
+                                            </p>
+                                        </div>
+                                    </ng-template>
                                 </td>
 
                                 <!-- Validation Errors -->
@@ -444,7 +450,6 @@
                                         </div>
                                     </ng-template>
                                 </td>
-
 
                                 <!-- Validation Errors -->
                                 <td class="px-0 t-b">

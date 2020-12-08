@@ -146,6 +146,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'euro-sign',
           'exchange-alt',
           'exclamation-triangle',
+          'exclamation-circle',
           'expand',
           'external-link-alt',
           'fax',
