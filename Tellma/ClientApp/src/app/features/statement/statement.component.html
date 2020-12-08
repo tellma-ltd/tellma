@@ -189,7 +189,7 @@
                     <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
                         <span>{{ to | number }}</span>
                     </span>
-                    <span class="t-vertical-align-middle"> / {{ total | number }}</span>
+                    <span class="t-vertical-align-middle"> / {{ totalDisplay }}</span>
                 </div>
                 <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
                     title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">

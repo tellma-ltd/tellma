@@ -1,7 +1,14 @@
 // tslint:disable:member-ordering
 import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { ReportView, modifiedPropDesc } from '../report-results/report-results.component';
-import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, MasterStatus } from '~/app/data/workspace.service';
+import {
+  WorkspaceService,
+  ReportArguments,
+  ReportStore,
+  DEFAULT_PAGE_SIZE,
+  MasterStatus,
+  MAXIMUM_COUNT
+} from '~/app/data/workspace.service';
 import {
   ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl,
   EntityDescriptor, metadata, getChoices, NavigationPropDescriptor
@@ -14,6 +21,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { formatNumber } from '@angular/common';
 
 interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
 
@@ -495,6 +503,15 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   get total(): number {
     return this.state.total;
+  }
+
+  get totalDisplay(): string {
+    const total = this.total;
+    if (total >= MAXIMUM_COUNT) {
+      return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
+    } else {
+      return formatNumber(total, 'en-GB');
+    }
   }
 
   onPreviousPage() {
