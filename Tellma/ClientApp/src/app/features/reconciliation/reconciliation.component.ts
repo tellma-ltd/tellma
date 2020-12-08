@@ -1287,14 +1287,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
               for (let i = 0; i < length; i++) {
                 const row: ReconciliationRow = { reconciliation };
 
-                // The first row will have a middle cell extending to the entire reconciliation, with a button to unreconcile
+                // The first row will have a button to unreconcile
+                // And all cells below the button will have no top border to make it look like one big cell
                 if (i === 0) {
-                  row.rowSpan = length;
-                }
-                // The last row will have a thick bottom border indicating that the
-                // reconciliation is done, and shows the next reconciliation
-                if (i === length - 1) {
-                  row.lastOne = true;
+                  row.firstOne = length;
                 }
 
                 // The entry
@@ -2127,7 +2123,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 interface ReconciliationRow {
   // Reconciled Stuff
   reconciliation?: Reconciliation;
-  rowSpan?: number;
+  firstOne?: number;
   lastOne?: boolean;
 
   ///////////////// Entry

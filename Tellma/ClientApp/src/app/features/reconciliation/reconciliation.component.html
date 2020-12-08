@@ -499,9 +499,11 @@
                             </ng-container>
                             <ng-template #reconciledcolumns>
                                 <!-- Unreconcile button -->
-                                <td *ngIf="!!row.rowSpan" [rowSpan]="row.rowSpan"
+                                <td 
+                                    [class.border-top-0]="!row.firstOne"
                                     class="bg-white border-right border-left">
                                     <button (click)="onDeleteReconciliation(row)" [title]="'Unreconcile' | translate"
+                                        *ngIf="row.firstOne"
                                         class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
                                         <fa-icon icon="times" tabindex="-1"></fa-icon>
                                     </button>
