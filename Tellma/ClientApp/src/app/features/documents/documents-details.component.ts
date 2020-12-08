@@ -1534,17 +1534,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showCustodian_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+    return !!at && !!at.CustodianDefinitionId;
   }
 
   public readonlyCustodian_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.CustodianId;
+    const custody = this.custody(entry);
+    return (!!account && !!account.CustodianId) || (!!custody && !!custody.CustodianId);
   }
 
   public readonlyValueCustodianId_Manual(entry: Entry): number {
     const account = this.account(entry);
-    return !!account ? account.CustodianId : null;
+    const custody = this.custody(entry);
+    return !!account ? account.CustodianId : !!custody ? custody.CustodianId : null;
   }
 
   public labelCustodian_Manual(entry: Entry): string {
@@ -1560,7 +1562,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // CustodyId
-
   public showCustody_Manual(entry: Entry): boolean {
     const account = this.account(entry);
     return !!account && !!account.CustodyDefinitionId;
@@ -1604,17 +1605,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showParticipant_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+    return !!at && !!at.ParticipantDefinitionId;
   }
 
   public readonlyParticipant_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.ParticipantId;
+    const resource = this.resource(entry);
+    return (!!account && !!account.ParticipantId) || (!!resource && !!resource.ParticipantId);
   }
 
   public readonlyValueParticipantId_Manual(entry: Entry): number {
     const account = this.account(entry);
-    return !!account ? account.ParticipantId : null;
+    const resource = this.resource(entry);
+    return !!account ? account.CustodianId : !!resource ? resource.ParticipantId : null;
   }
 
   public labelParticipant_Manual(entry: Entry): string {

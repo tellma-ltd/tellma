@@ -850,17 +850,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showCustodianParameter(): boolean {
     const at = this.accountType();
-    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+    return !!at && !!at.CustodianDefinitionId;
   }
 
   public get readonlyCustodian_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodianId;
+    const custody = this.custody();
+    return (!!account && !!account.CustodianId) || (!!custody && !!custody.CustodianId);
   }
 
   public get readonlyValueCustodianId_Manual(): number {
     const account = this.account();
-    return !!account ? account.CustodianId : null;
+    const custody = this.custody();
+    return !!account ? account.CustodianId : !!custody ? custody.CustodianId : null;
   }
 
   public get labelCustodian_Manual(): string {
@@ -969,17 +971,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showParticipantParameter(): boolean {
     const at = this.accountType();
-    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+    return !!at && !!at.ParticipantDefinitionId;
   }
 
   public get readonlyParticipant_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.ParticipantId;
+    const resource = this.resource();
+    return (!!account && !!account.ParticipantId) || (!!resource && !!resource.ParticipantId);
   }
 
   public get readonlyValueParticipantId_Manual(): number {
     const account = this.account();
-    return !!account ? account.ParticipantId : null;
+    const resource = this.resource();
+    return !!account ? account.CustodianId : !!resource ? resource.ParticipantId : null;
   }
 
   public get labelParticipant_Manual(): string {

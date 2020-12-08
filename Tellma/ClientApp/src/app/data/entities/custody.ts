@@ -33,6 +33,7 @@ export interface CustodyForSave extends EntityForSave {
   // Lookup5Id?: number;
   Text1?: string;
   Text2?: string;
+  CustodianId?: number;
   Image?: string;
 
   ExternalReference?: number;

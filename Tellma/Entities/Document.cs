@@ -345,7 +345,8 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryCustodyPaths(string path = null) => CustodyPaths(path)
-            // Entry Custody also adds the Currency and Center
+            // Entry Custody also adds the Custodian, Currency and Center
+            .Concat(RelationPaths(nameof(Custody.Custodian)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> CustodyPaths(string path = null) => CustodyProps
@@ -359,7 +360,8 @@ namespace Tellma.Entities
             .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}/{p}"));
         public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)
-            // Entry Resource also adds the Currency and Center
+            // Entry Resource also adds the Currency, Center, cost center and participant
+            .Concat(RelationPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}"))
             .Concat(CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}/{p}"));
@@ -444,8 +446,6 @@ namespace Tellma.Entities
             // Definitions
             nameof(AccountType.CustodianDefinitionId),
             nameof(AccountType.ParticipantDefinitionId),
-            nameof(AccountType.CustodyDefinitionsCount),
-            nameof(AccountType.ResourceDefinitionsCount),
 
             // Labels
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
