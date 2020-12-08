@@ -407,7 +407,7 @@
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink [style.background-color]="smartTabColor(lineDefId, model)">
                 <span *ngIf="showTabErrors(lineDefId, model)" class="text-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span
@@ -1211,7 +1211,7 @@
         <li class="{{ isJV ? attachmentsClass : '' }}" [ngbNavItem]="-20">
             <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
-                        <fa-icon icon="exclamation-triangle">
+                        <fa-icon icon="exclamation">
                         </fa-icon>&nbsp;
                     </span>
                     <span>
