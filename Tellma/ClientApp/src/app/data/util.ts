@@ -802,7 +802,7 @@ export function onCodeTextareaKeydown(txtarea: HTMLTextAreaElement, e: KeyboardE
       const after = text.slice(selectionTo);
       let between = text.slice(startOfFirstLine, selectionTo);
 
-      // Indent all lines in the between segment
+      // Indent all lines in the between section
       between = '\t' + between.replace(/\r|\n/g, '\n\t');
 
       // Reassemble the pieces and replace the textarea contents with the new result

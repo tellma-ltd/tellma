@@ -28,8 +28,13 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
 
     Prefix?: string;
     CodeWidth?: number;
-    MemoVisibility?: Visibility;
+
+    PostingDateVisibility?: Visibility;
+    CenterVisibility?: Visibility;
     ClearanceVisibility?: Visibility;
+    MemoVisibility?: Visibility;
+    HasAttachments?: boolean;
+    HasBookkeeping?: boolean;
 
     // Main Menu
 
@@ -94,8 +99,13 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
 
                 Prefix: { control: 'text', label: () => trx.instant('DocumentDefinition_Prefix') },
                 CodeWidth: { control: 'number', label: () => trx.instant('DocumentDefinition_CodeWidth'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                MemoVisibility: visibilityPropDescriptor('Memo', trx),
+
+                PostingDateVisibility: visibilityPropDescriptor('Document_PostingDate', trx),
+                CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),
+                MemoVisibility: visibilityPropDescriptor('Memo', trx),
+                HasAttachments: { control: 'boolean', label: () => trx.instant('Definition_HasAttachments') },
+                HasBookkeeping: { control: 'boolean', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

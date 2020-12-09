@@ -702,8 +702,13 @@ namespace Tellma.Controllers
                 Prefix = def.Prefix,
                 CodeWidth = def.CodeWidth ?? 4,
 
+                PostingDateVisibility = MapVisibility(def.PostingDateVisibility),
+                CenterVisibility = MapVisibility(def.CenterVisibility),
                 MemoVisibility = MapVisibility(def.MemoVisibility),
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
+
+                HasBookkeeping = def.HasBookkeeping.Value,
+                HasAttachments = def.HasAttachments.Value,
 
                 CanReachState1 = def.CanReachState1 ?? false,
                 CanReachState2 = def.CanReachState2 ?? false,
@@ -744,17 +749,20 @@ namespace Tellma.Controllers
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CenterType eq 'BusinessUnit'" };
             var unitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var lineDef in documentLineDefinitions)
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader == InheritsFrom.DocumentHeader))
                 {
+                    // The first 3 act different then the rest
+
                     // PostingDate
                     if (colDef.ColumnName == nameof(Line.PostingDate))
                     {
-                        result.PostingDateVisibility = true;
+                        result.PostingDateIsCommonVisibility = true;
+                        result.PostingDateVisibility ??= Visibility.Optional;
                         if (string.IsNullOrWhiteSpace(result.PostingDateLabel))
                         {
                             result.PostingDateLabel = colDef.Label;
@@ -769,6 +777,38 @@ namespace Tellma.Controllers
                         if (colDef.ReadOnlyState > (result.PostingDateReadOnlyState ?? 0))
                         {
                             result.PostingDateReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Center
+                    else if (colDef.ColumnName == nameof(Entry.CenterId))
+                    {
+                        result.CenterIsCommonVisibility = true;
+                        result.CenterVisibility ??= Visibility.Optional;
+                        if (string.IsNullOrWhiteSpace(result.CenterLabel))
+                        {
+                            result.CenterLabel = colDef.Label;
+                            result.CenterLabel2 = colDef.Label2;
+                            result.CenterLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState > (result.CenterRequiredState ?? 0))
+                        {
+                            result.CenterRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0))
+                        {
+                            result.CenterReadOnlyState = colDef.ReadOnlyState;
+                        }
+
+                        // Accumulate all the filter atoms in the hash set
+                        if (string.IsNullOrWhiteSpace(colDef.Filter))
+                        {
+                            centerFilters = null; // It means no filters will be added
+                        }
+                        else if (centerFilters != null)
+                        {
+                            centerFilters.Add(colDef.Filter);
                         }
                     }
 
@@ -822,37 +862,6 @@ namespace Tellma.Controllers
                         else if (currencyFilters != null)
                         {
                             currencyFilters.Add(colDef.Filter);
-                        }
-                    }
-
-                    // Center
-                    else if (colDef.ColumnName == nameof(Entry.CenterId))
-                    {
-                        result.CenterVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.CenterLabel))
-                        {
-                            result.CenterLabel = colDef.Label;
-                            result.CenterLabel2 = colDef.Label2;
-                            result.CenterLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.CenterRequiredState ?? 0))
-                        {
-                            result.CenterRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0))
-                        {
-                            result.CenterReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            centerFilters = null; // It means no filters will be added
-                        }
-                        else if (centerFilters != null)
-                        {
-                            centerFilters.Add(colDef.Filter);
                         }
                     }
 
@@ -1199,10 +1208,18 @@ namespace Tellma.Controllers
             if (def.Code == ManualJournalVoucher)
             {
                 // PostingDate
-                result.PostingDateVisibility = true; // TODO: like memo
+                result.PostingDateVisibility = Visibility.Required;
+                result.PostingDateIsCommonVisibility = false;
                 result.PostingDateLabel = null;
                 result.PostingDateLabel2 = null;
                 result.PostingDateLabel3 = null;
+
+                // Center
+                // result.CenterVisibility = Visibility.Required;
+                result.CenterIsCommonVisibility = false;
+                result.CenterLabel = null;
+                result.CenterLabel2 = null;
+                result.CenterLabel3 = null;
 
                 // Memo
                 result.MemoVisibility = Visibility.Optional;
@@ -1212,7 +1229,6 @@ namespace Tellma.Controllers
                 result.MemoLabel3 = null;
 
                 result.CurrencyVisibility = false;
-                result.CenterVisibility = false;
 
                 result.CustodianVisibility = false;
                 result.CustodyVisibility = false;
@@ -1226,6 +1242,8 @@ namespace Tellma.Controllers
 
                 result.AdditionalReferenceVisibility = false;
                 result.ExternalReferenceVisibility = false;
+
+                result.HasBookkeeping = false;
             }
 
             #endregion

@@ -41,9 +41,13 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.TitleSingular3 = this.initialText;
     }
 
+    result.PostingDateVisibility = 'Required';
+    result.CenterVisibility = 'Required';
     result.ClearanceVisibility = 'None';
     result.MemoVisibility = 'Optional';
     result.IsOriginalDocument = false;
+    result.HasAttachments = true;
+    result.HasBookkeeping = true;
     result.CodeWidth = 4;
     result.DocumentType = 2;
     result.LineDefinitions = [];
@@ -143,14 +147,17 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       ));
     } else if (section === 'Definition') {
       return (!!model.serverErrors && (
-        areServerErrors(model.serverErrors.MemoVisibility) ||
-        areServerErrors(model.serverErrors.IsOriginalDocument) ||
         areServerErrors(model.serverErrors.DocumentType) ||
+        areServerErrors(model.serverErrors.LineDefinitions) ||
+        areServerErrors(model.serverErrors.ClearanceVisibility) ||
+        areServerErrors(model.serverErrors.PostingDateVisibility) ||
+        areServerErrors(model.serverErrors.CenterVisibility) ||
+        areServerErrors(model.serverErrors.MemoVisibility) ||
         areServerErrors(model.serverErrors.Prefix) ||
         areServerErrors(model.serverErrors.CodeWidth) ||
-        areServerErrors(model.serverErrors.MemoVisibility) ||
-        areServerErrors(model.serverErrors.ClearanceVisibility) ||
-        areServerErrors(model.serverErrors.LineDefinitions)
+        areServerErrors(model.serverErrors.IsOriginalDocument) ||
+        areServerErrors(model.serverErrors.HasBookkeeping) ||
+        areServerErrors(model.serverErrors.HasAttachments)
       )) ||
         (!!model.LineDefinitions && model.LineDefinitions.some(e => this.weakEntityErrors(e)));
     } else if (section === 'MainMenu') {
@@ -216,6 +223,14 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         result.CodeWidth = 4;
       }
 
+      if (result.PostingDateVisibility === 'None') {
+        delete result.PostingDateVisibility;
+      }
+
+      if (result.CenterVisibility === 'None') {
+        delete result.CenterVisibility;
+      }
+
       if (result.MemoVisibility === 'None') {
         delete result.MemoVisibility;
       }
@@ -252,13 +267,15 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       let resourceFilters: { [filter: string]: true } = {};
 
       let centerFilters: { [filter: string]: true } = {};
+      centerFilters[`CenterType eq 'BusinessUnit'`] = true;
       let currencyFilters: { [filter: string]: true } = {};
       let unitFilters: { [filter: string]: true } = {};
 
       for (const lineDef of documentLineDefinitions) {
         for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader === 2)) {
           if (colDef.ColumnName === 'PostingDate') {
-            result.PostingDateVisibility = true;
+            result.PostingDateIsCommonVisibility = true;
+            result.PostingDateVisibility = result.PostingDateVisibility || 'Optional';
             if (!result.PostingDateLabel) {
               result.PostingDateLabel = colDef.Label;
               result.PostingDateLabel2 = colDef.Label2;
@@ -270,6 +287,29 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
             if (colDef.ReadOnlyState > (result.PostingDateReadOnlyState ?? 0)) {
               result.PostingDateReadOnlyState = colDef.ReadOnlyState;
+            }
+
+          } else if (colDef.ColumnName === 'CenterId') {
+            result.CenterIsCommonVisibility = true;
+            result.CenterVisibility = result.CenterVisibility || 'Optional';
+            if (!(result.CenterLabel)) {
+              result.CenterLabel = colDef.Label;
+              result.CenterLabel2 = colDef.Label2;
+              result.CenterLabel3 = colDef.Label3;
+            }
+            if (colDef.RequiredState > (result.CenterRequiredState ?? 0)) {
+              result.CenterRequiredState = colDef.RequiredState;
+            }
+
+            if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0)) {
+              result.CenterReadOnlyState = colDef.ReadOnlyState;
+            }
+
+            // Accumulate all the filter atoms in the hash set
+            if (!colDef.Filter) {
+              centerFilters = null; // It means no filters will be added
+            } else if (centerFilters != null) {
+              centerFilters[colDef.Filter] = true;
             }
 
           } else if (colDef.ColumnName === 'Memo') {
@@ -308,28 +348,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               currencyFilters = null; // It means no filters will be added
             } else if (currencyFilters != null) {
               currencyFilters[colDef.Filter] = true;
-            }
-
-          } else if (colDef.ColumnName === 'CenterId') {
-            result.CenterVisibility = true;
-            if (!(result.CenterLabel)) {
-              result.CenterLabel = colDef.Label;
-              result.CenterLabel2 = colDef.Label2;
-              result.CenterLabel3 = colDef.Label3;
-            }
-            if (colDef.RequiredState > (result.CenterRequiredState ?? 0)) {
-              result.CenterRequiredState = colDef.RequiredState;
-            }
-
-            if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0)) {
-              result.CenterReadOnlyState = colDef.ReadOnlyState;
-            }
-
-            // Accumulate all the filter atoms in the hash set
-            if (!colDef.Filter) {
-              centerFilters = null; // It means no filters will be added
-            } else if (centerFilters != null) {
-              centerFilters[colDef.Filter] = true;
             }
 
           } else if (colDef.ColumnName === 'CustodianId') {
@@ -582,6 +600,46 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.CenterFilter = disjunction(centerFilters);
       result.CurrencyFilter = disjunction(currencyFilters);
       result.UnitFilter = disjunction(unitFilters);
+
+
+      // JV has some hard coded values:
+      if (model.Code === 'ManualJournalVoucher') {
+          // PostingDate
+          result.PostingDateVisibility = 'Required';
+          result.PostingDateIsCommonVisibility = false;
+          result.PostingDateLabel = null;
+          result.PostingDateLabel2 = null;
+          result.PostingDateLabel3 = null;
+
+          // Center
+          // result.CenterVisibility = 'Required';
+          result.CenterIsCommonVisibility = false;
+          result.CenterLabel = null;
+          result.CenterLabel2 = null;
+          result.CenterLabel3 = null;
+
+          // Memo
+          result.MemoVisibility = 'Optional';
+          result.MemoIsCommonVisibility = false;
+          result.MemoLabel = null;
+          result.MemoLabel2 = null;
+          result.MemoLabel3 = null;
+
+          result.CurrencyVisibility = false;
+
+          result.CustodianVisibility = false;
+          result.CustodyVisibility = false;
+          result.ParticipantVisibility = false;
+          result.ResourceVisibility = false;
+
+          result.QuantityVisibility = false;
+          result.UnitVisibility = false;
+          result.Time1Visibility = false;
+          result.Time2Visibility = false;
+
+          result.AdditionalReferenceVisibility = false;
+          result.ExternalReferenceVisibility = false;
+      }
 
       this._getForClientResult = result;
     }

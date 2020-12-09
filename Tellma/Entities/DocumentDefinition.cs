@@ -79,13 +79,29 @@ namespace Tellma.Entities
         [Display(Name = "DocumentDefinition_CodeWidth")]
         public byte? CodeWidth { get; set; }
 
-        [VisibilityDisplay(Name = "Memo"), VisibilityChoiceList]
+        [VisibilityDisplay(Name = "Document_PostingDate"), VisibilityChoiceList]
         [Required]
-        public string MemoVisibility { get; set; }
+        public string PostingDateVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Document_Center"), VisibilityChoiceList]
+        [Required]
+        public string CenterVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Document_Clearance"), VisibilityChoiceList]
         [Required]
         public string ClearanceVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Memo"), VisibilityChoiceList]
+        [Required]
+        public string MemoVisibility { get; set; }
+
+        [Display(Name = "Definition_HasAttachments")]
+        [Required]
+        public bool? HasAttachments { get; set; }
+
+        [Display(Name = "DocumentDefinition_HasBookkeeping")]
+        [Required]
+        public bool? HasBookkeeping { get; set; }
 
         [Display(Name = "MainMenuIcon")]
         [StringLength(50)]

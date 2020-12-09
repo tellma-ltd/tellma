@@ -298,9 +298,6 @@
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>生产费用</value>
   </data>
-  <data name="Center_IsSegment" xml:space="preserve">
-    <value>IS分段</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>经理</value>
   </data>
@@ -580,9 +577,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>
   </data>
-  <data name="Document_Segment" xml:space="preserve">
-    <value>分割</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p.</value>
   </data>
@@ -634,6 +628,9 @@
   <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
     <value>监管机构</value>
   </data>
+  <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
+    <value>有簿记</value>
+  </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>是原始文档</value>
   </data>
@@ -644,7 +641,7 @@
     <value>印刷模板</value>
   </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
-    <value>#VALUE!</value>
+    <value>串行前缀</value>
   </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>文档定义行定义</value>

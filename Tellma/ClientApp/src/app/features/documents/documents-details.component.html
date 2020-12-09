@@ -133,15 +133,13 @@
         [labelContextMenu]="documentIsCommonMenu" labelContext="PostingDateIsCommon"
         [disableLabelMenu]="!(isEdit && showDocumentPostingDateIsCommon(model))"
         [serverErrors]="model?.serverErrors?.PostingDate" *ngIf="showDocumentPostingDate(model)">
-        <ng-container *ngIf="model?.PostingDateIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
-                <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
-            </t-restricted>
-            <t-date-picker *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
-                [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
-                [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-date-picker>
-        </ng-container>
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
+            <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
+            [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
+            [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-date-picker>
     </t-form-group>
 
     <!-- Clearance -->
@@ -226,33 +224,18 @@
         </ng-container>
     </t-form-group>
 
-    <!-- Segment -->
-    <t-form-group class="t-form-group" [label]="labelDocumentSegment(model)"
-        [serverErrors]="model?.serverErrors?.SegmentId" *ngIf="showDocumentSegment(model)">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.SegmentId">
-            <t-view-link link="../../../centers" [itemId]="model?.SegmentId">
-                {{ ws.getMultilingualValue('Center', model?.SegmentId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId" filter="IsSegment eq true" [required]="true"
-            [disabled]="readonlyDocumentSegment(model)">
-        </t-centers-picker>
-    </t-form-group>
-
     <!-- Center -->
     <t-form-group class="t-form-group" [label]="labelDocumentCenter(model)" [labelContextMenu]="documentIsCommonMenu"
-        labelContext="CenterIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CenterId"
-        *ngIf="showDocumentCenter(model)">
-        <ng-container *ngIf="model?.CenterIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CenterId">
-                <t-view-link link="../../../centers" [itemId]="model?.CenterId">
-                    {{ ws.getMultilingualValue('Center', model?.CenterId, 'Name') }}
-                </t-view-link>
-            </t-restricted>
-            <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="requireDocumentCenter(model)"
-                [disabled]="readonlyDocumentCenter(model)" [filter]="filterDocumentCenter(model)">
-            </t-centers-picker>
-        </ng-container>
+        labelContext="CenterIsCommon" [disableLabelMenu]="!(isEdit && showDocumentCenterIsCommon(model))"
+        [serverErrors]="model?.serverErrors?.CenterId" *ngIf="showDocumentCenter(model)">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CenterId">
+            <t-view-link link="../../../centers" [itemId]="model?.CenterId">
+                {{ ws.getMultilingualValue('Center', model?.CenterId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="requireDocumentCenter(model)"
+            [disabled]="readonlyDocumentCenter(model)" [filter]="filterDocumentCenter(model)">
+        </t-centers-picker>
     </t-form-group>
 
     <!-- Currency -->
@@ -507,8 +490,7 @@
                                     <t-spinner></t-spinner>
                                 </div>
                                 <div class="w-100 pt-3" *ngIf="showBarcodeError(lineDefId, model)">
-                                    <t-error-message dismissable="true"
-                                        (dismiss)="clearBarcodeError()">
+                                    <t-error-message dismissable="true" (dismiss)="clearBarcodeError()">
                                         {{ getBarcodeError(lineDefId, model) }} </t-error-message>
                                 </div>
                             </div>
@@ -1142,7 +1124,7 @@
         </li>
 
         <!-- Bookkeeping Tab -->
-        <li class="{{ attachmentsClass }}" [ngbNavItem]="-10" *ngIf="!isJV">
+        <li class="{{ attachmentsClass }}" [ngbNavItem]="-10" *ngIf="showBookkeepingTab">
             <a class="px-2" ngbNavLink [title]="'Bookkeeping' | translate"
                 [style.background-color]="bookkeepingTabColor(model)">
                 <span class="small t-slightly-bold">
@@ -1173,7 +1155,7 @@
                     <ng-container *ngIf="hasManualLines">
                         <div class="col-12 mt-3 pb-2 border-bottom">
                             <h5 class="small2 font-weight-bold2">
-                                {{ (manualLineTabTitle(model))  + ' (' + manualEntries(model).length + ')' }}</h5>
+                                {{ (bookkeepingManualAdjustmentsTitle(model))  + ' (' + manualEntries(model).length + ')' }}</h5>
                         </div>
                         <ng-container *ngTemplateOutlet="manualLines">
 
@@ -1208,7 +1190,7 @@
         </li>
 
         <!-- Attachments -->
-        <li class="{{ isJV ? attachmentsClass : '' }}" [ngbNavItem]="-20">
+        <li class="{{ !showBookkeepingTab ? attachmentsClass : '' }}" [ngbNavItem]="-20"  *ngIf="showAttachmentsTab">
             <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
                         <fa-icon icon="exclamation">
@@ -1342,8 +1324,8 @@
         <!-- Manual Line Properties -->
         <div class="row m-0 py-2" *ngIf="showManualLineProps(model)">
             <!-- Posting Date -->
-            <t-form-group class="t-form-group" [label]="'Line_PostingDate' | translate"
-                [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
+            <t-form-group class="t-form-group" *ngIf="!showDocumentPostingDate(model)"
+                [label]="'Line_PostingDate' | translate" [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
                 <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.PostingDate">
                     <div>{{ manualLine(model)?.PostingDate | date:'yyyy-MM-dd' }}</div>
                 </t-restricted>
@@ -1353,7 +1335,7 @@
             </t-form-group>
 
             <!-- Memo -->
-            <t-form-group class="t-form-group" [label]="'Memo' | translate"
+            <t-form-group class="t-form-group" *ngIf="!showDocumentMemo(model)" [label]="'Memo' | translate"
                 [serverErrors]="manualLine(model)?.serverErrors?.Memo">
                 <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.Memo">
                     <div>{{ manualLine(model)?.Memo }}</div>
@@ -1818,7 +1800,7 @@
     <!-- Warning of Modified Rows -->
     <ng-template #row_ModifiedWarning let-pair="item" let-line="item.line" let-index="index" let-update="update"
         let-bookkeeping="argument">
-        <fa-icon *ngIf="getIsModified(line, model)" icon="exclamation" class="text-danger"
+        <fa-icon *ngIf="getIsModified(line, model)" icon="exclamation-triangle" class="text-warning"
             [placement]="modifiedTooltipPlacement" [ngbTooltip]="'ModifiedLineWarning' | translate" container="body">
         </fa-icon>
     </ng-template>

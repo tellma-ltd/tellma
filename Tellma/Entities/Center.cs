@@ -73,9 +73,6 @@ namespace Tellma.Entities
 
     public class Center : CenterForSave
     {
-        [Display(Name = "Center_IsSegment")]
-        public bool? IsSegment { get; set; }
-
         [AlwaysAccessible]
         public short? Level { get; set; }
 

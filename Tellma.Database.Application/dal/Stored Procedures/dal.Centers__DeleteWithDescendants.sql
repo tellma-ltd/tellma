@@ -2,7 +2,7 @@
 	@Ids [dbo].[IdList] READONLY
 AS
 SET NOCOUNT ON;
-	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
+	DECLARE @BeforeBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
 
 	DELETE [dbo].[Centers] WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
@@ -42,8 +42,8 @@ SET NOCOUNT ON;
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 	
-	-- Whether there are multiple active segments is an important cached value of the settings
-	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
-
-	IF (@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
+	-- Whether there are multiple active business units is an important cached value of the settings
+	DECLARE @AfterBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
+	
+	IF (@BeforeBuCount <= 1 AND @AfterBuCount > 1) OR (@BeforeBuCount > 1 AND @AfterBuCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

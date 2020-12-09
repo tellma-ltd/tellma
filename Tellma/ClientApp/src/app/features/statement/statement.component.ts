@@ -42,7 +42,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'segment_id', 'custodian_id', 'custody_id', 'participant_id', 'resource_id', 'entry_type_id', 'center_id'];
+        return ['account_id', 'custodian_id', 'custody_id', 'participant_id', 'resource_id', 'entry_type_id', 'center_id'];
       case 'relation':
         return ['relation_id', 'account_id', 'resource_id'];
       default:
@@ -294,10 +294,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       accountId: this.accountId
     };
 
-    if (!!this.segmentId && this.showSegmentParameter) {
-      args.segmentId = this.segmentId;
-    }
-
     if (!!this.custodianId && this.showCustodianParameter) {
       args.custodianId = this.custodianId;
     }
@@ -390,7 +386,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (this.type) {
       case 'account':
-        return !!args.from_date && !!args.to_date && !!args.account_id && (!this.showSegmentParameter || !!args.segment_id);
+        return !!args.from_date && !!args.to_date && !!args.account_id;
       case 'relation':
         return !!args.from_date && !!args.to_date && !!args.relation_id && !!args.account_id;
       default:
@@ -510,9 +506,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         // (1) Add the parameters
         data.push(this.normalize([this.translate.instant('FromDate'), formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
         data.push(this.normalize([this.translate.instant('ToDate'), formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
-        if (!!args.segmentId) {
-          data.push(this.normalize([this.translate.instant('Document_Segment'), this.ws.getMultilingualValue('Center', args.segmentId, 'Name')], columns.length));
-        }
         data.push(this.normalize([this.translate.instant('Entry_Account'), this.ws.getMultilingualValue('Account', args.accountId, 'Name')], columns.length));
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
@@ -767,26 +760,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return null;
-  }
-
-  // Segment
-  public get segmentId(): number {
-    return this.state.arguments.segment_id;
-  }
-
-  public set segmentId(v: number) {
-    const args = this.state.arguments;
-    if (args.segment_id !== v) {
-      args.segment_id = v;
-      this.parametersChanged();
-    }
-  }
-
-  /**
-   * Whether or not to show the segment parameter
-   */
-  public get showSegmentParameter(): boolean {
-    return this.ws.settings.IsMultiSegment;
   }
 
   // Currency

@@ -659,7 +659,7 @@ namespace Tellma.Controllers
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
-            // TODO
+            // ...
 
             // Transaction
             using var trx = ControllerUtilities.CreateTransaction();
@@ -779,6 +779,8 @@ namespace Tellma.Controllers
             )> Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
         {
             // TODO: Permissions (?)
+            await UserPermissionsFilter(Constants.Update, cancellation: default);
+            // ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             var lineDef = LineDefinition(lineDefId);
 
@@ -909,16 +911,16 @@ namespace Tellma.Controllers
                     // Those are always true in JV
                     doc.PostingDateIsCommon = true;
                     doc.MemoIsCommon = true;
-                    // TODO: Add doc.CenterIsCommon = true;
+                    doc.CenterIsCommon = false;
                 }
                 else
                 {
-                    doc.MemoIsCommon ??= (docDef.MemoVisibility /* Or MemoIsCommonVisibility ? */ != null && (doc.MemoIsCommon ?? false));
-                    doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
+                    doc.MemoIsCommon ??= docDef.MemoIsCommonVisibility && (doc.MemoIsCommon ?? false);
+                    doc.PostingDateIsCommon ??= docDef.PostingDateIsCommonVisibility && (doc.PostingDateIsCommon ?? false);
+                    doc.CenterIsCommon ??= docDef.CenterIsCommonVisibility && (doc.CenterIsCommon ?? false);
                 }
 
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
-                doc.CenterIsCommon = docDef.CenterVisibility && (doc.CenterIsCommon ?? false);
 
                 doc.CustodianIsCommon = docDef.CustodianVisibility && (doc.CustodianIsCommon ?? false);
                 doc.CustodyIsCommon = docDef.CustodyVisibility && (doc.CustodyIsCommon ?? false);
@@ -961,38 +963,50 @@ namespace Tellma.Controllers
             // Set common header values on the lines
             docs.ForEach(doc =>
             {
-                // All fields that aren't marked as common, set them to
-                // null, the UI makes them invisible anyways
-                doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null; // TODO: like Memo
+                // All fields that aren't visible and marked as common, set them to null, the UI hides them anyways
+                // Those 3 are different than the rest, they can remain visible even when is common = false
+                doc.Memo = docDef.MemoVisibility != null ? doc.Memo : null;
+                doc.CenterId = docDef.CenterVisibility != null ? doc.CenterId : null;
+                doc.PostingDate = docDef.PostingDateVisibility != null ? doc.PostingDate : null;
 
-                doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
-                doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null; // TODO: like Memo
+                doc.CurrencyId = docDef.CurrencyVisibility && doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
-                doc.CustodianId = doc.CustodianIsCommon.Value ? doc.CustodianId : null;
-                doc.CustodyId = doc.CustodyIsCommon.Value ? doc.CustodyId : null;
-                doc.ParticipantId = doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
-                doc.ResourceId = doc.ResourceIsCommon.Value ? doc.ResourceId : null;
+                doc.CustodianId = docDef.CustodianVisibility && doc.CustodianIsCommon.Value ? doc.CustodianId : null;
+                doc.CustodyId = docDef.CustodyVisibility && doc.CustodyIsCommon.Value ? doc.CustodyId : null;
+                doc.ParticipantId = docDef.ParticipantVisibility && doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
+                doc.ResourceId = docDef.ResourceVisibility && doc.ResourceIsCommon.Value ? doc.ResourceId : null;
 
-                doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
-                doc.UnitId = doc.UnitIsCommon.Value ? doc.UnitId : null;
-                doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
-                doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
+                doc.Quantity = docDef.QuantityVisibility && doc.QuantityIsCommon.Value ? doc.Quantity : null;
+                doc.UnitId = docDef.UnitVisibility && doc.UnitIsCommon.Value ? doc.UnitId : null;
+                doc.Time1 = docDef.Time1Visibility && doc.Time1IsCommon.Value ? doc.Time1 : null;
+                doc.Time2 = docDef.Time2Visibility && doc.Time2IsCommon.Value ? doc.Time2 : null;
 
-                doc.ExternalReference = doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
-                doc.AdditionalReference = doc.AdditionalReferenceIsCommon.Value ? doc.AdditionalReference : null;
+                doc.ExternalReference = docDef.ExternalReferenceVisibility && doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
+                doc.AdditionalReference = docDef.AdditionalReferenceVisibility && doc.AdditionalReferenceIsCommon.Value ? doc.AdditionalReference : null;
 
                 // System IsSystem to false by default
                 doc.Lines.ForEach(line => line.Entries.ForEach(entry => entry.IsSystem ??= false));
 
-                // For JVs some properties are always copied across to the lines
-                if (isJV)
+                // Manual lines always inherit memo and posting date from document header (if visible)
+                if (docDef.MemoVisibility != null)
                 {
                     doc.Lines.ForEach(line =>
                     {
-                        line.PostingDate = doc.PostingDate;
-                        line.Memo = doc.Memo;
-                        // TODO: Add Center
-                        // TODO: also for smart screens
+                        if (line.DefinitionId == manualLineDefId)
+                        {
+                            line.Memo = doc.Memo;
+                        }
+                    });
+                }
+
+                if (docDef.PostingDateVisibility != null)
+                {
+                    doc.Lines.ForEach(line =>
+                    {
+                        if (line.DefinitionId == manualLineDefId)
+                        {
+                            line.PostingDate = doc.PostingDate;
+                        }
                     });
                 }
 
@@ -1857,7 +1871,7 @@ namespace Tellma.Controllers
                             }
                             else
                             {
-                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId));
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId) && e.InheritsFromHeader == 0);
                                 if (columnDef != null)
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
@@ -1888,7 +1902,7 @@ namespace Tellma.Controllers
                             }
                             else
                             {
-                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId));
+                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId) && e.InheritsFromHeader == 0);
                                 if (columnDef != null)
                                 {
                                     fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);

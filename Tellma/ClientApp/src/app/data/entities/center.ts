@@ -18,7 +18,6 @@ export interface CenterForSave extends EntityForSave {
 }
 
 export interface Center extends CenterForSave {
-    IsSegment?: boolean;
     Level?: number;
     ActiveChildCount?: number;
     ChildCount?: number;
@@ -82,7 +81,6 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                 ManagerId: { control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Manager: { control: 'navigation', label: () => trx.instant('Center_Manager'), type: 'Agent', foreignKeyName: 'ManagerId' },
                 Code: { control: 'text', label: () => trx.instant('Code') },
-                IsSegment: { control: 'boolean', label: () => trx.instant('Center_IsSegment')},
 
                 // Tree stuff
                 Level: {

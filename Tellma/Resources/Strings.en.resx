@@ -298,9 +298,6 @@
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>Production Expense</value>
   </data>
-  <data name="Center_IsSegment" xml:space="preserve">
-    <value>Is Segment</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>Manager</value>
   </data>
@@ -580,9 +577,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="Document_Segment" xml:space="preserve">
-    <value>Segment</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
   </data>
@@ -633,6 +627,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
     <value>Regulatory</value>
+  </data>
+  <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
+    <value>Has Bookkeeping</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>Is Original Document</value>

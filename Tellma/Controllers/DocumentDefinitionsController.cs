@@ -186,6 +186,8 @@ namespace Tellma.Controllers
             entities?.ForEach(e =>
             {
                 e.IsOriginalDocument ??= true;
+                e.HasAttachments ??= true;
+                e.HasBookkeeping ??= true;
                 e.CodeWidth ??= 4;
             });
 

@@ -39,11 +39,11 @@ SET NOCOUNT ON;
 	WHERE D.[PostingDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[SegmentId], [CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
+		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
 	)
 	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[SegmentId], [CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
+		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
 	FROM dbo.Documents
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)

@@ -99,17 +99,30 @@ export interface ReportDimensionDefinitionForClient {
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     IsOriginalDocument?: boolean;
+    HasAttachments?: boolean;
+    HasBookkeeping?: boolean;
     DocumentType?: number;
     Prefix?: string;
     CodeWidth?: number;
 
     // Posting Date
-    PostingDateVisibility?: boolean;
-    PostingDateRequiredState?: PositiveLineState | 5;
-    PostingDateReadOnlyState?: PositiveLineState | 5;
+    PostingDateVisibility?: Visibility;
+    PostingDateIsCommonVisibility?: boolean;
     PostingDateLabel?: string;
     PostingDateLabel2?: string;
     PostingDateLabel3?: string;
+    PostingDateRequiredState?: PositiveLineState | 5;
+    PostingDateReadOnlyState?: PositiveLineState | 5;
+
+    // Center
+    CenterVisibility?: Visibility;
+    CenterIsCommonVisibility?: boolean;
+    CenterLabel?: string;
+    CenterLabel2?: string;
+    CenterLabel3?: string;
+    CenterFilter?: string;
+    CenterRequiredState?: PositiveLineState | 5;
+    CenterReadOnlyState?: PositiveLineState | 5;
 
     // Memo
     MemoVisibility?: Visibility;
@@ -128,15 +141,6 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CurrencyLabel2?: string;
     CurrencyLabel3?: string;
     CurrencyFilter?: string;
-
-    // Center
-    CenterVisibility?: boolean;
-    CenterRequiredState?: PositiveLineState | 5;
-    CenterReadOnlyState?: PositiveLineState | 5;
-    CenterLabel?: string;
-    CenterLabel2?: string;
-    CenterLabel3?: string;
-    CenterFilter?: string;
 
     // Custodian
     CustodianVisibility?: boolean;

@@ -18,7 +18,7 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[MarkupTemplates] AS t
 		USING (
-			SELECT [Index], [Id], --[OperatingSegmentId],
+			SELECT [Index], [Id],
 				[Name], 
 				[Name2], 
 				[Name3], 

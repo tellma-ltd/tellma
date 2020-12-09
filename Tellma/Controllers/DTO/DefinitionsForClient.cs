@@ -151,18 +151,31 @@ namespace Tellma.Controllers.Dto
 
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public bool HasAttachments { get; set; }
+        public bool HasBookkeeping { get; set; }
         public bool IsOriginalDocument { get; set; }
         public byte DocumentType { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
 
         // Posting Date
-        public bool PostingDateVisibility { get; set; }
-        public short? PostingDateRequiredState { get; set; }
-        public short? PostingDateReadOnlyState { get; set; }
+        public string PostingDateVisibility { get; set; }
+        public bool PostingDateIsCommonVisibility { get; set; }
         public string PostingDateLabel { get; set; }
         public string PostingDateLabel2 { get; set; }
         public string PostingDateLabel3 { get; set; }
+        public short? PostingDateRequiredState { get; set; }
+        public short? PostingDateReadOnlyState { get; set; }
+
+        // Center
+        public string CenterVisibility { get; set; }
+        public bool CenterIsCommonVisibility { get; set; }
+        public string CenterLabel { get; set; }
+        public string CenterLabel2 { get; set; }
+        public string CenterLabel3 { get; set; }
+        public string CenterFilter { get; set; }
+        public short? CenterRequiredState { get; set; }
+        public short? CenterReadOnlyState { get; set; }
 
         // Memo
         public string MemoVisibility { get; set; }
@@ -181,15 +194,6 @@ namespace Tellma.Controllers.Dto
         public string CurrencyLabel2 { get; set; }
         public string CurrencyLabel3 { get; set; }
         public string CurrencyFilter { get; set; }
-
-        // Center
-        public bool CenterVisibility { get; set; }
-        public short? CenterRequiredState { get; set; }
-        public short? CenterReadOnlyState { get; set; }
-        public string CenterLabel { get; set; }
-        public string CenterLabel2 { get; set; }
-        public string CenterLabel3 { get; set; }
-        public string CenterFilter { get; set; }
 
         // Custodian
         public bool CustodianVisibility { get; set; }

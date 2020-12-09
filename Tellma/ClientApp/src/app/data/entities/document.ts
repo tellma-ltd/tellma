@@ -23,8 +23,6 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     Memo?: string;
     MemoIsCommon?: boolean;
 
-    SegmentId?: number;
-
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
     CenterId?: number;
@@ -127,9 +125,6 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
-
-                SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
 
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
@@ -243,11 +238,6 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 }
             }
 
-            if (!definition.MemoIsCommonVisibility) {
-                // Memo in particular can remain visible without MemoIsCommon
-                delete props.MemoIsCommon;
-            }
-
             // Navigation properties whose label and visibility are overriden by the definition
             for (const propName of ['Currency', 'Center', 'Custodian', 'Custody', 'Participant', 'Resource', 'Unit']) {
                 if (!definition[propName + 'Visibility']) {
@@ -276,6 +266,19 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
                     isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
+            }
+
+            // The following 3 properties can remain visible without MemoIsCommon
+            if (!definition.PostingDateIsCommonVisibility) {
+                delete props.PostingDateIsCommon;
+            }
+
+            if (!definition.CenterIsCommonVisibility) {
+                delete props.CenterIsCommon;
+            }
+
+            if (!definition.MemoIsCommonVisibility) {
+                delete props.MemoIsCommon;
             }
         }
 

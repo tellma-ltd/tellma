@@ -476,7 +476,7 @@ namespace Tellma.Data
             return (version, user, customSettings);
         }
 
-        public async Task<(bool isMultiSegment, GeneralSettings gSettings, FinancialSettings fSettings)> Settings__Load(CancellationToken cancellation)
+        public async Task<(bool isMultiBusinessUnit, GeneralSettings gSettings, FinancialSettings fSettings)> Settings__Load(CancellationToken cancellation)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Settings__Load));
 
@@ -484,7 +484,7 @@ namespace Tellma.Data
             // (1) whether active leaf centers are multiple or single
             // (2) the settings with the functional currency expanded
 
-            bool isMultiSegment = false;
+            bool isMultiBusinessUnit = false;
             GeneralSettings gSettings = new GeneralSettings();
             FinancialSettings fSettings = new FinancialSettings();
 
@@ -500,7 +500,7 @@ namespace Tellma.Data
                 // Load the version
                 if (await reader.ReadAsync(cancellation))
                 {
-                    isMultiSegment = reader.GetBoolean(0);
+                    isMultiBusinessUnit = reader.GetBoolean(0);
                 }
                 else
                 {
@@ -562,7 +562,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (isMultiSegment, gSettings, fSettings);
+            return (isMultiBusinessUnit, gSettings, fSettings);
         }
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
