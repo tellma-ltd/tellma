@@ -1337,7 +1337,7 @@
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
-    <value>መስኩ {0} አሉታዊ መሆን የለበትም.</value>
+    <value>መስኩ {0} አሉታዊ ሊሆን አይችልም.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>{0} ዋጋ መለያ ጋር አይጣጣምም.</value>

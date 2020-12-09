@@ -1337,7 +1337,7 @@
     <value>与ID的实体“{0}”被指定多次。</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
-    <value>字段{0}不应该是否定的。</value>
+    <value>字段{0}不能为负值。</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>的{0}的值是与该帐户不兼容。</value>

@@ -1376,7 +1376,7 @@
     <value>The entity with Id '{0}' is specified more than once.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
-    <value>The field {0} should not be negative.</value>
+    <value>The field {0} cannot be negative.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>The value of {0} is incompatible with the account.</value>
