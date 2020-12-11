@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
-  PivotTable, DimensionCell, MeasureCell, LabelCell, MeasureInfo, DimensionInfo, ChartDimensionCell, DEFAULT_PAGE_SIZE
+  PivotTable, DimensionCell, MeasureCell, LabelCell, MeasureInfo, DimensionInfo, ChartDimensionCell
 } from '~/app/data/workspace.service';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { EntityDescriptor, metadata, entityDescriptorImpl, PropDescriptor, isText, isNumeric } from '~/app/data/entities/base/metadata';
@@ -48,6 +48,8 @@ interface PivotHash {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
+
+  static DEFAULT_PAGE_SIZE = 60;
 
   @Input()
   state: ReportStore; // immutable
@@ -290,7 +292,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     let obs$: Observable<EntitiesResponse<Entity>>;
     if (this.showDetails) {
-      const top = this.definition.Top || DEFAULT_PAGE_SIZE;
+      const top = this.definition.Top || ReportResultsComponent.DEFAULT_PAGE_SIZE;
       const skip = !!this.definition.Top ? 0 : s.skip;
       const select = this.computeSelect();
       const orderby = this.definition.OrderBy;

@@ -230,7 +230,7 @@
                         <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
                             <span>{{ to | number }}</span>
                         </span>
-                        <span class="t-vertical-align-middle"> / {{ totalDisplay | number }}</span>
+                        <span class="t-vertical-align-middle"> / {{ totalDisplay }}</span>
                     </div>
                     <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
                         title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
@@ -241,6 +241,15 @@
                         <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
                     </button>
                 </div>
+
+                <!-- Expand/Collapse -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button font-weight-normal" type="button"
+                    title="{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}"
+                    (click)="onToggleCollapseParameters()" *ngIf="showParameters">
+                    <fa-icon [icon]="collapseParameters ? 'angle-down' : 'angle-up'"></fa-icon>
+                    <span
+                        class="d-none d-md-inline">&nbsp;&nbsp;{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}</span>
+                </button>
 
                 <!-- Report View Toggle -->
                 <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle t-toolbar-button">

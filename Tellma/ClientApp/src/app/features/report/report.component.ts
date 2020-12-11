@@ -1,11 +1,10 @@
 // tslint:disable:member-ordering
 import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { ReportView, modifiedPropDesc } from '../report-results/report-results.component';
+import { ReportView, modifiedPropDesc, ReportResultsComponent } from '../report-results/report-results.component';
 import {
   WorkspaceService,
   ReportArguments,
   ReportStore,
-  DEFAULT_PAGE_SIZE,
   MasterStatus,
   MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
@@ -209,7 +208,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     return rs[this.stateKey];
   }
 
-  private urlStateChange(): void {
+  private urlStateChanged(): void {
     // We wish to store part of the page state in the URL
     // This method is called whenever that part of the state has changed
     // Below we capture the new URL state, and then navigate to the new URL
@@ -436,7 +435,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public onArgumentChange() {
     this.immutableArguments = { ...this.arguments };
-    this.urlStateChange();
+    this.urlStateChanged();
   }
 
   public isActive(view: ReportView) {
@@ -445,11 +444,11 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public onView(view: ReportView) {
     this.view = view;
-    this.urlStateChange();
+    this.urlStateChanged();
   }
 
   public get showParametersSection(): boolean {
-    return this.showParameters || this.showParametersErrorMessage;
+    return (this.showParameters && !this.collapseParameters) || this.showParametersErrorMessage;
   }
 
   public get showParameters(): boolean {
@@ -480,7 +479,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public onSkipChange(skip: number) {
-    this.urlStateChange();
+    this.urlStateChanged();
   }
 
 
@@ -498,7 +497,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   get to(): number {
     const s = this.state;
-    return Math.min(s.skip + DEFAULT_PAGE_SIZE, s.total);
+    return Math.min(s.skip + ReportResultsComponent.DEFAULT_PAGE_SIZE, s.total);
   }
 
   get total(): number {
@@ -516,7 +515,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   onPreviousPage() {
     const s = this.state;
-    s.skip = Math.max(s.skip - DEFAULT_PAGE_SIZE, 0);
+    s.skip = Math.max(s.skip - ReportResultsComponent.DEFAULT_PAGE_SIZE, 0);
 
     this.onSkipChange(s.skip); // to update the URL state
     this.refresh$.next();
@@ -528,7 +527,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   onNextPage() {
     const s = this.state;
-    s.skip = s.skip + DEFAULT_PAGE_SIZE;
+    s.skip = s.skip + ReportResultsComponent.DEFAULT_PAGE_SIZE;
 
     this.onSkipChange(s.skip); // to update the URL state
     this.refresh$.next();
@@ -577,5 +576,23 @@ export class ReportComponent implements OnInit, OnDestroy {
         }
       })
       .catch(_ => delete ws.isEdit);
+  }
+
+  // Collapse parameters
+  public get collapseParameters(): boolean {
+    return this.state.collapseParams;
+  }
+
+  public set collapseParameters(v: boolean) {
+    const s = this.state;
+    if (s.collapseParams !== v) {
+      s.collapseParams = v;
+    }
+  }
+
+  // Hovering over a reconciled entry/external entry highlights all entries/external entries with yellow marker
+
+  public onToggleCollapseParameters() {
+    this.collapseParameters = !this.collapseParameters;
   }
 }
