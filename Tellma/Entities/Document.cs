@@ -36,11 +36,6 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
-
-        [Display(Name = "Document_Segment")]
-        public int? SegmentId { get; set; }
-
-
         [Display(Name = "Entry_Currency")]
         [StringLength(3)]
         public string CurrencyId { get; set; }
@@ -53,7 +48,6 @@ namespace Tellma.Entities
 
         [IsCommonDisplay(Name = "Document_Center")]
         public bool? CenterIsCommon { get; set; }
-
 
         [Display(Name = "Entry_Custodian")]
         public int? CustodianId { get; set; }
@@ -79,7 +73,6 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_Resource")]
         public bool? ResourceIsCommon { get; set; }
 
-
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 
@@ -104,7 +97,6 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_Time2")]
         public bool? Time2IsCommon { get; set; }
 
-
         [Display(Name = "Entry_ExternalReference")]
         [StringLength(50)]
         public string ExternalReference { get; set; }
@@ -118,7 +110,6 @@ namespace Tellma.Entities
 
         [IsCommonDisplay(Name = "Entry_AdditionalReference")]
         public bool? AdditionalReferenceIsCommon { get; set; }
-
 
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
@@ -190,11 +181,6 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-        
-        [Display(Name = "Document_Segment")]
-        [ForeignKey(nameof(SegmentId))]
-        public Center Segment { get; set; }
-
 
         [Display(Name = "Entry_Currency")]
         [ForeignKey(nameof(CurrencyId))]
@@ -203,8 +189,6 @@ namespace Tellma.Entities
         [Display(Name = "Document_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
-
-
 
         [Display(Name = "Entry_Custodian")]
         [ForeignKey(nameof(CustodianId))]
@@ -222,13 +206,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
 
-
-
         [Display(Name = "Entry_Unit")]
         [ForeignKey(nameof(UnitId))]
         public Unit Unit { get; set; }
-
-
 
         [Display(Name = "Document_Assignee")]
         [ForeignKey(nameof(AssigneeId))]
@@ -280,7 +260,6 @@ namespace Tellma.Entities
         // ------------------------------------------------
         // Paths to return on the level of each entity type
         // ------------------------------------------------
-
         public static IEnumerable<string> DocumentPaths() => DocumentProps
 
             // Weak Collections
@@ -291,8 +270,6 @@ namespace Tellma.Entities
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
 
             // Navigation Properties
-            .Concat(CenterPaths(nameof(Document.Segment)))
-
             .Concat(CurrencyPaths(nameof(Document.Currency)))
             .Concat(CenterPaths(nameof(Document.Center)))
 

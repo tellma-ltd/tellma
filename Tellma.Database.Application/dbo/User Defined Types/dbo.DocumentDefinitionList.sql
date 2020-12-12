@@ -17,11 +17,16 @@
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
-	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
-	--[DebitAgentDefinitionId]	NVARCHAR (50),
-	--[CreditAgentDefinitionId]	NVARCHAR (50),
-	--[NotedAgentDefinitionId]	NVARCHAR (50),
+	
+	[PostingDateVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([PostingDateVisibility] IN (N'None', N'Optional', N'Required')),
+	[CenterVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
+
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
+	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
+
+	[HasAttachments]			BIT NOT NULL DEFAULT 1,
+	[HasBookkeeping]			BIT NOT NULL DEFAULT 1,
+
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),	-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]			DECIMAL (9,4)

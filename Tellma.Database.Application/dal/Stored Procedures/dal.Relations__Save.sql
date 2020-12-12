@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Relations] AS t
 		USING (
-			SELECT [Index], [Id], --[OperatingSegmentId],
+			SELECT [Index], [Id],
 				@DefinitionId AS [DefinitionId],
 				[Name], 
 				[Name2], 

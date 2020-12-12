@@ -209,7 +209,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const s = this.state.detailsState as DocumentDetailsState;
     // -20 = Attachments
     // -10 = Bookkeeping
-    if (s.tab === -20 || (!this.isJV && s.tab === -10)) {
+    if ((this.showAttachmentsTab && s.tab === -20) || (!this.showBookkeepingTab && s.tab === -10)) {
       return s.tab;
     }
 
@@ -219,8 +219,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return s.tab;
     } else {
       // Get the first visible tab
-      return visibleTabs[0] || -10;
+      return visibleTabs[0] || (this.showBookkeepingTab ? -10 : null) || (this.showAttachmentsTab ? -20 : null);
     }
+  }
+
+  public get showBookkeepingTab() {
+    return this.definition.HasBookkeeping;
+  }
+
+  public get showAttachmentsTab() {
+    return this.definition.HasAttachments;
   }
 
   /**
@@ -641,7 +649,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   ////////////// Properties of the document
 
-  public showClearance(_: DocumentForSave) {
+  public showClearance(_: DocumentForSave): boolean {
     return !!this.definition.ClearanceVisibility;
   }
 
@@ -661,27 +669,60 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Posting Date
 
-  public showDocumentPostingDate(_: DocumentForSave) {
-    return this.definition.PostingDateVisibility || this.isJV;
+  public showDocumentPostingDate(_: DocumentForSave): boolean {
+    return !!this.definition.PostingDateVisibility;
   }
 
   public showDocumentPostingDateIsCommon(_: Document): boolean {
-    return !this.isJV;
+    return this.definition.PostingDateIsCommonVisibility;
   }
 
   public requireDocumentPostingDate(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentPostingDate || this.isJV;
+
+    return this.definition.PostingDateVisibility === 'Required' || this._requireDocumentPostingDate;
   }
 
   public readonlyDocumentPostingDate(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentPostingDate && !this.isJV;
+
+    return this._readonlyDocumentPostingDate && !this.isJV; // JV Posting Date is never readonly
   }
 
   public labelDocumentPostingDate(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'PostingDateLabel') ||
       this.translate.instant('Document_PostingDate');
+  }
+
+  // Center (Business Unit)
+
+  public showDocumentCenter(_: DocumentForSave): boolean {
+    return !!this.definition.CenterVisibility && this.ws.settings.IsMultiBusinessUnit;
+  }
+
+  public showDocumentCenterIsCommon(_: Document): boolean {
+    return this.definition.CenterIsCommonVisibility;
+  }
+
+  public requireDocumentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+
+    return this.definition.CenterVisibility === 'Required' || this._requireDocumentCenter;
+  }
+
+  public readonlyDocumentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+
+    return this._readonlyDocumentCenter && !this.isJV;
+  }
+
+  public labelDocumentCenter(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'CenterLabel') ||
+      this.translate.instant('Document_Center');
+  }
+
+  public filterDocumentCenter(_: DocumentForSave): string {
+    return this.definition.CenterFilter;
   }
 
   // Document Memo
@@ -691,37 +732,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public showDocumentMemoIsCommon(_: DocumentForSave): boolean {
-    return this.definition.MemoIsCommonVisibility && !this.isJV;
+    return this.definition.MemoIsCommonVisibility;
   }
 
   public requireDocumentMemo(doc: Document): boolean {
     this.computeDocumentSettings(doc);
+
     return this.definition.MemoVisibility === 'Required' || this._requireDocumentMemo;
   }
 
   public readonlyDocumentMemo(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentMemo;
+
+    return this._readonlyDocumentMemo && !this.isJV;
   }
 
   public labelDocumentMemo(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
-  }
-
-  // Segment
-
-  public showDocumentSegment(_: DocumentForSave) {
-    return this.ws.settings.IsMultiSegment;
-  }
-
-  public labelDocumentSegment(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'SegmentLabel') ||
-      this.translate.instant('Document_Segment');
-  }
-
-  public readonlyDocumentSegment(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return false; // TODO
   }
 
   // Currency
@@ -747,31 +774,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public filterDocumentCurrency(_: DocumentForSave): string {
     return this.definition.CurrencyFilter;
-  }
-
-  // Center
-
-  public showDocumentCenter(_: DocumentForSave) {
-    return this.definition.CenterVisibility;
-  }
-
-  public requireDocumentCenter(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentCenter;
-  }
-
-  public readonlyDocumentCenter(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentCenter;
-  }
-
-  public labelDocumentCenter(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'CenterLabel') ||
-      this.translate.instant('Document_Center');
-  }
-
-  public filterDocumentCenter(_: DocumentForSave): string {
-    return this.definition.CenterFilter;
   }
 
   // Custodian
@@ -2567,7 +2569,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._invisibleTabs;
   }
 
-  public onOtherTab(lineDefId: number, model: Document): void {
+  public onOtherTab(lineDefId: number, _: Document): void {
     this._visibleTabs.push(lineDefId);
     this._visibleTabs = this._visibleTabs.slice();
     this._invisibleTabs = this._invisibleTabs.filter(e => e !== lineDefId);
@@ -2575,12 +2577,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.setActiveTab(lineDefId);
   }
 
-  public manualLineTabTitle(model: DocumentForSave): string {
-    if (this.isJV) {
-      return this.translate.instant('Entries');
-    } else {
-      return this.tabTitle(this.ws.definitions.ManualLinesDefinitionId, model);
-    }
+  public bookkeepingManualAdjustmentsTitle(model: DocumentForSave): string {
+    return this.tabTitle(this.ws.definitions.ManualLinesDefinitionId, model);
   }
 
   public tabTitle(lineDefId: number, model: DocumentForSave): string {
@@ -2672,7 +2670,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showManualLineProps(model: Document): boolean {
     // Manual Line Memo and Posting Date fields are shown in non JV documents that have a manual line
-    return !this.isJV && !!this.manualLine(model);
+    return !!this.manualLine(model) && !(this.showDocumentPostingDate(model) && this.showDocumentMemo(model));
   }
 
   public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
@@ -4505,25 +4503,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             defIds = this.definitionIdsCustodian_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Relation(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectCustodian_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectCustodian_Smart(lineDefId);
             break;
           case 'CustodyId':
             defIds = this.definitionIdsCustody_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Custody(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectCustody_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectCustody_Smart(lineDefId);
             break;
           case 'ParticipantId':
             defIds = this.definitionIdsParticipant_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Relation(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectParticipant_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectParticipant_Smart(lineDefId);
             break;
           case 'ResourceId':
             defIds = this.definitionIdsResource_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Resource(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectResource_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectResource_Smart(lineDefId);
             break;
         }
 

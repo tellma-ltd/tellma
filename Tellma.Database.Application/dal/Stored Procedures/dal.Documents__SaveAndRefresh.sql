@@ -28,7 +28,6 @@ BEGIN
 				[Clearance],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
-				[SegmentId],
 				
 				[CurrencyId],
 				[CurrencyIsCommon],
@@ -74,7 +73,6 @@ BEGIN
 				t.[Clearance]					= s.[Clearance],
 				t.[Memo]						= s.[Memo],
 				t.[MemoIsCommon]				= s.[MemoIsCommon],
-				t.[SegmentId]					= s.[SegmentId],
 				
 				t.[CurrencyId]					= s.[CurrencyId],
 				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
@@ -115,7 +113,6 @@ BEGIN
 				[Clearance],
 				[Memo],
 				[MemoIsCommon],
-				[SegmentId],
 				
 				[CurrencyId],
 				[CurrencyIsCommon],
@@ -153,7 +150,6 @@ BEGIN
 				s.[Clearance],
 				s.[Memo],
 				s.[MemoIsCommon],
-				s.[SegmentId],		
 
 				s.[CurrencyId],
 				s.[CurrencyIsCommon],

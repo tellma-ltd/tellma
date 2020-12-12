@@ -15,21 +15,29 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	SELECT DISTINCT TOP (@Top)
 		CASE
 			WHEN LDC.InheritsFromHeader >= 2 AND (
-				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
-				FL.Id = N'ParticipantId' AND D.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND D.[CurrencyIsCommon] = 1 OR
+				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
+				FL.Id = N'CustodianId' AND D.[CustodianIsCommon] = 1 OR
+				FL.Id = N'CustodyId' AND D.[CustodyIsCommon] = 1 OR
+				FL.Id = N'ParticipantId' AND D.[ParticipantIsCommon] = 1 OR
+				FL.Id = N'ResourceId' AND D.[ResourceIsCommon] = 1 OR
+				FL.Id = N'Quantity' AND D.[QuantityIsCommon] = 1 OR
+				FL.Id = N'UnitId' AND D.[UnitIsCommon] = 1 OR
+				FL.Id = N'Time1' AND D.[Time1IsCommon] = 1 OR
+				FL.Id = N'Time2' AND D.[Time2IsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND D.[ExternalReferenceIsCommon] = 1 OR
 				FL.Id = N'AdditionalReference' AND D.[AdditionalReferenceIsCommon] = 1
 			) THEN
 				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
-				FL.Id = N'ParticipantId' AND DLDE.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'CurrencyId' AND DLDE.[CurrencyIsCommon] = 1 OR
+				FL.Id = N'CenterId' AND DLDE.[CenterIsCommon] = 1 OR
+				FL.Id = N'CustodianId' AND DLDE.[CustodianIsCommon] = 1 OR
 				FL.Id = N'CustodyId' AND DLDE.[CustodyIsCommon] = 1 OR
+				FL.Id = N'ParticipantId' AND DLDE.[ParticipantIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
 				FL.Id = N'Quantity' AND DLDE.[QuantityIsCommon] = 1 OR
 				FL.Id = N'UnitId' AND DLDE.[UnitIsCommon] = 1 OR
-				FL.Id = N'CenterId' AND DLDE.[CenterIsCommon] = 1 OR
 				FL.Id = N'Time1' AND DLDE.[Time1IsCommon] = 1 OR
 				FL.Id = N'Time2' AND DLDE.[Time2IsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND DLDE.[ExternalReferenceIsCommon] = 1 OR

@@ -3,7 +3,7 @@
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
-	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
+	DECLARE @BeforeBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
@@ -73,12 +73,12 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[Centers] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
-
-	-- Whether there are multiple active segments is an important cached value of the settings
-	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsSegment] = 1 AND [IsActive] = 1);
-
-	-- BUG: filling Maximus centers did not update the segment count
-	IF (@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
+	
+	-- Whether there are multiple active business units is an important cached value of the settings
+	DECLARE @AfterBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
+	
+	-- BUG: filling Maximus centers did not update the business unit count
+	IF (@BeforeBuCount <= 1 AND @AfterBuCount > 1) OR (@BeforeBuCount > 1 AND @AfterBuCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
 
 	IF @ReturnIds = 1

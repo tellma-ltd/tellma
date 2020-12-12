@@ -1529,7 +1529,7 @@ export class ApiService {
     };
   }
 
-  private updateDefinitionStateFactory<TDefinition>(apiSegment: string, cancellationToken$: Observable<void>) {
+  private updateDefinitionStateFactory<TDefinition>(endpoint: string, cancellationToken$: Observable<void>) {
     return (ids: (string | number)[], args: UpdateStateArguments, extras?: { [key: string]: any }) => {
 
       const paramsArray = this.stringifyActionArguments(args);
@@ -1538,7 +1538,7 @@ export class ApiService {
       paramsArray.push(`state=${encodeURIComponent(args.state)}`);
 
       const params: string = paramsArray.join('&');
-      const url = appsettings.apiAddress + `api/${apiSegment}/update-state?${params}`;
+      const url = appsettings.apiAddress + `api/${endpoint}/update-state?${params}`;
 
       this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<TDefinition>>(url, ids, {

@@ -31,8 +31,15 @@ SET NOCOUNT ON;
 				t.[TitlePlural3]		= s.[TitlePlural3],
 				t.[Prefix]				= s.[Prefix],
 				t.[CodeWidth]			= s.[CodeWidth],
-				t.[MemoVisibility]		= s.[MemoVisibility],
+
+				t.[PostingDateVisibility]= s.[PostingDateVisibility],
+				t.[CenterVisibility]	= s.[CenterVisibility],
 				t.[ClearanceVisibility]	= s.[ClearanceVisibility],
+				t.[MemoVisibility]		= s.[MemoVisibility],
+
+				t.[HasAttachments]		= s.[HasAttachments],
+				t.[HasBookkeeping]		= s.[HasBookkeeping],
+
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
 				t.[MainMenuSortKey]		= s.[MainMenuSortKey]
@@ -43,7 +50,7 @@ SET NOCOUNT ON;
 				[Description2],
 				[Description3],
 				[TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
-				[Prefix], [CodeWidth], [MemoVisibility], [ClearanceVisibility],
+				[Prefix], [CodeWidth], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MemoVisibility], [HasAttachments], [HasBookkeeping],
 				[MainMenuIcon], [MainMenuSection], [MainMenuSortKey]
 			) VALUES (
 				s.[Code], s.[IsOriginalDocument], s.[DocumentType],
@@ -51,7 +58,7 @@ SET NOCOUNT ON;
 				s.[Description2],
 				s.[Description3],
 				s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
-				s.[Prefix], s.[CodeWidth], s.[MemoVisibility], s.[ClearanceVisibility],
+				s.[Prefix], s.[CodeWidth], s.[PostingDateVisibility], s.[CenterVisibility], s.[ClearanceVisibility], s.[MemoVisibility], s.[HasAttachments], s.[HasBookkeeping],
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;

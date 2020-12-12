@@ -298,9 +298,6 @@
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>تكاليف تصنيع</value>
   </data>
-  <data name="Center_IsSegment" xml:space="preserve">
-    <value>قطاع؟</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>
   </data>
@@ -580,9 +577,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
   </data>
-  <data name="Document_Segment" xml:space="preserve">
-    <value>القطاع</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
   </data>
@@ -633,6 +627,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
     <value>نظامي</value>
+  </data>
+  <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
+    <value>له قيود مالية</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>مستند أصلي؟</value>

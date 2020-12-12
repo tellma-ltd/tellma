@@ -20,8 +20,6 @@ namespace Tellma.Controllers.Dto
 
         public int? AccountId { get; set; }
 
-        public int? SegmentId { get; set; }
-
         public int? CustodianId { get; set; }
 
         public int? CustodyId { get; set; }

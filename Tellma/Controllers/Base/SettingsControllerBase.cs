@@ -187,7 +187,7 @@ namespace Tellma.Controllers
 
         public static async Task<Versioned<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
-            var (isMultiSegment, generalSettings, financialSettings) = await repo.Settings__Load(cancellation);
+            var (isMultiBusinessUnit, generalSettings, financialSettings) = await repo.Settings__Load(cancellation);
             if (generalSettings == null)
             {
                 // This should never happen
@@ -206,8 +206,8 @@ namespace Tellma.Controllers
                 }
             }
 
-            // Is Multi Center/Segment
-            settingsForClient.IsMultiSegment = isMultiSegment;
+            // Is Multi Business Unit
+            settingsForClient.IsMultiBusinessUnit = isMultiBusinessUnit;
 
             // Financial Settings
             settingsForClient.FunctionalCurrencyId = financialSettings.FunctionalCurrencyId;

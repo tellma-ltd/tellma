@@ -156,9 +156,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     this._subscriptions.unsubscribe();
   }
 
-  private _ignoreUnsavedChanges: boolean;
-
-  private urlStateChanged(ignoreUnsavedChanges = false): void {
+  private urlStateChanged(): void {
     // We wish to store part of the page state in the URL
     // This method is called whenever that part of the state has changed
     // Below we capture the new URL state, and then navigate to the new URL
@@ -183,15 +181,8 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       }
     }
 
-    // Collapse, special case
-    if (args.collapse) {
-      params.collapse = 'true';
-    }
-
     // navigate to the new url
-    this._ignoreUnsavedChanges = ignoreUnsavedChanges;
-    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true })
-      .then(() => delete this._ignoreUnsavedChanges, () => delete this._ignoreUnsavedChanges);
+    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
 
     // Save the arguments in user settings
     const argsString = JSON.stringify(args);
@@ -332,7 +323,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public canDeactivate(): boolean | Observable<boolean> {
-    if (this.isDirty && !this._ignoreUnsavedChanges) {
+    if (this.isDirty) {
 
       // IF there are unsaved changes, prompt the user asking if they would like them discarded
       const modal = this.modalService.open(this.unsavedChangesModal);
@@ -2060,14 +2051,13 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   // Collapse parameters
   public get collapseParameters(): boolean {
-    return this.state.arguments.collapse;
+    return this.state.collapseParams;
   }
 
   public set collapseParameters(v: boolean) {
-    const args = this.state.arguments;
-    if (args.collapse !== v) {
-      args.collapse = v;
-      this.urlStateChanged(true);
+    const s = this.state;
+    if (s.collapseParams !== v) {
+      s.collapseParams = v;
     }
   }
 

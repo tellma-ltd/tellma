@@ -15,7 +15,6 @@
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
-	[SegmentId]						INT	CONSTRAINT [FK_Documents__SegmentId] REFERENCES dbo.[Centers]([Id]), --
 
 	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_Documents__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,

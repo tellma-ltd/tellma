@@ -50,7 +50,7 @@ namespace Tellma.Controllers.Dto
 
         public DateTimeOffset CreatedAt { get; set; }
 
-        public bool IsMultiSegment { get; set; }
+        public bool IsMultiBusinessUnit { get; set; }
 
         public bool SmsEnabled { get; set; }
     }

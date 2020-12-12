@@ -717,6 +717,8 @@ export class ReconciliationStore extends ReportStoreBase {
   unreconciled_entries_count: number;
   unreconciled_ex_entries_count: number;
   reconciled_count: number;
+
+  collapseParams = false; // When true hides the reconciliation parameters
 }
 
 export class ReportStore extends ReportStoreBase {
@@ -730,6 +732,7 @@ export class ReportStore extends ReportStoreBase {
   extras: { [key: string]: any };
   filter: string; // the one used to retrieve the result
   disableFetch = false; // set it to true upon a catastrophic failure from a bad definition
+  collapseParams = false; // When true hides the report parameters
 
   //////////// Pivot table
 
