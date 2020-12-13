@@ -734,6 +734,8 @@
     <Build Include="map\map.FinancialSettings.sql" />
     <Build Include="bll\Stored Procedures\bll.FinancialSettings_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.FinancialSettings__Save.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.DuplicateSalesInvoices.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.DuplicatePurchasesInvoices.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
