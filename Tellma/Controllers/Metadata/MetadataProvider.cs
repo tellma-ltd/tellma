@@ -175,7 +175,7 @@ namespace Tellma.Controllers
                     if (multilingualAtt != null)
                     {
                         string name = multilingualAtt.Name;
-                        if (settings.SecondaryLanguageId != null || settings.TernaryLanguageId != null)
+                        if (settings.SecondaryLanguageId != null || settings.TernaryLanguageId != null) // Bi-lingual or tri-lingual company
                         {
                             display = multilingualAtt.Language switch
                             {
@@ -185,9 +185,15 @@ namespace Tellma.Controllers
                                 _ => throw new InvalidOperationException($"Unknown Language {multilingualAtt.Language}") // Future proofing
                             };
                         }
-                        else
+                        else // uni-lingual company
                         {
-                            display = () => _localizer[name];
+                            display = multilingualAtt.Language == Language.Primary ? () => _localizer[name] : (Func<string>)null;
+
+                            // This one goes away entirely in uni-lingual
+                            if (propDesc.Name == nameof(MarkupTemplate.SupportsPrimaryLanguage))
+                            {
+                                display = null;
+                            }
                         }
                     }
 
