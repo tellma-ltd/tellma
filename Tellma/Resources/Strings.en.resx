@@ -1588,9 +1588,6 @@
   <data name="GeneralSettings" xml:space="preserve">
     <value>General Settings</value>
   </data>
-  <data name="GeneralSettings" xml:space="preserve">
-    <value>General Settings</value>
-  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>Generate Recovery Codes</value>
   </data>

@@ -209,7 +209,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const s = this.state.detailsState as DocumentDetailsState;
     // -20 = Attachments
     // -10 = Bookkeeping
-    if ((this.showAttachmentsTab && s.tab === -20) || (!this.showBookkeepingTab && s.tab === -10)) {
+    if ((this.showAttachmentsTab && s.tab === -20) || (this.showBookkeepingTab && s.tab === -10)) {
       return s.tab;
     }
 
