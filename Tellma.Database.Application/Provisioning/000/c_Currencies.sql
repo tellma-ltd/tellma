@@ -1,4 +1,6 @@
-﻿INSERT INTO @Currencies([Index], [NumericCode], [Id], [Name], [Description],[E]) VALUES
+﻿EXEC sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
+
+INSERT INTO @Currencies([Index], [NumericCode], [Id], [Name], [Description],[E]) VALUES
 (0,784,N'AED',N'AE Dirham',N'United Arab Emirates Dirham',2),
 (1,971,N'AFN',N'afghani',N'Afghan afghani',2),
 (2,8,N'ALL',N'Lek',N'Albanian lek',2),
