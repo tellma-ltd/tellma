@@ -4,6 +4,7 @@ AS
 RETURN (
 	SELECT
 		[FunctionalCurrencyId],
+		[TaxIdentificationNumber],
 		[ArchiveDate],
 		[FinancialModifiedAt],
 		[FinancialModifiedById]	

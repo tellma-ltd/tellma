@@ -21,4 +21,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[GeneralModifiedById]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7eb8a2be-1430-455f-a5da-3c039f75fb3b" ChangeDateTime="12/14/2020 08:24:04">
+    <Property Name="ElementName" Value="[api].[Settings__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GeneralSettings__Save]" />
+  </Operation>
 </Operations>

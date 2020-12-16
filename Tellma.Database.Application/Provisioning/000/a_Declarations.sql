@@ -6,8 +6,12 @@
 	DECLARE @PrimaryLanguageId NVARCHAR(5)			= N'$(PrimaryLanguageId)'; --N'en';
 	DECLARE @SecondaryLanguageId NVARCHAR(5)		= N'$(SecondaryLanguageId)'; --N'en';
 	DECLARE @TernaryLanguageId NVARCHAR(5)			= N'$(TernaryLanguageId)'; --N'en';
-	DECLARE @FunctionalCurrencyId NCHAR(3)			= N'$(FunctionalCurrency)'; --N'ETB'
+	DECLARE @FunctionalCurrencyId NCHAR(3)			= N'$(FunctionalCurrency)';
 	DECLARE @OverwriteDb BIT						= CAST(N'$(OverwriteDB)' AS BIT);
+	
+	DECLARE @BrandColor NCHAR (7) = NULL;
+
+
 
 	-- Country selection defines functional currency, tax laws, labor laws, secondary language, and account classification
 	-- It also defines what attributes are critical in relations definitions, and resource definitions
