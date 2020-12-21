@@ -32,7 +32,7 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor, EntityDescriptor } from '~/app/data/entities/base/metadata';
+import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
@@ -4533,7 +4533,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           return;
         }
 
-        const barcodeForFilter = barcodePropDescriptor.control === 'text' ? `'${barcode.replace(`'`, `''`)}'` : barcode.toString();
+        const barcodeForFilter = isText(barcodePropDescriptor) ? `'${barcode.replace(`'`, `''`)}'` : barcode.toString();
         const barcodeFilter = `${barcodeProperty} eq ${barcodeForFilter}`;
         const activeFilter = ' and IsActive eq true';
         const baseFilter = this.getFilter(lineDefId, barcodeColumnIndex);

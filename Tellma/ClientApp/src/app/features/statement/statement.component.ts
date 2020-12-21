@@ -294,28 +294,32 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       accountId: this.accountId
     };
 
-    if (!!this.custodianId && this.showCustodianParameter) {
-      args.custodianId = this.custodianId;
+    if (this.showCustodianParameter) {
+      args.custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
     }
 
-    if (!!this.custodyId && this.showCustodyParameter) {
-      args.custodyId = this.custodyId;
+    if (this.showCustodyParameter) {
+      args.custodyId = this.readonlyCustody_Manual ? this.readonlyValueCustodyId_Manual : this.custodyId;
     }
 
-    if (!!this.participantId && this.showParticipantParameter) {
-      args.participantId = this.participantId;
+    if (this.showParticipantParameter) {
+      args.participantId = this.readonlyParticipant_Manual ? this.readonlyValueParticipantId_Manual : this.participantId;
     }
 
-    if (!!this.resourceId && this.showResourceParameter) {
-      args.resourceId = this.resourceId;
+    if (this.showResourceParameter) {
+      args.resourceId = this.readonlyResource_Manual ? this.readonlyValueResourceId_Manual : this.resourceId;
     }
 
-    if (!!this.entryTypeId && this.showEntryTypeParameter) {
-      args.entryTypeId = this.entryTypeId;
+    if (this.showEntryTypeParameter) {
+      args.entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
     }
 
-    if (!!this.centerId && this.showCenterParameter) {
-      args.centerId = this.centerId;
+    if (this.showCenterParameter) {
+      args.centerId = this.readonlyCenter_Manual ? this.readonlyValueCenterId_Manual : this.centerId;
+    }
+
+    if (this.showCurrencyParameter) {
+      args.currencyId = this.currencyId;
     }
 
     if (!!this.currencyId && this.showCurrencyParameter) {

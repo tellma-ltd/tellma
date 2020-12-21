@@ -36,8 +36,8 @@ export enum ReportView {
  */
 interface PivotHash {
   cell: DimensionCell;
-  values?: { [value: string]: PivotHash };
   children: DimensionCell[];
+  values?: { [value: string]: PivotHash };
   undefined?: PivotHash;
 }
 
@@ -267,7 +267,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     this.notifyFetch$.next();
   }
 
-  doFetch(): Observable<void> {
+  private doFetch(): Observable<void> {
 
     let s = this.state;
     if (s.disableFetch) {
@@ -664,27 +664,32 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       lowerCaseArgs[arg.toLowerCase()] = args[arg];
     }
 
-    const lowerCaseDefs: { [key: string]: boolean } = {};
+    const lowerCaseIsRequired: { [key: string]: boolean } = {};
     if (!!this.definition.Parameters) {
       for (const paramDef of this.definition.Parameters.filter(p => !!p.Key)) {
-        lowerCaseDefs[paramDef.Key.toLowerCase()] = paramDef.Visibility === 'Required';
+        lowerCaseIsRequired[paramDef.Key.toLowerCase()] = paramDef.Visibility === 'Required';
       }
     }
 
-    exp = this.applyArguments(exp, lowerCaseArgs, lowerCaseDefs);
+    exp = this.replaceFilterPlaceholders(exp, lowerCaseArgs, lowerCaseIsRequired);
 
     return FilterTools.stringify(exp);
   }
 
-  private applyArguments(
+  /**
+   * Replaces all @ placeholders in the expression tree with their values
+   * or if no value is supplied prunes the atom containing the placeholder
+   * out if it's optional or throws an error if the value is required
+   */
+  private replaceFilterPlaceholders(
     exp: FilterExpression, lowerCaseArgs: ReportArguments,
-    lowerCaseDefs: { [key: string]: boolean }): FilterExpression {
+    lowerCaseIsRequired: { [key: string]: boolean }): FilterExpression {
 
     switch (exp.type) {
       case 'conjunction':
       case 'disjunction':
-        const left = this.applyArguments(exp.left, lowerCaseArgs, lowerCaseDefs);
-        const right = this.applyArguments(exp.right, lowerCaseArgs, lowerCaseDefs);
+        const left = this.replaceFilterPlaceholders(exp.left, lowerCaseArgs, lowerCaseIsRequired);
+        const right = this.replaceFilterPlaceholders(exp.right, lowerCaseArgs, lowerCaseIsRequired);
         if (!!left && !!right) {
           exp.left = left;
           exp.right = right;
@@ -694,7 +699,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         }
 
       case 'negation':
-        const inner = this.applyArguments(exp.inner, lowerCaseArgs, lowerCaseDefs);
+        const inner = this.replaceFilterPlaceholders(exp.inner, lowerCaseArgs, lowerCaseIsRequired);
         if (!!inner) {
           exp.inner = inner;
           return exp;
@@ -707,7 +712,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         if (exp.value.startsWith('@')) {
           const keyLower = exp.value.substr(1).toLowerCase(); // case insensitive
           const value = lowerCaseArgs[keyLower];
-          const isRequired = !!lowerCaseDefs[keyLower];
+          const isRequired = !!lowerCaseIsRequired[keyLower];
 
           if (isSpecified(value)) {
             const entityDesc = entityDescriptorImpl(
@@ -1260,7 +1265,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      // Calculate the exportColSpan of every cell's parent
+      // Calculate the expandedColSpan of every cell's parent
       columnHeaders.forEach(row => row.forEach(cell => {
         cell.expandedColSpan = 0;
       }));

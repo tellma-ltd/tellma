@@ -583,7 +583,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   public showLang(lang: 1 | 2 | 3, model: MarkupTemplateForSave): boolean {
     return (lang === 1 && !!model.SupportsPrimaryLanguage) ||
       (lang === 2 && !!model.SupportsSecondaryLanguage && !!this.ws.settings.SecondaryLanguageId) ||
-      (lang === 2 && !!model.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
+      (lang === 3 && !!model.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
   }
 
   public showQueryByFilterParams(model: MarkupTemplateForSave) {

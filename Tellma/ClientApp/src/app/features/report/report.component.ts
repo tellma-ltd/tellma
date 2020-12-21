@@ -258,8 +258,8 @@ export class ReportComponent implements OnInit, OnDestroy {
       try {
         this._parametersErrorMessage = null;
         this._currentParameters = [];
-        this._currentDefinition = this.definition;
         this._currentFilter = this.definition.Filter;
+        this._currentDefinition = this.definition;
         this._currentEntityDescriptor = this.entityDescriptor;
 
         //////// (1) Get the default parameters from filter and built in parameter descriptors
