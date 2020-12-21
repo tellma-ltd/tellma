@@ -29,3 +29,15 @@ AS
 	AND (E.[CustodyId] = T.[CustodyId] OR E.[CustodyId] IS NULL AND T.[CustodyId] IS NULL)
 	WHERE D.[State] = 1
 	ORDER BY E.[ExternalReference], D.[Code]
+
+	-- 
+	SELECT E.ExternalReference, MIN(D.[Code]) AS Doc1, MAX(D.[Code]) AS Doc2
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
+	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
+	WHERE D.[State] = 1
+	AND LD.Code = N'CustomerPeriodInvoice'
+	AND E.ExternalReference like 'FS%'
+	GROUP BY E.[ExternalReference]--, E.[CustodyId]
+	HAVING COUNT(DISTINCT D.[Code]) > 1

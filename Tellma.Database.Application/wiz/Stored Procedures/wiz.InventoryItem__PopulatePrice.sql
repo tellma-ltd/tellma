@@ -47,7 +47,7 @@ AS
 		[Time1],
 		[Time2],
 		[ExternalReference],
-		[AdditionalReference],
+		[InternalReference],
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate])
@@ -68,7 +68,7 @@ AS
 		[Time1],
 		[Time2],
 		[ExternalReference],
-		[AdditionalReference],
+		[InternalReference],
 		[NotedAgentName],
 		[NotedAmount] * @Multiplier AS [NotedAmount],
 		[NotedDate]

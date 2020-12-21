@@ -475,7 +475,7 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'Check/Rcpt #', [AdditionalReferenceLabel] = N'Voucher #'
+	SET [ExternalReferenceLabel] = N'External Ref #', [InternalReferenceLabel] = N'Internal Ref #'
 WHERE [Concept] IN (
 	N'CashOnHand',
 	N'BalancesWithBanks'
@@ -541,7 +541,7 @@ WHERE [Concept] IN (
 	--[Time1Label], [Time1Label2], [Time1Label3],
 	--[Time2Label], [Time2Label2], [Time2Label3],
 	--[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	--[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
+	--[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	--[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	--[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	--[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
@@ -944,7 +944,7 @@ INSERT INTO @AccountTypes(
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
 	[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
+	[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
@@ -963,7 +963,7 @@ SELECT
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
 	[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
+	[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],

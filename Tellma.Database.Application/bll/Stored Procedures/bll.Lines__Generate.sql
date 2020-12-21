@@ -49,7 +49,7 @@ AS
 	[E].[Time1],
 	[E].[Time2],
 	[E].[ExternalReference],
-	[E].[AdditionalReference],
+	[E].[InternalReference],
 	[E].[NotedAgentName],
 	[E].[NotedAmount],
 	[E].[NotedDate],

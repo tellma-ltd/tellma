@@ -36,8 +36,8 @@
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
-	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
+	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
-	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number
-	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0
+	[InternalReference]				NVARCHAR (50),
+	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0
 );

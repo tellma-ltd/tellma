@@ -103,7 +103,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodianId], E.[CustodyId],
 			E.[ParticipantId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
-			E.[ExternalReference], E.[AdditionalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
+			E.[ExternalReference], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
 		JOIN dbo.Entries BE ON E.Id = BE.Id
@@ -125,7 +125,7 @@ BEGIN
 		E.[Time1]				= IIF(CTE.[ColumnName] = N'Time1', CTE.[Time1], E.[Time1]),
 		E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
 		E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
-		E.[AdditionalReference]	= IIF(CTE.[ColumnName] = N'AdditionalReference', CTE.[AdditionalReference], E.[AdditionalReference]),
+		E.[InternalReference]	= IIF(CTE.[ColumnName] = N'InternalReference', CTE.[InternalReference], E.[InternalReference]),
 		E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
 		E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
 		E.[NotedDate]			= IIF(CTE.[ColumnName] = N'NotedDate', CTE.[NotedDate], E.[NotedDate]),
@@ -185,7 +185,7 @@ BEGIN
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 
 	--	For Manual JV, get center from resource, if any
-	IF (1=0) -- Skip this
+	--IF (1=0) -- Skip this, not sure why I had it
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(

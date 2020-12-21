@@ -101,6 +101,7 @@
     <Folder Include="_Azure" />
     <Folder Include="Provisioning\100" />
     <Folder Include="Provisioning\200" />
+    <Folder Include="Provisioning\299" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -338,7 +339,7 @@
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
     <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
     <Build Include="bll\Stored Procedures\bll.GeneralSettings_Validate__Save.sql" />
-    <Build Include="api\Stored Procedures\api.Settings__Save.sql" />
+    <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.WideLines__Unpivot.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitionEntries__Pivot.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Delete.sql" />
@@ -733,6 +734,13 @@
     <Build Include="dal\Stored Procedures\dal.FinancialSettings__Save.sql" />
     <Build Include="rpt\Stored Procedures\rpt.DuplicateSalesInvoices.sql" />
     <Build Include="rpt\Stored Procedures\rpt.DuplicatePurchasesInvoices.sql" />
+    <None Include="Provisioning\299\00_Script.sql" />
+    <None Include="Provisioning\299\299_11Users.sql" />
+    <None Include="Provisioning\299\299_12Permissions.sql" />
+    <None Include="Provisioning\299\299_21Lookups.sql" />
+    <None Include="Provisioning\299\299_22Centers.sql" />
+    <None Include="Provisioning\299\299_24Resources.sql" />
+    <None Include="Provisioning\299\21_Units.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
