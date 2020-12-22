@@ -295,31 +295,45 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     if (this.showCustodianParameter) {
-      args.custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
+      const custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
+      if (!!custodianId) {
+        args.custodianId = custodianId;
+      }
     }
 
     if (this.showCustodyParameter) {
-      args.custodyId = this.readonlyCustody_Manual ? this.readonlyValueCustodyId_Manual : this.custodyId;
+      const custodyId = this.readonlyCustody_Manual ? this.readonlyValueCustodyId_Manual : this.custodyId;
+      if (!!custodyId) {
+        args.custodyId = custodyId;
+      }
     }
 
     if (this.showParticipantParameter) {
-      args.participantId = this.readonlyParticipant_Manual ? this.readonlyValueParticipantId_Manual : this.participantId;
+      const participantId = this.readonlyParticipant_Manual ? this.readonlyValueParticipantId_Manual : this.participantId;
+      if (!!participantId) {
+        args.participantId = participantId;
+      }
     }
 
     if (this.showResourceParameter) {
-      args.resourceId = this.readonlyResource_Manual ? this.readonlyValueResourceId_Manual : this.resourceId;
+      const resourceId = this.readonlyResource_Manual ? this.readonlyValueResourceId_Manual : this.resourceId;
+      if (!!resourceId) {
+        args.resourceId = resourceId;
+      }
     }
 
     if (this.showEntryTypeParameter) {
-      args.entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
+      const entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
+      if (!!entryTypeId) {
+        args.entryTypeId = entryTypeId;
+      }
     }
 
     if (this.showCenterParameter) {
-      args.centerId = this.readonlyCenter_Manual ? this.readonlyValueCenterId_Manual : this.centerId;
-    }
-
-    if (this.showCurrencyParameter) {
-      args.currencyId = this.currencyId;
+      const centerId = this.readonlyCenter_Manual ? this.readonlyValueCenterId_Manual : this.centerId;
+      if (!!centerId) {
+        args.centerId = centerId;
+      }
     }
 
     if (!!this.currencyId && this.showCurrencyParameter) {
@@ -1478,7 +1492,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
         const baseUnitDefined = !!resourceDef && !!resourceDef.UnitCardinality && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
-        const baseUnitId  = baseUnitDefined ? resource.UnitId : null;
+        const baseUnitId = baseUnitDefined ? resource.UnitId : null;
 
         this._columns.push({
           select: ['Direction', 'Quantity'],
