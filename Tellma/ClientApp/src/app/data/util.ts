@@ -1,11 +1,11 @@
 import { EntitiesResponse } from './dto/entities-response';
-import { WorkspaceService, EntityWorkspace } from './workspace.service';
+import { WorkspaceService, EntityWorkspace, TenantWorkspace } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { from, Observable, Observer, of, throwError, zip } from 'rxjs';
-import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control } from './entities/base/metadata';
+import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control, DataType, ChoicePropDescriptor } from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 import { insert, set, getSelection } from 'text-field-edit';
@@ -771,28 +771,68 @@ export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
   return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }
 
-export function descFromControlOptions(control: Control, options: string, original?: PropDescriptor) {
+/**
+ * Constructs a PropDescriptor from scratch using the provided control and control options values.
+ */
+export function descFromControlOptions(ws: TenantWorkspace, control: Control, optionsJSON: string, label?: () => string): PropDescriptor {
+  // This function takes control and control options and uses them to override a prop descriptor or construct it from scratch
+  // If constructed from scratch
+  label = label || (() => '');
+  let options: any;
+  if (!!optionsJSON) {
+    try {
+      options = JSON.parse(optionsJSON);
+    } catch { }
+  }
+  options = options || {};
 
-  if (!original) {
-    let datatype: string;
-    switch (control) {
-      case 'text':
-        datatype = 'string';
-        break;
-      case 'number':
-      case 'percent':
-        datatype = 'decimal';
-        break;
-      case 'text':
-        datatype = 'string';
-        break;
-      case 'text':
-        datatype = 'string';
-        break;
-      case 'text':
-        datatype = 'string';
-        break;
-    }
+  switch (control) {
+    case 'text':
+      return { datatype: 'string', control, label };
+
+    case 'choice':
+      let choices: string[] = [];
+      let format = (c: string) => c;
+      if (!!options.choices && options.choices.length > 0) {
+        const choicesArray = options.choices as { value: string, name: string, name2: string, name3: string }[];
+        const choicesDic: { [key: string]: () => string } = {};
+        for (const e of choicesArray) {
+          choicesDic[e.value] = () => ws.getMultilingualValueImmediate(e, 'name');
+        }
+
+        choices = choicesArray.map((e) => e.value);
+        format = (c: string) => choicesDic[c] ? choicesDic[c]() : c;
+      }
+
+      return { datatype: 'string', control, label, choices, format };
+
+    case 'serial':
+      const prefix = options.prefix || '';
+      const codeWidth = options.codeWidth || 4;
+
+      return { datatype: 'integral', control, label, prefix, codeWidth };
+
+    case 'number':
+    case 'percent':
+      const minDecimalPlaces = options.minDecimalPlaces || 0;
+      const maxDecimalPlaces = !options.maxDecimalPlaces ? (options.maxDecimalPlaces === 0 ? 0 : 4) : options.maxDecimalPlaces;
+
+      return { datatype: 'decimal', control, label, minDecimalPlaces, maxDecimalPlaces };
+
+    case 'boolean':
+      return { datatype: 'boolean', control, label };
+
+    case 'date':
+      return { datatype: 'date', control, label };
+
+    case 'datetime':
+      return { datatype: 'datetimeoffset', control, label };
+
+    default:
+      const filter = options.filter;
+      const definitionId = options.definitionId;
+      return { datatype: 'entity', control, label, foreignKeyName: '', filter, definitionId };
+
   }
 }
 
