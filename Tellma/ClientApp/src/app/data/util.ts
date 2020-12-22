@@ -1,16 +1,15 @@
 import { EntitiesResponse } from './dto/entities-response';
-import { WorkspaceService, EntityWorkspace, TenantWorkspace } from './workspace.service';
+import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { from, Observable, Observer, of, throwError, zip } from 'rxjs';
-import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control, DataType, ChoicePropDescriptor } from './entities/base/metadata';
+import { from, Observable, Observer, throwError } from 'rxjs';
+import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control } from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 import { insert, set, getSelection } from 'text-field-edit';
-import { Attachment } from './entities/attachment';
-import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { formatSerial } from './entities/document';
 
 // This handy function takes the entities from the response and all their related entities
@@ -776,7 +775,7 @@ export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
  */
 export function descFromControlOptions(ws: TenantWorkspace, control: Control, optionsJSON: string, label?: () => string): PropDescriptor {
   // This function takes control and control options and uses them to override a prop descriptor or construct it from scratch
-  // If constructed from scratch
+
   label = label || (() => '');
   let options: any;
   if (!!optionsJSON) {
@@ -831,8 +830,8 @@ export function descFromControlOptions(ws: TenantWorkspace, control: Control, op
     default:
       const filter = options.filter;
       const definitionId = options.definitionId;
-      return { datatype: 'entity', control, label, foreignKeyName: '', filter, definitionId };
 
+      return { datatype: 'entity', control, label, foreignKeyName: '', filter, definitionId };
   }
 }
 
