@@ -93,10 +93,10 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
           if (!currentPropDesc) {
             throw new Error(`'${step}' does not exist on '${currentCollection || ''}', definition:'${currentDefinition || ''}'`);
 
-          } else if (currentPropDesc.control === 'navigation') {
+          } else if (currentPropDesc.datatype === 'entity') {
 
-            currentCollection = currentPropDesc.collection || currentPropDesc.type;
-            currentDefinition = currentPropDesc.definition;
+            currentCollection = currentPropDesc.control;
+            currentDefinition = currentPropDesc.definitionId;
             currentEntityDesc = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
           } else if (i !== pathArray.length - 1) {

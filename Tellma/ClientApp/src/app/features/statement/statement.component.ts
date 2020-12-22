@@ -15,7 +15,7 @@ import { Entity } from '~/app/data/entities/base/entity';
 import { DetailsEntry } from '~/app/data/entities/details-entry';
 import { formatDate, formatNumber } from '@angular/common';
 import { LineForQuery } from '~/app/data/entities/line';
-import { Document, metadata_Document } from '~/app/data/entities/document';
+import { Document, formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
 import { FriendlyError, mergeEntitiesInWorkspace, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
@@ -1301,7 +1301,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             const doc = this.ws.get('Document', line.DocumentId) as Document;
             const desc = metadata_Document(this.workspace, this.translate, doc.DefinitionId);
             const prop = desc.properties.SerialNumber as SerialPropDescriptor;
-            return prop.format(doc.SerialNumber);
+
+            return formatSerial(doc.SerialNumber, prop.prefix, prop.codeWidth);
           },
           weight: 1
         }];

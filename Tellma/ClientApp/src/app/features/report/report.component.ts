@@ -9,7 +9,7 @@ import {
   MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
 import {
-  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl,
+  ChoicePropDescriptor, PropDescriptor, entityDescriptorImpl,
   EntityDescriptor, metadata, getChoices, NavigationPropDescriptor
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
@@ -133,19 +133,20 @@ export class ReportComponent implements OnInit, OnDestroy {
                   urlValue = urlStringValue.toLowerCase() === 'true';
                   break;
                 case 'choice':
-                case 'state':
                   urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
                   break;
-                case 'navigation':
-                  const navPropDesc = p.desc as NavigationPropDescriptor;
-                  const collection = navPropDesc.type || navPropDesc.collection;
-                  const metadataFn = metadata[collection];
-                  if (!metadataFn) {
-                    // developer mistake
-                    console.error(`Collection @${collection} was not found`);
+                default:
+                  if (p.desc.datatype === 'entity') {
+                    const navPropDesc = p.desc as NavigationPropDescriptor;
+                    const collection = navPropDesc.control;
+                    const metadataFn = metadata[collection];
+                    if (!metadataFn) {
+                      // developer mistake
+                      console.error(`Collection @${collection} was not found`);
+                    }
+                    const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definitionId);
+                    urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
                   }
-                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
-                  urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
 
                   break;
               }
@@ -289,7 +290,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             propName = 'ParentId';
           } else {
             propDesc = entityDesc.properties[propName];
-            if (!!propDesc && propDesc.control === 'navigation') {
+            if (!!propDesc && propDesc.datatype === 'entity') {
               throw new Error(`Cannot terminate a filter path with a navigation property like '${propName}'`);
             }
           }
@@ -298,7 +299,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           // property, if so use the descriptor of that nav property instead
           propDesc = Object.keys(entityDesc.properties)
             .map(e => entityDesc.properties[e])
-            .find(e => e.control === 'navigation' && e.foreignKeyName === propName)
+            .find(e => e.datatype === 'entity' && e.foreignKeyName === propName)
             || propDesc; // Else rely on the descriptor of the prop itself
 
           if (!propDesc) {
@@ -374,7 +375,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._currentParameters;
   }
 
-  public choices(desc: ChoicePropDescriptor | StatePropDescriptor): SelectorChoice[] {
+  public choices(desc: ChoicePropDescriptor): SelectorChoice[] {
     return getChoices(desc);
   }
 

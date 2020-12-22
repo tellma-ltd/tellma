@@ -2,20 +2,30 @@
   <!-- Loaded Value -->
   <ng-container *ngSwitchCase="2" [ngSwitch]="control">
 
+    <!-- Error -->
     <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
-    <div class="d-inline text-nowrap" *ngSwitchCase="'state'" [style.text-align]="alignment">
-      <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
-    </div>
-    <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">&zwnj;{{ displayValue }}&zwnj;</span>
-    <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
 
-    <!-- <span *ngSwitchCase="'boolean'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'date'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'datetime'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'serial'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'text'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'choice'">{{ displayValue }}</span> -->
-    <span *ngSwitchDefault>{{ displayValue }}</span>
+    <!-- Choice -->
+    <div class="d-inline text-nowrap" *ngSwitchCase="'choice'" [style.text-align]="alignment">
+      
+      <span *ngIf="hasColor; else nocolor" class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
+      <ng-template #nocolor>
+        <span>{{ displayValue }}</span>
+      </ng-template>
+    </div>
+    
+    <!-- Number -->
+    <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">&zwnj;{{ displayValue }}&zwnj;</span>
+    
+    <ng-container *ngSwitchDefault>
+      <!-- Entity -->
+      <span *ngIf="isEntity; else simple">{{ navigationValue }}</span>
+
+      <!-- Everything Else -->
+      <ng-template #simple>
+        <span>{{ displayValue }}</span>
+      </ng-template>
+    </ng-container>
 
   </ng-container>
 

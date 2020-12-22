@@ -1155,7 +1155,8 @@
                     <ng-container *ngIf="hasManualLines">
                         <div class="col-12 mt-3 pb-2 border-bottom">
                             <h5 class="small2 font-weight-bold2">
-                                {{ (bookkeepingManualAdjustmentsTitle(model))  + ' (' + manualEntries(model).length + ')' }}</h5>
+                                {{ (bookkeepingManualAdjustmentsTitle(model))  + ' (' + manualEntries(model).length + ')' }}
+                            </h5>
                         </div>
                         <ng-container *ngTemplateOutlet="manualLines">
 
@@ -1190,7 +1191,7 @@
         </li>
 
         <!-- Attachments -->
-        <li class="{{ !showBookkeepingTab ? attachmentsClass : '' }}" [ngbNavItem]="-20"  *ngIf="showAttachmentsTab">
+        <li class="{{ !showBookkeepingTab ? attachmentsClass : '' }}" [ngbNavItem]="-20" *ngIf="showAttachmentsTab">
             <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
                         <fa-icon icon="exclamation">
@@ -2091,76 +2092,76 @@
 
     <!-- body -->
     <div class="modal-body">
-        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters"
-            [ngSwitch]="dataType(param.DataType)">
+        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters" [ngSwitch]="param.Control">
             <!-- Center -->
             <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
+                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter">
+                </t-centers-picker>
             </t-form-group>
 
             <!-- Unit -->
             <t-form-group *ngSwitchCase="'Unit'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-units-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
+                <t-units-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter">
                 </t-units-picker>
             </t-form-group>
 
             <!-- Currency -->
             <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
+                <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter">
                 </t-currencies-picker>
             </t-form-group>
 
             <!-- Relation -->
             <t-form-group *ngSwitchCase="'Relation'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-relations-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-relations-picker>
+                <t-relations-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter"
+                    [definitionIds]="[controlOptions(param)?.definitionId]"></t-relations-picker>
             </t-form-group>
 
             <!-- Custody -->
             <t-form-group *ngSwitchCase="'Custody'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-custodies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-custodies-picker>
+                <t-custodies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter"
+                    [definitionIds]="[controlOptions(param)?.definitionId]"></t-custodies-picker>
             </t-form-group>
 
             <!-- Lookup -->
             <t-form-group *ngSwitchCase="'Lookup'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-lookups-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionId]="dataTypeDefinitionId(param.DataType)"></t-lookups-picker>
+                <t-lookups-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter"
+                    [definitionId]="controlOptions(param)?.definitionId"></t-lookups-picker>
             </t-form-group>
 
             <!-- Resource -->
             <t-form-group *ngSwitchCase="'Resource'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <t-resources-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-resources-picker>
+                <t-resources-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="controlOptions(param)?.filter"
+                    [definitionIds]="[controlOptions(param)?.definitionId]"></t-resources-picker>
             </t-form-group>
 
-            <!-- Date -->
-            <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
+            <!-- date -->
+            <t-form-group *ngSwitchCase="'date'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
             </t-form-group>
 
-            <!-- Decimal -->
-            <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
+            <!-- number -->
+            <t-form-group *ngSwitchCase="'number'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
             </t-form-group>
 
-            <!-- Percentage -->
-            <t-form-group *ngSwitchCase="'Percentage'" class="t-form-group" style="margin-top:0!important"
+            <!-- percent -->
+            <t-form-group *ngSwitchCase="'percent'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]" [isPercentage]="true"></t-decimal-editor>
             </t-form-group>
 
-            <!-- String -->
-            <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
+            <!-- text -->
+            <t-form-group *ngSwitchCase="'text'" class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
                 <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
             </t-form-group>
@@ -2168,7 +2169,7 @@
             <!-- Default -->
             <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
                 [label]="parameterLabel(param)">
-                <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
+                <span class="text-danger">TODO: Implement Control: {{ param.Control }}</span>
             </t-form-group>
 
         </ng-container>

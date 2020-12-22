@@ -32,7 +32,7 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText } from '~/app/data/entities/base/metadata';
+import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, Control } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
@@ -4057,8 +4057,26 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return label;
   }
 
-  public dataType(dt: string) {
-    return !!dt ? dt.split('/')[0] : null;
+  private _controlOptionsJson: string;
+  private _controlOptionsResult: any;
+  public controlOptions(p: LineDefinitionGenerateParameterForClient) {
+    const ctrlOptionsJson = p.ControlOptions;
+    if (this._controlOptionsJson !== ctrlOptionsJson) {
+      this._controlOptionsJson = ctrlOptionsJson;
+
+      if (!ctrlOptionsJson) {
+        delete this._controlOptionsResult;
+      }
+
+      try {
+        this._controlOptionsResult = JSON.parse(ctrlOptionsJson);
+      } catch (e) {
+        console.error('Error parsing ControlOptions JSON:', e);
+        delete this._controlOptionsResult;
+      }
+    }
+
+    return this._controlOptionsResult;
   }
 
   public dataTypeDefinitionIds(dt: string): number[] {

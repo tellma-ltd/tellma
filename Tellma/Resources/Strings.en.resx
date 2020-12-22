@@ -418,6 +418,12 @@
   <data name="Definition_Archive" xml:space="preserve">
     <value>Archive</value>
   </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>Control</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>Control Options</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>Has Attachments</value>
   </data>
@@ -2127,12 +2133,6 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
-  </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>Data Type</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>Filter</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>Key</value>

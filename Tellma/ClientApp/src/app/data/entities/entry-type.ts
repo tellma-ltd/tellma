@@ -60,45 +60,50 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
 
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-        Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-        Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-        Code: { control: 'text', label: () => trx.instant('Code') },
-        Concept: { control: 'text', label: () => trx.instant('EntryType_Concept') },
-        IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
+        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+        Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+        Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+        Concept: { datatype: 'string', control: 'text', label: () => trx.instant('EntryType_Concept') },
+        IsAssignable: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsAssignable') },
 
         // tree stuff
         ParentId: {
+          datatype: 'integral',
           control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
           minDecimalPlaces: 0, maxDecimalPlaces: 0
         },
         Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'EntryType',
+          datatype: 'entity',
+          control: 'EntryType', label: () => trx.instant('TreeParent'),
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
+          datatype: 'integral',
           control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
         ActiveChildCount: {
+          datatype: 'integral',
           control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
           maxDecimalPlaces: 0, alignment: 'right'
         },
         Level: {
+          datatype: 'integral',
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
 
-        IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsSystem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsSystem') },
+        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 

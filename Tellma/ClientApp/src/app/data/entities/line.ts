@@ -63,22 +63,23 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => '',
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DocumentId: { control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Document: { control: 'navigation', label: () => trx.instant('Line_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
-                IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
-                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'LineDefinition', foreignKeyName: 'DefinitionId' },
-                PostingDate: { control: 'date', label: () => trx.instant('Line_PostingDate') },
-                TemplateLineId: { control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TemplateLine: { control: 'navigation', label: () => trx.instant('Line_TemplateLine'), type: 'LineForQuery', foreignKeyName: 'TemplateLineId' },
-                Multiplier: { control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                Memo: { control: 'text', label: () => trx.instant('Memo') },
-                Boolean1: { control: 'boolean', label: () => trx.instant('Line_Boolean1') },
-                Decimal1: { control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Text1: { control: 'text', label: () => trx.instant('Line_Text1') },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DocumentId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Document: { datatype: 'entity', control: 'Document', label: () => trx.instant('Line_Document'), foreignKeyName: 'DocumentId' },
+                IsSystem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsSystem') },
+                DefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Definition: { datatype: 'entity', control: 'LineDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
+                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Line_PostingDate') },
+                TemplateLineId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                TemplateLine: { datatype: 'entity', control: 'LineForQuery', label: () => trx.instant('Line_TemplateLine'), foreignKeyName: 'TemplateLineId' },
+                Multiplier: { datatype: 'decimal', control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                Memo: { datatype: 'string', control: 'text', label: () => trx.instant('Memo') },
+                Boolean1: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Line_Boolean1') },
+                Decimal1: { datatype: 'decimal', control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Text1: { datatype: 'string', control: 'text', label: () => trx.instant('Line_Text1') },
                 State: {
-                    control: 'state',
+                    datatype: 'integral',
+                    control: 'choice',
                     label: () => trx.instant('State'),
                     choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
                     format: (state: number) => {
@@ -105,10 +106,10 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 },
 
                 // Audit
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

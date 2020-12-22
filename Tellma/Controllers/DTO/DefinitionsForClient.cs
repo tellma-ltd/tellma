@@ -116,6 +116,8 @@ namespace Tellma.Controllers.Dto
         public string Label3 { get; set; }
         public string Visibility { get; set; }
         public string Value { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     public class ReportSelectDefinitionForClient
@@ -386,8 +388,8 @@ namespace Tellma.Controllers.Dto
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string Visibility { get; set; }
-        public string DataType { get; set; }
-        public string Filter { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     ///////////////////// Other Definitions

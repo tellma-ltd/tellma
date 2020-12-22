@@ -586,7 +586,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public hasChildren(info: FieldInfo): boolean {
-    return info.desc.control === 'navigation';
+    return info.desc.datatype === 'entity';
   }
 
   public showTreeNode(node: FieldInfo): boolean {
@@ -611,11 +611,11 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public onExpand(node: FieldInfo, index: number, model: ReportDefinition): void {
-    if (node.desc.control === 'navigation') {
+    if (node.desc.datatype === 'entity') {
       node.isExpanded = !node.isExpanded;
       if (node.isExpanded && !node.childrenLoaded) {
-        const collection = node.desc.collection || node.desc.type;
-        const definitionId = node.desc.definition;
+        const collection = node.desc.control;
+        const definitionId = node.desc.definitionId;
         const children = this.getChildren(collection, definitionId, node);
         const allFields = this.allFields(model);
         allFields.splice(index + 1, 0, ...children);

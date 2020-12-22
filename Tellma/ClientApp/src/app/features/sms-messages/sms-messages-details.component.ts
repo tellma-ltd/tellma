@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { StatePropDescriptor } from '~/app/data/entities/base/metadata';
+import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { metadata_SmsMessage, SmsMessageState } from '~/app/data/entities/sms-message';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -14,7 +14,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 export class SmsMessagesDetailsComponent extends DetailsBaseComponent {
 
   public expand = '';
-  private _stateDesc: StatePropDescriptor;
+  private _stateDesc: ChoicePropDescriptor;
 
   constructor(private workspace: WorkspaceService, private translate: TranslateService) {
     super();
@@ -27,7 +27,7 @@ export class SmsMessagesDetailsComponent extends DetailsBaseComponent {
   public stateDisplay(state: SmsMessageState) {
     if (!this._stateDesc) {
       const meta = metadata_SmsMessage(null, this.translate);
-      this._stateDesc = meta.properties.State as StatePropDescriptor;
+      this._stateDesc = meta.properties.State as ChoicePropDescriptor;
     }
 
     return this._stateDesc.format(state);
@@ -36,7 +36,7 @@ export class SmsMessagesDetailsComponent extends DetailsBaseComponent {
   public stateColor(state: SmsMessageState) {
     if (!this._stateDesc) {
       const meta = metadata_SmsMessage(null, this.translate);
-      this._stateDesc = meta.properties.State as StatePropDescriptor;
+      this._stateDesc = meta.properties.State as ChoicePropDescriptor;
     }
 
     return this._stateDesc.color(state);

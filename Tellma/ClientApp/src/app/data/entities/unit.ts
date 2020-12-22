@@ -47,15 +47,16 @@ export function metadata_Unit(wss: WorkspaceService, trx: TranslateService): Ent
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: () => trx.instant('Code') },
-        Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-        Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-        Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+        Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+        Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         UnitType: {
+          datatype: 'string',
           control: 'choice',
           label: () => trx.instant('Unit_UnitType'),
           choices: ['Pure', 'Time', 'Distance', 'Count', 'Mass', 'Volume'],
@@ -71,13 +72,18 @@ export function metadata_Unit(wss: WorkspaceService, trx: TranslateService): Ent
             }
           }
         },
-        UnitAmount: { control: 'number', label: () => trx.instant('Unit_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
-        BaseAmount: { control: 'number', label: () => trx.instant('Unit_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        UnitAmount: {
+          datatype: 'decimal', control: 'number', label: () => trx.instant('Unit_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9
+        },
+        BaseAmount: {
+          datatype: 'decimal', control: 'number', label: () => trx.instant('Unit_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9
+        },
+
+        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 

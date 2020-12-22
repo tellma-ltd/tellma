@@ -217,27 +217,21 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         [VisibilityChoiceList]
         public string Visibility { get; set; }
-        
-        //// TODO: This will come in handy once we upgrade the filter syntax
-        //public string Control { get; set; }
-        //// TODO
-        //public string Collection { get; set; }
-
-        //[Display(Name = "ReportDefinition_Definition")]
-        //public string DefinitionId { get; set; }
-
-        //[Display(Name = "ReportDefinition_Filter")]
-        //public string Filter { get; set; }
-
-        //// TODO
-        //public int MinDecimalPlaces { get; set; }
-        //// TODO
-        //public int MaxDecimalPlaces { get; set; }
 
         [Display(Name = "ReportDefinition_Value")]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Value { get; set; }
+
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
     }
 
     public class ReportParameterDefinition : ReportParameterDefinitionForSave

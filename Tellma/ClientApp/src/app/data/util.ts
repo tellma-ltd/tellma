@@ -5,12 +5,13 @@ import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { from, Observable, Observer, of, throwError, zip } from 'rxjs';
-import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
+import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control } from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 import { insert, set, getSelection } from 'text-field-edit';
 import { Attachment } from './entities/attachment';
 import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
+import { formatSerial } from './entities/document';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -216,9 +217,9 @@ export function downloadBlob(blob: Blob, fileName: string) {
 const _maxAttachmentSize = 20 * 1024 * 1024;
 
 export function onFileSelected(
-    input: HTMLInputElement,
-    pendingFilesSize: number,
-    translate: TranslateService) {
+  input: HTMLInputElement,
+  pendingFilesSize: number,
+  translate: TranslateService) {
   const files = input.files as FileList;
   if (!files) {
     return;
@@ -600,8 +601,8 @@ export function composeEntities(
         break;
       } else {
         headerArray.push(prop.label());
-        if (prop.control === 'navigation') {
-          currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
+        if (prop.datatype === 'entity') {
+          currentDesc = metadataFactory(prop.control)(ws, trx, prop.definitionId);
           navProps.push(prop);
         } else if (i !== pathArray.length - 1) {
           // Only navigation properties are allowed unless this is the last one
@@ -625,7 +626,7 @@ export function composeEntities(
 
           if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
 
-            const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
+            const entitiesOfType = relatedEntities[navProp.control];
 
             // Get the foreign key
             const fkValue = entity[navProp.foreignKeyName];
@@ -744,17 +745,20 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
     case 'boolean': {
       return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
     }
-    case 'choice':
-    case 'state': {
+    case 'choice': {
       return !!prop && !!prop.format ? prop.format(value) : null;
     }
     case 'serial': {
-      return !!prop && !!prop.format ? prop.format(value) : (value + '');
+      return !!prop ? formatSerial(value, prop.prefix, prop.codeWidth) : (value + '');
     }
-    case 'navigation':
     default:
       // Programmer error
-      throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
+      if (prop.datatype === 'entity') {
+        throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
+      } else {
+        console.error(prop);
+        throw new Error(`calling "displayValue" on a property of an unknown control`);
+      }
   }
 }
 
@@ -765,6 +769,31 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
  */
 export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
   return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
+}
+
+export function descFromControlOptions(control: Control, options: string, original?: PropDescriptor) {
+
+  if (!original) {
+    let datatype: string;
+    switch (control) {
+      case 'text':
+        datatype = 'string';
+        break;
+      case 'number':
+      case 'percent':
+        datatype = 'decimal';
+        break;
+      case 'text':
+        datatype = 'string';
+        break;
+      case 'text':
+        datatype = 'string';
+        break;
+      case 'text':
+        datatype = 'string';
+        break;
+    }
+  }
 }
 
 /**

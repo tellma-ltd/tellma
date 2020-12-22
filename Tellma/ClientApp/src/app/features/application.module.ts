@@ -262,6 +262,8 @@ import {
   faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
+import { ControlOptionsComponent } from './control-options/control-options.component';
+import { EditorComponent } from './editor/editor/editor.component';
 
 const routes: Routes = [
   {
@@ -800,7 +802,9 @@ const routes: Routes = [
     SmsMessagesDetailsComponent,
     SmsMessagesMasterComponent,
     ReportDefinitionsPickerComponent,
-    FinancialSettingsComponent
+    FinancialSettingsComponent,
+    ControlOptionsComponent,
+    EditorComponent
   ],
   imports: [
     SharedModule,

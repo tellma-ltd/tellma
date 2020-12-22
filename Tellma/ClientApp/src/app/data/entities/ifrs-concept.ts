@@ -36,14 +36,20 @@ export function metadata_IfrsConcept(wss: WorkspaceService, trx: TranslateServic
             inactiveFilter: null, // No inactive filter
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Label: { control: 'text', label: () => trx.instant('Label') + ws.primaryPostfix },
-                Label2: { control: 'text', label: () => trx.instant('Label') + ws.secondaryPostfix },
-                Label3: { control: 'text', label: () => trx.instant('Label') + ws.ternaryPostfix },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                Documentation: { control: 'text', label: () => trx.instant('IfrsConcept_Documentation') + ws.primaryPostfix },
-                Documentation2: { control: 'text', label: () => trx.instant('IfrsConcept_Documentation') + ws.secondaryPostfix },
-                Documentation3: { control: 'text', label: () => trx.instant('IfrsConcept_Documentation') + ws.ternaryPostfix },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Label: { datatype: 'string', control: 'text', label: () => trx.instant('Label') + ws.primaryPostfix },
+                Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Label') + ws.secondaryPostfix },
+                Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Label') + ws.ternaryPostfix },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                Documentation: {
+                    datatype: 'string', control: 'text', label: () => trx.instant('IfrsConcept_Documentation') + ws.primaryPostfix
+                },
+                Documentation2: {
+                    datatype: 'string', control: 'text', label: () => trx.instant('IfrsConcept_Documentation') + ws.secondaryPostfix
+                },
+                Documentation3: {
+                    datatype: 'string', control: 'text', label: () => trx.instant('IfrsConcept_Documentation') + ws.ternaryPostfix
+                },
             }
         };
 
