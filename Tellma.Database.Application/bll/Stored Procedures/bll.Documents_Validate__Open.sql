@@ -40,11 +40,11 @@ SET NOCOUNT ON;
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
 	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	FROM dbo.Documents
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 
@@ -62,13 +62,13 @@ SET NOCOUNT ON;
 	[Index], [LineIndex], [DocumentIndex], [Id],
 	[Direction], [AccountId], [CurrencyId], [CustodianId], [CustodyId],[ParticipantId], [ResourceId], [CenterId],
 	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [AdditionalReference], [NotedAgentName],
+	[Time2], [ExternalReference], [InternalReference], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
 	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodianId],E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentName],
+	E.[Time2],E.[ExternalReference],E.[InternalReference],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];

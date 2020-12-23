@@ -54,8 +54,8 @@ BEGIN
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
-				[AdditionalReference],
-				[AdditionalReferenceIsCommon],
+				[InternalReference],
+				[InternalReferenceIsCommon],
 
 				ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
@@ -99,8 +99,8 @@ BEGIN
 
 				t.[ExternalReference]			= s.[ExternalReference],
 				t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
-				t.[AdditionalReference]			= s.[AdditionalReference],
-				t.[AdditionalReferenceIsCommon]	= s.[AdditionalReferenceIsCommon],
+				t.[InternalReference]			= s.[InternalReference],
+				t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
 
 				t.[ModifiedAt]					= @Now,
 				t.[ModifiedById]				= @UserId
@@ -139,8 +139,8 @@ BEGIN
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
-				[AdditionalReference],
-				[AdditionalReferenceIsCommon]
+				[InternalReference],
+				[InternalReferenceIsCommon]
 			)
 			VALUES (
 				@DefinitionId,
@@ -176,8 +176,8 @@ BEGIN
 
 				s.[ExternalReference],
 				s.[ExternalReferenceIsCommon],
-				s.[AdditionalReference],
-				s.[AdditionalReferenceIsCommon]
+				s.[InternalReference],
+				s.[InternalReferenceIsCommon]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
@@ -225,8 +225,8 @@ BEGIN
 
 			LDE.[ExternalReference],
 			LDE.[ExternalReferenceIsCommon],
-			LDE.[AdditionalReference],
-			LDE.[AdditionalReferenceIsCommon]
+			LDE.[InternalReference],
+			LDE.[InternalReferenceIsCommon]
 		FROM @DocumentLineDefinitionEntries LDE
 		JOIN @DocumentsIndexedIds DI ON LDE.[DocumentIndex] = DI.[Index]
 	) AS s ON (t.Id = s.Id)
@@ -267,8 +267,8 @@ BEGIN
 
 			t.[ExternalReference]			= s.[ExternalReference],
 			t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
-			t.[AdditionalReference]			= s.[AdditionalReference],
-			t.[AdditionalReferenceIsCommon] = s.[AdditionalReferenceIsCommon],
+			t.[InternalReference]			= s.[InternalReference],
+			t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
 			
 			t.[ModifiedAt]					= @Now,
 			t.[ModifiedById]				= @UserId
@@ -309,8 +309,8 @@ BEGIN
 
 			[ExternalReference],
 			[ExternalReferenceIsCommon],
-			[AdditionalReference],
-			[AdditionalReferenceIsCommon]
+			[InternalReference],
+			[InternalReferenceIsCommon]
 		)
 		VALUES (
 			s.[DocumentId],
@@ -348,8 +348,8 @@ BEGIN
 
 			s.[ExternalReference],
 			s.[ExternalReferenceIsCommon],
-			s.[AdditionalReference],
-			s.[AdditionalReferenceIsCommon]
+			s.[InternalReference],
+			s.[InternalReferenceIsCommon]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -414,7 +414,7 @@ BEGIN
 			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
 			E.[Time1], E.[Time2],
 			E.[ExternalReference],
-			E.[AdditionalReference],
+			E.[InternalReference],
 			E.[NotedAgentName], 
 			E.[NotedAmount], 
 			E.[NotedDate]
@@ -442,7 +442,7 @@ BEGIN
 			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
 			t.[ExternalReference]		= s.[ExternalReference],
-			t.[AdditionalReference]		= s.[AdditionalReference],
+			t.[InternalReference]		= s.[InternalReference],
 			t.[NotedAgentName]			= s.[NotedAgentName],
 			t.[NotedAmount]				= s.[NotedAmount],
 			t.[NotedDate]				= s.[NotedDate],
@@ -455,7 +455,7 @@ BEGIN
 			[MonetaryValue], [Quantity], [UnitId], [Value],
 			[Time1], [Time2],
 			[ExternalReference],
-			[AdditionalReference],
+			[InternalReference],
 			[NotedAgentName], 
 			[NotedAmount], 
 			[NotedDate]
@@ -466,7 +466,7 @@ BEGIN
 			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
 			s.[Time1], s.[Time2],
 			s.[ExternalReference],
-			s.[AdditionalReference],
+			s.[InternalReference],
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
 			s.[NotedDate]

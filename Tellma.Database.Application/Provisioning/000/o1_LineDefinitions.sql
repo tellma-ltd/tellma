@@ -532,7 +532,7 @@ SET [PreprocessScript] = N'
 		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 1),
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Relations WHERE [Id] = [ParticipantId1]),
-		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0]),
+		[InternalReference0] = IIF(ISNUMERIC([InternalReference0]) = 1, N''CRV'' + [InternalReference0], [InternalReference0]),
 
 		[EntryTypeId0]		=	IIF ([EntryTypeId0] IS NULL,
 			(
@@ -566,8 +566,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,120,	N'ExternalReference',	0,	N'Check #',			5,5,0),
 (9,120,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
 (10,120,N'PostingDate',			1,	N'Receipt Date',	1,2,1),
-(11,120, N'CenterId',			1,	N'Business Unit',	1,4,1),
-(12,120, N'AdditionalReference',0,	N'CRV #',			5,5,0);
+(11,120, N'CenterId',			1,	N'Business Unit',	1,4,1);
 --130:CashPaymentToOther
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -577,8 +576,6 @@ SET [PreprocessScript] = N'
 		[CenterId1]			= COALESCE([CenterId1], [CenterId0]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue0], 0),
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.Relations WHERE [Id] = [ParticipantId0]),
-		[AdditionalReference1] = IIF(ISNUMERIC([AdditionalReference1]) = 1, N''CPV'' + [AdditionalReference1], [AdditionalReference1]),
-
 		[EntryTypeId1]		=	IIF ([EntryTypeId1] IS NULL,
 			(
 				SELECT [Id] FROM dbo.EntryTypes
@@ -611,8 +608,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,130,	N'ExternalReference',	1,	N'Check #',			5,5,0),
 (9,130,	N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0),
 (10,130,N'PostingDate',			0,	N'Payment Date',	1,2,1),
-(11,130, N'CenterId',			0,	N'Business Unit',	1,4,1),
-(12,130, N'AdditionalReference',1,	N'CPV #',			5,5,0);
+(11,130, N'CenterId',			0,	N'Business Unit',	1,4,1);
 
 
 --120:CashReceiptFromOther

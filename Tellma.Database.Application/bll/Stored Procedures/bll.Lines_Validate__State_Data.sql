@@ -26,7 +26,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 				FL.Id = N'Time1' AND D.[Time1IsCommon] = 1 OR
 				FL.Id = N'Time2' AND D.[Time2IsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND D.[ExternalReferenceIsCommon] = 1 OR
-				FL.Id = N'AdditionalReference' AND D.[AdditionalReferenceIsCommon] = 1
+				FL.Id = N'InternalReference' AND D.[InternalReferenceIsCommon] = 1
 			) THEN
 				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND (
@@ -41,7 +41,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 				FL.Id = N'Time1' AND DLDE.[Time1IsCommon] = 1 OR
 				FL.Id = N'Time2' AND DLDE.[Time2IsCommon] = 1 OR
 				FL.Id = N'ExternalReference' AND DLDE.[ExternalReferenceIsCommon] = 1 OR
-				FL.Id = N'AdditionalReference' AND DLDE.[AdditionalReferenceIsCommon] = 1
+				FL.Id = N'InternalReference' AND DLDE.[InternalReferenceIsCommon] = 1
 			) THEN
 				N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].LineDefinitionEntries['  + CAST(DLDE.[Index] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			ELSE
@@ -53,7 +53,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	FROM @Entries E
 	CROSS JOIN (VALUES
 		(N'CurrencyId'),('CustodianId'),(N'CustodyId'),(N'ParticipantId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
-		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
+		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'InternalReference'),
 		(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -77,7 +77,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		FL.Id = N'Time1'				AND E.[Time1] IS NULL OR
 		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR
 		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
-		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
+		FL.Id = N'InternalReference'	AND E.[InternalReference] IS NULL OR
 		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
 		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL

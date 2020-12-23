@@ -574,7 +574,7 @@ SET [PreprocessScript] = N'
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
 		[ParticipantId1]	= [ParticipantId0],
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
-		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
+		[InternalReference0] = IIF(ISNUMERIC([InternalReference0]) = 1, N''CRV'' + [InternalReference0], [InternalReference0])
 '
 WHERE [Index] = 1350;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -592,8 +592,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,1350,	N'ParticipantId',		0,	N'Customer',		1,4,1,NULL),
 (5,1350,	N'PostingDate',			1,	N'Received On',		1,4,1,NULL),
 (6,1350,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
-(7,1350,	N'CenterId',			1,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(8,1350,	N'AdditionalReference',	0,	N'CRV #',			5,5,0,NULL);
+(7,1350,	N'CenterId',			1,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1360:CashFromCustomerWithWT
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -606,8 +605,7 @@ SET [PreprocessScript] = N'
 		[MonetaryValue2]	= ISNULL([MonetaryValue2], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
 		[ParticipantId1]	= [ParticipantId2],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2]),
-		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0]) 
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2])
 '
 WHERE [Index] = 1360;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -629,8 +627,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,1360,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
 (10,1360,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1360,	N'PostingDate',			2,	N'Payment Date',	1,2,1,NULL),
-(12,1360,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(13,1360,	N'AdditionalReference',	0,	N'CRV #',			5,5,0,NULL);
+(12,1360,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1370:CashFromCustomerWithWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -645,8 +642,7 @@ SET [PreprocessScript] = N'
 		[NotedAmount1]		= ISNULL([MonetaryValue2], 0),
 		[ParticipantId1]	= [ParticipantId2],
 	--	[EntryTypeId0]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''ReceiptsFromSalesOfGoodsAndRenderingOfServices''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2]),
-		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2])
 '
 WHERE [Index] = 1370;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -668,8 +664,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,1370,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
 (10,1370,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1370,	N'PostingDate',			2,	N'Payment Date',	1,2,1,NULL),
-(12,1370,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(13,1370,	N'AdditionalReference',	0,	N'CRV #',			5,5,0,NULL);
+(12,1370,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1390:CashFromCustomerWithWTWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -693,8 +688,7 @@ SET [PreprocessScript] = N'
 		[ParticipantId1]	= [ParticipantId3],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId0]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''ReceiptsFromSalesOfGoodsAndRenderingOfServices''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId3]),
-		[AdditionalReference0] = IIF(ISNUMERIC([AdditionalReference0]) = 1, N''CRV'' + [AdditionalReference0], [AdditionalReference0])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId3])
 '
 WHERE [Index] = 1390;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -719,8 +713,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,1390,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
 (10,1390,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1390,	N'PostingDate',			3,	N'Payment Date',	1,2,1,NULL),
-(12,1390,	N'CenterId',			3,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(13,1390,	N'AdditionalReference',	0,	N'CRV #',			5,5,0,NULL);
+(12,1390,	N'CenterId',			3,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1490:CashExchange - synced
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -842,8 +835,7 @@ SET [PreprocessScript] = N'
 		[ParticipantId1]	= [ParticipantId0],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId2]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
-		[AdditionalReference2] = IIF(ISNUMERIC([AdditionalReference2]) = 1, N''CPV'' + [AdditionalReference2], [AdditionalReference2])
+		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 1590;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -865,8 +857,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,1590,N'ExternalReference',	2,	N'Check #',			5,5,0,NULL),
 (9,1590,N'CustodyId',			2,	N'Cash/Bank Acct',	4,4,0,NULL),
 (10,1590,N'PostingDate',		0,	N'Payment Date',	1,2,1,NULL),
-(11,1590,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(12,1590,N'AdditionalReference',2,	N'CPV #',			1,4,0,NULL);
+(11,1590,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1610:CashToSupplierWithPointInvoiceWithWT CashPaymentToTradePayableWithWT: (basically, it is the VAT) -- assume all in same currency
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -890,8 +881,7 @@ SET [PreprocessScript] = N'
 		[ParticipantId2]	= [ParticipantId0],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId3]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
-		[AdditionalReference3] = IIF(ISNUMERIC([AdditionalReference3]) = 1, N''CPV'' + [AdditionalReference3], [AdditionalReference3])
+		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 1610;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -916,8 +906,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,1610,N'ExternalReference',	3,	N'Check #',			5,5,0,NULL),
 (10,1610,N'CustodyId',			3,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1610,N'PostingDate',		0,	N'Payment Date',	1,2,1,NULL),
-(12,1610,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(13,1610,N'AdditionalReference',3,	N'CPV #',			1,4,0,NULL);
+(12,1610,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1630:CashToSupplier
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
@@ -927,8 +916,7 @@ SET [PreprocessScript] = N'
 		[CenterId1]		= COALESCE([CenterId1], [CenterId0]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
-		[AdditionalReference1] = IIF(ISNUMERIC([AdditionalReference1]) = 1, N''CPV'' + [AdditionalReference1], [AdditionalReference1]) 
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 1630;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -946,8 +934,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,1630,N'ParticipantId',		0,	N'Supplier',		1,4,1,NULL),
 (5,1630,N'PostingDate',			0,	N'Paid On',			1,4,1,NULL),
 (6,1630,N'ExternalReference',	1,	N'Check #',			5,5,0,NULL),
-(7,1630,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
-(8,1630,N'AdditionalReference',	1,	N'CPV #',			5,5,0,NULL);
+(7,1630,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1660:SupplierWT
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'

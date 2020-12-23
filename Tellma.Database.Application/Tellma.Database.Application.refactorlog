@@ -28,4 +28,60 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[GeneralSettings__Save]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="be78ab5d-e7fd-4eee-ab52-64e2ca1cce9c" ChangeDateTime="12/21/2020 08:34:20">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AdditionalReferenceLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3b55ce6c-ddab-49b1-b6f5-0d8adf0ade69" ChangeDateTime="12/21/2020 08:34:42">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AdditionalReferenceLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c590d3a2-e1cf-449e-9fde-bc3088eef629" ChangeDateTime="12/21/2020 08:35:31">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AdditionalReferenceLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c0ab5338-cc70-45fe-a418-dd297b0ab07d" ChangeDateTime="12/21/2020 08:36:03">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[AdditionalReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReference]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cbaefff5-b570-4ae2-a2b1-15a994947bdc" ChangeDateTime="12/21/2020 08:36:25">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[AdditionalReferenceIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="249be180-1a27-4b72-84d0-86f46871be2b" ChangeDateTime="12/21/2020 08:37:24">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AdditionalReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReference]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="af345eb3-6216-4a5c-a582-b3df7d866c1e" ChangeDateTime="12/21/2020 08:38:23">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AdditionalReferenceIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d13c3659-8b3a-4a30-adea-3fbed19bbfc4" ChangeDateTime="12/21/2020 08:39:15">
+    <Property Name="ElementName" Value="[dbo].[Entries].[AdditionalReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReference]" />
+  </Operation>
 </Operations>

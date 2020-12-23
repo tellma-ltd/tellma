@@ -27,6 +27,7 @@
 	[FinancialModifiedById]			INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 );
 --	IFRS [810000]
+	--[NameOfReportingEntityOrOtherMeansOfIdentification]	NVARCHAR (255),
 	--[DomicileOfEntity]				NVARCHAR (255),
 	--[DomicileOfEntity2]				NVARCHAR (255),
 	--[DomicileOfEntity3]				NVARCHAR (255),
@@ -50,5 +51,4 @@
 	--[NameOfParentEntity3]				NVARCHAR (255),
 	--[NameOfUltimateParentOfGroup]		NVARCHAR (255),
 	--[NameOfUltimateParentOfGroup2]	NVARCHAR (255),
-	--[NameOfUltimateParentOfGroup3]	NVARCHAR (255),
-	--
+	--[NameOfUltimateParentOfGroup3]	NVARCHAR (255)
