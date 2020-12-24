@@ -845,6 +845,8 @@
   "Settings_TernaryLanguage": "Ternary ቋንቋ",
   "Settings_TernaryLanguageDescription": "ተጠቃሚዎች 3 ቋንቋዎች ውሂብ ተመልከት ሪፖርቶች ያስገቡ ይፈቅዳል",
   "Settings_TernaryLanguageSymbol": "Ternary ቋንቋ ምልክት",
+  "Settings_TIN": "የግብር መለያ ቁጥር",
+  "Settings_TINDescription": "ድርጅት የተሰጠ ህጋዊ የግብር መለያ ቁጥር",
   "ShortDay1": "ሰኞ",
   "ShortDay2": "ማክ",
   "ShortDay3": "ረቡዕ",

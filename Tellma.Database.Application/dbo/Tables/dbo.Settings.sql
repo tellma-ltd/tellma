@@ -20,8 +20,7 @@
 
 	-- Financial Settings
 	[FunctionalCurrencyId]			NCHAR(3)			NOT NULL DEFAULT CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
-	[TaxIdentificationNumber]		NVARCHAR (50)		NOT NULL DEFAULT N'Fill In Financial Settings',
-
+	[TaxIdentificationNumber]		NVARCHAR (50)		NULL,
 	[ArchiveDate]					DATE				NOT NULL DEFAULT ('1900.01.01'),	
 	[FinancialModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]			INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),

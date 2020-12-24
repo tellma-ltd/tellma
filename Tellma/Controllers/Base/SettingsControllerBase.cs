@@ -211,6 +211,7 @@ namespace Tellma.Controllers
 
             // Financial Settings
             settingsForClient.FunctionalCurrencyId = financialSettings.FunctionalCurrencyId;
+            settingsForClient.TaxIdentificationNumber = financialSettings.TaxIdentificationNumber;
             settingsForClient.ArchiveDate = financialSettings.ArchiveDate ?? DateTime.MinValue;
             settingsForClient.FunctionalCurrencyDecimals = financialSettings.FunctionalCurrency.E ?? 0;
             settingsForClient.FunctionalCurrencyName = financialSettings.FunctionalCurrency.Name;

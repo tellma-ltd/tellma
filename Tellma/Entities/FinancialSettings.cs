@@ -13,6 +13,10 @@ namespace Tellma.Entities
         [StringLength(3)]
         public string FunctionalCurrencyId { get; set; }
 
+        [Display(Name = "Settings_TIN")]
+        [StringLength(50)]
+        public string TaxIdentificationNumber { get; set; }
+
         [Display(Name = "Settings_ArchiveDate")]
         public DateTime? ArchiveDate { get; set; }
     }

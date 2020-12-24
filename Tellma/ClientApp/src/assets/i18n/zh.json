@@ -845,6 +845,8 @@
   "Settings_TernaryLanguage": "三元语言",
   "Settings_TernaryLanguageDescription": "允许用户输入3种语言的数据和查看报表",
   "Settings_TernaryLanguageSymbol": "三元语言符号",
+  "Settings_TIN": "税号",
+  "Settings_TINDescription": "发给组织的法定纳税识别号码",
   "ShortDay1": "莫",
   "ShortDay2": "涂",
   "ShortDay3": "我们",

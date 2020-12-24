@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[FinancialSettings__Save]
-	@FunctionalCurrencyId NCHAR(3),
+	@FunctionalCurrencyId NCHAR (3),
 	@TaxIdentificationNumber NVARCHAR (50),
 	@ArchiveDate DATE = '1900.01.01'
 AS

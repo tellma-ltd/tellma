@@ -846,6 +846,8 @@
   "Settings_TernaryLanguage": "اللغة الثالثة",
   "Settings_TernaryLanguageDescription": "تتيح للمستخدمين إدخال البيانات واستعراض التقارير بثلاث لغات",
   "Settings_TernaryLanguageSymbol": "رمز اللغة الثالثة",
+  "Settings_TIN": "رقم التعريف الضريبي",
+  "Settings_TINDescription": "رقم التعريف الضريبي القانوني الممنوح للجهة المستخدمة للنظام",
   "ShortDay1": "الإثنين",
   "ShortDay2": "الثلاثاء",
   "ShortDay3": "الأربعاء",

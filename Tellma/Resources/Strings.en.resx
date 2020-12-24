@@ -2776,6 +2776,9 @@
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary Language Symbol</value>
   </data>
+  <data name="Settings_TIN" xml:space="preserve">
+    <value>Tax Identification Number</value>
+  </data>
   <data name="ShortDay1" xml:space="preserve">
     <value>Mon</value>
   </data>

@@ -862,6 +862,8 @@
   "Settings_TernaryLanguage": "Ternary Language",
   "Settings_TernaryLanguageDescription": "Allows users to enter data and view reports in 3 languages",
   "Settings_TernaryLanguageSymbol": "Ternary Language Symbol",
+  "Settings_TIN": "Tax Identification Number",
+  "Settings_TINDescription": "The legal tax identification number issued to the organization",
   "ShortDay1": "Mon",
   "ShortDay2": "Tue",
   "ShortDay3": "Wed",
