@@ -84,7 +84,8 @@
                                 <!-- Expand button -->
                                 <button class="btn btn-sm m-0 py-0 px-2 border-0 text-white t-pointer t-transparent"
                                     [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
-                                    [style.cursor]="!hasChildren(node) ? 'inherit' : null" (click)="onExpand(node, i, model)">
+                                    [style.cursor]="!hasChildren(node) ? 'inherit' : null"
+                                    (click)="onExpand(node, i, model)">
                                     <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)">
                                     </fa-icon>
                                 </button>
@@ -174,8 +175,9 @@
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
-                                        <t-auto-label [collection]="model.Collection" [definitionId]="model.DefinitionId"
-                                            [path]="dim.Path"></t-auto-label>&nbsp;<span
+                                        <t-auto-label [collection]="model.Collection"
+                                            [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
+                                        &nbsp;<span
                                             *ngIf="dim.Modifier">({{ ( 'Modifier_' + dim.Modifier) | translate }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -211,8 +213,9 @@
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
-                                        <t-auto-label [collection]="model.Collection" [definitionId]="model.DefinitionId"
-                                            [path]="dim.Path"></t-auto-label>&nbsp;<span
+                                        <t-auto-label [collection]="model.Collection"
+                                            [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
+                                        &nbsp;<span
                                             *ngIf="dim.Modifier">({{ ( 'Modifier_' + dim.Modifier) | translate }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -248,8 +251,9 @@
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
-                                        <t-auto-label [collection]="model.Collection" [definitionId]="model.DefinitionId"
-                                            [path]="dim.Path"></t-auto-label>&nbsp;<span
+                                        <t-auto-label [collection]="model.Collection"
+                                            [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
+                                        &nbsp;<span
                                             *ngIf="dim.Aggregation">({{ ( 'ReportDefinition_Aggregation_' + dim.Aggregation) | translate }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -303,8 +307,8 @@
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
-                                        <t-auto-label [collection]="model.Collection" [definitionId]="model.DefinitionId"
-                                            [path]="dim.Path"></t-auto-label>
+                                        <t-auto-label [collection]="model.Collection"
+                                            [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                                         (click)="onConfigureSelect(i, model)" [title]="'Configure' | translate">
@@ -545,8 +549,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'MainMenu' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                        *ngIf="mainMenuSectionErrors(model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="mainMenuSectionErrors(model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('MainMenu')">
@@ -764,6 +767,19 @@
                 <input class="form-control t-studio-input" id="value" type="text" [(ngModel)]="itemToEdit['Value']"
                     (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
                     autocomplete="off" [required]="getParameterDescriptor(itemToEdit['Key'])?.isRequired" />
+            </div>
+
+            <!-- Control Options-->
+            <div class="form-group w-100"
+                *ngIf="itemToEditNature === 'parameter' && showOptions(itemToEdit, modelRef, itemToEdit['Key'])">
+                <t-control-options [control]="getParamPropDescriptor(modelRef, itemToEdit['Key'])?.control"
+                    [isEdit]="true" [(ngModel)]="itemToEdit['ControlOptions']"
+                    (ngModelChange)="itemToEditHasChanged = true" #controloptions="ngModel">
+                </t-control-options>
+
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: controloptions, serverErrors: itemToEdit?.serverErrors?.ControlOptions }">
+                </ng-container>
             </div>
         </div>
     </div>

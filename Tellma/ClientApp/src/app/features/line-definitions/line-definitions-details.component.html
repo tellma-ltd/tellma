@@ -749,6 +749,12 @@
                                         <fa-icon icon="ellipsis-h">
                                         </fa-icon>
                                     </button>
+
+                                    <span *ngIf="showGenerateParametersError(param)"
+                                        class="text-danger t-light-danger t-vertical-align-middle">
+                                        &nbsp;<fa-icon icon="exclamation">
+                                        </fa-icon>
+                                    </span>
                                 </td>
 
                                 <td *ngIf="isEdit">

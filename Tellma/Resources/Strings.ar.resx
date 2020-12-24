@@ -910,6 +910,9 @@
   <data name="EntryTypes" xml:space="preserve">
     <value>أنواع الأسطر</value>
   </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>الحقل {0} ينبغي أن يكون أكبر من أو يساوي صفرا.</value>
+  </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
   </data>

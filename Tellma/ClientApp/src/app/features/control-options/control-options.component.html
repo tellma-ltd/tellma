@@ -66,6 +66,7 @@
 
 <!-- choices -->
 <div class="form-group t-wide-form-group t-text-whitish" *ngIf="showChoices">
+    <label class="small" for="prefix">{{ 'ControlOptions_choices' | translate }}</label>
     <table class="table table-sm table-dark text-nowrap mb-1">
 
         <thead class="small font-weight-normal">
@@ -92,24 +93,36 @@
                 </td>
 
                 <td [class.p-0]="isEdit">
-                    <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.value"
-                        (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                    <ng-container *ngIf="!isEdit; else value"> {{ choice.value }}</ng-container>
+                    <ng-template #value>
+                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.value"
+                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </ng-template>
                 </td>
                 <td [class.p-0]="isEdit">
-                    <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name"
-                        (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                    <ng-container *ngIf="!isEdit; else name"> {{ choice.name }}</ng-container>
+                    <ng-template #name>
+                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name"
+                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </ng-template>
                 </td>
                 <td *ngIf="ws.settings.SecondaryLanguageId" [class.p-0]="isEdit">
-                    <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name2"
-                        (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                    <ng-container *ngIf="!isEdit; else name2"> {{ choice.name2 }}</ng-container>
+                    <ng-template #name2>
+                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name2"
+                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </ng-template>
                 </td>
                 <td *ngIf="ws.settings.TernaryLanguageId" [class.p-0]="isEdit">
-                    <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name3"
-                        (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                    <ng-container *ngIf="!isEdit; else name3"> {{ choice.name3 }}</ng-container>
+                    <ng-template #name3>
+                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name3"
+                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </ng-template>
                 </td>
 
                 <td *ngIf="isEdit">

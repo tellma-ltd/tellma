@@ -561,6 +561,11 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       (!!model.GenerateParameters && model.GenerateParameters.some(e => this.weakEntityErrors(e)));
   }
 
+
+  public showGenerateParametersError(param: LineDefinitionEntry): boolean {
+    return !!param.serverErrors && areServerErrors(param.serverErrors.ControlOptions);
+  }
+
   public showWorkflowsError(model: LineDefinition): boolean {
     return !!model.Workflows && model.Workflows.some(w => {
       return !!w.Signatures && w.Signatures.some(e => this.weakEntityErrors(e));

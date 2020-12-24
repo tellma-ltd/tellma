@@ -33,6 +33,7 @@ namespace Tellma.Entities
         public string Visibility { get; set; }
 
         [Display(Name = "Definition_Control")]
+        [Required]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Control { get; set; }

@@ -346,6 +346,54 @@
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>
   </data>
+  <data name="Control_boolean" xml:space="preserve">
+    <value>Yes/No</value>
+  </data>
+  <data name="Control_choice" xml:space="preserve">
+    <value>Choice List</value>
+  </data>
+  <data name="Control_date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Control_datetime" xml:space="preserve">
+    <value>Date and Time</value>
+  </data>
+  <data name="Control_number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="Control_percent" xml:space="preserve">
+    <value>Percentage</value>
+  </data>
+  <data name="Control_serial" xml:space="preserve">
+    <value>Serial Number</value>
+  </data>
+  <data name="Control_text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ControlOptions_choices" xml:space="preserve">
+    <value>Choices</value>
+  </data>
+  <data name="ControlOptions_codeWidth" xml:space="preserve">
+    <value>Code Width</value>
+  </data>
+  <data name="ControlOptions_definitionId" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="ControlOptions_filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="ControlOptions_maxDecimalPlaces" xml:space="preserve">
+    <value>Maximum Decimal Places</value>
+  </data>
+  <data name="ControlOptions_minDecimalPlaces" xml:space="preserve">
+    <value>Minimum Decimal Places</value>
+  </data>
+  <data name="ControlOptions_prefix" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="ControlOptions_value" xml:space="preserve">
+    <value>Value</value>
+  </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>Copyright © {0} Tellma, Ltd. All rights reserved.</value>
   </data>
@@ -909,6 +957,9 @@
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>Entry Types</value>
+  </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>Field {0} must be greater than or equal to zero.</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>A {0} path cannot terminate with a navigation field {1}.</value>

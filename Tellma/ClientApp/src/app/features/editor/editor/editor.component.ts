@@ -1,6 +1,6 @@
 import { Component, HostBinding, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControlDirective, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { getChoices, PropDescriptor } from '~/app/data/entities/base/metadata';
+import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { getChoices, NavigationPropDescriptor, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { IdService } from '~/app/data/id.service';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
@@ -17,7 +17,7 @@ export class EditorComponent implements ControlValueAccessor {
   w100 = true;
 
   @Input()
-  public desc: PropDescriptor;
+  public desc: PropVisualDescriptor;
 
   @ViewChild(NgControl, { static: false })
   public get control(): NgControl {
@@ -26,6 +26,7 @@ export class EditorComponent implements ControlValueAccessor {
 
   public set control(v: NgControl) {
     if (this._control !== v) {
+      const firstTime = !this._control;
       this._control = v;
       this.initializeNewControl(v);
     }
@@ -65,18 +66,21 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
-      ctrl.valueAccessor.writeValue(obj);
+      ctrl.valueAccessor.writeValue(this.value);
     }
   }
 
   registerOnChange(fn: any): void {
     // For future controls
-    this.onChangeFn = fn;
+    this.onChangeFn = (v) => {
+      this.value = v;
+      fn(v);
+    };
 
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
-      ctrl.valueAccessor.registerOnChange(fn);
+      ctrl.valueAccessor.registerOnChange(this.onChangeFn);
     }
   }
 
@@ -87,7 +91,7 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
-      ctrl.valueAccessor.registerOnTouched(fn);
+      ctrl.valueAccessor.registerOnTouched(this.onTouchedFn);
     }
   }
 
@@ -98,7 +102,7 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor && ctrl.valueAccessor.setDisabledState) {
-      ctrl.valueAccessor.setDisabledState(isDisabled);
+      ctrl.valueAccessor.setDisabledState(this.isDisabled);
     }
   }
 
@@ -158,29 +162,28 @@ export class EditorComponent implements ControlValueAccessor {
     return [];
   }
 
-  public get definitionId(): number {
-    if (this.desc.datatype === 'entity') {
-      return this.desc.definitionId;
-    }
+  public get filter(): string {
+    const desc = this.desc as NavigationPropDescriptor;
+    return desc.filter;
+  }
 
-    console.error(`Editor error: requesting definitionId from a ${this.desc.control}`);
+  public get definitionId(): number {
+    const desc = this.desc as NavigationPropDescriptor;
+    return desc.definitionId;
   }
 
   public get definitionIds(): number[] {
-    if (this.desc.datatype === 'entity') {
-      const defId = this.desc.definitionId;
-      if (this.definitionIdForArray !== defId) {
-        this.definitionIdForArray = defId;
-        if (!defId) {
-          this.definitionIdArray = [];
-        } else {
-          this.definitionIdArray = [defId];
-        }
+    const desc = this.desc as NavigationPropDescriptor;
+    const defId = desc.definitionId;
+    if (this.definitionIdForArray !== defId) {
+      this.definitionIdForArray = defId;
+      if (!defId) {
+        this.definitionIdArray = [];
+      } else {
+        this.definitionIdArray = [defId];
       }
-
-      return this.definitionIdArray;
     }
 
-    console.error(`Editor error: requesting definitionIds from a ${this.desc.control}`);
+    return this.definitionIdArray;
   }
 }

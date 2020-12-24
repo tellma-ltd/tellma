@@ -308,6 +308,9 @@ export interface PropDescriptorBase {
      * The label of this field, typically shown on table headers
      */
     label: () => string;
+}
+
+export interface PropVisualDescriptorBase {
 
     /**
      * Whether the field value should be displayed as RTL
@@ -315,21 +318,28 @@ export interface PropDescriptorBase {
     alignment?: 'left' | 'right' | 'center';
 }
 
-export interface TextPropDescriptor extends PropDescriptorBase {
+export interface TextPropDescriptor extends TextPropVisualDescriptor, PropDescriptorBase {
     datatype: 'string';
+}
+export interface TextPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'text';
 }
 
-export interface SerialPropDescriptor extends PropDescriptorBase {
+export interface SerialPropDescriptor extends SerialPropVisualDescriptor, PropDescriptorBase {
     datatype: 'integral';
+}
+export interface SerialPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'serial';
 
     prefix: string;
     codeWidth: number;
 }
 
-export interface ChoicePropDescriptor extends PropDescriptorBase {
+
+export interface ChoicePropDescriptor extends ChoicePropVisualDescriptor, PropDescriptorBase {
     datatype: 'integral' | 'string';
+}
+export interface ChoicePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'choice';
 
     /**
@@ -349,13 +359,15 @@ export interface ChoicePropDescriptor extends PropDescriptorBase {
     selector?: { value: string | number; name: () => string }[];
 }
 
-export function getChoices(desc: ChoicePropDescriptor): SelectorChoice[] {
+export function getChoices(desc: ChoicePropVisualDescriptor): SelectorChoice[] {
     desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
     return desc.selector;
 }
 
-export interface NumberPropDescriptor extends PropDescriptorBase {
+export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {
     datatype: 'integral' | 'decimal';
+}
+export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'number';
 
     /**
@@ -363,11 +375,12 @@ export interface NumberPropDescriptor extends PropDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
-    // formatAsCurrency?: boolean;
 }
 
-export interface PercentPropDescriptor extends PropDescriptorBase {
+export interface PercentPropDescriptor extends PercentPropVisualDescriptor, PropDescriptorBase {
     datatype: 'decimal';
+}
+export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'percent';
 
     /**
@@ -377,18 +390,24 @@ export interface PercentPropDescriptor extends PropDescriptorBase {
     maxDecimalPlaces: number;
 }
 
-export interface DatePropDescriptor extends PropDescriptorBase {
+export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescriptorBase {
     datatype: 'date' | 'datetime' | 'datetimeoffset';
+}
+export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'date';
 }
 
-export interface DatetimePropDescriptor extends PropDescriptorBase {
+export interface DatetimePropDescriptor extends DatetimePropVisualDescriptor, PropDescriptorBase {
     datatype: 'datetime' | 'datetimeoffset';
+}
+export interface DatetimePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'datetime';
 }
 
-export interface BooleanPropDescriptor extends PropDescriptorBase {
+export interface BooleanPropDescriptor extends BooleanPropVisualDescriptor, PropDescriptorBase {
     datatype: 'boolean';
+}
+export interface BooleanPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'boolean';
 
     /**
@@ -397,8 +416,14 @@ export interface BooleanPropDescriptor extends PropDescriptorBase {
     format?: (b: boolean) => string;
 }
 
-export interface NavigationPropDescriptor extends PropDescriptorBase {
+export interface NavigationPropDescriptor extends NavigationPropVisualDescriptor, PropDescriptorBase {
     datatype: 'entity';
+    /**
+     * The name of the foreign key property
+     */
+    foreignKeyName: string;
+}
+export interface NavigationPropVisualDescriptor extends PropVisualDescriptorBase {
     control: Collection;
 
     /**
@@ -410,16 +435,15 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
      * For the details picker
      */
     filter?: string;
-
-    /**
-     * The name of the foreign key property
-     */
-    foreignKeyName: string;
 }
 
-export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor | BooleanPropDescriptor
-    | NumberPropDescriptor | PercentPropDescriptor | DatePropDescriptor | DatetimePropDescriptor | NavigationPropDescriptor
-    | SerialPropDescriptor;
+export declare type PropVisualDescriptor = TextPropVisualDescriptor | ChoicePropVisualDescriptor |
+    BooleanPropVisualDescriptor | NumberPropVisualDescriptor | PercentPropVisualDescriptor |
+    DatePropVisualDescriptor | DatetimePropVisualDescriptor | NavigationPropVisualDescriptor | SerialPropVisualDescriptor;
+
+export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
+    BooleanPropDescriptor | NumberPropDescriptor | PercentPropDescriptor |
+    DatePropDescriptor | DatetimePropDescriptor | NavigationPropDescriptor | SerialPropDescriptor;
 
 export function entityDescriptorImpl(
     pathArray: string[], baseCollection: string, baseDefinition: number,

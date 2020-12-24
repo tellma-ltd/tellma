@@ -37,64 +37,64 @@
     </div>
 
     <!-- Entities -->
-    <t-account-classifications-picker *ngSwitchCase="'AccountClassification'" [(ngModel)]="v" [showCreate]="false">
+    <t-account-classifications-picker *ngSwitchCase="'AccountClassification'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-account-classifications-picker>
 
-    <t-ifrs-concepts-picker *ngSwitchCase="'IfrsConcept'" [(ngModel)]="v" [showCreate]="false">
+    <t-ifrs-concepts-picker *ngSwitchCase="'IfrsConcept'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-ifrs-concepts-picker>
 
-    <t-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="v" [showCreate]="false">
+    <t-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-account-types-picker>
 
-    <t-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="v" [showCreate]="false">
+    <t-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-accounts-picker>
 
-    <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="v" [showCreate]="false">
+    <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-agents-picker>
 
-    <t-relations-picker *ngSwitchCase="'Relation'" [(ngModel)]="v" [definitionIds]="definitionIds" [showCreate]="false">
+    <t-relations-picker *ngSwitchCase="'Relation'" [(ngModel)]="v" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
     </t-relations-picker>
 
-    <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="v" [showCreate]="false">
+    <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-currencies-picker>
 
-    <t-entry-types-picker *ngSwitchCase="'EntryType'" [(ngModel)]="v" [showCreate]="false">
+    <t-entry-types-picker *ngSwitchCase="'EntryType'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-entry-types-picker>
 
-    <t-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="v" [definitionId]="definitionId" [showCreate]="false">
+    <t-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="v" [definitionId]="definitionId" [showCreate]="false" [filter]="filter">
     </t-lookups-picker>
 
-    <t-units-picker *ngSwitchCase="'Unit'" [(ngModel)]="v" [showCreate]="false">
+    <t-units-picker *ngSwitchCase="'Unit'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-units-picker>
 
-    <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="v" [definitionIds]="definitionIds" [showCreate]="false">
+    <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="v" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
     </t-custodies-picker>
 
-    <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="v" [definitionIds]="definitionIds" [showCreate]="false">
+    <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="v" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
     </t-resources-picker>
 
-    <t-centers-picker *ngSwitchCase="'Center'" [(ngModel)]="v" [showCreate]="false">
+    <t-centers-picker *ngSwitchCase="'Center'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-centers-picker>
 
-    <t-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="v" [showCreate]="false">
+    <t-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-roles-picker>
 
-    <t-users-picker *ngSwitchCase="'User'" [(ngModel)]="v" [showCreate]="false">
+    <t-users-picker *ngSwitchCase="'User'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-users-picker>
 
-    <t-relation-definitions-picker *ngSwitchCase="'RelationDefinition'" [(ngModel)]="v" [showCreate]="false">
+    <t-relation-definitions-picker *ngSwitchCase="'RelationDefinition'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-relation-definitions-picker>
 
-    <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'" [(ngModel)]="v" [showCreate]="false">
+    <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-custody-definitions-picker>
 
-    <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'" [(ngModel)]="v" [showCreate]="false">
+    <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-resource-definitions-picker>
 
-    <t-lookup-definitions-picker *ngSwitchCase="'LookupDefinition'" [(ngModel)]="v" [showCreate]="false">
+    <t-lookup-definitions-picker *ngSwitchCase="'LookupDefinition'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-lookup-definitions-picker>
 
-    <t-document-definitions-picker *ngSwitchCase="'DocumentDefinition'" [(ngModel)]="v" [showCreate]="false">
+    <t-document-definitions-picker *ngSwitchCase="'DocumentDefinition'" [(ngModel)]="v" [showCreate]="false" [filter]="filter">
     </t-document-definitions-picker>
 
     <div class="text-danger font-weight-bold" *ngSwitchDefault>

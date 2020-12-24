@@ -13,7 +13,7 @@ import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
 import {
   isSpecified, mergeEntitiesInWorkspace, csvPackage,
-  downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse
+  downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse, modifiedPropDesc
 } from '~/app/data/util';
 import {
   ReportDefinitionForClient, ReportDimensionDefinitionForClient,
@@ -1935,56 +1935,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
   }
-}
-
-export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx: TranslateService) {
-  const oldLabel = propDesc.label;
-  const label = () => `${oldLabel()} (${trx.instant('Modifier_' + modifier)})`;
-  switch (modifier) {
-    case 'dayofyear':
-    case 'day':
-    case 'week':
-      propDesc = { datatype: 'integral', control: 'number', label, minDecimalPlaces: 0, maxDecimalPlaces: 0 };
-      break;
-    case 'year':
-      propDesc = {
-        datatype: 'integral',
-        control: 'choice',
-        label,
-        choices: [...Array(30).keys()].map(y => y + 2000),
-        format: (c: number | string) => !c ? '' : c.toString()
-      };
-      break;
-    case 'quarter':
-      propDesc = {
-        datatype: 'integral',
-        control: 'choice',
-        label,
-        choices: [1, 2, 3, 4],
-        format: (c: number | string) => !c ? '' : trx.instant(`ShortQuarter${c}`)
-      };
-      break;
-    case 'month':
-      propDesc = {
-        datatype: 'integral',
-        control: 'choice',
-        label,
-        choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        format: (c: number | string) => !c ? '' : trx.instant(`ShortMonth${c}`)
-      };
-      break;
-    case 'weekday':
-      propDesc = {
-        datatype: 'integral',
-        control: 'choice',
-        label,
-        choices: [2 /* Mon */, 3, 4, 5, 6, 7, 1 /* Sun */],
-        // SQL Server numbers the days differently from ngb-datepicker
-        format: (c: number) => !c ? '' : trx.instant(`ShortDay${(c - 1) === 0 ? 7 : c - 1}`)
-      };
-      break;
-  }
-  return propDesc;
 }
 
 /*

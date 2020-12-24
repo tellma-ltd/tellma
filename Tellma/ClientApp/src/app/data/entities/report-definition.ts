@@ -4,7 +4,7 @@ import { EntityForSave } from './base/entity-for-save';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
-import { Control, EntityDescriptor } from './base/metadata';
+import { Collection, Control, EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionVisibility as Visibility, MainMenuSection, MainMenuIcon, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
@@ -33,7 +33,7 @@ export interface ReportDefinitionForSave<
     Type?: ReportType; // summary or details
     Chart?: ChartType;
     DefaultsToChart?: boolean; // ?
-    Collection?: string;
+    Collection?: Collection;
     DefinitionId?: number;
     Filter?: string;
     OrderBy?: string;

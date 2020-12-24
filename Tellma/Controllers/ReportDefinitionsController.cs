@@ -52,12 +52,16 @@ namespace Tellma.Controllers
     {
 
         private readonly ApplicationRepository _repo;
+        private readonly ISettingsCache _settingsCache;
+        private readonly IDefinitionsCache _defCache;
 
         private string View => ReportDefinitionsController.BASE_ADDRESS;
 
-        public ReportDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public ReportDefinitionsService(ApplicationRepository repo, ISettingsCache settingsCache, IDefinitionsCache defCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
+            _settingsCache = settingsCache;
+            _defCache = defCache;
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -93,6 +97,8 @@ namespace Tellma.Controllers
 
         protected override Task<List<ReportDefinitionForSave>> SavePreprocessAsync(List<ReportDefinitionForSave> entities)
         {
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+
             entities.ForEach(entity =>
             {
                 // Default Id
@@ -151,6 +157,15 @@ namespace Tellma.Controllers
                     entity.MainMenuSection = null;
                     entity.MainMenuSortKey = null;
                 }
+
+                // Generate Parameters
+                entity.Parameters.ForEach(parameter =>
+                {
+                    if (parameter.Control != null) // TODO: Need to figure out how to retrieve the default control
+                    {
+                        parameter.ControlOptions = ControllerUtilities.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                    }
+                });
             });
 
             return Task.FromResult(entities);
@@ -158,6 +173,9 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ReportDefinitionForSave> entities)
         {
+            var defs = _defCache.GetCurrentDefinitionsIfCached().Data;
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
                 if (entity.ShowInMainMenu ?? false)
@@ -168,6 +186,16 @@ namespace Tellma.Controllers
                         string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
 
                         ModelState.AddModelError(path, msg);
+                    }
+                }
+
+                foreach (var (parameter, paramIndex) in entity.Parameters.Select((e, i) => (e, i)))
+                {
+                    // TODO: Need to figure out how to retrieve the default control
+                    var errors = ControllerUtilities.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
+                    foreach (var msg in errors)
+                    {
+                        ModelState.AddModelError($"[{index}].{nameof(entity.Parameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
                     }
                 }
             }
