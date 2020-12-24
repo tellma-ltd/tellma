@@ -9,6 +9,6 @@
 	[Label2]				NVARCHAR (50),
 	[Label3]				VARCHAR (50),
 	[Visibility]			NVARCHAR (50), -- N'None', N'Optional', N'Required'
-	[DataType]				NVARCHAR (50),
-	[Filter]				NVARCHAR (255)
+	[Control]				NVARCHAR (50),  -- 'text', 'number', 'decimal', 'date', 'boolean', 'Resource'
+	[ControlOptions]		NVARCHAR (1024)
 );

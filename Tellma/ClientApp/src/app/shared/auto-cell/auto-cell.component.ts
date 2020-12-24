@@ -1,11 +1,9 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
-import { metadata, StatePropDescriptor, NumberPropDescriptor, EntityDescriptor, PropDescriptor } from '~/app/data/entities/base/metadata';
+import { metadata, ChoicePropDescriptor, NumberPropDescriptor, EntityDescriptor, PropDescriptor } from '~/app/data/entities/base/metadata';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { Entity } from '~/app/data/entities/base/entity';
-import { formatNumber, formatDate } from '@angular/common';
-import { formatAccounting, displayValue, displayEntity } from '~/app/data/util';
+import { displayValue, displayEntity } from '~/app/data/util';
 
 @Component({
   selector: 't-auto-cell',
@@ -44,6 +42,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   _metavalue: -1 | 0 | 1 | 2;
   _value: any;
   _control: string;
+  _isEntity: boolean;
 
   // Constructor and lifecycle hooks
   constructor(private workspace: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
@@ -86,6 +85,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
     this._metavalue = 2;
     this._value = null;
     this._control = null;
+    this._isEntity = false;
 
     try {
 
@@ -97,6 +97,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         this._entityDescriptor = this.entityDescriptor;
         this._metavalue = 2;
         this._control = this._propDescriptor.control;
+        this._isEntity = this._propDescriptor.datatype === 'entity';
 
       } else {
         if (!this.collection) {
@@ -109,7 +110,8 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         if (pathArray.length === 0) {
           this._propDescriptor = null;
           this._metavalue = 2;
-          this._control = 'navigation';
+          this._control = this.collection;
+          this._isEntity = true;
 
         } else {
           let currentCollection = this.collection;
@@ -126,11 +128,12 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
               // always set the control
               this._control = this._propDescriptor.control;
+              this._isEntity = this._propDescriptor.datatype === 'entity';
 
-              if (this._propDescriptor.control === 'navigation') {
+              if (this._propDescriptor.datatype === 'entity') {
 
-                currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
-                currentDefinition = this._propDescriptor.definition;
+                currentCollection = this._propDescriptor.control;
+                currentDefinition = this._propDescriptor.definitionId;
                 this._entityDescriptor = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
                 if (!!this._value && !!this._value.EntityMetadata) {
@@ -171,10 +174,15 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
       this._metavalue = -1;
       this._value = ex.message;
       this._control = 'error';
+      this._isEntity = false;
     }
   }
 
   // UI Binding
+
+  get isEntity(): boolean {
+    return this._isEntity;
+  }
 
   get control(): string {
     return this._control;
@@ -193,9 +201,14 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get stateColor(): string {
-    const prop = this._propDescriptor as StatePropDescriptor;
+    const prop = this._propDescriptor as ChoicePropDescriptor;
     const value = this._value;
     return (!!prop && !!prop.color ? prop.color(value) : null) || 'transparent';
+  }
+
+  get hasColor(): boolean {
+    const prop = this._propDescriptor as ChoicePropDescriptor;
+    return !!prop.color;
   }
 
   get alignment(): string {

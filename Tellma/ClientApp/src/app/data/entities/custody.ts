@@ -86,55 +86,52 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'CustodyDefinition', foreignKeyName: 'DefinitionId' },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: () => trx.instant('Code') },
-        CurrencyId: { control: 'text', label: () => `${trx.instant('Entity_Currency')} (${trx.instant('Id')})` },
-        Currency: { control: 'navigation', label: () => trx.instant('Entity_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-        CenterId: { control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Center: { control: 'navigation', label: () => trx.instant('Entity_Center'), type: 'Center', foreignKeyName: 'CenterId' },
-        Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-        Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-        Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-        LocationJson: { control: 'text', label: () => trx.instant('Entity_LocationJson') },
+        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        DefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Definition: { datatype: 'entity', control: 'CustodyDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+        CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Entity_Currency')} (${trx.instant('Id')})` },
+        Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Entity_Currency'), foreignKeyName: 'CurrencyId' },
+        CenterId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Entity_Center'),  foreignKeyName: 'CenterId' },
+        Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+        Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+        LocationJson: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_LocationJson') },
 
-        FromDate: { control: 'date', label: () => trx.instant('Entity_FromDate') },
-        ToDate: { control: 'date', label: () => trx.instant('Entity_ToDate') },
-        Decimal1: { control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-        Decimal2: { control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-        Int1: { control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Int2: { control: 'number', label: () => trx.instant('Entity_Int2'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Lookup1Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Lookup1: { control: 'navigation', label: () => trx.instant('Entity_Lookup1'), type: 'Lookup', foreignKeyName: 'Lookup1Id' },
-        Lookup2Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Lookup2: { control: 'navigation', label: () => trx.instant('Entity_Lookup2'), type: 'Lookup', foreignKeyName: 'Lookup2Id' },
-        Lookup3Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Lookup3: { control: 'navigation', label: () => trx.instant('Entity_Lookup3'), type: 'Lookup', foreignKeyName: 'Lookup3Id' },
-        Lookup4Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Lookup4: { control: 'navigation', label: () => trx.instant('Entity_Lookup4'), type: 'Lookup', foreignKeyName: 'Lookup4Id' },
-        // Lookup5Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup5')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        // Lookup5: { control: 'navigation', label: () => trx.instant('Entity_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
-        Text1: { control: 'text', label: () => trx.instant('Entity_Text1') },
-        Text2: { control: 'text', label: () => trx.instant('Entity_Text2') },
+        FromDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_FromDate') },
+        ToDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_ToDate') },
+        Decimal1: { datatype: 'decimal', control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+        Decimal2: { datatype: 'decimal', control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+        Int1: { datatype: 'integral', control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Int2: { datatype: 'integral', control: 'number', label: () => trx.instant('Entity_Int2'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup1Id: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Entity_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup1: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup1'), foreignKeyName: 'Lookup1Id' },
+        Lookup2Id: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Entity_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup2: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup2'), foreignKeyName: 'Lookup2Id' },
+        Lookup3Id: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Entity_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup3: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup3'), foreignKeyName: 'Lookup3Id' },
+        Lookup4Id: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Entity_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Lookup4: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup4'), foreignKeyName: 'Lookup4Id' },
+        Text1: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Text1') },
+        Text2: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Text2') },
 
         // Custody Only
 
-        CustodianId: { control: 'number', label: () => `${trx.instant('Custody_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Custodian: { control: 'navigation', label: () => trx.instant('Custody_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
+        CustodianId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Custody_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Custody_Custodian'), foreignKeyName: 'CustodianId' },
 
-        ExternalReference: { control: 'text', label: () => trx.instant('Custody_ExternalReference') },
+        ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Custody_ExternalReference') },
 
         // Standard
-
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsActive: {datatype: 'boolean',  control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 
@@ -217,7 +214,7 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
               delete entityDesc.properties[propName + 'Id'];
           } else {
               const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
-              propDesc.definition = definition[propName + 'DefinitionId'];
+              propDesc.definitionId = definition[propName + 'DefinitionId'];
               const defaultLabel = propDesc.label;
               propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
@@ -232,13 +229,13 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
           delete entityDesc.properties.Custodian;
       } else {
           const propDesc = entityDesc.properties.Custodian as NavigationPropDescriptor;
-          propDesc.definition = definition.CustodianDefinitionId;
-          if (!!propDesc.definition) {
-              const custodianDef = ws.definitions.Relations[propDesc.definition];
+          propDesc.definitionId = definition.CustodianDefinitionId;
+          if (!!propDesc.definitionId) {
+              const custodianDef = ws.definitions.Relations[propDesc.definitionId];
               if (!!custodianDef) {
                   propDesc.label = () => ws.getMultilingualValueImmediate(custodianDef, 'TitleSingular');
               } else {
-                  console.error(`Missing Relation definitionId ${propDesc.definition} for custodian`);
+                  console.error(`Missing Relation definitionId ${propDesc.definitionId} for custodian`);
               }
           }
       }

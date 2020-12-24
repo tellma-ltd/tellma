@@ -58,25 +58,27 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-                Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-                Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-                Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-                Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+                Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+                Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+                Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+                Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
                 Usage: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('MarkupTemplate_Usage'),
-                    choices: ['QueryByFilter', 'QueryById' ],
+                    choices: ['QueryByFilter', 'QueryById'],
                     format: (c: number | string) => {
                         return !!c ? 'MarkupTemplate_Usage_' + c : '';
                     }
                 },
-                Collection: { control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
-                DefinitionId: { control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Collection: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
+                DefinitionId: { datatype: 'integral', control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 MarkupLanguage: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('MarkupTemplate_MarkupLanguage'),
                     choices: ['text/html'],
@@ -87,16 +89,16 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                         }
                     }
                 },
-                SupportsPrimaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.primaryPostfix },
-                SupportsSecondaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.secondaryPostfix },
-                SupportsTernaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.ternaryPostfix },
-                DownloadName: { control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
-                Body: { control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
-                IsDeployed: { control: 'boolean', label: () => trx.instant('MarkupTemplate_IsDeployed') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                SupportsPrimaryLanguage: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.primaryPostfix },
+                SupportsSecondaryLanguage: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.secondaryPostfix },
+                SupportsTernaryLanguage: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.ternaryPostfix },
+                DownloadName: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
+                Body: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
+                IsDeployed: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('MarkupTemplate_IsDeployed') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

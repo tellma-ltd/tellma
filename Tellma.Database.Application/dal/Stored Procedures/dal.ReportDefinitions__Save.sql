@@ -72,7 +72,7 @@ SET NOCOUNT ON;
 	)
 	MERGE INTO BP AS t
 	USING (
-		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Key], L.[Label], L.[Label2], L.[Label3], L.[Visibility], L.[Value]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Key], L.[Label], L.[Label2], L.[Label3], L.[Visibility], L.[Value], L.[Control], L.[ControlOptions]
 		FROM @Parameters L
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
@@ -86,13 +86,15 @@ SET NOCOUNT ON;
 			t.[Label2]				= s.[Label2],
 			t.[Label3]				= s.[Label3],
 			t.[Visibility]			= s.[Visibility],
-			t.[Value]				= s.[Value]
+			t.[Value]				= s.[Value],
+			t.[Control]				= s.[Control],
+			t.[ControlOptions]		= s.[ControlOptions]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[Index], [ReportDefinitionId], [Key], [Label], [Label2], [Label3], [Visibility], [Value]
+			[Index], [ReportDefinitionId], [Key], [Label], [Label2], [Label3], [Visibility], [Value], [Control], [ControlOptions]
 		)
 		VALUES (
-			s.[Index], s.[ReportDefinitionId], s.[Key], s.[Label], s.[Label2], s.[Label3], s.[Visibility], s.[Value]
+			s.[Index], s.[ReportDefinitionId], s.[Key], s.[Label], s.[Label2], s.[Label3], s.[Visibility], s.[Value], s.[Control], s.[ControlOptions]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

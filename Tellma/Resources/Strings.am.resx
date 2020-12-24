@@ -418,6 +418,12 @@
   <data name="Definition_Archive" xml:space="preserve">
     <value>ማህደር</value>
   </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>መቆጣጠሪያ</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>መቆጣጠሪያ አማራጮች</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>አባሪዎች አሉት</value>
   </data>
@@ -903,6 +909,9 @@
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>ግቤት አይነቶች</value>
+  </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>የመስክ {0} የበለጠ መሆን ወይም ዜሮ እኩል መሆን አለባቸው.</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
@@ -2089,12 +2098,6 @@
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>ባለሁለት ክፍሉ ማረጋገጫ (2FA)</value>
   </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>የውሂብ አይነት</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>ማጣሪያ</value>
-  </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>ቁልፍ</value>
   </data>
@@ -2216,7 +2219,7 @@
     <value>ልዩ ልዩ</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
-    <value>ሌሎች ገንዘብ ነክ ንብረቶች</value>
+    <value>ሌሎች የገንዘብ ንብረቶች</value>
   </data>
   <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
     <value>ሌሎች የገንዘብ ተጠያቂነቶች</value>
@@ -2570,7 +2573,7 @@
     <value>የመገልገያ ፍቺ</value>
   </data>
   <data name="ResourceDefinition_ResourceDefinitionType" xml:space="preserve">
-    <value>የመገልገያ ፍቺ አይነት</value>
+    <value>ሀብት ፍቺ አይነት</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>ክፍል የቁጥሮች</value>

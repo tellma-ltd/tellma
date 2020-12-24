@@ -87,22 +87,110 @@ export const metadata: {
     VoucherBooklet: metadata_VoucherBooklet,
 };
 
-let _collections: SelectorChoice[];
+/**
+ * Array of all possible DataType values
+ */
+export const datatypesArray: DataType[] =
+    ['string', 'integral', 'decimal', 'date', 'datetime', 'datetimeoffset', 'boolean', 'entity'];
 
-export function collectionsWithEndpoint(ws: WorkspaceService, trx: TranslateService): SelectorChoice[] {
-    if (!_collections) {
-        _collections = Object.keys(metadata)
+/**
+ * Array of all possible SimpleControl values
+ */
+export const simpleControlsArray: SimpleControl[] =
+    ['text', 'serial', 'choice', 'number', 'percent', 'date', 'datetime', 'boolean'];
+
+/**
+ * Names of all datatypes
+ */
+export type DataType = 'string' | 'integral' | 'decimal' | 'date' | 'datetime' | 'datetimeoffset' | 'boolean' | 'entity';
+
+/**
+ * Combines simple and entity controls
+ */
+export type Control = SimpleControl | Collection;
+
+/**
+ * Names of simple (scalar) editors
+ */
+export type SimpleControl = 'text' | 'serial' | 'choice' | 'number' | 'percent' | 'date' | 'datetime' | 'boolean';
+
+/**
+ * Names of collections that support the standard tellma API (Get Fact)
+ */
+export type Collection =
+    'Unit' |
+    'User' |
+    'Agent' |
+    'Relation' |
+    'Custody' |
+    'Lookup' |
+    'Currency' |
+    'Resource' |
+    'AccountClassification' |
+    'IfrsConcept' |
+    'AccountType' |
+    'Account' |
+    'ReportDefinition' |
+    'Center' |
+    'EntryType' |
+    'Document' |
+    'LineForQuery' |
+    'ExchangeRate' |
+    'DetailsEntry' |
+    'SummaryEntry' |
+    'MarkupTemplate' |
+    'InboxRecord' |
+    'OutboxRecord' |
+    'RelationDefinition' |
+    'CustodyDefinition' |
+    'ResourceDefinition' |
+    'LookupDefinition' |
+    'LineDefinition' |
+    'DocumentDefinition' |
+    'EmailForQuery' |
+    'SmsMessageForQuery' |
+    'AdminUser' |
+    'IdentityServerUser' |
+    'VoucherBooklet';
+
+let _collectionsSingular: SelectorChoice[];
+let _collectionsPlural: SelectorChoice[];
+
+export function collectionsWithEndpoint(ws: WorkspaceService, trx: TranslateService, singular = false): SelectorChoice[] {
+    if (!_collectionsSingular) {
+        const source = Object.keys(metadata)
             .filter(key => {
                 const meta = metadata[key](ws, trx, null);
                 return !!meta && !meta.isAdmin && !!meta.apiEndpoint;
-            })
+            });
+
+        _collectionsSingular = source
+            .map(key => ({
+                value: key,
+                name: metadata[key](ws, trx, null).titleSingular
+            }))
+            .sort((a, b) => a.name() < b.name() ? - 1 : a.name() > b.name() ? 1 : 0);
+
+        _collectionsPlural = source
             .map(key => ({
                 value: key,
                 name: metadata[key](ws, trx, null).titlePlural
-            }));
+            }))
+            .sort((a, b) => a.name() < b.name() ? - 1 : a.name() > b.name() ? 1 : 0);
     }
 
-    return _collections;
+    return singular ? _collectionsSingular : _collectionsPlural;
+}
+
+let _simpleControls: SelectorChoice[];
+
+export function simpleControls(trx: TranslateService): SelectorChoice[] {
+    if (!_simpleControls) {
+        _simpleControls = simpleControlsArray
+            .map(c => ({ value: c, name: () => trx.instant('Control_' + c) }));
+    }
+
+    return _simpleControls;
 }
 
 export interface EntityDescriptor {
@@ -220,6 +308,9 @@ export interface PropDescriptorBase {
      * The label of this field, typically shown on table headers
      */
     label: () => string;
+}
+
+export interface PropVisualDescriptorBase {
 
     /**
      * Whether the field value should be displayed as RTL
@@ -227,37 +318,29 @@ export interface PropDescriptorBase {
     alignment?: 'left' | 'right' | 'center';
 }
 
-export interface TextPropDescriptor extends PropDescriptorBase {
+export interface TextPropDescriptor extends TextPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'string';
+}
+export interface TextPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'text';
 }
 
-export interface SerialPropDescriptor extends PropDescriptorBase {
+export interface SerialPropDescriptor extends SerialPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'integral';
+}
+export interface SerialPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'serial';
 
-    format: (serial: number) => string;
+    prefix: string;
+    codeWidth: number;
 }
 
-export interface ChoicePropDescriptor extends PropDescriptorBase {
+
+export interface ChoicePropDescriptor extends ChoicePropVisualDescriptor, PropDescriptorBase {
+    datatype: 'integral' | 'string';
+}
+export interface ChoicePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'choice';
-
-    /**
-     * All the choices that can be selected
-     */
-    choices: (string | number)[];
-
-    /**
-     * A function that formats any choice into a display object
-     */
-    format: (choice: string | number) => string;
-
-    /**
-     * Useful for components to cache the list of { name, value } for the selector
-     */
-    selector?: { value: string | number; name: () => string }[];
-}
-
-export interface StatePropDescriptor extends PropDescriptorBase {
-    control: 'state';
 
     /**
      * All the choices that can be selected
@@ -276,12 +359,15 @@ export interface StatePropDescriptor extends PropDescriptorBase {
     selector?: { value: string | number; name: () => string }[];
 }
 
-export function getChoices(desc: StatePropDescriptor | ChoicePropDescriptor): SelectorChoice[] {
+export function getChoices(desc: ChoicePropVisualDescriptor): SelectorChoice[] {
     desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
     return desc.selector;
 }
 
-export interface NumberPropDescriptor extends PropDescriptorBase {
+export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'integral' | 'decimal';
+}
+export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'number';
 
     /**
@@ -289,10 +375,12 @@ export interface NumberPropDescriptor extends PropDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
-    // formatAsCurrency?: boolean;
 }
 
-export interface PercentPropDescriptor extends PropDescriptorBase {
+export interface PercentPropDescriptor extends PercentPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'decimal';
+}
+export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'percent';
 
     /**
@@ -302,15 +390,24 @@ export interface PercentPropDescriptor extends PropDescriptorBase {
     maxDecimalPlaces: number;
 }
 
-export interface DatePropDscriptor extends PropDescriptorBase {
+export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescriptorBase {
+    datatype: 'date' | 'datetime' | 'datetimeoffset';
+}
+export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'date';
 }
 
-export interface DatetimePropDscriptor extends PropDescriptorBase {
+export interface DatetimePropDescriptor extends DatetimePropVisualDescriptor, PropDescriptorBase {
+    datatype: 'datetime' | 'datetimeoffset';
+}
+export interface DatetimePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'datetime';
 }
 
-export interface BooleanPropDescriptor extends PropDescriptorBase {
+export interface BooleanPropDescriptor extends BooleanPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'boolean';
+}
+export interface BooleanPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'boolean';
 
     /**
@@ -319,33 +416,34 @@ export interface BooleanPropDescriptor extends PropDescriptorBase {
     format?: (b: boolean) => string;
 }
 
-export interface NavigationPropDescriptor extends PropDescriptorBase {
-    control: 'navigation';
-
-    /**
-     * Determines the definitionId of the entities that reside in these properties (e.g. Inventory vs. Resource)
-     */
-    definition?: number;
-
+export interface NavigationPropDescriptor extends NavigationPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'entity';
     /**
      * The name of the foreign key property
      */
     foreignKeyName: string;
+}
+export interface NavigationPropVisualDescriptor extends PropVisualDescriptorBase {
+    control: Collection;
 
     /**
-     * Determines the type of this property
+     * Determines the definitionId of the entities that reside in these properties (e.g. Inventory vs. Resource)
      */
-    type: string; // e.g. Relation
+    definitionId?: number;
 
     /**
-     * Determines the name of the collection holding the entities represented by this property
+     * For the details picker
      */
-    collection?: string; // e.g. Custody
+    filter?: string;
 }
 
-export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor | BooleanPropDescriptor
-    | NumberPropDescriptor | PercentPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor
-    | StatePropDescriptor | SerialPropDescriptor;
+export declare type PropVisualDescriptor = TextPropVisualDescriptor | ChoicePropVisualDescriptor |
+    BooleanPropVisualDescriptor | NumberPropVisualDescriptor | PercentPropVisualDescriptor |
+    DatePropVisualDescriptor | DatetimePropVisualDescriptor | NavigationPropVisualDescriptor | SerialPropVisualDescriptor;
+
+export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
+    BooleanPropDescriptor | NumberPropDescriptor | PercentPropDescriptor |
+    DatePropDescriptor | DatetimePropDescriptor | NavigationPropDescriptor | SerialPropDescriptor;
 
 export function entityDescriptorImpl(
     pathArray: string[], baseCollection: string, baseDefinition: number,
@@ -363,13 +461,13 @@ export function entityDescriptorImpl(
         if (!propDesc) {
             throw new Error(`Property ${step} does not exist`);
 
-        } else if (propDesc.control !== 'navigation') {
+        } else if (propDesc.datatype !== 'entity') {
             throw new Error(`Property ${step} is not a navigation property`);
 
         } else {
 
-            const coll = propDesc.collection || propDesc.type;
-            const definition = propDesc.definition;
+            const coll = propDesc.control;
+            const definition = propDesc.definitionId;
 
             currentEntityDesc = metadata[coll](wss, trx, definition);
         }
@@ -379,10 +477,26 @@ export function entityDescriptorImpl(
 }
 
 export function isText(propDesc: PropDescriptor): boolean {
-    return !!propDesc && (propDesc.control === 'text' ||
-        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'string'));
+    return !!propDesc && propDesc.datatype === 'string';
 }
 
 export function isNumeric(propDesc: PropDescriptor): boolean {
-    return !!propDesc && propDesc.control === 'number';
+    return !!propDesc && (propDesc.datatype === 'integral' || propDesc.datatype === 'decimal');
+}
+
+export function hasControlOptions(control: Control) {
+    if (!control) {
+        return false;
+    }
+
+    switch (control) {
+        case 'text':
+        case 'date':
+        case 'datetime':
+        case 'boolean':
+            // Those controls do not have additional options
+            return false;
+        default:
+            return true;
+    }
 }

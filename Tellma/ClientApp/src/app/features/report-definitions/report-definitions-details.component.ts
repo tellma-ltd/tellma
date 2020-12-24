@@ -1,10 +1,11 @@
+// tslint:disable:member-ordering
 import { Component, ViewChild, TemplateRef } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import {
   ChoicePropDescriptor, getChoices, collectionsWithEndpoint, metadata, entityDescriptorImpl,
-  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor
+  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor, hasControlOptions, Control, Collection
 } from '~/app/data/entities/base/metadata';
 import {
   ReportDefinitionForSave, metadata_ReportDefinition, ReportDefinition, ReportMeasureDefinition,
@@ -19,6 +20,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FilterTools, modifiers } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
 import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
+import { computePropDesc } from '~/app/data/util';
 
 export interface FieldInfo {
   path: string;
@@ -247,16 +249,18 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
               Key: key,
               Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' :
                 !!builtInMatch && !builtInMatch.isRequired ? 'None' : 'Optional',
+              Control: this.getParamPropDescriptor(model, key).control
             };
 
             modelTracker[keyLower] = parameterDef;
             parameters.push(parameterDef);
           } else {
             parameterDef.Key = key;
+            parameterDef.Control = this.getParamPropDescriptor(model, key).control;
           }
-
-          model.Parameters = parameters;
         }
+
+        model.Parameters = parameters;
       }
     } catch { } // Errors will be reported by the report preview
   }
@@ -335,7 +339,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public getParameterDescriptor(key: string, model?: ReportDefinition): ParameterDescriptor {
     model = model || this.modelRef;
     const entityDesc = metadata[model.Collection](this.workspace, this.translate, model.DefinitionId);
-    const result = !!entityDesc.parameters ? entityDesc.parameters.find(e => e.key === key) : null;
+    const result = !!entityDesc.parameters ? entityDesc.parameters.find(e => e.key.toLowerCase() === key.toLowerCase()) : null;
     return result;
   }
 
@@ -570,6 +574,52 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }, (_: any) => { });
   }
 
+  private _getParamPropDescriptorCollection: Collection;
+  private _getParamPropDescriptorDefinitionId: number;
+  private _getParamPropDescriptorFilter: string;
+  private _getParamPropDescriptorResults: { [key: string]: PropDescriptor } = {};
+
+  public getParamPropDescriptor(model: ReportDefinition, key: string): PropDescriptor {
+    if (this._getParamPropDescriptorCollection !== model.Collection ||
+      this._getParamPropDescriptorDefinitionId !== model.DefinitionId ||
+      this._getParamPropDescriptorFilter !== model.Filter) {
+      this._getParamPropDescriptorCollection = model.Collection;
+      this._getParamPropDescriptorDefinitionId = model.DefinitionId;
+      this._getParamPropDescriptorFilter = model.Filter;
+
+      this._getParamPropDescriptorResults = {};
+      if (!!model.Collection) {
+
+        // Custom params
+        const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(model.Filter));
+        for (const atom of placeholderAtoms) {
+          const keyLower = atom.value.substr(1).toLowerCase();
+          this._getParamPropDescriptorResults[keyLower] = computePropDesc(
+            this.workspace, this.translate, model.Collection, model.DefinitionId, atom.path, atom.property, atom.modifier);
+        }
+
+        // Built-in params
+        const desc = this.entityDescriptor(model);
+        const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
+        for (const param of builtInParamsDescriptors) {
+          this._getParamPropDescriptorResults[param.key.toLowerCase()] = param.desc;
+        }
+      }
+    }
+
+    return this._getParamPropDescriptorResults[key.toLowerCase()];
+  }
+
+  public showOptions(p: ReportParameterDefinition, model: ReportDefinition, key: string) {
+    let control = p.Control; // This overrides the default
+    if (!control) {
+      const desc = this.getParamPropDescriptor(model, key);
+      control = !!desc ? desc.control : null;
+    }
+
+    return hasControlOptions(control);
+  }
+
   public get canApply(): boolean {
     return this.itemToEditNature === 'parameter' || !!(this.itemToEdit as { Path: string }).Path;
   }
@@ -586,7 +636,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public hasChildren(info: FieldInfo): boolean {
-    return info.desc.control === 'navigation';
+    return info.desc.datatype === 'entity';
   }
 
   public showTreeNode(node: FieldInfo): boolean {
@@ -611,11 +661,11 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public onExpand(node: FieldInfo, index: number, model: ReportDefinition): void {
-    if (node.desc.control === 'navigation') {
+    if (node.desc.datatype === 'entity') {
       node.isExpanded = !node.isExpanded;
       if (node.isExpanded && !node.childrenLoaded) {
-        const collection = node.desc.collection || node.desc.type;
-        const definitionId = node.desc.definition;
+        const collection = node.desc.control;
+        const definitionId = node.desc.definitionId;
         const children = this.getChildren(collection, definitionId, node);
         const allFields = this.allFields(model);
         allFields.splice(index + 1, 0, ...children);

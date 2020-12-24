@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { StatePropDescriptor } from '~/app/data/entities/base/metadata';
+import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { EmailState, metadata_Email } from '~/app/data/entities/email';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -13,7 +13,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 export class EmailsDetailsComponent extends DetailsBaseComponent implements OnDestroy {
 
   public expand = '';
-  private _stateDesc: StatePropDescriptor;
+  private _stateDesc: ChoicePropDescriptor;
   private _url: string;
   private _body: string;
   private _iframe: ElementRef;
@@ -63,7 +63,7 @@ export class EmailsDetailsComponent extends DetailsBaseComponent implements OnDe
   public stateDisplay(state: EmailState) {
     if (!this._stateDesc) {
       const meta = metadata_Email(null, this.translate);
-      this._stateDesc = meta.properties.State as StatePropDescriptor;
+      this._stateDesc = meta.properties.State as ChoicePropDescriptor;
     }
 
     return this._stateDesc.format(state);
@@ -72,7 +72,7 @@ export class EmailsDetailsComponent extends DetailsBaseComponent implements OnDe
   public stateColor(state: EmailState) {
     if (!this._stateDesc) {
       const meta = metadata_Email(null, this.translate);
-      this._stateDesc = meta.properties.State as StatePropDescriptor;
+      this._stateDesc = meta.properties.State as ChoicePropDescriptor;
     }
 
     return this._stateDesc.color(state);

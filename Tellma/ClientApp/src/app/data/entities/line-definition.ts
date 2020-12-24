@@ -3,7 +3,7 @@ import { EntityForSave } from './base/entity-for-save';
 import { LineDefinitionEntryForSave, LineDefinitionEntry } from './line-definition-entry';
 import { LineDefinitionColumnForSave, LineDefinitionColumn } from './line-definition-column';
 import { LineDefinitionStateReasonForSave, LineDefinitionStateReason } from './line-definition-state-reason';
-import { LineDefinitionGenerateParameterForSave, LineDefinitionGenerateParameter } from './line-definition-state-generate-parameter';
+import { LineDefinitionGenerateParameterForSave, LineDefinitionGenerateParameter } from './line-definition-generate-parameter';
 import { WorkflowForSave, Workflow } from './workflow';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -81,39 +81,40 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
             inactiveFilter: null,
             format: (item: LineDefinition) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-                Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-                Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-                TitleSingular: { control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
-                TitleSingular2: { control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
-                TitleSingular3: { control: 'text', label: () => trx.instant('TitleSingular') + ws.ternaryPostfix },
-                TitlePlural: { control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
-                TitlePlural2: { control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
-                TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
-                AllowSelectiveSigning: { control: 'boolean', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
-                ViewDefaultsToForm: { control: 'boolean', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+                Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+                Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                TitleSingular: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
+                TitleSingular2: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
+                TitleSingular3: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.ternaryPostfix },
+                TitlePlural: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
+                TitlePlural2: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
+                TitlePlural3: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
+                AllowSelectiveSigning: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
+                ViewDefaultsToForm: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
 
                 // New barcode stuff
-                BarcodeColumnIndex: {  control: 'number', label: () => trx.instant('LineDefinition_BarcodeColumnIndex'), minDecimalPlaces: 0, maxDecimalPlaces: 0  },
-                BarcodeProperty: { control: 'text', label: () => trx.instant('LineDefinition_BarcodeProperty') },
+                BarcodeColumnIndex: { datatype: 'integral', control: 'number', label: () => trx.instant('LineDefinition_BarcodeColumnIndex'), minDecimalPlaces: 0, maxDecimalPlaces: 0  },
+                BarcodeProperty: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_BarcodeProperty') },
                 BarcodeExistingItemHandling: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('LineDefinition_BarcodeExistingItemHandling'),
                     choices: existingItemHandlingChoices,
                     format: (choice: string) => !!choice ? trx.instant('LineDefinition_Handling_' + choice) : ''
                 },
-                BarcodeBeepsEnabled: { control: 'boolean', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
+                BarcodeBeepsEnabled: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
 
-                GenerateLabel: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.primaryPostfix },
-                GenerateLabel2: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.secondaryPostfix },
-                GenerateLabel3: { control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.ternaryPostfix },
-                GenerateScript: { control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
-                PreprocessScript: { control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
-                ValidateScript: { control: 'text', label: () => trx.instant('Definition_ValidateScript') },
-                SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }
+                GenerateLabel: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.primaryPostfix },
+                GenerateLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.secondaryPostfix },
+                GenerateLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.ternaryPostfix },
+                GenerateScript: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
+                PreprocessScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
+                ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
+                SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };
 
@@ -121,12 +122,14 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
             delete entityDesc.properties.Description2;
             delete entityDesc.properties.TitleSingular2;
             delete entityDesc.properties.TitlePlural2;
+            delete entityDesc.properties.GenerateLabel2;
         }
 
         if (!ws.settings.TernaryLanguageId) {
             delete entityDesc.properties.Description3;
             delete entityDesc.properties.TitleSingular3;
             delete entityDesc.properties.TitlePlural3;
+            delete entityDesc.properties.GenerateLabel3;
         }
 
         _cache = entityDesc;

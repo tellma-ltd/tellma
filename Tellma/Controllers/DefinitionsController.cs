@@ -565,6 +565,8 @@ namespace Tellma.Controllers
                     Label3 = p.Label3,
                     Visibility = p.Visibility,
                     Value = p.Value,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions,
                 })?.ToList() ?? new List<ReportParameterDefinitionForClient>(),
 
                 // Chart
@@ -660,8 +662,8 @@ namespace Tellma.Controllers
                     Label = p.Label,
                     Label2 = p.Label2,
                     Label3 = p.Label3,
-                    DataType = p.DataType,
-                    Filter = p.Filter,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions,
                     Visibility = p.Visibility // This one can't be 'None'
                 })?.ToList() ?? new List<LineDefinitionGenerateParameterForClient>(),
             };

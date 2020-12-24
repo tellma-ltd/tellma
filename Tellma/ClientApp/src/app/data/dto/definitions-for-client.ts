@@ -4,6 +4,7 @@ import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
 import { ExistingItemHandling } from '../entities/line-definition';
+import { Collection, Control, PropVisualDescriptor } from '../entities/base/metadata';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -47,7 +48,7 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Type: ReportType; // summary or details
     Chart?: ChartType;
     DefaultsToChart: boolean; // ?
-    Collection: string;
+    Collection: Collection;
     DefinitionId?: number;
     Select: ReportSelectDefinitionForClient[];
     Parameters?: ReportParameterDefinitionForClient[];
@@ -69,6 +70,8 @@ export interface ReportParameterDefinitionForClient {
     Label3?: string;
     Visibility?: Visibility;
     Value?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
 export interface ReportSelectDefinitionForClient {
@@ -322,9 +325,11 @@ export interface LineDefinitionGenerateParameterForClient {
     Label: string;
     Label2: string;
     Label3: string;
-    DataType: string;
-    Filter: string;
+    Control: Control;
+    ControlOptions?: string;
     Visibility: Visibility;
+
+    desc?: PropVisualDescriptor; // For caching purposes
 }
 
 export const entryColumnNames = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'TemplateLineId',

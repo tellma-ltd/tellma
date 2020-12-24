@@ -32,12 +32,16 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
             format: (item: IdentityServerUser) => item.Email,
             isAdmin: true,
             properties: {
-                Id: { control: 'text', label: () => trx.instant('Id') },
-                Email: { control: 'text', label: () => trx.instant('User_Email') },
-                EmailConfirmed: { control: 'boolean', label: () => trx.instant('IdentityServerUser_EmailConfirmed') },
-                PasswordSet: { control: 'boolean', label: () => trx.instant('IdentityServerUser_PasswordSet') },
-                TwoFactorEnabled: { control: 'boolean', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled') },
-                LockoutEnd: { control: 'datetime', label: () => trx.instant('IdentityServerUser_LockoutEnd') },
+                Id: { datatype: 'string', control: 'text', label: () => trx.instant('Id') },
+                Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
+                EmailConfirmed: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IdentityServerUser_EmailConfirmed') },
+                PasswordSet: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IdentityServerUser_PasswordSet') },
+                TwoFactorEnabled: {
+                    datatype: 'boolean', control: 'boolean', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled')
+                },
+                LockoutEnd: {
+                    datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('IdentityServerUser_LockoutEnd')
+                },
             }
         };
     }

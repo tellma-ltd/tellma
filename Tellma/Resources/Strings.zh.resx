@@ -418,6 +418,12 @@
   <data name="Definition_Archive" xml:space="preserve">
     <value>档案</value>
   </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>控制</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>控制选项</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>有附件</value>
   </data>
@@ -903,6 +909,9 @@
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>进入分类</value>
+  </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>字段{0}必须大于或等于零。</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>A {0}路径不能与导航字段{1}终止。</value>
@@ -2088,12 +2097,6 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>双因素认证（2FA）</value>
-  </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>数据类型</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>过滤</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>键</value>

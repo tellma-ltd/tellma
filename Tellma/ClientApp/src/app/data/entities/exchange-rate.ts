@@ -40,24 +40,26 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
             inactiveFilter: null,
             format: (item: ExchangeRate) => `${!!item.ValidAsOf} ${ws.getMultilingualValue('Currency', item.CurrencyId, 'Name')}`,
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CurrencyId: { control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('ExchangeRate_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                ValidAsOf: { control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
-                ValidTill: { control: 'date', label: () => trx.instant('ExchangeRate_ValidTill') },
-                AmountInCurrency: { control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
+                Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('ExchangeRate_Currency'), foreignKeyName: 'CurrencyId' },
+                ValidAsOf: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
+                ValidTill: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidTill') },
+                AmountInCurrency: { datatype: 'decimal', control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
                 AmountInFunctional: {
+                    datatype: 'decimal',
                     control: 'number',
                     label: () => `${trx.instant('ExchangeRate_AmountInFunctional')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: 6,
                     alignment: 'right'
                 },
-                Rate: { control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                Rate: { datatype: 'decimal', control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
+
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 
