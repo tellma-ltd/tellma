@@ -481,8 +481,7 @@ $paper-width: 1150px; // The default font (1rem) is too big
   margin-left: 0.125rem;
 }
 
-input.t-h2,
-.t-h2 input {
+input.t-h2, .t-h2 input, .t-h2 .t-prefix {
   margin-bottom: 0.5rem;
   font-family: inherit;
   line-height: 1.2;

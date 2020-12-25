@@ -281,6 +281,7 @@ namespace Tellma.Controllers.Templating
                 ["$ShortCompanyName"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName),
                 ["$ShortCompanyName2"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName2),
                 ["$ShortCompanyName3"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName3),
+                ["$TaxIdentificationNumber"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).TaxIdentificationNumber),
                 ["$UserEmail"] = new TemplateVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Email),
                 ["$UserName"] = new TemplateVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name),
                 ["$UserName2"] = new TemplateVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name2),

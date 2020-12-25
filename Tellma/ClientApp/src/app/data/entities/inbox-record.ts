@@ -49,14 +49,15 @@ export function metadata_InboxRecord(wss: WorkspaceService, trx: TranslateServic
             inactiveFilter: null,
             format: (__: EntityWithKey) => '',
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DocumentId: { control: 'number', label: () => `${trx.instant('Assignment_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Document: { control: 'navigation', label: () => trx.instant('Assignment_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
-                Comment: { control: 'text', label: () => trx.instant('Document_Comment') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('Document_AssignedAt') },
-                CreatedById: { control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('Document_AssignedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                OpenedAt: { control: 'datetime', label: () => trx.instant('Document_OpenedAt') }
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DocumentId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Assignment_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Document: { datatype: 'entity', control: 'Document', label: () => trx.instant('Assignment_Document'), foreignKeyName: 'DocumentId' },
+                Comment: { datatype: 'string', control: 'text', label: () => trx.instant('Document_Comment') },
+
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

@@ -13,7 +13,7 @@ import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
 import {
   isSpecified, mergeEntitiesInWorkspace, csvPackage,
-  downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse
+  downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse, modifiedPropDesc
 } from '~/app/data/util';
 import {
   ReportDefinitionForClient, ReportDimensionDefinitionForClient,
@@ -392,26 +392,30 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       let desc: PropDescriptor;
       switch (aggregation) {
         case 'count':
-          desc = { control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right' };
+          desc = {
+            datatype: 'integral', control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right'
+          };
           break;
         case 'max':
         case 'min':
           desc = propDesc;
           break;
         case 'sum':
-          if (propDesc.control !== 'number') {
+          if (!isNumeric(propDesc)) {
             console.error(`Use of sum aggregation on a non-numeric property ${prop}`);
           } else {
             desc = propDesc;
           }
           break;
         case 'avg':
-          if (propDesc.control !== 'number') {
+          if (!isNumeric(propDesc)) {
             console.error(`Use of avg aggregation on a non-numeric property ${prop}`);
           } else {
-            desc = { ...propDesc };
-            desc.minDecimalPlaces = Math.max(desc.minDecimalPlaces, 2);
-            desc.maxDecimalPlaces = Math.max(desc.maxDecimalPlaces, 2);
+            desc = { datatype: 'decimal', control: 'number', label: propDesc.label, minDecimalPlaces: 2, maxDecimalPlaces: 2 };
+            if (propDesc.control === 'number') {
+              desc.minDecimalPlaces = Math.max(desc.minDecimalPlaces, 2);
+              desc.maxDecimalPlaces = Math.max(desc.maxDecimalPlaces, 2);
+            }
           }
           break;
       }
@@ -453,7 +457,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       // If this is a nav property, get the EntityDescriptor describing the target entity as well
-      if (propDesc.control === 'navigation') {
+      if (propDesc.datatype === 'entity') {
         entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
       }
 
@@ -578,7 +582,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         definitionId, this.workspace, this.translate);
 
       const propDesc = currentDesc.properties[property];
-      if (!!propDesc && propDesc.control === 'navigation') {
+      if (!!propDesc && propDesc.datatype === 'entity') {
         // For nav properties, select the Id + the display properties
         addAtom(`${stringPath}/Id`);
 
@@ -753,7 +757,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       if (!!propDesc) {
         // (1) Adjust path and propDesc in the case of a nav property
-        if (propDesc.control === 'navigation') {
+        if (propDesc.datatype === 'entity') {
           // Update path
           const fkName = propDesc.foreignKeyName;
           const steps = path.split('/').slice(0, -1);
@@ -887,7 +891,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           // Helper function
           const getDisplay = (cell: DimensionCell) => {
             let display: string;
-            if (cell.propDesc.control === 'navigation') {
+            if (cell.propDesc.datatype === 'entity') {
               display = displayEntity(cell.value, cell.entityDesc);
             } else {
               display = displayValue(cell.value, cell.propDesc, this.translate);
@@ -1931,52 +1935,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
   }
-}
-
-export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx: TranslateService) {
-  const oldLabel = propDesc.label;
-  const label = () => `${oldLabel()} (${trx.instant('Modifier_' + modifier)})`;
-  switch (modifier) {
-    case 'dayofyear':
-    case 'day':
-    case 'week':
-      propDesc = { control: 'number', label, minDecimalPlaces: 0, maxDecimalPlaces: 0 };
-      break;
-    case 'year':
-      propDesc = {
-        control: 'choice',
-        label,
-        choices: [...Array(30).keys()].map(y => y + 2000),
-        format: (c: number | string) => !c ? '' : c.toString()
-      };
-      break;
-    case 'quarter':
-      propDesc = {
-        control: 'choice',
-        label,
-        choices: [1, 2, 3, 4],
-        format: (c: number | string) => !c ? '' : trx.instant(`ShortQuarter${c}`)
-      };
-      break;
-    case 'month':
-      propDesc = {
-        control: 'choice',
-        label,
-        choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        format: (c: number | string) => !c ? '' : trx.instant(`ShortMonth${c}`)
-      };
-      break;
-    case 'weekday':
-      propDesc = {
-        control: 'choice',
-        label,
-        choices: [2 /* Mon */, 3, 4, 5, 6, 7, 1 /* Sun */],
-        // SQL Server numbers the days differently from ngb-datepicker
-        format: (c: number) => !c ? '' : trx.instant(`ShortDay${(c - 1) === 0 ? 7 : c - 1}`)
-      };
-      break;
-  }
-  return propDesc;
 }
 
 /*

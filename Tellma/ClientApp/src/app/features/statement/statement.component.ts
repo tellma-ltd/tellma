@@ -15,7 +15,7 @@ import { Entity } from '~/app/data/entities/base/entity';
 import { DetailsEntry } from '~/app/data/entities/details-entry';
 import { formatDate, formatNumber } from '@angular/common';
 import { LineForQuery } from '~/app/data/entities/line';
-import { Document, metadata_Document } from '~/app/data/entities/document';
+import { Document, formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
 import { FriendlyError, mergeEntitiesInWorkspace, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
@@ -295,31 +295,45 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     if (this.showCustodianParameter) {
-      args.custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
+      const custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
+      if (!!custodianId) {
+        args.custodianId = custodianId;
+      }
     }
 
     if (this.showCustodyParameter) {
-      args.custodyId = this.readonlyCustody_Manual ? this.readonlyValueCustodyId_Manual : this.custodyId;
+      const custodyId = this.readonlyCustody_Manual ? this.readonlyValueCustodyId_Manual : this.custodyId;
+      if (!!custodyId) {
+        args.custodyId = custodyId;
+      }
     }
 
     if (this.showParticipantParameter) {
-      args.participantId = this.readonlyParticipant_Manual ? this.readonlyValueParticipantId_Manual : this.participantId;
+      const participantId = this.readonlyParticipant_Manual ? this.readonlyValueParticipantId_Manual : this.participantId;
+      if (!!participantId) {
+        args.participantId = participantId;
+      }
     }
 
     if (this.showResourceParameter) {
-      args.resourceId = this.readonlyResource_Manual ? this.readonlyValueResourceId_Manual : this.resourceId;
+      const resourceId = this.readonlyResource_Manual ? this.readonlyValueResourceId_Manual : this.resourceId;
+      if (!!resourceId) {
+        args.resourceId = resourceId;
+      }
     }
 
     if (this.showEntryTypeParameter) {
-      args.entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
+      const entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
+      if (!!entryTypeId) {
+        args.entryTypeId = entryTypeId;
+      }
     }
 
     if (this.showCenterParameter) {
-      args.centerId = this.readonlyCenter_Manual ? this.readonlyValueCenterId_Manual : this.centerId;
-    }
-
-    if (this.showCurrencyParameter) {
-      args.currencyId = this.currencyId;
+      const centerId = this.readonlyCenter_Manual ? this.readonlyValueCenterId_Manual : this.centerId;
+      if (!!centerId) {
+        args.centerId = centerId;
+      }
     }
 
     if (!!this.currencyId && this.showCurrencyParameter) {
@@ -1301,7 +1315,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             const doc = this.ws.get('Document', line.DocumentId) as Document;
             const desc = metadata_Document(this.workspace, this.translate, doc.DefinitionId);
             const prop = desc.properties.SerialNumber as SerialPropDescriptor;
-            return prop.format(doc.SerialNumber);
+
+            return formatSerial(doc.SerialNumber, prop.prefix, prop.codeWidth);
           },
           weight: 1
         }];
@@ -1403,12 +1418,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
 
-        // AdditionalReference
-        if (!!accountType.AdditionalReferenceLabel) {
+        // InternalReference
+        if (!!accountType.InternalReferenceLabel) {
           this._columns.push({
-            select: ['AdditionalReference'],
-            label: () => this.ws.getMultilingualValueImmediate(accountType, 'AdditionalReferenceLabel'),
-            display: (entry: DetailsEntry) => entry.AdditionalReference,
+            select: ['InternalReference'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'InternalReferenceLabel'),
+            display: (entry: DetailsEntry) => entry.InternalReference,
             weight: 1
           });
         }
@@ -1478,7 +1493,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
         const baseUnitDefined = !!resourceDef && !!resourceDef.UnitCardinality && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
-        const baseUnitId  = baseUnitDefined ? resource.UnitId : null;
+        const baseUnitId = baseUnitDefined ? resource.UnitId : null;
 
         this._columns.push({
           select: ['Direction', 'Quantity'],

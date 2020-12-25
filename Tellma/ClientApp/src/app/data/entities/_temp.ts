@@ -30,8 +30,8 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
     _voucherBookletSettings = ws.settings;
     _voucherBookletCache = {
       collection: 'VoucherBooklet',
-      titleSingular: () =>  'Voucher Type',
-      titlePlural: () =>  'Voucher Types',
+      titleSingular: () => 'Voucher Type',
+      titlePlural: () => 'Voucher Types',
       select: ['VoucherTypeId'],
       apiEndpoint: 'voucher-booklets',
       masterScreenUrl: 'voucher-booklets',
@@ -39,20 +39,29 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
       inactiveFilter: 'IsActive eq true',
       format: (item: VoucherBookletForSave) => item.VoucherTypeId,
       properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
 
         // Temp
-        VoucherTypeId: { control: 'number', label: () => 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        StringPrefix: { control: 'text', label: () => 'String Prefix' },
-        NumericLength: { control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        RangeStarts: { control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        RangeEnds: { control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        VoucherTypeId: { datatype: 'integral', control: 'number', label: () => 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        StringPrefix: { datatype: 'string', control: 'text', label: () => 'String Prefix' },
+        NumericLength: {
+          datatype: 'integral',
+          control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
+        },
+        RangeStarts: {
+          datatype: 'integral',
+          control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
+        },
+        RangeEnds: {
+          datatype: 'integral',
+          control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
+        },
         // End Temp
 
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
+        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
       }
     };
   }

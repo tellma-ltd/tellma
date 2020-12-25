@@ -570,19 +570,19 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               result.ExternalReferenceReadOnlyState = colDef.ReadOnlyState;
             }
 
-          } else if (colDef.ColumnName === 'AdditionalReference') {
-            result.AdditionalReferenceVisibility = true;
-            if (!result.AdditionalReferenceLabel) {
-              result.AdditionalReferenceLabel = colDef.Label;
-              result.AdditionalReferenceLabel2 = colDef.Label2;
-              result.AdditionalReferenceLabel3 = colDef.Label3;
+          } else if (colDef.ColumnName === 'InternalReference') {
+            result.InternalReferenceVisibility = true;
+            if (!result.InternalReferenceLabel) {
+              result.InternalReferenceLabel = colDef.Label;
+              result.InternalReferenceLabel2 = colDef.Label2;
+              result.InternalReferenceLabel3 = colDef.Label3;
             }
-            if (colDef.RequiredState > (result.AdditionalReferenceRequiredState ?? 0)) {
-              result.AdditionalReferenceRequiredState = colDef.RequiredState;
+            if (colDef.RequiredState > (result.InternalReferenceRequiredState ?? 0)) {
+              result.InternalReferenceRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState > (result.AdditionalReferenceReadOnlyState ?? 0)) {
-              result.AdditionalReferenceReadOnlyState = colDef.ReadOnlyState;
+            if (colDef.ReadOnlyState > (result.InternalReferenceReadOnlyState ?? 0)) {
+              result.InternalReferenceReadOnlyState = colDef.ReadOnlyState;
             }
           }
         }
@@ -637,7 +637,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
           result.Time1Visibility = false;
           result.Time2Visibility = false;
 
-          result.AdditionalReferenceVisibility = false;
+          result.InternalReferenceVisibility = false;
           result.ExternalReferenceVisibility = false;
       }
 

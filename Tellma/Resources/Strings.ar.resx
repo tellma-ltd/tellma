@@ -118,9 +118,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>نوع حساب</value>
   </data>
-  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
-    <value>اسم المرجع الإضافي</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
   </data>
@@ -135,6 +132,9 @@
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الخارجي</value>
+  </data>
+  <data name="AccountType_InternalReferenceLabel" xml:space="preserve">
+    <value>اسم المرجع الداخلي</value>
   </data>
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>ذو طبيعة نقدية</value>
@@ -417,6 +417,12 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>أرشفة</value>
+  </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>نوع الحقل</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>خيارات الحقل</value>
   </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>يدعم المرفقات</value>
@@ -829,9 +835,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>المرجع الإضافي</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>المركز</value>
   </data>
@@ -858,6 +861,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>المرجع الخارجي</value>
+  </data>
+  <data name="Entry_InternalReference" xml:space="preserve">
+    <value>المرجع الداخلي</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>السطر</value>
@@ -903,6 +909,9 @@
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>أنواع الأسطر</value>
+  </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>الحقل {0} ينبغي أن يكون أكبر من أو يساوي صفرا.</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
@@ -2089,12 +2098,6 @@
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
   </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>الطبيعة</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>المصفاة</value>
-  </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>المفتاح</value>
   </data>
@@ -2685,6 +2688,9 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TIN" xml:space="preserve">
+    <value>رقم التعريف الضريبي</value>
   </data>
   <data name="ShortDay1" xml:space="preserve">
     <value>الإثنين</value>

@@ -32,15 +32,16 @@ namespace Tellma.Entities
         [VisibilityChoiceList]
         public string Visibility { get; set; }
 
-        [Display(Name = "Parameter_DataType")]
+        [Display(Name = "Definition_Control")]
+        [Required]
         [StringLength(50)]
         [AlwaysAccessible]
-        public string DataType { get; set; }
+        public string Control { get; set; }
 
-        [Display(Name = "Parameter_Filter")]
-        [StringLength(255)]
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
         [AlwaysAccessible]
-        public string Filter { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     public class LineDefinitionGenerateParameter : LineDefinitionGenerateParameterForSave

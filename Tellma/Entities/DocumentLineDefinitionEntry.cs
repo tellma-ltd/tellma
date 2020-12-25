@@ -97,12 +97,12 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_ExternalReference")]
         public bool? ExternalReferenceIsCommon { get; set; }
 
-        [Display(Name = "Entry_AdditionalReference")]
+        [Display(Name = "Entry_InternalReference")]
         [StringLength(50)]
-        public string AdditionalReference { get; set; }
+        public string InternalReference { get; set; }
 
-        [IsCommonDisplay(Name = "Entry_AdditionalReference")]
-        public bool? AdditionalReferenceIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Entry_InternalReference")]
+        public bool? InternalReferenceIsCommon { get; set; }
     }
 
     public class DocumentLineDefinitionEntry : DocumentLineDefinitionEntryForSave

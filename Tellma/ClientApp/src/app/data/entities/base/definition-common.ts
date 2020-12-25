@@ -1,7 +1,6 @@
 // tslint:disable:variable-name
 import { TranslateService } from '@ngx-translate/core';
-import { NumberPropDescriptor, ChoicePropDescriptor, StatePropDescriptor, NavigationPropDescriptor } from './metadata';
-import { TenantWorkspace } from '../../workspace.service';
+import { NumberPropDescriptor, ChoicePropDescriptor, NavigationPropDescriptor } from './metadata';
 
 // tslint:disable:max-line-length
 export type DefinitionVisibility = 'None' | 'Optional' | 'Required';
@@ -16,6 +15,7 @@ export type MainMenuIcon = 'clipboard' | 'chart-pie'; // TODO
  */
 export function visibilityPropDescriptor(name: string, trx: TranslateService): ChoicePropDescriptor {
     return {
+        datatype: 'string',
         control: 'choice',
         label: () => trx.instant('Field0Visibility', { 0: trx.instant(name) }),
         choices: ['None', 'Optional', 'Required'],
@@ -29,6 +29,7 @@ export function visibilityPropDescriptor(name: string, trx: TranslateService): C
  */
 export function cardinalityPropDescriptor(name: string, trx: TranslateService): ChoicePropDescriptor {
     return {
+        datatype: 'string',
         control: 'choice',
         label: () => trx.instant(name),
         choices: ['None', 'Single', 'Multiple'],
@@ -38,9 +39,10 @@ export function cardinalityPropDescriptor(name: string, trx: TranslateService): 
 /**
  * Returns the PropDescriptor of a definition state property (Hidden, Visible or Archived)
  */
-export function statePropDescriptor(trx: TranslateService): StatePropDescriptor {
+export function statePropDescriptor(trx: TranslateService): ChoicePropDescriptor {
     return {
-        control: 'state',
+        datatype: 'string',
+        control: 'choice',
         label: () => trx.instant('Definition_State'),
         choices: ['Hidden', 'Visible', 'Archived'],
         format: (c: string) => trx.instant('Definition_State_' + c),
@@ -57,6 +59,7 @@ export function statePropDescriptor(trx: TranslateService): StatePropDescriptor 
 
 export function lookupDefinitionIdPropDescriptor(name: string, trx: TranslateService): NumberPropDescriptor {
     return {
+        datatype: 'integral',
         control: 'number',
         label: () => `${trx.instant('Field0Definition', { 0: trx.instant(name) })} (${trx.instant('Id')})`,
         minDecimalPlaces: 0,
@@ -66,15 +69,16 @@ export function lookupDefinitionIdPropDescriptor(name: string, trx: TranslateSer
 
 export function lookupDefinitionPropDescriptor(name: string, fkName: string, trx: TranslateService): NavigationPropDescriptor {
     return {
-        control: 'navigation',
+        datatype: 'entity',
+        control: 'LookupDefinition',
         label: () => trx.instant('Field0Definition', { 0: trx.instant(name) }),
-        type: 'LookupDefinition',
         foreignKeyName: fkName
     };
 }
 
 export function mainMenuSectionPropDescriptor(trx: TranslateService): ChoicePropDescriptor {
     return {
+        datatype: 'string',
         control: 'choice',
         label: () => trx.instant('MainMenuSection'),
         choices: ['Mail', 'Financials', 'Cash', 'FixedAssets', 'Inventory', 'Production', 'Purchasing', 'Sales', 'HumanCapital', 'Investments', 'Maintenance', 'Administration', 'Security', 'Studio', 'Help'],
@@ -83,11 +87,12 @@ export function mainMenuSectionPropDescriptor(trx: TranslateService): ChoiceProp
 }
 
 export function mainMenuSortKeyPropDescriptor(trx: TranslateService): NumberPropDescriptor {
-    return { control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 0, maxDecimalPlaces: 0 };
+    return { datatype: 'integral', control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 0, maxDecimalPlaces: 0 };
 }
 
 export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDescriptor {
     return {
+        datatype: 'string',
         control: 'choice',
         label: () => trx.instant('MainMenuIcon'),
         choices: [

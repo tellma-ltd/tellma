@@ -30,11 +30,12 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
         inactiveFilter: null, // No inactive filter
         format: (item: SmsMessageForQuery) => item.Message,
         properties: {
-            Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            ToPhoneNumber: { control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },
-            Message: { control: 'text', label: () => trx.instant('SmsMessage_Message') },
+            Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            ToPhoneNumber: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },
+            Message: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_Message') },
             State: {
-                control: 'state',
+                datatype: 'integral',
+                control: 'choice',
                 label: () => trx.instant('State'),
                 choices: smsStates,
                 format: (state: number) => {
@@ -61,9 +62,9 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
                     }
                 }
             },
-            ErrorMessage: { control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
-            StateSince: { control: 'datetime', label: () => trx.instant('StateSince') },
-            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+            ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
+            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince') },
+            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         }
     };
 

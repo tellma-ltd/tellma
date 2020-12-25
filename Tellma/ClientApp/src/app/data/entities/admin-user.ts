@@ -43,11 +43,12 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             format: (item: AdminUserForSave) => item.Name,
             isAdmin: true,
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Name: { control: 'text', label: () => trx.instant('Name') },
-                Email: { control: 'text', label: () => trx.instant('User_Email') },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') },
+                Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
                 State: {
-                    control: 'state',
+                    datatype: 'string',
+                    control: 'choice',
                     label: () => trx.instant('State'),
                     choices: ['Invited', 'Member'],
                     format: (c: string) => {
@@ -65,12 +66,12 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                         }
                     }
                 },
-                LastAccess: { control: 'datetime', label: () => trx.instant('User_LastActivity') },
-                IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity') },
+                IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
     }

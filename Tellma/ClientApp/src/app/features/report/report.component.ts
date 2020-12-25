@@ -1,6 +1,6 @@
 // tslint:disable:member-ordering
 import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { ReportView, modifiedPropDesc, ReportResultsComponent } from '../report-results/report-results.component';
+import { ReportView, ReportResultsComponent } from '../report-results/report-results.component';
 import {
   WorkspaceService,
   ReportArguments,
@@ -9,20 +9,20 @@ import {
   MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
 import {
-  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl,
-  EntityDescriptor, metadata, getChoices, NavigationPropDescriptor
+  ChoicePropDescriptor,
+  EntityDescriptor, metadata, getChoices, NavigationPropDescriptor, PropVisualDescriptor
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, FriendlyError } from '~/app/data/util';
+import { isSpecified, computePropDesc, descFromControlOptions } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { formatNumber } from '@angular/common';
 
-interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
+interface ParameterInfo { label: () => string; key: string; desc: PropVisualDescriptor; isRequired: boolean; }
 
 @Component({
   selector: 't-report',
@@ -133,18 +133,17 @@ export class ReportComponent implements OnInit, OnDestroy {
                   urlValue = urlStringValue.toLowerCase() === 'true';
                   break;
                 case 'choice':
-                case 'state':
                   urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
                   break;
-                case 'navigation':
-                  const navPropDesc = p.desc as NavigationPropDescriptor;
-                  const collection = navPropDesc.type || navPropDesc.collection;
+                default:
+                  const navPropDesc = p.desc;
+                  const collection = navPropDesc.control;
                   const metadataFn = metadata[collection];
                   if (!metadataFn) {
                     // developer mistake
                     console.error(`Collection @${collection} was not found`);
                   }
-                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
+                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definitionId);
                   urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
 
                   break;
@@ -262,6 +261,9 @@ export class ReportComponent implements OnInit, OnDestroy {
         this._currentDefinition = this.definition;
         this._currentEntityDescriptor = this.entityDescriptor;
 
+        // Grab a hold of the current tenant
+        const ws = this.workspace.currentTenant;
+
         //////// (1) Get the default parameters from filter and built in parameter descriptors
         const defaultParams: { [key: string]: ParameterInfo } = {};
 
@@ -274,41 +276,14 @@ export class ReportComponent implements OnInit, OnDestroy {
         for (const atom of placeholderAtoms) {
           const key = atom.value.substr(1);
           const keyLower = key.toLowerCase();
-          const entityDesc = entityDescriptorImpl(
-            atom.path,
+
+          // Auto-calculate the property descriptor of this atom
+          const propDesc = computePropDesc(
+            this.workspace,
+            this.translate,
             this.definition.Collection,
             this.definition.DefinitionId,
-            this.workspace,
-            this.translate);
-
-          // This block's purpose is to auto-calculate the property descriptor of this atom
-          let propDesc: PropDescriptor;
-          let propName = atom.property;
-          if (propName === 'Node' && !!entityDesc.properties.ParentId) {
-            propDesc = entityDesc.properties.ParentId;
-            propName = 'ParentId';
-          } else {
-            propDesc = entityDesc.properties[propName];
-            if (!!propDesc && propDesc.control === 'navigation') {
-              throw new Error(`Cannot terminate a filter path with a navigation property like '${propName}'`);
-            }
-          }
-
-          // Check if the filtered property is a foreign key of another nav,
-          // property, if so use the descriptor of that nav property instead
-          propDesc = Object.keys(entityDesc.properties)
-            .map(e => entityDesc.properties[e])
-            .find(e => e.control === 'navigation' && e.foreignKeyName === propName)
-            || propDesc; // Else rely on the descriptor of the prop itself
-
-          if (!propDesc) {
-            throw new Error(`Property '${propName}' does not exist on '${entityDesc.titlePlural()}'`);
-          }
-
-          if (!!atom.modifier) {
-            // A modifier is specified, the prop descriptor is hardcoded per modifier
-            propDesc = modifiedPropDesc(propDesc, atom.modifier, this.translate);
-          }
+            atom.path, atom.property, atom.modifier);
 
           defaultParams[keyLower] = {
             label: propDesc.label,
@@ -344,8 +319,9 @@ export class ReportComponent implements OnInit, OnDestroy {
           } else {
             const paramInfo = defaultParams[keyLower];
             if (!!paramInfo) {
-              paramInfo.label = !!p.Label ? () => this.workspace.currentTenant.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
+              paramInfo.label = !!p.Label ? () => ws.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
               paramInfo.isRequired = p.Visibility === 'Required';
+              paramInfo.desc = descFromControlOptions(ws, p.Control, p.ControlOptions, paramInfo.desc);
               this._currentParameters.push(paramInfo);
               delete defaultParams[keyLower];
             }
@@ -374,7 +350,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._currentParameters;
   }
 
-  public choices(desc: ChoicePropDescriptor | StatePropDescriptor): SelectorChoice[] {
+  public choices(desc: ChoicePropDescriptor): SelectorChoice[] {
     return getChoices(desc);
   }
 

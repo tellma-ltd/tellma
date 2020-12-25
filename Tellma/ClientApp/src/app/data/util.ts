@@ -1,16 +1,18 @@
 import { EntitiesResponse } from './dto/entities-response';
-import { WorkspaceService, EntityWorkspace } from './workspace.service';
+import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { from, Observable, Observer, of, throwError, zip } from 'rxjs';
-import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
+import { from, Observable, Observer, throwError } from 'rxjs';
+import {
+  EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control, PropVisualDescriptor, Collection, entityDescriptorImpl
+} from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 import { insert, set, getSelection } from 'text-field-edit';
-import { Attachment } from './entities/attachment';
-import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
+import { formatSerial } from './entities/document';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -216,9 +218,9 @@ export function downloadBlob(blob: Blob, fileName: string) {
 const _maxAttachmentSize = 20 * 1024 * 1024;
 
 export function onFileSelected(
-    input: HTMLInputElement,
-    pendingFilesSize: number,
-    translate: TranslateService) {
+  input: HTMLInputElement,
+  pendingFilesSize: number,
+  translate: TranslateService) {
   const files = input.files as FileList;
   if (!files) {
     return;
@@ -600,8 +602,8 @@ export function composeEntities(
         break;
       } else {
         headerArray.push(prop.label());
-        if (prop.control === 'navigation') {
-          currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
+        if (prop.datatype === 'entity') {
+          currentDesc = metadataFactory(prop.control)(ws, trx, prop.definitionId);
           navProps.push(prop);
         } else if (i !== pathArray.length - 1) {
           // Only navigation properties are allowed unless this is the last one
@@ -625,7 +627,7 @@ export function composeEntities(
 
           if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
 
-            const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
+            const entitiesOfType = relatedEntities[navProp.control];
 
             // Get the foreign key
             const fkValue = entity[navProp.foreignKeyName];
@@ -698,73 +700,6 @@ export function composeEntitiesFromResponse(
 
   addToWorkspace(response, ws);
   return composeEntities(response.Result, columns, collection, defId, ws, trx);
-}
-
-/**
- * Returns a string representation of the value based on the property descriptor.
- * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
- * @param value The value to represent as a string
- * @param prop The property descriptor used to format the value as a string
- */
-export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
-  switch (prop.control) {
-    case 'text': {
-      return value;
-    }
-    case 'number': {
-      if (value === undefined) {
-        return null;
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return formatAccounting(value, digitsInfo);
-    }
-    case 'percent': {
-      if (value === undefined) {
-        return null;
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
-    }
-    case 'date': {
-      if (value === undefined) {
-        return null;
-      }
-      const format = 'yyyy-MM-dd';
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'datetime': {
-      if (value === undefined) {
-        return null;
-      }
-      const format = 'yyyy-MM-dd HH:mm';
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'boolean': {
-      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
-    }
-    case 'choice':
-    case 'state': {
-      return !!prop && !!prop.format ? prop.format(value) : null;
-    }
-    case 'serial': {
-      return !!prop && !!prop.format ? prop.format(value) : (value + '');
-    }
-    case 'navigation':
-    default:
-      // Programmer error
-      throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
-  }
-}
-
-/**
- * Returns a string representation of the entity based on the entity descriptor.
- * @param entity The entity to represent as a string
- * @param entityDesc The entity descriptor used to format the entity as a string
- */
-export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
-  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }
 
 /**
@@ -1005,4 +940,295 @@ export function iconFromExtension(extension: string): string {
         return 'file';
     }
   }
+}
+/**
+ * Returns a string representation of the value based on the property descriptor.
+ * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
+ * @param value The value to represent as a string
+ * @param prop The property descriptor used to format the value as a string
+ */
+export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
+  switch (prop.control) {
+    case 'text': {
+      return value;
+    }
+    case 'number': {
+      if (value === undefined) {
+        return null;
+      }
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      return formatAccounting(value, digitsInfo);
+    }
+    case 'percent': {
+      if (value === undefined) {
+        return null;
+      }
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      return isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
+    }
+    case 'date': {
+      if (value === undefined) {
+        return null;
+      }
+      const format = 'yyyy-MM-dd';
+      const locale = 'en-GB';
+      return formatDate(value, format, locale);
+    }
+    case 'datetime': {
+      if (value === undefined) {
+        return null;
+      }
+      const format = 'yyyy-MM-dd HH:mm';
+      const locale = 'en-GB';
+      return formatDate(value, format, locale);
+    }
+    case 'boolean': {
+      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
+    }
+    case 'choice': {
+      return !!prop && !!prop.format ? prop.format(value) : null;
+    }
+    case 'serial': {
+      return !!prop ? formatSerial(value, prop.prefix, prop.codeWidth) : (value + '');
+    }
+    default:
+      // Programmer error
+      if (prop.datatype === 'entity') {
+        throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
+      } else {
+        console.error(prop);
+        throw new Error(`calling "displayValue" on a property of an unknown control`);
+      }
+  }
+}
+
+/**
+ * Returns a string representation of the entity based on the entity descriptor.
+ * @param entity The entity to represent as a string
+ * @param entityDesc The entity descriptor used to format the entity as a string
+ */
+export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
+  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
+}
+
+/**
+ * Constructs a PropDescriptor from scratch or overrides and existing one using the provided control and control options values.
+ */
+export function descFromControlOptions(
+  ws: TenantWorkspace,
+  control: Control,
+  optionsJSON: string,
+  desc?: PropVisualDescriptor): PropVisualDescriptor {
+
+  // Optimization: Nothing to override
+  if (!!desc && desc.control === control && !optionsJSON) {
+    return desc;
+  }
+
+  let options: any;
+  if (!!optionsJSON) {
+    try {
+      options = JSON.parse(optionsJSON);
+    } catch { }
+  }
+  options = options || {};
+
+  desc = desc || { control: 'text' }; // Makes the subsequent logic tidier
+  control = control || desc.control;
+
+  switch (control) {
+    case 'text':
+    case 'boolean':
+    case 'date':
+    case 'datetime':
+      return { control };
+
+    case 'number':
+    case 'percent':
+      let minDecimalPlaces = 0;
+      if (isSpecified(options.minDecimalPlaces)) {
+        minDecimalPlaces = options.minDecimalPlaces;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        minDecimalPlaces = desc.minDecimalPlaces;
+      }
+
+      let maxDecimalPlaces = Math.max(minDecimalPlaces, 4);
+      if (isSpecified(options.maxDecimalPlaces)) {
+        maxDecimalPlaces = options.maxDecimalPlaces;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        maxDecimalPlaces = desc.maxDecimalPlaces;
+      }
+
+      let alignment: 'right' | 'left' | 'center' = 'right';
+      if (isSpecified(options.alignment)) {
+        alignment = options.alignment;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        alignment = desc.alignment;
+      }
+
+      return { control, minDecimalPlaces, maxDecimalPlaces, alignment };
+
+    case 'choice':
+      let choices: (string | number)[] = []; // default value
+      let format = (c: string | number) => c + ''; // default value
+      let color: (c: string | number) => string; // No default value
+      if (!!options.choices && options.choices.length > 0) {
+        const choicesArray = options.choices as { value: string, name: string, name2: string, name3: string }[];
+        const choicesDic: { [key: string]: () => string } = {};
+        for (const e of choicesArray) {
+          choicesDic[e.value] = () => ws.getMultilingualValueImmediate(e, 'name');
+        }
+
+        choices = choicesArray.map((e) => e.value);
+        format = (c: string) => choicesDic[c] ? choicesDic[c]() : c;
+      } else if (desc.control === 'choice') {
+        choices = desc.choices;
+        format = desc.format;
+        color = desc.color; // Only override this when overriding the others
+      }
+
+      return { control, choices, format, color };
+
+    case 'serial':
+      let prefix = '';
+      if (isSpecified(options.prefx)) {
+        prefix = options.prefix;
+      } else if (desc.control === 'serial') {
+        prefix = desc.prefix;
+      }
+
+      let codeWidth = 4;
+      if (isSpecified(options.prefx)) {
+        codeWidth = options.codeWidth;
+      } else if (desc.control === 'serial') {
+        codeWidth = desc.codeWidth;
+      }
+
+      return { control, prefix, codeWidth };
+
+    default:
+      let filter: string;
+      if (isSpecified(options.filter)) {
+        filter = options.filter;
+      } else if (desc.control === control) {
+        filter = desc.filter;
+      }
+
+      let definitionId: number;
+      if (isSpecified(options.definitionId)) {
+        definitionId = options.definitionId;
+      } else if (desc.control === control) {
+        definitionId = desc.definitionId;
+      }
+
+      return { control, filter, definitionId };
+  }
+}
+
+/**
+ * Auto-calculate the PropDescriptor for displaying custom parameters
+ */
+export function computePropDesc(
+  ws: WorkspaceService,
+  trx: TranslateService,
+  collection: Collection,
+  definitionId: number,
+  path: string[],
+  property: string,
+  modifier: string): PropDescriptor {
+  const entityDesc = entityDescriptorImpl(
+    path,
+    collection,
+    definitionId,
+    ws,
+    trx);
+
+  let propDesc: PropDescriptor;
+  let propName = property;
+  if (propName === 'Node' && !!entityDesc.properties.ParentId) {
+    propDesc = entityDesc.properties.ParentId;
+    propName = 'ParentId';
+  } else {
+    propDesc = entityDesc.properties[propName];
+    if (!!propDesc && propDesc.datatype === 'entity') {
+      throw new Error(`Cannot terminate a filter path with a navigation property like '${propName}'`);
+    }
+  }
+
+  // Check if the filtered property is a foreign key of another nav,
+  // property, if so use the descriptor of that nav property instead
+  propDesc = Object.keys(entityDesc.properties)
+    .map(e => entityDesc.properties[e])
+    .find(e => e.datatype === 'entity' && e.foreignKeyName === propName)
+    || propDesc; // Else rely on the descriptor of the prop itself
+
+  if (!propDesc) {
+    throw new Error(`Property '${propName}' does not exist on '${entityDesc.titlePlural()}'`);
+  }
+
+  if (!!modifier) {
+    // A modifier is specified, the prop descriptor is hardcoded per modifier
+    propDesc = modifiedPropDesc(propDesc, modifier, trx);
+  }
+
+  return propDesc;
+}
+
+/**
+ * Produces a new PropDescriptor based on an old PropDescriptor + modifier
+ */
+export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx: TranslateService): PropDescriptor {
+  const oldLabel = propDesc.label;
+  const label = () => `${oldLabel()} (${trx.instant('Modifier_' + modifier)})`;
+  switch (modifier) {
+    case 'dayofyear':
+    case 'day':
+    case 'week':
+      propDesc = {
+        datatype: 'integral',
+        control: 'number',
+        label,
+        minDecimalPlaces: 0,
+        maxDecimalPlaces: 0
+      };
+      break;
+    case 'year':
+      propDesc = {
+        datatype: 'integral',
+        control: 'choice',
+        label,
+        choices: [...Array(30).keys()].map(y => y + 2000),
+        format: (c: number | string) => !c ? '' : c.toString()
+      };
+      break;
+    case 'quarter':
+      propDesc = {
+        datatype: 'integral',
+        control: 'choice',
+        label,
+        choices: [1, 2, 3, 4],
+        format: (c: number | string) => !c ? '' : trx.instant(`ShortQuarter${c}`)
+      };
+      break;
+    case 'month':
+      propDesc = {
+        datatype: 'integral',
+        control: 'choice',
+        label,
+        choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        format: (c: number | string) => !c ? '' : trx.instant(`ShortMonth${c}`)
+      };
+      break;
+    case 'weekday':
+      propDesc = {
+        datatype: 'integral',
+        control: 'choice',
+        label,
+        choices: [2 /* Mon */, 3, 4, 5, 6, 7, 1 /* Sun */],
+        // SQL Server numbers the days differently from ngb-datepicker
+        format: (c: number) => !c ? '' : trx.instant(`ShortDay${(c - 1) === 0 ? 7 : c - 1}`)
+      };
+      break;
+  }
+  return propDesc;
 }

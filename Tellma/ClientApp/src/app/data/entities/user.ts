@@ -64,27 +64,28 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
       inactiveFilter: 'IsActive eq true',
       format: (item: UserForSave) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Email: { control: 'text', label: () => trx.instant('User_Email') },
+        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
         PreferredLanguage: {
+          datatype: 'string',
           control: 'choice',
           label: () => trx.instant('User_PreferredLanguage'),
           choices: companyLanguages,
           format: (c: string) => supportedCultures[c]
         },
-        ContactEmail: { control: 'text', label: () => trx.instant('Entity_ContactEmail') },
-        ContactMobile: { control: 'text', label: () => trx.instant('Entity_ContactMobile') },
-        NormalizedContactMobile: { control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
-        PushEnabled: { control: 'boolean', label: () => trx.instant('User_PushEnabled') },
-        // PreferredChannel?: string;
-        EmailNewInboxItem: { control: 'boolean', label: () => trx.instant('User_EmailNewInboxItem') },
-        SmsNewInboxItem: { control: 'boolean', label: () => trx.instant('User_SmsNewInboxItem') },
-        PushNewInboxItem: { control: 'boolean', label: () => trx.instant('User_PushNewInboxItem') },
+        ContactEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactEmail') },
+        ContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactMobile') },
+        NormalizedContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
+        PushEnabled: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_PushEnabled') },
+        EmailNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_EmailNewInboxItem') },
+        SmsNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_SmsNewInboxItem') },
+        PushNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_PushNewInboxItem') },
         State: {
-          control: 'state',
+          datatype: 'string',
+          control: 'choice',
           label: () => trx.instant('State'),
           choices: ['New', 'Confirmed'],
           format: (c: string) => {
@@ -102,12 +103,12 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
             }
           }
         },
-        LastAccess: { control: 'datetime', label: () => trx.instant('User_LastActivity') },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity') },
+        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 

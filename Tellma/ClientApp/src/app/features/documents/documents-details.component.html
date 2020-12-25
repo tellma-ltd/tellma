@@ -329,18 +329,18 @@
         </ng-container>
     </t-form-group>
 
-    <!-- AdditionalReference -->
-    <t-form-group class="t-form-group" [label]="labelDocumentAdditionalReference(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="AdditionalReferenceIsCommon"
-        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.AdditionalReference"
-        *ngIf="showDocumentAdditionalReference(model)">
-        <ng-container *ngIf="model?.AdditionalReferenceIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AdditionalReference">
-                {{ model?.AdditionalReference }}
+    <!-- InternalReference -->
+    <t-form-group class="t-form-group" [label]="labelDocumentInternalReference(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="InternalReferenceIsCommon"
+        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.InternalReference"
+        *ngIf="showDocumentInternalReference(model)">
+        <ng-container *ngIf="model?.InternalReferenceIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InternalReference">
+                {{ model?.InternalReference }}
             </t-restricted>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReference"
-                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentAdditionalReference(model)"
-                [disabled]="readonlyDocumentAdditionalReference(model)">
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReference"
+                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentInternalReference(model)"
+                [disabled]="readonlyDocumentInternalReference(model)">
             </t-text-editor>
         </ng-container>
     </t-form-group>
@@ -644,7 +644,7 @@
                         <span
                             *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
-                            *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                            *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
@@ -710,7 +710,7 @@
                                 <span
                                     *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
+                                    *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
@@ -839,7 +839,7 @@
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                                     [ngModelOptions]="{ updateOn: 'blur' }">
                                 </t-text-editor>
-                                <t-text-editor *ngSwitchCase="'AdditionalReference'"
+                                <t-text-editor *ngSwitchCase="'InternalReference'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
@@ -1155,7 +1155,8 @@
                     <ng-container *ngIf="hasManualLines">
                         <div class="col-12 mt-3 pb-2 border-bottom">
                             <h5 class="small2 font-weight-bold2">
-                                {{ (bookkeepingManualAdjustmentsTitle(model))  + ' (' + manualEntries(model).length + ')' }}</h5>
+                                {{ (bookkeepingManualAdjustmentsTitle(model))  + ' (' + manualEntries(model).length + ')' }}
+                            </h5>
                         </div>
                         <ng-container *ngTemplateOutlet="manualLines">
 
@@ -1190,7 +1191,7 @@
         </li>
 
         <!-- Attachments -->
-        <li class="{{ !showBookkeepingTab ? attachmentsClass : '' }}" [ngbNavItem]="-20"  *ngIf="showAttachmentsTab">
+        <li class="{{ !showBookkeepingTab ? attachmentsClass : '' }}" [ngbNavItem]="-20" *ngIf="showAttachmentsTab">
             <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
                         <fa-icon icon="exclamation">
@@ -1630,18 +1631,18 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Additional Reference -->
-            <ng-container *ngIf="showAdditionalReference_Manual(entry)">
-                <t-form-group-dynamic [label]="labelAdditionalReference_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.AdditionalReference">
+            <!-- Internal Reference -->
+            <ng-container *ngIf="showInternalReference_Manual(entry)">
+                <t-form-group-dynamic [label]="labelInternalReference_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.InternalReference">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AdditionalReference">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.InternalReference">
                         <div class="text-truncate">
-                            {{ entry.AdditionalReference }}
+                            {{ entry.InternalReference }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AdditionalReference"
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.InternalReference"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
                     &nbsp;&nbsp;
@@ -2091,87 +2092,11 @@
 
     <!-- body -->
     <div class="modal-body">
-        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters"
-            [ngSwitch]="dataType(param.DataType)">
-            <!-- Center -->
-            <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
-            </t-form-group>
-
-            <!-- Unit -->
-            <t-form-group *ngSwitchCase="'Unit'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-units-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
-                </t-units-picker>
-            </t-form-group>
-
-            <!-- Currency -->
-            <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
-                </t-currencies-picker>
-            </t-form-group>
-
-            <!-- Relation -->
-            <t-form-group *ngSwitchCase="'Relation'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-relations-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-relations-picker>
-            </t-form-group>
-
-            <!-- Custody -->
-            <t-form-group *ngSwitchCase="'Custody'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-custodies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-custodies-picker>
-            </t-form-group>
-
-            <!-- Lookup -->
-            <t-form-group *ngSwitchCase="'Lookup'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-lookups-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionId]="dataTypeDefinitionId(param.DataType)"></t-lookups-picker>
-            </t-form-group>
-
-            <!-- Resource -->
-            <t-form-group *ngSwitchCase="'Resource'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-resources-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-resources-picker>
-            </t-form-group>
-
-            <!-- Date -->
-            <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
-            </t-form-group>
-
-            <!-- Decimal -->
-            <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
-            </t-form-group>
-
-            <!-- Percentage -->
-            <t-form-group *ngSwitchCase="'Percentage'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]" [isPercentage]="true"></t-decimal-editor>
-            </t-form-group>
-
-            <!-- String -->
-            <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
-            </t-form-group>
-
-            <!-- Default -->
-            <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
-            </t-form-group>
-
-        </ng-container>
+        <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey" class="t-form-group"
+            style="margin-top:0!important" [label]="parameterLabel(param)">
+            <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)">
+            </t-editor>
+        </t-form-group>
     </div>
 
     <!-- footer -->

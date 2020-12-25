@@ -11,6 +11,8 @@ export interface SettingsForClient {
     FunctionalCurrencyDescription: string;
     FunctionalCurrencyDescription2: string;
     FunctionalCurrencyDescription3: string;
+    ArchiveDate: string;
+    TaxIdentificationNumber?: string;
     PrimaryLanguageId: string;
     PrimaryLanguageName: string;
     PrimaryLanguageSymbol: string;

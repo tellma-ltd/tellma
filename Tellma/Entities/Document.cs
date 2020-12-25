@@ -104,12 +104,12 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_ExternalReference")]
         public bool? ExternalReferenceIsCommon { get; set; }
 
-        [Display(Name = "Entry_AdditionalReference")]
+        [Display(Name = "Entry_InternalReference")]
         [StringLength(50)]
-        public string AdditionalReference { get; set; }
+        public string InternalReference { get; set; }
 
-        [IsCommonDisplay(Name = "Entry_AdditionalReference")]
-        public bool? AdditionalReferenceIsCommon { get; set; }
+        [IsCommonDisplay(Name = "Entry_InternalReference")]
+        public bool? InternalReferenceIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
@@ -430,7 +430,7 @@ namespace Tellma.Entities
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
             nameof(AccountType.Time2Label), nameof(AccountType.Time2Label2), nameof(AccountType.Time2Label3),
             nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel2), nameof(AccountType.ExternalReferenceLabel3),
-            nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel2), nameof(AccountType.AdditionalReferenceLabel3),
+            nameof(AccountType.InternalReferenceLabel), nameof(AccountType.InternalReferenceLabel2), nameof(AccountType.InternalReferenceLabel3),
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel2), nameof(AccountType.NotedAgentNameLabel3),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel2), nameof(AccountType.NotedAmountLabel3),
             nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel2), nameof(AccountType.NotedDateLabel3)

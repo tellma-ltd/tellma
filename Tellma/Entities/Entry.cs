@@ -62,9 +62,9 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string ExternalReference { get; set; }
 
-        [Display(Name = "Entry_AdditionalReference")]
+        [Display(Name = "Entry_InternalReference")]
         [StringLength(50)]
-        public string AdditionalReference { get; set; }
+        public string InternalReference { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
         [StringLength(50)]

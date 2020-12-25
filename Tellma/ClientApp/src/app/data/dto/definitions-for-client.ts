@@ -4,6 +4,7 @@ import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
 import { ExistingItemHandling } from '../entities/line-definition';
+import { Collection, Control, PropVisualDescriptor } from '../entities/base/metadata';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -47,7 +48,7 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Type: ReportType; // summary or details
     Chart?: ChartType;
     DefaultsToChart: boolean; // ?
-    Collection: string;
+    Collection: Collection;
     DefinitionId?: number;
     Select: ReportSelectDefinitionForClient[];
     Parameters?: ReportParameterDefinitionForClient[];
@@ -69,6 +70,8 @@ export interface ReportParameterDefinitionForClient {
     Label3?: string;
     Visibility?: Visibility;
     Value?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
 export interface ReportSelectDefinitionForClient {
@@ -223,13 +226,13 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ExternalReferenceLabel2?: string;
     ExternalReferenceLabel3?: string;
 
-    // AdditionalReference
-    AdditionalReferenceVisibility?: boolean;
-    AdditionalReferenceRequiredState?: PositiveLineState | 5;
-    AdditionalReferenceReadOnlyState?: PositiveLineState | 5;
-    AdditionalReferenceLabel?: string;
-    AdditionalReferenceLabel2?: string;
-    AdditionalReferenceLabel3?: string;
+    // InternalReference
+    InternalReferenceVisibility?: boolean;
+    InternalReferenceRequiredState?: PositiveLineState | 5;
+    InternalReferenceReadOnlyState?: PositiveLineState | 5;
+    InternalReferenceLabel?: string;
+    InternalReferenceLabel2?: string;
+    InternalReferenceLabel3?: string;
 
     // Clearance
     ClearanceVisibility?: Visibility;
@@ -322,23 +325,25 @@ export interface LineDefinitionGenerateParameterForClient {
     Label: string;
     Label2: string;
     Label3: string;
-    DataType: string;
-    Filter: string;
+    Control: Control;
+    ControlOptions?: string;
     Visibility: Visibility;
+
+    desc?: PropVisualDescriptor; // For caching purposes
 }
 
 export const entryColumnNames = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'TemplateLineId',
     'Multiplier', 'AccountId', 'CurrencyId',
     'CustodianId', 'CustodyId', 'ParticipantId', 'ResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
-    'ExternalReference', 'AdditionalReference',
+    'ExternalReference', 'InternalReference',
     'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
     'CustodianId' | 'CustodyId' | 'ParticipantId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'AdditionalReference' |
+    'ExternalReference' | 'InternalReference' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {

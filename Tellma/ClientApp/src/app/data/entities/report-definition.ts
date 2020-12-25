@@ -4,7 +4,7 @@ import { EntityForSave } from './base/entity-for-save';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
-import { EntityDescriptor } from './base/metadata';
+import { Collection, Control, EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionVisibility as Visibility, MainMenuSection, MainMenuIcon, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
@@ -33,7 +33,7 @@ export interface ReportDefinitionForSave<
     Type?: ReportType; // summary or details
     Chart?: ChartType;
     DefaultsToChart?: boolean; // ?
-    Collection?: string;
+    Collection?: Collection;
     DefinitionId?: number;
     Filter?: string;
     OrderBy?: string;
@@ -67,6 +67,8 @@ export interface ReportParameterDefinitionForSave extends EntityForSave {
     Label3?: string;
     Visibility?: Visibility;
     Value?: string;
+    Control?: Control;
+    ControlOptions?: string; // JSON
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -149,20 +151,22 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => (ws.getMultilingualValueImmediate(item, _select[0]) || trx.instant('Untitled')),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Title: { control: 'text', label: () => trx.instant('Title') + ws.primaryPostfix },
-                Title2: { control: 'text', label: () => trx.instant('Title') + ws.secondaryPostfix },
-                Title3: { control: 'text', label: () => trx.instant('Title') + ws.ternaryPostfix },
-                Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-                Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-                Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Title: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.primaryPostfix },
+                Title2: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.secondaryPostfix },
+                Title3: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.ternaryPostfix },
+                Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+                Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+                Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
                 Type: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('ReportDefinition_Type'),
                     choices: ['Summary', 'Details'],
                     format: (c: string) => trx.instant(`ReportDefinition_Type_${c}`)
                 },
                 Chart: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('ReportDefinition_Chart'),
                     choices: [ // Ordered by number of supported dimensions for ease of selection
@@ -177,22 +181,22 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'BarsHorizontalStacked', 'BarsHorizontalNormalized', /* 'AreaStacked', 'AreaNormalized', 'Radar', */ 'HeatMap'],
                     format: (c: string) => trx.instant(`ReportDefinition_Chart_${c}`)
                 },
-                DefaultsToChart: { control: 'boolean', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
-                Collection: { control: 'text', label: () => trx.instant('ReportDefinition_Collection') },
-                DefinitionId: { control: 'number', label: () => trx.instant('ReportDefinition_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Filter: { control: 'text', label: () => trx.instant('ReportDefinition_Filter') },
-                OrderBy: { control: 'text', label: () => trx.instant('ReportDefinition_OrderBy') },
-                Top: { control: 'number', label: () => trx.instant('ReportDefinition_Top'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ShowColumnsTotal: { control: 'boolean', label: () => trx.instant('ReportDefinition_ShowColumnsTotal') },
-                ShowRowsTotal: { control: 'boolean', label: () => trx.instant('ReportDefinition_ShowRowsTotal') },
+                DefaultsToChart: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
+                Collection: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Collection') },
+                DefinitionId: { datatype: 'integral', control: 'number', label: () => trx.instant('ReportDefinition_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Filter: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Filter') },
+                OrderBy: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_OrderBy') },
+                Top: { datatype: 'integral', control: 'number', label: () => trx.instant('ReportDefinition_Top'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ShowColumnsTotal: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_ShowColumnsTotal') },
+                ShowRowsTotal: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_ShowRowsTotal') },
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
-                ShowInMainMenu: { control: 'boolean', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                ShowInMainMenu: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

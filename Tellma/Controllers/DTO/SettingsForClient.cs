@@ -28,6 +28,8 @@ namespace Tellma.Controllers.Dto
 
         public DateTime ArchiveDate { get; set; }
 
+        public string TaxIdentificationNumber { get; set; }
+
         public string PrimaryLanguageId { get; set; }
 
         public string PrimaryLanguageName { get; set; }

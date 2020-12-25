@@ -16,7 +16,7 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected
+  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected, descFromControlOptions
 } from '~/app/data/util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -32,7 +32,7 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText } from '~/app/data/entities/base/metadata';
+import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, Control } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
@@ -317,7 +317,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.Time2IsCommon = false;
 
       result.ExternalReferenceIsCommon = false;
-      result.AdditionalReferenceIsCommon = false;
+      result.InternalReferenceIsCommon = false;
     } else {
       const def = this.definition;
 
@@ -343,7 +343,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.Time2IsCommon = true;
 
       result.ExternalReferenceIsCommon = true;
-      result.AdditionalReferenceIsCommon = true;
+      result.InternalReferenceIsCommon = true;
     }
 
     return result;
@@ -1087,25 +1087,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_ExternalReference');
   }
 
-  // Additional Reference
+  // Internal Reference
 
-  public showDocumentAdditionalReference(_: DocumentForSave) {
-    return this.definition.AdditionalReferenceVisibility;
+  public showDocumentInternalReference(_: DocumentForSave) {
+    return this.definition.InternalReferenceVisibility;
   }
 
-  public requireDocumentAdditionalReference(doc: Document): boolean {
+  public requireDocumentInternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentAdditionalReference;
+    return this._requireDocumentInternalReference;
   }
 
-  public readonlyDocumentAdditionalReference(doc: Document): boolean {
+  public readonlyDocumentInternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentAdditionalReference;
+    return this._readonlyDocumentInternalReference;
   }
 
-  public labelDocumentAdditionalReference(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'AdditionalReferenceLabel') ||
-      this.translate.instant('Entry_AdditionalReference');
+  public labelDocumentInternalReference(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'InternalReferenceLabel') ||
+      this.translate.instant('Entry_InternalReference');
   }
 
   private _computeDocumentSettingsDoc: Document;
@@ -1141,8 +1141,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private _requireDocumentExternalReference: boolean;
   private _readonlyDocumentExternalReference: boolean;
-  private _requireDocumentAdditionalReference: boolean;
-  private _readonlyDocumentAdditionalReference: boolean;
+  private _requireDocumentInternalReference: boolean;
+  private _readonlyDocumentInternalReference: boolean;
 
   private computeDocumentSettings(doc: Document): void {
     if (!doc || !doc.Lines) {
@@ -1176,8 +1176,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       this._requireDocumentExternalReference = false;
       this._readonlyDocumentExternalReference = false;
-      this._requireDocumentAdditionalReference = false;
-      this._readonlyDocumentAdditionalReference = false;
+      this._requireDocumentInternalReference = false;
+      this._readonlyDocumentInternalReference = false;
 
       return;
     }
@@ -1216,8 +1216,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
       this._readonlyDocumentTime2 = def.Time2RequiredState === 0;
 
-      this._requireDocumentAdditionalReference = def.AdditionalReferenceRequiredState === 0;
-      this._readonlyDocumentAdditionalReference = def.AdditionalReferenceReadOnlyState === 0;
+      this._requireDocumentInternalReference = def.InternalReferenceRequiredState === 0;
+      this._readonlyDocumentInternalReference = def.InternalReferenceReadOnlyState === 0;
       this._requireDocumentExternalReference = def.ExternalReferenceRequiredState === 0;
       this._readonlyDocumentExternalReference = def.ExternalReferenceReadOnlyState === 0;
 
@@ -1359,14 +1359,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._readonlyDocumentExternalReference = true;
               }
               break;
-            case 'AdditionalReference':
-              if (!this._requireDocumentAdditionalReference &&
+            case 'InternalReference':
+              if (!this._requireDocumentInternalReference &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentAdditionalReference = true;
+                this._requireDocumentInternalReference = true;
               }
-              if (!this._readonlyDocumentAdditionalReference &&
+              if (!this._readonlyDocumentInternalReference &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentAdditionalReference = true;
+                this._readonlyDocumentInternalReference = true;
               }
               break;
           }
@@ -1850,18 +1850,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_ExternalReference');
   }
 
-  // Additional Reference
+  // Internal Reference
 
-  public showAdditionalReference_Manual(entry: Entry): boolean {
+  public showInternalReference_Manual(entry: Entry): boolean {
     const account = this.accountType(entry);
-    return !!account ? !!account.AdditionalReferenceLabel : false;
+    return !!account ? !!account.InternalReferenceLabel : false;
   }
 
-  public labelAdditionalReference_Manual(entry: Entry): string {
+  public labelInternalReference_Manual(entry: Entry): string {
     const at = this.accountType(entry);
-    return !!at.AdditionalReferenceLabel ?
-      this.ws.getMultilingualValueImmediate(at, 'AdditionalReferenceLabel') :
-      this.translate.instant('Entry_AdditionalReference');
+    return !!at.InternalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'InternalReferenceLabel') :
+      this.translate.instant('Entry_InternalReference');
   }
 
   // Noted Agent Name
@@ -2816,7 +2816,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     Time1IsCommon: true,
     Time2IsCommon: true,
     ExternalReferenceIsCommon: true,
-    AdditionalReferenceIsCommon: true,
+    InternalReferenceIsCommon: true,
   };
 
   private _smartTabHeaderColumnPathsIsCommonHasChanged = false;
@@ -2860,7 +2860,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
             (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+            (doc.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
           )) {
             // This column inherits from document header, hide it from the tab header
             return false;
@@ -2879,7 +2879,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               case 'Time1':
               case 'Time2':
               case 'ExternalReference':
-              case 'AdditionalReference':
+              case 'InternalReference':
                 return true;
             }
           }
@@ -2940,7 +2940,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
             (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+            (doc.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
           )) {
             // This column inherits from document header, hide it from the grid
             return false;
@@ -2961,7 +2961,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
               (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
               (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-              (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+              (tab.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
             )) {
               return false;
             }
@@ -3323,7 +3323,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'Time1': return 'Time1IsCommon';
       case 'Time2': return 'Time2IsCommon';
       case 'ExternalReference': return 'ExternalReferenceIsCommon';
-      case 'AdditionalReference': return 'AdditionalReferenceIsCommon';
+      case 'InternalReference': return 'InternalReferenceIsCommon';
       default: {
         console.error(`Could not determine IsCommon version of column name ${prop}`);
         return '';
@@ -4044,7 +4044,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Used by the auto-generate modal
   public autoGenerateArgs: { [key: string]: any } = {};
-  public autoGenerateLineDef: LineDefinitionForClient;
   public autoGenerateLineDefId: number;
   public autoGenerateDoc: Document;
 
@@ -4057,28 +4056,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return label;
   }
 
-  public dataType(dt: string) {
-    return !!dt ? dt.split('/')[0] : null;
+  public parameterDesc(p: LineDefinitionGenerateParameterForClient) {
+    return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
   }
 
-  public dataTypeDefinitionIds(dt: string): number[] {
-    const defId = this.dataTypeDefinitionId(dt);
-    if (!!defId) {
-      return [defId];
-    }
-
-    return null;
+  public get autoGenerateLineDef(): LineDefinitionForClient {
+    return this.lineDefinition(this.autoGenerateLineDefId);
   }
 
-  public dataTypeDefinitionId(dt: string): number {
-    if (!!dt) {
-      const defId = +dt.split('/')[1];
-      if (!!defId) {
-        return defId;
-      }
-    }
-
-    return null;
+  public trackByKey(p: LineDefinitionGenerateParameterForClient): string {
+    return p.Key;
   }
 
   public onAutoGenerate(lineDefId: number, doc: Document, isEdit: boolean): void {
@@ -4087,11 +4074,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const lineDef = this.lineDefinition(lineDefId);
-    if (this.autoGenerateLineDef !== lineDef ||
+    if (this.autoGenerateLineDefId !== lineDefId ||
       this.autoGenerateDoc !== doc) {
       // This IF statement to keep the args if the use is still on the same document
       this.autoGenerateDoc = doc;
-      this.autoGenerateLineDef = this.lineDefinition(lineDefId);
       this.autoGenerateLineDefId = lineDefId;
       this.autoGenerateArgs = {}; // Reset the args
     }

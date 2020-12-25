@@ -292,32 +292,32 @@
             </t-text-editor>
           </t-form-group>
 
-          <!-- AdditionalReferenceLabel -->
+          <!-- InternalReferenceLabel -->
           <t-form-group class="t-form-group"
-            [label]="('AccountType_AdditionalReferenceLabel' | translate) + ws.primaryPostfix"
-            [serverErrors]="model?.serverErrors?.AdditionalReferenceLabel">
-            <div *ngIf="!isEdit">{{ model?.AdditionalReferenceLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReferenceLabel"
+            [label]="('AccountType_InternalReferenceLabel' | translate) + ws.primaryPostfix"
+            [serverErrors]="model?.serverErrors?.InternalReferenceLabel">
+            <div *ngIf="!isEdit">{{ model?.InternalReferenceLabel }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReferenceLabel"
               [ngModelOptions]="{ updateOn: 'blur' }">
             </t-text-editor>
           </t-form-group>
 
-          <!-- AdditionalReferenceLabel2 -->
+          <!-- InternalReferenceLabel2 -->
           <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_AdditionalReferenceLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.AdditionalReferenceLabel2">
-            <div *ngIf="!isEdit">{{ model?.AdditionalReferenceLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReferenceLabel2"
+            [label]="('AccountType_InternalReferenceLabel' | translate) + ws.secondaryPostfix"
+            [serverErrors]="model?.serverErrors?.InternalReferenceLabel2">
+            <div *ngIf="!isEdit">{{ model?.InternalReferenceLabel2 }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReferenceLabel2"
               [ngModelOptions]="{ updateOn: 'blur' }">
             </t-text-editor>
           </t-form-group>
 
-          <!-- AdditionalReferenceLabel3 -->
+          <!-- InternalReferenceLabel3 -->
           <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_AdditionalReferenceLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.AdditionalReferenceLabel3">
-            <div *ngIf="!isEdit">{{ model?.AdditionalReferenceLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReferenceLabel3"
+            [label]="('AccountType_InternalReferenceLabel' | translate) + ws.ternaryPostfix"
+            [serverErrors]="model?.serverErrors?.InternalReferenceLabel3">
+            <div *ngIf="!isEdit">{{ model?.InternalReferenceLabel3 }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReferenceLabel3"
               [ngModelOptions]="{ updateOn: 'blur' }">
             </t-text-editor>
           </t-form-group>

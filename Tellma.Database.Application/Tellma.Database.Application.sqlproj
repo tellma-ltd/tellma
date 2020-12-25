@@ -339,7 +339,6 @@
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
     <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
     <Build Include="bll\Stored Procedures\bll.GeneralSettings_Validate__Save.sql" />
-    <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.WideLines__Unpivot.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitionEntries__Pivot.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Delete.sql" />

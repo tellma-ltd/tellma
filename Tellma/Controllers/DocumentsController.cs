@@ -294,7 +294,7 @@ namespace Tellma.Controllers
             Time1IsCommon = true,
             Time2IsCommon = true,
             ExternalReferenceIsCommon = true,
-            AdditionalReferenceIsCommon = true,
+            InternalReferenceIsCommon = true,
         };
 
         /// <summary>
@@ -934,7 +934,7 @@ namespace Tellma.Controllers
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
 
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
-                doc.AdditionalReferenceIsCommon = docDef.AdditionalReferenceVisibility && (doc.AdditionalReferenceIsCommon ?? false);
+                doc.InternalReferenceIsCommon = docDef.InternalReferenceVisibility && (doc.InternalReferenceIsCommon ?? false);
 
                 // Defaults that make the code simpler later
                 doc.Clearance ??= 0; // Public
@@ -1008,7 +1008,7 @@ namespace Tellma.Controllers
                 doc.Time2 = docDef.Time2Visibility && doc.Time2IsCommon.Value ? doc.Time2 : null;
 
                 doc.ExternalReference = docDef.ExternalReferenceVisibility && doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
-                doc.AdditionalReference = docDef.AdditionalReferenceVisibility && doc.AdditionalReferenceIsCommon.Value ? doc.AdditionalReference : null;
+                doc.InternalReference = docDef.InternalReferenceVisibility && doc.InternalReferenceIsCommon.Value ? doc.InternalReference : null;
 
                 // System IsSystem to false by default
                 doc.Lines.ForEach(line => line.Entries.ForEach(entry => entry.IsSystem ??= false));
@@ -1258,14 +1258,14 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
-                                    case nameof(Entry.AdditionalReference):
-                                        if (CopyFromDocument(colDef, doc.AdditionalReferenceIsCommon))
+                                    case nameof(Entry.InternalReference):
+                                        if (CopyFromDocument(colDef, doc.InternalReferenceIsCommon))
                                         {
-                                            entry.AdditionalReference = doc.AdditionalReference;
+                                            entry.InternalReference = doc.InternalReference;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.AdditionalReferenceIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.InternalReferenceIsCommon, defaultsToForm))
                                         {
-                                            entry.AdditionalReference = tabEntry.AdditionalReference;
+                                            entry.InternalReference = tabEntry.InternalReference;
                                         }
                                         break;
                                 }
@@ -1627,19 +1627,19 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
-                                    case nameof(Entry.AdditionalReference):
-                                        if (CopyFromDocument(colDef, doc.AdditionalReferenceIsCommon))
+                                    case nameof(Entry.InternalReference):
+                                        if (CopyFromDocument(colDef, doc.InternalReferenceIsCommon))
                                         {
-                                            if (entry.AdditionalReference != doc.AdditionalReference)
+                                            if (entry.InternalReference != doc.InternalReference)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AdditionalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.AdditionalReference} to {entry.AdditionalReference}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.InternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.InternalReference} to {entry.InternalReference}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.AdditionalReferenceIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.InternalReferenceIsCommon, defaultsToForm))
                                         {
-                                            if (entry.AdditionalReference != tabEntry.AdditionalReference)
+                                            if (entry.InternalReference != tabEntry.InternalReference)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AdditionalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.AdditionalReference} to {entry.AdditionalReference}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.InternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.InternalReference} to {entry.InternalReference}");
                                             }
                                         }
                                         break;

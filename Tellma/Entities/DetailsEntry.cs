@@ -117,8 +117,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_ExternalReference")]
         public string ExternalReference { get; set; }
 
-        [Display(Name = "Entry_AdditionalReference")]
-        public string AdditionalReference { get; set; }
+        [Display(Name = "Entry_InternalReference")]
+        public string InternalReference { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
         public string NotedAgentName { get; set; }

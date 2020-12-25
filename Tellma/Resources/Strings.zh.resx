@@ -118,9 +118,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>帐户类型</value>
   </data>
-  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
-    <value>其他参考标签</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>概念</value>
   </data>
@@ -135,6 +132,9 @@
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>外部参考标签</value>
+  </data>
+  <data name="AccountType_InternalReferenceLabel" xml:space="preserve">
+    <value>内部参考标签</value>
   </data>
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>是货币</value>
@@ -417,6 +417,12 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>档案</value>
+  </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>控制</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>控制选项</value>
   </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>有附件</value>
@@ -829,9 +835,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>其他参考</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>责任中心</value>
   </data>
@@ -858,6 +861,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>外部参考</value>
+  </data>
+  <data name="Entry_InternalReference" xml:space="preserve">
+    <value>其他参考</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>线</value>
@@ -903,6 +909,9 @@
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>进入分类</value>
+  </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>字段{0}必须大于或等于零。</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>A {0}路径不能与导航字段{1}终止。</value>
@@ -2089,12 +2098,6 @@
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>双因素认证（2FA）</value>
   </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>数据类型</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>过滤</value>
-  </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>键</value>
   </data>
@@ -2685,6 +2688,9 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>
+  </data>
+  <data name="Settings_TIN" xml:space="preserve">
+    <value>税号</value>
   </data>
   <data name="ShortDay1" xml:space="preserve">
     <value>莫</value>

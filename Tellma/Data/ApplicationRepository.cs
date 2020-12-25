@@ -368,7 +368,8 @@ namespace Tellma.Data
                         SecondaryLanguageId = reader.String(i++),
                         SecondaryLanguageSymbol = reader.String(i++),
                         TernaryLanguageId = reader.String(i++),
-                        TernaryLanguageSymbol = reader.String(i++)
+                        TernaryLanguageSymbol = reader.String(i++),
+                        TaxIdentificationNumber = reader.String(i++),
                     };
                 }
                 else
@@ -5637,7 +5638,7 @@ namespace Tellma.Data
                     Time1 = reader.DateTime(i++),
                     Time2 = reader.DateTime(i++),
                     ExternalReference = reader.String(i++),
-                    AdditionalReference = reader.String(i++),
+                    InternalReference = reader.String(i++),
                     NotedAgentName = reader.String(i++),
                     NotedAmount = reader.Decimal(i++),
                     NotedDate = reader.DateTime(i++),

@@ -33,12 +33,13 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         inactiveFilter: null, // No inactive filter
         format: (item: EmailForQuery) => item.Subject,
         properties: {
-            Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            ToEmail: { control: 'text', label: () => trx.instant('Email_ToEmail') },
-            Subject: { control: 'text', label: () => trx.instant('Email_Subject') },
-            Body: { control: 'text', label: () => trx.instant('Email_Body') },
+            Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            ToEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ToEmail') },
+            Subject: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Subject') },
+            Body: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Body') },
             State: {
-                control: 'state',
+                datatype: 'integral',
+                control: 'choice',
                 label: () => trx.instant('State'),
                 choices: emailStates,
                 format: (state: EmailState) => {
@@ -65,11 +66,11 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
                     }
                 }
             },
-            ErrorMessage: { control: 'text', label: () => trx.instant('Email_ErrorMessage') },
-            StateSince: { control: 'datetime', label: () => trx.instant('StateSince') },
-            DeliveredAt: { control: 'datetime', label: () => trx.instant('Email_DeliveredAt') },
-            OpenedAt: { control: 'datetime', label: () => trx.instant('Email_OpenedAt') },
-            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+            ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ErrorMessage') },
+            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince') },
+            DeliveredAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_DeliveredAt') },
+            OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_OpenedAt') },
+            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         }
     };
 

@@ -34,7 +34,6 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   public isDisabled = false;
   public onChangeFn: (val: any) => void = _ => { };
   public onTouchedFn: () => void = () => { };
-  public onValidatorChange: () => void = () => { };
 
   public focus(): void {
     if (this.input.nativeElement) {
