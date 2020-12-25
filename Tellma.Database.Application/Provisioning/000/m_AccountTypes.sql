@@ -474,28 +474,41 @@ WHERE [Concept] IN (
 	N'OtherCurrentFinancialAssets'
 );
 
-UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'External Ref #', [InternalReferenceLabel] = N'Internal Ref #'
-WHERE [Concept] IN (
-	N'CashOnHand',
-	N'BalancesWithBanks'
-);
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'External Ref #', [InternalReferenceLabel] = N'Internal Ref #'
+WHERE [Concept] IN (N'CashOnHand', N'BalancesWithBanks');
 
-UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'Invoice #'
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'Invoice #'
 WHERE [Concept] IN (
 	N'NoncurrentValueAddedTaxReceivables',
-	N'CurrentValueAddedTaxReceivables',
-	N'NoncurrentValueAddedTaxPayables',
-	N'CurrentValueAddedTaxPayables'
+	N'CurrentValueAddedTaxReceivables'
 );
 
-UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'WT Voucher #'
+UPDATE  @AccountTypes SET [InternalReferenceLabel] = N'Invoice #'
 WHERE [Concept] IN (
-	N'WithholdingTaxReceivablesExtension',
-	N'WithholdingTaxPayableExtension'
+	N'NoncurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables',
+	N'RevenueFromSaleOfGoods',
+	N'RevenueFromSaleOfFoodAndBeverage',
+	N'RevenueFromSaleOfAgriculturalProduce',
+	N'RevenueFromRenderingOfServices',
+	N'RevenueFromRenderingOfPointOfTimeServices',
+	N'RevenueFromRenderingOfPeriodOfTimeServices',
+	N'RevenueFromConstructionContracts',
+	N'RevenueFromRoyalties',
+	N'LicenceFeeIncome',
+	N'FranchiseFeeIncome',
+	N'RevenueFromInterest',
+	N'RevenueFromDividends',
+	N'OtherIncome',
+	N'OtherRevenue',
+	N'CostOfMerchandiseSold'
 );
+
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'WT Voucher #', [InternalReferenceLabel] = N'Invoice #'
+WHERE [Concept] = N'WithholdingTaxReceivablesExtension'
+
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'Invoice #', [InternalReferenceLabel] = N'WT Voucher #'
+WHERE [Concept] = N'WithholdingTaxPayableExtension'
 
 UPDATE  @AccountTypes
 	SET [NotedAgentNameLabel] = N'Issuer/Recipient'
