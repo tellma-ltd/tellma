@@ -329,18 +329,18 @@
         </ng-container>
     </t-form-group>
 
-    <!-- AdditionalReference -->
-    <t-form-group class="t-form-group" [label]="labelDocumentAdditionalReference(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="AdditionalReferenceIsCommon"
-        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.AdditionalReference"
-        *ngIf="showDocumentAdditionalReference(model)">
-        <ng-container *ngIf="model?.AdditionalReferenceIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AdditionalReference">
-                {{ model?.AdditionalReference }}
+    <!-- InternalReference -->
+    <t-form-group class="t-form-group" [label]="labelDocumentInternalReference(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="InternalReferenceIsCommon"
+        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.InternalReference"
+        *ngIf="showDocumentInternalReference(model)">
+        <ng-container *ngIf="model?.InternalReferenceIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InternalReference">
+                {{ model?.InternalReference }}
             </t-restricted>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReference"
-                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentAdditionalReference(model)"
-                [disabled]="readonlyDocumentAdditionalReference(model)">
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReference"
+                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentInternalReference(model)"
+                [disabled]="readonlyDocumentInternalReference(model)">
             </t-text-editor>
         </ng-container>
     </t-form-group>
@@ -644,7 +644,7 @@
                         <span
                             *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
-                            *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                            *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
@@ -710,7 +710,7 @@
                                 <span
                                     *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
+                                    *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
@@ -839,7 +839,7 @@
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                                     [ngModelOptions]="{ updateOn: 'blur' }">
                                 </t-text-editor>
-                                <t-text-editor *ngSwitchCase="'AdditionalReference'"
+                                <t-text-editor *ngSwitchCase="'InternalReference'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
@@ -1631,18 +1631,18 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Additional Reference -->
-            <ng-container *ngIf="showAdditionalReference_Manual(entry)">
-                <t-form-group-dynamic [label]="labelAdditionalReference_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.AdditionalReference">
+            <!-- Internal Reference -->
+            <ng-container *ngIf="showInternalReference_Manual(entry)">
+                <t-form-group-dynamic [label]="labelInternalReference_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.InternalReference">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AdditionalReference">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.InternalReference">
                         <div class="text-truncate">
-                            {{ entry.AdditionalReference }}
+                            {{ entry.InternalReference }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AdditionalReference"
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.InternalReference"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
                     &nbsp;&nbsp;

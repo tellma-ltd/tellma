@@ -5638,7 +5638,7 @@ namespace Tellma.Data
                     Time1 = reader.DateTime(i++),
                     Time2 = reader.DateTime(i++),
                     ExternalReference = reader.String(i++),
-                    AdditionalReference = reader.String(i++),
+                    InternalReference = reader.String(i++),
                     NotedAgentName = reader.String(i++),
                     NotedAmount = reader.Decimal(i++),
                     NotedDate = reader.DateTime(i++),

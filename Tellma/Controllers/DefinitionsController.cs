@@ -1167,24 +1167,24 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // AdditionalReference
-                    else if (colDef.ColumnName == nameof(Entry.AdditionalReference))
+                    // InternalReference
+                    else if (colDef.ColumnName == nameof(Entry.InternalReference))
                     {
-                        result.AdditionalReferenceVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.AdditionalReferenceLabel))
+                        result.InternalReferenceVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.InternalReferenceLabel))
                         {
-                            result.AdditionalReferenceLabel = colDef.Label;
-                            result.AdditionalReferenceLabel2 = colDef.Label2;
-                            result.AdditionalReferenceLabel3 = colDef.Label3;
+                            result.InternalReferenceLabel = colDef.Label;
+                            result.InternalReferenceLabel2 = colDef.Label2;
+                            result.InternalReferenceLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState > (result.AdditionalReferenceRequiredState ?? 0))
+                        if (colDef.RequiredState > (result.InternalReferenceRequiredState ?? 0))
                         {
-                            result.AdditionalReferenceRequiredState = colDef.RequiredState;
+                            result.InternalReferenceRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState > (result.AdditionalReferenceReadOnlyState ?? 0))
+                        if (colDef.ReadOnlyState > (result.InternalReferenceReadOnlyState ?? 0))
                         {
-                            result.AdditionalReferenceReadOnlyState = colDef.ReadOnlyState;
+                            result.InternalReferenceReadOnlyState = colDef.ReadOnlyState;
                         }
                     }
                 }
@@ -1242,7 +1242,7 @@ namespace Tellma.Controllers
                 result.Time1Visibility = false;
                 result.Time2Visibility = false;
 
-                result.AdditionalReferenceVisibility = false;
+                result.InternalReferenceVisibility = false;
                 result.ExternalReferenceVisibility = false;
 
                 result.HasBookkeeping = false;

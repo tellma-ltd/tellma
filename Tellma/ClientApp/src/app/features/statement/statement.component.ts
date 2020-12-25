@@ -1418,12 +1418,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
 
-        // AdditionalReference
-        if (!!accountType.AdditionalReferenceLabel) {
+        // InternalReference
+        if (!!accountType.InternalReferenceLabel) {
           this._columns.push({
-            select: ['AdditionalReference'],
-            label: () => this.ws.getMultilingualValueImmediate(accountType, 'AdditionalReferenceLabel'),
-            display: (entry: DetailsEntry) => entry.AdditionalReference,
+            select: ['InternalReference'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'InternalReferenceLabel'),
+            display: (entry: DetailsEntry) => entry.InternalReference,
             weight: 1
           });
         }

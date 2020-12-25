@@ -226,13 +226,13 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ExternalReferenceLabel2?: string;
     ExternalReferenceLabel3?: string;
 
-    // AdditionalReference
-    AdditionalReferenceVisibility?: boolean;
-    AdditionalReferenceRequiredState?: PositiveLineState | 5;
-    AdditionalReferenceReadOnlyState?: PositiveLineState | 5;
-    AdditionalReferenceLabel?: string;
-    AdditionalReferenceLabel2?: string;
-    AdditionalReferenceLabel3?: string;
+    // InternalReference
+    InternalReferenceVisibility?: boolean;
+    InternalReferenceRequiredState?: PositiveLineState | 5;
+    InternalReferenceReadOnlyState?: PositiveLineState | 5;
+    InternalReferenceLabel?: string;
+    InternalReferenceLabel2?: string;
+    InternalReferenceLabel3?: string;
 
     // Clearance
     ClearanceVisibility?: Visibility;
@@ -336,14 +336,14 @@ export const entryColumnNames = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 
     'Multiplier', 'AccountId', 'CurrencyId',
     'CustodianId', 'CustodyId', 'ParticipantId', 'ResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
-    'ExternalReference', 'AdditionalReference',
+    'ExternalReference', 'InternalReference',
     'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
     'CustodianId' | 'CustodyId' | 'ParticipantId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'AdditionalReference' |
+    'ExternalReference' | 'InternalReference' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {

@@ -143,7 +143,7 @@ namespace Tellma.Controllers
                         case "Time1":
                         case "Time2":
                         case "ExternalReference":
-                        case "AdditionalReference":
+                        case "InternalReference":
                             break;
                         default:
                             column.InheritsFromHeader = 0; // Only listed columns can inherit

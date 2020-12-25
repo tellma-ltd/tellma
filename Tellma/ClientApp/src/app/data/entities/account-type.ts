@@ -40,9 +40,9 @@ export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionFo
   ExternalReferenceLabel?: string;
   ExternalReferenceLabel2?: string;
   ExternalReferenceLabel3?: string;
-  AdditionalReferenceLabel?: string;
-  AdditionalReferenceLabel2?: string;
-  AdditionalReferenceLabel3?: string;
+  InternalReferenceLabel?: string;
+  InternalReferenceLabel2?: string;
+  InternalReferenceLabel3?: string;
   NotedAgentNameLabel?: string;
   NotedAgentNameLabel2?: string;
   NotedAgentNameLabel3?: string;
@@ -123,9 +123,9 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         ExternalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ExternalReferenceLabel') + ws.primaryPostfix },
         ExternalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ExternalReferenceLabel') + ws.secondaryPostfix },
         ExternalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ExternalReferenceLabel') + ws.ternaryPostfix },
-        AdditionalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_AdditionalReferenceLabel') + ws.primaryPostfix },
-        AdditionalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_AdditionalReferenceLabel') + ws.secondaryPostfix },
-        AdditionalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_AdditionalReferenceLabel') + ws.ternaryPostfix },
+        InternalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_InternalReferenceLabel') + ws.primaryPostfix },
+        InternalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_InternalReferenceLabel') + ws.secondaryPostfix },
+        InternalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_InternalReferenceLabel') + ws.ternaryPostfix },
         NotedAgentNameLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_NotedAgentNameLabel') + ws.primaryPostfix },
         NotedAgentNameLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_NotedAgentNameLabel') + ws.secondaryPostfix },
         NotedAgentNameLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_NotedAgentNameLabel') + ws.ternaryPostfix },
@@ -159,7 +159,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       delete entityDesc.properties.Time1Label2;
       delete entityDesc.properties.Time2Label2;
       delete entityDesc.properties.ExternalReferenceLabel2;
-      delete entityDesc.properties.AdditionalReferenceLabel2;
+      delete entityDesc.properties.InternalReferenceLabel2;
       delete entityDesc.properties.NotedAgentNameLabel2;
       delete entityDesc.properties.NotedAmountLabel2;
       delete entityDesc.properties.NotedDateLabel2;
@@ -171,7 +171,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       delete entityDesc.properties.Time1Label3;
       delete entityDesc.properties.Time2Label3;
       delete entityDesc.properties.ExternalReferenceLabel3;
-      delete entityDesc.properties.AdditionalReferenceLabel3;
+      delete entityDesc.properties.InternalReferenceLabel3;
       delete entityDesc.properties.NotedAgentNameLabel3;
       delete entityDesc.properties.NotedAmountLabel3;
       delete entityDesc.properties.NotedDateLabel3;

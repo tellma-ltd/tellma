@@ -221,7 +221,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       case 'Time1':
       case 'Time2':
       case 'ExternalReference':
-      case 'AdditionalReference':
+      case 'InternalReference':
         return true;
       default:
         return false;

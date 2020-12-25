@@ -31,8 +31,8 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     Time2IsCommon?: boolean;
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
-    AdditionalReference?: string;
-    AdditionalReferenceIsCommon?: boolean;
+    InternalReference?: string;
+    InternalReferenceIsCommon?: boolean;
 }
 
 export interface DocumentLineDefinitionEntry extends DocumentLineDefinitionEntryForSave {

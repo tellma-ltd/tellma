@@ -279,13 +279,13 @@ namespace Tellma.Controllers.Dto
         public string ExternalReferenceLabel2 { get; set; }
         public string ExternalReferenceLabel3 { get; set; }
 
-        // AdditionalReference
-        public bool AdditionalReferenceVisibility { get; set; }
-        public short? AdditionalReferenceRequiredState { get; set; }
-        public short? AdditionalReferenceReadOnlyState { get; set; }
-        public string AdditionalReferenceLabel { get; set; }
-        public string AdditionalReferenceLabel2 { get; set; }
-        public string AdditionalReferenceLabel3 { get; set; }
+        // InternalReference
+        public bool InternalReferenceVisibility { get; set; }
+        public short? InternalReferenceRequiredState { get; set; }
+        public short? InternalReferenceReadOnlyState { get; set; }
+        public string InternalReferenceLabel { get; set; }
+        public string InternalReferenceLabel2 { get; set; }
+        public string InternalReferenceLabel3 { get; set; }
 
         // Clearance
         public string ClearanceVisibility { get; set; }

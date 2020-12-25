@@ -44,7 +44,7 @@ export interface DetailsEntry extends EntityWithKey {
     Time1?: string;
     Time2?: string;
     ExternalReference?: string;
-    AdditionalReference?: string;
+    InternalReference?: string;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
@@ -198,7 +198,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1') },
                 Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2') },
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
-                AdditionalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
+                InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 NotedAgentName: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { datatype: 'decimal', control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NotedDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entry_NotedDate') },

@@ -118,9 +118,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>Account Type</value>
   </data>
-  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
-    <value>Additional Reference Label</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
@@ -135,6 +132,9 @@
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>External Reference Label</value>
+  </data>
+  <data name="AccountType_InternalReferenceLabel" xml:space="preserve">
+    <value>Internal Reference Label</value>
   </data>
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>Is Monetary</value>
@@ -883,9 +883,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>Additional Reference</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>Center</value>
   </data>
@@ -912,6 +909,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
+  </data>
+  <data name="Entry_InternalReference" xml:space="preserve">
+    <value>Internal Reference</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>Line</value>

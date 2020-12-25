@@ -1543,12 +1543,12 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.ExternalReferenceVisibility, display);
                     break;
 
-                case nameof(Document.AdditionalReference):
-                    display = PropertyDisplay(settings, def.AdditionalReferenceVisibility, def.AdditionalReferenceLabel, def.AdditionalReferenceLabel2, def.AdditionalReferenceLabel3, display);
-                    isRequired = def.AdditionalReferenceRequiredState == 0;
+                case nameof(Document.InternalReference):
+                    display = PropertyDisplay(settings, def.InternalReferenceVisibility, def.InternalReferenceLabel, def.InternalReferenceLabel2, def.InternalReferenceLabel3, display);
+                    isRequired = def.InternalReferenceRequiredState == 0;
                     break;
-                case nameof(Document.AdditionalReferenceIsCommon):
-                    display = PropertyDisplay(def.AdditionalReferenceVisibility, display);
+                case nameof(Document.InternalReferenceIsCommon):
+                    display = PropertyDisplay(def.InternalReferenceVisibility, display);
                     break;
 
                 case nameof(Document.Clearance):

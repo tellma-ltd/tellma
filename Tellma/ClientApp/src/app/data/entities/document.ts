@@ -48,8 +48,8 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
 
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
-    AdditionalReference?: string;
-    AdditionalReferenceIsCommon?: boolean;
+    InternalReference?: string;
+    InternalReferenceIsCommon?: boolean;
 
     Lines?: TLine[];
     LineDefinitionEntries?: TLineDefinitionEntry[];
@@ -159,8 +159,8 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
 
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 ExternalReferenceIsCommon: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ExternalReference') }) },
-                AdditionalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                AdditionalReferenceIsCommon: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_AdditionalReference') }) },
+                InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
+                InternalReferenceIsCommon: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_InternalReference') }) },
 
                 SerialNumber: {
                     datatype: 'integral',
@@ -224,7 +224,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete props.Definition;
 
             // Simple properties whose label and visibility are overriden by the definition
-            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Time2', 'AdditionalReference', 'ExternalReference']) {
+            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Time2', 'InternalReference', 'ExternalReference']) {
                 if (!definition[propName + 'Visibility']) {
                     delete props[propName];
                     delete props[propName + 'IsCommon'];
