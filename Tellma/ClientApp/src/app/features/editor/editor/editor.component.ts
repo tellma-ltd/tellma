@@ -26,13 +26,10 @@ export class EditorComponent implements ControlValueAccessor {
 
   public set control(v: NgControl) {
     if (this._control !== v) {
-      const firstTime = !this._control;
       this._control = v;
       this.initializeNewControl(v);
     }
   }
-
-  public v: any;
 
   private definitionIdForArray: number;
   private definitionIdArray: number[] = [];
@@ -42,13 +39,14 @@ export class EditorComponent implements ControlValueAccessor {
 
   ///////////// ControlValueAccessor
 
-  private value: any;
+  public value: any;
   private isDisabled = false;
   private onChangeFn: (val: any) => void = _ => { };
   private onTouchedFn: () => void = () => { };
 
   private initializeNewControl(ctrl: NgControl) {
     if (!!ctrl && ctrl.valueAccessor) {
+      console.log('Initializing New Component', this.desc);
       const va = ctrl.valueAccessor;
       va.writeValue(this.value);
       va.registerOnChange(this.onChangeFn);
@@ -66,20 +64,18 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
+      console.log('Writing Value', this.value);
       ctrl.valueAccessor.writeValue(this.value);
     }
   }
 
   registerOnChange(fn: any): void {
-    // For future controls
-    this.onChangeFn = (v) => {
-      this.value = v;
-      fn(v);
-    };
+    this.onChangeFn = fn;
 
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
+      console.log('Registering onChange', this.desc);
       ctrl.valueAccessor.registerOnChange(this.onChangeFn);
     }
   }
@@ -91,6 +87,7 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
+      console.log('Registering onTouch', this.desc);
       ctrl.valueAccessor.registerOnTouched(this.onTouchedFn);
     }
   }
@@ -102,6 +99,7 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor && ctrl.valueAccessor.setDisabledState) {
+      console.log('Setting disabled state', this.desc);
       ctrl.valueAccessor.setDisabledState(this.isDisabled);
     }
   }

@@ -15,7 +15,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, computePropDesc, descFromControlOptions } from '~/app/data/util';
+import { isSpecified, computePropDesc, descFromControlOptions, updateOn } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -412,6 +412,10 @@ export class ReportComponent implements OnInit, OnDestroy {
   public onArgumentChange() {
     this.immutableArguments = { ...this.arguments };
     this.urlStateChanged();
+  }
+
+  public updateOn(desc: PropVisualDescriptor): 'change' | 'blur' {
+    return updateOn(desc);
   }
 
   public isActive(view: ReportView) {
