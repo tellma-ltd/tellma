@@ -34,6 +34,7 @@ namespace Tellma.Entities
         public decimal? Decimal1 { get; set; }
 
         [Display(Name = "Line_Text1")]
+        [StringLength(10)]
         public string Text1 { get; set; }
 
         [ForeignKey(nameof(Entry.LineId))]
