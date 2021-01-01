@@ -3313,13 +3313,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     switch (prop) {
       case 'PostingDate': return 'PostingDateIsCommon';
       case 'Memo': return 'MemoIsCommon';
-      case 'ParticipantId': return 'ParticipantIsCommon';
       case 'CurrencyId': return 'CurrencyIsCommon';
+      case 'CenterId': return 'CenterIsCommon';
+
+      case 'CustodianId': return 'CustodianIsCommon';
       case 'CustodyId': return 'CustodyIsCommon';
+      case 'ParticipantId': return 'ParticipantIsCommon';
       case 'ResourceId': return 'ResourceIsCommon';
+
       case 'Quantity': return 'QuantityIsCommon';
       case 'UnitId': return 'UnitIsCommon';
-      case 'CenterId': return 'CenterIsCommon';
       case 'Time1': return 'Time1IsCommon';
       case 'Time2': return 'Time2IsCommon';
       case 'ExternalReference': return 'ExternalReferenceIsCommon';
