@@ -46,7 +46,6 @@ export class EditorComponent implements ControlValueAccessor {
 
   private initializeNewControl(ctrl: NgControl) {
     if (!!ctrl && ctrl.valueAccessor) {
-      console.log('Initializing New Component', this.desc);
       const va = ctrl.valueAccessor;
       va.writeValue(this.value);
       va.registerOnChange(this.onChangeFn);
@@ -64,7 +63,6 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
-      console.log('Writing Value', this.value);
       ctrl.valueAccessor.writeValue(this.value);
     }
   }
@@ -75,7 +73,6 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
-      console.log('Registering onChange', this.desc);
       ctrl.valueAccessor.registerOnChange(this.onChangeFn);
     }
   }
@@ -87,7 +84,6 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor) {
-      console.log('Registering onTouch', this.desc);
       ctrl.valueAccessor.registerOnTouched(this.onTouchedFn);
     }
   }
@@ -99,7 +95,6 @@ export class EditorComponent implements ControlValueAccessor {
     // For current control
     const ctrl = this.control;
     if (ctrl && ctrl.valueAccessor && ctrl.valueAccessor.setDisabledState) {
-      console.log('Setting disabled state', this.desc);
       ctrl.valueAccessor.setDisabledState(this.isDisabled);
     }
   }

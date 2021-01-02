@@ -233,7 +233,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     const urlArgs = this.arguments;
     const wsArgs = this.state.arguments;
-    for (const key of Object.keys(urlArgs)) {
+    for (const key of Object.keys(urlArgs).concat(Object.keys(wsArgs))) {
       if (wsArgs[key] !== urlArgs[key]) {
         wsArgs[key] = urlArgs[key];
         hasChanged = true;
