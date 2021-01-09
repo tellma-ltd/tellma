@@ -16,7 +16,7 @@
                 <div class="row m-0 px-0 px-lg-1 py-1">
                     <t-form-group *ngFor="let p of parameters" class="t-form-group"
                         [label]="p.label() + (p.isRequired ? ' *' : '')">
-                        <t-editor [(ngModel)]="arguments[p.key]" [ngModelOptions]="{ updateOn: 'blur' }"
+                        <t-editor [(ngModel)]="arguments[p.key]" [ngModelOptions]="{ updateOn: updateOn(p.desc) }"
                             [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [desc]="p.desc">
                         </t-editor>
                     </t-form-group>

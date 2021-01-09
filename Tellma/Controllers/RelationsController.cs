@@ -600,8 +600,9 @@ namespace Tellma.Controllers
                 var name2 = nameof(Relation.Name2);
                 var name3 = nameof(Relation.Name3);
                 var code = nameof(Relation.Code);
+                var tin = nameof(Relation.TaxIdentificationNumber);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
+                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {tin} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
             }
 

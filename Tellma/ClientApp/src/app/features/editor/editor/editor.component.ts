@@ -26,13 +26,10 @@ export class EditorComponent implements ControlValueAccessor {
 
   public set control(v: NgControl) {
     if (this._control !== v) {
-      const firstTime = !this._control;
       this._control = v;
       this.initializeNewControl(v);
     }
   }
-
-  public v: any;
 
   private definitionIdForArray: number;
   private definitionIdArray: number[] = [];
@@ -42,7 +39,7 @@ export class EditorComponent implements ControlValueAccessor {
 
   ///////////// ControlValueAccessor
 
-  private value: any;
+  public value: any;
   private isDisabled = false;
   private onChangeFn: (val: any) => void = _ => { };
   private onTouchedFn: () => void = () => { };
@@ -71,11 +68,7 @@ export class EditorComponent implements ControlValueAccessor {
   }
 
   registerOnChange(fn: any): void {
-    // For future controls
-    this.onChangeFn = (v) => {
-      this.value = v;
-      fn(v);
-    };
+    this.onChangeFn = fn;
 
     // For current control
     const ctrl = this.control;

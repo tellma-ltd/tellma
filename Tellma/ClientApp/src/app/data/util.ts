@@ -1232,3 +1232,22 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
   }
   return propDesc;
 }
+
+export function updateOn(desc: PropVisualDescriptor): 'change' | 'blur' {
+
+  switch (desc.control) {
+    case 'text':
+    case 'number':
+    case 'percent':
+    case 'serial':
+    case 'date':
+    case 'datetime':
+      return 'blur';
+    case 'choice':
+    case 'boolean':
+      return 'change';
+    default:
+      const x = desc.filter; // So it will complain if we forget a control
+      return !!x ? 'change' : 'change';
+  }
+}

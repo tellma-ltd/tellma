@@ -16,7 +16,7 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected, descFromControlOptions
+  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected, descFromControlOptions, updateOn
 } from '~/app/data/util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -32,7 +32,7 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, Control } from '~/app/data/entities/base/metadata';
+import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
@@ -3313,13 +3313,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     switch (prop) {
       case 'PostingDate': return 'PostingDateIsCommon';
       case 'Memo': return 'MemoIsCommon';
-      case 'ParticipantId': return 'ParticipantIsCommon';
       case 'CurrencyId': return 'CurrencyIsCommon';
+      case 'CenterId': return 'CenterIsCommon';
+
+      case 'CustodianId': return 'CustodianIsCommon';
       case 'CustodyId': return 'CustodyIsCommon';
+      case 'ParticipantId': return 'ParticipantIsCommon';
       case 'ResourceId': return 'ResourceIsCommon';
+
       case 'Quantity': return 'QuantityIsCommon';
       case 'UnitId': return 'UnitIsCommon';
-      case 'CenterId': return 'CenterIsCommon';
       case 'Time1': return 'Time1IsCommon';
       case 'Time2': return 'Time2IsCommon';
       case 'ExternalReference': return 'ExternalReferenceIsCommon';
@@ -4056,9 +4059,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return label;
   }
 
-  public parameterDesc(p: LineDefinitionGenerateParameterForClient) {
+  public parameterDesc(p: LineDefinitionGenerateParameterForClient): PropVisualDescriptor {
     return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
   }
+
+  public updateOn(p: LineDefinitionGenerateParameterForClient): 'change' | 'blur' {
+    const desc = this.parameterDesc(p);
+    return updateOn(desc);
+  }
+
 
   public get autoGenerateLineDef(): LineDefinitionForClient {
     return this.lineDefinition(this.autoGenerateLineDefId);

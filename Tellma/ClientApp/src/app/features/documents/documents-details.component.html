@@ -331,15 +331,14 @@
 
     <!-- InternalReference -->
     <t-form-group class="t-form-group" [label]="labelDocumentInternalReference(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="InternalReferenceIsCommon"
-        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.InternalReference"
-        *ngIf="showDocumentInternalReference(model)">
+        [labelContextMenu]="documentIsCommonMenu" labelContext="InternalReferenceIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.InternalReference" *ngIf="showDocumentInternalReference(model)">
         <ng-container *ngIf="model?.InternalReferenceIsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InternalReference">
                 {{ model?.InternalReference }}
             </t-restricted>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReference"
-                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentInternalReference(model)"
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReference" [ngModelOptions]="{ updateOn: 'blur' }"
+                [required]="requireDocumentInternalReference(model)"
                 [disabled]="readonlyDocumentInternalReference(model)">
             </t-text-editor>
         </ng-container>
@@ -2092,9 +2091,10 @@
 
     <!-- body -->
     <div class="modal-body">
-        <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey" class="t-form-group"
-            style="margin-top:0!important" [label]="parameterLabel(param)">
-            <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)">
+        <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey"
+            class="t-form-group" style="margin-top:0!important" [label]="parameterLabel(param)">
+            <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)"
+                [ngModelOptions]="{ updateOn: updateOn(param) }">
             </t-editor>
         </t-form-group>
     </div>
