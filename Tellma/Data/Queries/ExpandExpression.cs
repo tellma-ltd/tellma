@@ -6,7 +6,7 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents an expand argument which is a comma separated list of paths. For example: "Order/Customer,Amount"
+    /// Represents an expand argument which is a comma separated list of paths. For example: "Participant,Lines.Entries"
     /// </summary>
     public class ExpandExpression : IEnumerable<ExpandAtom>
     {
@@ -55,7 +55,7 @@ namespace Tellma.Data.Queries
 
         /// <summary>
         /// Parses a string representing an expand argument into an <see cref="ExpandExpression"/>. 
-        /// The expand argument is a comma separated list of paths, for example "Order/Customer,Amount"
+        /// The expand argument is a comma separated list of paths, for example "Participant,Lines.Entries"
         /// </summary>
         public static ExpandExpression Parse(string expand)
         {
@@ -64,11 +64,9 @@ namespace Tellma.Data.Queries
                 return null;
             }
 
-            var atoms = expand
-                .Split(',')
-                .Select(e => e?.Trim())
-                .Where(e => !string.IsNullOrEmpty(e))
-                .Select(s => ExpandAtom.Parse(s));
+            var atoms = Queryex.Parse(expand)
+                .Where(exp => exp != null)
+                .Select(exp => ExpandAtom.FromExpression(exp));
 
             return new ExpandExpression(atoms);
         }

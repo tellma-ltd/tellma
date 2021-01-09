@@ -6,7 +6,7 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Base class for all constant expressions such as 3 or 'Foo'
     /// </summary>
-    public abstract class ConstantBase : ExpressionBase
+    public abstract class TemplexConstant : TemplexBase
     {
         public override IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {

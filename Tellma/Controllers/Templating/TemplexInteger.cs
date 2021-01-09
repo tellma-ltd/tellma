@@ -3,14 +3,14 @@
 namespace Tellma.Controllers.Templating
 {
     /// <summary>
-    /// Represents a constant decimal expression: e.g. 127.5
+    /// Represents a constant integer expression: e.g. 15
     /// </summary>
-    public class ConstantDecimal : ConstantBase
+    public class TemplexInteger : TemplexConstant
     {
         /// <summary>
-        /// The value of the <see cref="ConstantDecimal"/> expression
+        /// The value of the <see cref="TemplexInteger"/> expression
         /// </summary>
-        public decimal Value { get; set; }
+        public int Value { get; set; }
 
         public override Task<object> Evaluate(EvaluationContext ctx)
         {

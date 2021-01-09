@@ -7,10 +7,10 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Represents an AND expression. E.g. A && B. Always evaluated to a boolean value
     /// </summary>
-    public class ExpressionConjunction : ExpressionBase
+    public class TemplexConjunction : TemplexBase
     {
-        public ExpressionBase Left { get; set; }
-        public ExpressionBase Right { get; set; }
+        public TemplexBase Left { get; set; }
+        public TemplexBase Right { get; set; }
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
@@ -55,11 +55,11 @@ namespace Tellma.Controllers.Templating
         }
 
         /// <summary>
-        /// Creates a new <see cref="ExpressionConjunction"/>
+        /// Creates a new <see cref="TemplexConjunction"/>
         /// </summary>
-        public static ExpressionConjunction Make(ExpressionBase left, ExpressionBase right)
+        public static TemplexConjunction Make(TemplexBase left, TemplexBase right)
         {
-            return new ExpressionConjunction
+            return new TemplexConjunction
             {
                 Left = left,
                 Right = right,

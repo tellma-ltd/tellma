@@ -14,7 +14,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// This expression evaluates to the value of the new variable
         /// </summary>
-        public ExpressionBase Value { get; set; }
+        public TemplexBase Value { get; set; }
 
         /// <summary>
         /// The name of the new variable

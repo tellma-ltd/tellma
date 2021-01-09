@@ -4,388 +4,405 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Tellma.Entities;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents a filter argument which is a tree of ANDs (conjunctions), ORs (disjunctions)
-    /// and NOTs (negations) with brackets to override the default precedence of these operators.
-    /// For example: "(Order/Total gt 1000) and (Customer/Gender eq 'M')"
-    /// This class also contains utilities for parsing filter arguments into <see cref="FilterExpression"/>s.
-    /// IMPORTANT: there is a high fidality replica of this in TypeScript for the ClientApp , the two must be kept in sync
+    /// Represents a filter argument which is a full expression tree that evaluated to a boolean.
+    /// For example: "(Order.Total > 1000) and (Customer.Gender = 'M')".
+    /// The filter syntax is that which can be parsed into <see cref="Queryex"/>
     /// </summary>
-    public abstract class FilterExpression : IEnumerable<FilterAtom>
+    public class FilterExpression
     {
+        public Queryex Expression { get; private set; }
+
         /// <summary>
         /// Parses a string representing a filter argument into a <see cref="FilterExpression"/>. 
-        /// The filter argument is a tree of ANDs (conjunctions), ORs (disjunctions)
-        /// and NOTs (negations) with brackets to override the default precedence of these operators.
-        /// For example "(Order/Total gt 1000) and (Customer/Gender eq 'M')"
+        /// The filter argument is a full expression tree that evaluated to a boolean.
+        /// For example: "(Order.Total > 1000) and (Customer.Gender = 'M')".
         /// </summary>
         public static FilterExpression Parse(string filter)
         {
-            string preprocessedFilter = Preprocess(filter);
-            if (string.IsNullOrWhiteSpace(preprocessedFilter))
+            var expressions = Queryex.Parse(filter);
+            if (expressions.Skip(1).Any())
+            {
+                throw new InvalidOperationException("Filter parameter must be a single expression without top level commas.");
+            }
+
+            var filterExpression = expressions.First();
+            if (filterExpression == null)
             {
                 return null;
             }
 
-            IEnumerable<string> tokenStream = Tokenize(preprocessedFilter);
-            FilterExpression filterExpression = ParseTokenStream(tokenStream);
-
-            return filterExpression;
-        }
-
-        /// <summary>
-        /// Preprocesses the filer expression: trimming it and removing any repeated spaces
-        /// </summary>
-        private static string Preprocess(string filter)
-        {
-            if (filter == null)
+            // Some validation
+            if (filterExpression.ContainsAggregations())
             {
-                return null;
+                throw new InvalidOperationException("Filter expression cannot contain aggregation functions like Sum or Count.");
             }
 
-            // Reduce all enters to a single space
-            filter = filter.Replace(Environment.NewLine, " ");
-
-            // Ensure no spaces are repeated
-            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-            filter = regex.Replace(filter, " ");
-
-            // Trim
-            filter = filter.Trim();
-
-            // return preprocessed filter argument
-            return filter;
+            return new FilterExpression
+            {
+                Expression = expressions.First()
+            };
         }
 
-        // All the symbols, we use spaces before and after the operators to tell them apart
-        // Special handling for "not(E)" we need to allow for no space before or after it, and at
-        // the same time cannot get confused with property names like "Notes"
-        private static readonly List<string> _symbols = new List<string> { // the order matters
+        ///// <summary>
+        ///// Returns all the <see cref="FilterAtom"/> in this current expression tree
+        ///// </summary>
+        ///// <returns></returns>
+        //public abstract IEnumerable<FilterAtom> Atoms();
 
-                    // Logical Operators
-                    " and ", " or ", "not",
-                    
-                    // Parentheses
-                    "(", ")",
-                };
+        ///// <summary>
+        ///// Implementation of <see cref="IEnumerable{T}"/>
+        ///// </summary>
+        //public IEnumerator<FilterAtom> GetEnumerator()
+        //{
+        //    return Atoms().GetEnumerator();
+        //}
 
-        /// <summary>
-        /// Lexical Analysis: Turns the filter expression into a stream of recognized tokens
-        /// </summary>
-        private static IEnumerable<string> Tokenize(string preprocessedFilter)
+        ///// <summary>
+        ///// Implementation of <see cref="IEnumerable{T}"/>
+        ///// </summary>
+        //IEnumerator IEnumerable.GetEnumerator()
+        //{
+        //    return Atoms().GetEnumerator();
+        //}
+    }
+
+    public static class QueryexExtensions
+    {
+        public static int CastingCost(QueryexType from, QueryexType to)
         {
-            // For performance: decompose the filter into a char array and use a string builder to accumulate the characters examined so far
-            char[] filterArray = preprocessedFilter.ToCharArray();
-            bool insideQuotes = false;
-            StringBuilder acc = new StringBuilder();
-            int index = 0;
-
-            string MatchingOperator(int i)
+            const int max = 100000;
+            if (from == to)
             {
-                // This basically finds the first symbol that matches the beginning of the current index at filterArray
-                var matchingSymbol = _symbols.FirstOrDefault(symbol => (filterArray.Length - i) >= symbol.Length &&
-                    Enumerable.Range(0, symbol.Length).All(j => char.ToLower(symbol[j]) == char.ToLower(filterArray[i + j])));
+                return 0;
+            }
 
-                if (matchingSymbol == "not")
-                {
-                    // The operator "not" requires more elaborate handling, since it may not necessarily be preceded or superseded by a space
-                    // but we don't want to confuse it with properties that contain "not" in their name like "Notes"
-                    int prevIndex = i - 1;
-                    bool precededProperly = prevIndex < 0 || filterArray[prevIndex] == ' ' || filterArray[prevIndex] == '(';
-                    int nextIndex = i + matchingSymbol.Length;
-                    bool followedProperly = nextIndex >= filterArray.Length || filterArray[nextIndex] == ' ' || filterArray[nextIndex] == '(';
+            return from switch
+            {
+                QueryexType.String => QueryexType.AnyExceptBoolean.HasFlag(to) ? 1 : max,
+                QueryexType.Numeric => to switch {
+                    QueryexType.String => 1,
+                    QueryexType.Numeric => 1,
+                    QueryexType.Date => 1,
+                    QueryexType.DateTime => 1,
+                    QueryexType.DateTimeOffset => 1,
+                    QueryexType.HierarchyId => 1,
+                    QueryexType.Geography => 1,
+                    QueryexType.Bit => 1,
+                    QueryexType.Boolean => max
+                },
+                QueryexType.Date => 1,
+                QueryexType.DateTime => 1,
+                QueryexType.DateTimeOffset => 1,
+                QueryexType.HierarchyId => 1,
+                QueryexType.Geography => 1,
+                QueryexType.Bit => 1,
+                QueryexType.Boolean => max
+            }
+        }
 
-                    return precededProperly && followedProperly ? matchingSymbol : null;
-                }
-                else
+        public static QueryexType FindOverload(params QueryexType[] expressions)
+        {
+
+
+            QueryexType result = QueryexType.None;
+        }
+
+        public static QueryexType ExpressionType(this Queryex @this, TypeDescriptor desc)
+        {
+            static QueryexType FunctionType(QueryexFunction exp, TypeDescriptor desc)
+            {
+                switch (exp.Name?.ToLower())
                 {
-                    // All the other symbols can be precisely matched
-                    return matchingSymbol;
+                    case "sum":
+                    case "count":
+                    case "avg":
+                        return QueryexType.Numeric;
+
+                    case "min":
+                    case "max":
+                        return exp.Arguments[0]?.ExpressionType(desc) ?? QueryexType.None;
+                    case ""
                 }
             }
 
-            while (index < filterArray.Length)
+            static QueryexType BinaryOperatorType(QueryexBinaryOperator exp, TypeDescriptor desc)
             {
-                bool isSingleQuote = filterArray[index] == '\'';
-
-                if (isSingleQuote)
+                switch (exp.Operator?.ToLower())
                 {
-                    bool followedBySingleQuote = (index + 1) < filterArray.Length && filterArray[index + 1] == '\'';
-
-                    acc.Append(filterArray[index]);
-                    index++;
-
-                    if (!insideQuotes)
-                    {
-                        insideQuotes = true;
-                    }
-                    else if (!followedBySingleQuote)
-                    {
-                        insideQuotes = false;
-                    }
-                    else // inside quotes and followed by a single quote
-                    {
-                        index++; // skip the other single quote, it's just there for escaping the first one
-                    }
-                }
-                else
-                {
-                    // Everything that is not inside single quotes is ripe for lexical analysis   
-                    string matchingSymbol;
-                    if (!insideQuotes && (matchingSymbol = MatchingOperator(index)) != null)
-                    {
-                        // Add all that has been accumulating before the symbol
-                        if (acc.Length > 0)
+                    case "+":
+                        if (exp.Left.ExpressionType(desc).HasFlag(QueryexType.Numeric) || exp.Right.ExpressionType(desc).HasFlag(QueryexType.Numeric))
                         {
-                            var token = acc.ToString().Trim();
-                            if (!string.IsNullOrWhiteSpace(token))
-                            {
-                                yield return token;
-                            }
-
-                            acc = new StringBuilder();
+                            return QueryexType.Numeric;
+                        } 
+                        else
+                        {
+                            return QueryexType.String;
                         }
 
-                        // And add the symbol  
-                        yield return matchingSymbol.ToLower().Trim();
-                        index += matchingSymbol.Length;
-                    }
-                    else
-                    {
-                        acc.Append(filterArray[index]);
-                        index++;
-                    }
-                }
-            }
+                    case "-":
+                    case "*":
+                    case "/":
+                    case "%":
+                        return QueryexType.Numeric;
 
-            if (insideQuotes)
-            {
-                // Programmer mistake
-                throw new InvalidOperationException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
-            }
-
-            if (acc.Length > 0)
-            {
-                var token = acc.ToString().Trim();
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    yield return token;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Constructs and returns an abstract expression tree (<see cref="FilterExpression"/>) based on a token stream
-        /// </summary>
-        public static FilterExpression ParseTokenStream(IEnumerable<string> tokens)
-        {
-            // This is an implementation of the shunting-yard algorithm from Edsger Dijkstra https://bit.ly/1fEvvLI
-
-            var ops = new Stack<string>();
-            var output = new Stack<FilterExpression>();
-
-            // Inline function to make it easy to add tokens to the output stack
-            void AddToOutput(string token)
-            {
-                switch (token)
-                {
+                    case "&&":
+                    case "||":
                     case "and":
-                        if (output.Count < 2)
-                        {
-                            throw new InvalidOperationException("Incorrectly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands");
-                        }
-                        else
-                        {
-                            var right = output.Pop();
-                            var left = output.Pop();
-                            output.Push(FilterConjunction.Make(left: left, right: right));
-                            break;
-                        }
                     case "or":
-                        if (output.Count < 2)
-                        {
-                            throw new InvalidOperationException("Incorrectly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands");
-                        }
-                        else
-                        {
-                            var right = output.Pop();
-                            var left = output.Pop();
-                            output.Push(FilterDisjunction.Make(left: left, right: right));
-                            break;
-                        }
-                    case "not":
-                        if (output.Count < 1)
-                        {
-                            throw new InvalidOperationException("Incorrectly formatted filter parameter, a negation 'not' was missing its operand");
-                        }
+                    case "=":
+                    case "!=":
+                    case "<>":
+                    case ">":
+                    case ">=":
+                    case "<":
+                    case "<=":
+                    case "gt":
+                    case "ge":
+                    case "lt":
+                    case "le":
+                    case "childof":
+                    case "descof":
+                    case "contains":
+                    case "startsw":
+                    case "endsw":
+                        return QueryexType.Boolean;
 
-                        output.Push(FilterNegation.Make(inner: output.Pop()));
-                        break;
                     default:
-                        output.Push(FilterAtom.Parse(token));
-                        break;
+                        throw new InvalidOperationException($"Unknown operator {exp.Operator}"); // Future proofing
                 }
             }
-            
-            foreach (var token in tokens)
+
+            static QueryexType UnaryOperatorType(QueryexUnaryOperator exp, TypeDescriptor desc) // Finished
             {
-                // Shunting-yard implementation
-                if (token == "not")
+                switch (exp.Operator?.ToLower())
                 {
-                    // if it is a logical negation push it on the operators stack
-                    ops.Push(token);
-                }
-                else if (_operators.TryGetValue(token, out OperatorInfo opInfo)) // if it is an operator
-                {
-                    // inline predicate determines how many items do we pop from the operator stack
-                    bool KeepPopping()
-                    {
-                        /* Modified from Wikipedia: Keep popping while...
-                          
-                            (the operator at the top of the operator stack is not a left parenthesis) AND 
-                            (   
-                                (there is a 'not' at the top of the operator stack) OR
-                                (there is an operator at the top of the operator stack with greater precedence) OR
-                                (the operator at the top of the operator stack has equal precedence and is left associative)
-                            )
-                         */
+                    case "-":
+                    case "+":
+                        return QueryexType.Numeric;
 
-                        if (ops.Count == 0)
-                        {
-                            // There is nothing left to pop
-                            return false;
-                        }
+                    case "!":
+                    case "not":
+                        return QueryexType.Boolean;
 
-                        string peek = ops.Peek();
-                        _operators.TryGetValue(peek, out OperatorInfo peekInfo);
-
-                        return peek != "(" &&
-                            (
-                                peek == "not" || peekInfo.Precedence > opInfo.Precedence ||
-                                (peekInfo.Precedence == opInfo.Precedence && peekInfo.IsLeftAssociative)
-                            );
-                    }
-
-                    while (KeepPopping())
-                    {
-                        AddToOutput(ops.Pop());
-                    }
-
-                    ops.Push(token);
-                }
-                else if (token == "(")
-                {
-                    ops.Push(token);
-                }
-                else if (token == ")")
-                {
-                    // Keep popping from the operator queue until you hit a left paren
-                    while (ops.Count > 0 && ops.Peek() != "(")
-                    {
-                        // Add to output
-                        AddToOutput(ops.Pop());
-                    }
-
-                    if (ops.Count > 0 && ops.Peek() == "(")
-                    {
-                        // Pop the left paren
-                        ops.Pop();
-                    }
-                    else
-                    {
-                        // There should have been a left paren in the stack
-                        throw new InvalidOperationException("Filter expression contains mismatched parentheses");
-                    }
-                }
-                else
-                {
-                    // It's a simple atom, add it to the output
-                    AddToOutput(token);
+                    default:
+                        throw new InvalidOperationException($"Unknown operator {exp.Operator}"); // Future proofing
                 }
             }
 
-            // Anything left in the operators queue, add it to the output
-            while (ops.Count > 0)
+            static QueryexType ColumnAccessType(QueryexColumnAccess exp, TypeDescriptor desc) // Finished
             {
-                if (ops.Peek() != "(")
+                var currentEntityDesc = desc;
+                foreach (var step in exp.Path)
                 {
-                    // Add to output
-                    AddToOutput(ops.Pop());
-                }
-                else
-                {
-                    // Depends whether you want to be forgiving of left parentheses that weren't closed
-                    // ops.Pop();
+                    var navPropDesc = currentEntityDesc.NavigationProperty(step);
+                    if (navPropDesc == null)
+                    {
+                        throw new QueryException($"Navigation property '{step}' does not exist on type '{currentEntityDesc.Name}'");
+                    }
 
-                    // There should not be a left paren in the stack
-                    throw new InvalidOperationException("Filter expression contains mismatched parentheses");
+                    currentEntityDesc = navPropDesc.GetEntityDescriptor();
+                }
+
+                var propDesc = currentEntityDesc.Property(exp.Property);
+                var propType = Nullable.GetUnderlyingType(propDesc.Type) ?? propDesc.Type;
+
+                switch (propType.Name)
+                {
+                    case nameof(Char):
+                    case nameof(String):
+                        return QueryexType.String;
+
+                    case nameof(Byte):
+                    case nameof(SByte):
+                    case nameof(Int16):
+                    case nameof(UInt16):
+                    case nameof(Int32):
+                    case nameof(UInt32):
+                    case nameof(Int64):
+                    case nameof(UInt64):
+                    case nameof(Single):
+                    case nameof(Double):
+                    case nameof(Decimal):
+                        return QueryexType.Numeric;
+
+                    case nameof(Boolean):
+                        return QueryexType.Bit;
+
+                    case nameof(DateTime):
+                        return propDesc.IncludesTime ? QueryexType.DateTime : QueryexType.Date;
+
+                    case nameof(DateTimeOffset):
+                        return QueryexType.DateTimeOffset;
+
+                    case nameof(HierarchyId):
+                        return QueryexType.HierarchyId;
+
+                    case nameof(Geography):
+                        return QueryexType.Geography;
+
+                    default:
+                        throw new InvalidOperationException($"Bug: Could not map type {propType.Name} to a {nameof(QueryexType)}"); // Future proofing
                 }
             }
 
-            // If the filter expression is valid, there should be exactly one item in the output stack at this stage
-            if (output.Count != 1)
+            return @this switch
             {
-                throw new InvalidOperationException("Incorrectly formatted filter parameter");
-            }
-
-            return output.Pop();
+                QueryexFunction exp => FunctionType(exp, desc),
+                QueryexBinaryOperator exp => BinaryOperatorType(exp, desc),
+                QueryexUnaryOperator exp => UnaryOperatorType(exp, desc),
+                QueryexQuote exp => QueryexType.String,
+                QueryexNumber exp => QueryexType.Numeric,
+                QueryexBit exp => QueryexType.Bit,
+                QueryexNull exp => QueryexType.AnyExceptBoolean,
+                QueryexColumnAccess exp => ColumnAccessType(exp, desc),
+                _ => throw new InvalidOperationException($"Bug: Unknown Queryex type {@this.GetType()}"), // Future proofing
+            };
         }
 
-        /// <summary>
-        /// Returns all the <see cref="FilterAtom"/> in this current expression tree
-        /// </summary>
-        /// <returns></returns>
-        public abstract IEnumerable<FilterAtom> Atoms();
-
-        /// <summary>
-        /// Implementation of <see cref="IEnumerable{T}"/>
-        /// </summary>
-        public IEnumerator<FilterAtom> GetEnumerator()
+        public static bool IsAggregateFunction(this Queryex @this)
         {
-            return Atoms().GetEnumerator();
+            if (@this is QueryexFunction exp)
+            {
+                return exp.Name?.ToLower() switch
+                {
+                    "sum" => true,
+                    "count" => true,
+                    "avg" => true,
+                    "min" => true,
+                    "max" => true,
+                    _ => false
+                };
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        /// <summary>
-        /// Implementation of <see cref="IEnumerable{T}"/>
-        /// </summary>
-        IEnumerator IEnumerable.GetEnumerator()
+        public static bool ContainsAggregations(this Queryex @this)
         {
-            return Atoms().GetEnumerator();
+            return @this switch
+            {
+                QueryexFunction exp => exp.IsAggregateFunction() || exp.Arguments.Any(arg => arg.ContainsAggregations()),
+                QueryexBinaryOperator exp => exp.Left.ContainsAggregations() || exp.Right.ContainsAggregations(),
+                QueryexUnaryOperator exp => exp.Operand.ContainsAggregations(),
+                _ => false,
+            };
         }
 
-        /// <summary>
-        /// This list contains the precedence and associativity of supported binary operators, the precedences used are the same as T-SQL (https://bit.ly/2YnyfbV)
-        /// </summary>
-        private static readonly Dictionary<string, OperatorInfo> _operators = new Dictionary<string, OperatorInfo>
+        public static List<QueryexType> DataType(this Queryex @this, TypeDescriptor root)
         {
-            ["and"] = new OperatorInfo { Precedence = 6, Associativity = Associativity.Left },
-            ["or"] = new OperatorInfo { Precedence = 7, Associativity = Associativity.Left },
+            switch (@this)
+            {
+                case QueryexNull _: return new List<QueryexType>();
+                case QueryexNull _: return new List<QueryexType>();
+                case QueryexNull _: return new List<QueryexType>();
+                case QueryexNull _: return new List<QueryexType>();
+                case QueryexNull _: return new List<QueryexType>();
+            }
+
+            return @this switch
+            {
+                QueryexFunction exp => exp.IsAggregateFunction() || exp.Arguments.Any(arg => arg.ContainsAggregations()),
+                QueryexBinaryOperator exp => exp.Left.ContainsAggregations() || exp.Right.ContainsAggregations(),
+                QueryexUnaryOperator exp => exp.Operand.ContainsAggregations(),
+                _ => false,
+            };
+        }
+
+        public static bool IsBoolean(this Queryex @this)
+        {
+            return @this switch
+            {
+                QueryexFunction exp => exp.Name?.ToLower() switch
+                {
+                    "not" => true,
+                    "contains" => true,
+                    "descof" => true,
+                    "childof" => true,
+                    _ => false
+                },
+                QueryexBinaryOperator exp => exp.Left.ContainsAggregations() || exp.Right.ContainsAggregations(),
+                QueryexUnaryOperator exp => exp.Operand.ContainsAggregations(),
+                _ => false,
+            };
+        }
+
+        public static readonly Dictionary<string, QueryexFunctionDescriptor> _functions = new Dictionary<string, QueryexFunctionDescriptor>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["if"] = new QueryexFunctionDescriptor
+            {
+                Parameters = new QueryexParamDescriptor[]
+                {
+                    new QueryexParamDescriptor { Name = "condition", Type = QueryexType.Boolean },
+                    new QueryexParamDescriptor { Name = "value_if_true", Type = QueryexType.X },
+                    new QueryexParamDescriptor { Name = "value_if_false", Type = QueryexType.X }
+                },
+                ResultType = QueryexType.X
+            },
+            ["sum"] = new QueryexFunctionDescriptor
+            {
+                Parameters = new QueryexParamDescriptor[]
+                {
+                    new QueryexParamDescriptor { Name = "expression", Type = QueryexType.Boolean },
+                    new QueryexParamDescriptor { Name = "condition", Type = QueryexType.X, IsOptional = true },
+                },
+                ResultType = QueryexType.X
+            },
         };
 
-        /// <summary>
-        /// Used internally to store the precedence and associativity of a binary operator
-        /// </summary>
-        private struct OperatorInfo
+        public static QueryexType CommonType(QueryexType t1, QueryexType t2)
         {
-            public int Precedence { get; set; }
-
-            public Associativity Associativity { get; set; }
-
-            public bool IsLeftAssociative
+            if (t1.HasFlag(t2))
             {
-                get
-                {
-                    return Associativity == Associativity.Left;
-                }
+                return t2; // t2 is more specific
             }
-        }
+            else if (t2.HasFlag(t1))
+            {
+                return t1; // t2 is more specific
+            }
 
-        /// <summary>
-        /// https://bit.ly/2Kp2Yvl
-        /// </summary>
-        private enum Associativity { Left, Right }
+
+            return 0;
+        }
+    }
+
+    public class QueryexFunctionDescriptor
+    {
+        public QueryexParamDescriptor[] Parameters { get; set; }
+
+        public QueryexType ResultType { get; set; }
+    }
+
+    public class QueryexUnaryOpDescriptor
+    {
+
+        public QueryexParamDescriptor Operand { get; set; }
+
+        public Func<QueryexType, QueryexType> ResultType { get; set; }
+    }
+
+    public class QueryexBinaryOpDescriptor
+    {
+        public QueryexParamDescriptor Left { get; set; }
+
+        public QueryexParamDescriptor Right { get; set; }
+
+        public Func<QueryexType, QueryexType, QueryexType> ResultType { get; set; }
+    }
+
+    public class QueryexParamDescriptor
+    {
+        public string Name { get; set; }
+
+        public bool IsOptional { get; set; }
+
+        public QueryexType Type { get; set; } // Empty means any
     }
 }

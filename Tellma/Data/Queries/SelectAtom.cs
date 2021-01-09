@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Linq;
 
 namespace Tellma.Data.Queries
 {
     /// <summary>
     /// Represents a single entry in a comma separated select argument
-    /// For example the select argument "Invoice/Customer/Name,Amount" contains two atoms separated by a comma
+    /// For example the select argument "Line.PostingDate,Amount" contains two atoms separated by a comma
     /// </summary>
     public class SelectAtom
     {
         /// <summary>
-        /// The path component of the atom (split along the slashes)
+        /// The path component of the atom (split along the dots)
         /// </summary>
         public string[] Path { get; set; }
 
@@ -19,28 +20,32 @@ namespace Tellma.Data.Queries
         public string Property { get; set; }
 
         /// <summary>
-        /// Parses a string representing a single atom (no commas) into an <see cref="AggregateSelectAtom"/>
+        /// Extracts a <see cref="SelectAtom"/> from a <see cref="Queryex"/> object
         /// </summary>
         /// <param name="atom">String representing a single atom (should not contain commas)</param>
-        public static SelectAtom Parse(string atom)
+        public static SelectAtom FromExpression(Queryex atom)
         {
-            // item comes in the general formats:
-            // - "Customer/Name"
-            // - "Amount"
+            // atom comes in the general formats:
+            // - "Line.PostingDate"
+            // - "Value"
 
-            if (string.IsNullOrWhiteSpace(atom))
+            if (atom is null)
             {
                 throw new ArgumentNullException(nameof(atom));
             }
 
-            atom = atom.Trim();
-
-            var (path, property) = QueryTools.ExtractPathAndProperty(atom);
-            return new SelectAtom
+            if (atom is QueryexColumnAccess columnAccess)
             {
-                Path = path,
-                Property = property
-            };
+                return new SelectAtom
+                {
+                    Path = columnAccess.Path,
+                    Property = columnAccess.Property
+                };
+            }
+            else
+            {
+                throw new QueryException($"The select atom {atom} is not a column access. Only column access literals like (Line.PostingDate) are permitted in a select parameter.");
+            }
         }
     }
 }

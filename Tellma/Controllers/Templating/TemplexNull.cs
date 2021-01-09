@@ -5,7 +5,7 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Represents a constant null
     /// </summary>
-    public class ConstantNull : ConstantBase
+    public class TemplexNull : TemplexConstant
     {
         public override Task<object> Evaluate(EvaluationContext ctx)
         {

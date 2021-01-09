@@ -6,7 +6,7 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents a select argument which is a comma separated list of paths. For example: "Invoice/Customer/Name,Amount"
+    /// Represents a select argument which is a comma separated list of column access atoms. For example: "Line.PostingDate,Value"
     /// </summary>
     public class SelectExpression : IEnumerable<SelectAtom>
     {
@@ -56,17 +56,6 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Returns the number of atoms currently contained in this <see cref="SelectExpression"/>
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _atoms.Count;
-            }
-        }
-
-        /// <summary>
         /// Implementation of <see cref="IEnumerable{T}"/>
         /// </summary>
         public IEnumerator<SelectAtom> GetEnumerator()
@@ -84,7 +73,7 @@ namespace Tellma.Data.Queries
 
         /// <summary>
         /// Parses a string representing a select argument into an <see cref="SelectExpression"/>. 
-        /// The aggregate select argument is a comma separated list of paths. For example: "Invoice/Customer/Name,Amount"
+        /// The aggregate select argument is a comma separated list of paths. For example: "Line.PostingDate,Value"
         /// </summary>
         public static SelectExpression Parse(string select)
         {
@@ -93,11 +82,9 @@ namespace Tellma.Data.Queries
                 return null;
             }
 
-            var atoms = select
-                .Split(',')
-                .Select(e => e?.Trim())
-                .Where(e => !string.IsNullOrEmpty(e))
-                .Select(s => SelectAtom.Parse(s));
+            var atoms = Queryex.Parse(select)
+                .Where(exp => exp != null)
+                .Select(exp => SelectAtom.FromExpression(exp));
 
             return new SelectExpression(atoms);
         }

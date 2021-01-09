@@ -12,19 +12,20 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Base class for all template expressions. Template expressions come inside double curly brackets: {{ expr }},
     /// or as string parameters to some functions: Filter(expr, 'condition_expr'), or in structural components: {{ *if expr }}.
-    /// An <see cref="ExpressionBase"/> can be evaluated to a final value given a <see cref="EvaluationContext"/> that supplies
+    /// An <see cref="TemplexBase"/> can be evaluated to a final value given a <see cref="EvaluationContext"/> that supplies
     /// all the referenced functions and variables.
-    /// An <see cref="ExpressionBase"/> may contain function invocations that retrieve data from the database.
+    /// An <see cref="TemplexBase"/> may contain function invocations that retrieve data from the database.
     /// It can also contain references to variables that are also initialized using database queries. 
-    /// Therefore an <see cref="ExpressionBase"/> should also be able to compute statically (before database
+    /// Therefore an <see cref="TemplexBase"/> should also be able to compute statically (before database
     /// variables have been initialized or database functions have been invoked) the list of <see cref="Path"/>s
     /// it needs, that represent the columns to SELECT from the database in order to initialize said variables
     /// and prepare the implementation of said functions, this is implemented in <see cref="TemplateBase.ComputeSelect(EvaluationContext)"/>
-    /// <see cref="ExpressionBase"/>s that evaluate to database entities should also statically provide a list of
+    /// <see cref="TemplexBase"/>s that evaluate to database entities should also statically provide a list of
     /// <see cref="Path"/>s that represent the base path of the returned entity, to aid parent expressions in computing
-    /// their SELECT list, this is implemented in <see cref="ComputePaths(EvaluationContext)"/>
+    /// their SELECT list, this is implemented in <see cref="ComputePaths(EvaluationContext)"/>.
+    /// The name "Templex" is short for "Template Expression", in analogy of "Regex".
     /// </summary>
-    public abstract class ExpressionBase : TemplateBase
+    public abstract class TemplexBase : TemplateBase
     {
         #region Symbols & Operators
 
@@ -129,10 +130,10 @@ namespace Tellma.Controllers.Templating
         }
 
         /// <summary>
-        /// Evaluates the <see cref="ExpressionBase"/> into a final value given a certain <see cref="EvaluationContext"/>.
+        /// Evaluates the <see cref="TemplexBase"/> into a final value given a certain <see cref="EvaluationContext"/>.
         /// Sometimes <see cref="Evaluate(EvaluationContext)"/> is invoked before some variables and functions that rely on
         /// database queries have been initialized in order, in which case these variables and functions cannot be referenced
-        /// by this <see cref="ExpressionBase"/>.
+        /// by this <see cref="TemplexBase"/>.
         /// For example consider Sum(lines, '$.Amount'). The second argument is an expression that must be evaluated
         /// before the variable lines is initialized in order for Sum to determine the SELECT list needed to load those
         /// lines from the database, in this case the list is ['Amount']. Trying something like Sum(lines, doc.Memo) would
@@ -141,20 +142,20 @@ namespace Tellma.Controllers.Templating
         public abstract Task<object> Evaluate(EvaluationContext ctx);
 
         /// <summary>
-        /// Parses the string into an <see cref="ExpressionBase"/>
+        /// Parses the string into an <see cref="TemplexBase"/>
         /// </summary>
         /// <param name="express"></param>
         /// <returns></returns>
-        public static ExpressionBase Parse(string express)
+        public static TemplexBase Parse(string express)
         {
-            string preprocessedFilter = Preprocess(express);
-            if (string.IsNullOrWhiteSpace(preprocessedFilter))
+            string preprocessedExpression = Preprocess(express);
+            if (string.IsNullOrWhiteSpace(preprocessedExpression))
             {
                 return null;
             }
 
-            IEnumerable<string> tokenStream = Tokenize(preprocessedFilter);
-            ExpressionBase templateExpression = ParseTokenStream(tokenStream);
+            IEnumerable<string> tokenStream = Tokenize(preprocessedExpression);
+            TemplexBase templateExpression = ParseTokenStream(tokenStream);
 
             return templateExpression;
         }
@@ -173,13 +174,13 @@ namespace Tellma.Controllers.Templating
             // Trim
             exp = exp.Trim();
 
-            // return preprocessed filter argument
+            // return preprocessed expression string
             return exp;
         }
 
         private static IEnumerable<string> Tokenize(string preprocessedExpression)
         {
-            // For performance: decompose the filter into a char array and use a string builder to accumulate the characters examined so far
+            // For performance: decompose the expression string into a char array and use a string builder to accumulate the characters examined so far
             char[] expArray = preprocessedExpression.ToCharArray();
             bool insideQuotes = false;
             StringBuilder acc = new StringBuilder();
@@ -187,7 +188,7 @@ namespace Tellma.Controllers.Templating
 
             bool TryMatchSymbol(int i, out string symbol)
             {
-                // This basically finds the first symbol that matches the beginning of the current index at filterArray
+                // This basically finds the first symbol that matches the beginning of the current index at expArray
                 var matchingSymbol = _symbols.FirstOrDefault(symbol => (expArray.Length - i) >= symbol.Length &&
                     Enumerable.Range(0, symbol.Length).All(j => char.ToLower(symbol[j]) == char.ToLower(expArray[i + j])));
 
@@ -264,7 +265,7 @@ namespace Tellma.Controllers.Templating
             if (insideQuotes)
             {
                 // Programmer mistake
-                throw new TemplateException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
+                throw new TemplateException($"Uneven number of single quotation marks in ({preprocessedExpression}), quotation marks in string literals should be escaped by specifying them twice.");
             }
 
             if (acc.Length > 0)
@@ -277,13 +278,26 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private static ExpressionBase ParseTokenStream(IEnumerable<string> tokens)
+        private static TemplexBase ParseTokenStream(IEnumerable<string> tokens)
         {
             // This is an implementation of the shunting-yard algorithm from Edsger Dijkstra https://bit.ly/1fEvvLI
             var ops = new Stack<string>();
             var brackets = new Stack<BracketsInfo>();
-            var output = new Stack<ExpressionBase>();
+            var output = new Stack<TemplexBase>();
             bool lastTokenWasVariable = false;
+
+            void IncrementArgumentCount()
+            {
+                // Increment the arguments counter if a comma count was incremented earlier
+                if (brackets.Count > 0)
+                {
+                    var peek = brackets.Peek();
+                    if (peek.IsFunctionInvocation && peek.ArgumentsCount == peek.CommaCount)
+                    {
+                        peek.ArgumentsCount++;
+                    }
+                }
+            }
 
             // Inline function to make it easy to add tokens to the output stack
             void AddToOutput(string token, bool isFunction = false, int argCount = 0)
@@ -297,7 +311,7 @@ namespace Tellma.Controllers.Templating
                         }
                         else
                         {
-                            if (!(output.Pop() is ExpressionVariable varCandidate))
+                            if (!(output.Pop() is TemplexVariable varCandidate))
                             {
                                 throw new TemplateException("The property accessor '.' should be used as follows: <entity_expression>.PropertyName");
                             }
@@ -305,7 +319,7 @@ namespace Tellma.Controllers.Templating
                             var propName = varCandidate.VariableName;
                             var entityCandidate = output.Pop();
 
-                            var exp = ExpressionPropertyAccess.Make(entityCandidate: entityCandidate, propName: propName);
+                            var exp = TemplexPropertyAccess.Make(entityCandidate: entityCandidate, propName: propName);
                             output.Push(exp);
                             break;
                         }
@@ -317,7 +331,7 @@ namespace Tellma.Controllers.Templating
                         }
                         else
                         {
-                            if (!(output.Pop() is ConstantInteger intCandidate))
+                            if (!(output.Pop() is TemplexInteger intCandidate))
                             {
                                 throw new TemplateException("The indexer operator '#' should be used as follows: <list_expression>#<number>");
                             }
@@ -325,7 +339,7 @@ namespace Tellma.Controllers.Templating
                             var index = intCandidate.Value;
                             var listCandidate = output.Pop();
 
-                            var exp = ExpressionIndexer.Make(listCandidate: listCandidate, index: index);
+                            var exp = TemplexIndexer.Make(listCandidate: listCandidate, index: index);
                             output.Push(exp);
                             break;
                         }
@@ -343,7 +357,7 @@ namespace Tellma.Controllers.Templating
                         {
                             var right = output.Pop();
                             var left = output.Pop();
-                            output.Push(ExpressionArithmeticOperator.Make(op: token, left: left, right: right));
+                            output.Push(TemplexArithmeticOperator.Make(op: token, left: left, right: right));
                             break;
                         }
 
@@ -362,7 +376,7 @@ namespace Tellma.Controllers.Templating
                         {
                             var right = output.Pop();
                             var left = output.Pop();
-                            output.Push(ExpressionComparisonOperator.Make(op: token, left: left, right: right));
+                            output.Push(TemplexComparisonOperator.Make(op: token, left: left, right: right));
                             break;
                         }
 
@@ -374,12 +388,12 @@ namespace Tellma.Controllers.Templating
                         else
                         {
                             var inner = output.Pop();
-                            output.Push(ExpressionNegation.Make(inner: inner));
+                            output.Push(TemplexNegation.Make(inner: inner));
                             break;
                         }
 
                     case "&&":
-                        if (output.Count < 1)
+                        if (output.Count < 2)
                         {
                             throw new TemplateException($"A conjunction operator '{token}' is missing one or both of its 2 operands");
                         }
@@ -387,11 +401,11 @@ namespace Tellma.Controllers.Templating
                         {
                             var right = output.Pop();
                             var left = output.Pop();
-                            output.Push(ExpressionConjunction.Make(left: left, right: right));
+                            output.Push(TemplexConjunction.Make(left: left, right: right));
                             break;
                         }
                     case "||":
-                        if (output.Count < 1)
+                        if (output.Count < 2)
                         {
                             throw new TemplateException($"A disjunction operator '{token}' is missing one or both of its 2 operands");
                         }
@@ -399,7 +413,7 @@ namespace Tellma.Controllers.Templating
                         {
                             var right = output.Pop();
                             var left = output.Pop();
-                            output.Push(ExpressionDisjunction.Make(left: left, right: right));
+                            output.Push(TemplexDisjunction.Make(left: left, right: right));
                             break;
                         }
 
@@ -412,7 +426,7 @@ namespace Tellma.Controllers.Templating
                                 throw new TemplateException("Bug: Argument count less than output stack size");
                             }
 
-                            List<ExpressionBase> args = new List<ExpressionBase>(argCount);
+                            List<TemplexBase> args = new List<TemplexBase>(argCount);
                             for (int i = 0; i < argCount; i++)
                             {
                                 args.Add(output.Pop());
@@ -421,41 +435,41 @@ namespace Tellma.Controllers.Templating
                             // Reverse the order of items popped from the stack
                             args.Reverse();
 
-                            var exp = ExpressionFunction.Make(functionName: token, args: args.ToArray());
+                            var exp = TemplexFunction.Make(functionName: token, args: args.ToArray());
                             output.Push(exp);
                             break;
                         }
                         else
                         {
-                            ExpressionBase exp;
+                            TemplexBase exp;
                             var tokenLower = token.ToLower();
                             switch (tokenLower)
                             {
                                 case "null":
-                                    exp = new ConstantNull();
+                                    exp = new TemplexNull();
                                     break;
 
                                 case "true":
                                 case "false":
-                                    exp = new ConstantBoolean { Value = tokenLower == "true", };
+                                    exp = new TemplexBoolean { Value = tokenLower == "true", };
                                     break;
 
                                 default:
-                                    if (token.StartsWith("'") && token.EndsWith('\''))
+                                    if (token.StartsWith('\'') && token.EndsWith('\''))
                                     {
-                                        exp = new ConstantString { Value = token[1..^1] };
+                                        exp = new TemplexString { Value = token[1..^1] };
                                     }
                                     else if (char.IsDigit(token[0]) && int.TryParse(token, out int intValue)) // <-- This will incorrectly capture decimals
                                     {
-                                        exp = new ConstantInteger { Value = intValue };
+                                        exp = new TemplexInteger { Value = intValue };
                                     }
                                     else if (char.IsDigit(token[0]) && char.IsDigit(token[^1]) && token.All(c => (char.IsDigit(c) || c == '.')) && decimal.TryParse(token, out decimal decimalValue))
                                     {
-                                        exp = new ConstantDecimal { Value = decimalValue };
+                                        exp = new TemplexDecimal { Value = decimalValue };
                                     }
-                                    else if (ExpressionVariable.IsValidVariableName(token))
+                                    else if (TemplexVariable.IsValidVariableName(token))
                                     {
-                                        exp = new ExpressionVariable { VariableName = token };
+                                        exp = new TemplexVariable { VariableName = token };
                                     }
                                     else
                                     {
@@ -464,10 +478,10 @@ namespace Tellma.Controllers.Templating
                                     break;
                             }
 
-                            if (exp is ExpressionVariable)
+                            if (exp is TemplexVariable)
                             {
                                 // In case the very next token was an openning bracket, this VariableExpression is
-                                // popped out of the stack and transformed into a InvocationExpression instead
+                                // popped out of the stack and transformed into an ExpressionFunction instead
                                 lastTokenWasVariable = true;
                             }
 
@@ -482,12 +496,11 @@ namespace Tellma.Controllers.Templating
                 // Copy and reset the lastTokenWasAVariable flag
                 var ifLastTokenWasVariable = lastTokenWasVariable;
                 lastTokenWasVariable = false;
-                bool incrementArgumentCount = false;
 
                 // Shunting-yard implementation
                 if (_operators.TryGetValue(token, out OperatorInfo opInfo)) // if it is an operator
                 {
-                    incrementArgumentCount = true;
+                    IncrementArgumentCount();
 
                     // inline predicate determines how many items do we pop from the operator stack
                     bool KeepPopping()
@@ -532,12 +545,12 @@ namespace Tellma.Controllers.Templating
                     // A variable name followed by an open bracket is expected to be a function
                     if (ifLastTokenWasVariable)
                     {
-                        var functionName = (output.Pop() as ExpressionVariable).VariableName;
+                        var functionName = (output.Pop() as TemplexVariable).VariableName;
                         ops.Push(functionName);
                     }
                     else
                     {
-                        incrementArgumentCount = true;
+                        IncrementArgumentCount();
                     }
 
                     brackets.Push(new BracketsInfo { IsFunctionInvocation = ifLastTokenWasVariable });
@@ -570,7 +583,7 @@ namespace Tellma.Controllers.Templating
                     else
                     {
                         // There should have been a left paren in the stack
-                        throw new TemplateException("Filter expression contains mismatched brackets");
+                        throw new TemplateException($"Expression contains mismatched brackets");
                     }
                 }
                 else if (token == ",")
@@ -596,26 +609,13 @@ namespace Tellma.Controllers.Templating
                 }
                 else
                 {
-                    incrementArgumentCount = true;
+                    IncrementArgumentCount();
 
                     // It's (hopefully) a simple atom => add it the output
                     // IF the very next token is an opening bracket "(" then
-                    // this a function invocation, this action is corrected
+                    // this is a function invocation, this action is corrected
                     // by popping from the output and pushing in ops
                     AddToOutput(token);
-                }
-
-                if (incrementArgumentCount)
-                {
-                    // Increment the arguments counter if a comma count was incremented earlier
-                    if (brackets.Count > 0)
-                    {
-                        var peek = brackets.Peek();
-                        if (peek.IsFunctionInvocation && peek.ArgumentsCount == peek.CommaCount)
-                        {
-                            peek.ArgumentsCount++;
-                        }
-                    }
                 }
             }
 

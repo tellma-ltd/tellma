@@ -7,10 +7,10 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Represents an OR expression. E.g. A || B. Always evaluated to a boolean value
     /// </summary>
-    public class ExpressionDisjunction : ExpressionBase
+    public class TemplexDisjunction : TemplexBase
     {
-        public ExpressionBase Left { get; set; }
-        public ExpressionBase Right { get; set; }
+        public TemplexBase Left { get; set; }
+        public TemplexBase Right { get; set; }
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
@@ -37,11 +37,11 @@ namespace Tellma.Controllers.Templating
 
             if (!(left is bool boolLeft))
             {
-                throw new TemplateException($"Operator '||' could not be applied. The expression ({Left.ToString()}) does not evaluate to a boolean value");
+                throw new TemplateException($"Operator '||' could not be applied. The expression ({Left}) does not evaluate to a boolean value");
             }
             else if (!(right is bool boolRight))
             {
-                throw new TemplateException($"Operator '||' could not be applied. The expression ({Right.ToString()}) does not evaluate to a boolean value");
+                throw new TemplateException($"Operator '||' could not be applied. The expression ({Right}) does not evaluate to a boolean value");
             }
             else
             {
@@ -51,15 +51,15 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"{Left.ToString()} OR {Right.ToString()}";
+            return $"{Left} OR {Right}";
         }
 
         /// <summary>
-        /// Creates a new <see cref="ExpressionDisjunction"/>
+        /// Creates a new <see cref="TemplexDisjunction"/>
         /// </summary>
-        public static ExpressionDisjunction Make(ExpressionBase left, ExpressionBase right)
+        public static TemplexDisjunction Make(TemplexBase left, TemplexBase right)
         {
-            return new ExpressionDisjunction
+            return new TemplexDisjunction
             {
                 Left = left,
                 Right = right,

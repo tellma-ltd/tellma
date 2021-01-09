@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Tellma.Controllers.Templating
 {
-    public class ExpressionIndexer : ExpressionBase
+    public class TemplexIndexer : TemplexBase
     {
-        public ExpressionBase ListCandidate { get; set; } // Must evaluate to a model entity
+        public TemplexBase ListCandidate { get; set; } // Must evaluate to a model entity
         public int Index { get; set; }
 
         public override IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
@@ -42,12 +42,11 @@ namespace Tellma.Controllers.Templating
             {
                 throw new TemplateException($"Indexer '#{Index}' is only valid on model entity lists");
             }
-
         }
 
-        public static ExpressionIndexer Make(ExpressionBase listCandidate, int index)
+        public static TemplexIndexer Make(TemplexBase listCandidate, int index)
         {
-            return new ExpressionIndexer
+            return new TemplexIndexer
             {
                 ListCandidate = listCandidate,
                 Index = index

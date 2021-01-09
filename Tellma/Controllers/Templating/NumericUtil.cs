@@ -11,7 +11,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// Divides left by right after converting both to their common numeric type. Throws a meaningful exception if right is equal to 0
         /// </summary>
-        public static object Divide(object left, object right, Type commonType, ExpressionBase rightExp)
+        public static object Divide(object left, object right, Type commonType, TemplexBase rightExp)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// Finds left modulo right after converting both to their common numeric type. Throws a meaningful exception if right is equal to 0
         /// </summary>
-        public static object Modulo(object left, object right, Type commonType, ExpressionBase rightExp)
+        public static object Modulo(object left, object right, Type commonType, TemplexBase rightExp)
         {
             try
             {

@@ -11,7 +11,7 @@ namespace Tellma.Controllers.Templating
     /// Represents accessing the property of an <see cref="Entity"/> object. E.g. doc.Memo.
     /// Evaluates to the value of that property
     /// </summary>
-    public class ExpressionPropertyAccess : ExpressionBase
+    public class TemplexPropertyAccess : TemplexBase
     {
         /// <summary>
         /// Cache, to avoid computing it twice
@@ -21,7 +21,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// The expression that evaluates to a model <see cref="Entity"/> whose property we're accessing
         /// </summary>
-        public ExpressionBase EntityCandidate { get; set; } // Must evaluate to a model entity
+        public TemplexBase EntityCandidate { get; set; } // Must evaluate to a model entity
 
         /// <summary>
         /// The name of the property we're accessing on the <see cref="Entity"/>
@@ -60,18 +60,7 @@ namespace Tellma.Controllers.Templating
                 return null;
             }
 
-            if (entityCandidate is DynamicEntity dynamicEntity)
-            {
-                if (!dynamicEntity.TryGetValue(PropertyName, out object value))
-                {
-                    throw new TemplateException($"Property '{PropertyName}' does not exist on the loaded entities");
-                }
-                else
-                {
-                    return value;
-                }
-            }
-            else if (entityCandidate is Entity entity)
+            if (entityCandidate is Entity entity)
             {
                 if (entity is EntityWithKey entityWithKey && PropertyName == "Id") 
                 {
@@ -109,11 +98,11 @@ namespace Tellma.Controllers.Templating
         }
 
         /// <summary>
-        /// Creates a new <see cref="ExpressionPropertyAccess"/>
+        /// Creates a new <see cref="TemplexPropertyAccess"/>
         /// </summary>
-        public static ExpressionPropertyAccess Make(ExpressionBase entityCandidate, string propName)
+        public static TemplexPropertyAccess Make(TemplexBase entityCandidate, string propName)
         {
-            return new ExpressionPropertyAccess
+            return new TemplexPropertyAccess
             {
                 EntityCandidate = entityCandidate,
                 PropertyName = propName
@@ -122,7 +111,7 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"{EntityCandidate.ToString()}.{PropertyName}";
+            return $"{EntityCandidate}.{PropertyName}";
         }
     }
 }

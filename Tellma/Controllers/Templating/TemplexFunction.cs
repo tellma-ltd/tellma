@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Tellma.Controllers.Templating
 {
-    public class ExpressionFunction : ExpressionBase
+    public class TemplexFunction : TemplexBase
     {
         public string FunctionName { get; set; } // Literal must be a function
 
-        public ExpressionBase[] Arguments { get; set; }
+        public TemplexBase[] Arguments { get; set; }
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
@@ -66,9 +66,9 @@ namespace Tellma.Controllers.Templating
             return $"{FunctionName}({args})";
         }
 
-        public static ExpressionFunction Make(string functionName, ExpressionBase[] args)
+        public static TemplexFunction Make(string functionName, TemplexBase[] args)
         {
-            return new ExpressionFunction
+            return new TemplexFunction
             {
                 FunctionName = functionName,
                 Arguments = args

@@ -5,10 +5,10 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Represents a constant string expression, enclosed in single quotation marks. E.g. 'Thank you'
     /// </summary>
-    public class ConstantString : ConstantBase
+    public class TemplexString : TemplexConstant
     {
         /// <summary>
-        /// The value of the <see cref="ConstantString"/> expression
+        /// The value of the <see cref="TemplexString"/> expression
         /// </summary>
         public string Value { get; set; }
 

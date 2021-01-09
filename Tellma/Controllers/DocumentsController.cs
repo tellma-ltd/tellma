@@ -2138,7 +2138,7 @@ namespace Tellma.Controllers
                                 var lineIndex = line.EntityMetadata.OriginalIndex;
                                 var entryIndex = entry.EntityMetadata.OriginalIndex;
 
-                                var entryPath = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
+                                var entryPath = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
                                 throw new BadRequestException($"[Bug] the CenterId for {entryPath} was never set.");
                             }
                         });
@@ -2338,7 +2338,7 @@ namespace Tellma.Controllers
         }
 
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
-        private static readonly SelectExpression _detailsSelectExpression = new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
+        private static readonly SelectExpression _detailsSelectExpression = SelectExpression.Parse(_detailsSelect); // new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]

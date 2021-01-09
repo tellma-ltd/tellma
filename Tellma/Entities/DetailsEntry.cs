@@ -109,9 +109,11 @@ namespace Tellma.Entities
         public decimal? ValuePerUnit { get; set; }
 
         [Display(Name = "Entry_Time1")]
+        [IncludesTime]
         public DateTime? Time1 { get; set; }
 
         [Display(Name = "Entry_Time2")]
+        [IncludesTime]
         public DateTime? Time2 { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]

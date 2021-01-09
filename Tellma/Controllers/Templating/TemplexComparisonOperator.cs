@@ -9,13 +9,13 @@ namespace Tellma.Controllers.Templating
     /// Represents a comparison between two expressions that evaluate to an <see cref="IComparable"/>, e.g. 5 < 6.
     /// This expression always evaluates to a boolean value
     /// </summary>
-    public class ExpressionComparisonOperator : ExpressionBase
+    public class TemplexComparisonOperator : TemplexBase
     {
-        public ExpressionBase Left { get; set; }
-        public ExpressionBase Right { get; set; }
+        public TemplexBase Left { get; set; }
+        public TemplexBase Right { get; set; }
 
         /// <summary>
-        /// The infix comparison operator. E.g. "=". The full list of supported operators can be found in <see cref="ExpressionBase.ParseTokenStream(IEnumerable{string})"/>
+        /// The infix comparison operator. E.g. "=". The full list of supported operators can be found in <see cref="TemplexBase.ParseTokenStream(IEnumerable{string})"/>
         /// </summary>
         public string Operator { get; set; }
 
@@ -99,15 +99,15 @@ namespace Tellma.Controllers.Templating
         }
 
         /// <summary>
-        /// Creates a new <see cref="ExpressionComparisonOperator"/>
+        /// Creates a new <see cref="TemplexComparisonOperator"/>
         /// </summary>
         /// <param name="op"></param>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static ExpressionComparisonOperator Make(string op, ExpressionBase left, ExpressionBase right)
+        public static TemplexComparisonOperator Make(string op, TemplexBase left, TemplexBase right)
         {
-            return new ExpressionComparisonOperator
+            return new TemplexComparisonOperator
             {
                 Left = left,
                 Right = right,

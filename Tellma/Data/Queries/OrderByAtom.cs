@@ -45,7 +45,7 @@ namespace Tellma.Data.Queries
             if (atom.ToLower().EndsWith("desc"))
             {
                 desc = true;
-                atom = atom.Substring(0, atom.Length - 4).Trim();
+                atom = atom[0..^4].Trim();
             }
 
             // extract the path and the property

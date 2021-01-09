@@ -111,7 +111,7 @@ namespace Tellma.Controllers
                     Result = data,
 
                     // TODO: Add ancestors of tree dimensions
-                    RelatedEntities = new Dictionary<string, IEnumerable<Entity>>(),
+                    DimensionAncestors = new Dictionary<string, IEnumerable<Entity>>(),
                 };
 
                 return Ok(result);

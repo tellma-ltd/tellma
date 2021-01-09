@@ -308,7 +308,7 @@ namespace Tellma.Controllers.Templating
             return Task.FromResult(result);
         }
 
-        private async IAsyncEnumerable<Path> QueryByFilterPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> QueryByFilterPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             var sourceObj = args.Length > 0 ? await args[0].Evaluate(ctx) : null;
             var filterObj = args.Length > 1 ? await args[1].Evaluate(ctx) : null;
@@ -425,7 +425,7 @@ namespace Tellma.Controllers.Templating
             return Task.FromResult(result);
         }
 
-        private async IAsyncEnumerable<Path> QueryByIdPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> QueryByIdPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             var sourceObj = args.Length > 0 ? await args[0].Evaluate(ctx) : null;
             var idObj = args.Length > 1 ? await args[1].Evaluate(ctx) : null;
@@ -544,8 +544,8 @@ namespace Tellma.Controllers.Templating
         {
             return new TemplateFunction(
                 functionAsync: (object[] args, EvaluationContext ctx) => FilterImpl(args, ctx),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx));
+                additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx),
+                pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx));
         }
 
         private async Task<object> FilterImpl(object[] args, EvaluationContext ctx)
@@ -567,7 +567,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Filter)}' expects a 2nd argument condition of type string");
             }
 
-            var conditionExp = ExpressionBase.Parse(conditionString) ??
+            var conditionExp = TemplexBase.Parse(conditionString) ??
                 throw new TemplateException($"Function '{nameof(Filter)}' 2nd parameter cannot be an empty string");
 
             List<object> result = new List<object>();
@@ -594,7 +594,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> FilterSelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> FilterSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -613,7 +613,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Filter)}' expects a 2nd argument condition of type string");
             }
 
-            var conditionExp = ExpressionBase.Parse(conditionString) ??
+            var conditionExp = TemplexBase.Parse(conditionString) ??
                 throw new TemplateException($"Function '{nameof(Filter)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -629,7 +629,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private IAsyncEnumerable<Path> FilterPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private IAsyncEnumerable<Path> FilterPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -649,8 +649,8 @@ namespace Tellma.Controllers.Templating
         {
             return new TemplateFunction(
                 functionAsync: (object[] args, EvaluationContext ctx) => OrderByImpl(args, ctx),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => OrderBySelect(args, ctx),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => OrderByPaths(args, ctx));
+                additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => OrderBySelect(args, ctx),
+                pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => OrderByPaths(args, ctx));
         }
 
         private async Task<object> OrderByImpl(object[] args, EvaluationContext ctx)
@@ -672,7 +672,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(OrderBy)}' 2nd parameter cannot be an empty string");
 
             // Retrieve the selected value on which the sorting happens
@@ -698,7 +698,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> OrderBySelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> OrderBySelect(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -717,7 +717,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorString) ??
+            var selectorExp = TemplexBase.Parse(selectorString) ??
                 throw new TemplateException($"Function '{nameof(OrderBy)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -733,7 +733,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private IAsyncEnumerable<Path> OrderByPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private IAsyncEnumerable<Path> OrderByPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -753,8 +753,8 @@ namespace Tellma.Controllers.Templating
         {
             return new TemplateFunction(
                 functionAsync: (object[] args, EvaluationContext ctx) => SelectManyImpl(args, ctx),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => SelectManySelect(args, ctx),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => SelectManyPaths(args, ctx));
+                additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => SelectManySelect(args, ctx),
+                pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => SelectManyPaths(args, ctx));
         }
 
         private async Task<object> SelectManyImpl(object[] args, EvaluationContext ctx)
@@ -776,7 +776,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
 
             List<object> result = new List<object>();
@@ -805,7 +805,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> SelectManySelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> SelectManySelect(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -824,7 +824,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -840,7 +840,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private async IAsyncEnumerable<Path> SelectManyPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> SelectManyPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -858,7 +858,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -904,7 +904,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Sum)}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{nameof(Sum)}' 2nd parameter cannot be an empty string");
 
             Type commonType = null;
@@ -930,7 +930,7 @@ namespace Tellma.Controllers.Templating
             return sum;
         }
 
-        private async IAsyncEnumerable<Path> SumSelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> SumSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -950,7 +950,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Sum)}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{nameof(Sum)}' 2nd parameter cannot be an empty string");
 
 
@@ -1004,7 +1004,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{funcName}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{funcName}' 2nd parameter cannot be an empty string");
 
             IComparable result = null;
@@ -1035,7 +1035,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> MaxMinSelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> MaxMinSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -1055,7 +1055,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Max)}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{nameof(Max)}' 2nd parameter cannot be an empty string");
 
 
@@ -1226,7 +1226,7 @@ namespace Tellma.Controllers.Templating
             return condition ? args[1] : args[2];
         }
 
-        private async IAsyncEnumerable<Path> IfPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> IfPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 3;

@@ -13,7 +13,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// The condition to be evaluated to determine whether to output the scoped template
         /// </summary>
-        public ExpressionBase ConditionCandidate { get; set; }
+        public TemplexBase ConditionCandidate { get; set; }
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {

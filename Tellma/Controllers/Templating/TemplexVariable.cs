@@ -9,7 +9,7 @@ namespace Tellma.Controllers.Templating
     /// Represents accessing the value of a variable from the <see cref="EvaluationContext"/>.
     /// Evaluates to the value of that variable from the supplied <see cref="EvaluationContext"/>
     /// </summary>
-    public class ExpressionVariable : ExpressionBase
+    public class TemplexVariable : TemplexBase
     {
         public static readonly List<string> _keywords = new List<string> { "null", "true", "false" };
 

@@ -7,9 +7,9 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Represents a logical negation. E.g. !A. Always evaluated to a boolean value
     /// </summary>
-    public class ExpressionNegation : ExpressionBase
+    public class TemplexNegation : TemplexBase
     {
-        public ExpressionBase Inner { get; set; }
+        public TemplexBase Inner { get; set; }
 
         public override IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
@@ -26,7 +26,7 @@ namespace Tellma.Controllers.Templating
             var inner = await Inner.Evaluate(ctx) ?? false; // Null is treated as false
             if (!(inner is bool boolVal))
             {
-                throw new TemplateException($"Operator '!' could not be applied. The expression ({Inner.ToString()}) does not evaluate to a boolean value");
+                throw new TemplateException($"Operator '!' could not be applied. The expression ({Inner}) does not evaluate to a boolean value");
             }
             else
             {
@@ -36,15 +36,15 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"NOT({Inner.ToString()})";
+            return $"NOT({Inner})";
         }
 
         /// <summary>
-        /// Creates a new <see cref="ExpressionNegation"/>
+        /// Creates a new <see cref="TemplexNegation"/>
         /// </summary>
-        public static ExpressionNegation Make(ExpressionBase inner)
+        public static TemplexNegation Make(TemplexBase inner)
         {
-            return new ExpressionNegation
+            return new TemplexNegation
             {
                 Inner = inner,
             };

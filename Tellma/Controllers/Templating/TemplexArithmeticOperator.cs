@@ -8,13 +8,13 @@ namespace Tellma.Controllers.Templating
     /// <summary>
     /// Represents an infix arithmetic operator expression. E.g 1 + 3
     /// </summary>
-    public class ExpressionArithmeticOperator : ExpressionBase
+    public class TemplexArithmeticOperator : TemplexBase
     {
-        public ExpressionBase Left { get; set; }
-        public ExpressionBase Right { get; set; }
+        public TemplexBase Left { get; set; }
+        public TemplexBase Right { get; set; }
 
         /// <summary>
-        /// The infix arithmetic operator. E.g. "+". The full list of supported operators can be found in <see cref="ExpressionBase.ParseTokenStream(IEnumerable{string})"/>
+        /// The infix arithmetic operator. E.g. "+". The full list of supported operators can be found in <see cref="TemplexBase.ParseTokenStream(IEnumerable{string})"/>
         /// </summary>
         public string Operator { get; set; }
 
@@ -53,11 +53,11 @@ namespace Tellma.Controllers.Templating
             {
                 if (!NumericUtil.IsNumericType(left))
                 {
-                    throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Left.ToString()}) does not evaluate to a numeric value");
+                    throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Left}) does not evaluate to a numeric value");
                 }
                 else if (!NumericUtil.IsNumericType(right))
                 {
-                    throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Right.ToString()}) does not evaluate to a numeric value");
+                    throw new TemplateException($"Operator '{Operator}' could not be applied. Operand ({Right}) does not evaluate to a numeric value");
                 }
                 else
                 {
@@ -77,11 +77,11 @@ namespace Tellma.Controllers.Templating
         }
 
         /// <summary>
-        /// Creates a new <see cref="ExpressionArithmeticOperator"/>
+        /// Creates a new <see cref="TemplexArithmeticOperator"/>
         /// </summary>
-        public static ExpressionArithmeticOperator Make(string op, ExpressionBase left, ExpressionBase right)
+        public static TemplexArithmeticOperator Make(string op, TemplexBase left, TemplexBase right)
         {
-            return new ExpressionArithmeticOperator
+            return new TemplexArithmeticOperator
             {
                 Left = left,
                 Right = right,
@@ -91,7 +91,7 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"{Left.ToString()} {Operator} {Right.ToString()}";
+            return $"{Left} {Operator} {Right}";
         }
     }
 }
