@@ -70,7 +70,6 @@
 	[Quantity2]					DECIMAL (19,4),
 	[UnitId2]					INT,
 	[Value2]					DECIMAL (19,4),
-	[RelatedDate2]				DATE,
 	[Time12]					DATETIME2 (2),
 	[Time22]					DATETIME2 (2),
 	[ExternalReference2]		NVARCHAR (50),

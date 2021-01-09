@@ -4,7 +4,13 @@ RETURN (
 	SELECT
 		[AC].*,
 		[Node].GetLevel() AS [Level],
-		(SELECT COUNT(*) FROM [dbo].[AccountClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([AC].[Node]) = 1) As [ActiveChildCount],
-		(SELECT COUNT(*) FROM [dbo].[AccountClassifications] WHERE [Node].IsDescendantOf([AC].[Node]) = 1) As [ChildCount]
+		CC.[ActiveChildCount],
+		CC.ChildCount
 	FROM dbo.[AccountClassifications] AC
+	CROSS APPLY (
+		SELECT COUNT(*) AS [ChildCount],
+		SUM(IIF([IsActive]=1,1,0)) AS  [ActiveChildCount]	
+		FROM [dbo].[AccountClassifications]
+		WHERE [Node].IsDescendantOf(AC.[Node]) = 1
+	) CC 
 );
