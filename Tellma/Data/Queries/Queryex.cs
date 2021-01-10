@@ -12,7 +12,48 @@ namespace Tellma.Data.Queries
 
         public abstract (QueryexType, QueryexNullability) Type(TypeDescriptor desc);
 
-        public abstract string Compile(QueryexType targetType, EvaluationContext ctx);
+        public virtual bool TryCompile(QueryexType targetType, EvaluationContext ctx, out string sql)
+        {
+            // Some types are universally castable to other types
+            // Null -> Any type that isn't boolean
+            // Bit -> Numeric
+            // 
+            var (type, nullability) = Type(ctx.Descriptor);
+            if (type == targetType)
+            {
+                sql = Compile(ctx);
+                return true;
+            }
+            else if (nullability == QueryexNullability.Null)
+            {
+                // A null can be anything except boolean
+                if (targetType != QueryexType.Boolean)
+                {
+                    sql = Compile(ctx);
+                    return true;
+                }
+            }
+            else if (type == QueryexType.Bit)
+            {
+                // A BIT can also be a numeric or a boolean
+                if (targetType == QueryexType.Numeric)
+                {
+                    sql = Compile(ctx); // TODO
+                    return true;
+                } 
+                else if (targetType == QueryexType.Boolean)
+                {
+                    sql = Compile(ctx); // TODO
+                    return true;
+                }
+            }
+
+            // In the general case, no other casting is possible
+            sql = null;
+            return false;
+        }
+
+        public abstract string Compile(EvaluationContext ctx);
 
         public abstract IEnumerable<QueryexColumnAccess> ColumnAccesses();
 
@@ -681,7 +722,7 @@ namespace Tellma.Data.Queries
             yield return this;
         }
 
-        public override string Compile(QueryexType targetType, EvaluationContext ctx)
+        public override string Compile(EvaluationContext ctx)
         {
             // (A) Prepare the symbol corresponding to the path, e.g. P1
             var join = ctx.Joins[Path];
@@ -700,8 +741,6 @@ namespace Tellma.Data.Queries
                 // Developer mistake
                 throw new InvalidOperationException($"Bug: Could not find property {propName} on type {join.EntityDescriptor}");
             }
-
-
 
             return $"[{symbol}].[{propName}]";
         }
@@ -961,6 +1000,42 @@ namespace Tellma.Data.Queries
             return (QueryexType.String, QueryexNullability.NotNull);
         }
 
+        public override bool TryCompile(QueryexType targetType, EvaluationContext ctx, out string sql)
+        {
+            if (targetType == QueryexType.Date)
+            {
+                if (DateTime.TryParse(Value, out DateTime d))
+                {
+                    d = d.Date; // Remove the time component
+                    sql = $"N'{d:yyyy-MM-dd}'";
+                    return true;
+                }
+            }
+            else if (targetType == QueryexType.DateTime)
+            {
+                if (DateTime.TryParse(Value, out DateTime dt))
+                {
+                    sql = $"N'{dt:o}'";
+                    return true;
+                }
+            }
+            else if (targetType == QueryexType.DateTimeOffset)
+            {
+                if (DateTimeOffset.TryParse(Value, out DateTimeOffset dto))
+                {
+                    sql = $"N'{dto:o}'";
+                    return true;
+                }
+            }
+
+            return base.TryCompile(targetType, ctx, out sql);
+        }
+
+        public override string Compile(EvaluationContext ctx)
+        {
+            return $"@{ctx.Parameters.AddParameter(Value)}";
+        }
+
         /// <summary>
         /// Validates the token against all the rules for expression quote literals
         /// </summary>
@@ -1031,14 +1106,21 @@ namespace Tellma.Data.Queries
             return (QueryexType.Numeric, QueryexNullability.NotNull);
         }
 
-        public override string Compile(QueryexType targetType, EvaluationContext ctx)
+        public override bool TryCompile(QueryexType targetType, EvaluationContext ctx, out string sql)
         {
-            return targetType switch
+            if (targetType == QueryexType.Bit)
             {
-                // QueryexType.String => $"N'{Value}'",
-                QueryexType.Numeric => Value.ToString(),
-                _ => throw new QueryException($"Could not compile {Value} to an expression of type {targetType}")
-            };
+                if (Value == 0 || Value == 1)
+                {
+
+                }
+            }
+            return base.TryCompile(targetType, ctx, out sql);
+        }
+
+        public override string Compile(EvaluationContext ctx)
+        {
+            return Value.ToString();
         }
     }
 
@@ -1089,9 +1171,9 @@ namespace Tellma.Data.Queries
             return Value.ToString();
         }
 
-        public override QueryexType Type(TypeDescriptor desc)
+        public override (QueryexType, QueryexNullability) Type(TypeDescriptor desc)
         {
-            return QueryexType.Bit;
+            return (QueryexType.Bit, QueryexNullability.Null);
         }
 
         public override string Compile(QueryexType targetType, EvaluationContext ctx)
@@ -1099,7 +1181,6 @@ namespace Tellma.Data.Queries
             var bit = Value ? "1" : "0";
             return targetType switch
             {
-                QueryexType.String => $"N'{bit}'",
                 QueryexType.Numeric => bit,
                 QueryexType.Bit => bit,
                 QueryexType.Boolean => $"{bit} = 1",
