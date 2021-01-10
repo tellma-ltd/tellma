@@ -57,14 +57,16 @@ SELECT
     [Node].GetAncestor(1)  AS [ParentNode],
     [Node].GetLevel() AS [Level],
     [Node].ToString() AS [Path],
-	CC.[ActiveChildCount],
-	CC.ChildCount
+	Q.[ActiveChildCount],
+	Q.[ChildCount]
+	--CC.[ActiveChildCount],
+	--CC.ChildCount
 FROM [dbo].[AccountTypes] Q
-CROSS APPLY (
-		SELECT COUNT(*) AS [ChildCount],
-		SUM(IIF([IsActive]=1,1,0)) AS  [ActiveChildCount]	
-		FROM [dbo].[AccountTypes]
-		WHERE [Node].IsDescendantOf(Q.[Node]) = 1
-) CC 
+--CROSS APPLY (
+--		SELECT COUNT(*) AS [ChildCount],
+--		SUM(IIF([IsActive]=1,1,0)) AS  [ActiveChildCount]	
+--		FROM [dbo].[AccountTypes]
+--		WHERE [Node].IsDescendantOf(Q.[Node]) = 1
+--) CC 
 
 );
