@@ -204,112 +204,114 @@ namespace Tellma.Controllers
             int Count
             )> GetStatement(StatementArguments args, CancellationToken cancellation)
         {
-            // Step 1: Prepare the filters
-            string undatedFilter = UndatedFilter(args);
+            throw new NotImplementedException();
 
-            var beforeOpeningFilterBldr = new StringBuilder(undatedFilter);
-            var betweenFilterBldr = new StringBuilder(undatedFilter);
-            var beforeClosingFilterBldr = new StringBuilder(undatedFilter);
+            //// Step 1: Prepare the filters
+            //string undatedFilter = UndatedFilter(args);
 
-            if (args.FromDate != null)
-            {
-                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.lt} {args.FromDate.Value:yyyy-MM-dd}"); // <
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.ge} {args.FromDate.Value:yyyy-MM-dd}"); // >=
-            }
+            //var beforeOpeningFilterBldr = new StringBuilder(undatedFilter);
+            //var betweenFilterBldr = new StringBuilder(undatedFilter);
+            //var beforeClosingFilterBldr = new StringBuilder(undatedFilter);
 
-            if (args.ToDate != null)
-            {
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
-                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
-            }
+            //if (args.FromDate != null)
+            //{
+            //    beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.lt} {args.FromDate.Value:yyyy-MM-dd}"); // <
+            //    betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.ge} {args.FromDate.Value:yyyy-MM-dd}"); // >=
+            //}
 
-            string beforeOpeningFilter = beforeOpeningFilterBldr.ToString();
-            string betweenDatesFilter = betweenFilterBldr.ToString();
-            string beforeClosingFilter = beforeClosingFilterBldr.ToString();
+            //if (args.ToDate != null)
+            //{
+            //    betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
+            //    beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
+            //}
 
-            // Step 2: Load the entries
-            var factArgs = new GetArguments
-            {
-                Select = args.Select,
-                Top = args.Skip + args.Top, // We need this to compute openining balance, we do the skipping later in memory
-                Skip = 0, // args.Skip,
-                OrderBy = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
-                CountEntities = true,
-                Filter = betweenDatesFilter,
-            };
+            //string beforeOpeningFilter = beforeOpeningFilterBldr.ToString();
+            //string betweenDatesFilter = betweenFilterBldr.ToString();
+            //string beforeClosingFilter = beforeClosingFilterBldr.ToString();
 
-            var (data, _, _, count) = await GetFact(factArgs, cancellation);
+            //// Step 2: Load the entries
+            //var factArgs = new GetArguments
+            //{
+            //    Select = args.Select,
+            //    Top = args.Skip + args.Top, // We need this to compute openining balance, we do the skipping later in memory
+            //    Skip = 0, // args.Skip,
+            //    OrderBy = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
+            //    CountEntities = true,
+            //    Filter = betweenDatesFilter,
+            //};
 
-            // Step 3: Load the opening balances
-            string valueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
-            string quantityExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicQuantity)})";
-            string monetaryValueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
-            var openingArgs = new GetAggregateArguments
-            {
-                Filter = beforeOpeningFilter,
-                Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
-            };
+            //var (data, _, _, count) = await GetFact(factArgs, cancellation);
 
-            var (openingData, _) = await GetAggregate(openingArgs, cancellation);
-            openingData[0].TryGetValue(valueExp, out object openingObj);
-            decimal opening = (decimal)(openingObj ?? 0m);
+            //// Step 3: Load the opening balances
+            //string valueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
+            //string quantityExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicQuantity)})";
+            //string monetaryValueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
+            //var openingArgs = new GetAggregateArguments
+            //{
+            //    Filter = beforeOpeningFilter,
+            //    Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
+            //};
 
-            openingData[0].TryGetValue(quantityExp, out object openingQuantityObj);
-            decimal openingQuantity = (decimal)(openingQuantityObj ?? 0m);
+            //var (openingData, _) = await GetAggregate(openingArgs, cancellation);
+            //openingData[0].TryGetValue(valueExp, out object openingObj);
+            //decimal opening = (decimal)(openingObj ?? 0m);
 
-            openingData[0].TryGetValue(monetaryValueExp, out object openingMonetaryValueObj);
-            decimal openingMonetaryValue = (decimal)(openingMonetaryValueObj ?? 0m);
+            //openingData[0].TryGetValue(quantityExp, out object openingQuantityObj);
+            //decimal openingQuantity = (decimal)(openingQuantityObj ?? 0m);
 
-            // step (4) Add the Acc. column
-            decimal acc = opening;
-            decimal accQuantity = openingQuantity;
-            decimal accMonetaryValue = openingMonetaryValue;
-            foreach (var entry in data)
-            {
-                acc += (entry.Value ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
-                entry.Accumulation = acc;
-                entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
+            //openingData[0].TryGetValue(monetaryValueExp, out object openingMonetaryValueObj);
+            //decimal openingMonetaryValue = (decimal)(openingMonetaryValueObj ?? 0m);
 
-                accQuantity += entry.AlgebraicQuantity ?? 0m; // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
-                entry.QuantityAccumulation = accQuantity;
-                entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
+            //// step (4) Add the Acc. column
+            //decimal acc = opening;
+            //decimal accQuantity = openingQuantity;
+            //decimal accMonetaryValue = openingMonetaryValue;
+            //foreach (var entry in data)
+            //{
+            //    acc += (entry.Value ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
+            //    entry.Accumulation = acc;
+            //    entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
 
-                accMonetaryValue += (entry.MonetaryValue ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
-                entry.MonetaryValueAccumulation = accMonetaryValue;
-                entry.EntityMetadata[nameof(entry.MonetaryValueAccumulation)] = FieldMetadata.Loaded;
-            }
+            //    accQuantity += entry.AlgebraicQuantity ?? 0m; // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
+            //    entry.QuantityAccumulation = accQuantity;
+            //    entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
 
-            // Step (5) Load closing (if the data page is not the complete result)
-            decimal closing;
-            decimal closingQuantity;
-            decimal closingMonetaryValue;
-            if (args.Skip + args.Top >= count.Value)
-            {
-                var closingArgs = new GetAggregateArguments
-                {
-                    Filter = beforeClosingFilter,
-                    Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
-                };
+            //    accMonetaryValue += (entry.MonetaryValue ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
+            //    entry.MonetaryValueAccumulation = accMonetaryValue;
+            //    entry.EntityMetadata[nameof(entry.MonetaryValueAccumulation)] = FieldMetadata.Loaded;
+            //}
 
-                var (closingData, _) = await GetAggregate(closingArgs, cancellation);
-                closingData[0].TryGetValue(valueExp, out object closingObj);
-                closing = (decimal)(closingObj ?? 0m);
+            //// Step (5) Load closing (if the data page is not the complete result)
+            //decimal closing;
+            //decimal closingQuantity;
+            //decimal closingMonetaryValue;
+            //if (args.Skip + args.Top >= count.Value)
+            //{
+            //    var closingArgs = new GetAggregateArguments
+            //    {
+            //        Filter = beforeClosingFilter,
+            //        Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
+            //    };
 
-                closingData[0].TryGetValue(quantityExp, out object closingQuantityObj);
-                closingQuantity = (decimal)(closingQuantityObj ?? 0m);
+            //    var (closingData, _) = await GetAggregate(closingArgs, cancellation);
+            //    closingData[0].TryGetValue(valueExp, out object closingObj);
+            //    closing = (decimal)(closingObj ?? 0m);
 
-                closingData[0].TryGetValue(monetaryValueExp, out object closingMonetaryValueObj);
-                closingMonetaryValue = (decimal)(closingMonetaryValueObj ?? 0m);
-            }
-            else
-            {
-                closing = acc;
-                closingQuantity = accQuantity;
-                closingMonetaryValue = accMonetaryValue;
-            }
+            //    closingData[0].TryGetValue(quantityExp, out object closingQuantityObj);
+            //    closingQuantity = (decimal)(closingQuantityObj ?? 0m);
 
-            data = data.Skip(args.Skip).ToList(); // Skip in memory
-            return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
+            //    closingData[0].TryGetValue(monetaryValueExp, out object closingMonetaryValueObj);
+            //    closingMonetaryValue = (decimal)(closingMonetaryValueObj ?? 0m);
+            //}
+            //else
+            //{
+            //    closing = acc;
+            //    closingQuantity = accQuantity;
+            //    closingMonetaryValue = accMonetaryValue;
+            //}
+
+            //data = data.Skip(args.Skip).ToList(); // Skip in memory
+            //return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
         }
     }
 }

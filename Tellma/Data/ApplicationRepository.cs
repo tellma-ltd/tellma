@@ -236,7 +236,7 @@ namespace Tellma.Data
         /// Returns a function that maps every <see cref="Entity"/> type in <see cref="ApplicationRepository"/> 
         /// to the default SQL query that retrieves it + some optional parameters
         /// </summary>
-        private static string Sources(Type t)
+        public static string Sources(Type t)
         {
             var result = t.Name switch
             {

@@ -352,8 +352,8 @@ namespace Tellma.Data.Queries
             SelectExpression selectExp = _select;
             ExpandExpression expandExp = _expand;
             OrderByExpression orderbyExp = _orderby;
-            FilterExpression filterExp = _filterConditions?.Aggregate(
-                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
+            FilterExpression filterExp = null; // _filterConditions?.Aggregate(
+            //    (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
             ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp, resultDesc, localizer);
@@ -605,184 +605,184 @@ namespace Tellma.Data.Queries
             return entities.FirstOrDefault();
         }
 
-        /// <summary>
-        /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
-        /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
-        /// </summary>
-        public async Task<IEnumerable<IndexedId<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
-        {
-            return await GetIndexMapInner<TKey>(criteriaIndexes, cancellation);
-        }
+//        /// <summary>
+//        /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
+//        /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
+//        /// </summary>
+//        public async Task<IEnumerable<IndexedId<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
+//        {
+//            return await GetIndexMapInner<TKey>(criteriaIndexes, cancellation);
+//        }
 
-        /// <summary>
-        /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
-        /// and returns a mapping from every entity Id (which is specifically an INT) in the original query to all the criteria
-        /// that are satified by this entity, this is different from <see cref="GetIndexToIdMap(IEnumerable{IndexAndCriteria})"/>
-        /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
-        /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
-        /// </summary>
-        public async Task<IEnumerable<IndexedId<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
-        {
-            return await GetIndexMapInner<int>(criteriaIndexes, cancellation);
-        }
+//        /// <summary>
+//        /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
+//        /// and returns a mapping from every entity Id (which is specifically an INT) in the original query to all the criteria
+//        /// that are satified by this entity, this is different from <see cref="GetIndexToIdMap(IEnumerable{IndexAndCriteria})"/>
+//        /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
+//        /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
+//        /// </summary>
+//        public async Task<IEnumerable<IndexedId<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
+//        {
+//            return await GetIndexMapInner<int>(criteriaIndexes, cancellation);
+//        }
 
-        /// <summary>
-        /// Internal Implementation
-        /// </summary>
-        private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
-        {
-            var args = await _factory(cancellation);
-            var conn = args.Connection;
-            var sources = args.Sources;
-            var userId = args.UserId;
-            var userTimeZone = args.UserToday;
-            var localizer = args.Localizer;
+//        /// <summary>
+//        /// Internal Implementation
+//        /// </summary>
+//        private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
+//        {
+//            var args = await _factory(cancellation);
+//            var conn = args.Connection;
+//            var sources = args.Sources;
+//            var userId = args.UserId;
+//            var userTimeZone = args.UserToday;
+//            var localizer = args.Localizer;
 
-            var resultDesc = TypeDescriptor.Get<T>();
+//            var resultDesc = TypeDescriptor.Get<T>();
 
-            if (_select != null || _expand != null)
-            {
-                // Programmer mistake
-                throw new InvalidOperationException($"Cannot call {nameof(GetIndexToIdMap)} when select or expand are specified");
-            }
+//            if (_select != null || _expand != null)
+//            {
+//                // Programmer mistake
+//                throw new InvalidOperationException($"Cannot call {nameof(GetIndexToIdMap)} when select or expand are specified");
+//            }
 
-            var orderByExp = _orderby;
-            FilterExpression filterExp = _filterConditions?.Aggregate(
-                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
+//            var orderByExp = _orderby;
+//            FilterExpression filterExp = _filterConditions?.Aggregate(
+//                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
-            // To prevent SQL injection
-            ValidatePathsAndProperties(null, null, filterExp, orderByExp, resultDesc, localizer);
+//            // To prevent SQL injection
+//            ValidatePathsAndProperties(null, null, filterExp, orderByExp, resultDesc, localizer);
 
-            // Prepare the internal query
-            var flatQuery = new QueryInternal
-            {
-                ResultDescriptor = resultDesc,
-                Filter = filterExp,
-                Ids = _ids,
-                ParentIds = _parentIds,
-                PropName = _propName,
-                Values = _values,
-                IncludeRoots = _includeRoots,
-                OrderBy = orderByExp,
-                Skip = _skip,
-                Top = _top,
-                FromSql = _fromSql
-            };
+//            // Prepare the internal query
+//            var flatQuery = new QueryInternal
+//            {
+//                ResultDescriptor = resultDesc,
+//                Filter = filterExp,
+//                Ids = _ids,
+//                ParentIds = _parentIds,
+//                PropName = _propName,
+//                Values = _values,
+//                IncludeRoots = _includeRoots,
+//                OrderBy = orderByExp,
+//                Skip = _skip,
+//                Top = _top,
+//                FromSql = _fromSql
+//            };
 
-            // Prepare the parameters
-            var ps = new SqlStatementParameters();
+//            // Prepare the parameters
+//            var ps = new SqlStatementParameters();
 
-            // Add the fromSql parameters
-            if (_parameters != null)
-            {
-                foreach (var p in _parameters)
-                {
-                    ps.AddParameter(p);
-                }
-            }
+//            // Add the fromSql parameters
+//            if (_parameters != null)
+//            {
+//                foreach (var p in _parameters)
+//                {
+//                    ps.AddParameter(p);
+//                }
+//            }
 
-            if (_additionalParameters != null)
-            {
-                foreach (var additionalParameter in _additionalParameters)
-                {
-                    ps.AddParameter(additionalParameter);
-                }
-            }
+//            if (_additionalParameters != null)
+//            {
+//                foreach (var additionalParameter in _additionalParameters)
+//                {
+//                    ps.AddParameter(additionalParameter);
+//                }
+//            }
 
-            // Use the internal query to create the SQL
-            var sourceSql = flatQuery.PrepareStatement(sources, ps, userId, userTimeZone).Sql;
+//            // Use the internal query to create the SQL
+//            var sourceSql = flatQuery.PrepareStatement(sources, ps, userId, userTimeZone).Sql;
 
-            List<StringBuilder> toBeUnioned = new List<StringBuilder>(criteriaIndexes.Count());
-            foreach (var criteriaIndex in criteriaIndexes)
-            {
-                int index = criteriaIndex.Index;
-                string criteria = criteriaIndex.Criteria;
+//            List<StringBuilder> toBeUnioned = new List<StringBuilder>(criteriaIndexes.Count());
+//            foreach (var criteriaIndex in criteriaIndexes)
+//            {
+//                int index = criteriaIndex.Index;
+//                string criteria = criteriaIndex.Criteria;
 
-                var criteriaExp = FilterExpression.Parse(criteria);
-                ValidatePathsAndProperties(null, null, criteriaExp, null, resultDesc, localizer);
+//                var criteriaExp = FilterExpression.Parse(criteria);
+//                ValidatePathsAndProperties(null, null, criteriaExp, null, resultDesc, localizer);
 
-                var criteriaQuery = new QueryInternal
-                {
-                    ResultDescriptor = resultDesc,
-                    Filter = criteriaExp
-                };
+//                var criteriaQuery = new QueryInternal
+//                {
+//                    ResultDescriptor = resultDesc,
+//                    Filter = criteriaExp
+//                };
 
-                JoinTrie joinTree = criteriaQuery.JoinSql();
-                string joinSql = joinTree.GetSql(sources, fromSql: $@"({sourceSql})");
-                string whereSql = criteriaQuery.WhereSql(sources, joinTree, ps, userId, userTimeZone);
+//                JoinTrie joinTree = criteriaQuery.JoinSql();
+//                string joinSql = joinTree.GetSql(sources, fromSql: $@"({sourceSql})");
+//                string whereSql = criteriaQuery.WhereSql(sources, joinTree, ps, userId, userTimeZone);
 
 
-                var sqlBuilder = new StringBuilder();
-                sqlBuilder.AppendLine($"SELECT [P].[Id], {index} As [Index]");
-                sqlBuilder.AppendLine(joinSql);
-                sqlBuilder.AppendLine(whereSql);
+//                var sqlBuilder = new StringBuilder();
+//                sqlBuilder.AppendLine($"SELECT [P].[Id], {index} As [Index]");
+//                sqlBuilder.AppendLine(joinSql);
+//                sqlBuilder.AppendLine(whereSql);
 
-                toBeUnioned.Add(sqlBuilder);
-            }
+//                toBeUnioned.Add(sqlBuilder);
+//            }
 
-            string sql = toBeUnioned.Select(s => s.ToString()).Aggregate((s1, s2) => $@"{s1}
+//            string sql = toBeUnioned.Select(s => s.ToString()).Aggregate((s1, s2) => $@"{s1}
 
-UNION
+//UNION
 
-{s2}");
+//{s2}");
 
-            if (!string.IsNullOrWhiteSpace(_preSql))
-            {
-                sql = $@"{_preSql}
+//            if (!string.IsNullOrWhiteSpace(_preSql))
+//            {
+//                sql = $@"{_preSql}
 
-{sql}";
-            }
+//{sql}";
+//            }
 
-            using var cmd = conn.CreateCommand();
+//            using var cmd = conn.CreateCommand();
 
-            // Prepare the SQL command
-            cmd.CommandText = sql;
-            foreach (var parameter in ps)
-            {
-                cmd.Parameters.Add(parameter);
-            }
+//            // Prepare the SQL command
+//            cmd.CommandText = sql;
+//            foreach (var parameter in ps)
+//            {
+//                cmd.Parameters.Add(parameter);
+//            }
 
-            // This block is never entered, but we add it anyways for robustness sake
-            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
-            if (ownsConnection)
-            {
-                conn.Open();
-            }
+//            // This block is never entered, but we add it anyways for robustness sake
+//            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+//            if (ownsConnection)
+//            {
+//                conn.Open();
+//            }
 
-            try
-            {
-                var result = new List<IndexedId<TKey>>();
-                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
-                {
-                    // Loop over the result from the database
-                    while (await reader.ReadAsync())
-                    {
-                        var dbId = reader["Id"];
-                        var dbIndex = reader.GetInt32(1);
+//            try
+//            {
+//                var result = new List<IndexedId<TKey>>();
+//                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
+//                {
+//                    // Loop over the result from the database
+//                    while (await reader.ReadAsync())
+//                    {
+//                        var dbId = reader["Id"];
+//                        var dbIndex = reader.GetInt32(1);
 
-                        result.Add(new IndexedId<TKey>
-                        {
-                            Id = (TKey)dbId,
-                            Index = dbIndex
-                        });
-                    }
-                }
+//                        result.Add(new IndexedId<TKey>
+//                        {
+//                            Id = (TKey)dbId,
+//                            Index = dbIndex
+//                        });
+//                    }
+//                }
 
-                return result;
-            }
-            finally
-            {
-                // Otherwise we might get an error
-                cmd.Parameters.Clear();
+//                return result;
+//            }
+//            finally
+//            {
+//                // Otherwise we might get an error
+//                cmd.Parameters.Clear();
 
-                // This block is never entered but we add it here for robustness
-                if (ownsConnection)
-                {
-                    conn.Close();
-                    conn.Dispose();
-                }
-            }
-        }
+//                // This block is never entered but we add it here for robustness
+//                if (ownsConnection)
+//                {
+//                    conn.Close();
+//                    conn.Dispose();
+//                }
+//            }
+//        }
 
         /// <summary>
         /// To prevent SQL injection attacks
@@ -824,22 +824,22 @@ UNION
                     allowNavigationTerminals: true);
             }
 
-            // Filter
-            if (filterExp != null)
-            {
-                PathValidator trie = new PathValidator();
-                foreach (var atom in filterExp)
-                {
-                    // AddPath(atom.Path, atom.Property);
-                    trie.AddPath(atom.Path, atom.Property);
-                }
+            //// Filter
+            //if (filterExp != null)
+            //{
+            //    PathValidator trie = new PathValidator();
+            //    foreach (var atom in filterExp)
+            //    {
+            //        // AddPath(atom.Path, atom.Property);
+            //        trie.AddPath(atom.Path, atom.Property);
+            //    }
 
-                // Make sure the paths are valid (Protects against SQL injection)
-                trie.Validate(rootDesc, localizer, "filter",
-                    allowLists: false,
-                    allowSimpleTerminals: true,
-                    allowNavigationTerminals: false);
-            }
+            //    // Make sure the paths are valid (Protects against SQL injection)
+            //    trie.Validate(rootDesc, localizer, "filter",
+            //        allowLists: false,
+            //        allowSimpleTerminals: true,
+            //        allowNavigationTerminals: false);
+            //}
 
             // Order By
             if (orderbyExp != null)

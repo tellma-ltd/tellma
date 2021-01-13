@@ -91,7 +91,7 @@ namespace Tellma.Data.Queries
 
             if (Filter != null)
             {
-                allPaths.AddRange(Filter.Select(e => e.Path));
+                //allPaths.AddRange(Filter.Select(e => e.Path));
             }
 
             // This will represent the mapping from paths to symbols

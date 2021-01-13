@@ -7,11 +7,11 @@ namespace Tellma.Data.Queries
 {
     /// <summary>
     /// A collection containing a bunch of <see cref="SqlParameter"/>s, contains a
-    /// method that lets you add parameters with auto-names: "Param_1", "Param_2" etc...
+    /// method that lets you add parameters with auto-names: "Param__1", "Param__2" etc...
     /// </summary>
     public class SqlStatementParameters : IEnumerable<SqlParameter>
     {
-        private static readonly string _prefix = "Param__";
+        public const string _prefix = "Param__";
         private readonly HashSet<SqlParameter> _params = new HashSet<SqlParameter>();
         private int _counter = 0;
 
@@ -20,10 +20,16 @@ namespace Tellma.Data.Queries
         /// </summary>
         public void AddParameter(SqlParameter p)
         {
-            if(p.ParameterName.StartsWith(_prefix))
+            if (p.ParameterName.StartsWith(_prefix))
             {
                 // Developer mistake
                 throw new InvalidOperationException($"Cannot use reserved prefix '{_prefix}' in SQL parameter names");
+            }
+
+            if (p.ParameterName.StartsWith(SqlStatementVariables._prefix))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Cannot use reserved prefix '{SqlStatementVariables._prefix}' in SQL parameter names");
             }
 
             _params.Add(p);

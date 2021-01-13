@@ -430,7 +430,7 @@ namespace Tellma.Data.Queries
 
             if (Filter != null)
             {
-                allPaths.AddRange(Filter.Select(e => e.Path));
+                //allPaths.AddRange(Filter.Expression.Select(e => e.Path));
             }
 
             if (OrderBy != null)

@@ -62,9 +62,14 @@ namespace Tellma.Entities.Descriptors
         public int MaxLength { get; }
 
         /// <summary>
-        /// Indicates that a <see cref="DateTime"/> can store time as well as date (maps to a DateTime column in the database)
+        /// Indicates that a <see cref="DateTime"/> property can store time as well as date (maps to a DateTime column in the database)
         /// </summary>
         public bool IncludesTime { get; set; }
+
+        /// <summary>
+        /// Indicates that this property is NOT NULL in the database
+        /// </summary>
+        public bool IsNotNull { get; set; }
 
         /// <summary>
         /// For self referencing foreign keys like ParentId (FKs that reference the same entity type),
@@ -152,6 +157,12 @@ namespace Tellma.Entities.Descriptors
             #region IncludesTime
 
             IncludesTime = propInfo.GetCustomAttribute<IncludesTimeAttribute>(inherit: true) != null;
+
+            #endregion
+
+            #region Not Null
+
+            IsNotNull = propInfo.GetCustomAttribute<NotNullAttribute>(inherit: true) != null;
 
             #endregion
         }

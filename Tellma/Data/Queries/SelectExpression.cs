@@ -82,7 +82,7 @@ namespace Tellma.Data.Queries
                 return null;
             }
 
-            var atoms = Queryex.Parse(select)
+            var atoms = QueryexBase.Parse(select)
                 .Where(exp => exp != null)
                 .Select(exp => SelectAtom.FromExpression(exp));
 

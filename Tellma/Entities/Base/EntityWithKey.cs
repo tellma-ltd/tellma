@@ -43,6 +43,7 @@ namespace Tellma.Entities
         /// so much shared logic for tracking resources and caching them
         /// </summary>
         [Display(Name = "Id")]
+        [NotNull]
         public TKey Id { get; set; }
 
         // The below method is used by implementations that benefit from a generic object Id, such as Object Loader

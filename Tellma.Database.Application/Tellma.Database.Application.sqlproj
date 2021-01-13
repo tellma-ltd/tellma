@@ -740,6 +740,11 @@
     <None Include="Provisioning\299\299_22Centers.sql" />
     <None Include="Provisioning\299\299_24Resources.sql" />
     <None Include="Provisioning\299\21_Units.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_DatePart.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmmAlQura_DatePart.sql" />
+    <Build Include="wiz\Functions\wiz.fn_JulianDayNumber.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_DateAdd.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmmAlQura_DateAdd.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

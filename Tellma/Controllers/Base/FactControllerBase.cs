@@ -111,7 +111,7 @@ namespace Tellma.Controllers
                     Result = data,
 
                     // TODO: Add ancestors of tree dimensions
-                    DimensionAncestors = new Dictionary<string, IEnumerable<Entity>>(),
+                   // DimensionAncestors = new Dictionary<string, IEnumerable<Entity>>(),
                 };
 
                 return Ok(result);
@@ -451,7 +451,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns a <see cref="List{DynamicEntity}"/> as per the specifications in the <see cref="GetAggregateArguments"/>,
         /// </summary>
-        public virtual async Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
+        public virtual async Task<(List<DynamicRow> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -639,7 +639,7 @@ namespace Tellma.Controllers
                 // The user has access to part of the data set based on a list
                 // of filters that will  be ORed together in a dynamic query
                 return permissions.Select(e => FilterExpression.Parse(e.Criteria))
-                        .Aggregate((e1, e2) => FilterDisjunction.Make(e1, e2));
+                        .Aggregate((e1, e2) => FilterExpression.Disjunction(e1, e2));
             }
         }
 
@@ -841,7 +841,7 @@ namespace Tellma.Controllers
             return (genericData, extras, isPartial, count);
         }
 
-        Task<(List<DynamicEntity> Data, bool IsPartial)> IFactServiceBase.GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
+        Task<(List<DynamicRow> Data, bool IsPartial)> IFactServiceBase.GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             return GetAggregate(args, cancellation);
         }
@@ -853,6 +853,6 @@ namespace Tellma.Controllers
     {
         Task<(List<Entity> Data, Extras Extras, bool IsPartial, int? Count)> GetFact(GetArguments args, CancellationToken cancellation);
 
-        Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
+        Task<(List<DynamicRow> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
     }
 }

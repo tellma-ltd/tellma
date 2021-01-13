@@ -17,7 +17,7 @@ namespace Tellma.Data.Queries
         /// Parses a string representing a single expand path (no commas) into an <see cref="ExpandAtom"/>
         /// </summary>
         /// <param name="atom">String representing a single path (should not contain commas)</param>
-        public static ExpandAtom FromExpression(Queryex atom)
+        public static ExpandAtom FromExpression(QueryexBase atom)
         {
             // atom comes in the general formats:
             // - "Line.PostingDate"

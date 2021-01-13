@@ -280,27 +280,27 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Path { get; set; }
 
-        [Display(Name = "ReportDefinition_Modifier")]
-        [StringLength(255)]
-        [AlwaysAccessible]
-        [ChoiceList(new object[] { 
-            Modifiers.year, 
-            Modifiers.quarter, 
-            Modifiers.month, 
-            Modifiers.dayofyear, 
-            Modifiers.day,
-            Modifiers.week,
-            Modifiers.weekday
-        }, new string[] {
-            "Modifier_year",
-            "Modifier_quarter",
-            "Modifier_month",
-            "Modifier_dayofyear",
-            "Modifier_day",
-            "Modifier_week",
-            "Modifier_weekday"
-        })]
-        public string Modifier { get; set; }
+        //[Display(Name = "ReportDefinition_Modifier")]
+        //[StringLength(255)]
+        //[AlwaysAccessible]
+        //[ChoiceList(new object[] { 
+        //    Modifiers.year, 
+        //    Modifiers.quarter, 
+        //    Modifiers.month, 
+        //    Modifiers.dayofyear, 
+        //    Modifiers.day,
+        //    Modifiers.week,
+        //    Modifiers.weekday
+        //}, new string[] {
+        //    "Modifier_year",
+        //    "Modifier_quarter",
+        //    "Modifier_month",
+        //    "Modifier_dayofyear",
+        //    "Modifier_day",
+        //    "Modifier_week",
+        //    "Modifier_weekday"
+        //})]
+        //public string Modifier { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255)]

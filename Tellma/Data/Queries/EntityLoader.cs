@@ -40,130 +40,130 @@ namespace Tellma.Data.Queries
             return sql.ToString();
         }
 
-        /// <summary>
-        /// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicEntity"/>
-        /// </summary>
-        /// <param name="statement">The <see cref="SqlStatement"/> to load</param>
-        /// <param name="preparatorySql">Any SQL to be included at the very beginning the main script (cannot contain a SELECT or return a result set</param>
-        /// <param name="ps">The parameters needed by SQL</param>
-        /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
-        /// <returns>The list of hydrated <see cref="DynamicEntity"/>s</returns>            
-        public static async Task<List<DynamicEntity>> LoadAggregateStatement(
-            SqlStatement statement, string preparatorySql, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
-        {
-            var result = new List<DynamicEntity>();
+        ///// <summary>
+        ///// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicEntity"/>
+        ///// </summary>
+        ///// <param name="statement">The <see cref="SqlStatement"/> to load</param>
+        ///// <param name="preparatorySql">Any SQL to be included at the very beginning the main script (cannot contain a SELECT or return a result set</param>
+        ///// <param name="ps">The parameters needed by SQL</param>
+        ///// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
+        ///// <returns>The list of hydrated <see cref="DynamicEntity"/>s</returns>            
+        //public static async Task<List<DynamicRow>> LoadAggregateStatement(
+        //    SqlStatement statement, string preparatorySql, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
+        //{
+        //    var result = new List<DynamicRow>();
 
-            using (var cmd = conn.CreateCommand())
-            {
-                // Command Text
-                cmd.CommandText = PrepareSql(preparatorySql, null, statement);
+        //    using (var cmd = conn.CreateCommand())
+        //    {
+        //        // Command Text
+        //        cmd.CommandText = PrepareSql(preparatorySql, null, statement);
 
-                // Command Parameters
-                foreach (var parameter in ps)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
+        //        // Command Parameters
+        //        foreach (var parameter in ps)
+        //        {
+        //            cmd.Parameters.Add(parameter);
+        //        }
 
-                // It will always be open, but we add this nonetheless for robustness
-                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
-                if (ownsConnection)
-                {
-                    conn.Open();
-                }
+        //        // It will always be open, but we add this nonetheless for robustness
+        //        bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+        //        if (ownsConnection)
+        //        {
+        //            conn.Open();
+        //        }
 
-                // Efficiently calculates the dynamic property name
-                var cacheDynamicPropertyName = new Dictionary<(ArraySegment<string>, string, string, string), string>();
-                string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation, string function)
-                {
-                    if (!cacheDynamicPropertyName.ContainsKey((path, prop, aggregation, function)))
-                    {
-                        string result = prop;
+        //        // Efficiently calculates the dynamic property name
+        //        var cacheDynamicPropertyName = new Dictionary<(ArraySegment<string>, string, string, string), string>();
+        //        string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation, string function)
+        //        {
+        //            if (!cacheDynamicPropertyName.ContainsKey((path, prop, aggregation, function)))
+        //            {
+        //                string result = prop;
 
-                        string pathString = string.Join('/', path);
-                        if (!string.IsNullOrWhiteSpace(pathString))
-                        {
-                            result = $"{pathString}/{result}";
-                        }
+        //                string pathString = string.Join('/', path);
+        //                if (!string.IsNullOrWhiteSpace(pathString))
+        //                {
+        //                    result = $"{pathString}/{result}";
+        //                }
 
-                        if (!string.IsNullOrWhiteSpace(function))
-                        {
-                            result = $"{result}|{function}";
-                        }
+        //                if (!string.IsNullOrWhiteSpace(function))
+        //                {
+        //                    result = $"{result}|{function}";
+        //                }
 
-                        if (!string.IsNullOrWhiteSpace(aggregation))
-                        {
-                            result = $"{aggregation}({result})";
-                        }
+        //                if (!string.IsNullOrWhiteSpace(aggregation))
+        //                {
+        //                    result = $"{aggregation}({result})";
+        //                }
 
-                        cacheDynamicPropertyName[(path, prop, aggregation, function)] = result;
-                    }
+        //                cacheDynamicPropertyName[(path, prop, aggregation, function)] = result;
+        //            }
 
-                    return cacheDynamicPropertyName[(path, prop, aggregation, function)];
-                }
+        //            return cacheDynamicPropertyName[(path, prop, aggregation, function)];
+        //        }
 
-                // This recursive method hydrates the dynamic properties from the reader according to the entityDef tree
-                void HydrateDynamicProperties(SqlDataReader reader, DynamicEntity entity, ColumnMapTrie entityDef)
-                {
-                    foreach (var (propDesc, index, aggregation, function) in entityDef.Properties)
-                    {
-                        if (propDesc.IsHierarchyId || propDesc.IsGeography)
-                        {
-                            continue;
-                        }
+        //        // This recursive method hydrates the dynamic properties from the reader according to the entityDef tree
+        //        void HydrateDynamicProperties(SqlDataReader reader, DynamicRow entity, ColumnMapTrie entityDef)
+        //        {
+        //            foreach (var (propDesc, index, aggregation, function) in entityDef.Properties)
+        //            {
+        //                if (propDesc.IsHierarchyId || propDesc.IsGeography)
+        //                {
+        //                    continue;
+        //                }
 
-                        var dbValue = reader[index];
-                        if (dbValue != DBNull.Value)
-                        {
-                            // char still comes from the DB as a string
-                            if (propDesc.Type == typeof(char?))
-                            {
-                                dbValue = dbValue.ToString()[0]; // gets the char
-                            }
+        //                var dbValue = reader[index];
+        //                if (dbValue != DBNull.Value)
+        //                {
+        //                    // char still comes from the DB as a string
+        //                    if (propDesc.Type == typeof(char?))
+        //                    {
+        //                        dbValue = dbValue.ToString()[0]; // gets the char
+        //                    }
 
-                            // The propertyNameMap was populated as soon as the ColumnMapTree was created
-                            string propName = DynamicPropertyName(entityDef.Path, propDesc.Name, aggregation, function);
-                            entity[propName] = dbValue;
-                        }
-                    }
+        //                    // The propertyNameMap was populated as soon as the ColumnMapTree was created
+        //                    string propName = DynamicPropertyName(entityDef.Path, propDesc.Name, aggregation, function);
+        //                    entity[propName] = dbValue;
+        //                }
+        //            }
 
-                    foreach (var subEntityDef in entityDef.Children)
-                    {
-                        HydrateDynamicProperties(reader, entity, subEntityDef);
-                    }
-                }
+        //            foreach (var subEntityDef in entityDef.Children)
+        //            {
+        //                HydrateDynamicProperties(reader, entity, subEntityDef);
+        //            }
+        //        }
 
-                // Results are loaded
-                try
-                {
-                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
+        //        // Results are loaded
+        //        try
+        //        {
+        //            using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
-                    // Group the column map by the path (which represents the target entity)
-                    var entityDef = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: true);
+        //            // Group the column map by the path (which represents the target entity)
+        //            var entityDef = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: true);
 
-                    // Loop over the result from the result set
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        var dynamicEntity = new DynamicEntity();
-                        HydrateDynamicProperties(reader, dynamicEntity, entityDef);
-                        result.Add(dynamicEntity);
-                    }
-                }
-                finally
-                {
-                    // Otherwise we might get an error when a parameter is reused
-                    cmd.Parameters.Clear();
+        //            // Loop over the result from the result set
+        //            while (await reader.ReadAsync(cancellation))
+        //            {
+        //                var dynamicEntity = new DynamicRow();
+        //                HydrateDynamicProperties(reader, dynamicEntity, entityDef);
+        //                result.Add(dynamicEntity);
+        //            }
+        //        }
+        //        finally
+        //        {
+        //            // Otherwise we might get an error when a parameter is reused
+        //            cmd.Parameters.Clear();
 
-                    // The connection is never owned, but we add this code anyways for robustness
-                    if (ownsConnection)
-                    {
-                        conn.Close();
-                        conn.Dispose();
-                    }
-                }
-            }
+        //            // The connection is never owned, but we add this code anyways for robustness
+        //            if (ownsConnection)
+        //            {
+        //                conn.Close();
+        //                conn.Dispose();
+        //            }
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         /// <summary>
         /// This method builds one large SQL script from the supplied <see cref="SqlStatement"/>s and executes it against a SQL server connection in one go,

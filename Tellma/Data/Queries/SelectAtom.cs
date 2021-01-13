@@ -20,10 +20,10 @@ namespace Tellma.Data.Queries
         public string Property { get; set; }
 
         /// <summary>
-        /// Extracts a <see cref="SelectAtom"/> from a <see cref="Queryex"/> object
+        /// Extracts a <see cref="SelectAtom"/> from a <see cref="QueryexBase"/> object
         /// </summary>
         /// <param name="atom">String representing a single atom (should not contain commas)</param>
-        public static SelectAtom FromExpression(Queryex atom)
+        public static SelectAtom FromExpression(QueryexBase atom)
         {
             // atom comes in the general formats:
             // - "Line.PostingDate"

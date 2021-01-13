@@ -51,61 +51,62 @@ namespace Tellma.Data.Queries
         /// <param name="atom">String representing a single atom (should not contain commas)</param>
         public static AggregateSelectAtom Parse(string atom)
         {
-            // item comes in the general formats:
-            // - "Customer/Name asc"
-            // - "sum(Amount) desc"
-            // - "sum(Customer/DateOfBirth|month) desc
+            throw new NotImplementedException();
+            //// item comes in the general formats:
+            //// - "Customer/Name asc"
+            //// - "sum(Amount) desc"
+            //// - "sum(Customer/DateOfBirth|month) desc
 
-            if (string.IsNullOrWhiteSpace(atom))
-            {
-                throw new ArgumentNullException(nameof(atom));
-            }
+            //if (string.IsNullOrWhiteSpace(atom))
+            //{
+            //    throw new ArgumentNullException(nameof(atom));
+            //}
 
-            atom = atom.Trim();
+            //atom = atom.Trim();
 
-            // Extract the order by direction if any
-            string[] orderDirKeywords = { " desc", " asc" };
-            string orderDirection = orderDirKeywords.FirstOrDefault(ob =>
-                atom.ToLower().EndsWith(ob) &&
-                atom.Substring(ob.Length).Trim().Length > 0 &&
-                !atom.Substring(ob.Length).Trim().EndsWith("/"));
-            if (orderDirection != null)
-            {
-                atom = atom.Remove(atom.Length - orderDirection.Length).Trim();
-                orderDirection = orderDirection.Trim();
-            }
+            //// Extract the order by direction if any
+            //string[] orderDirKeywords = { " desc", " asc" };
+            //string orderDirection = orderDirKeywords.FirstOrDefault(ob =>
+            //    atom.ToLower().EndsWith(ob) &&
+            //    atom.Substring(ob.Length).Trim().Length > 0 &&
+            //    !atom.Substring(ob.Length).Trim().EndsWith("/"));
+            //if (orderDirection != null)
+            //{
+            //    atom = atom.Remove(atom.Length - orderDirection.Length).Trim();
+            //    orderDirection = orderDirection.Trim();
+            //}
 
-            atom = atom.Trim();
+            //atom = atom.Trim();
 
-            // Extract the aggregation function (sum, count etc...) if any
-            string[] aggregationKeywords = Aggregations.All;
-            string aggregation = aggregationKeywords.FirstOrDefault(ag =>
-                atom.ToLower().StartsWith(ag) &&
-                atom.Substring(ag.Length).Trim().StartsWith("("));
-            if (aggregation != null)
-            {
-                atom = atom.Substring(aggregation.Length);
-                atom = atom.TrimStart();
-                atom = atom.Substring(1); // to remove the bracket
+            //// Extract the aggregation function (sum, count etc...) if any
+            //string[] aggregationKeywords = Aggregations.All;
+            //string aggregation = aggregationKeywords.FirstOrDefault(ag =>
+            //    atom.ToLower().StartsWith(ag) &&
+            //    atom.Substring(ag.Length).Trim().StartsWith("("));
+            //if (aggregation != null)
+            //{
+            //    atom = atom.Substring(aggregation.Length);
+            //    atom = atom.TrimStart();
+            //    atom = atom.Substring(1); // to remove the bracket
 
-                if (atom.EndsWith(")"))
-                {
-                    atom = atom.Remove(atom.Length - 1).Trim();
-                }
-            }
+            //    if (atom.EndsWith(")"))
+            //    {
+            //        atom = atom.Remove(atom.Length - 1).Trim();
+            //    }
+            //}
 
-            // Extrat path, property and modifier
-            var (path, property, modifier) = QueryTools.ExtractPathPropertyAndModifier(atom);
+            //// Extrat path, property and modifier
+            //var (path, property, modifier) = QueryTools.ExtractPathPropertyAndModifier(atom);
 
-            // Return the result
-            return new AggregateSelectAtom
-            {
-                Path = path,
-                Property = property,
-                Modifier = modifier,
-                Aggregation = aggregation,
-                OrderDirection = orderDirection
-            };
+            //// Return the result
+            //return new AggregateSelectAtom
+            //{
+            //    Path = path,
+            //    Property = property,
+            //    Modifier = modifier,
+            //    Aggregation = aggregation,
+            //    OrderDirection = orderDirection
+            //};
         }
     }
 }

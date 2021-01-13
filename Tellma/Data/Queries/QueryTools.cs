@@ -153,281 +153,283 @@ namespace Tellma.Data.Queries
         /// </summary>
         public static string FilterToSql(FilterExpression e, Func<Type, string> sources, SqlStatementParameters ps, JoinTrie joinTree, int userId, DateTime? userToday)
         {
-            if (e == null)
-            {
-                return null;
-            }
+            throw new NotImplementedException();
 
-            // This inner function just relieves us of having to pass all the above parameters each time, they just become part of its closure
-            string FilterToSqlInner(FilterExpression exp)
-            {
-                if (exp is FilterConjunction conExp)
-                {
-                    return $"({FilterToSqlInner(conExp.Left)}) AND ({FilterToSqlInner(conExp.Right)})";
-                }
+            //if (e == null)
+            //{
+            //    return null;
+            //}
 
-                if (exp is FilterDisjunction disExp)
-                {
-                    return $"({FilterToSqlInner(disExp.Left)}) OR ({FilterToSqlInner(disExp.Right)})";
-                }
+            //// This inner function just relieves us of having to pass all the above parameters each time, they just become part of its closure
+            //string FilterToSqlInner(FilterExpression exp)
+            //{
+            //    if (exp is FilterConjunction conExp)
+            //    {
+            //        return $"({FilterToSqlInner(conExp.Left)}) AND ({FilterToSqlInner(conExp.Right)})";
+            //    }
 
-                if (exp is FilterNegation notExp)
-                {
-                    return $"NOT ({FilterToSqlInner(notExp.Inner)})";
-                }
+            //    if (exp is FilterDisjunction disExp)
+            //    {
+            //        return $"({FilterToSqlInner(disExp.Left)}) OR ({FilterToSqlInner(disExp.Right)})";
+            //    }
 
-                if (exp is FilterAtom atom)
-                {
-                    // (A) Prepare the symbol corresponding to the path, e.g. P1
-                    var join = joinTree[atom.Path];
-                    if (join == null)
-                    {
-                        // Developer mistake
-                        throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
-                    }
-                    var symbol = join.Symbol;
+            //    if (exp is FilterNegation notExp)
+            //    {
+            //        return $"NOT ({FilterToSqlInner(notExp.Inner)})";
+            //    }
 
-                    // (B) Determine the type of the property and its value
-                    var propName = atom.Property;
-                    var prop = join.EntityDescriptor.Property(propName);
-                    if (prop == null)
-                    {
-                        // Developer mistake
-                        throw new InvalidOperationException($"Could not find property {propName} on type {join.EntityDescriptor}");
-                    }
+            //    if (exp is FilterAtom atom)
+            //    {
+            //        // (A) Prepare the symbol corresponding to the path, e.g. P1
+            //        var join = joinTree[atom.Path];
+            //        if (join == null)
+            //        {
+            //            // Developer mistake
+            //            throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
+            //        }
+            //        var symbol = join.Symbol;
 
-                    // The type of the first operand
-                    var propType = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
-                    if (!string.IsNullOrWhiteSpace(atom.Modifier))
-                    {
-                        // So far all modifiers are only applicable for date properties
-                        if (propType != typeof(DateTime) && propType != typeof(DateTimeOffset))
-                        {
-                            // Developer mistake
-                            throw new InvalidOperationException($"The modifier {atom.Modifier} is not valid for property {propName} since it is not of type DateTime or DateTimeOffset");
-                        }
+            //        // (B) Determine the type of the property and its value
+            //        var propName = atom.Property;
+            //        var prop = join.EntityDescriptor.Property(propName);
+            //        if (prop == null)
+            //        {
+            //            // Developer mistake
+            //            throw new InvalidOperationException($"Could not find property {propName} on type {join.EntityDescriptor}");
+            //        }
 
-                        // So far all modifiers are date modifiers that return INT
-                        propType = typeof(int);
-                    }
+            //        // The type of the first operand
+            //        var propType = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
+            //        if (!string.IsNullOrWhiteSpace(atom.Modifier))
+            //        {
+            //            // So far all modifiers are only applicable for date properties
+            //            if (propType != typeof(DateTime) && propType != typeof(DateTimeOffset))
+            //            {
+            //                // Developer mistake
+            //                throw new InvalidOperationException($"The modifier {atom.Modifier} is not valid for property {propName} since it is not of type DateTime or DateTimeOffset");
+            //            }
 
-                    // The expected type of the second operand (different in the case of hierarchyId)
-                    var expectedValueType = propType;
-                    if (expectedValueType == typeof(HierarchyId))
-                    {
-                        var idType = join.EntityDescriptor.Property("Id")?.Type;
-                        if (idType == null)
-                        {
-                            // Programmer mistake
-                            throw new InvalidOperationException($"Type {join.EntityDescriptor} is a tree structure but has no Id property");
-                        }
+            //            // So far all modifiers are date modifiers that return INT
+            //            propType = typeof(int);
+            //        }
 
-                        expectedValueType = Nullable.GetUnderlyingType(idType) ?? idType;
-                    }
+            //        // The expected type of the second operand (different in the case of hierarchyId)
+            //        var expectedValueType = propType;
+            //        if (expectedValueType == typeof(HierarchyId))
+            //        {
+            //            var idType = join.EntityDescriptor.Property("Id")?.Type;
+            //            if (idType == null)
+            //            {
+            //                // Programmer mistake
+            //                throw new InvalidOperationException($"Type {join.EntityDescriptor} is a tree structure but has no Id property");
+            //            }
 
-                    // (C) Prepare the value (e.g. "'Huntington Rd.'")
-                    var valueString = atom.Value;
-                    object value;
-                    bool isNull = false;
-                    switch (valueString?.ToLower())
-                    {
-                        // This checks all built-in values
-                        case "null":
-                            value = null;
-                            isNull = true;
-                            break;
+            //            expectedValueType = Nullable.GetUnderlyingType(idType) ?? idType;
+            //        }
 
-                        case "me":
-                            value = userId;
-                            break;
+            //        // (C) Prepare the value (e.g. "'Huntington Rd.'")
+            //        var valueString = atom.Value;
+            //        object value;
+            //        bool isNull = false;
+            //        switch (valueString?.ToLower())
+            //        {
+            //            // This checks all built-in values
+            //            case "null":
+            //                value = null;
+            //                isNull = true;
+            //                break;
 
-                        // Relative DateTime values
-                        case "startofyear":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //            case "me":
+            //                value = userId;
+            //                break;
 
-                            value = StartOfYear(userToday);
-                            break;
+            //            // Relative DateTime values
+            //            case "startofyear":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "endofyear":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = StartOfYear(userToday);
+            //                break;
 
-                            value = StartOfYear(userToday).AddYears(1);
-                            break;
+            //            case "endofyear":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "startofquarter":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = StartOfYear(userToday).AddYears(1);
+            //                break;
 
-                            value = StartOfQuarter(userToday);
-                            break;
+            //            case "startofquarter":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "endofquarter":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = StartOfQuarter(userToday);
+            //                break;
 
-                            value = StartOfQuarter(userToday).AddMonths(3);
-                            break;
+            //            case "endofquarter":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "startofmonth":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = StartOfQuarter(userToday).AddMonths(3);
+            //                break;
 
-                            value = StartOfMonth(userToday);
-                            break;
+            //            case "startofmonth":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "endofmonth":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = StartOfMonth(userToday);
+            //                break;
 
-                            value = StartOfMonth(userToday).AddMonths(1);
-                            break;
+            //            case "endofmonth":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "today":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = StartOfMonth(userToday).AddMonths(1);
+            //                break;
 
-                            value = Today(userToday);
-                            break;
+            //            case "today":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "endofday":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTime(atom, propName, propType);
+            //                value = Today(userToday);
+            //                break;
 
-                            value = Today(userToday).AddDays(1);
-                            break;
+            //            case "endofday":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTime(atom, propName, propType);
 
-                        case "now":
-                            EnsureNullModifier(atom);
-                            EnsureTypeDateTimeOffset(atom, propName, propType);
+            //                value = Today(userToday).AddDays(1);
+            //                break;
 
-                            var now = DateTimeOffset.Now;
-                            value = now;
-                            break;
+            //            case "now":
+            //                EnsureNullModifier(atom);
+            //                EnsureTypeDateTimeOffset(atom, propName, propType);
 
-                        default:
-                            if (expectedValueType == typeof(string) || expectedValueType == typeof(char))
-                            {
-                                if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
-                                {
-                                    // Developer mistake
-                                    throw new InvalidOperationException($"Property {propName} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
-                                }
+            //                var now = DateTimeOffset.Now;
+            //                value = now;
+            //                break;
 
-                                valueString = valueString[1..^1];
-                            }
+            //            default:
+            //                if (expectedValueType == typeof(string) || expectedValueType == typeof(char))
+            //                {
+            //                    if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
+            //                    {
+            //                        // Developer mistake
+            //                        throw new InvalidOperationException($"Property {propName} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
+            //                    }
 
-                            try
-                            {
-                                value = ParseFilterValue(valueString, expectedValueType);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // Developer mistake
-                                throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
-                            }
+            //                    valueString = valueString[1..^1];
+            //                }
 
-                            break;
-                    }
+            //                try
+            //                {
+            //                    value = ParseFilterValue(valueString, expectedValueType);
+            //                }
+            //                catch (ArgumentException)
+            //                {
+            //                    // Developer mistake
+            //                    throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
+            //                }
 
-                    var paramSymbol = isNull ? "NULL" : "@" + ps.AddParameter(value);
+            //                break;
+            //        }
 
-                    // (D) Prepare the SQL property
-                    string propSQL = AtomSql(symbol, atom.Property, null, atom.Modifier);
+            //        var paramSymbol = isNull ? "NULL" : "@" + ps.AddParameter(value);
 
-                    // (E) parse the operator (e.g. "eq")
-                    switch (atom.Op?.ToLower() ?? "")
-                    {
-                        case Ops.gt:
-                        case Ops.gtSign:
-                            return $"{propSQL} > {paramSymbol}";
+            //        // (D) Prepare the SQL property
+            //        string propSQL = AtomSql(symbol, atom.Property, null, atom.Modifier);
 
-                        case Ops.ge:
-                        case Ops.geSign:
-                            return $"{propSQL} >= {paramSymbol}";
+            //        // (E) parse the operator (e.g. "eq")
+            //        switch (atom.Op?.ToLower() ?? "")
+            //        {
+            //            case Ops.gt:
+            //            case Ops.gtSign:
+            //                return $"{propSQL} > {paramSymbol}";
 
-                        case Ops.lt:
-                        case Ops.ltSign:
-                            return $"{propSQL} < {paramSymbol}";
+            //            case Ops.ge:
+            //            case Ops.geSign:
+            //                return $"{propSQL} >= {paramSymbol}";
 
-                        case Ops.le:
-                        case Ops.leSign:
-                            return $"{propSQL} <= {paramSymbol}";
+            //            case Ops.lt:
+            //            case Ops.ltSign:
+            //                return $"{propSQL} < {paramSymbol}";
 
-                        case Ops.eq:
-                        case Ops.eqSign:
-                            string eqSql = isNull ? "IS" : "=";
-                            return $"{propSQL} {eqSql} {paramSymbol}";
+            //            case Ops.le:
+            //            case Ops.leSign:
+            //                return $"{propSQL} <= {paramSymbol}";
 
-                        case Ops.ne:
-                        case Ops.neSign:
-                        case Ops.neSign2:
-                            string neSql = isNull ? "IS NOT" : "<>";
-                            return $"{propSQL} {neSql} {paramSymbol}";
+            //            case Ops.eq:
+            //            case Ops.eqSign:
+            //                string eqSql = isNull ? "IS" : "=";
+            //                return $"{propSQL} {eqSql} {paramSymbol}";
 
-                        case Ops.contains: // Must be text
-                            EnsureTypeString(atom, propName, propType);
-                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
-                            return $"{propSQL} LIKE N'%' + {paramSymbol} + N'%'";
+            //            case Ops.ne:
+            //            case Ops.neSign:
+            //            case Ops.neSign2:
+            //                string neSql = isNull ? "IS NOT" : "<>";
+            //                return $"{propSQL} {neSql} {paramSymbol}";
 
-                        case Ops.ncontains: // Must be text
-                            EnsureTypeString(atom, propName, propType);
-                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
-                            return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
+            //            case Ops.contains: // Must be text
+            //                EnsureTypeString(atom, propName, propType);
+            //                paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
+            //                return $"{propSQL} LIKE N'%' + {paramSymbol} + N'%'";
 
-                        case Ops.startsw: // Must be text
-                            EnsureTypeString(atom, propName, propType);
-                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
-                            return $"{propSQL} LIKE {paramSymbol} + N'%'";
+            //            case Ops.ncontains: // Must be text
+            //                EnsureTypeString(atom, propName, propType);
+            //                paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
+            //                return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
 
-                        case Ops.nstartsw: // Must be text
-                            EnsureTypeString(atom, propName, propType);
-                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
-                            return $"{propSQL} NOT LIKE {paramSymbol} + N'%'";
+            //            case Ops.startsw: // Must be text
+            //                EnsureTypeString(atom, propName, propType);
+            //                paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
+            //                return $"{propSQL} LIKE {paramSymbol} + N'%'";
 
-                        case Ops.endsw: // Must be text
-                            EnsureTypeString(atom, propName, propType);
-                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
-                            return $"{propSQL} LIKE N'%' + {paramSymbol}";
+            //            case Ops.nstartsw: // Must be text
+            //                EnsureTypeString(atom, propName, propType);
+            //                paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
+            //                return $"{propSQL} NOT LIKE {paramSymbol} + N'%'";
 
-                        case Ops.nendsw: // Must be text
-                            EnsureTypeString(atom, propName, propType);
-                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
-                            return $"{propSQL} NOT LIKE N'%' + {paramSymbol}";
+            //            case Ops.endsw: // Must be text
+            //                EnsureTypeString(atom, propName, propType);
+            //                paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
+            //                return $"{propSQL} LIKE N'%' + {paramSymbol}";
 
-                        case Ops.childof: // Must be hierarchy Id
-                            {
-                                EnsureTypeHierarchyId(atom, propName, propType);
-                                string treeSource = sources(join.EntityDescriptor.Type);
-                                string parentNode = isNull ? "HierarchyId::GetRoot()" :
-                                    $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
+            //            case Ops.nendsw: // Must be text
+            //                EnsureTypeString(atom, propName, propType);
+            //                paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
+            //                return $"{propSQL} NOT LIKE N'%' + {paramSymbol}";
 
-                                return $"{propSQL}.GetAncestor(1) = {parentNode}";
-                            }
+            //            case Ops.childof: // Must be hierarchy Id
+            //                {
+            //                    EnsureTypeHierarchyId(atom, propName, propType);
+            //                    string treeSource = sources(join.EntityDescriptor.Type);
+            //                    string parentNode = isNull ? "HierarchyId::GetRoot()" :
+            //                        $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
 
-                        case Ops.descof: // Must be hierarchy Id
-                            {
-                                EnsureTypeHierarchyId(atom, propName, propType);
-                                string treeSource = sources(join.EntityDescriptor.Type);
-                                string parentNode = isNull ? "HierarchyId::GetRoot()" :
-                                    $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
+            //                    return $"{propSQL}.GetAncestor(1) = {parentNode}";
+            //                }
 
-                                return $"{propSQL}.IsDescendantOf({parentNode}) = 1";
-                            }
+            //            case Ops.descof: // Must be hierarchy Id
+            //                {
+            //                    EnsureTypeHierarchyId(atom, propName, propType);
+            //                    string treeSource = sources(join.EntityDescriptor.Type);
+            //                    string parentNode = isNull ? "HierarchyId::GetRoot()" :
+            //                        $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
 
-                        default:
-                            // Developer mistake
-                            throw new InvalidOperationException($"The filter operator '{atom.Op}' is not recognized");
-                    }
-                }
+            //                    return $"{propSQL}.IsDescendantOf({parentNode}) = 1";
+            //                }
 
-                // Programmer mistake
-                throw new InvalidOperationException("Unknown AST type");
+            //            default:
+            //                // Developer mistake
+            //                throw new InvalidOperationException($"The filter operator '{atom.Op}' is not recognized");
+            //        }
+            //    }
 
-            }
+            //    // Programmer mistake
+            //    throw new InvalidOperationException("Unknown AST type");
 
-            return FilterToSqlInner(e);
+            //}
+
+            //return FilterToSqlInner(e);
         }
 
         /// <summary>
@@ -495,78 +497,79 @@ namespace Tellma.Data.Queries
         /// </summary>
         public static string AtomSql(string symbol, string propName, string aggregation, string modifier)
         {
-            var result = $"[{symbol}].[{propName}]";
+            throw new NotImplementedException();
+            //var result = $"[{symbol}].[{propName}]";
 
-            if (!string.IsNullOrWhiteSpace(modifier))
-            {
-                // So far all modifiers are date parts and have no parameters, in the future this may change
-                var lowerCaseFunction = modifier.ToLower();
-                var sqlFunction = Modifiers.All.FirstOrDefault(fn => lowerCaseFunction.Equals(fn)) ??
-                    throw new InvalidOperationException($"Unrecognized modifier '{modifier}'");
+            //if (!string.IsNullOrWhiteSpace(modifier))
+            //{
+            //    // So far all modifiers are date parts and have no parameters, in the future this may change
+            //    var lowerCaseFunction = modifier.ToLower();
+            //    var sqlFunction = Modifiers.All.FirstOrDefault(fn => lowerCaseFunction.Equals(fn)) ??
+            //        throw new InvalidOperationException($"Unrecognized modifier '{modifier}'");
 
-                result = $"DATEPART({sqlFunction}, {result})";
-            }
+            //    result = $"DATEPART({sqlFunction}, {result})";
+            //}
 
-            // Apply the aggregation if any
-            if (!string.IsNullOrWhiteSpace(aggregation))
-            {
-                var sqlAggregation = aggregation switch
-                {
-                    Aggregations.count => "COUNT({0})",
-                    Aggregations.sum => "SUM({0})",
-                    Aggregations.avg => "AVG(CAST({0} AS DECIMAL(18,8)))",
-                    Aggregations.min => "MIN({0})",
-                    Aggregations.max => "MAX({0})",
-                    _ => throw new InvalidOperationException($"Unrcognized aggregation '{aggregation}'"),
-                };
-                result = string.Format(sqlAggregation, result);
-            }
+            //// Apply the aggregation if any
+            //if (!string.IsNullOrWhiteSpace(aggregation))
+            //{
+            //    var sqlAggregation = aggregation switch
+            //    {
+            //        Aggregations.count => "COUNT({0})",
+            //        Aggregations.sum => "SUM({0})",
+            //        Aggregations.avg => "AVG(CAST({0} AS DECIMAL(18,8)))",
+            //        Aggregations.min => "MIN({0})",
+            //        Aggregations.max => "MAX({0})",
+            //        _ => throw new InvalidOperationException($"Unrcognized aggregation '{aggregation}'"),
+            //    };
+            //    result = string.Format(sqlAggregation, result);
+            //}
 
-            return result;
+            //return result;
         }
 
-        private static void EnsureNullModifier(FilterAtom atom)
-        {
-            if (!string.IsNullOrWhiteSpace(atom.Modifier))
-            {
-                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with a date modifier such as '{atom.Modifier}'");
-            }
-        }
+        //private static void EnsureNullModifier(FilterAtom atom)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(atom.Modifier))
+        //    {
+        //        throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with a date modifier such as '{atom.Modifier}'");
+        //    }
+        //}
 
-        private static void EnsureTypeHierarchyId(FilterAtom atom, string propName, Type propType)
-        {
-            if (propType != typeof(HierarchyId))
-            {
-                // Developer mistake
-                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} because it is not of type HierarchyId");
-            }
-        }
+        //private static void EnsureTypeHierarchyId(FilterAtom atom, string propName, Type propType)
+        //{
+        //    if (propType != typeof(HierarchyId))
+        //    {
+        //        // Developer mistake
+        //        throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} because it is not of type HierarchyId");
+        //    }
+        //}
 
-        private static void EnsureTypeString(FilterAtom atom, string propName, Type propType)
-        {
-            if (propType != typeof(string))
-            {
-                // Developer mistake
-                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} because it is not of type String");
-            }
-        }
+        //private static void EnsureTypeString(FilterAtom atom, string propName, Type propType)
+        //{
+        //    if (propType != typeof(string))
+        //    {
+        //        // Developer mistake
+        //        throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} because it is not of type String");
+        //    }
+        //}
 
-        private static void EnsureTypeDateTime(FilterAtom atom, string propName, Type propType)
-        {
-            if (propType != typeof(DateTime))
-            {
-                // Developer mistake
-                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTime");
-            }
-        }
+        //private static void EnsureTypeDateTime(FilterAtom atom, string propName, Type propType)
+        //{
+        //    if (propType != typeof(DateTime))
+        //    {
+        //        // Developer mistake
+        //        throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTime");
+        //    }
+        //}
 
-        private static void EnsureTypeDateTimeOffset(FilterAtom atom, string propName, Type propType)
-        {
-            if (propType != typeof(DateTimeOffset))
-            {
-                // Developer mistake
-                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTimeOffset");
-            }
-        }
+        //private static void EnsureTypeDateTimeOffset(FilterAtom atom, string propName, Type propType)
+        //{
+        //    if (propType != typeof(DateTimeOffset))
+        //    {
+        //        // Developer mistake
+        //        throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTimeOffset");
+        //    }
+        //}
     }
 }

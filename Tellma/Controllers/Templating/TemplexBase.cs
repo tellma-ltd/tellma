@@ -23,7 +23,7 @@ namespace Tellma.Controllers.Templating
     /// <see cref="TemplexBase"/>s that evaluate to database entities should also statically provide a list of
     /// <see cref="Path"/>s that represent the base path of the returned entity, to aid parent expressions in computing
     /// their SELECT list, this is implemented in <see cref="ComputePaths(EvaluationContext)"/>.
-    /// The name "Templex" is short for "Template Expression", in analogy of "Regex".
+    /// The prefix "Templex" is short for "Template Expression", in an analogy of "Regex".
     /// </summary>
     public abstract class TemplexBase : TemplateBase
     {
