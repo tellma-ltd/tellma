@@ -563,6 +563,7 @@ namespace Tellma.Data.Queries
                 statements: statements,
                 preparatorySql: null,
                 countSql: countSql,
+                vars: vars,
                 ps: ps,
                 conn: conn,
                 instrumentation: i,

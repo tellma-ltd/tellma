@@ -15,10 +15,16 @@ namespace Tellma.Data.Queries
 {
     internal static class EntityLoader
     {
-        private static string PrepareSql(string preparatorySql, string countSql, params string[] statementSqls)
+        private static string PrepareSql(string variablesSql, string preparatorySql, string countSql, params string[] statementSqls)
         {
             // Prepare the main sql script
             StringBuilder sql = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(variablesSql))
+            {
+                sql.AppendLine(variablesSql);
+                sql.AppendLine(); // Just for aesthetics
+            }
+
             if (!string.IsNullOrWhiteSpace(preparatorySql))
             {
                 sql.AppendLine(preparatorySql);
@@ -56,10 +62,10 @@ namespace Tellma.Data.Queries
             using (var cmd = conn.CreateCommand())
             {
                 // Add any variables in the preparatory SQL
-                string preparatorySql = vars.ToSql();
+                string variablesSql = vars.ToSql();
 
                 // Command Text
-                cmd.CommandText = PrepareSql(preparatorySql, null, statement.Sql);
+                cmd.CommandText = PrepareSql(variablesSql, null, null, statement.Sql);
 
                 // Command Parameters
                 foreach (var parameter in ps)
@@ -128,6 +134,7 @@ namespace Tellma.Data.Queries
            List<SqlStatement> statements,
            string preparatorySql,
            string countSql,
+           SqlStatementVariables vars,
            SqlStatementParameters ps,
            SqlConnection conn,
            IInstrumentationService instrumentation,
@@ -143,8 +150,11 @@ namespace Tellma.Data.Queries
             // Prepare the SQL command
             using var cmd = conn.CreateCommand();
 
+            // Add any variables in the preparatory SQL
+            string variablesSql = vars.ToSql();
+
             // Command Text
-            cmd.CommandText = PrepareSql(preparatorySql, countSql, statements.Select(e => e.Sql).ToArray());
+            cmd.CommandText = PrepareSql(variablesSql, preparatorySql, countSql, statements.Select(e => e.Sql).ToArray());
 
             // Command Parameters
             foreach (var parameter in ps)
