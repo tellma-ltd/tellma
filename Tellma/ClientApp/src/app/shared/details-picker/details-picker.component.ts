@@ -916,8 +916,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._definitionId = definitionId;
     this._idString = 'new';
 
-    console.log('Opening!!');
-
     // Without setTimeout it doesn't open in dev env sometimes, weird
     setTimeout(() => {
       const modalRef = this.modalService.open(this.detailsWrapperTemplate, { windowClass: this.detailsModalWindowClass });

@@ -29,6 +29,7 @@ using Microsoft.Extensions.Options;
 using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Controllers.Utiltites;
 using System.Globalization;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Controllers
 {
@@ -284,26 +285,27 @@ namespace Tellma.Controllers
             PostingDateIsCommon = true,
             MemoIsCommon = true,
             CurrencyIsCommon = true,
+            CenterIsCommon = true,
             CustodianIsCommon = true,
             CustodyIsCommon = true,
             ParticipantIsCommon = true,
             ResourceIsCommon = true,
             QuantityIsCommon = true,
             UnitIsCommon = true,
-            CenterIsCommon = true,
             Time1IsCommon = true,
             Time2IsCommon = true,
             ExternalReferenceIsCommon = true,
             InternalReferenceIsCommon = true,
         };
 
+        private static readonly TypeDescriptor lineDefEntryForSaveDescriptor = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
+
         /// <summary>
         /// Checks if the supplied DocumentLineDefinitionEntryForSave is equivalent to the default one (ignoring Id, LineDefinitionId and EntryIndex properties)
         /// </summary>
         private static bool EqualsDefaultTabEntry(DocumentLineDefinitionEntryForSave tabEntry)
         {
-            var desc = Entities.Descriptors.TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
-            return desc.Properties.All(p =>
+            return lineDefEntryForSaveDescriptor.Properties.All(p =>
             {
                 switch (p.Name)
                 {

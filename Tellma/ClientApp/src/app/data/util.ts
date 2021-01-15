@@ -201,8 +201,6 @@ export function downloadBlob(blob: Blob, fileName: string) {
       // win.document.body.style.margin = '0';
 
     } else {
-      console.log(blob.type);
-
       // Below is a trick for downloading files without opening a new browser tab
       const a = document.createElement('a');
       a.href = url;
