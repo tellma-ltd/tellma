@@ -4900,7 +4900,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents, includeAttachments: true);
+                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {

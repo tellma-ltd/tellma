@@ -133,7 +133,7 @@ namespace Tellma.Data
             return table;
         }
 
-        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries, DataTable attachments) DataTableFromDocuments(IEnumerable<DocumentForSave> documents, bool includeAttachments = true)
+        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries, DataTable attachments) DataTableFromDocuments(IEnumerable<DocumentForSave> documents)
         {
             // Prepare the documents table skeleton
             DataTable docsTable = new DataTable();

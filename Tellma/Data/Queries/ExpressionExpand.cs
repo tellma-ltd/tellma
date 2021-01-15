@@ -66,7 +66,7 @@ namespace Tellma.Data.Queries
                 return null;
             }
 
-            var expressions = QueryexBase.Parse(expand);
+            var expressions = QueryexBase.Parse(expand, expectPathsOnly: true);
             if (!expressions.All(e => e is QueryexColumnAccess))
             {
                 throw new QueryException($"Expand parameter can only contain column access expressions like this: Id,Name,CreatedBy.Name");
@@ -94,7 +94,7 @@ namespace Tellma.Data.Queries
         {
             get
             {
-                return new ExpressionExpand(new List<QueryexColumnAccess> { new QueryexColumnAccess(new string[0]) });
+                return new ExpressionExpand(new List<QueryexColumnAccess> { new QueryexColumnAccess(new string[0], null) });
             }
         }
     }

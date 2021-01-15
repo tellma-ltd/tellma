@@ -276,13 +276,10 @@ namespace Tellma.Controllers
         // Private fields
 
         private readonly AdminRepository _repo;
-        private readonly IStringLocalizer _localizer;
 
-        public AdminSettingsService(AdminRepository repo,
-            IStringLocalizer<Strings> localizer)
+        public AdminSettingsService(AdminRepository repo)
         {
             _repo = repo;
-            _localizer = localizer;
         }
 
         public async Task<Versioned<AdminSettingsForClient>> SettingsForClient(CancellationToken cancellation)

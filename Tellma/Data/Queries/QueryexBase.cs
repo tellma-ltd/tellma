@@ -341,7 +341,7 @@ namespace Tellma.Data.Queries
 
         #region Parser
 
-        public static IEnumerable<QueryexBase> Parse(string expressionString, bool expectDirKeywords = false)
+        public static IEnumerable<QueryexBase> Parse(string expressionString, bool expectDirKeywords = false, bool expectPathsOnly = false)
         {
             if (string.IsNullOrWhiteSpace(expressionString))
             {
@@ -349,7 +349,7 @@ namespace Tellma.Data.Queries
             }
 
             IEnumerable<string> tokenStream = Tokenize(expressionString);
-            foreach (var expression in ParseTokenStream(tokenStream, expressionString, expectDirKeywords))
+            foreach (var expression in ParseTokenStream(tokenStream, expressionString, expectDirKeywords, expectPathsOnly))
             {
                 if (expression != null)
                 {
@@ -488,7 +488,7 @@ namespace Tellma.Data.Queries
             }
         }
 
-        private static IEnumerable<QueryexBase> ParseTokenStream(IEnumerable<string> tokens, string expressionString, bool expectDirKeywords)
+        private static IEnumerable<QueryexBase> ParseTokenStream(IEnumerable<string> tokens, string expressionString, bool expectDirKeywords, bool expectPathsOnly)
         {
             // This is an implementation of the shunting-yard algorithm from Edsger Dijkstra https://bit.ly/1fEvvLI
             var ops = new Stack<(string op, bool isUnary)>();
@@ -834,9 +834,9 @@ namespace Tellma.Data.Queries
                             {
                                 exp = new QueryexNumber(value: decimalValue);
                             }
-                            else if (QueryexColumnAccess.IsValidColumnAccess(currentToken, out string[] steps))
+                            else if (QueryexColumnAccess.IsValidColumnAccess(currentToken, expectPathsOnly, out string[] pathArray, out string propName))
                             {
-                                exp = new QueryexColumnAccess(steps: steps);
+                                exp = new QueryexColumnAccess(path: pathArray, prop: propName);
                             }
                             else
                             {
@@ -915,33 +915,15 @@ namespace Tellma.Data.Queries
 
     public class QueryexColumnAccess : QueryexBase
     {
-        public QueryexColumnAccess(string[] steps)
-        {
-            Steps = steps ?? throw new ArgumentNullException(nameof(steps));
-            Path = Steps.Length > 0 ? Steps.SkipLast(1).ToArray() : new string[0] { };
-            Property = Steps.Length > 0 ? Steps[^1] : null;
-        }
-
         public QueryexColumnAccess(string[] path, string prop)
         {
             Path = path ?? throw new ArgumentNullException(nameof(path));
             Property = prop;
-
-            if (string.IsNullOrWhiteSpace(prop))
-            {
-                Steps = path;
-            }
-            else
-            {
-                Steps = path.Append(prop).ToArray();
-            }
         }
 
-        public string[] Steps { get; }
+        public string[] Path { get; }
 
         public string Property { get; }
-
-        public string[] Path { get; }
 
         public override string ToString()
         {
@@ -956,6 +938,12 @@ namespace Tellma.Data.Queries
 
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
         {
+            if (string.IsNullOrWhiteSpace(Property))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Bug: Invoking {nameof(CompileNative)} on a {nameof(QueryexColumnAccess)} that does not have a property.");
+            }
+
             // Get the property descriptor
             var join = ctx.Joins[Path];
             if (join == null)
@@ -1042,16 +1030,18 @@ namespace Tellma.Data.Queries
         public override bool Equals(object exp)
         {
             return exp is QueryexColumnAccess ca &&
-                ca.Steps.Length == Steps.Length &&
-                ca.Steps.Select((step, index) => (step, index))
-                        .All(pair => pair.step == Steps[pair.index]);
+                ca.Property == Property &&
+                ca.Path.Length == Path.Length &&
+                Enumerable.Range(0, Path.Length)
+                    .All(i => ca.Path[i] == Path[i]);
         }
 
         public override int GetHashCode()
         {
-            return Steps
-                .Select(s => s.GetHashCode())
-                .Aggregate(0, (code1, code2) => code1 ^ code2);
+            int propCode = Property?.GetHashCode() ?? 0;
+
+            return Path.Select(s => s.GetHashCode())
+                .Aggregate(propCode, (code1, code2) => code1 ^ code2);
         }
 
         #region Column Access Validation
@@ -1113,20 +1103,31 @@ namespace Tellma.Data.Queries
         /// </summary>
         /// <param name="token">The token to test</param>
         /// <returns>True if it passes all the validation rules, false otherwise</returns>
-        public static bool IsValidColumnAccess(string token, out string[] steps)
+        public static bool IsValidColumnAccess(string token, bool expectPathsOnly, out string[] pathArray, out string propName)
         {
             bool match = ProperFirstChar(token) && ProperChars(token) && NotReservedKeyword(token);
             if (match)
             {
-                steps = token
-                .Split('.')
-                .Select(e => e.Trim())
-                .Where(e => !string.IsNullOrEmpty(e))
-                .ToArray();
+                var steps = token
+                    .Split('.')
+                    .Select(e => e.Trim())
+                    .Where(e => !string.IsNullOrEmpty(e));
+
+                if (expectPathsOnly)
+                {
+                    pathArray = steps.ToArray();
+                    propName = null;
+                }
+                else
+                {
+                    pathArray = steps.SkipLast(1).ToArray();
+                    propName = steps.Last();
+                }
             }
             else
             {
-                steps = null;
+                pathArray = null;
+                propName = null;
             }
 
             return match;
@@ -1577,7 +1578,8 @@ namespace Tellma.Data.Queries
             return exp is QueryexFunction func &&
                 func.Name == Name &&
                 func.Arguments.Length == Arguments.Length &&
-                Enumerable.Range(0, func.Arguments.Length).All(i => func.Arguments[i].Equals(Arguments[i]));
+                Enumerable.Range(0, Arguments.Length)
+                    .All(i => func.Arguments[i].Equals(Arguments[i]));
         }
 
         public override int GetHashCode()

@@ -278,7 +278,7 @@ namespace Tellma.Data.Queries
             Expand ??= ExpressionExpand.Empty;
             foreach (var expand in Expand.Union(ExpressionExpand.RootSingleton))
             {
-                string[] path = expand.Steps;
+                string[] path = expand.Path;
                 for (int i = 0; i <= path.Length; i++)
                 {
                     var subpath = new ArraySegment<string>(path, 0, i);
@@ -421,7 +421,7 @@ namespace Tellma.Data.Queries
 
             if (Expand != null)
             {
-                allPaths.AddRange(Expand.Select(e => e.Steps));
+                allPaths.AddRange(Expand.Select(e => e.Path));
             }
 
             if (Filter != null)

@@ -455,7 +455,7 @@ namespace Tellma.Data.Queries
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add a select
                             {
                                 flatQuery.Select ??= new ExpressionSelect();
-                                flatQuery.Select.Add(new QueryexColumnAccess(subPath.SkipLast(1).ToArray(), null));
+                                flatQuery.Select.Add(new QueryexColumnAccess(path: subPath.SkipLast(1).ToArray(), prop: null));
                             }
                         }
 
@@ -479,10 +479,10 @@ namespace Tellma.Data.Queries
 
             expandExp ??= ExpressionExpand.RootSingleton;
             {
-                var expandTree = PathTrie.Build(resultDesc, expandExp.Select(e => e.Steps));
+                var expandTree = PathTrie.Build(resultDesc, expandExp.Select(e => e.Path));
                 foreach (var expandAtom in expandExp)
                 {
-                    var pathSegments = expandTree.GetSegments(expandAtom.Steps);
+                    var pathSegments = expandTree.GetSegments(expandAtom.Path);
                     ArraySegment<string> previousFullPath = null;
                     foreach (var (fullPath, subPath, type) in pathSegments.SkipLast(1))
                     {
@@ -499,7 +499,7 @@ namespace Tellma.Data.Queries
                             {
                                 flatQuery.Expand ??= new ExpressionExpand();
                                 // flatQuery.Expand.Add(new ExpandAtom { Steps = subPath.SkipLast(1).ToArray() });
-                                flatQuery.Expand.Add(new QueryexColumnAccess(steps: subPath.SkipLast(1).ToArray()));
+                                flatQuery.Expand.Add(new QueryexColumnAccess(path: subPath.SkipLast(1).ToArray(), prop: null));
                             }
                         }
                         previousFullPath = fullPath;
@@ -516,7 +516,7 @@ namespace Tellma.Data.Queries
                             //{
                             //    Steps = subPath.ToArray(),
                             //});
-                            flatQuery.Expand.Add(new QueryexColumnAccess(steps: subPath.ToArray()));
+                            flatQuery.Expand.Add(new QueryexColumnAccess(path: subPath.ToArray(), prop: null));
                         }
                     }
                 }
@@ -612,7 +612,7 @@ namespace Tellma.Data.Queries
                 PathValidator trie = new PathValidator();
                 foreach (var atom in expandExp)
                 {
-                    trie.AddPath(atom.Steps);
+                    trie.AddPath(atom.Path);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
