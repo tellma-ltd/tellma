@@ -13,12 +13,12 @@ namespace Tellma.Controllers.Utilities
     public class FilteredRepository<TFiltered> : IRepository where TFiltered : Entity
     {
         private readonly IRepository _repo;
-        private readonly FilterExpression _filter;
+        private readonly ExpressionFilter _filter;
 
         public FilteredRepository(IRepository repo, string filter)
         {
             _repo = repo;
-            _filter = FilterExpression.Parse(filter);
+            _filter = ExpressionFilter.Parse(filter);
         }
 
         public AggregateQuery<T> AggregateQuery<T>() where T : Entity

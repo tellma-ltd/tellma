@@ -9,14 +9,14 @@ namespace Tellma.Data.Queries
     /// Represents an expand argument which is a comma separated list of paths. Where some paths are optionally
     /// postfixed with "desc" or "asc". For example: "Invoice/Customer,Amount"
     /// </summary>
-    public class OrderByExpression : IEnumerable<OrderByAtom>
+    public class ExpressionOrderBy : IEnumerable<QueryexColumnAccess>
     {
-        private readonly IEnumerable<OrderByAtom> _atoms;
+        private readonly IEnumerable<QueryexColumnAccess> _atoms;
 
         /// <summary>
-        /// Create an instance of <see cref="OrderByExpression"/> containing the provided <see cref="OrderByAtom"/>s
+        /// Create an instance of <see cref="ExpressionOrderBy"/> containing the provided <see cref="OrderByAtom"/>s
         /// </summary>
-        public OrderByExpression(IEnumerable<OrderByAtom> atoms)
+        public ExpressionOrderBy(IEnumerable<QueryexColumnAccess> atoms)
         {
             _atoms = atoms ?? throw new ArgumentNullException(nameof(atoms));
         }
@@ -24,7 +24,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Implementation of <see cref="IEnumerable"/>
         /// </summary>
-        public IEnumerator<OrderByAtom> GetEnumerator()
+        public IEnumerator<QueryexColumnAccess> GetEnumerator()
         {
             return _atoms.GetEnumerator();
         }
@@ -38,24 +38,24 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Parses a string representing an order by argument into an <see cref="OrderByExpression"/>. 
+        /// Parses a string representing an order by argument into an <see cref="ExpressionOrderBy"/>. 
         /// The orderby argument is a comma separated list of paths, where some paths are optionally
         /// postfixed with "desc" or "asc". For example "Invoice/Customer,Amount"
         /// </summary>
-        public static OrderByExpression Parse(string orderby)
+        public static ExpressionOrderBy Parse(string orderby)
         {
             if (string.IsNullOrWhiteSpace(orderby))
             {
                 return null;
             }
 
-            var atoms = orderby
-                .Split(',')
-                .Select(e => e?.Trim())
-                .Where(e => !string.IsNullOrEmpty(e))
-                .Select(s => OrderByAtom.Parse(s));
+            var expressions = QueryexBase.Parse(orderby, expectDirKeywords: true);
+            if (!expressions.All(e => e is QueryexColumnAccess))
+            {
+                throw new QueryException($"OrderBy parameter can only contain column access expressions like this: Id desc,Name asc,CreatedBy.Name");
+            }
 
-            return new OrderByExpression(atoms);
+            return new ExpressionOrderBy(expressions.Cast<QueryexColumnAccess>());
         }
     }
 }

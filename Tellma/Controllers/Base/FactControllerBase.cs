@@ -370,17 +370,17 @@ namespace Tellma.Controllers
             block = _instrumentation.Block("Parse Filter");
 
             // Parse the parameters
-            var filter = FilterExpression.Parse(args.Filter);
+            var filter = ExpressionFilter.Parse(args.Filter);
 
             block.Dispose();
             block = _instrumentation.Block("Parse OrderBy");
 
-            var orderby = OrderByExpression.Parse(args.OrderBy);
+            var orderby = ExpressionOrderBy.Parse(args.OrderBy);
 
             block.Dispose();
             block = _instrumentation.Block("Parse Expand");
 
-            var expand = ExpandExpression.Parse(args.Expand);
+            var expand = ExpressionExpand.Parse(args.Expand);
 
             block.Dispose();
             block = _instrumentation.Block("Parse Select");
@@ -454,8 +454,10 @@ namespace Tellma.Controllers
         public virtual async Task<(List<DynamicRow> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
-            var filter = FilterExpression.Parse(args.Filter);
-            var select = AggregateSelectExpression.Parse(args.Select);
+            var filter = ExpressionFilter.Parse(args.Filter);
+            var having = ExpressionHaving.Parse(args.Having);
+            var select = ExpressionAggregateSelect.Parse(args.Select);
+            var orderby = ExpressionAggregateOrderBy.Parse(args.OrderBy);
 
             // Prepare the query
             var query = GetRepository().AggregateQuery<TEntity>();
@@ -465,16 +467,20 @@ namespace Tellma.Controllers
             query = query.Filter(permissionsFilterExp); // Important
             var isPartial = false;
 
-            // Filter
+            // Filter and Having
             query = query.Filter(filter);
+            query = query.Having(having);
 
             // Apply the top parameter
             var top = args.Top == 0 ? int.MaxValue : args.Top; // 0 means get all
             top = Math.Min(top, MAXIMUM_AGGREGATE_RESULT_SIZE + 1);
             query = query.Top(top);
 
-            // Apply the select, which has the general format 'Select=A,B/C,D'
+            // Apply the select, which has the general format 'Select=A+B.C,Sum(D)'
             query = query.Select(select);
+
+            // Apply the orderby, which has the general format 'A+B.C desc,Sum(D) asc'
+            query = query.OrderBy(orderby);
 
             // Load the data in memory
             var data = await query.ToListAsync(cancellation);
@@ -600,9 +606,9 @@ namespace Tellma.Controllers
         /// the select string that get expanded into a proper select expression on the server.
         /// This way clients don't have to send large select string in the request for common scenarios
         /// </summary>
-        protected virtual SelectExpression ParseSelect(string select)
+        protected virtual ExpressionSelect ParseSelect(string select)
         {
-            return SelectExpression.Parse(select);
+            return ExpressionSelect.Parse(select);
         }
 
         /// <summary>
@@ -617,9 +623,9 @@ namespace Tellma.Controllers
         protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
 
         /// <summary>
-        /// Retrieves the user permissions for the given action and parses them in the form of an <see cref="FilterExpression"/>, throws a <see cref="ForbiddenException"/> if none are found.
+        /// Retrieves the user permissions for the given action and parses them in the form of an <see cref="ExpressionFilter"/>, throws a <see cref="ForbiddenException"/> if none are found.
         /// </summary>        
-        protected async Task<FilterExpression> UserPermissionsFilter(string action, CancellationToken cancellation)
+        protected async Task<ExpressionFilter> UserPermissionsFilter(string action, CancellationToken cancellation)
         {
             // Check if the user has any permissions on View at all, else throw forbidden exception
             // If the user has some permissions on View, OR all their criteria together and return as a FilterExpression
@@ -638,8 +644,8 @@ namespace Tellma.Controllers
             {
                 // The user has access to part of the data set based on a list
                 // of filters that will  be ORed together in a dynamic query
-                return permissions.Select(e => FilterExpression.Parse(e.Criteria))
-                        .Aggregate((e1, e2) => FilterExpression.Disjunction(e1, e2));
+                return permissions.Select(e => ExpressionFilter.Parse(e.Criteria))
+                        .Aggregate((e1, e2) => ExpressionFilter.Disjunction(e1, e2));
             }
         }
 
@@ -772,7 +778,7 @@ namespace Tellma.Controllers
         /// <param name="orderby">The orderby parameter which has the format 'A/B/C desc,D/E'</param>
         /// <param name="desc">True for a descending order</param>
         /// <returns>Ordered query</returns>
-        protected virtual Query<TEntity> OrderBy(Query<TEntity> query, OrderByExpression orderby)
+        protected virtual Query<TEntity> OrderBy(Query<TEntity> query, ExpressionOrderBy orderby)
         {
             orderby ??= DefaultOrderBy();
             return query.OrderBy(orderby);
@@ -783,7 +789,7 @@ namespace Tellma.Controllers
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        protected abstract OrderByExpression DefaultOrderBy();
+        protected abstract ExpressionOrderBy DefaultOrderBy();
 
         /// <summary>
         /// Specifies the maximum page size to be returned by GET, defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>

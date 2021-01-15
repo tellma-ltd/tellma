@@ -126,15 +126,15 @@ namespace Tellma.Controllers
 
             //    var name = nameof(SummaryEntry.Name);
 
-            //    query = query.Filter($"{name} {Ops.contains} '{search}'");
+            //    query = query.Filter($"{name} contains '{search}'");
             //}
 
             return query;
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(SummaryEntry.AccountId));
+            return ExpressionOrderBy.Parse(nameof(SummaryEntry.AccountId));
         }
     }
 }

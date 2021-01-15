@@ -22,7 +22,7 @@ namespace Tellma.Data.Queries
         public TypeDescriptor ResultDescriptor { get; set; }
 
         /// <summary>
-        /// Maps every column index to a path, property and aggregation function
+        /// Maps every column index to a path, property, modifier and aggregation function
         /// </summary>
         public List<SqlStatementColumn> ColumnMap { get; set; }
 

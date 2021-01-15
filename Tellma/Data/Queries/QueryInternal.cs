@@ -54,13 +54,13 @@ namespace Tellma.Data.Queries
         /// </summary>
         public List<ArraySegment<string>> PathsToParentEntitiesWithExpandedAncestors { get; set; } = new List<ArraySegment<string>>();
 
-        public SelectExpression Select { get; set; } // Should NOT contain collection nav properties
+        public ExpressionSelect Select { get; set; } // Should NOT contain collection nav properties
 
-        public ExpandExpression Expand { get; set; } // Should NOT contain collection nav properties
+        public ExpressionExpand Expand { get; set; } // Should NOT contain collection nav properties
 
-        public FilterExpression Filter { get; set; }
+        public ExpressionFilter Filter { get; set; }
 
-        public OrderByExpression OrderBy { get; set; }
+        public ExpressionOrderBy OrderBy { get; set; }
 
         public IEnumerable<object> Ids { get; set; }
 
@@ -109,7 +109,8 @@ namespace Tellma.Data.Queries
                        whereSql: whereSql,
                        orderbySql: null,
                        offsetFetchSql: null,
-                       groupbySql: null
+                       groupbySql: null,
+                       havingSql: null
                    );
 
             sql = $@"SELECT COUNT(*) As [Count] FROM (
@@ -158,7 +159,8 @@ namespace Tellma.Data.Queries
                     whereSql: whereSql,
                     orderbySql: orderbySql,
                     offsetFetchSql: offsetFetchSql,
-                    groupbySql: null
+                    groupbySql: null,
+                    havingSql: null
                 );
 
             // (8) Return the result
@@ -241,7 +243,8 @@ namespace Tellma.Data.Queries
                     whereSql: whereSql,
                     orderbySql: orderbySql,
                     offsetFetchSql: offsetFetchSql,
-                    groupbySql: null
+                    groupbySql: null,
+                    havingSql: null
                 );
 
             // (8) Return the result
@@ -279,10 +282,10 @@ namespace Tellma.Data.Queries
             HashSet<JoinTrie> selectedJoins = new HashSet<JoinTrie>();
 
             // For every expanded entity that has not been tainted by a select argument, we add all its properties to the list of selects
-            Expand ??= ExpandExpression.Empty;
-            foreach (var expand in Expand.Union(ExpandExpression.RootSingleton))
+            Expand ??= ExpressionExpand.Empty;
+            foreach (var expand in Expand.Union(ExpressionExpand.RootSingleton))
             {
-                string[] path = expand.Path;
+                string[] path = expand.Steps;
                 for (int i = 0; i <= path.Length; i++)
                 {
                     var subpath = new ArraySegment<string>(path, 0, i);
@@ -425,7 +428,7 @@ namespace Tellma.Data.Queries
 
             if (Expand != null)
             {
-                allPaths.AddRange(Expand.Select(e => e.Path));
+                allPaths.AddRange(Expand.Select(e => e.Steps));
             }
 
             if (Filter != null)
@@ -655,7 +658,7 @@ namespace Tellma.Data.Queries
                         throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
                     }
                     var symbol = join.Symbol;
-                    string orderby = $"[{symbol}].[{atom.Property}] {(atom.Desc ? "DESC" : "ASC")}";
+                    string orderby = $"[{symbol}].[{atom.Property}] {(atom.IsDescending ? "DESC" : "ASC")}";
                     orderbys.Add(orderby);
                 }
             }

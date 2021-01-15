@@ -241,7 +241,7 @@ namespace Tellma.Controllers
                 block = _instrumentation.Block("Check Permissions");
 
                 // Check that any updated Ids are 
-                FilterExpression updateFilter = await CheckUpdatePermissionBefore(entities);
+                ExpressionFilter updateFilter = await CheckUpdatePermissionBefore(entities);
 
                 block.Dispose();
                 block = _instrumentation.Block("Validate Unique Ids");
@@ -400,7 +400,7 @@ namespace Tellma.Controllers
         /// </summary>
         /// <param name="entities">The entities being saved</param>
         /// <returns>True if post save check is required</returns>
-        private async Task<FilterExpression> CheckUpdatePermissionBefore(List<TEntityForSave> entities)
+        private async Task<ExpressionFilter> CheckUpdatePermissionBefore(List<TEntityForSave> entities)
         {
             if (entities == null || !entities.Any())
             {

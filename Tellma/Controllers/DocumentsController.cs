@@ -284,15 +284,18 @@ namespace Tellma.Controllers
             PostingDateIsCommon = true,
             MemoIsCommon = true,
             CurrencyIsCommon = true,
+            CenterIsCommon = true,
+
             CustodianIsCommon = true,
             CustodyIsCommon = true,
             ParticipantIsCommon = true,
             ResourceIsCommon = true,
+
             QuantityIsCommon = true,
             UnitIsCommon = true,
-            CenterIsCommon = true,
             Time1IsCommon = true,
             Time2IsCommon = true,
+
             ExternalReferenceIsCommon = true,
             InternalReferenceIsCommon = true,
         };
@@ -809,7 +812,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} {DefinitionId}";
+            string filter = $"{nameof(Document.DefinitionId)} eq {DefinitionId}";
             return new FilteredRepository<Document>(_repo, filter);
         }
 
@@ -2264,9 +2267,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse($"{nameof(Document.SerialNumber)} desc");
+            return ExpressionOrderBy.Parse($"{nameof(Document.SerialNumber)} desc");
         }
 
         private string AttachmentBlobName(string guid)
@@ -2304,7 +2307,7 @@ namespace Tellma.Controllers
             return base.ProcessDefaultMapping(mapping);
         }
 
-        protected override SelectExpression ParseSelect(string select)
+        protected override ExpressionSelect ParseSelect(string select)
         {
             if (select == null)
             {
@@ -2315,7 +2318,7 @@ namespace Tellma.Controllers
             // strings, this one is usually requested from the document details
             // screen and it contains hundreds of atoms
             string shorthand = "$Details";
-            SelectExpression result;
+            ExpressionSelect result;
             if (select.Contains(shorthand))
             {
                 // Use the built in expansion for shorthand
@@ -2323,7 +2326,7 @@ namespace Tellma.Controllers
                 select = select.Replace(shorthand, "");
 
                 // Add any additional atoms
-                SelectExpression remainderExpression = base.ParseSelect(select);
+                ExpressionSelect remainderExpression = base.ParseSelect(select);
                 if (remainderExpression != null)
                 {
                     result.AddAll(remainderExpression);
@@ -2338,7 +2341,7 @@ namespace Tellma.Controllers
         }
 
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
-        private static readonly SelectExpression _detailsSelectExpression = SelectExpression.Parse(_detailsSelect); // new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
+        private static readonly ExpressionSelect _detailsSelectExpression = ExpressionSelect.Parse(_detailsSelect); // new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]
@@ -2393,7 +2396,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
                 }
 
-                string definitionPredicate = $"{nameof(Document.DefinitionId)} {Ops.eq} {definitionId}";
+                string definitionPredicate = $"{nameof(Document.DefinitionId)} eq {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
@@ -2422,9 +2425,9 @@ namespace Tellma.Controllers
             return DocumentServiceUtil.SearchImpl(query, args, prefixMap);
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse($"{nameof(Document.PostingDate)} desc");
+            return ExpressionOrderBy.Parse($"{nameof(Document.PostingDate)} desc");
         }
     }
 
@@ -2451,7 +2454,7 @@ namespace Tellma.Controllers
                     var definitionIdProp = nameof(Document.DefinitionId);
 
                     // Prepare the filter string
-                    var filterString = $"{serialNumberProp} {Ops.eq} {serial} and {definitionIdProp} {Ops.eq} {definitionId}";
+                    var filterString = $"{serialNumberProp} eq {serial} and {definitionIdProp} eq {definitionId}";
 
                     // Apply the filter
                     query = query.Filter(filterString);
@@ -2467,22 +2470,22 @@ namespace Tellma.Controllers
                     var postingDateProp = nameof(Document.PostingDate);
 
                     // Prepare the filter string
-                    var filterString = $"{memoProp} {Ops.contains} '{search}'";
+                    var filterString = $"{memoProp} contains '{search}'";
 
                     // If the search is a number, include documents with that serial number
                     if (int.TryParse(search.Trim(), out int searchNumber))
                     {
-                        filterString = $"{filterString} or {serialNumberProp} {Ops.eq} {searchNumber}";
+                        filterString = $"{filterString} or {serialNumberProp} eq {searchNumber}";
                     }
 
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {postingDateProp} {Ops.eq} {searchDate:yyyy-MM-dd}";
+                        filterString = $"{filterString} or {postingDateProp} eq {searchDate:yyyy-MM-dd}";
                     }
 
                     // Apply the filter
-                    query = query.Filter(FilterExpression.Parse(filterString));
+                    query = query.Filter(ExpressionFilter.Parse(filterString));
                 }
             }
 

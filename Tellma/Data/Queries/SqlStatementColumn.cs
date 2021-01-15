@@ -22,7 +22,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The function applied on the column if any (e.g. dayofyear)
         /// </summary>
-        public string Function { get; set; }
+        public string Modifier { get; set; }
 
         /// <summary>
         /// The aggregation function applied on the column if any (e.g. sum)

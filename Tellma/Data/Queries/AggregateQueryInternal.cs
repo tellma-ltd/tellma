@@ -15,12 +15,22 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The select parameter, should NOT contain collection nav properties or tree nav properties (Parent)
         /// </summary>
-        public AggregateSelectExpression Select { get; set; }
+        public ExpressionAggregateSelect Select { get; set; }
+
+        /// <summary>
+        /// The orderby parameter
+        /// </summary>
+        public ExpressionAggregateOrderBy OrderBy { get; set; }
 
         /// <summary>
         /// The filter parameter
         /// </summary>
-        public FilterExpression Filter { get; set; }
+        public ExpressionFilter Filter { get; set; }
+
+        /// <summary>
+        /// The having parameter
+        /// </summary>
+        public ExpressionHaving Having { get; set; }
 
         /// <summary>
         /// The top parameter
@@ -37,26 +47,27 @@ namespace Tellma.Data.Queries
         /// </summary>
         public SqlStatement PrepareStatement(
             Func<Type, string> sources,
+            SqlStatementVariables vars,
             SqlStatementParameters ps,
             int userId,
             DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
-            var joinTree = PrepareJoin();
-            var joinSql = joinTree.GetSql(sources, fromSql: null);
+            var joinTrie = PrepareJoin();
+            var joinSql = joinTrie.GetSql(sources, fromSql: null);
 
-            // (2) Prepare the SELECT clause
-            SqlSelectGroupByClause selectClause = PrepareSelect(joinTree);
-            var selectSql = selectClause.ToSelectSql();
-            var groupbySql = selectClause.ToGroupBySql();
+            // Compilation context
+            var today = userToday ?? DateTime.Today;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, userId);
 
-            // (3) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
+            // (2) Prepare all the SQL clauses
+            string selectSql = PrepareSelectSql(ctx);
+            string groupbySql = PrepareGroupBySql(ctx);
+            string whereSql = PrepareWhereSql(ctx);
+            string havingSql = PrepareHavingSql(ctx);
+            string orderbySql = PrepareOrderBySql(ctx);
 
-            // (4) Prepare the ORDERBY clause
-            string orderbySql = PrepareOrderBy(joinTree);
-
-            // (5) Finally put together the final SQL statement and return it
+            // (3) Put together the final SQL statement and return it
             string sql = QueryTools.CombineSql(
                     selectSql: selectSql,
                     joinSql: joinSql,
@@ -64,16 +75,15 @@ namespace Tellma.Data.Queries
                     whereSql: whereSql,
                     orderbySql: orderbySql,
                     offsetFetchSql: null,
-                    groupbySql: groupbySql
+                    groupbySql: groupbySql,
+                    havingSql: havingSql
                 );
 
-            // (6) Return the result
+            // (8) Return the result
             return new SqlStatement
             {
                 Sql = sql,
-                ResultDescriptor = ResultType,
-                ColumnMap = selectClause.GetColumnMap(),
-                Query = null, // Not used anyways
+                ResultDescriptor = ResultType
             };
         }
 
@@ -86,12 +96,22 @@ namespace Tellma.Data.Queries
             var allPaths = new List<string[]>();
             if (Select != null)
             {
-                allPaths.AddRange(Select.Select(e => e.Path));
+                allPaths.AddRange(Select.ColumnAccesses().Select(e => e.Path));
+            }
+
+            if (OrderBy != null)
+            {
+                allPaths.AddRange(OrderBy.ColumnAccesses().Select(e => e.Path));
             }
 
             if (Filter != null)
             {
-                //allPaths.AddRange(Filter.Select(e => e.Path));
+                allPaths.AddRange(Filter.ColumnAccesses().Select(e => e.Path));
+            }
+
+            if (Having != null)
+            {
+                allPaths.AddRange(Having.ColumnAccesses().Select(e => e.Path));
             }
 
             // This will represent the mapping from paths to symbols
@@ -99,41 +119,32 @@ namespace Tellma.Data.Queries
             return joinTree;
         }
 
-        /// <summary>
-        /// Prepares a data structure containing all the information needed to construct the SELECT and GROUP BY clauses of the aggregate query
-        /// </summary>
-        private SqlSelectGroupByClause PrepareSelect(JoinTrie joinTree)
+        private string PrepareSelectSql(QxCompilationContext ctx)
         {
-            var selects = new HashSet<(string Symbol, string PropName, string Aggregate, string Modifier)>(); // To ensure uniqueness
-            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, string Modifier)>();
+            string top = Top == 0 ? "" : $"TOP {Top} ";
+            return $"SELECT {top}" + string.Join(", ", Select.Select(e => e.CompileToNonBoolean(ctx).DeBracket()));
+        }
 
-            foreach (var select in Select)
+        private string PrepareGroupBySql(QxCompilationContext ctx)
+        {
+            // take all columns that are not aggregated, and group them together
+            var nonAggregateSelects = Select.Where(e => !e.ContainsAggregations);
+            if (nonAggregateSelects.Any())
             {
-                // Add the property
-                string[] path = select.Path;
-                var join = joinTree[path];
-                var symbol = join.Symbol;
-                var propName = select.Property; // Can be null
-                var aggregation = select.Aggregation;
-                var modifier = select.Modifier;
-
-                // If the select doesn't exist: add it, or if it is not original and it shows up again as original: upgrade it
-                if (selects.Add((symbol, propName, aggregation, modifier)))
-                {
-                    columns.Add((symbol, path, propName, aggregation, modifier));
-                }
+                return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => e.CompileToNonBoolean(ctx).DeBracket()));
             }
-
-            // Change the hash set to a list so that the order is well defined
-            return new SqlSelectGroupByClause(columns.ToList(), Top ?? 0);
+            else
+            {
+                return "";
+            }
         }
 
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTrie joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
+        private string PrepareWhereSql(QxCompilationContext ctx)
         {
-            string whereSql = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday) ?? "";
+            string whereSql = Filter?.Expression?.CompileToBoolean(ctx)?.DeBracket();
 
             // Add the "WHERE" keyword
             if (!string.IsNullOrEmpty(whereSql))
@@ -145,38 +156,50 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
+        /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
+        /// </summary>
+        private string PrepareHavingSql(QxCompilationContext ctx)
+        {
+            string havingSql = Having?.Expression?.CompileToBoolean(ctx)?.DeBracket();
+
+            // Add the "HAVING" keyword
+            if (!string.IsNullOrEmpty(havingSql))
+            {
+                havingSql = "HAVING " + havingSql;
+            }
+
+            return havingSql;
+        }
+
+        /// <summary>
         /// Prepares the ORDER BY clause of the SQL query using the <see cref="Select"/> argument: ORDER BY ABC
         /// </summary>
-        private string PrepareOrderBy(JoinTrie joinTree)
+        private string PrepareOrderBySql(QxCompilationContext ctx)
         {
-            var orderByAtoms = Select.Where(e => !string.IsNullOrEmpty(e.OrderDirection));
-            var orderByAtomsCount = orderByAtoms.Count();
+            var orderByAtomsCount = OrderBy?.Count() ?? 0;
             if (orderByAtomsCount == 0)
             {
                 return "";
             }
 
             List<string> orderbys = new List<string>(orderByAtomsCount);
-            foreach (var atom in orderByAtoms)
+            foreach (var expression in OrderBy)
             {
-                var join = joinTree[atom.Path];
-                if (join == null)
+                string orderby = expression.CompileToNonBoolean(ctx);
+                if (expression.IsDescending)
                 {
-                    // Developer mistake
-                    throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
+                    orderby += " DESC";
                 }
-                var symbol = join.Symbol;
-                string orderby = QueryTools.AtomSql(symbol, atom.Property, atom.Aggregation, atom.Modifier) + $" {atom.OrderDirection.ToUpper()}";
+
+                if (expression.IsAscending)
+                {
+                    orderby += " ASC";
+                }
+
                 orderbys.Add(orderby);
             }
 
-            string orderbySql = ""; //  "ORDER BY Id DESC"; // Default order by
-            if (orderbys.Count > 0)
-            {
-                orderbySql = "ORDER BY " + string.Join(", ", orderbys);
-            }
-
-            return orderbySql;
+            return "ORDER BY " + string.Join(", ", orderbys);
         }
     }
 }

@@ -36,6 +36,18 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
+        /// Adds all the paths and properties in the provided collection of column accesses
+        /// </summary>
+        /// <param name="columnAccesses"></param>
+        public void AddAll(IEnumerable<QueryexColumnAccess> columnAccesses)
+        {
+            foreach (var columnAccess in columnAccesses)
+            {
+                AddPath(columnAccess.Path, columnAccess.Property);
+            }
+        }
+
+        /// <summary>
         /// Validate the tree of paths against a root type, throwing localized exceptions if a path contains a non-existent property
         /// </summary>
         /// <param name="desc">The <see cref="TypeDescriptor"/> of the root type of the <see cref="PathValidator"/> tree</param>

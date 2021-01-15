@@ -210,26 +210,26 @@ namespace Tellma.Controllers
                 var desc3Prop = $"{currencyProp}/{nameof(Currency.Description3)}";
 
                 // Prepare the filter string
-                var filterString = $"{idProp} {Ops.contains} '{search}' or {nameProp} {Ops.contains} '{search}' or {name2Prop} {Ops.contains} '{search}' or {name3Prop} {Ops.contains} '{search}' or {descProp} {Ops.contains} '{search}' or {desc2Prop} {Ops.contains} '{search}' or {desc3Prop} {Ops.contains} '{search}'";
+                var filterString = $"{idProp} contains '{search}' or {nameProp} contains '{search}' or {name2Prop} contains '{search}' or {name3Prop} contains '{search}' or {descProp} contains '{search}' or {desc2Prop} contains '{search}' or {desc3Prop} contains '{search}'";
 
                 // If the search is a date, include documents with that date
                 if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                 {
                     var validAsOfProp = nameof(ExchangeRate.ValidAsOf);
-                    filterString = $"{filterString} or {validAsOfProp} {Ops.eq} {searchDate:yyyy-MM-dd}";
+                    filterString = $"{filterString} or {validAsOfProp} eq {searchDate:yyyy-MM-dd}";
                 }
 
                 // Apply the filter
-                query = query.Filter(FilterExpression.Parse(filterString));
+                query = query.Filter(ExpressionFilter.Parse(filterString));
 
             }
 
             return query;
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(ExchangeRate.ValidAsOf) + " desc");
+            return ExpressionOrderBy.Parse(nameof(ExchangeRate.ValidAsOf) + " desc");
         }
     }
 }

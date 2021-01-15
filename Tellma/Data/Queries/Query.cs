@@ -24,10 +24,10 @@ namespace Tellma.Data.Queries
         // From setter methods
         private int? _top;
         private int? _skip;
-        private List<FilterExpression> _filterConditions;
-        private SelectExpression _select;
-        private ExpandExpression _expand;
-        private OrderByExpression _orderby;
+        private List<ExpressionFilter> _filterConditions;
+        private ExpressionSelect _select;
+        private ExpressionExpand _expand;
+        private ExpressionOrderBy _orderby;
         private IEnumerable<object> _ids;
         private IEnumerable<object> _parentIds;
         private string _propName;
@@ -75,9 +75,9 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Applies a <see cref="SelectExpression"/> on the <see cref="Query{T}"/> to determine what columns need to be returned
+        /// Applies a <see cref="ExpressionSelect"/> on the <see cref="Query{T}"/> to determine what columns need to be returned
         /// </summary>
-        public Query<T> Select(SelectExpression select)
+        public Query<T> Select(ExpressionSelect select)
         {
             var clone = Clone();
             clone._select = select;
@@ -85,18 +85,18 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// A version of <see cref="Select(SelectExpression)"/> that accepts a string
+        /// A version of <see cref="Select(ExpressionSelect)"/> that accepts a string
         /// </summary>
         public Query<T> Select(string select)
         {
-            return Select(SelectExpression.Parse(select));
+            return Select(ExpressionSelect.Parse(select));
         }
 
         /// <summary>
-        /// Applies an <see cref="ExpandExpression"/> on the <see cref="Query{T}"/> to determine what related tables to
-        /// include in the result, any tables touched by the <see cref="SelectExpression"/> will have it overriding the <see cref="ExpandExpression"/>
+        /// Applies an <see cref="ExpressionExpand"/> on the <see cref="Query{T}"/> to determine what related tables to
+        /// include in the result, any tables touched by the <see cref="ExpressionSelect"/> will have it overriding the <see cref="ExpressionExpand"/>
         /// </summary>
-        public Query<T> Expand(ExpandExpression expand)
+        public Query<T> Expand(ExpressionExpand expand)
         {
             var clone = Clone();
             clone._expand = expand;
@@ -104,11 +104,11 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// A version of <see cref="Expand(ExpandExpression)" that accepts a string
+        /// A version of <see cref="Expand(ExpressionExpand)" that accepts a string
         /// </summary>
         public Query<T> Expand(string expand)
         {
-            return Expand(ExpandExpression.Parse(expand));
+            return Expand(ExpressionExpand.Parse(expand));
         }
 
         ///// <summary>
@@ -122,9 +122,9 @@ namespace Tellma.Data.Queries
         //}
 
         /// <summary>
-        /// Applies a <see cref="FilterExpression"/> to filter the result
+        /// Applies a <see cref="ExpressionFilter"/> to filter the result
         /// </summary>
-        public Query<T> Filter(FilterExpression condition)
+        public Query<T> Filter(ExpressionFilter condition)
         {
             if (_top != null || _skip != null)
             {
@@ -134,7 +134,7 @@ namespace Tellma.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
-                clone._filterConditions ??= new List<FilterExpression>();
+                clone._filterConditions ??= new List<ExpressionFilter>();
                 clone._filterConditions.Add(condition);
             }
 
@@ -142,11 +142,11 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// A version of <see cref="Filter(FilterExpression)" that accepts a string
+        /// A version of <see cref="Filter(ExpressionFilter)" that accepts a string
         /// </summary>
         public Query<T> Filter(string filter)
         {
-            return Filter(FilterExpression.Parse(filter));
+            return Filter(ExpressionFilter.Parse(filter));
         }
 
         /// <summary>
@@ -224,10 +224,10 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Applies a <see cref="OrderByExpression"/> to set the order of the result, it is used in
+        /// Applies a <see cref="ExpressionOrderBy"/> to set the order of the result, it is used in
         /// conjunction with <see cref="Top(int)"/> and <see cref="Skip(int)"/> to implement paging
         /// </summary>
-        public Query<T> OrderBy(OrderByExpression orderby)
+        public Query<T> OrderBy(ExpressionOrderBy orderby)
         {
             var clone = Clone();
             clone._orderby = orderby;
@@ -235,11 +235,11 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// A version of <see cref="OrderBy(OrderByExpression)" that accepts a string
+        /// A version of <see cref="OrderBy(ExpressionOrderBy)" that accepts a string
         /// </summary>
         public Query<T> OrderBy(string orderBy)
         {
-            return OrderBy(OrderByExpression.Parse(orderBy));
+            return OrderBy(ExpressionOrderBy.Parse(orderBy));
         }
 
         /// <summary>
@@ -345,14 +345,14 @@ namespace Tellma.Data.Queries
             block.Dispose();
             block = i.Block("Validate Paths and Props");
 
-            _orderby ??= (IsEntityWithKey() ? OrderByExpression.Parse("Id desc") :
+            _orderby ??= (IsEntityWithKey() ? ExpressionOrderBy.Parse("Id desc") :
                 throw new InvalidOperationException($"Query<{resultDesc.Type.Name}> was executed without an orderby clause"));
 
             // Prepare all the query parameters
-            SelectExpression selectExp = _select;
-            ExpandExpression expandExp = _expand;
-            OrderByExpression orderbyExp = _orderby;
-            FilterExpression filterExp = null; // _filterConditions?.Aggregate(
+            ExpressionSelect selectExp = _select;
+            ExpressionExpand expandExp = _expand;
+            ExpressionOrderBy orderbyExp = _orderby;
+            ExpressionFilter filterExp = null; // _filterConditions?.Aggregate(
             //    (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
@@ -425,7 +425,7 @@ namespace Tellma.Data.Queries
                 }
 
                 // This is the orderby of related queries, and the default orderby of the root query
-                var defaultOrderBy = OrderByExpression.Parse(
+                var defaultOrderBy = ExpressionOrderBy.Parse(
                     desc.HasProperty("Index") ? "Index" :
                     desc.HasProperty("SortKey") ? "SortKey" : "Id");
 
@@ -464,7 +464,7 @@ namespace Tellma.Data.Queries
                             var flatQuery = segments[previousFullPath];
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add a select
                             {
-                                flatQuery.Select ??= new SelectExpression();
+                                flatQuery.Select ??= new ExpressionSelect();
                                 flatQuery.Select.Add(new SelectAtom { Path = subPath.SkipLast(1).ToArray() });
                             }
                         }
@@ -476,7 +476,7 @@ namespace Tellma.Data.Queries
                     {
                         var (_, subPath, _) = pathSegments.Last();
                         var flatQuery = segments[previousFullPath];
-                        flatQuery.Select ??= new SelectExpression();
+                        flatQuery.Select ??= new ExpressionSelect();
                         flatQuery.Select.Add(new SelectAtom
                         {
                             Path = subPath.ToArray(),
@@ -486,12 +486,12 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            expandExp ??= ExpandExpression.RootSingleton;
+            expandExp ??= ExpressionExpand.RootSingleton;
             {
-                var expandTree = PathTrie.Build(resultDesc, expandExp.Select(e => e.Path));
+                var expandTree = PathTrie.Build(resultDesc, expandExp.Select(e => e.Steps));
                 foreach (var expandAtom in expandExp)
                 {
-                    var pathSegments = expandTree.GetSegments(expandAtom.Path);
+                    var pathSegments = expandTree.GetSegments(expandAtom.Steps);
                     ArraySegment<string> previousFullPath = null;
                     foreach (var (fullPath, subPath, type) in pathSegments.SkipLast(1))
                     {
@@ -506,8 +506,8 @@ namespace Tellma.Data.Queries
                             var flatQuery = segments[previousFullPath];
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add an expand
                             {
-                                flatQuery.Expand ??= new ExpandExpression();
-                                flatQuery.Expand.Add(new ExpandAtom { Path = subPath.SkipLast(1).ToArray() });
+                                flatQuery.Expand ??= new ExpressionExpand();
+                                flatQuery.Expand.Add(new ExpandAtom { Steps = subPath.SkipLast(1).ToArray() });
                             }
                         }
                         previousFullPath = fullPath;
@@ -519,10 +519,10 @@ namespace Tellma.Data.Queries
                         if (subPath.Count > 0)
                         {
                             var flatQuery = segments[previousFullPath];
-                            flatQuery.Expand ??= new ExpandExpression();
+                            flatQuery.Expand ??= new ExpressionExpand();
                             flatQuery.Expand.Add(new ExpandAtom
                             {
-                                Path = subPath.ToArray(),
+                                Steps = subPath.ToArray(),
                             });
                         }
                     }
@@ -787,7 +787,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// To prevent SQL injection attacks
         /// </summary>
-        private void ValidatePathsAndProperties(SelectExpression selectExp, ExpandExpression expandExp, FilterExpression filterExp, OrderByExpression orderbyExp, TypeDescriptor rootDesc, IStringLocalizer localizer)
+        private void ValidatePathsAndProperties(ExpressionSelect selectExp, ExpressionExpand expandExp, ExpressionFilter filterExp, ExpressionOrderBy orderbyExp, TypeDescriptor rootDesc, IStringLocalizer localizer)
         {
             // This is important to avoid SQL injection attacks
 
@@ -814,7 +814,7 @@ namespace Tellma.Data.Queries
                 PathValidator trie = new PathValidator();
                 foreach (var atom in expandExp)
                 {
-                    trie.AddPath(atom.Path);
+                    trie.AddPath(atom.Steps);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)

@@ -88,8 +88,8 @@ namespace Tellma.Controllers
                 var desc2 = nameof(ReportDefinition.Description2);
                 var desc3 = nameof(ReportDefinition.Description3);
 
-                var filterString = $"{title} {Ops.contains} '{search}' or {title2} {Ops.contains} '{search}' or {title3} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{title} contains '{search}' or {title2} contains '{search}' or {title3} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
@@ -242,7 +242,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
             // By default: Order report definitions by name
             var tenantInfo = _repo.GetTenantInfo();
@@ -256,7 +256,7 @@ namespace Tellma.Controllers
                 orderby = $"{nameof(ReportDefinition.Title3)},{nameof(ReportDefinition.Title)},{nameof(ReportDefinition.Id)}";
             }
 
-            return OrderByExpression.Parse(orderby);
+            return ExpressionOrderBy.Parse(orderby);
 
         }
     }

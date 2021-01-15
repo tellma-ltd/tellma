@@ -11,14 +11,16 @@ namespace Tellma.Data.Queries
     public class SqlSelectGroupByClause
     {
         private readonly int _top;
-        private readonly List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation, string Function)> _columns;
+        private readonly QxCompilationContext _ctx;
+        private readonly List<QueryexBase> _columns;
 
         /// <summary>
         /// Create a new instance of <see cref="SqlSelectGroupByClause"/> using the supplied column definitions
         /// </summary>
-        public SqlSelectGroupByClause(List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation, string Function)> columns, int top)
+        public SqlSelectGroupByClause(List<QueryexBase> columns, int top, QxCompilationContext ctx)
         {
             _top = top;
+            _ctx = ctx;
             _columns = columns ?? throw new ArgumentNullException(nameof(columns));
         }
 
@@ -28,7 +30,7 @@ namespace Tellma.Data.Queries
         public string ToSelectSql()
         {
             string top = _top == 0 ? "" : $"TOP {_top} ";
-            return $"SELECT {top}" + string.Join(", ", _columns.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation, e.Function)));
+            return $"SELECT {top}" + string.Join(", ", _columns.Select(e => e.CompileToNonBoolean(_ctx)));
         }
 
         /// <summary>
@@ -37,33 +39,15 @@ namespace Tellma.Data.Queries
         public string ToGroupBySql()
         {
             // take all columns that are not aggregated, and group them together
-            var nonAggregateSelects = _columns.Where(e => string.IsNullOrWhiteSpace(e.Aggregation));
+            var nonAggregateSelects = _columns.Where(e => !e.ContainsAggregations);
             if (nonAggregateSelects.Any())
             {
-                return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation, e.Function)));
+                return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => e.CompileToNonBoolean(_ctx)));
             }
             else
             {
                 return "";
             }
-        }
-
-        /// <summary>
-        /// Returns a list of <see cref="SqlStatementColumn"/> which define the columns that are returned by this <see cref="SqlSelectGroupByClause"/> in the correct order
-        /// </summary>
-        public List<SqlStatementColumn> GetColumnMap()
-        {
-            // Prepare the column map
-            var columnMap = _columns.Select(e => new SqlStatementColumn
-            {
-                Path = e.Path,
-                Property = e.PropName,
-                Aggregation = e.Aggregation,
-                Function = e.Function
-            })
-            .ToList();
-
-            return columnMap;
         }
     }
 }

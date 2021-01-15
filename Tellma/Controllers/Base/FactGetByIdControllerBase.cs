@@ -91,7 +91,7 @@ namespace Tellma.Controllers
         public virtual async Task<(TEntity, Extras)> GetById(TKey id, GetByIdArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
-            var expand = ExpandExpression.Parse(args?.Expand);
+            var expand = ExpressionExpand.Parse(args?.Expand);
             var select = ParseSelect(args?.Select);
 
             // Load the data

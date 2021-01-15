@@ -600,9 +600,9 @@ namespace Tellma.Controllers
             return _repo.UserPermissions(action, View, cancellation); // TODO: Cache
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(AdminUser.Name));
+            return ExpressionOrderBy.Parse(nameof(AdminUser.Name));
         }
 
         private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string nameOfRecipient)

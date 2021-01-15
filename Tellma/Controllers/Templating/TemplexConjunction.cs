@@ -37,11 +37,11 @@ namespace Tellma.Controllers.Templating
 
             if (!(left is bool boolLeft))
             {
-                throw new TemplateException($"Operator '&&' could not be applied. The expression ({Left.ToString()}) does not evaluate to a boolean value");
+                throw new TemplateException($"Operator '&&' could not be applied. The expression ({Left}) does not evaluate to a boolean value");
             }
             else if (!(right is bool boolRight))
             {
-                throw new TemplateException($"Operator '&&' could not be applied. The expression ({Right.ToString()}) does not evaluate to a boolean value");
+                throw new TemplateException($"Operator '&&' could not be applied. The expression ({Right}) does not evaluate to a boolean value");
             }
             else
             {
@@ -51,7 +51,7 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"{Left.ToString()} AND {Right.ToString()}";
+            return $"{Left} AND {Right}";
         }
 
         /// <summary>

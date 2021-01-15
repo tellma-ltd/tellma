@@ -10,5 +10,11 @@ namespace Tellma.Data.Queries
     /// </summary>
     public class DynamicRow : List<object>
     {
+        public DynamicRow() : base()
+        {
+        }
+        public DynamicRow(int capacity) : base(capacity)
+        {
+        }
     }
 }

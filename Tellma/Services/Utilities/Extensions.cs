@@ -200,6 +200,11 @@ namespace Tellma.Services.Utilities
         /// </summary>
         public static string DeBracket(this string str)
         {
+            if (str.Length < 2)
+            {
+                return str;
+            }
+
             int level = 0;
             for (int i = 0; i < str.Length - 1; i++)
             {

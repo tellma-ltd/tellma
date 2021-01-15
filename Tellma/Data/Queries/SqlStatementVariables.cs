@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Tellma.Data.Queries
 {
@@ -74,6 +75,20 @@ namespace Tellma.Data.Queries
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _variables.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns the SQL declarations of the variables
+        /// </summary>
+        public string ToSql()
+        {
+            var bldr = new StringBuilder();
+            foreach (var variable in this)
+            {
+                bldr.AppendLine(variable.ToSql());
+            }
+
+            return bldr.ToString();
         }
     }
 

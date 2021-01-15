@@ -13,6 +13,16 @@ namespace Tellma.Data.Queries
         public const string FALSE = "(0 = 1)";
         public const string TRUE = "(1 = 1)";
 
+        #region Direction
+
+        public QxDirection Direction { get; set; }
+        public bool IsAscending => Direction == QxDirection.Asc;
+        public bool IsDescending => Direction == QxDirection.Desc;
+
+        #endregion
+
+        #region Helper Functions
+
         /// <summary>
         /// Compiles the expression to the first <see cref="QxType"/> other than boolean that it can be compiled to.
         /// The <see cref="QxType"/>s are tested in the order specified in <see cref="QxTypes.AllExceptBoolean"/>
@@ -49,11 +59,87 @@ namespace Tellma.Data.Queries
             }
         }
 
-        #region Direction
+        /// <summary>
+        /// Returns every <see cref="QueryexColumnAccess"/> within this expression
+        /// </summary>
+        public IEnumerable<QueryexColumnAccess> ColumnAccesses()
+        {
+            if (this is QueryexColumnAccess columnAccess)
+            {
+                yield return columnAccess;
+            }
 
-        public QxDirection Direction { get; set; }
-        public bool IsAscending => Direction == QxDirection.Asc;
-        public bool IsDescending => Direction == QxDirection.Desc;
+            foreach (var child in Children)
+            {
+                foreach (var ca in child.ColumnAccesses())
+                {
+                    yield return ca;
+                }
+            }
+        }
+
+        public IEnumerable<QueryexFunction> Aggregations()
+        {
+            if (this is QueryexFunction func && func.IsAggregation)
+            {
+                yield return func;
+            }
+
+
+            foreach (var child in Children)
+            {
+                foreach (var ca in child.Aggregations())
+                {
+                    yield return ca;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines if any aggregations functions like Sum or Count are present within the expression tree
+        /// </summary>
+        public bool ContainsAggregations => Aggregations().Any();
+
+        /// <summary>
+        /// Determines if a column accesses like Line.Memo are present within the expression tree
+        /// </summary>
+        public bool ContainsColumnAccesses => ColumnAccesses().Any();
+
+        public bool IsAggregation => this is QueryexFunction func && func.Name?.ToLower() switch
+        {
+            "sum" => true,
+            "count" => true,
+            "avg" => true,
+            "max" => true,
+            "min" => true,
+            _ => false,
+        };
+
+        public IEnumerable<QueryexColumnAccess> UnaggregatedColumnAccesses()
+        {
+            return UnaggregatedColumnAccessesInner(false);
+        }
+
+        private IEnumerable<QueryexColumnAccess> UnaggregatedColumnAccessesInner(bool aggregated)
+        {
+            if (IsAggregation)
+            {
+                aggregated = true;
+            }
+
+            if (aggregated && this is QueryexColumnAccess columnAccess)
+            {
+                yield return columnAccess;
+            }
+
+            foreach (var child in Children)
+            {
+                foreach (var ca in child.UnaggregatedColumnAccessesInner(aggregated))
+                {
+                    yield return ca;
+                }
+            }
+        }
 
         #endregion
 
@@ -120,16 +206,13 @@ namespace Tellma.Data.Queries
         /// </summary>
         public abstract (string sql, QxType type, QxNullity nullity) CompileNative(QxCompilationContext ctx);
 
-        /// <summary>
-        /// Returns every <see cref="QueryexColumnAccess"/> within this expression
-        /// </summary>
-        /// <returns></returns>
-        public abstract IEnumerable<QueryexColumnAccess> ColumnAccesses();
-
-        /// <summary>
-        /// True if the current expression is an aggregation function, false otherwise
-        /// </summary>
-        public virtual bool IsAggregation => false;
+        public virtual IEnumerable<QueryexBase> Children
+        {
+            get
+            {
+                yield break;
+            }
+        }
 
         #endregion
 
@@ -263,14 +346,16 @@ namespace Tellma.Data.Queries
         {
             if (string.IsNullOrWhiteSpace(expressionString))
             {
-                yield return null;
                 yield break;
             }
 
             IEnumerable<string> tokenStream = Tokenize(expressionString);
             foreach (var expression in ParseTokenStream(tokenStream, expressionString, expectDirKeywords))
             {
-                yield return expression;
+                if (expression != null)
+                {
+                    yield return expression;
+                }
             }
         }
 
@@ -657,7 +742,14 @@ namespace Tellma.Data.Queries
                             var argCount = bracketsInfo.Arity;
 
                             // Add the function to the output
-                            output.Push(new QueryexFunction(name: functionName, args: bracketsInfo.Arguments.ToArray()));
+                            var function = new QueryexFunction(name: functionName, args: bracketsInfo.Arguments.ToArray());
+
+                            if (function.IsAggregation && function.Children.Any(e => e.ContainsAggregations))
+                            {
+                                throw new QueryException($"The expression {function} contains an aggregation within an aggregation.");
+                            }
+
+                            output.Push(function);
                         }
                         else if (previousToken == "(")
                         {
@@ -833,9 +925,24 @@ namespace Tellma.Data.Queries
             Steps = steps ?? throw new ArgumentNullException(nameof(steps));
         }
 
+        public QueryexColumnAccess(string[] path, string prop)
+        {
+            if (path is null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (prop is null)
+            {
+                throw new ArgumentNullException(nameof(prop));
+            }
+
+            Steps = path.Append(prop).ToArray();
+        }
+
         public string[] Steps { get; }
 
-        public string Property => _property ??= Steps.Length > 0 ? Steps[Steps.Length - 1] : null;
+        public string Property => _property ??= Steps.Length > 0 ? Steps[^1] : null;
 
         public string[] Path => _path ??= Steps.Length > 0 ? Steps.SkipLast(1).ToArray() : new string[0] { };
 
@@ -848,11 +955,6 @@ namespace Tellma.Data.Queries
             }
 
             return result;
-        }
-
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
-        {
-            yield return this;
         }
 
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
@@ -938,6 +1040,21 @@ namespace Tellma.Data.Queries
 
             // Return the result
             return (sql, type, nullity);
+        }
+
+        public override bool Equals(object exp)
+        {
+            return exp is QueryexColumnAccess ca && 
+                ca.Steps.Length == Steps.Length && 
+                ca.Steps.Select((step, index) => (step, index))
+                        .All(pair => pair.step == Steps[pair.index]);
+        }
+
+        public override int GetHashCode()
+        {
+            return Steps
+                .Select(s => s.GetHashCode())
+                .Aggregate(0, (code1, code2) => code1 ^ code2);
         }
 
         #region Column Access Validation
@@ -1067,20 +1184,7 @@ namespace Tellma.Data.Queries
             return $"{Name}({string.Join(", ", Arguments.Select(e => e.ToString()))})";
         }
 
-        public override bool IsAggregation => Name?.ToLower() switch
-        {
-            "sum" => true,
-            "count" => true,
-            "avg" => true,
-            "max" => true,
-            "min" => true,
-            _ => false,
-        };
-
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
-        {
-            return Arguments.SelectMany(e => e.ColumnAccesses());
-        }
+        public override IEnumerable<QueryexBase> Children => Arguments;
 
         public override bool TryCompile(QxType targetType, QxCompilationContext ctx, out string resultSql, out QxNullity resultNullity)
         {
@@ -1471,6 +1575,25 @@ namespace Tellma.Data.Queries
             return (resultSql, resultType, resultNullity);
         }
 
+        public override bool Equals(object exp)
+        {
+            return exp is QueryexFunction func &&
+                func.Name == Name &&
+                func.Arguments.Length == Arguments.Length &&
+                func.Arguments
+                    .Select((arg, index) => (arg, index))
+                    .All(pair => pair.arg.Equals(Arguments[pair.index]));
+        }
+
+        public override int GetHashCode()
+        {
+            var argsHash = Arguments
+                .Select(arg => arg.GetHashCode())
+                .Aggregate(0, (code1, code2) => code1 ^ code2);
+
+            return Name.GetHashCode() ^ argsHash;
+        }
+
         #region Helper Functions
 
         private (QueryexBase exp, string conditionSql) AggregationParameters(QxCompilationContext ctx)
@@ -1686,9 +1809,13 @@ namespace Tellma.Data.Queries
             return $"({Left} {Operator} {Right})";
         }
 
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
+        public override IEnumerable<QueryexBase> Children
         {
-            return Left.ColumnAccesses().Concat(Right.ColumnAccesses());
+            get
+            {
+                yield return Left;
+                yield return Right;
+            }
         }
 
         public override bool TryCompile(QxType targetType, QxCompilationContext ctx, out string resultSql, out QxNullity resultNullity)
@@ -2174,6 +2301,19 @@ namespace Tellma.Data.Queries
 
             return (resultSql, resultType, resultNullity);
         }
+
+        public override bool Equals(object exp)
+        {
+            return exp is QueryexBinaryOperator bo
+                && bo.Operator == Operator
+                && bo.Left.Equals(Left)
+                && bo.Right.Equals(Right);
+        }
+
+        public override int GetHashCode()
+        {
+            return Operator.GetHashCode() ^ Left.GetHashCode() ^ Right.GetHashCode();
+        }
     }
 
     public class QueryexUnaryOperator : QueryexBase
@@ -2199,9 +2339,12 @@ namespace Tellma.Data.Queries
             return $"{Operator}{operand}";
         }
 
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
+        public override IEnumerable<QueryexBase> Children
         {
-            return Operand.ColumnAccesses();
+            get
+            {
+                yield return Operand;
+            }
         }
 
         public override (string sql, QxType type, QxNullity nullity) CompileNative(QxCompilationContext ctx)
@@ -2305,6 +2448,18 @@ namespace Tellma.Data.Queries
             return (resultSql, resultType, resultNullity);
 
         }
+
+        public override bool Equals(object exp)
+        {
+            return exp is QueryexUnaryOperator uo
+                && uo.Operator == Operator
+                && uo.Operand.Equals(Operand);
+        }
+
+        public override int GetHashCode()
+        {
+            return Operator.GetHashCode() ^ Operand.GetHashCode();
+        }
     }
 
     public class QueryexQuote : QueryexBase
@@ -2399,9 +2554,14 @@ namespace Tellma.Data.Queries
             return match;
         }
 
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
+        public override bool Equals(object exp)
         {
-            yield break;
+            return exp is QueryexQuote quote && Value == quote.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
         }
     }
 
@@ -2438,14 +2598,19 @@ namespace Tellma.Data.Queries
             }
         }
 
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
-        {
-            yield break;
-        }
-
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
         {
             return (Value.ToString(), QxType.Numeric, QxNullity.NotNull);
+        }
+
+        public override bool Equals(object exp)
+        {
+            return exp is QueryexNumber n && Value == n.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
         }
     }
 
@@ -2465,11 +2630,6 @@ namespace Tellma.Data.Queries
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
         {
             return ("NULL", QxType.Null, QxNullity.Null);
-        }
-
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
-        {
-            yield break;
         }
     }
 
@@ -2492,10 +2652,15 @@ namespace Tellma.Data.Queries
             string sql = Value ? "1" : "0";
             return (sql, QxType.Bit, QxNullity.NotNull);
         }
-
-        public override IEnumerable<QueryexColumnAccess> ColumnAccesses()
+        
+        public override bool Equals(object exp)
         {
-            yield break;
+            return exp is QueryexBit n && Value == n.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
         }
     }
 
