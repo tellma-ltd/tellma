@@ -51,6 +51,8 @@
 		N'Expenditure',
 		N'OtherPL'
 	)),
+	[ChildCount]				INT,
+	[ActiveChildCount]			INT,
 	-- Audit properties
 	[SavedById]					INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AccountTypes__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]					DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,

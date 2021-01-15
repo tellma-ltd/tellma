@@ -428,6 +428,18 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
+	SET [NotedDateLabel] = N'Paysheet Month Ending'
+WHERE [Concept] IN (
+	N'ShorttermEmployeeBenefitsAccruals',
+	N'CurrentSocialSecurityPayablesExtension',
+	N'CurrentEmployeeIncomeTaxPayablesExtension',
+	N'ProvidentFundPayableExtension',
+	N'WagesAndSalaries',
+	N'SocialSecurityContributions',
+	N'OtherShorttermEmployeeBenefits'
+);
+
+UPDATE  @AccountTypes
 	SET [NotedDateLabel] = N'Due Date'
 WHERE [Concept] IN (
 	N'NoncurrentReceivables',

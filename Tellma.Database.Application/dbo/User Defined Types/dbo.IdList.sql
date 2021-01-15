@@ -1,3 +1,3 @@
 ﻿CREATE TYPE [dbo].[IdList] AS TABLE (
-	[Id] INT
+	[Id] INT PRIMARY KEY DEFAULT 0
 );

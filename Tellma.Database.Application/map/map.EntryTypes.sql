@@ -3,7 +3,13 @@ RETURNS TABLE
 AS
 RETURN (
 	SELECT Q.*,
-	(SELECT COUNT(*) FROM [dbo].[EntryTypes] WHERE [IsActive] = 1 AND [Node].IsDescendantOf(Q.[Node]) = 1) As [ActiveChildCount],
-    (SELECT COUNT(*) FROM [dbo].[EntryTypes] WHERE [Node].IsDescendantOf(Q.[Node]) = 1) As [ChildCount]
+	CC.[ActiveChildCount],
+	CC.ChildCount
 	FROM [dbo].[EntryTypes] Q
+	CROSS APPLY (
+		SELECT COUNT(*) AS [ChildCount],
+		SUM(IIF([IsActive]=1,1,0)) AS  [ActiveChildCount]	
+		FROM [dbo].[EntryTypes]
+		WHERE [Node].IsDescendantOf(Q.[Node]) = 1
+	) CC 
 );
