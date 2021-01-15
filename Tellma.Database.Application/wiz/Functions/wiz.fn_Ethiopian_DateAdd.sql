@@ -4,7 +4,7 @@
 	@Number INT,
 	@Date DATETIME
 )
-RETURNS INT
+RETURNS DATETIME
 AS
 BEGIN
 	-- TODO: Implement correctly
