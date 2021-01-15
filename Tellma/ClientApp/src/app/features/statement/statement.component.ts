@@ -1296,7 +1296,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         // PostingDate
         {
           id: 'PostingDate',
-          select: ['Line/PostingDate'],
+          select: ['Line.PostingDate'],
           label: () => this.translate.instant('Line_PostingDate'),
           display: (entry: DetailsEntry) => {
             const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
@@ -1308,7 +1308,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         // SerialNumber
         {
           id: 'SerialNumber',
-          select: ['Line/Document/SerialNumber', 'Line/Document/DefinitionId'],
+          select: ['Line.Document.SerialNumber', 'Line.Document.DefinitionId'],
           label: () => this.translate.instant('Document_SerialNumber'),
           display: (entry: DetailsEntry) => {
             const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
@@ -1324,7 +1324,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       // Memo
       this._columns.push({
         id: 'Memo',
-        select: ['Line/Memo'],
+        select: ['Line.Memo'],
         label: () => this.translate.instant('Memo'),
         display: (entry: DetailsEntry) => {
           const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
@@ -1337,7 +1337,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !this.custodianId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Custodian/Name,Custodian/Name2,Custodian/Name3'],
+          select: ['Custodian.Name,Custodian.Name2,Custodian.Name3'],
           label: () => this.labelCustodian_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Relation', entry.CustodianId, 'Name');
@@ -1350,7 +1350,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showCustodyParameter && !this.readonlyCustody_Manual && !this.custodyId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Custody/Name,Custody/Name2,Custody/Name3'],
+          select: ['Custody.Name,Custody.Name2,Custody.Name3'],
           label: () => this.labelCustody_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Custody', entry.CustodyId, 'Name');
@@ -1363,7 +1363,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showEntryTypeParameter && !this.readonlyEntryType_Manual && !this.entryTypeId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['EntryType/Name,EntryType/Name2,EntryType/Name3'],
+          select: ['EntryType.Name,EntryType.Name2,EntryType.Name3'],
           label: () => this.translate.instant('Entry_EntryType'),
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name');
@@ -1376,7 +1376,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showCenterParameter && !this.readonlyCenter_Manual && !this.centerId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Center/Name,Center/Name2,Center/Name3'],
+          select: ['Center.Name,Center.Name2,Center.Name3'],
           label: () => this.translate.instant('Entry_Center'),
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Center', entry.CenterId, 'Name');
@@ -1463,7 +1463,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showParticipantParameter && !this.readonlyParticipant_Manual && !this.participantId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Participant/Name,Participant/Name2,Participant/Name3'],
+          select: ['Participant.Name,Participant.Name2,Participant.Name3'],
           label: () => this.labelParticipant_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Relation', entry.ParticipantId, 'Name');
@@ -1476,7 +1476,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showResourceParameter && !this.readonlyResource_Manual && !this.resourceId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Resource/Name,Resource/Name2,Resource/Name3'],
+          select: ['Resource.Name,Resource.Name2,Resource.Name3'],
           label: () => this.labelResource_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Resource', entry.ResourceId, 'Name');
@@ -1515,7 +1515,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         // If a single unit is not defined, add a column to show the unit per row
         if (!singleUnitDefined) {
           this._columns.push({
-            select: ['Unit/Name', 'Unit/Name2', 'Unit/Name3'],
+            select: ['Unit.Name', 'Unit.Name2', 'Unit.Name3'],
             label: () => this.translate.instant('Entry_Unit'),
             display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.UnitId, 'Name'),
             weight: 1
@@ -1579,7 +1579,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           // Currency
           this._columns.push({
-            select: ['Currency/Name', 'Currency/Name2', 'Currency/Name3', 'Currency/E'], // The E is to format the values correctly
+            select: ['Currency.Name', 'Currency.Name2', 'Currency.Name3', 'Currency.E'], // The E is to format the values correctly
             label: () => this.translate.instant('Entry_Currency'),
             display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name'),
             weight: 1

@@ -126,7 +126,7 @@ namespace Tellma.Controllers
                 var memo = nameof(LineForQuery.Memo);
                 var text1 = nameof(LineForQuery.Text1);
 
-                var filterString = $"{line}/{memo} contains '{search}' or {line}/{text1} contains '{search}' ";
+                var filterString = $"{line}.{memo} contains '{search}' or {line}.{text1} contains '{search}' ";
                 query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
@@ -141,11 +141,11 @@ namespace Tellma.Controllers
         private string UndatedFilter(StatementArguments args)
         {
             // State == Posted
-            string stateFilter = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} eq {LineState.Posted}";
+            string stateFilter = $"{nameof(DetailsEntry.Line)}.{nameof(LineForQuery.State)} eq {LineState.Posted}";
             if (args.IncludeCompleted ?? false)
             {
                 // OR State == Completed
-                stateFilter = $"({stateFilter} or {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} eq {LineState.Completed})";
+                stateFilter = $"({stateFilter} or {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.State)} eq {LineState.Completed})";
             }
 
             StringBuilder undatedFilterBldr = new StringBuilder(stateFilter);
@@ -213,14 +213,14 @@ namespace Tellma.Controllers
 
             if (args.FromDate != null)
             {
-                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.lt} {args.FromDate.Value:yyyy-MM-dd}"); // <
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.ge} {args.FromDate.Value:yyyy-MM-dd}"); // >=
+                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} lt {args.FromDate.Value:yyyy-MM-dd}"); // <
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} ge {args.FromDate.Value:yyyy-MM-dd}"); // >=
             }
 
             if (args.ToDate != null)
             {
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
-                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le {args.ToDate.Value:yyyy-MM-dd}"); // <=
+                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le {args.ToDate.Value:yyyy-MM-dd}"); // <=
             }
 
             string beforeOpeningFilter = beforeOpeningFilterBldr.ToString();
@@ -233,7 +233,7 @@ namespace Tellma.Controllers
                 Select = args.Select,
                 Top = args.Skip + args.Top, // We need this to compute openining balance, we do the skipping later in memory
                 Skip = 0, // args.Skip,
-                OrderBy = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
+                OrderBy = $"{nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
                 CountEntities = true,
                 Filter = betweenDatesFilter,
             };
@@ -241,9 +241,9 @@ namespace Tellma.Controllers
             var (data, _, _, count) = await GetFact(factArgs, cancellation);
 
             // Step 3: Load the opening balances
-            string valueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
-            string quantityExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicQuantity)})";
-            string monetaryValueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
+            string valueExp = $"sum({nameof(DetailsEntry.AlgebraicValue)})";
+            string quantityExp = $"sum({nameof(DetailsEntry.AlgebraicQuantity)})";
+            string monetaryValueExp = $"sum({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
             var openingArgs = new GetAggregateArguments
             {
                 Filter = beforeOpeningFilter,
@@ -251,14 +251,10 @@ namespace Tellma.Controllers
             };
 
             var (openingData, _) = await GetAggregate(openingArgs, cancellation);
-            openingData[0].TryGetValue(valueExp, out object openingObj);
-            decimal opening = (decimal)(openingObj ?? 0m);
 
-            openingData[0].TryGetValue(quantityExp, out object openingQuantityObj);
-            decimal openingQuantity = (decimal)(openingQuantityObj ?? 0m);
-
-            openingData[0].TryGetValue(monetaryValueExp, out object openingMonetaryValueObj);
-            decimal openingMonetaryValue = (decimal)(openingMonetaryValueObj ?? 0m);
+            decimal opening = (decimal)(openingData[0][0] ?? 0m);
+            decimal openingQuantity = (decimal)(openingData[0][1] ?? 0m);
+            decimal openingMonetaryValue = (decimal)(openingData[0][2] ?? 0m);
 
             // step (4) Add the Acc. column
             decimal acc = opening;
@@ -292,14 +288,9 @@ namespace Tellma.Controllers
                 };
 
                 var (closingData, _) = await GetAggregate(closingArgs, cancellation);
-                closingData[0].TryGetValue(valueExp, out object closingObj);
-                closing = (decimal)(closingObj ?? 0m);
-
-                closingData[0].TryGetValue(quantityExp, out object closingQuantityObj);
-                closingQuantity = (decimal)(closingQuantityObj ?? 0m);
-
-                closingData[0].TryGetValue(monetaryValueExp, out object closingMonetaryValueObj);
-                closingMonetaryValue = (decimal)(closingMonetaryValueObj ?? 0m);
+                closing = (decimal)(closingData[0][0] ?? 0m);
+                closingQuantity = (decimal)(closingData[0][1] ?? 0m);
+                closingMonetaryValue = (decimal)(closingData[0][2] ?? 0m);
             }
             else
             {

@@ -24,8 +24,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType/CustodyDefinitions,AccountType/ResourceDefinitions,Classification,
-Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custody/Center,EntryType,Participant,Custodian`;
+  public expand = `AccountType.CustodyDefinitions,AccountType.ResourceDefinitions,Classification,
+Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custody.Center,EntryType,Participant,Custodian`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -452,8 +452,8 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
   }
 
   public get accountTypeAdditionalSelect(): string {
-    const defaultSelect = `CustodyDefinitions/CustodyDefinitionId,
-    ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId,CustodianDefinitionId,ParticipantDefinitionId`;
+    const defaultSelect = `CustodyDefinitions.CustodyDefinitionId,
+    ResourceDefinitions.ResourceDefinitionId,EntryTypeParentId,CustodianDefinitionId,ParticipantDefinitionId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
@@ -475,8 +475,8 @@ Currency,Center,Custody,Resource/Currency,Custody/Currency,Resource/Center,Custo
   }
 
   public get resourceAdditionalSelect(): string {
-    const defaultSelect = `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Center/Name,Center/Name2,Center/Name3,
-CostCenter/Name,CostCenter/Name2,CostCenter/Name3`;
+    const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3,
+CostCenter.Name,CostCenter.Name2,CostCenter.Name3`;
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
       return '$DocumentDetails,' + defaultSelect;
@@ -487,6 +487,6 @@ CostCenter/Name,CostCenter/Name2,CostCenter/Name3`;
   }
 
   public custodyAdditionalSelect =
-    `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Center/Name,Center/Name2,Center/Name3`;
+    `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Currency.E,Center.Name,Center.Name2,Center.Name3`;
 
 }

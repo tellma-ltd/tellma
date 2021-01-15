@@ -8,6 +8,7 @@
     public class ServerNotificationSummary
     {
         public InboxNotification Inbox { get; set; }
+
         public NotificationsNotification Notifications { get; set; }
     }
 }

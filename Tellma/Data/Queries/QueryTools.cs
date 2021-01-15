@@ -1,9 +1,5 @@
-﻿using Tellma.Entities;
-using Tellma.Services.Utilities;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,42 +11,6 @@ namespace Tellma.Data.Queries
     /// </summary>
     internal static class QueryTools
     {
-        /// <summary>
-        /// Takes a string in the form of "A/B/C" and returns the path ["A", "B"] and the property "C"
-        /// trimming all the strings along the way
-        /// </summary>
-        public static (string[] Path, string Property) ExtractPathAndProperty(string s)
-        {
-            var steps = s.Split('/').Select(e => e?.Trim());
-            string[] path = steps.Take(steps.Count() - 1).ToArray();
-            string property = steps.Last();
-
-            return (path, property);
-        }
-
-        /// <summary>
-        /// Takes a string in the form of "A/B/C|month" and returns the path ["A", "B"], the property "C"
-        /// and the modifier "month" (as long as it is one of the modifiers in <see cref="Modifiers"/>
-        /// trimming all the strings  along the way
-        /// </summary>
-        public static (string[] Path, string Property, string Modifier) ExtractPathPropertyAndModifier(string atom)
-        {
-            var pieces = atom.Split('|');
-
-            // Get the modifier
-            string modifier = null;
-            if (pieces.Length > 1)
-            {
-                modifier = string.Join("|", pieces.Skip(1)).Trim();
-            }
-
-            // Get the path and property
-            string pathAndProp = pieces[0].Trim();
-            var (path, property) = ExtractPathAndProperty(pathAndProp);
-
-            return (path, property, modifier);
-        }
-
         /// <summary>
         /// This is alternative for <see cref="Type.GetProperties"/>
         /// that returns base class properties before inherited class properties

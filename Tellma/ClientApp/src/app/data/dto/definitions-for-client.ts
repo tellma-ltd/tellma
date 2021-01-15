@@ -706,13 +706,6 @@ export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForCl
     Lookup4Visibility: Visibility;
     Lookup4DefinitionId: number;
 
-    //// Lookup 5
-    // Lookup5Label: string;
-    // Lookup5Label2: string;
-    // Lookup5Label3: string;
-    // Lookup5Visibility: Visibility;
-    // Lookup5DefinitionId: number;
-
     // Text 1
     Text1Label: string;
     Text1Label2: string;

@@ -74,7 +74,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             //     { key: 'VolumeUnitId', isRequired: false, desc: { datatype: 'entity', label: () => trx.instant('Resource_VolumeUnit'), type: 'Unit', foreignKeyName: 'CountUnitId' } },
             // ],
             masterScreenUrl: 'details-entries',
-            navigateToDetailsSelect: ['Line/Document/DefinitionId'],
+            navigateToDetailsSelect: ['Line.Document.DefinitionId'],
             navigateToDetails: (detailsEntry: DetailsEntry, router: Router, _: string) => {
                 const line = ws.get('LineForQuery', detailsEntry.LineId);
                 const docId = line.DocumentId;

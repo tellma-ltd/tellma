@@ -201,13 +201,13 @@ namespace Tellma.Controllers
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var currencyProp = nameof(ExchangeRate.Currency);
-                var idProp = $"{currencyProp}/{nameof(Currency.Id)}";
-                var nameProp = $"{currencyProp}/{nameof(Currency.Name)}";
-                var name2Prop = $"{currencyProp}/{nameof(Currency.Name2)}";
-                var name3Prop = $"{currencyProp}/{nameof(Currency.Name3)}";
-                var descProp = $"{currencyProp}/{nameof(Currency.Description)}";
-                var desc2Prop = $"{currencyProp}/{nameof(Currency.Description2)}";
-                var desc3Prop = $"{currencyProp}/{nameof(Currency.Description3)}";
+                var idProp = $"{currencyProp}.{nameof(Currency.Id)}";
+                var nameProp = $"{currencyProp}.{nameof(Currency.Name)}";
+                var name2Prop = $"{currencyProp}.{nameof(Currency.Name2)}";
+                var name3Prop = $"{currencyProp}.{nameof(Currency.Name3)}";
+                var descProp = $"{currencyProp}.{nameof(Currency.Description)}";
+                var desc2Prop = $"{currencyProp}.{nameof(Currency.Description2)}";
+                var desc3Prop = $"{currencyProp}.{nameof(Currency.Description3)}";
 
                 // Prepare the filter string
                 var filterString = $"{idProp} contains '{search}' or {nameProp} contains '{search}' or {name2Prop} contains '{search}' or {name3Prop} contains '{search}' or {descProp} contains '{search}' or {desc2Prop} contains '{search}' or {desc3Prop} contains '{search}'";

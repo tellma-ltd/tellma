@@ -1,5 +1,5 @@
 /**
- * The base class for all filter expressions
+ * The base class for all filter expressions (TODO: DELETE)
  */
 export abstract class FilterExpressionBase {
     public abstract toString(): string;

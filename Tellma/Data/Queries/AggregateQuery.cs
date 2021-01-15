@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Tellma.Entities.Descriptors;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Data.Queries
 {
@@ -49,7 +50,9 @@ namespace Tellma.Data.Queries
             {
                 _top = _top,
                 _filterConditions = _filterConditions?.ToList(),
+                _having = _having,
                 _select = _select,
+                _orderby = _orderby,
                 _additionalParameters = _additionalParameters?.ToList()
             };
 
@@ -151,8 +154,6 @@ namespace Tellma.Data.Queries
             var userId = args.UserId;
             var userToday = args.UserToday;
             var localizer = args.Localizer;
-
-            var rootDesc = TypeDescriptor.Get<T>();
 
             // ------------------------ Validation Step
 
@@ -261,9 +262,8 @@ namespace Tellma.Data.Queries
 
 
             // Prepare the internal query (this one should not have any select paths containing Parent property)
-            AggregateQueryInternal query = new AggregateQueryInternal
+            StatementBuilder builder = new StatementBuilder
             {
-                ResultType = rootDesc,
                 Select = selectExp,
                 Filter = filterExp,
                 OrderBy = orderbyExp,
@@ -273,20 +273,12 @@ namespace Tellma.Data.Queries
 
             // Prepare the variables and parameters
             var vars = new SqlStatementVariables();
-            var ps = new SqlStatementParameters();
+            var ps = new SqlStatementParameters(_additionalParameters);
 
-            if (_additionalParameters != null)
-            {
-                foreach (var additionalParameter in _additionalParameters)
-                {
-                    ps.AddParameter(additionalParameter);
-                }
-            }
+            SqlDynamicStatement statement = builder.BuildStatement(sources, vars, ps, userId, userToday);
 
-            SqlStatement statement = query.PrepareStatement(sources, vars, ps, userId, userToday);
-
-            // load the entities and return them
-            var result = await EntityLoader.LoadAggregateStatement(
+            // load the rows and return them
+            var result = await EntityLoader.LoadDynamicStatement(
                 statement: statement,
                 vars: vars,
                 ps: ps,
@@ -296,46 +288,209 @@ namespace Tellma.Data.Queries
             return result;
         }
 
-        ///// <summary>
-        ///// Protects against SQL injection attacks
-        ///// </summary>
-        //private void ValidatePathsAndProperties(ExpressionAggregateSelect selectExp, ExpressionFilter filterExp, TypeDescriptor rootDesc, IStringLocalizer localizer)
-        //{
-        //    // This is important to avoid SQL injection attacks
+        /// <summary>
+        /// Responsible for creating an <see cref="SqlDynamicStatement"/> based on some query parameters.
+        /// </summary>
+        private class StatementBuilder
+        {
+            /// <summary>
+            /// The select parameter, should NOT contain collection nav properties or tree nav properties (Parent)
+            /// </summary>
+            public ExpressionAggregateSelect Select { get; set; }
 
-        //    // Select
-        //    if (selectExp != null)
-        //    {
-        //        PathValidator selectPathValidator = new PathValidator();
-        //        foreach (var atom in selectExp)
-        //        {
-        //            // AddPath(atom.Path, atom.Property);
-        //            selectPathValidator.AddPath(atom.Path, atom.Property);
-        //        }
+            /// <summary>
+            /// The orderby parameter
+            /// </summary>
+            public ExpressionAggregateOrderBy OrderBy { get; set; }
 
-        //        // Make sure the paths are valid (Protects against SQL injection)
-        //        selectPathValidator.Validate(rootDesc, localizer, "select",
-        //            allowLists: false,
-        //            allowSimpleTerminals: true,
-        //            allowNavigationTerminals: false);
-        //    }
+            /// <summary>
+            /// The filter parameter
+            /// </summary>
+            public ExpressionFilter Filter { get; set; }
 
-        //    // Filter
-        //    if (filterExp != null)
-        //    {
-        //        PathValidator filterPathTree = new PathValidator();
-        //        foreach (var atom in filterExp)
-        //        {
-        //            // AddPath(atom.Path, atom.Property);
-        //            filterPathTree.AddPath(atom.Path, atom.Property);
-        //        }
+            /// <summary>
+            /// The having parameter
+            /// </summary>
+            public ExpressionHaving Having { get; set; }
 
-        //        // Make sure the paths are valid (Protects against SQL injection)
-        //        filterPathTree.Validate(rootDesc, localizer, "filter",
-        //            allowLists: false,
-        //            allowSimpleTerminals: true,
-        //            allowNavigationTerminals: false);
-        //    }
-        //}
+            /// <summary>
+            /// The top parameter
+            /// </summary>
+            public int? Top { get; set; }
+
+            /// <summary>
+            /// Implementation of <see cref="IQueryInternal"/> 
+            /// </summary>
+            public SqlDynamicStatement BuildStatement(
+                Func<Type, string> sources,
+                SqlStatementVariables vars,
+                SqlStatementParameters ps,
+                int userId,
+                DateTime? userToday)
+            {
+                // (1) Prepare the JOIN's clause
+                var joinTrie = PrepareJoin();
+                var joinSql = joinTrie.GetSql(sources, fromSql: null);
+
+                // Compilation context
+                var today = userToday ?? DateTime.Today;
+                var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, userId);
+
+                // (2) Prepare all the SQL clauses
+                var (selectSql, groupbySql, columnCount) = PrepareSelectAndGroupBySql(ctx);
+                string whereSql = PrepareWhereSql(ctx);
+                string havingSql = PrepareHavingSql(ctx);
+                string orderbySql = PrepareOrderBySql(ctx);
+
+                // (3) Put together the final SQL statement and return it
+                string sql = QueryTools.CombineSql(
+                        selectSql: selectSql,
+                        joinSql: joinSql,
+                        principalQuerySql: null,
+                        whereSql: whereSql,
+                        orderbySql: orderbySql,
+                        offsetFetchSql: null,
+                        groupbySql: groupbySql,
+                        havingSql: havingSql
+                    );
+
+                // (8) Return the result
+                return new SqlDynamicStatement(sql, columnCount);
+            }
+
+            /// <summary>
+            /// Prepares the join tree 
+            /// </summary>
+            private JoinTrie PrepareJoin()
+            {
+                // construct the join tree
+                var allPaths = new List<string[]>();
+                if (Select != null)
+                {
+                    allPaths.AddRange(Select.ColumnAccesses().Select(e => e.Path));
+                }
+
+                if (OrderBy != null)
+                {
+                    allPaths.AddRange(OrderBy.ColumnAccesses().Select(e => e.Path));
+                }
+
+                if (Filter != null)
+                {
+                    allPaths.AddRange(Filter.ColumnAccesses().Select(e => e.Path));
+                }
+
+                if (Having != null)
+                {
+                    allPaths.AddRange(Having.ColumnAccesses().Select(e => e.Path));
+                }
+
+                // This will represent the mapping from paths to symbols
+                var joinTree = JoinTrie.Make(TypeDescriptor.Get<T>(), allPaths);
+                return joinTree;
+            }
+
+            private (string select, string groupby, int columnCount) PrepareSelectAndGroupBySql(QxCompilationContext ctx)
+            {
+                List<string> selects = new List<string>(Select.Count());
+                List<string> groupbys = new List<string>();
+
+                // This is to make the group by list unique
+                HashSet<QueryexBase> groupbyHash = new HashSet<QueryexBase>();
+
+                foreach (var exp in Select)
+                {
+                    var (sql, type, _) = exp.CompileNative(ctx);
+                    if (type == QxType.Boolean || type == QxType.HierarchyId || type == QxType.Geography)
+                    {
+                        // Those three types are not supported for loading into C#
+                        throw new QueryException($"A select expression {exp} cannot have a type {type}.");
+                    }
+                    else
+                    {
+                        sql = sql.DeBracket();
+                        selects.Add(sql);
+                        if (!exp.ContainsAggregations && groupbyHash.Add(exp))
+                        {
+                            groupbys.Add(sql);
+                        }
+                    }
+                }
+
+                // Prepare 
+                string top = Top == 0 ? "" : $"TOP {Top} ";
+                string selectSql = $"SELECT {top}" + string.Join(", ", selects);
+
+                string groupbySql = "";
+                if (groupbys.Count > 0)
+                {
+                    groupbySql = "GROUP BY " + string.Join(", ", groupbys);
+                }
+
+                return (selectSql, groupbySql, selects.Count);
+            }
+
+            /// <summary>
+            /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
+            /// </summary>
+            private string PrepareWhereSql(QxCompilationContext ctx)
+            {
+                string whereSql = Filter?.Expression?.CompileToBoolean(ctx)?.DeBracket();
+
+                // Add the "WHERE" keyword
+                if (!string.IsNullOrEmpty(whereSql))
+                {
+                    whereSql = "WHERE " + whereSql;
+                }
+
+                return whereSql;
+            }
+
+            /// <summary>
+            /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
+            /// </summary>
+            private string PrepareHavingSql(QxCompilationContext ctx)
+            {
+                string havingSql = Having?.Expression?.CompileToBoolean(ctx)?.DeBracket();
+
+                // Add the "HAVING" keyword
+                if (!string.IsNullOrEmpty(havingSql))
+                {
+                    havingSql = "HAVING " + havingSql;
+                }
+
+                return havingSql;
+            }
+
+            /// <summary>
+            /// Prepares the ORDER BY clause of the SQL query using the <see cref="Select"/> argument: ORDER BY ABC
+            /// </summary>
+            private string PrepareOrderBySql(QxCompilationContext ctx)
+            {
+                var orderByAtomsCount = OrderBy?.Count() ?? 0;
+                if (orderByAtomsCount == 0)
+                {
+                    return "";
+                }
+
+                List<string> orderbys = new List<string>(orderByAtomsCount);
+                foreach (var expression in OrderBy)
+                {
+                    string orderby = expression.CompileToNonBoolean(ctx);
+                    if (expression.IsDescending)
+                    {
+                        orderby += " DESC";
+                    }
+                    else
+                    {
+                        orderby += " ASC";
+                    }
+
+                    orderbys.Add(orderby);
+                }
+
+                return "ORDER BY " + string.Join(", ", orderbys);
+            }
+        }
     }
 }

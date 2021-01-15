@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { supportedCultures } from '~/app/data/supported-cultures';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 

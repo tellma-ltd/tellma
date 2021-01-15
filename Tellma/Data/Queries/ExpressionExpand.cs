@@ -6,7 +6,8 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents an expand argument which is a comma separated list of paths. For example: "Participant,Lines.Entries"
+    /// Represents an expand argument which is a comma separated list of column accesses that terminate with nav properties. 
+    /// For example: "Participant,Lines.Entries"
     /// </summary>
     public class ExpressionExpand : IEnumerable<QueryexColumnAccess>
     {
@@ -55,7 +56,8 @@ namespace Tellma.Data.Queries
 
         /// <summary>
         /// Parses a string representing an expand argument into an <see cref="ExpressionExpand"/>. 
-        /// The expand argument is a comma separated list of paths, for example "Participant,Lines.Entries"
+        /// The expand argument is a comma separated list of column accesses.
+        /// For example "Participant,Lines.Entries"
         /// </summary>
         public static ExpressionExpand Parse(string expand)
         {

@@ -583,7 +583,7 @@ export function composeEntities(
   const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
 
   for (const col of columns) {
-    const pathArray = (col.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+    const pathArray = (col.path || '').split('.').map(e => e.trim()).filter(e => !!e);
 
     // This will contain the display steps of a single header. E.g. Item / Created By / Name
     const headerArray: string[] = [];

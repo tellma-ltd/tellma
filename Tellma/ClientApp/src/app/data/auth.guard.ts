@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateChild, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService, AuthEvent } from './auth.service';
-import { tap, catchError, finalize } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { ServerNotificationsService } from './server-notifications.service';

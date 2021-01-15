@@ -104,7 +104,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
           throw new Error(`The collection is not specified`);
         }
 
-        const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+        const pathArray = (this.path || '').split('.').map(e => e.trim()).filter(e => !!e);
         this._entityDescriptor = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definitionId);
 
         if (pathArray.length === 0) {

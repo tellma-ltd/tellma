@@ -6,8 +6,10 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents an expand argument which is a comma separated list of paths. Where some paths are optionally
-    /// postfixed with "desc" or "asc". For example: "Invoice/Customer,Amount"
+    /// Represents an aggregate orderby argument which is a comma separated list of non-boolean expressions. 
+    /// The syntax is anything that can be compiled by <see cref="QueryexBase"/>.
+    /// Some expressions may optionally be postfixed with "desc" or "asc" keywords. 
+    /// For example: "Line.PostingDate desc,Sum(Amount * Value)"
     /// </summary>
     public class ExpressionAggregateOrderBy : IEnumerable<QueryexBase>
     {
@@ -27,9 +29,10 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Parses a string representing an order by argument into an <see cref="ExpressionAggregateOrderBy"/>. 
-        /// The orderby argument is a comma separated list of paths, where some paths are optionally
-        /// postfixed with "desc" or "asc". For example "Invoice/Customer,Amount"
+        /// Parses a string representing an aggregate orderby argument into an <see cref="ExpressionAggregateOrderBy"/>. 
+        /// The syntax is anything that can be compiled by <see cref="QueryexBase"/>.
+        /// The orderby argument is a comma separated list of non-boolean expressions. Some expressions may optionally be postfixed with "desc" or "asc" keywords. 
+        /// For example: "Line.PostingDate desc,Sum(Amount * Value)"
         /// </summary>
         public static ExpressionAggregateOrderBy Parse(string orderby)
         {

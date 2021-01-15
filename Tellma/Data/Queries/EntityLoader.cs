@@ -15,7 +15,7 @@ namespace Tellma.Data.Queries
 {
     internal static class EntityLoader
     {
-        private static string PrepareSql(string preparatorySql, string countSql, params SqlStatement[] statements)
+        private static string PrepareSql(string preparatorySql, string countSql, params string[] statementSqls)
         {
             // Prepare the main sql script
             StringBuilder sql = new StringBuilder();
@@ -31,9 +31,9 @@ namespace Tellma.Data.Queries
                 sql.AppendLine(); // Just for aesthetics
             }
 
-            foreach (var statement in statements)
+            foreach (var statement in statementSqls)
             {
-                sql.AppendLine(statement.Sql);
+                sql.AppendLine(statement);
                 sql.AppendLine(); // Just for aesthetics
             }
 
@@ -41,15 +41,15 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicEntity"/>
+        /// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicRow"/>
         /// </summary>
         /// <param name="statement">The <see cref="SqlStatement"/> to load</param>
         /// <param name="preparatorySql">Any SQL to be included at the very beginning the main script (cannot contain a SELECT or return a result set</param>
         /// <param name="ps">The parameters needed by SQL</param>
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
-        /// <returns>The list of hydrated <see cref="DynamicEntity"/>s</returns>            
-        public static async Task<List<DynamicRow>> LoadAggregateStatement(
-            SqlStatement statement, SqlStatementVariables vars, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
+        /// <returns>The list of hydrated <see cref="DynamicRow"/>s</returns>            
+        public static async Task<List<DynamicRow>> LoadDynamicStatement(
+            SqlDynamicStatement statement, SqlStatementVariables vars, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
         {
             var result = new List<DynamicRow>();
 
@@ -59,7 +59,7 @@ namespace Tellma.Data.Queries
                 string preparatorySql = vars.ToSql();
 
                 // Command Text
-                cmd.CommandText = PrepareSql(preparatorySql, null, statement);
+                cmd.CommandText = PrepareSql(preparatorySql, null, statement.Sql);
 
                 // Command Parameters
                 foreach (var parameter in ps)
@@ -74,59 +74,27 @@ namespace Tellma.Data.Queries
                     conn.Open();
                 }
 
-                // This recursive method hydrates the dynamic properties from the reader according to the entityDef tree
-                static void HydrateDynamicProperties(SqlDataReader reader, DynamicRow entity, ColumnMapTrie entityDef)
-                {
-                    foreach (var (propDesc, index, aggregation, function) in entityDef.Properties)
-                    {
-                        if (propDesc.IsHierarchyId || propDesc.IsGeography)
-                        {
-                            continue;
-                        }
-
-                        var dbValue = reader[index];
-                        if (dbValue == DBNull.Value)
-                        {
-                            dbValue = null;
-                        }
-
-
-
-                        if (dbValue != DBNull.Value)
-                        {
-                            // char still comes from the DB as a string
-                            if (propDesc.Type == typeof(char?))
-                            {
-                                dbValue = dbValue.ToString()[0]; // gets the char
-                            }
-
-                            // The propertyNameMap was populated as soon as the ColumnMapTree was created
-                            string propName = DynamicPropertyName(entityDef.Path, propDesc.Name, aggregation, function);
-                            entity[propName] = dbValue;
-                        }
-                    }
-
-                    foreach (var subEntityDef in entityDef.Children)
-                    {
-                        HydrateDynamicProperties(reader, entity, subEntityDef);
-                    }
-                }
-
                 // Results are loaded
                 try
                 {
-                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
-
-                    // Group the column map by the path (which represents the target entity)
-                    var entityDef = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: true);
-
-                    int columnCount = statement.Col
+                    int columnCount = statement.ColumnCount;
 
                     // Loop over the result from the result set
+                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
                     while (await reader.ReadAsync(cancellation))
                     {
-                        var dynamicEntity = new DynamicRow();
-                        HydrateDynamicProperties(reader, dynamicEntity, entityDef);
+                        var dynamicEntity = new DynamicRow(columnCount);
+                        for (int index = 0; index < columnCount; index++)
+                        {
+                            var dbValue = reader[index];
+                            if (dbValue == DBNull.Value)
+                            {
+                                dbValue = null;
+                            }
+
+                            dynamicEntity.Add(dbValue);
+                        }
+
                         result.Add(dynamicEntity);
                     }
                 }
@@ -176,7 +144,7 @@ namespace Tellma.Data.Queries
             using var cmd = conn.CreateCommand();
 
             // Command Text
-            cmd.CommandText = PrepareSql(preparatorySql, countSql, statements.ToArray());
+            cmd.CommandText = PrepareSql(preparatorySql, countSql, statements.Select(e => e.Sql).ToArray());
 
             // Command Parameters
             foreach (var parameter in ps)
@@ -253,7 +221,7 @@ namespace Tellma.Data.Queries
                 if (!isHydrated)
                 {
                     // Hydrate the simple properties at the current entityDef level
-                    foreach (var (propDesc, index, aggregation, function) in entityTrie.Properties)
+                    foreach (var (propDesc, index) in entityTrie.Properties)
                     {
                         if (propDesc.IsHierarchyId || propDesc.IsGeography)
                         {
@@ -320,7 +288,7 @@ namespace Tellma.Data.Queries
                     var list = results[statement.Query];
 
                     // Group the column map by the path (which represents the target entity)
-                    var entityTrie = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: false);
+                    var entityTrie = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap);
 
                     // Assigns the appropriate EntitiesOfType at every level of the trie (If missing creates a new empty one)
                     entityTrie.InitializeEntitiesOfTypeDictionaries(allIdEntities);
@@ -491,7 +459,7 @@ namespace Tellma.Data.Queries
                     foreach (var collectionEntity in collectionEntities)
                     {
                         var id = collectionEntity.GetId();
-                        if(!groupedCollections.TryGetValue(id, out IList collection))
+                        if (!groupedCollections.TryGetValue(id, out IList collection))
                         {
                             collection = query.ResultDescriptor.CreateList();
                         }
@@ -551,7 +519,7 @@ namespace Tellma.Data.Queries
             /// <summary>
             /// All the properties at this level mentioned by all the paths
             /// </summary>
-            public List<(PropertyDescriptor Property, int Index, string Aggregation, string Function)> Properties { get; set; } = new List<(PropertyDescriptor, int, string, string)>();
+            public List<(PropertyDescriptor Property, int Index)> Properties { get; set; } = new List<(PropertyDescriptor, int)>();
 
             /// <summary>
             /// The segment of the path leading up to this level
@@ -573,7 +541,7 @@ namespace Tellma.Data.Queries
             /// for efficiently hydrating Entities and dynamic results from the SQL query result,
             /// a single tree is associated with a single SQL select statement
             /// </summary>
-            public static ColumnMapTrie Build(TypeDescriptor rootDescriptor, List<SqlStatementColumn> columnMap, bool isAggregate)
+            public static ColumnMapTrie Build(TypeDescriptor rootDescriptor, List<SqlStatementColumn> columnMap)
             {
                 var root = new ColumnMapTrie { Descriptor = rootDescriptor, Path = new string[0] };
                 for (var i = 0; i < columnMap.Count; i++)
@@ -608,12 +576,10 @@ namespace Tellma.Data.Queries
 
                     // Phase (1) Set the property info
                     var propName = columnInfo.Property;
-                    var aggregation = string.IsNullOrWhiteSpace(columnInfo.Aggregation) ? null : columnInfo.Aggregation;
-                    var function = string.IsNullOrWhiteSpace(columnInfo.Modifier) ? null : columnInfo.Modifier;
 
 
                     // In flat queries, the Id is given special treatment for efficiency, since it used to connect related entities together
-                    if (!isAggregate && propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && string.IsNullOrWhiteSpace(function) && currentTree.Descriptor.HasId)
+                    if (propName == "Id" && currentTree.Descriptor.HasId)
                     {
                         // This IdIndex is only set for Entityable path terminals
                         currentTree.IdIndex = i;
@@ -621,7 +587,7 @@ namespace Tellma.Data.Queries
                     else
                     {
                         var propDescriptor = currentTree.Descriptor.Property(propName);
-                        currentTree.Properties.Add((propDescriptor, i, aggregation, function));
+                        currentTree.Properties.Add((propDescriptor, i));
                     }
                 }
 
@@ -640,7 +606,7 @@ namespace Tellma.Data.Queries
                 if (!currentTree.IdExists && parentIdExists)
                 {
                     // Developer mistake
-                    throw new InvalidOperationException($"The level '{string.Join("/", currentTree.Path)}' of type '{currentTree.Descriptor.Name}' is missing its Id");
+                    throw new InvalidOperationException($"The level '{string.Join(".", currentTree.Path)}' of type '{currentTree.Descriptor.Name}' is missing its Id");
                 }
 
                 bool currentIdExists = currentTree.IdExists;

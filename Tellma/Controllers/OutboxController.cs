@@ -58,12 +58,12 @@ namespace Tellma.Controllers
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var assigneeProp = nameof(OutboxRecord.Assignee);
-                var nameProp = $"{assigneeProp}/{nameof(User.Name)}";
-                var name2Prop = $"{assigneeProp}/{nameof(User.Name2)}";
-                var name3Prop = $"{assigneeProp}/{nameof(User.Name3)}";
+                var nameProp = $"{assigneeProp}.{nameof(User.Name)}";
+                var name2Prop = $"{assigneeProp}.{nameof(User.Name2)}";
+                var name3Prop = $"{assigneeProp}.{nameof(User.Name3)}";
 
                 var commentProp = nameof(OutboxRecord.Comment);
-                var memoProp = $"{nameof(OutboxRecord.Document)}/{nameof(Document.Memo)}";
+                var memoProp = $"{nameof(OutboxRecord.Document)}.{nameof(Document.Memo)}";
 
                 // Prepare the filter string
                 var filterString = $"{nameProp} contains '{search}' or {name2Prop} contains '{search}' or {name3Prop} contains '{search}' or {commentProp} contains '{search}' or {memoProp} contains '{search}'";

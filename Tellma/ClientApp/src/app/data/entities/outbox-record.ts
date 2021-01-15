@@ -38,7 +38,7 @@ export function metadata_OutboxRecord(wss: WorkspaceService, trx: TranslateServi
             select: _select,
             apiEndpoint: 'outbox',
             masterScreenUrl: 'outbox',
-            navigateToDetailsSelect: ['Document/DefinitionId'],
+            navigateToDetailsSelect: ['Document.DefinitionId'],
             navigateToDetails: (outboxRecord: OutboxRecord, router: Router, _: string) => {
                 const docId = outboxRecord.DocumentId;
                 const definitionId = ws.Document[docId].DefinitionId;

@@ -1,14 +1,9 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -21,7 +16,6 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.ApiAuthentication;
-using Tellma.Services.BlobStorage;
 using Tellma.Services.Email;
 using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Services.Utilities;
@@ -398,11 +392,10 @@ namespace Tellma.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var email = nameof(Entities.AdminUser.Email);
-                var name = nameof(Entities.AdminUser.Name);
-                var cs = Ops.contains;
+                var email = nameof(AdminUser.Email);
+                var name = nameof(AdminUser.Name);
 
-                query = query.Filter($"{name} {cs} '{search}' or {email} {cs} '{search}'");
+                query = query.Filter($"{name} contains '{search}' or {email} contains '{search}'");
             }
 
             return query;

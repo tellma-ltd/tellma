@@ -375,9 +375,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return measures.map(measureDef => {
-      const key = `${measureDef.Aggregation}(${measureDef.Path.split('/').map(e => e.trim()).join('/')})`;
+      const key = `${measureDef.Aggregation}(${measureDef.Path.split('.').map(e => e.trim()).join('.')})`;
       const aggregation = measureDef.Aggregation;
-      const steps = measureDef.Path.split('/').map(e => e.trim());
+      const steps = measureDef.Path.split('.').map(e => e.trim());
       const prop = steps.pop();
       const collection = this.definition.Collection;
       const definitionId = this.definition.DefinitionId;
@@ -435,7 +435,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     dims = dims || [];
     return dims.map(dim => {
       // Normalized the path
-      const path = dim.Path.split('/').map((e: string) => e.trim()).join('/');
+      const path = dim.Path.split('.').map((e: string) => e.trim()).join('.');
       const modifier = dim.Modifier;
       const key = !!dim.Modifier ? `${path}|${dim.Modifier}` : path;
 
@@ -448,7 +448,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const definitionId = this.definition.DefinitionId;
       const ws = this.workspace;
       const trx = this.translate;
-      const steps = path.split('/');
+      const steps = path.split('.');
       const prop = steps[steps.length - 1];
       const parentEntityDesc = entityDescriptorImpl(steps.slice(0, -1), collection, definitionId, ws, trx);
       propDesc = parentEntityDesc.properties[prop];
@@ -479,11 +479,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       // This is a nav property, add a few extra things to allow for
       // efficient extraction of mock navigation entities from the server results
       if (!!entityDesc) {
-        const pathSlash = !!path ? path + '/' : '';
+        const pathDot = !!path ? path + '.' : '';
 
         result.entityDesc = entityDesc;
-        result.idKey = `${pathSlash}Id`;
-        result.selectKeys = entityDesc.select.map(s => ({ path: `${pathSlash}${s}`, prop: s }));
+        result.idKey = `${pathDot}Id`;
+        result.selectKeys = entityDesc.select.map(s => ({ path: `${pathDot}${s}`, prop: s }));
       }
 
       return result;
@@ -527,21 +527,21 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       baseEntityDescriptor.navigateToDetailsSelect.forEach(e => resultPaths[e] = true);
     }
 
-    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
     select.map(col => col.Path).forEach(path => {
 
       if (!path) {
         return;
       }
 
-      const steps = path.split('/').map(e => e.trim());
-      path = steps.join('/'); // to trim extra spaces
+      const steps = path.split('.').map(e => e.trim());
+      path = steps.join('.'); // to trim extra spaces
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
           this.definitionId, this.workspace, this.translate);
 
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
       } catch {
         resultPaths[path] = true;
       }
@@ -572,9 +572,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     // (1) Add dimensions (special handling for nav props)
     cols.concat(rows).forEach(dimensionDef => {
-      const path = dimensionDef.Path.trim().split('/').map(e => e.trim());
+      const path = dimensionDef.Path.trim().split('.').map(e => e.trim());
       const property = path[path.length - 1]; // last element
-      const stringPath = path.join('/');
+      const stringPath = path.join('.');
       const orderDir = dimensionDef.OrderDirection;
 
       // get the description of the entity hosting the property
@@ -584,7 +584,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const propDesc = currentDesc.properties[property];
       if (!!propDesc && propDesc.datatype === 'entity') {
         // For nav properties, select the Id + the display properties
-        addAtom(`${stringPath}/Id`);
+        addAtom(`${stringPath}.Id`);
 
         const desc = entityDescriptorImpl(path, collection, definitionId,
           this.workspace, this.translate);
@@ -593,13 +593,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         desc.orderby().forEach(o => {
           const descSelect = desc.select.find(s => s === o);
           if (!!descSelect) {
-            const descSelectPath = `${stringPath}/${descSelect}`.trim();
+            const descSelectPath = `${stringPath}.${descSelect}`.trim();
             addAtom(descSelectPath, orderDir);
           }
         });
 
         desc.select.forEach(descSelect => {
-          const descSelectPath = `${stringPath}/${descSelect}`.trim();
+          const descSelectPath = `${stringPath}.${descSelect}`.trim();
           addAtom(descSelectPath, orderDir);
         });
       } else if (!!dimensionDef.Modifier) {
@@ -616,7 +616,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const measures = this.definition.Measures || [];
     measures.forEach(measureDef => {
       // extract the relevant values from definition
-      const path = measureDef.Path.split('/').map(e => e.trim()).join('/');
+      const path = measureDef.Path.split('.').map(e => e.trim()).join('.');
       const orderDir = measureDef.OrderDirection;
       const aggregation = measureDef.Aggregation;
 
@@ -760,8 +760,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         if (propDesc.datatype === 'entity') {
           // Update path
           const fkName = propDesc.foreignKeyName;
-          const steps = path.split('/').slice(0, -1);
-          path = steps.concat([fkName]).join('/');
+          const steps = path.split('.').slice(0, -1);
+          path = steps.concat([fkName]).join('.');
 
           // Update propDesc
           const entityDesc = currentDimension.entityDesc;
@@ -1349,7 +1349,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       // This is only useful if there is an AVG measure
       const countKeys = this.definition.Measures.map(m =>
-        `count(${m.Path.split('/').map(e => e.trim()).join('/')})`);
+        `count(${m.Path.split('.').map(e => e.trim()).join('.')})`);
 
       const columnsHash = columnsResult.hash;
       const rowHash = rowResult.hash;

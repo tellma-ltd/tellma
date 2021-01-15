@@ -6,9 +6,9 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents a filter argument which is a full expression tree that evaluates to a boolean.
+    /// Represents a filter argument which is a boolean expression.
+    /// The syntax is anything that can be compiled by <see cref="QueryexBase"/> into a single boolean expression.
     /// For example: "(Value * Direction > 1000) and (Participant.Lookup1.Code = 'M')".
-    /// The filter syntax is that which can be parsed into <see cref="QueryexBase"/>
     /// </summary>
     public class ExpressionFilter
     {
@@ -23,7 +23,7 @@ namespace Tellma.Data.Queries
 
         /// <summary>
         /// Parses a string representing a filter argument into a <see cref="ExpressionFilter"/>. 
-        /// The filter argument is a full expression tree that evaluates to a boolean.
+        /// The syntax is anything that can be compiled by <see cref="QueryexBase"/> into a single boolean expression.
         /// For example: "(Value * Direction > 1000) and (Participant.Lookup1.Code = 'M')".
         /// </summary>
         public static ExpressionFilter Parse(string filter)
@@ -36,13 +36,13 @@ namespace Tellma.Data.Queries
                 throw new InvalidOperationException("Filter parameter must contain a single expression without top level commas.");
             }
 
-            var filterExpression = expressions.First();
+            var filterExpression = expressions.FirstOrDefault();
             if (filterExpression == null)
             {
                 return null;
             }
 
-            return new ExpressionFilter(expressions.First());
+            return new ExpressionFilter(filterExpression);
         }
 
         public IEnumerable<QueryexColumnAccess> ColumnAccesses()

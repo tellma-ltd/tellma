@@ -38,7 +38,7 @@ export function metadata_InboxRecord(wss: WorkspaceService, trx: TranslateServic
             select: _select,
             apiEndpoint: 'inbox',
             masterScreenUrl: 'inbox',
-            navigateToDetailsSelect: ['Document/DefinitionId'],
+            navigateToDetailsSelect: ['Document.DefinitionId'],
             navigateToDetails: (entity: InboxRecord, router: Router, stateKey: string) => {
                 const id = entity.Id;
                 const definitionId = ws.Document[id].DefinitionId;

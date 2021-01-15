@@ -419,10 +419,10 @@ namespace Tellma.Controllers
             top = Math.Min(top, MaximumPageSize());
             query = query.Skip(skip).Top(top);
 
-            // Apply the expand, which has the general format 'Expand=A,B/C,D'
+            // Apply the expand, which has the general format 'Expand=A,B.C,D'
             query = query.Expand(expand);
 
-            // Apply the select, which has the general format 'Select=A,B/C,D'
+            // Apply the select, which has the general format 'Select=A,B.C,D'
             query = query.Select(select);
 
             block.Dispose();
@@ -653,7 +653,7 @@ namespace Tellma.Controllers
         ///// If the user has no permission masks defined (can see all), this mask is used.
         ///// This makes it easier to setup permissions such that a user cannot see employee
         ///// salaries for example, since without this, the user can "expand" the Entity tree 
-        ///// all the way to the salaries if s/he has access to any Entity from which the employee entity is reachable
+        ///// all the way to the salaries if she has access to any Entity from which the employee entity is reachable
         ///// </summary>
         ///// <returns></returns>
         //protected virtual MaskTree GetDefaultMask()
@@ -714,7 +714,7 @@ namespace Tellma.Controllers
         //{
         //    if (orderby != null)
         //    {
-        //        var orderbyPaths = orderby.Select(e => string.Join("/", e.Path.Union(new string[] { e.Property })));
+        //        var orderbyPaths = orderby.Select(e => string.Join(".", e.Path.Union(new string[] { e.Property })));
         //        var orderbyMask = MaskTree.GetMaskTree(orderbyPaths);
         //        var orderbyAccess = Normalize(orderbyMask);
 
@@ -775,7 +775,7 @@ namespace Tellma.Controllers
         /// Orders the query as per the orderby and desc arguments
         /// </summary>
         /// <param name="query">The base query to order</param>
-        /// <param name="orderby">The orderby parameter which has the format 'A/B/C desc,D/E'</param>
+        /// <param name="orderby">The orderby parameter which has the format 'A.B.C desc,D.E'</param>
         /// <param name="desc">True for a descending order</param>
         /// <returns>Ordered query</returns>
         protected virtual Query<TEntity> OrderBy(Query<TEntity> query, ExpressionOrderBy orderby)

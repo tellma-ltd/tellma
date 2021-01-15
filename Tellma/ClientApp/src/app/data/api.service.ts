@@ -19,7 +19,6 @@ import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
 import { Relation } from './entities/relation';
 import { Role } from './entities/role';
-import { GeneralSettings } from './entities/general-settings';
 import { SettingsForClient } from './dto/settings-for-client';
 import { Versioned } from './dto/versioned';
 import { PermissionsForClient } from './dto/permissions-for-client';

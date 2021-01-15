@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +19,6 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Entities.Descriptors;
-using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
@@ -1194,15 +1192,15 @@ namespace Tellma.Controllers
                     if (prefix != null)
                     {
                         bldr.Append(prefix);
-                        bldr.Append("/");
+                        bldr.Append(".");
                     }
 
                     // Append the property name
                     if (simpleProp is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
                     {
-                        // Append navigation property name followed by key. E.g. Resource/Code
+                        // Append navigation property name followed by key. E.g. Resource.Code
                         bldr.Append(fkProp.NavPropertyMetadata.Descriptor.Name);
-                        bldr.Append("/");
+                        bldr.Append(".");
                         bldr.Append(fkProp.KeyPropertyMetadata.Descriptor.Name);
                     }
                     else
@@ -1221,7 +1219,7 @@ namespace Tellma.Controllers
                     }
                     else
                     {
-                        nextPrefix = $"{prefix}/{collProp.ParentCollectionPropertyMetadata.Descriptor.Name}";
+                        nextPrefix = $"{prefix}.{collProp.ParentCollectionPropertyMetadata.Descriptor.Name}";
                     }
 
                     SelectFromMappingInner(collProp, bldr, nextPrefix, notFirstAtom);

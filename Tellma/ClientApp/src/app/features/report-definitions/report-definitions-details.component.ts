@@ -448,7 +448,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       const measure: ReportMeasureDefinition = { ...dimension, Aggregation: dimension['Aggregation'] };
       if (!measure.Aggregation) {
         try {
-          const steps = measure.Path.split('/');
+          const steps = measure.Path.split('.');
           const prop = steps.pop();
           const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.workspace, this.translate);
           const propDesc = desc.properties[prop];
@@ -651,7 +651,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
     const entityDesc = metadata[collection](this.workspace, this.translate, definitionId);
     const level = !!parent ? parent.level + 1 : 0;
-    const parentPath = !!parent ? `${parent.path}/` : '';
+    const parentPath = !!parent ? `${parent.path}.` : '';
     return Object.keys(entityDesc.properties).map(prop => ({
       path: `${parentPath}${prop}`,
       desc: entityDesc.properties[prop],

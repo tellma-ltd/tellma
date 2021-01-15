@@ -71,7 +71,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
         throw new Error(`The collection is not specified`);
       }
 
-      const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+      const pathArray = (this.path || '').split('.').map(e => e.trim()).filter(e => !!e);
 
       if (pathArray.length === 0) {
         this._label = this.translate.instant('DisplayName');

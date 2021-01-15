@@ -575,17 +575,15 @@ namespace Tellma.Controllers
                 var name = nameof(User.Name);
                 var name2 = nameof(User.Name2);
                 var name3 = nameof(User.Name3);
-                var cs = Ops.contains;
 
-                string filter = $"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {email} {cs} '{search}'";
+                string filter = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {email} contains '{search}'";
 
                 // If the search term looks like an email, include the contact email in the search
                 if (emailAtt.IsValid(search))
                 {
                     var contactEmail = nameof(User.ContactEmail);
-                    var eq = Ops.eq;
 
-                    filter += $" or {contactEmail} {eq} '{search}'";
+                    filter += $" or {contactEmail} eq '{search}'";
                 }
 
                 // If the search term looks like a phone number, include the contact mobile in the search
@@ -593,9 +591,8 @@ namespace Tellma.Controllers
                 {
                     var e164 = ControllerUtilities.ToE164(search);
                     var normalizedContactMobile = nameof(User.NormalizedContactMobile);
-                    var eq = Ops.eq;
 
-                    filter += $" or {normalizedContactMobile} {eq} '{e164}'";
+                    filter += $" or {normalizedContactMobile} eq '{e164}'";
                 }
 
                 query = query.Filter(filter);

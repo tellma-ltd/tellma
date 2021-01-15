@@ -243,7 +243,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties with label and definition Id
-            for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
+            for (const propName of ['1', '2', '3', '4'].map(pf => 'Lookup' + pf)) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

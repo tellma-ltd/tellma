@@ -8,10 +8,7 @@ import {
   MasterStatus,
   MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
-import {
-  ChoicePropDescriptor,
-  EntityDescriptor, metadata, getChoices, NavigationPropDescriptor, PropVisualDescriptor
-} from '~/app/data/entities/base/metadata';
+import { ChoicePropDescriptor, EntityDescriptor, metadata, getChoices, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';

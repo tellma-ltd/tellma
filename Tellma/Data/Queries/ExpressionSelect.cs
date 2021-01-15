@@ -6,7 +6,8 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents a select argument which is a comma separated list of column access atoms. For example: "Line.PostingDate,Value"
+    /// Represents a select argument which is a comma separated list of column accesses. 
+    /// For example: "Line.PostingDate,Value"
     /// </summary>
     public class ExpressionSelect : IEnumerable<QueryexColumnAccess>
     {
@@ -73,7 +74,8 @@ namespace Tellma.Data.Queries
 
         /// <summary>
         /// Parses a string representing a select argument into an <see cref="ExpressionSelect"/>. 
-        /// The aggregate select argument is a comma separated list of paths. For example: "Line.PostingDate,Value"
+        /// The select argument is a comma separated list of column accesses. 
+        /// For example: "Line.PostingDate,Value"
         /// </summary>
         public static ExpressionSelect Parse(string select)
         {

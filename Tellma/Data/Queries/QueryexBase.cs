@@ -126,8 +126,7 @@ namespace Tellma.Data.Queries
             {
                 aggregated = true;
             }
-
-            if (aggregated && this is QueryexColumnAccess columnAccess)
+            else if (!aggregated && this is QueryexColumnAccess columnAccess)
             {
                 yield return columnAccess;
             }
@@ -916,35 +915,33 @@ namespace Tellma.Data.Queries
 
     public class QueryexColumnAccess : QueryexBase
     {
-        private string[] _path;
-
-        private string _property;
-
         public QueryexColumnAccess(string[] steps)
         {
             Steps = steps ?? throw new ArgumentNullException(nameof(steps));
+            Path = Steps.Length > 0 ? Steps.SkipLast(1).ToArray() : new string[0] { };
+            Property = Steps.Length > 0 ? Steps[^1] : null;
         }
 
         public QueryexColumnAccess(string[] path, string prop)
         {
-            if (path is null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            Path = path ?? throw new ArgumentNullException(nameof(path));
+            Property = prop;
 
-            if (prop is null)
+            if (string.IsNullOrWhiteSpace(prop))
             {
-                throw new ArgumentNullException(nameof(prop));
+                Steps = path;
             }
-
-            Steps = path.Append(prop).ToArray();
+            else
+            {
+                Steps = path.Append(prop).ToArray();
+            }
         }
 
         public string[] Steps { get; }
 
-        public string Property => _property ??= Steps.Length > 0 ? Steps[^1] : null;
+        public string Property { get; }
 
-        public string[] Path => _path ??= Steps.Length > 0 ? Steps.SkipLast(1).ToArray() : new string[0] { };
+        public string[] Path { get; }
 
         public override string ToString()
         {
@@ -1044,8 +1041,8 @@ namespace Tellma.Data.Queries
 
         public override bool Equals(object exp)
         {
-            return exp is QueryexColumnAccess ca && 
-                ca.Steps.Length == Steps.Length && 
+            return exp is QueryexColumnAccess ca &&
+                ca.Steps.Length == Steps.Length &&
                 ca.Steps.Select((step, index) => (step, index))
                         .All(pair => pair.step == Steps[pair.index]);
         }
@@ -1544,7 +1541,7 @@ namespace Tellma.Data.Queries
                         }
 
                         resultType = QxType.Numeric;
-                        if (ctx.UserId != null)
+                        if (ctx.UserId != 0)
                         {
                             resultNullity = QxNullity.NotNull;
                             resultSql = ctx.UserId.ToString();
@@ -1580,9 +1577,7 @@ namespace Tellma.Data.Queries
             return exp is QueryexFunction func &&
                 func.Name == Name &&
                 func.Arguments.Length == Arguments.Length &&
-                func.Arguments
-                    .Select((arg, index) => (arg, index))
-                    .All(pair => pair.arg.Equals(Arguments[pair.index]));
+                Enumerable.Range(0, func.Arguments.Length).All(i => func.Arguments[i].Equals(Arguments[i]));
         }
 
         public override int GetHashCode()
@@ -2652,7 +2647,7 @@ namespace Tellma.Data.Queries
             string sql = Value ? "1" : "0";
             return (sql, QxType.Bit, QxNullity.NotNull);
         }
-        
+
         public override bool Equals(object exp)
         {
             return exp is QueryexBit n && Value == n.Value;
@@ -2666,7 +2661,7 @@ namespace Tellma.Data.Queries
 
     public class QxCompilationContext
     {
-        public QxCompilationContext(JoinTrie joins, Func<Type, string> sources, SqlStatementVariables vars, SqlStatementParameters ps, DateTime today, int? userId)
+        public QxCompilationContext(JoinTrie joins, Func<Type, string> sources, SqlStatementVariables vars, SqlStatementParameters ps, DateTime today, int userId)
         {
             Joins = joins ?? throw new ArgumentNullException(nameof(joins));
             Sources = sources ?? throw new ArgumentNullException(nameof(sources));
@@ -2690,7 +2685,7 @@ namespace Tellma.Data.Queries
 
         public DateTimeOffset Now => _now ??= DateTimeOffset.UtcNow;
 
-        public int? UserId { get; }
+        public int UserId { get; }
     }
 
     /// <summary>

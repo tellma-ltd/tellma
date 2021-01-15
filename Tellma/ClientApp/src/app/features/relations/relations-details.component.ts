@@ -41,9 +41,8 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
-  // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
   public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,
-Relation1,Agent,Users/User,Attachments/Category,Attachments/CreatedBy`;
+Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   create = () => {
     const result: RelationForSave = {};
@@ -860,7 +859,6 @@ Relation1,Agent,Users/User,Attachments/Category,Attachments/CreatedBy`;
 
   /////////////// Attachments - START
 
-  private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineModel: string;
 
   public showAttachmentsErrors(model: RelationForSave) {

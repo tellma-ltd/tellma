@@ -71,11 +71,6 @@ export interface CustodyDefinitionForSave<TReportDefinition = CustodyDefinitionR
     Lookup4Label3?: string;
     Lookup4Visibility?: Visibility;
     Lookup4DefinitionId?: number;
-    // Lookup5Label?: string;
-    // Lookup5Label2?: string;
-    // Lookup5Label3?: string;
-    // Lookup5Visibility?: Visibility;
-    // Lookup5DefinitionId?: number;
     Text1Label?: string;
     Text1Label2?: string;
     Text1Label3?: string;

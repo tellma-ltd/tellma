@@ -126,7 +126,7 @@ namespace Tellma.Controllers.Templating
                     continue;
                 }
 
-                var select = string.Join(",", trie.GetPaths().Select(p => string.Join("/", p)));
+                var select = string.Join(",", trie.GetPaths().Select(p => string.Join(".", p)));
 
                 // Load the query
                 if (query is QueryByFilterInfo queryByFilter)

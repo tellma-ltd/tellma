@@ -6,9 +6,13 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents an aggregate select argument which is a comma separated list of paths that
-    /// are optionally aggregated with an aggregation function. Where some of those are optionally
-    /// postfixed with "desc" or "asc". For example: "Invoice/Customer/Name,sum(Amount) desc"
+    /// Represents an aggregate select argument which is a comma separated list of non-boolean expressions.
+    /// The syntax is anything that can be compiled by <see cref="QueryexBase"/>.
+    /// Valid <see cref="ExpressionAggregateSelect"/> expressions are two types:
+    /// - Dimensions: Do not contain any aggregation functions.
+    /// - Measures: Contain at least one aggregation function in the expression tree.
+    /// If an expression is a measures: all column accesses in that expression must be contained within an aggregation function.
+    /// For example: Account.Id,Account.Name,Sum(Value * Direction)
     /// </summary>
     public class ExpressionAggregateSelect : IEnumerable<QueryexBase>
     {
@@ -36,10 +40,14 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Parses a string representing an aggregate select argument into an <see cref="ExpressionAggregateSelect"/>. 
-        /// The aggregate select argument is a comma separated list of paths that are optionally aggregated with an
-        /// aggregation function. Where some of those are optionally postfixed with "desc" or "asc".
-        /// For example: "Invoice/Customer/Name,sum(Amount) desc"
+        /// Parses a string representing of an aggregate select argument into an <see cref="ExpressionAggregateSelect"/>. 
+        /// The aggregate select argument is a comma separated list of non-boolean expressions. 
+        /// The syntax is anything that can be compiled by <see cref="QueryexBase"/>.
+        /// Valid <see cref="ExpressionAggregateSelect"/> expressions are two types:
+        /// - Dimensions: Do not contain any aggregation functions.
+        /// - Measures: Contain at least one aggregation function in the expression tree.
+        /// If an expression is a measures: all column accesses in that expression must be contained within an aggregation function.
+        /// For example: Account.Id,Account.Name,Sum(Value * Direction)
         /// </summary>
         public static ExpressionAggregateSelect Parse(string aggregateSelect)
         {

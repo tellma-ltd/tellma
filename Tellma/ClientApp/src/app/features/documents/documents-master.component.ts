@@ -1,19 +1,15 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { DocumentDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
-import { tap, catchError, finalize } from 'rxjs/operators';
-import { addToWorkspace, printBlob } from '~/app/data/util';
-import { Observable, of, Subscription } from 'rxjs';
+import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { tap } from 'rxjs/operators';
+import { addToWorkspace } from '~/app/data/util';
+import { Observable } from 'rxjs';
 import { Document } from '~/app/data/entities/document';
-import { MasterComponent } from '~/app/shared/master/master.component';
-import { GenerateMarkupByFilterArguments } from '~/app/data/dto/generate-markup-arguments';
-import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { Placement } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 't-documents-master',

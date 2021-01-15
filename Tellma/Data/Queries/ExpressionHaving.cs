@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents a having argument which is a full expression tree that evaluates to a boolean.
+    /// Represents a having argument which is a boolean expression.
+    /// The syntax is anything that can be compiled by <see cref="QueryexBase"/> into a single boolean expression where every column access is contained within an aggregation.
     /// For example: "SUM(Value * Direction) > 1000 and Max(Participant.Lookup1.Code) = 'M'".
-    /// The having syntax is that which can be parsed into <see cref="QueryexBase"/>, but every column access must be contained within an aggregation.
     /// </summary>
     public class ExpressionHaving
     {
@@ -23,12 +22,13 @@ namespace Tellma.Data.Queries
 
         /// <summary>
         /// Parses a string representing a filter argument into a <see cref="ExpressionHaving"/>. 
-        /// The filter argument is a full expression tree that evaluated to a boolean.
-        /// For example: "(Order.Total > 1000) and (Customer.Gender = 'M')".
+        /// The filter argument is a boolean expression. The syntax is anything that can be compiled by
+        /// <see cref="QueryexBase"/> into a single boolean expression where every column access is contained within an aggregation.
+        /// For example: "SUM(Value * Direction) > 1000 and Max(Participant.Lookup1.Code) = 'M'".
         /// </summary>
-        public static ExpressionHaving Parse(string filter)
+        public static ExpressionHaving Parse(string having)
         {
-            var expressions = QueryexBase.Parse(filter);
+            var expressions = QueryexBase.Parse(having);
 
             // Can only contain 0 or 1 atoms
             if (expressions.Skip(1).Any())
@@ -36,13 +36,13 @@ namespace Tellma.Data.Queries
                 throw new InvalidOperationException("Having parameter must contain a single expression without top level commas.");
             }
 
-            var filterExpression = expressions.First();
-            if (filterExpression == null)
+            var havingExpression = expressions.FirstOrDefault();
+            if (havingExpression == null)
             {
                 return null;
             }
 
-            return new ExpressionHaving(expressions.First());
+            return new ExpressionHaving(havingExpression);
         }
 
         public IEnumerable<QueryexColumnAccess> ColumnAccesses()

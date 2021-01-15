@@ -173,7 +173,7 @@ namespace Tellma.Controllers
             string attachments = nameof(Relation.Attachments);
             var (entity, _) = await GetById(docId, new GetByIdArguments
             {
-                Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
+                Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
             },
             cancellation);
 

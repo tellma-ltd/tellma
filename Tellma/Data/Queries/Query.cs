@@ -111,16 +111,6 @@ namespace Tellma.Data.Queries
             return Expand(ExpressionExpand.Parse(expand));
         }
 
-        ///// <summary>
-        ///// Filters the query according to the supplied definition Id. Permits only the visible columns according to the definition
-        ///// </summary>
-        //public Query<T> DefinitionId(string definitionId)
-        //{
-        //    var clone = Clone();
-        //    clone._definitionId = definitionId;
-        //    return clone.Filter($"DefinitionId eq {definitionId}");
-        //}
-
         /// <summary>
         /// Applies a <see cref="ExpressionFilter"/> to filter the result
         /// </summary>
@@ -352,8 +342,8 @@ namespace Tellma.Data.Queries
             ExpressionSelect selectExp = _select;
             ExpressionExpand expandExp = _expand;
             ExpressionOrderBy orderbyExp = _orderby;
-            ExpressionFilter filterExp = null; // _filterConditions?.Aggregate(
-            //    (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
+            ExpressionFilter filterExp = _filterConditions?.Aggregate(
+                (e1, e2) => ExpressionFilter.Conjunction(e1, e2));
 
             // To prevent SQL injection
             ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp, resultDesc, localizer);
@@ -376,7 +366,7 @@ namespace Tellma.Data.Queries
                 if (principalQuery != null && desc.KeyType == KeyType.None)
                 {
                     // Programmer mistake
-                    throw new InvalidOperationException($"Type {desc.Name} has no Id property, yet it is used as a navigation collection on another entity");
+                    throw new InvalidOperationException($"[Bug] Type {desc.Name} has no Id property, yet it is used as a navigation collection on another entity");
                 }
 
                 string foreignKeyToPrincipalQuery = null;
@@ -445,17 +435,17 @@ namespace Tellma.Data.Queries
 
             if (selectExp != null)
             {
-                var selectTree = PathTrie.Build(resultDesc, selectExp.Select(e => e.Path));
+                var selectTrie = PathTrie.Build(resultDesc, selectExp.Select(e => e.Path));
                 foreach (var selectAtom in selectExp)
                 {
                     // This breaks up the path into multiple segments along the one-to-many and child-parent relationship boundaries
-                    var pathSegments = selectTree.GetSegments(selectAtom.Path);
+                    var pathSegments = selectTrie.GetSegments(selectAtom.Path);
                     ArraySegment<string> previousFullPath = null;
-                    foreach (var (fullPath, subPath, type) in pathSegments.SkipLast(1))
+                    foreach (var (fullPath, subPath, desc) in pathSegments.SkipLast(1))
                     {
                         if (!segments.ContainsKey(fullPath))
                         {
-                            QueryInternal flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
+                            QueryInternal flatQuery = MakeFlatQuery(previousFullPath, subPath, desc);
                             segments[fullPath] = flatQuery;
                         }
 
@@ -465,7 +455,7 @@ namespace Tellma.Data.Queries
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add a select
                             {
                                 flatQuery.Select ??= new ExpressionSelect();
-                                flatQuery.Select.Add(new SelectAtom { Path = subPath.SkipLast(1).ToArray() });
+                                flatQuery.Select.Add(new QueryexColumnAccess(subPath.SkipLast(1).ToArray(), null));
                             }
                         }
 
@@ -477,11 +467,12 @@ namespace Tellma.Data.Queries
                         var (_, subPath, _) = pathSegments.Last();
                         var flatQuery = segments[previousFullPath];
                         flatQuery.Select ??= new ExpressionSelect();
-                        flatQuery.Select.Add(new SelectAtom
-                        {
-                            Path = subPath.ToArray(),
-                            Property = selectAtom.Property
-                        });
+                        //flatQuery.Select.Add(new SelectAtom
+                        //{
+                        //    Path = subPath.ToArray(),
+                        //    Property = selectAtom.Property
+                        //});
+                        flatQuery.Select.Add(new QueryexColumnAccess(path: subPath.ToArray(), prop: selectAtom.Property));
                     }
                 }
             }
@@ -507,7 +498,8 @@ namespace Tellma.Data.Queries
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add an expand
                             {
                                 flatQuery.Expand ??= new ExpressionExpand();
-                                flatQuery.Expand.Add(new ExpandAtom { Steps = subPath.SkipLast(1).ToArray() });
+                                // flatQuery.Expand.Add(new ExpandAtom { Steps = subPath.SkipLast(1).ToArray() });
+                                flatQuery.Expand.Add(new QueryexColumnAccess(steps: subPath.SkipLast(1).ToArray()));
                             }
                         }
                         previousFullPath = fullPath;
@@ -520,10 +512,11 @@ namespace Tellma.Data.Queries
                         {
                             var flatQuery = segments[previousFullPath];
                             flatQuery.Expand ??= new ExpressionExpand();
-                            flatQuery.Expand.Add(new ExpandAtom
-                            {
-                                Steps = subPath.ToArray(),
-                            });
+                            //flatQuery.Expand.Add(new ExpandAtom
+                            //{
+                            //    Steps = subPath.ToArray(),
+                            //});
+                            flatQuery.Expand.Add(new QueryexColumnAccess(steps: subPath.ToArray()));
                         }
                     }
                 }
@@ -548,28 +541,12 @@ namespace Tellma.Data.Queries
             block = i.Block("Prepare Statemnts");
 
             // Prepare the parameters
-            var ps = new SqlStatementParameters();
-
-            // Add the fromSql parameters
-            if (_parameters != null)
-            {
-                foreach (var p in _parameters)
-                {
-                    ps.AddParameter(p);
-                }
-            }
-
-            if (_additionalParameters != null)
-            {
-                foreach (var additionalParameter in _additionalParameters)
-                {
-                    ps.AddParameter(additionalParameter);
-                }
-            }
+            var vars = new SqlStatementVariables();
+            var ps = new SqlStatementParameters(_parameters, _additionalParameters);
 
             // Prepare the SqlStatements
             List<SqlStatement> statements = segments.Values
-                .Select(q => q.PrepareStatement(sources, ps, userId, userToday))
+                .Select(q => q.PrepareStatement(sources, vars, ps, userId, userToday))
                 .ToList(); // The order matters for the Entity loader
 
 
@@ -577,7 +554,7 @@ namespace Tellma.Data.Queries
             block = i.Block("Prepare Count");
 
             // Prepare the countSQL (if any)
-            string countSql = includeCount ? root.PrepareCountSql(sources, ps, userId, userToday, maxCount) : null;
+            string countSql = includeCount ? root.PrepareCountSql(sources, vars, ps, userId, userToday, maxCount) : null;
 
             block.Dispose();
 
@@ -605,185 +582,6 @@ namespace Tellma.Data.Queries
             return entities.FirstOrDefault();
         }
 
-//        /// <summary>
-//        /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
-//        /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
-//        /// </summary>
-//        public async Task<IEnumerable<IndexedId<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
-//        {
-//            return await GetIndexMapInner<TKey>(criteriaIndexes, cancellation);
-//        }
-
-//        /// <summary>
-//        /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
-//        /// and returns a mapping from every entity Id (which is specifically an INT) in the original query to all the criteria
-//        /// that are satified by this entity, this is different from <see cref="GetIndexToIdMap(IEnumerable{IndexAndCriteria})"/>
-//        /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
-//        /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
-//        /// </summary>
-//        public async Task<IEnumerable<IndexedId<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
-//        {
-//            return await GetIndexMapInner<int>(criteriaIndexes, cancellation);
-//        }
-
-//        /// <summary>
-//        /// Internal Implementation
-//        /// </summary>
-//        private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
-//        {
-//            var args = await _factory(cancellation);
-//            var conn = args.Connection;
-//            var sources = args.Sources;
-//            var userId = args.UserId;
-//            var userTimeZone = args.UserToday;
-//            var localizer = args.Localizer;
-
-//            var resultDesc = TypeDescriptor.Get<T>();
-
-//            if (_select != null || _expand != null)
-//            {
-//                // Programmer mistake
-//                throw new InvalidOperationException($"Cannot call {nameof(GetIndexToIdMap)} when select or expand are specified");
-//            }
-
-//            var orderByExp = _orderby;
-//            FilterExpression filterExp = _filterConditions?.Aggregate(
-//                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
-
-//            // To prevent SQL injection
-//            ValidatePathsAndProperties(null, null, filterExp, orderByExp, resultDesc, localizer);
-
-//            // Prepare the internal query
-//            var flatQuery = new QueryInternal
-//            {
-//                ResultDescriptor = resultDesc,
-//                Filter = filterExp,
-//                Ids = _ids,
-//                ParentIds = _parentIds,
-//                PropName = _propName,
-//                Values = _values,
-//                IncludeRoots = _includeRoots,
-//                OrderBy = orderByExp,
-//                Skip = _skip,
-//                Top = _top,
-//                FromSql = _fromSql
-//            };
-
-//            // Prepare the parameters
-//            var ps = new SqlStatementParameters();
-
-//            // Add the fromSql parameters
-//            if (_parameters != null)
-//            {
-//                foreach (var p in _parameters)
-//                {
-//                    ps.AddParameter(p);
-//                }
-//            }
-
-//            if (_additionalParameters != null)
-//            {
-//                foreach (var additionalParameter in _additionalParameters)
-//                {
-//                    ps.AddParameter(additionalParameter);
-//                }
-//            }
-
-//            // Use the internal query to create the SQL
-//            var sourceSql = flatQuery.PrepareStatement(sources, ps, userId, userTimeZone).Sql;
-
-//            List<StringBuilder> toBeUnioned = new List<StringBuilder>(criteriaIndexes.Count());
-//            foreach (var criteriaIndex in criteriaIndexes)
-//            {
-//                int index = criteriaIndex.Index;
-//                string criteria = criteriaIndex.Criteria;
-
-//                var criteriaExp = FilterExpression.Parse(criteria);
-//                ValidatePathsAndProperties(null, null, criteriaExp, null, resultDesc, localizer);
-
-//                var criteriaQuery = new QueryInternal
-//                {
-//                    ResultDescriptor = resultDesc,
-//                    Filter = criteriaExp
-//                };
-
-//                JoinTrie joinTree = criteriaQuery.JoinSql();
-//                string joinSql = joinTree.GetSql(sources, fromSql: $@"({sourceSql})");
-//                string whereSql = criteriaQuery.WhereSql(sources, joinTree, ps, userId, userTimeZone);
-
-
-//                var sqlBuilder = new StringBuilder();
-//                sqlBuilder.AppendLine($"SELECT [P].[Id], {index} As [Index]");
-//                sqlBuilder.AppendLine(joinSql);
-//                sqlBuilder.AppendLine(whereSql);
-
-//                toBeUnioned.Add(sqlBuilder);
-//            }
-
-//            string sql = toBeUnioned.Select(s => s.ToString()).Aggregate((s1, s2) => $@"{s1}
-
-//UNION
-
-//{s2}");
-
-//            if (!string.IsNullOrWhiteSpace(_preSql))
-//            {
-//                sql = $@"{_preSql}
-
-//{sql}";
-//            }
-
-//            using var cmd = conn.CreateCommand();
-
-//            // Prepare the SQL command
-//            cmd.CommandText = sql;
-//            foreach (var parameter in ps)
-//            {
-//                cmd.Parameters.Add(parameter);
-//            }
-
-//            // This block is never entered, but we add it anyways for robustness sake
-//            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
-//            if (ownsConnection)
-//            {
-//                conn.Open();
-//            }
-
-//            try
-//            {
-//                var result = new List<IndexedId<TKey>>();
-//                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
-//                {
-//                    // Loop over the result from the database
-//                    while (await reader.ReadAsync())
-//                    {
-//                        var dbId = reader["Id"];
-//                        var dbIndex = reader.GetInt32(1);
-
-//                        result.Add(new IndexedId<TKey>
-//                        {
-//                            Id = (TKey)dbId,
-//                            Index = dbIndex
-//                        });
-//                    }
-//                }
-
-//                return result;
-//            }
-//            finally
-//            {
-//                // Otherwise we might get an error
-//                cmd.Parameters.Clear();
-
-//                // This block is never entered but we add it here for robustness
-//                if (ownsConnection)
-//                {
-//                    conn.Close();
-//                    conn.Dispose();
-//                }
-//            }
-//        }
-
         /// <summary>
         /// To prevent SQL injection attacks
         /// </summary>
@@ -794,15 +592,15 @@ namespace Tellma.Data.Queries
             // Select
             if (selectExp != null)
             {
-                PathValidator trie = new PathValidator();
+                PathValidator validator = new PathValidator();
                 foreach (var atom in selectExp)
                 {
                     // AddPath(atom.Path, atom.Property);
-                    trie.AddPath(atom.Path, atom.Property);
+                    validator.AddPath(atom.Path, atom.Property);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                trie.Validate(rootDesc, localizer, "select",
+                validator.Validate(rootDesc, localizer, "select",
                     allowLists: true,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -824,22 +622,22 @@ namespace Tellma.Data.Queries
                     allowNavigationTerminals: true);
             }
 
-            //// Filter
-            //if (filterExp != null)
-            //{
-            //    PathValidator trie = new PathValidator();
-            //    foreach (var atom in filterExp)
-            //    {
-            //        // AddPath(atom.Path, atom.Property);
-            //        trie.AddPath(atom.Path, atom.Property);
-            //    }
+            // Filter
+            if (filterExp != null)
+            {
+                PathValidator trie = new PathValidator();
+                foreach (var atom in filterExp.ColumnAccesses())
+                {
+                    // AddPath(atom.Path, atom.Property);
+                    trie.AddPath(atom.Path, atom.Property);
+                }
 
-            //    // Make sure the paths are valid (Protects against SQL injection)
-            //    trie.Validate(rootDesc, localizer, "filter",
-            //        allowLists: false,
-            //        allowSimpleTerminals: true,
-            //        allowNavigationTerminals: false);
-            //}
+                // Make sure the paths are valid (Protects against SQL injection)
+                trie.Validate(rootDesc, localizer, "filter",
+                    allowLists: false,
+                    allowSimpleTerminals: true,
+                    allowNavigationTerminals: false);
+            }
 
             // Order By
             if (orderbyExp != null)

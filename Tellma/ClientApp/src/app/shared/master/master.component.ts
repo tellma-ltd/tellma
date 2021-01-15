@@ -686,17 +686,17 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       baseEntityDescriptor.navigateToDetailsSelect.forEach(e => resultPaths[e] = true);
     }
 
-    // (5) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (5) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
     select.split(',').forEach(path => {
 
-      const steps = path.split('/').map(e => e.trim());
-      path = steps.join('/'); // to trim extra spaces
+      const steps = path.split('.').map(e => e.trim());
+      path = steps.join('.'); // to trim extra spaces
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
           this.definitionId, this.workspace, this.translate);
 
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
       } catch {
         resultPaths[path] = true;
       }
@@ -710,8 +710,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       // select from parents what you select from children
       const selectWithParents = Object.keys(resultPaths)
         .map(atom => atom.trim())
-        .filter(atom => !!atom && !atom.startsWith('Parent/'))
-        .map(atom => `Parent/${atom}`);
+        .filter(atom => !!atom && !atom.startsWith('Parent.'))
+        .map(atom => `Parent.${atom}`);
 
       selectWithParents.forEach(e => resultPaths[e] = true);
     }
@@ -726,17 +726,17 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
 
-    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
     select.split(',').forEach(path => {
 
-      const steps = path.split('/').map(e => e.trim());
-      path = steps.join('/'); // to trim extra spaces
+      const steps = path.split('.').map(e => e.trim());
+      path = steps.join('.'); // to trim extra spaces
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
           this.definitionId, this.workspace, this.translate);
 
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
       } catch {
         resultPaths[path] = true;
       }
@@ -851,11 +851,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       } else {
 
         try {
-          const entityDesc = entityDescriptorImpl(result.split('/'),
+          const entityDesc = entityDescriptorImpl(result.split('.'),
             this.collection, this.definitionId, this.workspace, this.translate);
 
           if (!!entityDesc) {
-            result = entityDesc.orderby().map(e => `${result}/${e}`).join(',');
+            result = entityDesc.orderby().map(e => `${result}.${e}`).join(',');
           }
 
         } catch { }

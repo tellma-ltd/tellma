@@ -1435,7 +1435,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const entryDef = lineDef.Entries[entryIndex];
       if (!!entryDef && !!entryDef.ParentAccountTypeId) {
         // Account Type Id
-        let filter = `AccountType/Node descof ${entryDef.ParentAccountTypeId}`;
+        let filter = `AccountType.Id descof ${entryDef.ParentAccountTypeId}`;
 
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
@@ -4636,16 +4636,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           if (!!colDef) {
             switch (colDef.ColumnName) {
               case 'CustodianId':
-                tracker[`Lines/Entries/Custodian/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Custodian.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'ParticipantId':
-                tracker[`Lines/Entries/Participant/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Participant.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'CustodyId':
-                tracker[`Lines/Entries/Custody/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Custody.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'ResourceId':
-                tracker[`Lines/Entries/Resource/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Resource.${lineDef.BarcodeProperty}`] = true;
                 break;
             }
           }

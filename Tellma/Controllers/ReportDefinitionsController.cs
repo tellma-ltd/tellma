@@ -1,19 +1,16 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Tellma.Controllers
 {

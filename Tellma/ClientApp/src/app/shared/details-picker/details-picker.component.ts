@@ -178,7 +178,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       map((e: any) => e.target.value as string),
       tap(term => {
 
-        // Here capture what the user is typing, in case s/he clicks on 'Create'
+        // Here capture what the user is typing, in case she clicks on 'Create'
         // we pass this value to the details template which can use it as an initial
         // value for the name saving the user from having to type it again
         this._initialText = term;
@@ -842,7 +842,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private openSearchModalInner(definitionId?: number) {
 
     // it would be confusing if the user opens the details form the master
-    // and find the text s/he typed in the input field a while ago
+    // and find the text she typed in the input field a while ago
     this._initialText = '';
     this._definitionId = definitionId;
 

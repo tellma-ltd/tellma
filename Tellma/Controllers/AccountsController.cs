@@ -4,8 +4,6 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

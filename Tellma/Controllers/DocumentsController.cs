@@ -1,34 +1,28 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.ImportExport;
-using Tellma.Controllers.Templating;
+using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Utilities;
+using Tellma.Controllers.Utiltites;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using Tellma.Services;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Tellma.Controllers.Jobs;
 using Tellma.Services.Email;
+using Tellma.Services.MultiTenancy;
 using Tellma.Services.Sms;
-using Microsoft.Extensions.Options;
-using Tellma.Services.EmbeddedIdentityServer;
-using Tellma.Controllers.Utiltites;
-using System.Globalization;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -721,7 +715,7 @@ namespace Tellma.Controllers
             string attachments = nameof(Document.Attachments);
             var (doc, _) = await GetById(docId, new GetByIdArguments
             {
-                Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
+                Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
             },
             cancellation);
 

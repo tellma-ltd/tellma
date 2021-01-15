@@ -33,7 +33,7 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private relationDefinitionsApi = this.api.relationDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `ReportDefinitions/ReportDefinition,Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,
+  public expand = `ReportDefinitions.ReportDefinition,Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,
   Lookup5Definition,Lookup6Definition,Lookup7Definition,Lookup8Definition,Relation1Definition,AttachmentsCategoryDefinition`;
 
   create = () => {

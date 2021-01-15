@@ -10,11 +10,11 @@ namespace Tellma.Controllers.Utilities
     /// <summary>
     /// Represents a permission mask in an efficient-to-manipulate data structure, and provides utilties for common operations on mask trees
     /// </summary>
-    public class MaskTree : Dictionary<string, MaskTree>
+    public class MaskTrie : Dictionary<string, MaskTrie>
     {
         // [Nomenclature]
-        // - mask: a string of the general form "Prop1,Prop2/Prop3,Prop4/Prop5/Prop6"
-        // - path: a string of the general form "Prop2/Prop3"
+        // - mask: a string of the general form "Prop1,Prop2.Prop3,Prop4.Prop5.Prop6"
+        // - path: a string of the general form "Prop2.Prop3"
         // - step: a string of the general form "Prop3"
         // - mask tree: a data structure representing a mask as a tree of dictionaries
         // - basic fields: fields on every DTO that are always accessible if you have access to the DTO as a whole (usually: Name, Code and IsActive)
@@ -25,7 +25,7 @@ namespace Tellma.Controllers.Utilities
         public const string BASIC_FIELDS_KEYWORD = "BasicFields";
 
         /// <summary>
-        /// Returns the fields of the level represented by this <see cref="MaskTree"/>
+        /// Returns the fields of the level represented by this <see cref="MaskTrie"/>
         /// </summary>
         public ICollection<string> Fields
         {
@@ -48,9 +48,9 @@ namespace Tellma.Controllers.Utilities
         /// <summary>
         /// Function that turns a list of paths into a path tree
         /// </summary>
-        public static MaskTree GetMaskTree(IEnumerable<string> paths)
+        public static MaskTrie GetMaskTree(IEnumerable<string> paths)
         {
-            var tree = new MaskTree();
+            var tree = new MaskTrie();
             if (paths != null)
             {
                 foreach (var path in paths)
@@ -61,7 +61,7 @@ namespace Tellma.Controllers.Utilities
                     {
                         if (!currentTree.ContainsKey(step))
                         {
-                            currentTree[step] = new MaskTree();
+                            currentTree[step] = new MaskTrie();
                         }
 
                         currentTree = currentTree[step];
@@ -72,9 +72,9 @@ namespace Tellma.Controllers.Utilities
             return tree;
         }
 
-        public static MaskTree GetMaskTree(IEnumerable<(string[], string)> paths)
+        public static MaskTrie GetMaskTree(IEnumerable<(string[], string)> paths)
         {
-            var tree = new MaskTree();
+            var tree = new MaskTrie();
             if (paths != null)
             {
                 foreach (var (path, prop) in paths)
@@ -86,7 +86,7 @@ namespace Tellma.Controllers.Utilities
 
                         if (!currentTree.ContainsKey(step))
                         {
-                            currentTree[step] = new MaskTree();
+                            currentTree[step] = new MaskTrie();
                         }
 
                         currentTree = currentTree[step];
@@ -110,10 +110,10 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
-        /// Parses a mask string into a <see cref="MaskTree"/>. A mask string is a comma separated
-        /// list of paths, which are in tern a slash (/) separated list of path steps, for example A/B,C,D/E/F contains 3 paths
+        /// Parses a mask string into a <see cref="MaskTrie"/>. A mask string is a comma separated
+        /// list of paths, which are in tern a dot (.) separated list of path steps, for example A.B,C,D.E.F contains 3 paths
         /// </summary>
-        public static MaskTree Parse(string mask)
+        public static MaskTrie Parse(string mask)
         {
             return GetMaskTree(Split(mask));
         }
@@ -121,7 +121,7 @@ namespace Tellma.Controllers.Utilities
         /// <summary>
         /// Finds the intersection between two mask trees, i.e the fields that are accessible in both trees
         /// </summary>
-        public MaskTree IntersectionWith(MaskTree tree)
+        public MaskTrie IntersectionWith(MaskTrie tree)
         {
             // For readability
             var first = this;
@@ -155,7 +155,7 @@ namespace Tellma.Controllers.Utilities
                 }
                 else
                 {
-                    MaskTree result = new MaskTree();
+                    MaskTrie result = new MaskTrie();
                     foreach (var step in commonSteps)
                     {
                         result[step] = first[step].IntersectionWith(second[step]);
@@ -169,7 +169,7 @@ namespace Tellma.Controllers.Utilities
         /// <summary>
         /// Finds the union of two mask trees, i.e the fields that are accessible in either tree
         /// </summary>
-        public MaskTree UnionWith(MaskTree tree)
+        public MaskTrie UnionWith(MaskTrie tree)
         {
             // For readability
             var first = this;
@@ -193,7 +193,7 @@ namespace Tellma.Controllers.Utilities
                 var allSteps = first.Keys.Union(second.Keys);
 
                 // (2) Recursively go down to the next level (breadth-first traversal)
-                MaskTree result = new MaskTree();
+                MaskTrie result = new MaskTrie();
                 foreach (var step in allSteps)
                 {
                     if (!second.ContainsKey(step))
@@ -219,7 +219,7 @@ namespace Tellma.Controllers.Utilities
         /// tree must not cotain a path referring to a basic field directly, the last step 
         /// of such a path must be replaced with "BasicFields"
         /// </summary>
-        public bool Covers(MaskTree normalizedTree)
+        public bool Covers(MaskTrie normalizedTree)
         {
             return IsUnrestricted || normalizedTree.IsBasicFields ||
                 normalizedTree.Keys.All(key => ContainsKey(key) && this[key].Covers(normalizedTree[key]));
@@ -262,7 +262,7 @@ namespace Tellma.Controllers.Utilities
         {
             if (!IsUnrestricted && !ContainsKey(BASIC_FIELDS_KEYWORD))
             {
-                this[BASIC_FIELDS_KEYWORD] = new MaskTree();
+                this[BASIC_FIELDS_KEYWORD] = new MaskTrie();
             }
 
             List<string> toRemove = new List<string>();
@@ -331,11 +331,11 @@ namespace Tellma.Controllers.Utilities
         /// <summary>
         /// Convenience method for creating the most restrictive mask, one that allows access to the basic fields only
         /// </summary>
-        public static MaskTree BasicFieldsMaskTree()
+        public static MaskTrie BasicFieldsMaskTree()
         {
-            return new MaskTree
+            return new MaskTrie
             {
-                [BASIC_FIELDS_KEYWORD] = new MaskTree()
+                [BASIC_FIELDS_KEYWORD] = new MaskTrie()
             };
         }
 
@@ -349,7 +349,7 @@ namespace Tellma.Controllers.Utilities
 
         private IEnumerable<string> Paths()
         {
-            return this.SelectMany(pair => pair.Value.Keys.Count == 0 ? (new string[] { pair.Key }) : pair.Value.Paths().Select(path => $"{pair.Key}/{path}"));
+            return this.SelectMany(pair => pair.Value.Keys.Count == 0 ? (new string[] { pair.Key }) : pair.Value.Paths().Select(path => $"{pair.Key}.{path}"));
         }
     }
 }

@@ -364,7 +364,7 @@ namespace Tellma.Data
                             lineDefinitionEntriesRow[prop.Name] = value ?? DBNull.Value;
                         }
 
-                        // Entries/CustodyDefinitions
+                        // Entries.CustodyDefinitions
                         if (lineDefinitionEntry.CustodyDefinitions != null)
                         {
                             int lineDefinitionEntryCustodyDefinitionIndex = 0;
@@ -387,7 +387,7 @@ namespace Tellma.Data
                             });
                         }
 
-                        // Entries/ResourceDefinitions
+                        // Entries.ResourceDefinitions
                         if (lineDefinitionEntry.ResourceDefinitions != null)
                         {
                             int lineDefinitionEntryResourceDefinitionIndex = 0;
@@ -494,7 +494,7 @@ namespace Tellma.Data
                             workflowsRow[prop.Name] = value ?? DBNull.Value;
                         }
 
-                        // Workflows/Signatures
+                        // Workflows.Signatures
                         if (workflow.Signatures != null)
                         {
                             int workflowSignatureIndex = 0;

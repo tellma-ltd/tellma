@@ -16,6 +16,30 @@ namespace Tellma.Data.Queries
         private int _counter = 0;
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        public SqlStatementParameters()
+        {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public SqlStatementParameters(params IEnumerable<SqlParameter>[] parameterGroups)
+        {
+            foreach (var parameterGroup in parameterGroups)
+            {
+                if (parameterGroup != null)
+                {
+                    foreach (var parameter in parameterGroup)
+                    {
+                        AddParameter(parameter);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Add a regular <see cref="SqlParameter"/> if not already added, the parameter name cannot start with "Param_"
         /// </summary>
         public void AddParameter(SqlParameter p)
