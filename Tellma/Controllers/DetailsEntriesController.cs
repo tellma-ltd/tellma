@@ -250,7 +250,7 @@ namespace Tellma.Controllers
                 Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
             };
 
-            var (openingData, _) = await GetAggregate(openingArgs, cancellation);
+            var (openingData, _, _) = await GetAggregate(openingArgs, cancellation);
 
             decimal opening = (decimal)(openingData[0][0] ?? 0m);
             decimal openingQuantity = (decimal)(openingData[0][1] ?? 0m);
@@ -287,7 +287,7 @@ namespace Tellma.Controllers
                     Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
                 };
 
-                var (closingData, _) = await GetAggregate(closingArgs, cancellation);
+                var (closingData, _, _) = await GetAggregate(closingArgs, cancellation);
                 closing = (decimal)(closingData[0][0] ?? 0m);
                 closingQuantity = (decimal)(closingData[0][1] ?? 0m);
                 closingMonetaryValue = (decimal)(closingData[0][2] ?? 0m);

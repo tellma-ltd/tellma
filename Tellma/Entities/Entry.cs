@@ -8,9 +8,11 @@ namespace Tellma.Entities
     public class EntryForSave : EntityWithKey<int>
     {
         [Display(Name = "IsSystem")]
+        [NotNull]
         public bool? IsSystem { get; set; }
 
         [Display(Name = "Entry_Direction")]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
         public short? Direction { get; set; }
@@ -19,6 +21,7 @@ namespace Tellma.Entities
         public int? AccountId { get; set; }
 
         [Display(Name = "Entry_Currency")]
+        [NotNull]
         [StringLength(3)]
         public string CurrencyId { get; set; }
 
@@ -35,6 +38,7 @@ namespace Tellma.Entities
         public int? ResourceId { get; set; }
 
         [Display(Name = "Entry_Center")]
+        [NotNull]
         public int? CenterId { get; set; }
 
         [Display(Name = "Entry_EntryType")]
@@ -82,20 +86,26 @@ namespace Tellma.Entities
     public class Entry : EntryForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
+        [NotNull]
         public int? LineId { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

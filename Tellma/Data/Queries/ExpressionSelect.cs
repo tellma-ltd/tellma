@@ -22,7 +22,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Create an instance of <see cref="ExpressionSelect"/> containing the provided <see cref="SelectAtom"/>s
+        /// Create an instance of <see cref="ExpressionSelect"/> containing the provided <see cref="SelectAtom"/>s.
         /// </summary>
         public ExpressionSelect(IEnumerable<QueryexColumnAccess> atoms)
         {
@@ -30,7 +30,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Add the given <see cref="SelectAtom"/> to the atoms comprising this <see cref="ExpressionSelect"/>
+        /// Add the given <see cref="SelectAtom"/> to the atoms comprising this <see cref="ExpressionSelect"/>.
         /// </summary>
         public void Add(QueryexColumnAccess atom)
         {
@@ -38,7 +38,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Add the given <see cref="SelectAtom"/>s to the atoms comprising this <see cref="ExpressionSelect"/>
+        /// Add the given <see cref="QueryexColumnAccess"/>s to the atoms comprising this <see cref="ExpressionSelect"/>.
         /// </summary>
         public void AddAll(IEnumerable<QueryexColumnAccess> atoms)
         {

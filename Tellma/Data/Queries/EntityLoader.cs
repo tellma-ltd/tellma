@@ -49,23 +49,36 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicRow"/>
         /// </summary>
-        /// <param name="statement">The <see cref="SqlStatement"/> to load</param>
+        /// <param name="principalStatement">The principal <see cref="SqlStatement"/> to load first.</param>
         /// <param name="preparatorySql">Any SQL to be included at the very beginning the main script (cannot contain a SELECT or return a result set</param>
         /// <param name="ps">The parameters needed by SQL</param>
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
         /// <returns>The list of hydrated <see cref="DynamicRow"/>s</returns>            
-        public static async Task<List<DynamicRow>> LoadDynamicStatement(
-            SqlDynamicStatement statement, SqlStatementVariables vars, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
+        public static async Task<(List<DynamicRow> result, IEnumerable<TreeDimensionResult> treeDimensions)> LoadDynamicStatement(
+            SqlDynamicStatement principalStatement,
+            IEnumerable<DimensionAncestorsStatement> dimAncestorsStatements,
+            SqlStatementVariables vars,
+            SqlStatementParameters ps,
+            SqlConnection conn,
+            CancellationToken cancellation)
         {
+            dimAncestorsStatements ??= new List<DimensionAncestorsStatement>();
             var result = new List<DynamicRow>();
+            var treeResults = new List<TreeDimensionResult>();
+
+            ////////////// Prepare the complete SQL code
+            // Add any variables in the preparatory SQL
+            string variablesSql = vars.ToSql();
+
+            var statements = new List<string>(1 + dimAncestorsStatements.Count()) { principalStatement.Sql };
+            statements.AddRange(dimAncestorsStatements.Select(e => e.Sql));
+
+            string sql = PrepareSql(variablesSql, null, null, statements.ToArray());
 
             using (var cmd = conn.CreateCommand())
             {
-                // Add any variables in the preparatory SQL
-                string variablesSql = vars.ToSql();
-
                 // Command Text
-                cmd.CommandText = PrepareSql(variablesSql, null, null, statement.Sql);
+                cmd.CommandText = sql;
 
                 // Command Parameters
                 foreach (var parameter in ps)
@@ -83,25 +96,61 @@ namespace Tellma.Data.Queries
                 // Results are loaded
                 try
                 {
-                    int columnCount = statement.ColumnCount;
-
-                    // Loop over the result from the result set
+                    // Load results of the principal query
                     using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
+
                     {
-                        var dynamicEntity = new DynamicRow(columnCount);
-                        for (int index = 0; index < columnCount; index++)
+                        int columnCount = principalStatement.ColumnCount;
+                        while (await reader.ReadAsync(cancellation))
                         {
-                            var dbValue = reader[index];
-                            if (dbValue == DBNull.Value)
+                            var row = new DynamicRow(columnCount);
+                            for (int index = 0; index < columnCount; index++)
                             {
-                                dbValue = null;
+                                var dbValue = reader[index];
+                                if (dbValue == DBNull.Value)
+                                {
+                                    dbValue = null;
+                                }
+
+                                row.Add(dbValue);
                             }
 
-                            dynamicEntity.Add(dbValue);
+                            result.Add(row);
+                        }
+                    }
+
+                    // Load the tree dimensions
+                    foreach (var treeStatement in dimAncestorsStatements)
+                    {
+                        int columnCount = treeStatement.TargetIndices.Count();
+
+                        int index;
+                        int minIndex = treeStatement.TargetIndices.Min();
+                        int[] targetIndices = treeStatement.TargetIndices.Select(i => i - minIndex).ToArray();
+
+                        var treeResult = new TreeDimensionResult(treeStatement.IdIndex, minIndex);
+
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var row = new DynamicRow(columnCount);
+                            for (index = 0; index < targetIndices.Length; index++)
+                            {
+                                int targetIndex = targetIndices[index];
+
+                                var dbValue = reader[index];
+                                if (dbValue == DBNull.Value)
+                                {
+                                    dbValue = null;
+                                }
+
+                                row.AddAt(dbValue, targetIndex);
+                            }
+
+                            treeResult.Result.Add(row);
                         }
 
-                        result.Add(dynamicEntity);
+                        treeResults.Add(treeResult);
                     }
                 }
                 finally
@@ -118,7 +167,7 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            return result;
+            return (result, treeResults);
         }
 
         /// <summary>

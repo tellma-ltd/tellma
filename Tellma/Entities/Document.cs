@@ -14,10 +14,12 @@ namespace Tellma.Entities
     {
         [Display(Name = "Document_SerialNumber")]
         [AlwaysAccessible]
+        [NotNull]
         [UserKey]
         public int? SerialNumber { get; set; }
 
         [Display(Name = "Document_Clearance")]
+        [NotNull]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
         public byte? Clearance { get; set; }
@@ -26,6 +28,7 @@ namespace Tellma.Entities
         public DateTime? PostingDate { get; set; }
 
         [IsCommonDisplay(Name = "Document_PostingDate")]
+        [NotNull]
         public bool? PostingDateIsCommon { get; set; }
 
         [Display(Name = "Memo")]
@@ -33,6 +36,7 @@ namespace Tellma.Entities
         public string Memo { get; set; }
 
         [IsCommonDisplay(Name = "Memo")]
+        [NotNull]
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
@@ -41,48 +45,56 @@ namespace Tellma.Entities
         public string CurrencyId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Currency")]
+        [NotNull]
         public bool? CurrencyIsCommon { get; set; }
 
         [Display(Name = "Document_Center")]
         public int? CenterId { get; set; }
 
         [IsCommonDisplay(Name = "Document_Center")]
+        [NotNull]
         public bool? CenterIsCommon { get; set; }
 
         [Display(Name = "Entry_Custodian")]
         public int? CustodianId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Custodian")]
+        [NotNull]
         public bool? CustodianIsCommon { get; set; }
 
         [Display(Name = "Entry_Custody")]
         public int? CustodyId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Custody")]
+        [NotNull]
         public bool? CustodyIsCommon { get; set; }
 
         [Display(Name = "Entry_Participant")]
         public int? ParticipantId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Participant")]
+        [NotNull]
         public bool? ParticipantIsCommon { get; set; }
 
         [Display(Name = "Entryt_Resource")]
         public int? ResourceId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Resource")]
+        [NotNull]
         public bool? ResourceIsCommon { get; set; }
 
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Quantity")]
+        [NotNull]
         public bool? QuantityIsCommon { get; set; }
 
         [Display(Name = "Entry_Unit")]
         public int? UnitId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Unit")]
+        [NotNull]
         public bool? UnitIsCommon { get; set; }
 
         [Display(Name = "Entry_Time1")]
@@ -90,6 +102,7 @@ namespace Tellma.Entities
         public DateTime? Time1 { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Time1")]
+        [NotNull]
         public bool? Time1IsCommon { get; set; }
 
         [Display(Name = "Entry_Time2")]
@@ -97,6 +110,7 @@ namespace Tellma.Entities
         public DateTime? Time2 { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Time2")]
+        [NotNull]
         public bool? Time2IsCommon { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
@@ -104,6 +118,7 @@ namespace Tellma.Entities
         public string ExternalReference { get; set; }
 
         [IsCommonDisplay(Name = "Entry_ExternalReference")]
+        [NotNull]
         public bool? ExternalReferenceIsCommon { get; set; }
 
         [Display(Name = "Entry_InternalReference")]
@@ -111,6 +126,7 @@ namespace Tellma.Entities
         public string InternalReference { get; set; }
 
         [IsCommonDisplay(Name = "Entry_InternalReference")]
+        [NotNull]
         public bool? InternalReferenceIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
@@ -132,14 +148,17 @@ namespace Tellma.Entities
     public class Document : DocumentForSave<Line, DocumentLineDefinitionEntry, Attachment>
     {
         [Display(Name = "Definition")]
+        [NotNull]
         public int? DefinitionId { get; set; }
 
         [Display(Name = "Code")]
+        [NotNull]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "Document_State")]
         [AlwaysAccessible]
+        [NotNull]
         [ChoiceList(new object[] {
             DocState.Current,
             DocState.Posted,
@@ -153,6 +172,7 @@ namespace Tellma.Entities
         public short? State { get; set; }
 
         [Display(Name = "Document_StateAt")]
+        [NotNull]
         public DateTimeOffset? StateAt { get; set; }
 
         [Display(Name = "Document_Comment")]
@@ -171,15 +191,19 @@ namespace Tellma.Entities
         public DateTimeOffset? OpenedAt { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

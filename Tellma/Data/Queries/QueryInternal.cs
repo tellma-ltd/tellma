@@ -98,7 +98,8 @@ namespace Tellma.Data.Queries
 
             // Compilation context
             var today = userToday ?? DateTime.Today;
-            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, userId);
+            var now = DateTimeOffset.Now;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
             string selectSql = maxCount > 0 ? $"SELECT TOP {maxCount} [P].*" : "SELECT [P].*";
@@ -115,7 +116,8 @@ namespace Tellma.Data.Queries
                        orderbySql: null,
                        offsetFetchSql: null,
                        groupbySql: null,
-                       havingSql: null
+                       havingSql: null,
+                       selectFromTempSql: null
                    );
 
             sql = $@"SELECT COUNT(*) As [Count] FROM (
@@ -143,7 +145,8 @@ namespace Tellma.Data.Queries
 
             // Compilation context
             var today = userToday ?? DateTime.Today;
-            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, userId);
+            var now = DateTimeOffset.Now;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
             SqlSelectClause selectClause = PrepareSelect(joinTrie);
@@ -170,7 +173,8 @@ namespace Tellma.Data.Queries
                     orderbySql: orderbySql,
                     offsetFetchSql: offsetFetchSql,
                     groupbySql: null,
-                    havingSql: null
+                    havingSql: null,
+                    selectFromTempSql: null
                 );
 
             // (8) Return the result
@@ -204,7 +208,8 @@ namespace Tellma.Data.Queries
 
             // Compilation context
             var today = userToday ?? DateTime.Today;
-            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, userId);
+            var now = DateTimeOffset.Now;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
             SqlSelectClause selectClause = PrepareSelectAsPrincipal(joinTrie, pathToCollectionProperty, isAncestorExpand);
@@ -237,7 +242,8 @@ namespace Tellma.Data.Queries
                     orderbySql: orderbySql,
                     offsetFetchSql: offsetFetchSql,
                     groupbySql: null,
-                    havingSql: null
+                    havingSql: null,
+                    selectFromTempSql: null
                 );
 
             // (8) Return the result

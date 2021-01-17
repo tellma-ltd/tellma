@@ -61,7 +61,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Takes a bunch of clauses and combines them into one nicely formatted SQL query
         /// </summary>
-        /// <param name="selectSql">The SELECT clause</param>
+        /// <param name="selectSql">The SELECT clause (with an optional "INTO #TempTable" at the end)</param>
         /// <param name="joinSql">The FROM ... JOIN clause </param>
         /// <param name="principalQuerySql">The INNER JOIN clause of the principal query</param>
         /// <param name="whereSql">The WHERE clause</param>
@@ -69,7 +69,17 @@ namespace Tellma.Data.Queries
         /// <param name="offsetFetchSql">The OFFSET ... FETCH clause</param>
         /// <param name="groupbySql">The GROUP BY clause</param>
         /// <param name="havingSql">The HAVING clause</param>
-        public static string CombineSql(string selectSql, string joinSql, string principalQuerySql, string whereSql, string orderbySql, string offsetFetchSql, string groupbySql, string havingSql)
+        /// <param name="selectFromTempSql">The SELECT * FROM #TempTable Clause</param>
+        public static string CombineSql(
+            string selectSql, 
+            string joinSql, 
+            string principalQuerySql, 
+            string whereSql, 
+            string orderbySql, 
+            string offsetFetchSql, 
+            string groupbySql, 
+            string havingSql,
+            string selectFromTempSql)
         {
             var finalSQL = new StringBuilder();
 
@@ -110,6 +120,18 @@ namespace Tellma.Data.Queries
             {
                 finalSQL.AppendLine();
                 finalSQL.Append(offsetFetchSql);
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectFromTempSql))
+            {
+                finalSQL.AppendLine();
+                finalSQL.AppendLine();
+                finalSQL.Append(selectFromTempSql);
+                if (!string.IsNullOrWhiteSpace(orderbySql))
+                {
+                    finalSQL.AppendLine();
+                    finalSQL.Append(orderbySql);
+                }
             }
 
             return finalSQL.ToString();

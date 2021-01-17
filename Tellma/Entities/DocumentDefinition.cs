@@ -19,12 +19,14 @@ namespace Tellma.Entities
 
         [Display(Name = "DocumentDefinition_DocumentType")]
         [Required]
+        [NotNull]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2, (byte)3 },
             new string[] { "DocumentDefinition_DocumentType_0", "DocumentDefinition_DocumentType_1", "DocumentDefinition_DocumentType_2", "DocumentDefinition_DocumentType_3" })]
         public byte? DocumentType { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(1024)]
         [AlwaysAccessible]
         public string Description { get; set; }
@@ -41,6 +43,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
@@ -57,6 +60,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
@@ -73,34 +77,42 @@ namespace Tellma.Entities
 
         [Display(Name = "DocumentDefinition_Prefix")]
         [Required]
+        [NotNull]
         [StringLength(5)]
         public string Prefix { get; set; }
 
         [Display(Name = "DocumentDefinition_CodeWidth")]
+        [NotNull]
         public byte? CodeWidth { get; set; }
 
         [VisibilityDisplay(Name = "Document_PostingDate"), VisibilityChoiceList]
         [Required]
+        [NotNull]
         public string PostingDateVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Document_Center"), VisibilityChoiceList]
         [Required]
+        [NotNull]
         public string CenterVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Document_Clearance"), VisibilityChoiceList]
         [Required]
+        [NotNull]
         public string ClearanceVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Memo"), VisibilityChoiceList]
         [Required]
+        [NotNull]
         public string MemoVisibility { get; set; }
 
         [Display(Name = "Definition_HasAttachments")]
         [Required]
+        [NotNull]
         public bool? HasAttachments { get; set; }
 
         [Display(Name = "DocumentDefinition_HasBookkeeping")]
         [Required]
+        [NotNull]
         public bool? HasBookkeeping { get; set; }
 
         [Display(Name = "MainMenuIcon")]
@@ -129,17 +141,26 @@ namespace Tellma.Entities
     public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition>
     {
         [Display(Name = "Definition_State")]
+        [NotNull]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },
             new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
         [AlwaysAccessible]
         public string State { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
+        [NotNull]
         public bool? CanReachState1 { get; set; }
+
+        [NotNull]
         public bool? CanReachState2 { get; set; }
+
+        [NotNull]
         public bool? CanReachState3 { get; set; }
+
+        [NotNull]
         public bool? HasWorkflow { get; set; }
 
         // For Query

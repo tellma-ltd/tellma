@@ -11,12 +11,14 @@ namespace Tellma.Entities
     {
         [Display(Name = "Name")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [Display(Name = "User_Email")]
         [Required]
+        [NotNull]
         [EmailAddress]
         [StringLength(255)]
         public string Email { get; set; }
@@ -36,6 +38,7 @@ namespace Tellma.Entities
         public string ExternalId { get; set; }
 
         [Display(Name = "State")]
+        [NotNull]
         [ChoiceList(new object[] { "Invited", "Member" },
             new string[] { "User_Invited", "User_Member" })]
         public string State { get; set; }
@@ -44,19 +47,24 @@ namespace Tellma.Entities
         public DateTimeOffset? LastAccess { get; set; }
 
         [Display(Name = "IsActive")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

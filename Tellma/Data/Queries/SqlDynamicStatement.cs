@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -18,7 +16,7 @@ namespace Tellma.Data.Queries
 
             if (columnCount == 0)
             {
-                throw new ArgumentException($"'{nameof(columnCount)}' cannot be 0", nameof(columnCount));
+                throw new ArgumentException($"'{nameof(columnCount)}' cannot be null or empty", nameof(columnCount));
             }
 
             Sql = sql;
@@ -31,7 +29,7 @@ namespace Tellma.Data.Queries
         public string Sql { get; }
 
         /// <summary>
-        /// Maps every column index to a path, property, modifier and aggregation function
+        /// The number of columns
         /// </summary>
         public int ColumnCount { get; }
     }

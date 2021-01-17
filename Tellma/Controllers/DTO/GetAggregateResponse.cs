@@ -15,7 +15,7 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// Contains the ancestors of tree dimensions if any
         /// </summary>
-        public Dictionary<int, IEnumerable<DynamicRow>> DimensionAncestors { get; set; }
+        public IEnumerable<TreeDimensionResult> DimensionAncestors { get; set; }
 
         public DateTimeOffset ServerTime { get; set; }
 
@@ -23,4 +23,6 @@ namespace Tellma.Controllers.Dto
 
         public bool IsPartial { get; set; }
     }
+
+
 }

@@ -99,7 +99,7 @@ namespace Tellma.Controllers
                 var serverTime = DateTimeOffset.UtcNow;
 
                 // Load the data
-                var (data, isPartial) = await GetFactService().GetAggregate(args, cancellation);
+                var (data, ancestors, isPartial) = await GetFactService().GetAggregate(args, cancellation);
 
                 // Finally return the result
                 var result = new GetAggregateResponse
@@ -109,9 +109,7 @@ namespace Tellma.Controllers
                     ServerTime = serverTime,
 
                     Result = data,
-
-                    // TODO: Add ancestors of tree dimensions
-                   // DimensionAncestors = new Dictionary<string, IEnumerable<Entity>>(),
+                    DimensionAncestors = ancestors,
                 };
 
                 return Ok(result);
@@ -150,9 +148,6 @@ namespace Tellma.Controllers
         /////////////////////////////
 
         #endregion
-
-
-
 
         protected abstract FactServiceBase<TEntity> GetFactService();
 
@@ -451,7 +446,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns a <see cref="List{DynamicEntity}"/> as per the specifications in the <see cref="GetAggregateArguments"/>,
         /// </summary>
-        public virtual async Task<(List<DynamicRow> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
+        public virtual async Task<(List<DynamicRow> Data, IEnumerable<TreeDimensionResult> Ancestors, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
@@ -483,7 +478,7 @@ namespace Tellma.Controllers
             query = query.OrderBy(orderby);
 
             // Load the data in memory
-            var data = await query.ToListAsync(cancellation);
+            var (data, ancestors) = await query.ToListAsync(cancellation);
 
             // Put a limit on the number of data points returned, to prevent DoS attacks
             if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
@@ -493,7 +488,7 @@ namespace Tellma.Controllers
             }
 
             // Return
-            return (data, isPartial);
+            return (data, ancestors, isPartial);
         }
 
         public async Task<(byte[] FileBytes, string FileName)> PrintByFilter([FromRoute] int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
@@ -847,7 +842,7 @@ namespace Tellma.Controllers
             return (genericData, extras, isPartial, count);
         }
 
-        Task<(List<DynamicRow> Data, bool IsPartial)> IFactServiceBase.GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
+        Task<(List<DynamicRow> Data, IEnumerable<TreeDimensionResult> Ancestors, bool IsPartial)> IFactServiceBase.GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             return GetAggregate(args, cancellation);
         }
@@ -859,6 +854,6 @@ namespace Tellma.Controllers
     {
         Task<(List<Entity> Data, Extras Extras, bool IsPartial, int? Count)> GetFact(GetArguments args, CancellationToken cancellation);
 
-        Task<(List<DynamicRow> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
+        Task<(List<DynamicRow> Data, IEnumerable<TreeDimensionResult> Ancestors, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
     }
 }

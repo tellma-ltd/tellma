@@ -140,6 +140,16 @@ namespace Tellma.Data.Queries
             }
         }
 
+        /// <summary>
+        /// Deep clones the entire <see cref="QueryexBase"/> tree. 
+        /// This method accepts an optional parameter "prefix". When supplied any <see cref="QueryexColumnAccess"/> 
+        /// in the original tree whose path starts with this prefix will be cloned into one with that prefix removed.
+        /// For example if the prefix is ["A", "B"], and a <see cref="QueryexColumnAccess"/> is present in the tree with
+        /// a path of ["A", "B", "C"], the resulting <see cref="QueryexColumnAccess"/> will have a path of ["C"]
+        /// </summary>
+        /// <returns>A deep clone of the original tree</returns>
+        public abstract QueryexBase Clone(string[] prefixToRemove = null);
+
         #endregion
 
         #region Abstract Members
@@ -944,29 +954,29 @@ namespace Tellma.Data.Queries
                 throw new InvalidOperationException($"Bug: Invoking {nameof(CompileNative)} on a {nameof(QueryexColumnAccess)} that does not have a property.");
             }
 
-            // Get the property descriptor
-            var join = ctx.Joins[Path];
-            if (join == null)
+            var propName = Property;
+
+            // (A) Calculate Nullity (the entire path foreign keys + the final property must be all NOT NULL)
+            bool pathNotNull = true;
+            var join = ctx.Joins;
+            foreach (var step in Path)
             {
-                // Developer mistake
-                throw new InvalidOperationException($"Bug: The path '{this}' was not found in the joinTree.");
+                var navPropDesc = join.EntityDescriptor.NavigationProperty(step); 
+                pathNotNull = pathNotNull && navPropDesc.ForeignKey.IsNotNull;
+                join = join[step];
             }
 
-            var symbol = join.Symbol;
-            var propName = Property;
             var propDesc = join.EntityDescriptor.Property(propName);
             if (propDesc == null)
             {
                 throw new QueryException($"Property '{propName}' does not exist on type {join.EntityDescriptor.Name}.");
             }
 
-            var propType = Nullable.GetUnderlyingType(propDesc.Type) ?? propDesc.Type;
-
-            // (A) Calculate Nullity
-            QxNullity nullity = propDesc.IsNotNull ? QxNullity.NotNull : QxNullity.Nullable;
+            QxNullity nullity = pathNotNull && propDesc.IsNotNull ? QxNullity.NotNull : QxNullity.Nullable;
 
             // (B) Calculate the type
             QxType type;
+            var propType = Nullable.GetUnderlyingType(propDesc.Type) ?? propDesc.Type;
             switch (propType.Name)
             {
                 case nameof(Char):
@@ -1021,7 +1031,7 @@ namespace Tellma.Data.Queries
             }
 
             // (C) Calculate the SQL
-            var sql = $"[{symbol}].[{propName}]";
+            var sql = $"[{join.Symbol}].[{propName}]";
 
             // Return the result
             return (sql, type, nullity);
@@ -1042,6 +1052,33 @@ namespace Tellma.Data.Queries
 
             return Path.Select(s => s.GetHashCode())
                 .Aggregate(propCode, (code1, code2) => code1 ^ code2);
+        }
+
+        public override QueryexBase Clone(string[] prefix = null)
+        {
+            if (prefix == null || prefix.Length == 0 || !PathStartsWith(prefix))
+            {
+                return new QueryexColumnAccess(Path[..], Property);
+            }
+            else
+            {
+                return new QueryexColumnAccess(Path[prefix.Length..], Property);
+            }
+        }
+
+        /// <summary>
+        /// Helper function to check if the given path contains the same steps as the path of this <see cref="QueryexColumnAccess"/>.
+        /// </summary>
+        public bool PathStartsWith(string[] prefix)
+        {
+            return prefix != null && prefix.Length <= Path.Length &&
+                Enumerable.Range(0, prefix.Length).All(i => prefix[i] == Path[i]);
+        }
+
+        public bool PathEquals(string[] path)
+        {
+            return path != null && path.Length == Path.Length &&
+                Enumerable.Range(0, path.Length).All(i => path[i] == Path[i]);
         }
 
         #region Column Access Validation
@@ -1576,7 +1613,7 @@ namespace Tellma.Data.Queries
         public override bool Equals(object exp)
         {
             return exp is QueryexFunction func &&
-                func.Name == Name &&
+                StringComparer.OrdinalIgnoreCase.Equals(func.Name, Name) &&
                 func.Arguments.Length == Arguments.Length &&
                 Enumerable.Range(0, Arguments.Length)
                     .All(i => func.Arguments[i].Equals(Arguments[i]));
@@ -1584,12 +1621,15 @@ namespace Tellma.Data.Queries
 
         public override int GetHashCode()
         {
-            var argsHash = Arguments
+            var nameCode = StringComparer.OrdinalIgnoreCase.GetHashCode(Name);
+            var argsCode = Arguments
                 .Select(arg => arg.GetHashCode())
                 .Aggregate(0, (code1, code2) => code1 ^ code2);
 
-            return Name.GetHashCode() ^ argsHash;
+            return nameCode ^ argsCode;
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexFunction(Name, Arguments.Select(e => e.Clone(prefix)).ToArray());
 
         #region Helper Functions
 
@@ -2302,15 +2342,18 @@ namespace Tellma.Data.Queries
         public override bool Equals(object exp)
         {
             return exp is QueryexBinaryOperator bo
-                && bo.Operator == Operator
+                && StringComparer.OrdinalIgnoreCase.Equals(bo.Operator, Operator)
                 && bo.Left.Equals(Left)
                 && bo.Right.Equals(Right);
         }
 
         public override int GetHashCode()
         {
-            return Operator.GetHashCode() ^ Left.GetHashCode() ^ Right.GetHashCode();
+            int opCode = StringComparer.OrdinalIgnoreCase.GetHashCode(Operator);
+            return opCode ^ Left.GetHashCode() ^ Right.GetHashCode();
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexBinaryOperator(Operator, Left.Clone(prefix), Right.Clone(prefix));
     }
 
     public class QueryexUnaryOperator : QueryexBase
@@ -2449,14 +2492,17 @@ namespace Tellma.Data.Queries
         public override bool Equals(object exp)
         {
             return exp is QueryexUnaryOperator uo
-                && uo.Operator == Operator
+                && StringComparer.OrdinalIgnoreCase.Equals(uo.Operator, Operator)
                 && uo.Operand.Equals(Operand);
         }
 
         public override int GetHashCode()
         {
-            return Operator.GetHashCode() ^ Operand.GetHashCode();
+            int opCode = StringComparer.OrdinalIgnoreCase.GetHashCode(Operator);
+            return opCode ^ Operand.GetHashCode();
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexUnaryOperator(Operator, Operand.Clone(prefix));
     }
 
     public class QueryexQuote : QueryexBase
@@ -2560,6 +2606,8 @@ namespace Tellma.Data.Queries
         {
             return Value.GetHashCode();
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexQuote(Value);
     }
 
     public class QueryexNumber : QueryexBase
@@ -2609,6 +2657,8 @@ namespace Tellma.Data.Queries
         {
             return Value.GetHashCode();
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexNumber(Value);
     }
 
     public class QueryexNull : QueryexBase
@@ -2628,6 +2678,8 @@ namespace Tellma.Data.Queries
         {
             return ("NULL", QxType.Null, QxNullity.Null);
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => this;
     }
 
     public class QueryexBit : QueryexBase
@@ -2659,21 +2711,22 @@ namespace Tellma.Data.Queries
         {
             return Value.GetHashCode();
         }
+
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexBit(Value);
     }
 
     public class QxCompilationContext
     {
-        public QxCompilationContext(JoinTrie joins, Func<Type, string> sources, SqlStatementVariables vars, SqlStatementParameters ps, DateTime today, int userId)
+        public QxCompilationContext(JoinTrie joins, Func<Type, string> sources, SqlStatementVariables vars, SqlStatementParameters ps, DateTime today, DateTimeOffset now, int userId)
         {
             Joins = joins ?? throw new ArgumentNullException(nameof(joins));
             Sources = sources ?? throw new ArgumentNullException(nameof(sources));
             Variables = vars ?? throw new ArgumentNullException(nameof(vars));
             Parameters = ps ?? throw new ArgumentNullException(nameof(ps));
             Today = today;
+            Now = now;
             UserId = userId;
         }
-
-        private DateTimeOffset? _now;
 
         public JoinTrie Joins { get; }
 
@@ -2685,7 +2738,7 @@ namespace Tellma.Data.Queries
 
         public DateTime Today { get; }
 
-        public DateTimeOffset Now => _now ??= DateTimeOffset.UtcNow;
+        public DateTimeOffset Now { get; }
 
         public int UserId { get; }
     }
