@@ -400,6 +400,21 @@
   <data name="Data" xml:space="preserve">
     <value>数据</value>
   </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>月日</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>美分硬币</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>本周日</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>年</value>
+  </data>
   <data name="DateTime" xml:space="preserve">
     <value>日期</value>
   </data>
@@ -2035,27 +2050,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>修改者</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>月日</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>年度日</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>月</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>美分硬币</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>周</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>本周日</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>年</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>名称</value>
   </data>
@@ -2335,24 +2329,6 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>报告定义</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>聚集功能</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>平均</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>计数</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>最大值</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>最低限度</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>和</value>
-  </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>自动扩展</value>
   </data>
@@ -2443,9 +2419,6 @@
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>措施</value>
   </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>功能</value>
-  </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>排序</value>
   </data>
@@ -2460,9 +2433,6 @@
   </data>
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>参数</value>
-  </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>路径</value>
   </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>行</value>
@@ -2490,9 +2460,6 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>摘要</value>
-  </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>值</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>

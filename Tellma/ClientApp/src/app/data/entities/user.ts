@@ -79,10 +79,10 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
         ContactEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactEmail') },
         ContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactMobile') },
         NormalizedContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
-        PushEnabled: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_PushEnabled') },
-        EmailNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_EmailNewInboxItem') },
-        SmsNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_SmsNewInboxItem') },
-        PushNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_PushNewInboxItem') },
+        PushEnabled: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushEnabled') },
+        EmailNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_EmailNewInboxItem') },
+        SmsNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_SmsNewInboxItem') },
+        PushNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushNewInboxItem') },
         State: {
           datatype: 'string',
           control: 'choice',
@@ -104,7 +104,7 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
           }
         },
         LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity') },
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
         ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

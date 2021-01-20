@@ -80,7 +80,7 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
             properties: {
                 Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
-                IsOriginalDocument: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('DocumentDefinition_IsOriginalDocument') },
+                IsOriginalDocument: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_IsOriginalDocument') },
                 DocumentType: {
                     datatype: 'integral',
                     control: 'choice',
@@ -105,8 +105,8 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),
                 MemoVisibility: visibilityPropDescriptor('Memo', trx),
-                HasAttachments: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Definition_HasAttachments') },
-                HasBookkeeping: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
+                HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
+                HasBookkeeping: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

@@ -103,11 +103,11 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
         Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-        IsMonetary: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('AccountType_IsMonetary') },
+        IsMonetary: { datatype: 'bit', control: 'check', label: () => trx.instant('AccountType_IsMonetary') },
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
         Concept: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Concept') },
-        IsAssignable: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsAssignable') },
-        StandardAndPure: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('AccountType_StandardAndPure') },
+        IsAssignable: { datatype: 'bit', control: 'check', label: () => trx.instant('IsAssignable') },
+        StandardAndPure: { datatype: 'bit', control: 'check', label: () => trx.instant('AccountType_StandardAndPure') },
         CustodianDefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('AccountType_CustodianDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         CustodianDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('AccountType_CustodianDefinition'), foreignKeyName: 'CustodianDefinitionId' },
         ParticipantDefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('AccountType_ParticipantDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -144,8 +144,8 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         ActiveChildCount: { datatype: 'integral', control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
         Level: { datatype: 'integral', control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
 
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
-        IsSystem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsSystem') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+        IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
 
         // Audit info
         SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

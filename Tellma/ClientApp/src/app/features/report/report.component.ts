@@ -116,6 +116,8 @@ export class ReportComponent implements OnInit, OnDestroy {
           } else {
             try {
               switch (p.desc.control) {
+                case 'unsupported':
+                case 'null':
                 case 'text':
                 case 'date':
                 case 'datetime':
@@ -126,7 +128,7 @@ export class ReportComponent implements OnInit, OnDestroy {
                 case 'serial':
                   urlValue = +urlStringValue;
                   break;
-                case 'boolean':
+                case 'check':
                   urlValue = urlStringValue.toLowerCase() === 'true';
                   break;
                 case 'choice':

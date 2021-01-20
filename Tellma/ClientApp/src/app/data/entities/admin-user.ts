@@ -67,7 +67,7 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                     }
                 },
                 LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity') },
-                IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

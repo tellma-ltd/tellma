@@ -34,10 +34,10 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
             properties: {
                 Id: { datatype: 'string', control: 'text', label: () => trx.instant('Id') },
                 Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
-                EmailConfirmed: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IdentityServerUser_EmailConfirmed') },
-                PasswordSet: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IdentityServerUser_PasswordSet') },
+                EmailConfirmed: { datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_EmailConfirmed') },
+                PasswordSet: { datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_PasswordSet') },
                 TwoFactorEnabled: {
-                    datatype: 'boolean', control: 'boolean', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled')
+                    datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled')
                 },
                 LockoutEnd: {
                     datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('IdentityServerUser_LockoutEnd')

@@ -102,7 +102,7 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 EntryTypeId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('Account_EntryType'), foreignKeyName: 'EntryTypeId' },
 
-                IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

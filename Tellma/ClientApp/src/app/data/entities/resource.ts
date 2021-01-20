@@ -150,7 +150,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
 
                 // Standard
 
-                IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

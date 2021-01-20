@@ -73,7 +73,7 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 SortKey: { datatype: 'decimal', control: 'number', label: () => trx.instant('SortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
 
-                IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

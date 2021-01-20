@@ -1,4 +1,8 @@
 <ng-container [ngSwitch]="desc?.control">
+    <!-- Unsupported -->
+    <span *ngSwitchCase="'unsupported'" class="font-italic text-muted">
+        {{ 'NotSupportedForDisplay' | translate }}
+    </span>
 
     <!-- Text -->
     <t-text-editor *ngSwitchCase="'text'" [(ngModel)]="value">
@@ -31,7 +35,7 @@
     </t-selector>
 
     <!-- Boolean -->
-    <div *ngSwitchCase="'boolean'" class="custom-control custom-checkbox t-labelless-checkbox">
+    <div *ngSwitchCase="'check'" class="custom-control custom-checkbox t-labelless-checkbox">
         <input type="checkbox" class="custom-control-input" [(ngModel)]="value" id="{{checkboxId}}">
         <label class="custom-control-label t-pointer" for="{{checkboxId}}">&zwnj;</label>
     </div>

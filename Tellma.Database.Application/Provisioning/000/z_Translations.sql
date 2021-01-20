@@ -1809,21 +1809,21 @@ SET
 	[Title3] = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @TernaryLanguageId, 'n')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportDefinitions')
 -- ReportParameter Definitions
-UPDATE dbo.ReportParameterDefinitions
+UPDATE dbo.[ReportDefinitionParameters]
 SET
 	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @PrimaryLanguageId, 'n'),
 	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @SecondaryLanguageId, 'n'),
 	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @TernaryLanguageId, 'n')
 WHERE [Key] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportParameterDefinitions');
 -- ReportSelect Definitions
-UPDATE dbo.ReportSelectDefinitions
+UPDATE dbo.[ReportDefinitionSelects]
 SET
-	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Path], @PrimaryLanguageId, 'n'),
-	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Path], @SecondaryLanguageId, 'n'),
-	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Path], @TernaryLanguageId, 'n')
-WHERE [Path] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportSelectDefinitions')
+	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @PrimaryLanguageId, 'n'),
+	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @SecondaryLanguageId, 'n'),
+	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @TernaryLanguageId, 'n')
+WHERE [Expression] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportSelectDefinitions')
 -- ReportMeasure Definitions
-UPDATE dbo.ReportMeasureDefinitions
+UPDATE dbo.[ReportDefinitionMeasures]
 SET
 	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @PrimaryLanguageId, 'n'),
 	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @SecondaryLanguageId, 'n'),

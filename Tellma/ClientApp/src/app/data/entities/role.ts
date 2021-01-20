@@ -52,8 +52,8 @@ export function metadata_Role(wss: WorkspaceService, trx: TranslateService): Ent
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
-        IsPublic: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Role_IsPublic') },
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsPublic: { datatype: 'bit', control: 'check', label: () => trx.instant('Role_IsPublic') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
       }
     };

@@ -92,8 +92,8 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 TitlePlural: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
                 TitlePlural2: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
                 TitlePlural3: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
-                AllowSelectiveSigning: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
-                ViewDefaultsToForm: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
+                AllowSelectiveSigning: { datatype: 'bit', control: 'check', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
+                ViewDefaultsToForm: { datatype: 'bit', control: 'check', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
 
                 // New barcode stuff
                 BarcodeColumnIndex: { datatype: 'integral', control: 'number', label: () => trx.instant('LineDefinition_BarcodeColumnIndex'), minDecimalPlaces: 0, maxDecimalPlaces: 0  },
@@ -105,7 +105,7 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                     choices: existingItemHandlingChoices,
                     format: (choice: string) => !!choice ? trx.instant('LineDefinition_Handling_' + choice) : ''
                 },
-                BarcodeBeepsEnabled: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
+                BarcodeBeepsEnabled: { datatype: 'bit', control: 'check', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
 
                 GenerateLabel: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.primaryPostfix },
                 GenerateLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.secondaryPostfix },

@@ -400,6 +400,21 @@
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
   </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>يوم الشهر</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>الشهر</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>الربع</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>يوم الأسبوع</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>السنة</value>
+  </data>
   <data name="DateTime" xml:space="preserve">
     <value>تاريخ</value>
   </data>
@@ -2035,27 +2050,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>آخر تعديل من قبل</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>يوم الشهر</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>يوم السنة</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>الشهر</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>الربع</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>الأسبوع</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>يوم الأسبوع</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>السنة</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>الاسم</value>
   </data>
@@ -2082,6 +2076,9 @@
   </data>
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>فشل الإرسال</value>
+  </data>
+  <data name="NotSupportedForDisplay" xml:space="preserve">
+    <value>(لا يمكن عرضه)</value>
   </data>
   <data name="Or" xml:space="preserve">
     <value>أو</value>
@@ -2335,26 +2332,14 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>تعريف تقرير</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>دالة التجميع</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>معدل</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>عدد</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>أقصى</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>أدنى</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>مجموع</value>
+  <data name="ReportDefinition_Attributes" xml:space="preserve">
+    <value>صفات</value>
   </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>توسيع تلقائي</value>
+  </data>
+  <data name="ReportDefinition_AutoExpandLevel" xml:space="preserve">
+    <value>درجة التوسيع التلقائي</value>
   </data>
   <data name="ReportDefinition_Chart" xml:space="preserve">
     <value>المخطط</value>
@@ -2419,11 +2404,23 @@
   <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
     <value>خارطة شجرية</value>
   </data>
+  <data name="ReportDefinition_ChartOptions" xml:space="preserve">
+    <value>خيارات المخطط</value>
+  </data>
   <data name="ReportDefinition_Collection" xml:space="preserve">
     <value>المجموعة</value>
   </data>
   <data name="ReportDefinition_Columns" xml:space="preserve">
     <value>الأعمدة</value>
+  </data>
+  <data name="ReportDefinition_ColumnsTotalLabel" xml:space="preserve">
+    <value>اسم مجموع الأعمدة</value>
+  </data>
+  <data name="ReportDefinition_DangerWhen" xml:space="preserve">
+    <value>خطر عندما</value>
+  </data>
+  <data name="ReportDefinition_DefaultExpression" xml:space="preserve">
+    <value>التعبير الافتراضي</value>
   </data>
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>إظهار المخطط تلقائيا</value>
@@ -2434,17 +2431,32 @@
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>التعريف</value>
   </data>
+  <data name="ReportDefinition_DisplayExpression" xml:space="preserve">
+    <value>التعبير العرضي</value>
+  </data>
+  <data name="ReportDefinition_Expression" xml:space="preserve">
+    <value>التعبير</value>
+  </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>المصفاة</value>
+  </data>
+  <data name="ReportDefinition_Having" xml:space="preserve">
+    <value>مصفاة  التجميع</value>
+  </data>
+  <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
+    <value>تنقيب مفصل</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>معامل مطلوب</value>
   </data>
+  <data name="ReportDefinition_KeyExpression" xml:space="preserve">
+    <value>التعبير المفتاحي</value>
+  </data>
+  <data name="ReportDefinition_Localize" xml:space="preserve">
+    <value>ترجمة تلقائية</value>
+  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>القيم</value>
-  </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>المغير</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>الترتيب</value>
@@ -2461,23 +2473,32 @@
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>المعاملات</value>
   </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>المسار</value>
-  </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>الأسطر</value>
+  </data>
+  <data name="ReportDefinition_RowsTotalLabel" xml:space="preserve">
+    <value>اسم مجموع الأسطر</value>
   </data>
   <data name="ReportDefinition_Select" xml:space="preserve">
     <value>الحقول</value>
   </data>
+  <data name="ReportDefinition_ShowAsTree" xml:space="preserve">
+    <value>إظهار كشجرة</value>
+  </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>أظهر مجموع الأعمدة</value>
+  </data>
+  <data name="ReportDefinition_ShowEmptyMembers" xml:space="preserve">
+    <value>إظهار القيم الفارغة</value>
   </data>
   <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
     <value>إظهار في القائمة الرئيسية</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>أظهر مجموع الأسطر</value>
+  </data>
+  <data name="ReportDefinition_SuccessWhen" xml:space="preserve">
+    <value>نجاح عندما</value>
   </data>
   <data name="ReportDefinition_Top" xml:space="preserve">
     <value>أول</value>
@@ -2491,8 +2512,8 @@
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>إجمالي</value>
   </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>القيمة</value>
+  <data name="ReportDefinition_WarningWhen" xml:space="preserve">
+    <value>تنبيه عندما</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>تعاريف تقارير</value>

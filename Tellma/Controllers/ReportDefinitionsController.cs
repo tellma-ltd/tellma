@@ -47,7 +47,6 @@ namespace Tellma.Controllers
 
     public class ReportDefinitionsService : CrudServiceBase<ReportDefinitionForSave, ReportDefinition, int>
     {
-
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
         private readonly IDefinitionsCache _defCache;
@@ -98,7 +97,16 @@ namespace Tellma.Controllers
 
             entities.ForEach(entity =>
             {
-                // Default Id
+                // Makes subsequent code simpler
+                entity.Rows ??= new List<ReportDefinitionRowForSave>();
+                entity.Rows.ForEach(row => row.Attributes ??= new List<ReportDefinitionDimensionAttributeForSave>());
+                entity.Columns ??= new List<ReportDefinitionColumnForSave>();
+                entity.Columns.ForEach(col => col.Attributes ??= new List<ReportDefinitionDimensionAttributeForSave>());
+                entity.Measures ??= new List<ReportDefinitionMeasureForSave>();
+                entity.Select ??= new List<ReportDefinitionSelectForSave>();
+                entity.Parameters ??= new List<ReportDefinitionParameterForSave>();
+
+                // Default Values
                 if (string.IsNullOrWhiteSpace(entity.Code))
                 {
                     entity.Code = Guid.NewGuid().ToString("D");
@@ -107,10 +115,13 @@ namespace Tellma.Controllers
                 // Summary reports
                 if (entity.Type == "Summary")
                 {
-                    // Those properties aren't needed
-                    entity.Select = new List<ReportSelectDefinitionForSave>();
-                    entity.Top = null;
-                    entity.OrderBy = null;
+                    if (!(entity.IsCustomDrilldown ?? false))
+                    {
+                        // Those properties aren't needed
+                        entity.Select = new List<ReportDefinitionSelectForSave>();
+                        entity.Top = null;
+                        entity.OrderBy = null;
+                    }
 
                     // Defaults for Show Totals
                     entity.ShowColumnsTotal ??= false;
@@ -119,27 +130,45 @@ namespace Tellma.Controllers
                         entity.ShowColumnsTotal = false;
                     }
 
+                    if (!entity.ShowColumnsTotal.Value)
+                    {
+                        entity.ColumnsTotalLabel = null;
+                        entity.ColumnsTotalLabel2 = null;
+                        entity.ColumnsTotalLabel3 = null;
+                    }
+
                     entity.ShowRowsTotal ??= false;
                     if (entity.Rows == null || entity.Rows.Count == 0)
                     {
                         entity.ShowRowsTotal = false;
+                    }
+
+                    if (!entity.ShowRowsTotal.Value)
+                    {
+                        entity.RowsTotalLabel = null;
+                        entity.RowsTotalLabel2 = null;
+                        entity.RowsTotalLabel3 = null;
                     }
                 }
 
                 // Details Report
                 if (entity.Type == "Details")
                 {
-                    entity.Rows = new List<ReportRowDefinitionForSave>();
-                    entity.Columns = new List<ReportColumnDefinitionForSave>();
-                    entity.Measures = new List<ReportMeasureDefinitionForSave>();
-                    entity.ShowColumnsTotal = null;
-                    entity.ShowRowsTotal = null;
+                    // Those properties aren't needed
+                    entity.Rows = new List<ReportDefinitionRowForSave>();
+                    entity.Columns = new List<ReportDefinitionColumnForSave>();
+                    entity.Measures = new List<ReportDefinitionMeasureForSave>();
+                    entity.ShowColumnsTotal = false;
+                    entity.ShowRowsTotal = false;
+                    entity.IsCustomDrilldown = false;
+                    entity.Having = null;
                 }
 
                 // Defaults to Chart
                 if (string.IsNullOrWhiteSpace(entity.Chart))
                 {
-                    entity.DefaultsToChart = null;
+                    entity.DefaultsToChart = false;
+                    entity.ChartOptions = null;
                 }
                 else
                 {
@@ -161,6 +190,15 @@ namespace Tellma.Controllers
                     if (parameter.Control != null) // TODO: Need to figure out how to retrieve the default control
                     {
                         parameter.ControlOptions = ControllerUtilities.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                    }
+                });
+
+                // Generate Parameters
+                entity.Measures.ForEach(measure =>
+                {
+                    if (measure.Control != null) // TODO: Need to figure out how to retrieve the default control
+                    {
+                        measure.ControlOptions = ControllerUtilities.PreprocessControlOptions(measure.Control, measure.ControlOptions, settings);
                     }
                 });
             });

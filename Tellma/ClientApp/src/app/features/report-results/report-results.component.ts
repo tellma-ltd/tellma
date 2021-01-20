@@ -16,8 +16,8 @@ import {
   downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse, modifiedPropDesc
 } from '~/app/data/util';
 import {
-  ReportDefinitionForClient, ReportDimensionDefinitionForClient,
-  ReportMeasureDefinitionForClient, ReportSelectDefinitionForClient
+  ReportDefinitionForClient, ReportDefinitionDimensionForClient,
+  ReportDefinitionMeasureForClient, ReportDefinitionSelectForClient
 } from '~/app/data/dto/definitions-for-client';
 import { Router, Params } from '@angular/router';
 import { displayEntity, displayValue } from '~/app/data/util';
@@ -368,16 +368,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  private computeMeasureInfos(measures: ReportMeasureDefinitionForClient[]): MeasureInfo[] {
+  private computeMeasureInfos(measures: ReportDefinitionMeasureForClient[]): MeasureInfo[] {
 
     if (!measures) {
       return [];
     }
 
     return measures.map(measureDef => {
-      const key = `${measureDef.Aggregation}(${measureDef.Path.split('.').map(e => e.trim()).join('.')})`;
+      const key = `${measureDef.Aggregation}(${measureDef.Expression.split('.').map(e => e.trim()).join('.')})`;
       const aggregation = measureDef.Aggregation;
-      const steps = measureDef.Path.split('.').map(e => e.trim());
+      const steps = measureDef.Expression.split('.').map(e => e.trim());
       const prop = steps.pop();
       const collection = this.definition.Collection;
       const definitionId = this.definition.DefinitionId;
@@ -386,7 +386,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
       const propDesc = entityDesc.properties[prop];
       if (!propDesc) {
-        throw new Error(`The path '${measureDef.Path}' is not valid, the terminal property ${prop} was not found`);
+        throw new Error(`The path '${measureDef.Expression}' is not valid, the terminal property ${prop} was not found`);
       }
 
       let desc: PropDescriptor;
@@ -430,12 +430,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private computeRealDimensions(dims: ReportDimensionDefinitionForClient[]): DimensionInfo[] {
+  private computeRealDimensions(dims: ReportDefinitionDimensionForClient[]): DimensionInfo[] {
 
     dims = dims || [];
     return dims.map(dim => {
       // Normalized the path
-      const path = dim.Path.split('.').map((e: string) => e.trim()).join('.');
+      const path = dim.KeyExpression.split('.').map((e: string) => e.trim()).join('.');
       const modifier = dim.Modifier;
       const key = !!dim.Modifier ? `${path}|${dim.Modifier}` : path;
 
@@ -472,7 +472,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         path,
         modifier,
         propDesc,
-        autoExpand: dim.AutoExpand,
+        autoExpand: dim.AutoExpandLevel,
         label: () => !!dim.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
       };
 
@@ -507,7 +507,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private computeSelect(): string {
-    const select: ReportSelectDefinitionForClient[] = this.select;
+    const select: ReportDefinitionSelectForClient[] = this.select;
     if (!select || select.length === 0) {
       return '';
     }
@@ -528,7 +528,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
-    select.map(col => col.Path).forEach(path => {
+    select.map(col => col.Expression).forEach(path => {
 
       if (!path) {
         return;
@@ -572,7 +572,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     // (1) Add dimensions (special handling for nav props)
     cols.concat(rows).forEach(dimensionDef => {
-      const path = dimensionDef.Path.trim().split('.').map(e => e.trim());
+      const path = dimensionDef.KeyExpression.trim().split('.').map(e => e.trim());
       const property = path[path.length - 1]; // last element
       const stringPath = path.join('.');
       const orderDir = dimensionDef.OrderDirection;
@@ -616,7 +616,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const measures = this.definition.Measures || [];
     measures.forEach(measureDef => {
       // extract the relevant values from definition
-      const path = measureDef.Path.split('.').map(e => e.trim()).join('.');
+      const path = measureDef.Expression.split('.').map(e => e.trim()).join('.');
       const orderDir = measureDef.OrderDirection;
       const aggregation = measureDef.Aggregation;
 
@@ -646,8 +646,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // Definition values override (the user should not be able to specify them anyways)
     if (!!this.definition.Parameters) {
       for (const p of this.definition.Parameters) {
-        if (p.Visibility === 'None' && p.Value !== null && p.Value !== undefined) {
-          args[p.Key] = p.Value;
+        if (p.Visibility === 'None' && p.DefaultExpression !== null && p.DefaultExpression !== undefined) {
+          args[p.Key] = p.DefaultExpression;
         }
       }
     }
@@ -824,7 +824,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           const columns: ColumnDescriptor[] = this.select.map(e =>
             ({
               display: this.workspace.currentTenant.getMultilingualValueImmediate(e, 'Label'),
-              path: e.Path
+              path: e.Expression
             })
           );
 
@@ -1349,7 +1349,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       // This is only useful if there is an AVG measure
       const countKeys = this.definition.Measures.map(m =>
-        `count(${m.Path.split('.').map(e => e.trim()).join('.')})`);
+        `count(${m.Expression.split('.').map(e => e.trim()).join('.')})`);
 
       const columnsHash = columnsResult.hash;
       const rowHash = rowResult.hash;
@@ -1869,7 +1869,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return !!this.definition ? this.definition.DefinitionId : null;
   }
 
-  public get select(): ReportSelectDefinitionForClient[] {
+  public get select(): ReportDefinitionSelectForClient[] {
     return !!this.definition ? this.definition.Select : null;
   }
 
@@ -1903,7 +1903,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.state.result;
   }
 
-  public selectLabel(s: ReportSelectDefinitionForClient) {
+  public selectLabel(s: ReportDefinitionSelectForClient) {
     return this.workspace.currentTenant.getMultilingualValueImmediate(s, 'Label');
   }
 

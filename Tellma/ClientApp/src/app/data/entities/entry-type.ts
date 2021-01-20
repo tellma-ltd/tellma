@@ -69,7 +69,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
         Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
         Concept: { datatype: 'string', control: 'text', label: () => trx.instant('EntryType_Concept') },
-        IsAssignable: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsAssignable') },
+        IsAssignable: { datatype: 'bit', control: 'check', label: () => trx.instant('IsAssignable') },
 
         // tree stuff
         ParentId: {
@@ -98,8 +98,8 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
           alignment: 'right'
         },
 
-        IsSystem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsSystem') },
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
         ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

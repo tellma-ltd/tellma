@@ -104,10 +104,10 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                     datatype: 'entity', control: 'Center', label: () => trx.instant('TreeParent'),
                     foreignKeyName: 'ParentId'
                 },
-                IsLeaf: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsLeaf') },
+                IsLeaf: { datatype: 'bit', control: 'check', label: () => trx.instant('IsLeaf') },
 
                 // IsActive & Audit info
-                IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

@@ -10,19 +10,17 @@ import { DefinitionVisibility as Visibility, MainMenuSection, MainMenuIcon, main
 
 export type ReportOrderDirection = 'asc' | 'desc';
 export type ReportType = 'Summary' | 'Details';
-export type Aggregation = 'count' | 'sum' | 'avg' | 'max' | 'min';
 export type ChartType = 'Card' | 'BarsVertical' | 'BarsVerticalGrouped' | 'BarsVerticalStacked' |
     'BarsVerticalNormalized' | 'BarsHorizontal' | 'BarsHorizontalGrouped' | 'BarsHorizontalStacked' |
     'BarsHorizontalNormalized' | 'Line' | 'Area' | 'AreaStacked' | 'AreaNormalized' | 'Pie' | 'Doughnut' |
     'HeatMap' | 'TreeMap' | 'NumberCards' | 'Gauge' | 'Radar';
-export type Modifier = 'year' | 'quarter' | 'month' | 'dayofyear' | 'day' | 'week' | 'weekday';
 
 export interface ReportDefinitionForSave<
-    TParameter = ReportParameterDefinitionForSave,
-    TRow = ReportRowDefinitionForSave,
-    TColumn = ReportColumnDefinitionForSave,
-    TMeasure = ReportMeasureDefinitionForSave,
-    TSelect = ReportSelectDefinitionForSave> extends EntityForSave {
+    TParameter = ReportDefinitionParameterForSave,
+    TRow = ReportDefinitionRowForSave,
+    TColumn = ReportDefinitionColumnForSave,
+    TMeasure = ReportDefinitionMeasureForSave,
+    TSelect = ReportDefinitionSelectForSave> extends EntityForSave {
 
     Title?: string;
     Title2?: string;
@@ -32,14 +30,23 @@ export interface ReportDefinitionForSave<
     Description3?: string;
     Type?: ReportType; // summary or details
     Chart?: ChartType;
-    DefaultsToChart?: boolean; // ?
+    DefaultsToChart?: boolean;
+    ChartOptions?: string; // JSON
     Collection?: Collection;
     DefinitionId?: number;
     Filter?: string;
+    Having?: string;
     OrderBy?: string;
     Top?: number;
     ShowColumnsTotal?: boolean;
+    ColumnsTotalLabel?: string;
+    ColumnsTotalLabel2?: string;
+    ColumnsTotalLabel3?: string;
     ShowRowsTotal?: boolean;
+    RowsTotalLabel?: string;
+    RowsTotalLabel2?: string;
+    RowsTotalLabel3?: string;
+    IsCustomDrilldown?: boolean;
     MainMenuSection?: MainMenuSection;
     MainMenuIcon?: MainMenuIcon;
     MainMenuSortKey?: number;
@@ -53,81 +60,104 @@ export interface ReportDefinitionForSave<
 }
 
 export interface ReportDefinition extends ReportDefinitionForSave<
-    ReportParameterDefinition, ReportRowDefinition, ReportColumnDefinition, ReportMeasureDefinition, ReportSelectDefinition> {
+    ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect> {
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
     ModifiedById?: number | string;
 }
 
-export interface ReportParameterDefinitionForSave extends EntityForSave {
+export interface ReportDefinitionParameterForSave extends EntityForSave {
     Key?: string; // e.g. 'FromDate'
     Label?: string;
     Label2?: string;
     Label3?: string;
     Visibility?: Visibility;
-    Value?: string;
+    DefaultExpression?: string;
     Control?: Control;
     ControlOptions?: string; // JSON
 }
 
 // tslint:disable-next-line:no-empty-interface
-export interface ReportParameterDefinition extends ReportParameterDefinitionForSave {
+export interface ReportDefinitionParameter extends ReportDefinitionParameterForSave {
     ReportDefinitionId?: number;
 }
 
-export interface ReportSelectDefinitionForSave extends EntityForSave {
-    Path?: string;
+export interface ReportDefinitionSelectForSave extends EntityForSave {
+    Expression?: string;
+    Localize?: boolean;
     Label?: string;
     Label2?: string;
     Label3?: string;
 }
 
 // tslint:disable-next-line:no-empty-interface
-export interface ReportSelectDefinition extends ReportSelectDefinitionForSave {
+export interface ReportDefinitionSelect extends ReportDefinitionSelectForSave {
     ReportDefinitionId?: number;
 }
 
-export interface ReportDimensionDefinition extends EntityForSave {
-    Path?: string;
-    Modifier?: string;
-    Label?: string;
-    Label2?: string;
-    Label3?: string;
-    OrderDirection?: ReportOrderDirection;
-    AutoExpand?: boolean;
-}
-
-// tslint:disable-next-line:no-empty-interface
-export interface ReportColumnDefinitionForSave extends ReportDimensionDefinition {
-}
-
-// tslint:disable-next-line:no-empty-interface
-export interface ReportColumnDefinition extends ReportColumnDefinitionForSave {
-    ReportDefinitionId?: number;
-}
-
-// tslint:disable-next-line:no-empty-interface
-export interface ReportRowDefinitionForSave extends ReportDimensionDefinition {
-
-}
-
-// tslint:disable-next-line:no-empty-interface
-export interface ReportRowDefinition extends ReportRowDefinitionForSave {
-    ReportDefinitionId?: number;
-}
-
-export interface ReportMeasureDefinitionForSave extends EntityForSave {
-    Path?: string;
+export interface ReportDefinitionDimension<TAttribute> extends EntityForSave {
+    KeyExpression?: string;
+    DisplayExpression?: string;
+    Localize?: boolean;
     Label?: string;
     Label2?: string;
     Label3?: string;
     OrderDirection?: ReportOrderDirection;
-    Aggregation?: Aggregation;
+    AutoExpandLevel?: number;
+    ShowAsTree?: boolean;
+    ShowEmptyMembers?: boolean;
+    Attributes?: TAttribute[];
 }
 
 // tslint:disable-next-line:no-empty-interface
-export interface ReportMeasureDefinition extends ReportMeasureDefinitionForSave {
+export interface ReportDefinitionColumnForSave extends ReportDefinitionDimension<ReportDefinitionDimensionAttributeForSave> {
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportDefinitionColumn extends ReportDefinitionDimension<ReportDefinitionDimensionAttribute> {
+    ReportDefinitionId?: number;
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportDefinitionRowForSave extends ReportDefinitionDimension<ReportDefinitionDimensionAttributeForSave> {
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportDefinitionRow extends ReportDefinitionDimension<ReportDefinitionDimensionAttribute> {
+    ReportDefinitionId?: number;
+}
+
+export interface ReportDefinitionDimensionAttributeForSave extends EntityWithKey {
+    Expression?: string;
+    Localize?: boolean;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+
+}
+
+export interface ReportDefinitionDimensionAttribute extends ReportDefinitionDimensionAttributeForSave {
+    ReportDefinitionDimensionId?: number;
+}
+
+
+export interface ReportDefinitionMeasureForSave extends EntityForSave {
+    Expression?: string;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+    Control?: Control;
+    ControlOptions?: string; // JSON
+    DangerWhen?: string;
+    WarningWhen?: string;
+    SuccessWhen?: string;
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportDefinitionMeasure extends ReportDefinitionMeasureForSave {
     ReportDefinitionId?: number;
 }
 
@@ -181,18 +211,27 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'BarsHorizontalStacked', 'BarsHorizontalNormalized', /* 'AreaStacked', 'AreaNormalized', 'Radar', */ 'HeatMap'],
                     format: (c: string) => trx.instant(`ReportDefinition_Chart_${c}`)
                 },
-                DefaultsToChart: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
+                DefaultsToChart: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
+                ChartOptions: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ChartOptions') },
                 Collection: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Collection') },
                 DefinitionId: { datatype: 'integral', control: 'number', label: () => trx.instant('ReportDefinition_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Filter: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Filter') },
+                Having: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Having') },
                 OrderBy: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_OrderBy') },
                 Top: { datatype: 'integral', control: 'number', label: () => trx.instant('ReportDefinition_Top'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ShowColumnsTotal: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_ShowColumnsTotal') },
-                ShowRowsTotal: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_ShowRowsTotal') },
+                ShowColumnsTotal: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_ShowColumnsTotal') },
+                ColumnsTotalLabel: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ColumnsTotalLabel') + ws.primaryPostfix },
+                ColumnsTotalLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ColumnsTotalLabel') + ws.secondaryPostfix },
+                ColumnsTotalLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ColumnsTotalLabel') + ws.ternaryPostfix },
+                ShowRowsTotal: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_ShowRowsTotal') },
+                RowsTotalLabel: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_RowsTotalLabel') + ws.primaryPostfix },
+                RowsTotalLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_RowsTotalLabel') + ws.secondaryPostfix },
+                RowsTotalLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_RowsTotalLabel') + ws.ternaryPostfix },
+                IsCustomDrilldown: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_IsCustomDrilldown') },
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
-                ShowInMainMenu: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
+                ShowInMainMenu: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

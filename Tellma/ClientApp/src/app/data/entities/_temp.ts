@@ -61,7 +61,7 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
         },
         // End Temp
 
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
       }
     };
   }

@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[ReportParameterDefinitionList] AS TABLE
+﻿CREATE TYPE [dbo].[ReportDefinitionParameterList] AS TABLE
 (
 	[Index]			INT				DEFAULT 0,
 	[HeaderIndex]	INT				DEFAULT 0,
@@ -9,7 +9,7 @@
 	[Label2]					NVARCHAR (255),
 	[Label3]					NVARCHAR (255),
 	[Visibility]				NVARCHAR (50), -- N'None', N'Optional', N'Required'
-	[Value]						NVARCHAR (255),
+	[DefaultExpression]			NVARCHAR (255),
 	[Control]					NVARCHAR (50),  -- 'text', 'number', 'decimal', 'date', 'boolean', 'Resource'
 	[ControlOptions]			NVARCHAR (1024)
 )

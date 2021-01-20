@@ -329,7 +329,7 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 JobVisibility: visibilityPropDescriptor('Relation_Job', trx),
                 BankAccountNumberVisibility: visibilityPropDescriptor('Relation_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('RelationDefinition_UserCardinality', trx),
-                HasAttachments: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Definition_HasAttachments') },
+                HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
                 AttachmentsCategoryDefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('RelationDefinition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AttachmentsCategoryDefinition: { datatype: 'entity', label: () => trx.instant('RelationDefinition_AttachmentsCategoryDefinition'), control: 'LookupDefinition', foreignKeyName: 'AttachmentsCategoryDefinitionId' },
 

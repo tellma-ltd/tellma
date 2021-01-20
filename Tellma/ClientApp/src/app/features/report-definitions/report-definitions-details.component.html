@@ -71,6 +71,8 @@
                         [placeholder]="('Search' | translate) + '...'" />
                 </div>
 
+                <!-- <button class="btn btn-primary" (click)="onParse(search)">Parse</button> -->
+
                 <!-- Fields List -->
                 <div class="t-studio-source-area" cdkDropList #fields="cdkDropList"
                     [cdkDropListConnectedTo]="[rows, columns, measures, select]"
@@ -145,16 +147,16 @@
                             <input class="custom-control-input" type="radio" name="type" id="type_summary"
                                 value="Summary" [checked]="model.Type === 'Summary'"
                                 (change)="model.Type = 'Summary'; onDefinitionChange(model);">
-                            <label class="custom-control-label"
-                                for="type_summary">{{ 'ReportDefinition_Type_Summary' | translate }}</label>
+                            <label class="custom-control-label" for="type_summary">{{ 'ReportDefinition_Type_Summary' |
+                                translate }}</label>
                         </div>
                         &nbsp;&nbsp;
                         <div class="custom-control custom-radio custom-control-inline mx-0">
                             <input class="custom-control-input" type="radio" name="type" id="type_details"
                                 value="Details" [checked]="model.Type === 'Details'"
                                 (change)="model.Type = 'Details'; onDefinitionChange(model);">
-                            <label class="custom-control-label"
-                                for="type_details">{{ 'ReportDefinition_Type_Details' | translate }}</label>
+                            <label class="custom-control-label" for="type_details">{{ 'ReportDefinition_Type_Details' |
+                                translate }}</label>
                         </div>
                     </div>
 
@@ -175,10 +177,7 @@
                                         *ngIf="weakEntityErrors(dim)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
-                                        <t-auto-label [collection]="model.Collection"
-                                            [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
-                                        &nbsp;<span
-                                            *ngIf="dim.Modifier">({{ ( 'Modifier_' + dim.Modifier) | translate }})</span>
+                                        <span> {{ dim.KeyExpression }} </span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                                         (click)="onConfigureRow(i, model)" [title]="'Configure' | translate">
@@ -215,8 +214,8 @@
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection"
                                             [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
-                                        &nbsp;<span
-                                            *ngIf="dim.Modifier">({{ ( 'Modifier_' + dim.Modifier) | translate }})</span>
+                                        &nbsp;<span *ngIf="dim.Modifier">({{ ( 'DatePart_' + dim.Modifier) | translate
+                                            }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                                         (click)="onConfigureColumn(i, model)" [title]="'Configure' | translate">
@@ -253,8 +252,8 @@
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection"
                                             [definitionId]="model.DefinitionId" [path]="dim.Path"></t-auto-label>
-                                        &nbsp;<span
-                                            *ngIf="dim.Aggregation">({{ ( 'ReportDefinition_Aggregation_' + dim.Aggregation) | translate }})</span>
+                                        &nbsp;<span *ngIf="dim.Aggregation">({{ ( 'ReportDefinition_Aggregation_' +
+                                            dim.Aggregation) | translate }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                                         (click)="onConfigureMeasure(i, model)" [title]="'Configure' | translate">
@@ -278,8 +277,8 @@
                         *ngIf="!!model.Columns?.length">
                         <input type="checkbox" class="custom-control-input" id="showColumnsTotal"
                             [(ngModel)]="model.ShowColumnsTotal" (ngModelChange)="onDefinitionChange(model)">
-                        <label class="custom-control-label"
-                            for="showColumnsTotal">{{ 'ReportDefinition_ShowColumnsTotal' | translate }}</label>
+                        <label class="custom-control-label" for="showColumnsTotal">{{
+                            'ReportDefinition_ShowColumnsTotal' | translate }}</label>
                     </div>
 
                     <!-- Show Rows Total -->
@@ -287,8 +286,8 @@
                         *ngIf="!!model.Rows?.length">
                         <input type="checkbox" class="custom-control-input" id="showRowsTotal"
                             [(ngModel)]="model.ShowRowsTotal" (ngModelChange)="onDefinitionChange(model)">
-                        <label class="custom-control-label"
-                            for="showRowsTotal">{{ 'ReportDefinition_ShowRowsTotal' | translate }}</label>
+                        <label class="custom-control-label" for="showRowsTotal">{{ 'ReportDefinition_ShowRowsTotal' |
+                            translate }}</label>
                     </div>
 
                     <!-- Select -->
@@ -377,6 +376,18 @@
                         </ng-container>
                     </div>
 
+                    <!-- Having -->
+                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)">
+                        <label class="small" for="having">{{ 'ReportDefinition_Having' | translate }}</label>
+                        <textarea class="form-control t-studio-input t-no-resize" rows="6" id="having" type="text"
+                            [(ngModel)]="model.ReportDefinition_Having" (ngModelChange)="onHavingChange(model)"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false" #having="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: having, serverErrors: model.serverErrors?.Having }">
+                        </ng-container>
+                    </div>
+
                     <!-- Parameters -->
                     <div class="form-group" *ngIf="!!getParameters(model).length">
                         <label class="small">{{ 'ReportDefinition_Parameters' | translate }}</label>
@@ -442,8 +453,8 @@
                         <input type="checkbox" class="custom-control-input" id="defaultsToChart"
                             [(ngModel)]="model.DefaultsToChart"
                             (ngModelChange)="onDefinitionChange(model, 'DefaultsToChart')">
-                        <label class="custom-control-label"
-                            for="defaultsToChart">{{ 'ReportDefinition_DefaultsToChart' | translate }}</label>
+                        <label class="custom-control-label" for="defaultsToChart">{{ 'ReportDefinition_DefaultsToChart'
+                            | translate }}</label>
                     </div>
                 </div>
 
@@ -559,8 +570,8 @@
                         <input type="checkbox" class="custom-control-input" id="showInMainMenu"
                             [(ngModel)]="model.ShowInMainMenu"
                             (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
-                        <label class="custom-control-label"
-                            for="showInMainMenu">{{ 'ReportDefinition_ShowInMainMenu' | translate }}</label>
+                        <label class="custom-control-label" for="showInMainMenu">{{ 'ReportDefinition_ShowInMainMenu' |
+                            translate }}</label>
                     </div>
 
                     <!-- Main Menu Section -->
@@ -659,23 +670,24 @@
     <!-- body -->
     <div class="modal-body col t-less-dark t-text-whitish">
         <div class="row">
-            <!-- Path -->
-            <div class="form-group col-12 col-sm-6" [class.is-invalid]="invalid(path, itemToEdit.serverErrors?.Path)"
+            <!-- Expression -->
+            <div class="form-group col-12 col-sm-6"
+                [class.is-invalid]="invalid(exp, itemToEdit.serverErrors?.Expression)"
                 *ngIf="itemToEditNature !== 'parameter'">
-                <label class="small" for="path">{{ 'ReportDefinition_Path' | translate }}</label>
-                <input class="form-control t-studio-input" id="path" type="text" [(ngModel)]="itemToEdit['Path']"
-                    (ngModelChange)="itemToEditHasChanged = true; onPathChanged(itemToEdit, modelRef);"
-                    [ngModelOptions]="{ updateOn: 'blur' }" required autocomplete="off" #path="ngModel" />
+                <label class="small" for="exp">{{ 'ReportDefinition_Expression' | translate }}</label>
+                <input class="form-control t-studio-input" id="exp" type="text" [(ngModel)]="itemToEdit['Path']"
+                    (ngModelChange)="itemToEditHasChanged = true; onExpressionChanged(itemToEdit, modelRef);"
+                    [ngModelOptions]="{ updateOn: 'blur' }" required autocomplete="off" #exp="ngModel" />
                 <ng-container
-                    *ngTemplateOutlet="errorsTemplate;context: { control: path, serverErrors: itemToEdit.serverErrors?.Path }">
+                    *ngTemplateOutlet="errorsTemplate;context: { control: exp, serverErrors: itemToEdit.serverErrors?.Expression }">
                 </ng-container>
             </div>
 
             <!-- Key -->
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
                 <label class="small" for="key">{{ 'Parameter_Key' | translate }}</label>
-                <span class="form-control t-studio-input" id="key"
-                    style="opacity: 0.5;">{{ '@' + itemToEdit['Key'] }}</span>
+                <span class="form-control t-studio-input" id="key" style="opacity: 0.5;">{{ '@' + itemToEdit['Key']
+                    }}</span>
             </div>
 
             <!-- Modifier -->
@@ -686,7 +698,7 @@
                     (ngModelChange)="itemToEditHasChanged = true">
                     <option value=""></option>
                     <option *ngFor="let modifier of modifiers" value="{{modifier}}">
-                        {{ ('Modifier_' + modifier) | translate }}</option>
+                        {{ ('DatePart_' + modifier) | translate }}</option>
                 </select>
             </div>
 
@@ -742,8 +754,8 @@
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="autoExpand"
                         [(ngModel)]="itemToEdit['AutoExpand']" (ngModelChange)="itemToEditHasChanged = true">
-                    <label class="custom-control-label"
-                        for="autoExpand">{{ 'ReportDefinition_AutoExpand' | translate }}</label>
+                    <label class="custom-control-label" for="autoExpand">{{ 'ReportDefinition_AutoExpand' | translate
+                        }}</label>
                 </div>
             </div>
 
@@ -795,4 +807,121 @@
             &nbsp;{{ 'Cancel' | translate }}
         </button>
     </div>
+</ng-template>
+
+<ng-template #dimensionConfigModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header t-dark t-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ 'Configure' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="t-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col t-less-dark t-text-whitish">
+        <div class="row">
+            <!-- KeyExpression -->
+            <div class="form-group col-12"
+                [class.is-invalid]="invalid(keyexpression, dimToEdit.serverErrors?.KeyExpression) || dimExpressionError">
+                <label class="small" for="keyexpression">{{ 'ReportDefinition_KeyExpression' | translate }}</label>
+                <input class="form-control t-studio-input" id="keyexpression" type="text"
+                    [(ngModel)]="dimToEdit.KeyExpression"
+                    (ngModelChange)="dimToEditHasChanged = true; onKeyExpressionChanged(dimToEdit, modelRef);"
+                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #keyexpression="ngModel" />
+                <span *ngIf="dimExpressionError" class="small t-light-danger px-1"> {{ dimExpressionError }} </span>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: keyexpression, serverErrors: dimToEdit.serverErrors?.KeyExpression }">
+                </ng-container>
+            </div>
+
+
+
+            <!-- Label -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ ('Label' | translate) + ws.primaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label" type="text" [(ngModel)]="dimToEdit.Label"
+                    (ngModelChange)="dimToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            <!-- Label2 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.SecondaryLanguageId">
+                <label class="small" for="label2">{{ ('Label' | translate) + ws.secondaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label2" type="text" [(ngModel)]="dimToEdit.Label2"
+                    (ngModelChange)="dimToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            <!-- Label3 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.TernaryLanguageId">
+                <label class="small" for="label3">{{ ('Label' | translate) + ws.ternaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label3" type="text" [(ngModel)]="dimToEdit.Label3"
+                    (ngModelChange)="dimToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            Is Tree: {{ dimExpressionIsTree }}
+            <br/>
+            Is Nav: {{ dimExpressionIsNav }}
+            <br/>
+            Is Choice List: {{ dimExpressionIsChoiceList }}
+            <br/>
+            <span class="font-weight-bold">Descriptor:</span>
+            <br/>
+            {{ dimDesc | json }}
+
+            <!-- Order Direction -->
+            <!-- <div class="form-group col-12 col-sm-6"
+                *ngIf="itemToEditNature === 'dimension' || itemToEditNature === 'measure'">
+                <label class="small" for="orderDirection">{{ 'ReportDefinition_OrderDirection' | translate }}</label>
+                <select class="form-control t-studio-input" id="orderDirection"
+                    [(ngModel)]="itemToEdit['OrderDirection']" (ngModelChange)="itemToEditHasChanged = true">
+                    <option value=""></option>
+                    <option *ngFor="let dir of ['asc', 'desc']" value="{{dir}}">
+                        {{ ('ReportDefinition_OrderDirection_' + dir) | translate }}</option>
+                </select>
+            </div> -->
+
+            <!-- Auto Expand -->
+            <!-- <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'dimension'">
+                <label class="small">&zwnj;</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="autoExpand"
+                        [(ngModel)]="itemToEdit['AutoExpand']" (ngModelChange)="itemToEditHasChanged = true">
+                    <label class="custom-control-label"
+                        for="autoExpand">{{ 'ReportDefinition_AutoExpand' | translate }}</label>
+                </div>
+            </div> -->
+
+            <!-- Control Options-->
+            <!-- <div class="form-group w-100"
+                *ngIf="itemToEditNature === 'parameter' && showOptions(itemToEdit, modelRef, itemToEdit['Key'])">
+                <t-control-options [control]="getParamPropDescriptor(modelRef, itemToEdit['Key'])?.control"
+                    [isEdit]="true" [(ngModel)]="itemToEdit['ControlOptions']"
+                    (ngModelChange)="itemToEditHasChanged = true" #controloptions="ngModel">
+                </t-control-options>
+
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: controloptions, serverErrors: itemToEdit?.serverErrors?.ControlOptions }">
+                </ng-container>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close();" [disabled]="!canApplyDimension">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Apply' | translate }}
+        </button>
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+
 </ng-template>

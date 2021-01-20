@@ -949,6 +949,9 @@ export function iconFromExtension(extension: string): string {
  */
 export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
   switch (prop.control) {
+    case 'null': {
+      return '';
+    }
     case 'text': {
       return value;
     }
@@ -982,7 +985,7 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
       const locale = 'en-GB';
       return formatDate(value, format, locale);
     }
-    case 'boolean': {
+    case 'check': {
       return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
     }
     case 'choice': {
@@ -990,6 +993,9 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
     }
     case 'serial': {
       return !!prop ? formatSerial(value, prop.prefix, prop.codeWidth) : (value + '');
+    }
+    case 'unsupported': {
+      return trx.instant('NotSupported');
     }
     default:
       // Programmer error
@@ -1037,10 +1043,12 @@ export function descFromControlOptions(
   control = control || desc.control;
 
   switch (control) {
+    case 'null':
     case 'text':
-    case 'boolean':
+    case 'check':
     case 'date':
     case 'datetime':
+    case 'unsupported':
       return { control };
 
     case 'number':
@@ -1179,7 +1187,7 @@ export function computePropDesc(
  */
 export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx: TranslateService): PropDescriptor {
   const oldLabel = propDesc.label;
-  const label = () => `${oldLabel()} (${trx.instant('Modifier_' + modifier)})`;
+  const label = () => `${oldLabel()} (${trx.instant('DatePart_' + modifier)})`;
   switch (modifier) {
     case 'dayofyear':
     case 'day':
@@ -1236,15 +1244,17 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
 export function updateOn(desc: PropVisualDescriptor): 'change' | 'blur' {
 
   switch (desc.control) {
+    case 'null':
     case 'text':
     case 'number':
     case 'percent':
     case 'serial':
     case 'date':
     case 'datetime':
+    case 'unsupported':
       return 'blur';
     case 'choice':
-    case 'boolean':
+    case 'check':
       return 'change';
     default:
       const x = desc.filter; // So it will complain if we forget a control

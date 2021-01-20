@@ -59,6 +59,23 @@ namespace Tellma.Data.Queries
             }
         }
 
+        public IEnumerable<QueryexFunction> Aggregations()
+        {
+            if (this is QueryexFunction func && func.IsAggregation)
+            {
+                yield return func;
+            }
+
+
+            foreach (var child in Children)
+            {
+                foreach (var ca in child.Aggregations())
+                {
+                    yield return ca;
+                }
+            }
+        }
+
         /// <summary>
         /// Returns every <see cref="QueryexColumnAccess"/> within this expression
         /// </summary>
@@ -72,23 +89,6 @@ namespace Tellma.Data.Queries
             foreach (var child in Children)
             {
                 foreach (var ca in child.ColumnAccesses())
-                {
-                    yield return ca;
-                }
-            }
-        }
-
-        public IEnumerable<QueryexFunction> Aggregations()
-        {
-            if (this is QueryexFunction func && func.IsAggregation)
-            {
-                yield return func;
-            }
-
-
-            foreach (var child in Children)
-            {
-                foreach (var ca in child.Aggregations())
                 {
                     yield return ca;
                 }
@@ -246,16 +246,16 @@ namespace Tellma.Data.Queries
                     "+", "-", "*", "/", "%",
 
                     // String Operators (for backward compatibility)
-                    " contains ", " startsw ", " endsw ", 
+                    "contains", "startsw", "endsw", 
                 
                     // Tree Operators (for backward compatibility)
-                    " childof ", " descof ",
+                    "descof",
 
                     // Logical Operators (for backward compatibility)
-                    "not", " and ", " or ",
+                    "not", "and", "or",
             
                     // Comparison Operators (for backward compatibility)
-                    " gt ", " ge ", " lt ", " le ", " eq ", " ne ",
+                    "gt", "ge", "lt", "le", "eq", "ne",
 
                     // Directions
                     "asc", "desc",
@@ -293,7 +293,6 @@ namespace Tellma.Data.Queries
             ["contains"] = new OperatorInfo { Precedence = 4, Associativity = Associativity.Left },
             ["startsw"] = new OperatorInfo { Precedence = 4, Associativity = Associativity.Left },
             ["endsw"] = new OperatorInfo { Precedence = 4, Associativity = Associativity.Left },
-            ["childof"] = new OperatorInfo { Precedence = 4, Associativity = Associativity.Left },
             ["descof"] = new OperatorInfo { Precedence = 4, Associativity = Associativity.Left },
 
             // Logical Operators
@@ -304,6 +303,31 @@ namespace Tellma.Data.Queries
             ["and"] = new OperatorInfo { Precedence = 6, Associativity = Associativity.Left },
             ["or"] = new OperatorInfo { Precedence = 7, Associativity = Associativity.Left },
         };
+
+        public static bool IsAlphabeticSymbol(string op)
+        {
+            switch (op)
+            {
+                case "eq":
+                case "ne":
+                case "le":
+                case "lt":
+                case "gt":
+                case "ge":
+                case "contains":
+                case "startsw":
+                case "endsw":
+                case "descof":
+                case "not":
+                case "and":
+                case "or":
+                case "asc":
+                case "desc":
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         private static bool ValidUnaryOperator(string op)
         {
@@ -383,25 +407,12 @@ namespace Tellma.Data.Queries
 
                 // The operator "not" requires more elaborate handling, since it may not necessarily be preceded or superseded by a space
                 // but we don't want to confuse it with properties that contain "not" in their name like "Notes"
-                if (matchingSymbol == "not")
+                if (IsAlphabeticSymbol(matchingSymbol))
                 {
                     int prevIndex = i - 1;
-                    bool precededProperly = prevIndex < 0 || expArray[prevIndex] == ' ' || expArray[prevIndex] == ',' || expArray[prevIndex] == '(';
+                    bool precededProperly = prevIndex < 0 || !QueryexColumnAccess.ProperChar(expArray[prevIndex]);
                     int nextIndex = i + matchingSymbol.Length;
-                    bool followedProperly = nextIndex >= expArray.Length || expArray[nextIndex] == ' ' || expArray[nextIndex] == ',' || expArray[nextIndex] == '(';
-
-                    if (!precededProperly || !followedProperly)
-                    {
-                        matchingSymbol = null;
-                    }
-                }
-
-                if (matchingSymbol == "asc" || matchingSymbol == "desc")
-                {
-                    int prevIndex = i - 1;
-                    bool precededProperly = prevIndex < 0 || expArray[prevIndex] == ' ' || expArray[prevIndex] == ',' || expArray[prevIndex] == ')';
-                    int nextIndex = i + matchingSymbol.Length;
-                    bool followedProperly = nextIndex >= expArray.Length || expArray[nextIndex] == ' ' || expArray[nextIndex] == ',' || expArray[nextIndex] == ')';
+                    bool followedProperly = nextIndex >= expArray.Length || !QueryexColumnAccess.ProperChar(expArray[nextIndex]);
 
                     if (!precededProperly || !followedProperly)
                     {
@@ -466,14 +477,7 @@ namespace Tellma.Data.Queries
                         // Return the symbol  
                         yield return matchingSymbol.Trim();
 
-                        if (matchingSymbol.EndsWith(' '))
-                        {
-                            index += matchingSymbol.Length - 1; // Gives a chance for a subsequent space-padded operator sumbol to match
-                        }
-                        else
-                        {
-                            index += matchingSymbol.Length;
-                        }
+                        index += matchingSymbol.Length;
                     }
                     else
                     {
@@ -597,7 +601,7 @@ namespace Tellma.Data.Queries
 
             // By inspecting the previous token we can tell if the current token is syntacitcally used
             // like a prefix unary operator or function (as opposed to binary operators)
-            bool currentTokenUsedLikeAPrefix()
+            bool CurrentTokenUsedLikeAPrefix()
             {
                 return previousToken == null || previousToken == "," || previousToken == "(" || _operatorInfos.ContainsKey(previousToken);
             }
@@ -632,15 +636,15 @@ namespace Tellma.Data.Queries
                     throw new QueryException($"Incorrectly formatted expression: {expressionString}.");
                 }
 
-                var result = output.Pop();
+                var res = output.Pop();
 
                 // Set the direction if any
                 if (IsDirectionKeyword(previousToken, out QxDirection dir))
                 {
-                    result.Direction = dir;
+                    res.Direction = dir;
                 }
 
-                return result;
+                return res;
             }
 
             foreach (var currentToken in tokens)
@@ -650,15 +654,13 @@ namespace Tellma.Data.Queries
                 currentTokenIsPotentialFunction = false;
                 expressionTerminated = false;
 
-                bool isDirKeyword = currentToken.Equals("asc", StringComparison.OrdinalIgnoreCase) || currentToken.Equals("desc", StringComparison.OrdinalIgnoreCase);
-
                 if (_operatorInfos.TryGetValue(currentToken, out OperatorInfo opInfo)) // if it is an operator
                 {
                     // Increment the argument count if not already incremented
                     IncrementArity();
 
                     // Determine the operator usage: Unary (like negative sign) vs Binary (like subtraction)
-                    bool usedAsUnaryOperator = currentTokenUsedLikeAPrefix();
+                    bool usedAsUnaryOperator = CurrentTokenUsedLikeAPrefix();
 
                     // If binary, we pop from the operator stack according to the shunting yard alogirhtm
                     if (!usedAsUnaryOperator) // Unary operators do not pop anything
@@ -748,17 +750,16 @@ namespace Tellma.Data.Queries
                             TerminateFunctionArgument(bracketsInfo);
 
                             var (functionName, _) = ops.Pop();
-                            var argCount = bracketsInfo.Arity;
 
                             // Add the function to the output
-                            var function = new QueryexFunction(name: functionName, args: bracketsInfo.Arguments.ToArray());
+                            var func = new QueryexFunction(name: functionName, args: bracketsInfo.Arguments.ToArray());
 
-                            if (function.IsAggregation && function.Children.Any(e => e.ContainsAggregations))
+                            if (func.IsAggregation && func.Children.Any(e => e.ContainsAggregations))
                             {
-                                throw new QueryException($"The expression {function} contains an aggregation within an aggregation.");
+                                throw new QueryException($"The expression {func} contains an aggregation within an aggregation.");
                             }
 
-                            output.Push(function);
+                            output.Push(func);
                         }
                         else if (previousToken == "(")
                         {
@@ -768,7 +769,7 @@ namespace Tellma.Data.Queries
                     else
                     {
                         // There should have been a left paren in the stack
-                        throw new QueryException($"Expression contains mismatched brackets");
+                        throw new QueryException($"Expression contains mismatched brackets.");
                     }
                 }
                 else if (currentToken == ",")
@@ -810,7 +811,7 @@ namespace Tellma.Data.Queries
                     IncrementArity();
 
                     // Flag it if potential function
-                    currentTokenIsPotentialFunction = currentTokenUsedLikeAPrefix() && QueryexFunction.IsValidFunctionName(currentToken);
+                    currentTokenIsPotentialFunction = CurrentTokenUsedLikeAPrefix() && QueryexFunction.IsValidFunctionName(currentToken);
 
                     // It's (hopefully) a simple atom => add it the output
                     // IF this is a valid function name and the very next token is an opening bracket "(" then
@@ -821,7 +822,7 @@ namespace Tellma.Data.Queries
                     switch (tokenLower)
                     {
                         case "null":
-                            exp = QueryexNull.Value;
+                            exp = new QueryexNull();
                             break;
 
                         case "true":
@@ -937,13 +938,11 @@ namespace Tellma.Data.Queries
 
         public override string ToString()
         {
-            var result = Property;
-            if (Path.Length > 0)
-            {
-                result = string.Join('.', Path) + "." + result;
-            }
+            var path = string.Join(".", Path) ?? "";
+            var prop = Property ?? "";
+            var dot = string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(prop) ? "" : ".";
 
-            return result;
+            return $"{path}{dot}{prop}";
         }
 
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
@@ -961,7 +960,7 @@ namespace Tellma.Data.Queries
             var join = ctx.Joins;
             foreach (var step in Path)
             {
-                var navPropDesc = join.EntityDescriptor.NavigationProperty(step); 
+                var navPropDesc = join.EntityDescriptor.NavigationProperty(step);
                 pathNotNull = pathNotNull && navPropDesc.ForeignKey.IsNotNull;
                 join = join[step];
             }
@@ -1090,13 +1089,12 @@ namespace Tellma.Data.Queries
         /// <returns>True if the first character of the column access is valid according to the condition above, false otherwise</returns>
         private static bool ProperFirstChar(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return false;
-            }
+            return !string.IsNullOrEmpty(token) && char.IsLetter(token[0]);
+        }
 
-            var firstChar = token[0];
-            return char.IsLetter(firstChar);
+        public static bool ProperChar(char c)
+        {
+            return char.IsLetterOrDigit(c) || c == '_' || c == '.';
         }
 
         /// <summary>
@@ -1106,12 +1104,7 @@ namespace Tellma.Data.Queries
         /// <returns>True if the characters the column access are valid according to the condition above, false otherwise</returns>
         private static bool ProperChars(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return false;
-            }
-
-            return token.All(c => char.IsDigit(c) || char.IsLetter(c) || c == '_' || c == '.');
+            return !string.IsNullOrEmpty(token) && token.All(ProperChar);
         }
 
         /// <summary>
@@ -1123,11 +1116,11 @@ namespace Tellma.Data.Queries
         {
             switch (token.ToLower())
             {
-                case "asc":
-                case "desc":
                 case "null":
                 case "true":
                 case "false":
+                case "asc":
+                case "desc":
                     return false;
                 default:
                     return true;
@@ -1216,7 +1209,7 @@ namespace Tellma.Data.Queries
 
         public override string ToString()
         {
-            return $"{Name}({string.Join(", ", Arguments.Select(e => e.ToString()))})";
+            return $"{Name}({string.Join(", ", Arguments.Select(e => e.ToString().DeBracket()))})";
         }
 
         public override IEnumerable<QueryexBase> Children => Arguments;
@@ -1305,12 +1298,24 @@ namespace Tellma.Data.Queries
                         var (arg1, conditionSql) = AggregationParameters(ctx);
 
                         string expSql;
-                        if (nameLower == "max" || nameLower == "min")
+                        if (nameLower == "count" || nameLower == "max" || nameLower == "min")
                         {
+                            // Accept anything except boolean
                             (expSql, resultType, resultNullity) = arg1.CompileNative(ctx);
+                            if (resultType == QxType.Boolean)
+                            {
+                                throw new QueryException($"Function '{Name}': The first argument {arg1} cannot be a {QxType.Boolean} expression.");
+                            }
+
+                            if (nameLower == "count")
+                            {
+                                // Count always returns numeric, the other two return the same type of their argument
+                                resultType = QxType.Numeric;
+                            }
                         }
                         else if (arg1.TryCompile(QxType.Numeric, ctx, out expSql, out resultNullity))
                         {
+                            // Accept only numeric and return only numeric
                             resultType = QxType.Numeric; // The other 3 all take numeric and return numeric
                         }
                         else
@@ -1406,7 +1411,7 @@ namespace Tellma.Data.Queries
                             throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.Numeric}.");
                         }
 
-                        // Argument #3 Date
+                        // Argument #2 Date
                         var arg2 = Arguments[0];
                         if (arg2.TryCompile(QxType.Date, ctx, out string dateSql, out QxNullity dateNullity))
                         {
@@ -1495,7 +1500,7 @@ namespace Tellma.Data.Queries
                         }
                         else
                         {
-                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.Date}, {QxType.DateTime} or {QxType.DateTimeOffset}.");
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.Boolean}.");
                         }
                     }
 
@@ -1505,7 +1510,16 @@ namespace Tellma.Data.Queries
 
                         // Complie natively
                         var (ifTrueSql, ifTrueType, ifTrueNullity) = arg2.CompileNative(ctx);
+                        if (ifTrueType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} cannot be a {QxType.Boolean} expression.");
+                        }
+
                         var (ifFalseSql, ifFalseType, ifFalseNullity) = arg3.CompileNative(ctx);
+                        if (ifFalseType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Function '{Name}': The third argument {arg3} cannot be a {QxType.Boolean} expression.");
+                        }
 
                         if ((ifTrueType == ifFalseType) ||
                             (ifTrueType > ifFalseType && arg2.TryCompile(ifFalseType, ctx, out ifTrueSql, out ifTrueNullity)) ||
@@ -1527,7 +1541,16 @@ namespace Tellma.Data.Queries
                         var (exp, replacement) = IsNullParameters();
 
                         var (expSql, expType, expNullity) = exp.CompileNative(ctx);
+                        if (expType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {exp} cannot be a {QxType.Boolean} expression.");
+                        }
+
                         var (replacementSql, replacementType, replacementNullity) = replacement.CompileNative(ctx);
+                        if (replacementType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {replacement} cannot be a {QxType.Boolean} expression.");
+                        }
 
                         // Calculate the native type
                         if ((expType == replacementType) ||
@@ -1768,13 +1791,7 @@ namespace Tellma.Data.Queries
         /// <returns>True if the first character of the function name is valid according to the condition above, false otherwise</returns>
         private static bool ProperFirstChar(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return false;
-            }
-
-            var firstChar = token[0];
-            return char.IsLetter(firstChar);
+            return !string.IsNullOrEmpty(token) && char.IsLetter(token[0]);
         }
 
         /// <summary>
@@ -1784,12 +1801,8 @@ namespace Tellma.Data.Queries
         /// <returns>True if the characters the function name are valid according to the condition above, false otherwise</returns>
         private static bool ProperChars(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return false;
-            }
-
-            return token.All(c => char.IsDigit(c) || char.IsLetter(c) || c == '_');
+            return !string.IsNullOrEmpty(token) &&
+                token.All(c => char.IsLetterOrDigit(c) || c == '_');
         }
 
         /// <summary>
@@ -1939,23 +1952,20 @@ namespace Tellma.Data.Queries
 
                         string opSql = opLower;
 
-                        if (Left.TryCompile(QxType.Numeric, ctx, out leftSql, out leftNullity))
+                        if (!Left.TryCompile(QxType.Numeric, ctx, out leftSql, out leftNullity))
                         {
-                            if (Right.TryCompile(QxType.Numeric, ctx, out rightSql, out rightNullity))
-                            {
-                                resultNullity = leftNullity | rightNullity;
-                                resultSql = $"({leftSql} {opSql} {rightSql})";
-                                break;
-                            }
-                            else
-                            {
-                                throw new QueryException($"Expression {Right} does not have a numeric type, it cannot be used with operator '{Operator}'.");
-                            }
+                            throw new QueryException($"Operator '{Operator}': Left operand {Left} could not be interpreted as {QxType.Numeric}.");
                         }
-                        else
+
+                        if (!Right.TryCompile(QxType.Numeric, ctx, out rightSql, out rightNullity))
                         {
-                            throw new QueryException($"Expression {Left} does not have a numeric type, it cannot be used with operator '{Operator}'.");
+                            throw new QueryException($"Operator '{Operator}': Right operand {Right} could not be interpreted as {QxType.Numeric}.");
+
                         }
+                        resultNullity = leftNullity | rightNullity;
+                        resultSql = $"({leftSql} {opSql} {rightSql})";
+                        break;
+
                     }
 
                 case "&&":
@@ -2083,9 +2093,18 @@ namespace Tellma.Data.Queries
                         };
 
                         QxType leftType;
-                        QxType rightType;
                         (leftSql, leftType, leftNullity) = Left.CompileNative(ctx);
+                        if (leftType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Operator '{Operator}': The left operand {Left} cannot be a {QxType.Boolean} expression.");
+                        }
+
+                        QxType rightType;
                         (rightSql, rightType, rightNullity) = Right.CompileNative(ctx);
+                        if (rightType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Operator '{Operator}': The right operand {Right} cannot be a {QxType.Boolean} expression.");
+                        }
 
                         if ((leftType == rightType) ||
                             (leftType > rightType && Left.TryCompile(rightType, ctx, out leftSql, out leftNullity)) ||
@@ -2197,24 +2216,28 @@ namespace Tellma.Data.Queries
                         // Make sure the left side is vanilla column access
                         if (!(Left is QueryexColumnAccess columnAccess))
                         {
-                            throw new QueryException($"The left operand of {Operator} must be a column access like AccountType.Concept.");
+                            throw new QueryException($"Operator '{Operator}': The left operand {Left} must be a column access like AccountType.Concept.");
                         }
 
                         // Make sure the right side contains no column access
                         QueryexColumnAccess ca = Right.ColumnAccesses().FirstOrDefault();
                         if (ca == Right)
                         {
-                            throw new QueryException($"The right operand of {Operator} cannot be a column access expression like {ca}.");
+                            throw new QueryException($"Operator '{Operator}': The right operand cannot be a column access expression like {ca}.");
                         }
                         else if (ca != null)
                         {
-                            throw new QueryException($"The right operand of {Operator} cannot contain a column access expression like {ca}.");
+                            throw new QueryException($"Operator '{Operator}': The right operand cannot contain a column access expression like {ca}.");
                         }
 
                         QxType leftType;
                         QxType rightType;
                         (leftSql, leftType, leftNullity) = Left.CompileNative(ctx);
                         (rightSql, rightType, rightNullity) = Right.CompileNative(ctx);
+                        if (rightType == QxType.Boolean)
+                        {
+                            throw new QueryException($"Operator '{Operator}': The right operand {Right} cannot be a {QxType.Boolean} expression.");
+                        }
 
                         if ((leftType == rightType) ||
                             (leftType > rightType && Left.TryCompile(rightType, ctx, out leftSql, out leftNullity)) ||
@@ -2267,62 +2290,58 @@ namespace Tellma.Data.Queries
                     {
                         resultType = QxType.Boolean;
 
-                        if (Left.TryCompile(QxType.String, ctx, out leftSql, out leftNullity))
+                        if (!Left.TryCompile(QxType.String, ctx, out leftSql, out leftNullity))
                         {
-                            if (Right is QueryexQuote quote)
-                            {
-                                // Since it will be used as the 2nd operand of a LIKE, it must be escaped
-                                quote.EscapeForLike();
-                            }
-
-                            if (Right.TryCompile(QxType.String, ctx, out rightSql, out rightNullity))
-                            {
-                                resultNullity = QxNullity.NotNull;
-
-                                // Process right SQL to make it suitable as the second operand for the LIKE operator
-                                string beforePercent = opLower == "contains" || opLower == "endsw" ? "N'%' + " : "";
-                                string afterPercent = opLower == "contains" || opLower == "startsw" ? " + N'%'" : "";
-
-                                // Escape the 2nd LIKE operand unless it's a quote then we already escaped it earlier
-                                string escapedRightSql = rightSql;
-                                if (!(Right is QueryexQuote))
-                                {
-                                    escapedRightSql = $"REPLACE(REPLACE({escapedRightSql}, N'%', N'[%]'), N'_', N'[_]')";
-                                }
-
-                                escapedRightSql = $"{beforePercent}{escapedRightSql}{afterPercent}";
-
-                                resultSql = leftNullity switch
-                                {
-                                    QxNullity.NotNull => rightNullity switch
-                                    {
-                                        QxNullity.NotNull => $"({leftSql} LIKE {escapedRightSql})",
-                                        QxNullity.Nullable => $"({rightSql} IS NOT NULL AND {leftSql} LIKE {escapedRightSql})",
-                                        QxNullity.Null => FALSE,
-                                        _ => throw new InvalidOperationException($"Unknown nullity {rightNullity}"),
-                                    },
-                                    QxNullity.Nullable => rightNullity switch
-                                    {
-                                        QxNullity.NotNull => $"({leftSql} IS NOT NULL AND {leftSql} LIKE {escapedRightSql})",
-                                        QxNullity.Nullable => $"({leftSql} IS NOT NULL AND {rightSql} IS NOT NULL AND {leftSql} LIKE {escapedRightSql})",
-                                        QxNullity.Null => FALSE,
-                                        _ => throw new InvalidOperationException($"Unknown nullity {rightNullity}"),
-                                    },
-                                    QxNullity.Null => FALSE,
-                                    _ => throw new InvalidOperationException($"Unknown nullity {leftNullity}"),
-                                };
-
-                                break;
-                            }
-                            else
-                            {
-                                throw new QueryException($"Expression {Right} does not have a string type, it cannot be used with operator '{Operator}'.");
-                            }
+                            throw new QueryException($"Operator '{Operator}': Left operand {Left} could not be interpreted as {QxType.String}.");
                         }
-                        else
+
+                        if (Right is QueryexQuote quote)
                         {
-                            throw new QueryException($"Expression {Left} does not have a string type, it cannot be used with operator '{Operator}'.");
+                            // Since it will be used as the 2nd operand of a LIKE, it must be escaped
+                            quote.EscapeForLike();
                         }
+
+                        if (!Right.TryCompile(QxType.String, ctx, out rightSql, out rightNullity))
+                        {
+                            throw new QueryException($"Operator '{Operator}': Right operand {resultType} could not be interpreted as {QxType.String}.");
+                        }
+
+                        resultNullity = QxNullity.NotNull;
+
+                        // Process right SQL to make it suitable as the second operand for the LIKE operator
+                        string beforePercent = opLower == "contains" || opLower == "endsw" ? "N'%' + " : "";
+                        string afterPercent = opLower == "contains" || opLower == "startsw" ? " + N'%'" : "";
+
+                        // Escape the 2nd LIKE operand unless it's a quote then we already escaped it earlier
+                        string escapedRightSql = rightSql;
+                        if (!(Right is QueryexQuote))
+                        {
+                            escapedRightSql = $"REPLACE(REPLACE({escapedRightSql}, N'%', N'[%]'), N'_', N'[_]')";
+                        }
+
+                        escapedRightSql = $"{beforePercent}{escapedRightSql}{afterPercent}";
+
+                        resultSql = leftNullity switch
+                        {
+                            QxNullity.NotNull => rightNullity switch
+                            {
+                                QxNullity.NotNull => $"({leftSql} LIKE {escapedRightSql})",
+                                QxNullity.Nullable => $"({rightSql} IS NOT NULL AND {leftSql} LIKE {escapedRightSql})",
+                                QxNullity.Null => FALSE,
+                                _ => throw new InvalidOperationException($"Unknown nullity {rightNullity}"),
+                            },
+                            QxNullity.Nullable => rightNullity switch
+                            {
+                                QxNullity.NotNull => $"({leftSql} IS NOT NULL AND {leftSql} LIKE {escapedRightSql})",
+                                QxNullity.Nullable => $"({leftSql} IS NOT NULL AND {rightSql} IS NOT NULL AND {leftSql} LIKE {escapedRightSql})",
+                                QxNullity.Null => FALSE,
+                                _ => throw new InvalidOperationException($"Unknown nullity {rightNullity}"),
+                            },
+                            QxNullity.Null => FALSE,
+                            _ => throw new InvalidOperationException($"Unknown nullity {leftNullity}"),
+                        };
+
+                        break;
                     }
 
                 default:
@@ -2370,13 +2389,7 @@ namespace Tellma.Data.Queries
 
         public override string ToString()
         {
-            string operand = Operand.ToString();
-            if (!operand.StartsWith("("))
-            {
-                operand = $"({operand})";
-            }
-
-            return $"{Operator}{operand}";
+            return $"({Operator} {Operand})";
         }
 
         public override IEnumerable<QueryexBase> Children
@@ -2410,32 +2423,30 @@ namespace Tellma.Data.Queries
                     // The output type is uniquely determined by the input types (context doesn't matter)
                     // since there is no implicit cast from numeric to string or vice versa
                     {
-                        if (Operand.TryCompile(QxType.Numeric, ctx, out operandSql, out operandNullity))
+                        if (!Operand.TryCompile(QxType.Numeric, ctx, out operandSql, out operandNullity))
                         {
-                            // Addition
-                            resultType = QxType.Numeric;
-                            resultNullity = operandNullity;
+                            throw new QueryException($"Operator '{Operator}': Operand {Operand} could not be interpreted as {QxType.Numeric}.");
+                        }
 
-                            if (opLower == "+")
-                            {
-                                resultSql = operandSql; // +ve sign (does not do anything)
-                            }
-                            else if (opLower == "-")
-                            {
-                                resultSql = $"(-{operandSql})"; // -ve sign
-                            }
-                            else
-                            {
-                                // Developer mistake
-                                throw new InvalidOperationException($"Unknown unary arithmetic operator {opLower}.");
-                            }
+                        // Addition
+                        resultType = QxType.Numeric;
+                        resultNullity = operandNullity;
 
-                            break;
+                        if (opLower == "+")
+                        {
+                            resultSql = operandSql; // +ve sign (does not do anything)
+                        }
+                        else if (opLower == "-")
+                        {
+                            resultSql = $"(-{operandSql})"; // -ve sign
                         }
                         else
                         {
-                            throw new QueryException($"Expression {Operand} does not have a numeric type, it cannot be used with unary operator '{Operator}'.");
+                            // Developer mistake
+                            throw new InvalidOperationException($"Unknown unary arithmetic operator {opLower}.");
                         }
+
+                        break;
                     }
 
                 case "!":
@@ -2444,34 +2455,32 @@ namespace Tellma.Data.Queries
                     {
                         resultType = QxType.Boolean;
 
-                        if (Operand.TryCompile(QxType.Boolean, ctx, out operandSql, out operandNullity))
+                        if (!Operand.TryCompile(QxType.Boolean, ctx, out operandSql, out operandNullity))
                         {
-                            resultNullity = operandNullity;
-                            if (resultNullity != QxNullity.NotNull)
-                            {
-                                // Developer mistake
-                                throw new InvalidOperationException($"[Bug] A nullable boolean expression: {this}");
-                            }
+                            throw new QueryException($"Operator '{Operator}': Operand {Operand} could not be interpreted as {QxType.Boolean}.");
+                        }
 
-                            if (operandSql == FALSE)
-                            {
-                                resultSql = TRUE;
-                            }
-                            else if (operandSql == TRUE)
-                            {
-                                resultSql = FALSE;
-                            }
-                            else
-                            {
-                                resultSql = $"(NOT {operandSql})";
-                            }
+                        resultNullity = operandNullity;
+                        if (resultNullity != QxNullity.NotNull)
+                        {
+                            // Developer mistake
+                            throw new InvalidOperationException($"[Bug] A nullable boolean expression: {this}");
+                        }
 
-                            break;
+                        if (operandSql == FALSE)
+                        {
+                            resultSql = TRUE;
+                        }
+                        else if (operandSql == TRUE)
+                        {
+                            resultSql = FALSE;
                         }
                         else
                         {
-                            throw new QueryException($"Expression {Operand} does not have a boolean type, it cannot be used with unary operator '{Operator}'.");
+                            resultSql = $"(NOT {operandSql})";
                         }
+
+                        break;
                     }
 
                 default:
@@ -2530,7 +2539,7 @@ namespace Tellma.Data.Queries
 
         public override string ToString()
         {
-            return $"'{Value}'";
+            return $"'{Value.Replace("'", "''")}'";
         }
 
         public override bool TryCompile(QxType targetType, QxCompilationContext ctx, out string resultSql, out QxNullity resultNullity)
@@ -2632,8 +2641,9 @@ namespace Tellma.Data.Queries
         /// <returns>True if the token is a valid expression number, false otherwise</returns>
         public static bool IsValidNumber(string token, out decimal decimalValue)
         {
-            if (char.IsDigit(token[0]) && char.IsDigit(token[^1]) && token.All(c => char.IsDigit(c) || c == '.') && decimal.TryParse(token, out decimalValue))
+            if (char.IsDigit(token[0]) && char.IsDigit(token[^1]) && token.All(c => char.IsDigit(c) || c == '.'))
             {
+                decimalValue = decimal.Parse(token);
                 return true;
             }
             else
@@ -2663,12 +2673,6 @@ namespace Tellma.Data.Queries
 
     public class QueryexNull : QueryexBase
     {
-        private static readonly QueryexNull _value = new QueryexNull();
-
-        public static QueryexNull Value => _value;
-
-        private QueryexNull() { }
-
         public override string ToString()
         {
             return "null";
@@ -2679,7 +2683,17 @@ namespace Tellma.Data.Queries
             return ("NULL", QxType.Null, QxNullity.Null);
         }
 
-        public override QueryexBase Clone(string[] prefix = null) => this;
+        public override QueryexBase Clone(string[] prefix = null) => new QueryexNull();
+
+        public override bool Equals(object obj)
+        {
+            return obj is QueryexNull;
+        }
+
+        public override int GetHashCode()
+        {
+            return true.GetHashCode(); // Doesn't matter
+        }
     }
 
     public class QueryexBit : QueryexBase
@@ -2693,7 +2707,7 @@ namespace Tellma.Data.Queries
 
         public override string ToString()
         {
-            return Value.ToString();
+            return Value.ToString().ToLower();
         }
 
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)

@@ -127,7 +127,7 @@ export function metadata_Custody(wss: WorkspaceService, trx: TranslateService, d
         ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Custody_ExternalReference') },
 
         // Standard
-        IsActive: {datatype: 'boolean',  control: 'boolean', label: () => trx.instant('IsActive') },
+        IsActive: {datatype: 'bit',  control: 'check', label: () => trx.instant('IsActive') },
         CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
         ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

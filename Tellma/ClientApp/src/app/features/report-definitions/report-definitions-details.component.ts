@@ -5,12 +5,12 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import {
   ChoicePropDescriptor, getChoices, collectionsWithEndpoint, metadata, entityDescriptorImpl,
-  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor, hasControlOptions, Control, Collection
+  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor, hasControlOptions, Control, Collection, PropVisualDescriptor
 } from '~/app/data/entities/base/metadata';
 import {
-  ReportDefinitionForSave, metadata_ReportDefinition, ReportDefinition, ReportMeasureDefinition,
-  ReportColumnDefinition, ReportRowDefinition, ReportDimensionDefinition, ReportSelectDefinition,
-  ReportParameterDefinition
+  ReportDefinitionForSave, metadata_ReportDefinition, ReportDefinition, ReportDefinitionMeasure,
+  ReportDefinitionColumn, ReportDefinitionRow, ReportDefinitionDimension, ReportDefinitionSelect,
+  ReportDefinitionParameter
 } from '~/app/data/entities/report-definition';
 import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -21,6 +21,8 @@ import { FilterTools, modifiers } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
 import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { computePropDesc } from '~/app/data/util';
+import { DeBracket, Queryex, QueryexBase, QueryexColumnAccess, QueryexQuote } from '~/app/data/queryex';
+import { QueryexUtil } from '~/app/data/queryex-util';
 
 export interface FieldInfo {
   path: string;
@@ -59,14 +61,16 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public collapseDefinition = false;
 
   public modelRef: ReportDefinition;
-  public itemToEditHasChanged = false;
-  public itemToEditNature: 'dimension' | 'measure' | 'select' | 'parameter';
-  public itemToEdit: ReportRowDefinition | ReportColumnDefinition |
-    ReportMeasureDefinition | ReportSelectDefinition | ReportParameterDefinition;
+  // public itemToEditHasChanged = false;
+  // public itemToEditNature: 'dimension' | 'measure' | 'select' | 'parameter';
+  // public itemToEdit: ReportDefinitionRow | ReportDefinitionColumn |
+  //   ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter;
 
   @ViewChild('configureModal', { static: true })
   configureModal: TemplateRef<any>;
 
+  @ViewChild('dimensionConfigModal', { static: true })
+  dimensionConfigModal: TemplateRef<any>;
   /*
     The model can change in one of two ways:
     1 - Critical change: That requires the report-results.component to perform a full refresh of the screen (e.g. change of Type)
@@ -101,7 +105,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.ShowInMainMenu = false;
-    // result.Collection = 'Unit';
+    result.Collection = 'DetailsEntry';
     result.Type = 'Summary';
     result.Rows = [];
     result.Columns = [];
@@ -234,14 +238,14 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
         const parameters = model.Parameters.filter(p => !!paramTracker[p.Key.toLowerCase()]);
 
         // (5) Create a tracker for existing model parameters
-        const modelTracker: { [key: string]: ReportParameterDefinition } = {};
+        const modelTracker: { [key: string]: ReportDefinitionParameter } = {};
         parameters.forEach(pa => modelTracker[pa.Key.toLowerCase()] = pa);
 
         // (5) Add new parameters for new placeholders
         const keys = Object.keys(paramTracker).map(k => paramTracker[k]);
         for (const key of keys) {
           const keyLower = key.toLowerCase();
-          let parameterDef: ReportParameterDefinition = modelTracker[keyLower];
+          let parameterDef: ReportDefinitionParameter = modelTracker[keyLower];
           const builtInMatch = builtInParamsDescriptors.find(e => e.key === key);
           if (!parameterDef) {
             parameterDef = {
@@ -274,6 +278,12 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public onFilterChange(model: ReportDefinition) {
 
     this.synchronizeFilter(model);
+    this.onDefinitionChange(model);
+  }
+
+  public onHavingChange(model: ReportDefinition) {
+
+    this.synchronizeHaving(model);
     this.onDefinitionChange(model);
   }
 
@@ -331,7 +341,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return getChoices(desc);
   }
 
-  public getParameters(model: ReportDefinition): ReportParameterDefinition[] {
+  public getParameters(model: ReportDefinition): ReportDefinitionParameter[] {
     model.Parameters = model.Parameters || [];
     return model.Parameters;
   }
@@ -355,22 +365,22 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return !desc || !desc.isRequired;
   }
 
-  public getColumns(model: ReportDefinition): ReportColumnDefinition[] {
+  public getColumns(model: ReportDefinition): ReportDefinitionColumn[] {
     model.Columns = model.Columns || [];
     return model.Columns;
   }
 
-  public getRows(model: ReportDefinition): ReportRowDefinition[] {
+  public getRows(model: ReportDefinition): ReportDefinitionRow[] {
     model.Rows = model.Rows || [];
     return model.Rows;
   }
 
-  public getMeasures(model: ReportDefinition): ReportMeasureDefinition[] {
+  public getMeasures(model: ReportDefinition): ReportDefinitionMeasure[] {
     model.Measures = model.Measures || [];
     return model.Measures;
   }
 
-  public getSelect(model: ReportDefinition): ReportSelectDefinition[] {
+  public getSelect(model: ReportDefinition): ReportDefinitionSelect[] {
     model.Select = model.Select || [];
     return model.Select;
   }
@@ -404,9 +414,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     } else if (source === allFields && (destination === rows || destination === columns)) {
       // Create a new measure
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const dimension: ReportColumnDefinition | ReportRowDefinition = {
+      const dimension: ReportDefinitionColumn | ReportDefinitionRow = {
         Id: 0,
-        Path: fieldInfo.path,
+        KeyExpression: fieldInfo.path,
         AutoExpand: true
       };
       destination.splice(destinationIndex, 0, dimension);
@@ -414,9 +424,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     } else if (source === allFields && destination === measures) {
       // Create a new dimension
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const dimension: ReportMeasureDefinition = {
+      const dimension: ReportDefinitionMeasure = {
         Id: 0,
-        Path: fieldInfo.path,
+        Expression: fieldInfo.path,
         Aggregation: isNumeric(fieldInfo.desc) && fieldInfo.path !== 'Id' ? 'sum' : 'count' // Default
       };
       destination.splice(destinationIndex, 0, dimension);
@@ -424,9 +434,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     } else if (source === allFields && destination === select) {
       // Create a new dimension
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const column: ReportSelectDefinition = {
+      const column: ReportDefinitionSelect = {
         Id: 0,
-        Path: fieldInfo.path,
+        Expression: fieldInfo.path,
       };
       destination.splice(destinationIndex, 0, column);
       modelHasChanged = true;
@@ -437,22 +447,22 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       modelHasChanged = true;
     } else if (source === measures && (destination === rows || destination === columns)) {
       // Add AutoExpand = true
-      const measure = source.splice(sourceIndex, 1)[0] as ReportMeasureDefinition;
-      const dimension: ReportDimensionDefinition = { ...measure, AutoExpand: true };
+      const measure = source.splice(sourceIndex, 1)[0] as ReportDefinitionMeasure;
+      const dimension: ReportDefinitionDimension = { ...measure, AutoExpand: true };
       destination.splice(destinationIndex, 0, dimension);
       modelHasChanged = true;
     } else if ((source === rows || source === columns) && destination === measures) {
       // add default Aggregation
-      const dimension = source.splice(sourceIndex, 1)[0] as ReportDimensionDefinition;
+      const dimension = source.splice(sourceIndex, 1)[0] as ReportDefinitionDimension;
       // tslint:disable-next-line:no-string-literal
-      const measure: ReportMeasureDefinition = { ...dimension, Aggregation: dimension['Aggregation'] };
+      const measure: ReportDefinitionMeasure = { ...dimension, Aggregation: dimension['Aggregation'] };
       if (!measure.Aggregation) {
         try {
-          const steps = measure.Path.split('.');
+          const steps = measure.Expression.split('.');
           const prop = steps.pop();
           const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.workspace, this.translate);
           const propDesc = desc.properties[prop];
-          if (isNumeric(propDesc) && measure.Path !== 'Id') {
+          if (isNumeric(propDesc) && measure.Expression !== 'Id') {
             measure.Aggregation = 'sum';
           } else {
             measure.Aggregation = 'count';
@@ -477,16 +487,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  public onDeleteRow(index: number, model: ReportDefinition) {
-    model.Rows.splice(index, 1);
-    this.onDefinitionChange(model);
-  }
-
-  public onDeleteColumn(index: number, model: ReportDefinition) {
-    model.Columns.splice(index, 1);
-    this.onDefinitionChange(model);
-  }
-
   public onDeleteMeasure(index: number, model: ReportDefinition) {
     model.Measures.splice(index, 1);
     this.onDefinitionChange(model);
@@ -497,41 +497,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.onDefinitionChange(model);
   }
 
-  public onConfigureRow(index: number, model: ReportDefinition) {
-    this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Rows[index] } as ReportRowDefinition;
-    this.itemToEdit = itemToEdit;
-    this.itemToEditNature = 'dimension';
-    this.modelRef = model;
-
-    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
-      if (this.itemToEditHasChanged) {
-        model.Rows[index] = itemToEdit;
-        this.onDefinitionChange(model);
-      }
-    }, (_: any) => { });
-  }
-
-  public onConfigureColumn(index: number, model: ReportDefinition): void {
-    this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Columns[index] } as ReportColumnDefinition;
-    this.itemToEdit = itemToEdit;
-    this.itemToEditNature = 'dimension';
-    this.modelRef = model;
-
-    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(
-      () => {
-        if (this.itemToEditHasChanged) {
-          model.Columns[index] = itemToEdit;
-          this.onDefinitionChange(model);
-        }
-      }, (_: any) => { }
-    );
-  }
-
   public onConfigureMeasure(index: number, model: ReportDefinition) {
     this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Measures[index] } as ReportMeasureDefinition;
+    const itemToEdit = { ...model.Measures[index] } as ReportDefinitionMeasure;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'measure';
     this.modelRef = model;
@@ -546,7 +514,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public onConfigureSelect(index: number, model: ReportDefinition) {
     this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Select[index] } as ReportSelectDefinition;
+    const itemToEdit = { ...model.Select[index] } as ReportDefinitionSelect;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'select';
     this.modelRef = model;
@@ -561,7 +529,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public onConfigureParameter(index: number, model: ReportDefinition) {
     this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Parameters[index] } as ReportParameterDefinition;
+    const itemToEdit = { ...model.Parameters[index] } as ReportDefinitionParameter;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'parameter';
     this.modelRef = model;
@@ -610,7 +578,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._getParamPropDescriptorResults[key.toLowerCase()];
   }
 
-  public showOptions(p: ReportParameterDefinition, model: ReportDefinition, key: string) {
+  public showOptions(p: ReportDefinitionParameter, model: ReportDefinition, key: string) {
     let control = p.Control; // This overrides the default
     if (!control) {
       const desc = this.getParamPropDescriptor(model, key);
@@ -762,8 +730,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return validationErrors(control, serverErrors, this.translate);
   }
 
-  public weakEntityErrors(model: ReportRowDefinition | ReportColumnDefinition |
-    ReportMeasureDefinition | ReportSelectDefinition | ReportParameterDefinition) {
+  public weakEntityErrors(model: ReportDefinitionRow | ReportDefinitionColumn |
+    ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter) {
     return !!model.serverErrors &&
       Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
@@ -831,9 +799,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  public onPathChanged(itemToEdit: ReportRowDefinition | ReportColumnDefinition, model: ReportDefinitionForSave) {
+  public onPathChanged(itemToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave) {
     // This removes the modifier if the field isn't of type date
-    if (!this.isDate(itemToEdit.Path, model)) {
+    if (!this.isDate(itemToEdit.KeyExpression, model)) {
       delete itemToEdit.Modifier;
     }
   }
@@ -849,5 +817,123 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     if (entity.Type === 'Summary') {
       entity.Select = [];
     }
+  }
+
+  // public onParse(expString: string) {
+  //   try {
+  //     const exp = Queryex.parse(expString);
+  //     console.log(exp.map(e => e.toString()));
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
+
+  ///////////////////// Dimension Editing v2.0
+  dimToEdit: ReportDefinitionRow | ReportDefinitionColumn;
+  dimToEditHasChanged = false;
+
+  dimExpressionError: string = null;
+  dimExpressionIsTree = false;
+  dimExpressionIsNav = false;
+  dimExpressionIsChoiceList = false; // For show empty members
+  dimDesc: PropDescriptor; // For show empty members
+
+  public onKeyExpressionChanged(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave) {
+    this.dimExpressionError = null;
+    this.dimExpressionIsNav = false;
+    this.dimExpressionIsTree = false;
+    this.dimExpressionIsChoiceList = false;
+
+    if (!dimToEdit || !dimToEdit.KeyExpression) {
+      this.dimExpressionError = `Key Expression cannot be empty.`;
+      return;
+    }
+
+    try {
+      let exp: QueryexBase;
+      let desc: PropDescriptor;
+
+      // Get the expression
+      const expressions = Queryex.parse(dimToEdit.KeyExpression);
+      if (expressions.length > 1) {
+        this.dimExpressionError = `Key Expression cannot contain top level commas.`;
+        return;
+      } else if (expressions.length === 0) {
+        this.dimExpressionError = `Key Expression cannot be empty.`;
+        return;
+      } else {
+        exp = expressions[0];
+        const aggregations = exp.aggregations();
+        if (aggregations.length > 0) {
+          this.dimExpressionError = `Key Expression cannot contain aggregation functions like '${aggregations[0].name}'.`;
+          return;
+        }
+      }
+
+      // Get the descriptor
+      desc = QueryexUtil.nativeDescriptor(exp, model.Collection, model.DefinitionId, this.workspace, this.translate);
+      this.dimDesc = desc;
+      if (desc.datatype === 'bit') { // Should be bool not bit
+        this.dimExpressionError = `Key Expression cannot be of type boolean.`;
+        return;
+      }
+
+      // Finally: hydrate all the flags
+      this.dimExpressionIsChoiceList = desc.control === 'choice';
+      if (exp instanceof QueryexColumnAccess) {
+        if (desc.datatype === 'entity') { // Terminates with a nav property
+          this.dimExpressionIsNav = true;
+          this.dimExpressionIsTree = !!metadata[desc.control](this.workspace, this.translate, desc.definitionId).properties.Parent;
+        }
+      }
+
+    } catch (e) {
+      this.dimExpressionError = e.message;
+    }
+  }
+
+  public onConfigureRow(index: number, model: ReportDefinition) {
+    this.dimToEditHasChanged = false;
+    const dimToEdit = JSON.parse(JSON.stringify(model.Rows[index])) as ReportDefinitionRow;
+    this.dimToEdit = dimToEdit;
+    this.modelRef = model;
+
+    // This will set all the flags
+    this.onKeyExpressionChanged(dimToEdit, model);
+
+    this.modalService.open(this.dimensionConfigModal, { windowClass: 't-dark-theme' }).result.then(() => {
+      if (this.dimToEditHasChanged) {
+        model.Rows[index] = dimToEdit;
+        this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  public onDeleteRow(index: number, model: ReportDefinition) {
+    model.Rows.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public onConfigureColumn(index: number, model: ReportDefinition): void {
+    this.dimToEditHasChanged = false;
+    const itemToEdit = JSON.parse(JSON.stringify(model.Columns[index])) as ReportDefinitionColumn;
+    this.dimToEdit = itemToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.dimensionConfigModal, { windowClass: 't-dark-theme' }).result.then(() => {
+      if (this.dimToEditHasChanged) {
+        model.Columns[index] = itemToEdit;
+        this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  public onDeleteColumn(index: number, model: ReportDefinition) {
+    model.Columns.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public get canApplyDimension(): boolean {
+    return !this.dimExpressionError;
   }
 }
