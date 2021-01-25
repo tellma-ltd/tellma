@@ -1,3 +1,5 @@
+import { PropDescriptor } from './entities/base/metadata';
+
 class OperatorInfo {
     constructor(public precedence: number, public associativity: 'left' | 'right') { }
 
@@ -134,17 +136,42 @@ function isDirectionKeyword(token: string): QxDirection {
 }
 
 export class Queryex {
+
+    public static parseSingleton(
+        expressionString: string,
+        options?: {
+            expectDirKeywords?: boolean,
+            expectPathsOnly?: boolean,
+            placeholderReplacement?: QueryexBase
+        }) {
+
+        const expArray = Queryex.parse(expressionString, options);
+        if (expArray.length > 1) {
+          throw new Error(`Expression cannot contain top level commas.`);
+        } else if (expArray.length === 1) {
+            return expArray[0];
+        }
+    }
+
     public static parse(
         expressionString: string,
-        expectDirKeywords = false,
-        expectPathsOnly = false,
-        expectPlaceholder = false): QueryexBase[] {
-        if (!expressionString) {
+        options?: {
+            expectDirKeywords?: boolean,
+            expectPathsOnly?: boolean,
+            placeholderReplacement?: QueryexBase
+        }): QueryexBase[] {
+
+        if (!expressionString || !expressionString.trim()) {
             return [];
         }
 
+        const opt = options || { expectDirKeywords: false, expectPathsOnly: false };
+
         const tokenStream = Queryex.tokenize(expressionString);
-        return Queryex.parseTokenStream(tokenStream, expressionString, expectDirKeywords, expectPathsOnly, expectPlaceholder);
+        return Queryex.parseTokenStream(tokenStream, expressionString,
+            !!opt.expectDirKeywords,
+            !!opt.expectPathsOnly,
+            opt.placeholderReplacement);
     }
 
     private static tokenize(expressionString: string): string[] {
@@ -214,7 +241,7 @@ export class Queryex {
         }
 
         if (insideQuotes) {
-            throw new Error(`Uneven number of single quotation marks in (${expressionString}),
+            throw new Error(`Uneven number of single quotation marks in ${expressionString},
 quotation marks in string literals should be escaped by specifying them twice.`);
         }
 
@@ -233,7 +260,7 @@ quotation marks in string literals should be escaped by specifying them twice.`)
         expressionString: string,
         expectDirKeywords: boolean,
         expectPathsOnly: boolean,
-        expectPlaceholder: boolean): QueryexBase[] {
+        placeholderReplacement: QueryexBase): QueryexBase[] {
 
         const result: QueryexBase[] = [];
 
@@ -433,10 +460,10 @@ quotation marks in string literals should be escaped by specifying them twice.`)
                 const tokenLower = currentToken.toLowerCase();
                 switch (tokenLower) {
                     case '$':
-                        if (!expectPlaceholder) {
+                        if (!placeholderReplacement) {
                             throw new Error(`Unrecognized token: ${currentToken}`);
                         }
-                        exp = new QueryexPlaceholder();
+                        exp = placeholderReplacement.clone();
                         break;
                     case 'null':
                         exp = new QueryexNull();
@@ -511,6 +538,12 @@ export abstract class QueryexBase {
     public get isAscending(): boolean { return this.direction === QxDirection.asc; }
     public get isDescending(): boolean { return this.direction === QxDirection.desc; }
 
+    public unaggregatedColumnAccesses(): QueryexColumnAccess[] {
+        const result: QueryexColumnAccess[] = [];
+        this.unaggregatedColumnAccessesInner(result, false);
+        return result;
+    }
+
     public columnAccesses(): QueryexColumnAccess[] {
         const result: QueryexColumnAccess[] = [];
         this.columnAccessesInner(result);
@@ -520,6 +553,12 @@ export abstract class QueryexBase {
     public aggregations(): QueryexFunction[] {
         const result: QueryexFunction[] = [];
         this.aggregationsInner(result);
+        return result;
+    }
+
+    public parameters(): QueryexParameter[] {
+        const result: QueryexParameter[] = [];
+        this.parametersInner(result);
         return result;
     }
 
@@ -542,8 +581,11 @@ export abstract class QueryexBase {
 
     public abstract toString(): string;
     public abstract children(): QueryexBase[];
+    public abstract unaggregatedColumnAccessesInner(result: QueryexColumnAccess[], aggregated: boolean): void;
     public abstract columnAccessesInner(result: QueryexColumnAccess[]): void;
     public abstract aggregationsInner(result: QueryexFunction[]): void;
+    public abstract parametersInner(result: QueryexParameter[]): void;
+    public abstract clone(): QueryexBase;
 }
 
 export class QueryexColumnAccess extends QueryexBase {
@@ -607,11 +649,24 @@ export class QueryexColumnAccess extends QueryexBase {
         return [];
     }
 
+    public unaggregatedColumnAccessesInner(result: QueryexColumnAccess[], aggregated: boolean) {
+        if (!aggregated) {
+            result.push(this);
+        }
+    }
+
     public columnAccessesInner(result: QueryexColumnAccess[]) {
         result.push(this);
     }
 
     public aggregationsInner(_: QueryexFunction[]) {
+    }
+
+    public parametersInner(result: QueryexParameter[]) {
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexColumnAccess(this.path.slice(), this.property);
     }
 }
 
@@ -657,6 +712,16 @@ export class QueryexFunction extends QueryexBase {
         return this.arguments;
     }
 
+    public unaggregatedColumnAccessesInner(result: QueryexColumnAccess[], aggregated: boolean) {
+        if (this.isAggregation) {
+            aggregated = true;
+        }
+
+        for (const arg of this.arguments) {
+            arg.unaggregatedColumnAccessesInner(result, aggregated);
+        }
+    }
+
     public columnAccessesInner(result: QueryexColumnAccess[]) {
         for (const arg of this.arguments) {
             arg.columnAccessesInner(result);
@@ -671,6 +736,16 @@ export class QueryexFunction extends QueryexBase {
         for (const arg of this.arguments) {
             arg.aggregationsInner(result);
         }
+    }
+
+    public parametersInner(result: QueryexParameter[]) {
+        for (const arg of this.arguments) {
+            arg.parametersInner(result);
+        }
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexFunction(this.name, this.arguments.map(e => e.clone()));
     }
 }
 
@@ -687,6 +762,11 @@ export class QueryexBinaryOperator extends QueryexBase {
         return [this.left, this.right];
     }
 
+    public unaggregatedColumnAccessesInner(result: QueryexColumnAccess[], aggregated: boolean) {
+        this.left.unaggregatedColumnAccessesInner(result, aggregated);
+        this.right.unaggregatedColumnAccessesInner(result, aggregated);
+    }
+
     public columnAccessesInner(result: QueryexColumnAccess[]) {
         this.left.columnAccessesInner(result);
         this.right.columnAccessesInner(result);
@@ -695,6 +775,15 @@ export class QueryexBinaryOperator extends QueryexBase {
     public aggregationsInner(result: QueryexFunction[]) {
         this.left.aggregationsInner(result);
         this.right.aggregationsInner(result);
+    }
+
+    public parametersInner(result: QueryexParameter[]) {
+        this.left.parametersInner(result);
+        this.right.parametersInner(result);
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexBinaryOperator(this.operator, this.left.clone(), this.right.clone());
     }
 }
 
@@ -711,12 +800,24 @@ export class QueryexUnaryOperator extends QueryexBase {
         return [this.operand];
     }
 
+    public unaggregatedColumnAccessesInner(result: QueryexColumnAccess[], aggregated: boolean) {
+        this.operand.unaggregatedColumnAccessesInner(result, aggregated);
+    }
+
     public columnAccessesInner(result: QueryexColumnAccess[]) {
         this.operand.columnAccessesInner(result);
     }
 
     public aggregationsInner(result: QueryexFunction[]) {
         this.operand.aggregationsInner(result);
+    }
+
+    public parametersInner(result: QueryexParameter[]) {
+        this.operand.parametersInner(result);
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexUnaryOperator(this.operator, this.operand.clone());
     }
 }
 
@@ -739,10 +840,20 @@ export class QueryexQuote extends QueryexBase {
         return [];
     }
 
+    public unaggregatedColumnAccessesInner(_: QueryexColumnAccess[], __: boolean) {
+    }
+
     public columnAccessesInner(_: QueryexColumnAccess[]) {
     }
 
     public aggregationsInner(_: QueryexFunction[]) {
+    }
+
+    public parametersInner(_: QueryexParameter[]) {
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexQuote(this.value);
     }
 }
 
@@ -765,10 +876,20 @@ export class QueryexNumber extends QueryexBase {
         return [];
     }
 
+    public unaggregatedColumnAccessesInner(_: QueryexColumnAccess[], __: boolean) {
+    }
+
     public columnAccessesInner(_: QueryexColumnAccess[]) {
     }
 
     public aggregationsInner(_: QueryexFunction[]) {
+    }
+
+    public parametersInner(_: QueryexParameter[]) {
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexNumber(this.value);
     }
 }
 
@@ -781,10 +902,20 @@ export class QueryexNull extends QueryexBase {
         return [];
     }
 
+    public unaggregatedColumnAccessesInner(_: QueryexColumnAccess[], __: boolean) {
+    }
+
     public columnAccessesInner(_: QueryexColumnAccess[]) {
     }
 
     public aggregationsInner(_: QueryexFunction[]) {
+    }
+
+    public parametersInner(_: QueryexParameter[]) {
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexNull();
     }
 }
 
@@ -801,30 +932,27 @@ export class QueryexBit extends QueryexBase {
         return [];
     }
 
-    public columnAccessesInner(_: QueryexColumnAccess[]) {
-    }
-
-    public aggregationsInner(_: QueryexFunction[]) {
-    }
-}
-
-export class QueryexPlaceholder extends QueryexBase {
-    public toString(): string {
-        return '$';
-    }
-
-    public children(): QueryexBase[] {
-        return [];
+    public unaggregatedColumnAccessesInner(_: QueryexColumnAccess[], __: boolean) {
     }
 
     public columnAccessesInner(_: QueryexColumnAccess[]) {
     }
 
     public aggregationsInner(_: QueryexFunction[]) {
+    }
+
+    public parametersInner(_: QueryexParameter[]) {
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexBit(this.value);
     }
 }
 
 export class QueryexParameter extends QueryexBase {
+    public keyLower: string;
+    public desc: PropDescriptor;
+
     private static properFirstChar(token: string): boolean {
         return !!token && token[0] === '@';
     }
@@ -840,22 +968,34 @@ export class QueryexParameter extends QueryexBase {
         }
     }
 
-    constructor(public name: string) {
+    constructor(public key: string) {
         super();
+        this.keyLower = key.toLowerCase();
     }
 
     public toString(): string {
-        return `@${this.name}`;
+        return `@${this.key}`;
     }
 
     public children(): QueryexBase[] {
         return [];
     }
 
+    public unaggregatedColumnAccessesInner(_: QueryexColumnAccess[], __: boolean) {
+    }
+
     public columnAccessesInner(_: QueryexColumnAccess[]) {
     }
 
     public aggregationsInner(_: QueryexFunction[]) {
+    }
+
+    public parametersInner(result: QueryexParameter[]) {
+        result.push(this);
+    }
+
+    public clone(): QueryexBase {
+        return new QueryexParameter(this.key);
     }
 }
 

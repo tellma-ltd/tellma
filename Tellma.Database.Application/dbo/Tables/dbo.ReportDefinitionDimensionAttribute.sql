@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ReportDefinitionDimensionAttributes]
 (
 	[Id]						INT				CONSTRAINT [PK_ReportDefinitionDimensionAttributes] PRIMARY KEY IDENTITY,
-	[ReportDefinitionDimensionId] INT			NOT NULL CONSTRAINT [FK_ReportDefinitionDimensionAttributes__ReportDefinitionDimensionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
+	[ReportDefinitionDimensionId] INT			NOT NULL CONSTRAINT [FK_ReportDefinitionDimensionAttributes__ReportDefinitionDimensionId] REFERENCES [dbo].[ReportDefinitionDimensions] ([Id]) ON DELETE CASCADE,
 	[Index]						INT				NOT NULL,
 	CONSTRAINT [UX_ReportDefinitionDimensionAttributes__ReportDefinitionDimensionId_Index] UNIQUE([ReportDefinitionDimensionId], [Index]), -- We're here
 	[Expression]				NVARCHAR (255)	NOT NULL,

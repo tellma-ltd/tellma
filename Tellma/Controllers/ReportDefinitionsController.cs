@@ -125,12 +125,12 @@ namespace Tellma.Controllers
 
                     // Defaults for Show Totals
                     entity.ShowColumnsTotal ??= false;
-                    if (entity.Columns == null || entity.Columns.Count == 0)
+                    if (entity.Columns.Count == 0)
                     {
-                        entity.ShowColumnsTotal = false;
+                        entity.ShowColumnsTotal = true;
                     }
 
-                    if (!entity.ShowColumnsTotal.Value)
+                    if (!entity.ShowColumnsTotal.Value || entity.Columns.Count == 0)
                     {
                         entity.ColumnsTotalLabel = null;
                         entity.ColumnsTotalLabel2 = null;
@@ -138,12 +138,12 @@ namespace Tellma.Controllers
                     }
 
                     entity.ShowRowsTotal ??= false;
-                    if (entity.Rows == null || entity.Rows.Count == 0)
+                    if (entity.Rows.Count == 0)
                     {
-                        entity.ShowRowsTotal = false;
+                        entity.ShowRowsTotal = true;
                     }
 
-                    if (!entity.ShowRowsTotal.Value)
+                    if (!entity.ShowRowsTotal.Value || entity.Rows.Count == 0)
                     {
                         entity.RowsTotalLabel = null;
                         entity.RowsTotalLabel2 = null;
@@ -187,18 +187,26 @@ namespace Tellma.Controllers
                 // Generate Parameters
                 entity.Parameters.ForEach(parameter =>
                 {
-                    if (parameter.Control != null) // TODO: Need to figure out how to retrieve the default control
+                    if (parameter.Control != null)
                     {
                         parameter.ControlOptions = ControllerUtilities.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        parameter.ControlOptions = null;
                     }
                 });
 
                 // Generate Parameters
                 entity.Measures.ForEach(measure =>
                 {
-                    if (measure.Control != null) // TODO: Need to figure out how to retrieve the default control
+                    if (measure.Control != null)
                     {
                         measure.ControlOptions = ControllerUtilities.PreprocessControlOptions(measure.Control, measure.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        measure.ControlOptions = null;
                     }
                 });
             });

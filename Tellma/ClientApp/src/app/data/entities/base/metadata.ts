@@ -92,14 +92,14 @@ export const metadata: {
  */
 export const datatypesArray: DataType[] =
     ['boolean', 'hierarchyid', 'geography', 'datetimeoffset', 'datetime', 'date',
-        'decimal', 'integral', 'bit', 'string', 'null', 'entity'];
+        'numeric', 'bit', 'string', 'null', 'entity'];
 
 /**
  * Names of all datatypes
  */
 export type DataType =
     'boolean' | 'hierarchyid' | 'geography' | 'datetimeoffset' | 'datetime' | 'date' |
-    'decimal' | 'integral' | 'bit' | 'string' | 'null' | 'entity';
+    'numeric' | 'bit' | 'string' | 'null' | 'entity';
 
 /**
  * Combines simple and entity controls
@@ -117,7 +117,7 @@ export const simpleControlsArray: SimpleControl[] =
  * Names of simple (scalar) editors
  */
 export type SimpleControl =
-    'text' | 'serial' | 'choice' | 'number' | 'percent' | 'date' | 'datetime' | 'check' | 'null' |  'unsupported';
+    'text' | 'serial' | 'choice' | 'number' | 'percent' | 'date' | 'datetime' | 'check' | 'null' | 'unsupported';
 
 /**
  * Names of collections that support the standard tellma API (Get Fact)
@@ -310,7 +310,7 @@ export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
 }
 
 export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'decimal' | 'integral';
+    datatype: 'numeric';
 }
 export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'number';
@@ -342,7 +342,7 @@ export interface TextPropVisualDescriptor extends PropVisualDescriptorBase {
 }
 
 export interface SerialPropDescriptor extends SerialPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'integral';
+    datatype: 'numeric';
 }
 export interface SerialPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'serial';
@@ -352,7 +352,7 @@ export interface SerialPropVisualDescriptor extends PropVisualDescriptorBase {
 }
 
 export interface ChoicePropDescriptor extends ChoicePropVisualDescriptor, PropDescriptorBase {
-    datatype: 'integral' | 'string';
+    datatype: 'numeric' | 'string';
 }
 export interface ChoicePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'choice';
@@ -375,7 +375,7 @@ export interface ChoicePropVisualDescriptor extends PropVisualDescriptorBase {
 }
 
 export interface PercentPropDescriptor extends PercentPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'decimal';
+    datatype: 'numeric';
 }
 export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'percent';
@@ -396,7 +396,7 @@ export interface NullPropVisualDescriptor extends PropVisualDescriptorBase {
 }
 
 export interface NavigationPropDescriptor extends NavigationPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'entity' | 'integral' | 'string';
+    datatype: 'entity' | 'numeric' | 'string';
     /**
      * The name of the foreign key property
      */
@@ -469,7 +469,7 @@ export function getChoices(desc: ChoicePropVisualDescriptor): SelectorChoice[] {
  */
 export function getNavPropertyFromForeignKey(entityDesc: EntityDescriptor, fkName: string): NavigationPropDescriptor {
     if (!entityDesc.foreignKeys) {
-        entityDesc.foreignKeys = { };
+        entityDesc.foreignKeys = {};
         for (const key of Object.keys(entityDesc.properties)) {
             const propDesc = entityDesc.properties[key];
             if (propDesc.datatype === 'entity') {
@@ -486,7 +486,7 @@ export function isText(propDesc: PropDescriptor): boolean {
 }
 
 export function isNumeric(propDesc: PropDescriptor): boolean {
-    return !!propDesc && (propDesc.datatype === 'integral' || propDesc.datatype === 'decimal');
+    return !!propDesc && propDesc.datatype === 'numeric';
 }
 
 export function hasControlOptions(control: Control) {
@@ -541,6 +541,7 @@ let _simpleControls: SelectorChoice[];
 export function simpleControls(trx: TranslateService): SelectorChoice[] {
     if (!_simpleControls) {
         _simpleControls = simpleControlsArray
+            .filter(c => c !== 'null' && c !== 'unsupported')
             .map(c => ({ value: c, name: () => trx.instant('Control_' + c) }));
     }
 

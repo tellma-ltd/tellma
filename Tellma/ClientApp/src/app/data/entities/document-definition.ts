@@ -78,11 +78,11 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 IsOriginalDocument: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_IsOriginalDocument') },
                 DocumentType: {
-                    datatype: 'integral',
+                    datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('DocumentDefinition_DocumentType'),
                     choices: [0, 1, 2, 3],
@@ -99,7 +99,7 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 TitlePlural3: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
 
                 Prefix: { datatype: 'string', control: 'text', label: () => trx.instant('DocumentDefinition_Prefix') },
-                CodeWidth: { datatype: 'integral', control: 'number', label: () => trx.instant('DocumentDefinition_CodeWidth'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CodeWidth: { datatype: 'numeric', control: 'number', label: () => trx.instant('DocumentDefinition_CodeWidth'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
 
                 PostingDateVisibility: visibilityPropDescriptor('Document_PostingDate', trx),
                 CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
@@ -114,7 +114,7 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
 
                 // IsActive & Audit info
-                SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };

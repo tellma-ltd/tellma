@@ -2773,6 +2773,81 @@
   <data name="ShortMonth9" xml:space="preserve">
     <value>سبتمبر</value>
   </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>مسكرم</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>سيني</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>هاملي</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>ناهاسي</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>بيجومي</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>تيكيمت</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>هيدار</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>تهساس</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>تير</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>يكاتيت</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>ميجابيت</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>ميازيا</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>جينبوت</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>محرم</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>صفر</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>ربيع الأول</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>ربيع الثاني</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>جمادى الأول</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>جمادى الثاني</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>رجب</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>شعبان</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>رمضان</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>شوال</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>ذو القعدة</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>ذو الحجة</value>
+  </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>الربع 1</value>
   </data>

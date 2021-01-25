@@ -60,7 +60,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
 
-        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -73,7 +73,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
 
         // tree stuff
         ParentId: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
           minDecimalPlaces: 0, maxDecimalPlaces: 0
         },
@@ -83,17 +83,17 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
         ActiveChildCount: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
           maxDecimalPlaces: 0, alignment: 'right'
         },
         Level: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },

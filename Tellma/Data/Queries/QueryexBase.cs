@@ -489,7 +489,7 @@ namespace Tellma.Data.Queries
 
             if (insideQuotes)
             {
-                throw new QueryException($"Uneven number of single quotation marks in ({expressionString}), quotation marks in string literals should be escaped by specifying them twice.");
+                throw new QueryException($"Uneven number of single quotation marks in {expressionString}, quotation marks in string literals should be escaped by specifying them twice.");
             }
 
             if (acc.Length > 0)
@@ -2553,8 +2553,13 @@ namespace Tellma.Data.Queries
                         resultSql = $"N'{d:yyyy-MM-dd}'";
                         resultNullity = QxNullity.NotNull;
                         return true;
+                    } 
+                    else
+                    {
+                        resultSql = null;
+                        resultNullity = default;
+                        return false;
                     }
-                    break;
                 case QxType.DateTime:
                     if (DateTime.TryParse(Value, out DateTime dt))
                     {
@@ -2562,7 +2567,12 @@ namespace Tellma.Data.Queries
                         resultNullity = QxNullity.NotNull;
                         return true;
                     }
-                    break;
+                    else
+                    {
+                        resultSql = null;
+                        resultNullity = default;
+                        return false;
+                    }
                 case QxType.DateTimeOffset:
                     if (DateTimeOffset.TryParse(Value, out DateTimeOffset dto))
                     {
@@ -2570,7 +2580,12 @@ namespace Tellma.Data.Queries
                         resultNullity = QxNullity.NotNull;
                         return true;
                     }
-                    break;
+                    else
+                    {
+                        resultSql = null;
+                        resultNullity = default;
+                        return false;
+                    }
             }
 
             return base.TryCompile(targetType, ctx, out resultSql, out resultNullity);

@@ -1551,7 +1551,7 @@
 <!-- Template for Validation Errors -->
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <div *ngIf="invalid(control, serverErrors)" class="text-wrap">
-        <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+        <span class="small t-light-danger" *ngFor="let e of errors(control, serverErrors)">
             {{ e() }}
         </span>
     </div>

@@ -187,7 +187,7 @@ SET NOCOUNT ON;
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
-		OUTPUT s.[Index], inserted.[Id], inserted.[ReportDefinitionId]
+		OUTPUT s.[Index], inserted.[ReportDefinitionId], inserted.[Id]
 	) AS x
 	WHERE [Index] IS NOT NULL;
 	
@@ -212,7 +212,7 @@ SET NOCOUNT ON;
 		JOIN @IndexedIds RD ON E.[ReportDefinitionIndex] = RD.[Index]
 		JOIN @RowsIndexedIds RDR ON E.[HeaderIndex] = RDR.[Index] AND RDR.[HeaderId] = RD.[Id]
 	) AS s ON (t.Id = s.Id)
-		WHEN MATCHED THEN
+	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
 			t.[Expression]				= s.[Expression], 
@@ -223,6 +223,7 @@ SET NOCOUNT ON;
 			t.[OrderDirection]			= s.[OrderDirection]
 	WHEN NOT MATCHED THEN
 		INSERT (
+			[ReportDefinitionDimensionId],
 			[Index], 			
 			[Expression], 
 			[Localize], 
@@ -232,6 +233,7 @@ SET NOCOUNT ON;
 			[OrderDirection]
 		)
 		VALUES (
+			s.[ReportDefinitionDimensionId],
 			s.[Index], 			
 			s.[Expression], 
 			s.[Localize], 
@@ -320,6 +322,7 @@ SET NOCOUNT ON;
 			t.[OrderDirection]			= s.[OrderDirection]
 	WHEN NOT MATCHED THEN
 		INSERT (
+			[ReportDefinitionDimensionId],
 			[Index], 			
 			[Expression], 
 			[Localize], 
@@ -329,6 +332,7 @@ SET NOCOUNT ON;
 			[OrderDirection]
 		)
 		VALUES (
+			s.[ReportDefinitionDimensionId],
 			s.[Index], 			
 			s.[Expression], 
 			s.[Localize], 

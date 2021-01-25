@@ -30,11 +30,11 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
         inactiveFilter: null, // No inactive filter
         format: (item: SmsMessageForQuery) => item.Message,
         properties: {
-            Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
             ToPhoneNumber: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },
             Message: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_Message') },
             State: {
-                datatype: 'integral',
+                datatype: 'numeric',
                 control: 'choice',
                 label: () => trx.instant('State'),
                 choices: smsStates,

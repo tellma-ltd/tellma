@@ -5,24 +5,25 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import {
   ChoicePropDescriptor, getChoices, collectionsWithEndpoint, metadata, entityDescriptorImpl,
-  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor, hasControlOptions, Control, Collection, PropVisualDescriptor
+  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor, hasControlOptions,
+  Collection, PropVisualDescriptor, NavigationPropDescriptor, Control, simpleControls
 } from '~/app/data/entities/base/metadata';
 import {
   ReportDefinitionForSave, metadata_ReportDefinition, ReportDefinition, ReportDefinitionMeasure,
   ReportDefinitionColumn, ReportDefinitionRow, ReportDefinitionDimension, ReportDefinitionSelect,
-  ReportDefinitionParameter
+  ReportDefinitionParameter,
+  ReportDefinitionDimensionAttribute
 } from '~/app/data/entities/report-definition';
 import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FilterTools, modifiers } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
 import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
-import { computePropDesc } from '~/app/data/util';
-import { DeBracket, Queryex, QueryexBase, QueryexColumnAccess, QueryexQuote } from '~/app/data/queryex';
-import { QueryexUtil } from '~/app/data/queryex-util';
+import { computePropDesc, descFromControlOptions } from '~/app/data/util';
+import { DeBracket, Queryex, QueryexBase, QueryexColumnAccess, QueryexFunction } from '~/app/data/queryex';
+import { ExpressionInfo, QueryexUtil, tryGetDescFromVisual } from '~/app/data/queryex-util';
 
 export interface FieldInfo {
   path: string;
@@ -53,7 +54,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     MainMenu: false
   };
 
-  public expand = 'Parameters,Select,Rows,Columns,Measures';
+  public expand = 'Parameters,Select,Rows.Attributes,Columns.Attributes,Measures';
   public search: string;
 
   // Collapse or expand the 2 panes on the left
@@ -61,16 +62,25 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public collapseDefinition = false;
 
   public modelRef: ReportDefinition;
-  // public itemToEditHasChanged = false;
-  // public itemToEditNature: 'dimension' | 'measure' | 'select' | 'parameter';
-  // public itemToEdit: ReportDefinitionRow | ReportDefinitionColumn |
-  //   ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter;
 
-  @ViewChild('configureModal', { static: true })
-  configureModal: TemplateRef<any>;
+  // @ViewChild('configureModal', { static: true })
+  // configureModal: TemplateRef<any>;
 
   @ViewChild('dimensionConfigModal', { static: true })
   dimensionConfigModal: TemplateRef<any>;
+
+  @ViewChild('measureConfigModal', { static: true })
+  measureConfigModal: TemplateRef<any>;
+
+  @ViewChild('selectConfigModal', { static: true })
+  selectConfigModal: TemplateRef<any>;
+
+  @ViewChild('paramConfigModal', { static: true })
+  paramConfigModal: TemplateRef<any>;
+
+  @ViewChild('totalLabelsModal', { static: true })
+  totalLabelsModal: TemplateRef<any>;
+
   /*
     The model can change in one of two ways:
     1 - Critical change: That requires the report-results.component to perform a full refresh of the screen (e.g. change of Type)
@@ -202,90 +212,16 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.onDefinitionChange(model);
   }
 
-  private entityDescriptor(model: ReportDefinition): EntityDescriptor {
-    return !!model.Collection ? metadata[model.Collection](this.workspace, this.translate, model.DefinitionId) : null;
-  }
+  // private entityDescriptor(model: ReportDefinition): EntityDescriptor {
+  //   return !!model.Collection ? metadata[model.Collection](this.workspace, this.translate, model.DefinitionId) : null;
+  // }
 
-  private synchronizeFilter(model: ReportDefinition) {
-    // Here we synchronize the parameter list with the filter placeholders and the built in parameter descriptors
-    try {
-      // (1) Get the parameters from the custom filter
-      const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(model.Filter));
-      const customParamsKeys = placeholderAtoms.map(atom => atom.value.substr(1));
 
-      // (2) Get the built-in parameter descriptors
-      const desc = this.entityDescriptor(model);
-      const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
+  // public onFilterChange(model: ReportDefinition) {
 
-      if (customParamsKeys.length === 0 && builtInParamsDescriptors.length === 0) {
-        // Optimization
-        model.Parameters = [];
-      } else {
-
-        // (3) Use a tracker to accumulate all the keys in a case-insensitive fashion
-        const paramTracker: { [key: string]: string } = {};
-        for (const key of customParamsKeys) {
-          const keyLower = key.toLowerCase();
-          paramTracker[keyLower] = key;
-        }
-        for (const param of builtInParamsDescriptors) {
-          const key = param.key;
-          const keyLower = key.toLowerCase();
-          paramTracker[keyLower] = key;
-        }
-
-        // (4) Remove parameters without a matching placeholder
-        const parameters = model.Parameters.filter(p => !!paramTracker[p.Key.toLowerCase()]);
-
-        // (5) Create a tracker for existing model parameters
-        const modelTracker: { [key: string]: ReportDefinitionParameter } = {};
-        parameters.forEach(pa => modelTracker[pa.Key.toLowerCase()] = pa);
-
-        // (5) Add new parameters for new placeholders
-        const keys = Object.keys(paramTracker).map(k => paramTracker[k]);
-        for (const key of keys) {
-          const keyLower = key.toLowerCase();
-          let parameterDef: ReportDefinitionParameter = modelTracker[keyLower];
-          const builtInMatch = builtInParamsDescriptors.find(e => e.key === key);
-          if (!parameterDef) {
-            parameterDef = {
-              Id: 0,
-              Key: key,
-              Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' :
-                !!builtInMatch && !builtInMatch.isRequired ? 'None' : 'Optional',
-              Control: this.getParamPropDescriptor(model, key).control
-            };
-
-            modelTracker[keyLower] = parameterDef;
-            parameters.push(parameterDef);
-          } else {
-            parameterDef.Key = key;
-            parameterDef.Control = this.getParamPropDescriptor(model, key).control;
-          }
-        }
-
-        model.Parameters = parameters;
-      }
-    } catch { } // Errors will be reported by the report preview
-  }
-
-  public onCollectionChange(model: ReportDefinition) {
-
-    this.synchronizeFilter(model);
-    this.onDefinitionChange(model);
-  }
-
-  public onFilterChange(model: ReportDefinition) {
-
-    this.synchronizeFilter(model);
-    this.onDefinitionChange(model);
-  }
-
-  public onHavingChange(model: ReportDefinition) {
-
-    this.synchronizeHaving(model);
-    this.onDefinitionChange(model);
-  }
+  //   this.synchronizeFilter(model);
+  //   this.onDefinitionChange(model);
+  // }
 
   public getForClient(model: ReportDefinition): ReportDefinitionForClient {
     if (!model) {
@@ -301,6 +237,20 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return this.modelForClient;
+  }
+
+  /////////////////// Collection & DefinitionId v2.0
+
+  public onCollectionChange(model: ReportDefinition) {
+
+    this.validateModel(model);
+    this.onDefinitionChange(model);
+  }
+
+  public onDefinitionIdChange(model: ReportDefinition) {
+
+    this.validateModel(model);
+    this.onDefinitionChange(model);
   }
 
   public get allCollections(): SelectorChoice[] {
@@ -326,6 +276,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
+  ///////////////////// Charts
+
   public get allCharts(): SelectorChoice[] {
     const desc = metadata_ReportDefinition(this.workspace, this.translate).properties.Chart as ChoicePropDescriptor;
     return getChoices(desc);
@@ -341,11 +293,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return getChoices(desc);
   }
 
-  public getParameters(model: ReportDefinition): ReportDefinitionParameter[] {
-    model.Parameters = model.Parameters || [];
-    return model.Parameters;
-  }
-
   public getParameterDescriptor(key: string, model?: ReportDefinition): ParameterDescriptor {
     model = model || this.modelRef;
     const entityDesc = metadata[model.Collection](this.workspace, this.translate, model.DefinitionId);
@@ -353,36 +300,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  public showNone(key: string): boolean {
-    // Visibility option 'None' is only available when the parameter is built-in
-    const desc = this.getParameterDescriptor(key);
-    return !!desc;
-  }
-
   public showOptional(key: string): boolean {
     // Visibility option 'Optional' is available when the parameter is either regular OR built-in but not required
     const desc = this.getParameterDescriptor(key);
     return !desc || !desc.isRequired;
-  }
-
-  public getColumns(model: ReportDefinition): ReportDefinitionColumn[] {
-    model.Columns = model.Columns || [];
-    return model.Columns;
-  }
-
-  public getRows(model: ReportDefinition): ReportDefinitionRow[] {
-    model.Rows = model.Rows || [];
-    return model.Rows;
-  }
-
-  public getMeasures(model: ReportDefinition): ReportDefinitionMeasure[] {
-    model.Measures = model.Measures || [];
-    return model.Measures;
-  }
-
-  public getSelect(model: ReportDefinition): ReportDefinitionSelect[] {
-    model.Select = model.Select || [];
-    return model.Select;
   }
 
   public drop(event: CdkDragDrop<any[]>, model: ReportDefinition) {
@@ -392,7 +313,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     const rows = model.Rows;
     const columns = model.Columns;
     const measures = model.Measures;
-    const select = model.Select;
+    const selects = model.Select;
 
     // The source and destination collection
     const source = event.previousContainer.data;
@@ -417,59 +338,97 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       const dimension: ReportDefinitionColumn | ReportDefinitionRow = {
         Id: 0,
         KeyExpression: fieldInfo.path,
-        AutoExpand: true
+        Localize: true,
+        AutoExpandLevel: 1,
+        ShowAsTree: true,
+        ShowEmptyMembers: false,
+        Attributes: [],
       };
       destination.splice(destinationIndex, 0, dimension);
       modelHasChanged = true;
     } else if (source === allFields && destination === measures) {
       // Create a new dimension
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const dimension: ReportDefinitionMeasure = {
+      const aggregation = isNumeric(fieldInfo.desc) && fieldInfo.path !== 'Id' ? 'Sum' : 'Count';
+      const measure: ReportDefinitionMeasure = {
         Id: 0,
-        Expression: fieldInfo.path,
-        Aggregation: isNumeric(fieldInfo.desc) && fieldInfo.path !== 'Id' ? 'sum' : 'count' // Default
+        Expression: `${aggregation}(${fieldInfo.path})`,
       };
-      destination.splice(destinationIndex, 0, dimension);
+      destination.splice(destinationIndex, 0, measure);
       modelHasChanged = true;
-    } else if (source === allFields && destination === select) {
+    } else if (source === allFields && destination === selects) {
       // Create a new dimension
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const column: ReportDefinitionSelect = {
+      const select: ReportDefinitionSelect = {
         Id: 0,
         Expression: fieldInfo.path,
+        Localize: true
       };
-      destination.splice(destinationIndex, 0, column);
+      destination.splice(destinationIndex, 0, select);
       modelHasChanged = true;
-
     } else if (source !== allFields && destination === allFields) {
       // Delete dimension/measure from source
       source.splice(sourceIndex, 1);
       modelHasChanged = true;
     } else if (source === measures && (destination === rows || destination === columns)) {
-      // Add AutoExpand = true
+      // Get the measure from source
       const measure = source.splice(sourceIndex, 1)[0] as ReportDefinitionMeasure;
-      const dimension: ReportDefinitionDimension = { ...measure, AutoExpand: true };
+
+      // If there is a root aggregation function we try to peel it off and get the operand
+      let measureExpression: string;
+      try {
+        const exp = Queryex.parseSingleton(measure.Expression);
+        if (!!exp && exp instanceof QueryexFunction && exp.isAggregation && exp.arguments.length === 1) {
+          measureExpression = DeBracket(exp.arguments[0].toString());
+        }
+      } catch { }
+
+      const dimension: ReportDefinitionRow | ReportDefinitionColumn = { ...measure };
+
+      dimension.Id = 0;
+      dimension.KeyExpression = measureExpression || measure.Expression;
+      if (dimension.Localize === undefined) {
+        dimension.Localize = true;
+      }
+      if (dimension.AutoExpandLevel === undefined) {
+        dimension.AutoExpandLevel = 1;
+      }
+      if (dimension.ShowAsTree === undefined) {
+        dimension.ShowAsTree = true;
+      }
+      if (dimension.Attributes === undefined) {
+        dimension.Attributes = [];
+      }
+
       destination.splice(destinationIndex, 0, dimension);
       modelHasChanged = true;
     } else if ((source === rows || source === columns) && destination === measures) {
       // add default Aggregation
-      const dimension = source.splice(sourceIndex, 1)[0] as ReportDefinitionDimension;
-      // tslint:disable-next-line:no-string-literal
-      const measure: ReportDefinitionMeasure = { ...dimension, Aggregation: dimension['Aggregation'] };
-      if (!measure.Aggregation) {
-        try {
-          const steps = measure.Expression.split('.');
-          const prop = steps.pop();
-          const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.workspace, this.translate);
-          const propDesc = desc.properties[prop];
-          if (isNumeric(propDesc) && measure.Expression !== 'Id') {
-            measure.Aggregation = 'sum';
-          } else {
-            measure.Aggregation = 'count';
+      const dimension = source.splice(sourceIndex, 1)[0] as ReportDefinitionRow | ReportDefinitionColumn;
+
+      // Here we attempt to guess a suitable aggregation function
+      let aggregation = 'Count';
+      try {
+        const exp = Queryex.parseSingleton(dimension.KeyExpression);
+        if (exp.aggregations().length > 0) {
+          aggregation = null;
+        } else {
+          if (!(exp instanceof QueryexColumnAccess && exp.path.length === 0 && exp.property === 'Id')) {
+            const overrides = this.parameterOverrides(model);
+            const desc = QueryexUtil.nativeDesc(exp, overrides, model.Collection, model.DefinitionId, this.workspace, this.translate);
+            if (isNumeric(desc)) {
+              aggregation = 'Sum';
+            }
           }
-        } catch {
-          measure.Aggregation = 'sum';
         }
+      } catch { }
+
+      // Create the measure
+      const measure: ReportDefinitionMeasure = { ...dimension };
+      if (!!aggregation) {
+        measure.Expression = `${aggregation}(${dimension.KeyExpression})`;
+      } else {
+        measure.Expression = dimension.KeyExpression;
       }
 
       destination.splice(destinationIndex, 0, measure);
@@ -479,118 +438,60 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       transferArrayItem(source, destination, sourceIndex, destinationIndex);
       modelHasChanged = true;
     } else {
-      console.error('Unhandled case');
+      console.error('Unhandled drop case.');
     }
 
     if (modelHasChanged) {
+      this.validateModel(model);
       this.onDefinitionChange(model);
     }
   }
 
-  public onDeleteMeasure(index: number, model: ReportDefinition) {
-    model.Measures.splice(index, 1);
-    this.onDefinitionChange(model);
-  }
+  // private _getParamPropDescriptorCollection: Collection;
+  // private _getParamPropDescriptorDefinitionId: number;
+  // private _getParamPropDescriptorFilter: string;
+  // private _getParamPropDescriptorResults: { [key: string]: PropDescriptor } = {};
 
-  public onDeleteSelect(index: number, model: ReportDefinition) {
-    model.Select.splice(index, 1);
-    this.onDefinitionChange(model);
-  }
+  // public getParamPropDescriptor(model: ReportDefinition, key: string): PropDescriptor {
+  //   if (this._getParamPropDescriptorCollection !== model.Collection ||
+  //     this._getParamPropDescriptorDefinitionId !== model.DefinitionId ||
+  //     this._getParamPropDescriptorFilter !== model.Filter) {
+  //     this._getParamPropDescriptorCollection = model.Collection;
+  //     this._getParamPropDescriptorDefinitionId = model.DefinitionId;
+  //     this._getParamPropDescriptorFilter = model.Filter;
 
-  public onConfigureMeasure(index: number, model: ReportDefinition) {
-    this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Measures[index] } as ReportDefinitionMeasure;
-    this.itemToEdit = itemToEdit;
-    this.itemToEditNature = 'measure';
-    this.modelRef = model;
+  //     this._getParamPropDescriptorResults = {};
+  //     if (!!model.Collection) {
 
-    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
-      if (this.itemToEditHasChanged) {
-        model.Measures[index] = itemToEdit;
-        this.onDefinitionChange(model);
-      }
-    }, (_: any) => { });
-  }
+  //       // Custom params
+  //       const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(model.Filter));
+  //       for (const atom of placeholderAtoms) {
+  //         const keyLower = atom.value.substr(1).toLowerCase();
+  //         this._getParamPropDescriptorResults[keyLower] = computePropDesc(
+  //           this.workspace, this.translate, model.Collection, model.DefinitionId, atom.path, atom.property, atom.modifier);
+  //       }
 
-  public onConfigureSelect(index: number, model: ReportDefinition) {
-    this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Select[index] } as ReportDefinitionSelect;
-    this.itemToEdit = itemToEdit;
-    this.itemToEditNature = 'select';
-    this.modelRef = model;
+  //       // Built-in params
+  //       const desc = this.entityDescriptor(model);
+  //       const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
+  //       for (const param of builtInParamsDescriptors) {
+  //         this._getParamPropDescriptorResults[param.key.toLowerCase()] = param.desc;
+  //       }
+  //     }
+  //   }
 
-    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
-      if (this.itemToEditHasChanged) {
-        model.Select[index] = itemToEdit;
-        this.onDefinitionChange(model);
-      }
-    }, (_: any) => { });
-  }
+  //   return this._getParamPropDescriptorResults[key.toLowerCase()];
+  // }
 
-  public onConfigureParameter(index: number, model: ReportDefinition) {
-    this.itemToEditHasChanged = false;
-    const itemToEdit = { ...model.Parameters[index] } as ReportDefinitionParameter;
-    this.itemToEdit = itemToEdit;
-    this.itemToEditNature = 'parameter';
-    this.modelRef = model;
+  // public showOptions(p: ReportDefinitionParameter, model: ReportDefinition, key: string) {
+  //   let control = p.Control; // This overrides the default
+  //   if (!control) {
+  //     const desc = this.getParamPropDescriptor(model, key);
+  //     control = !!desc ? desc.control : null;
+  //   }
 
-    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
-      if (this.itemToEditHasChanged) {
-        model.Parameters[index] = itemToEdit;
-        this.onDefinitionChange(model);
-      }
-    }, (_: any) => { });
-  }
-
-  private _getParamPropDescriptorCollection: Collection;
-  private _getParamPropDescriptorDefinitionId: number;
-  private _getParamPropDescriptorFilter: string;
-  private _getParamPropDescriptorResults: { [key: string]: PropDescriptor } = {};
-
-  public getParamPropDescriptor(model: ReportDefinition, key: string): PropDescriptor {
-    if (this._getParamPropDescriptorCollection !== model.Collection ||
-      this._getParamPropDescriptorDefinitionId !== model.DefinitionId ||
-      this._getParamPropDescriptorFilter !== model.Filter) {
-      this._getParamPropDescriptorCollection = model.Collection;
-      this._getParamPropDescriptorDefinitionId = model.DefinitionId;
-      this._getParamPropDescriptorFilter = model.Filter;
-
-      this._getParamPropDescriptorResults = {};
-      if (!!model.Collection) {
-
-        // Custom params
-        const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(model.Filter));
-        for (const atom of placeholderAtoms) {
-          const keyLower = atom.value.substr(1).toLowerCase();
-          this._getParamPropDescriptorResults[keyLower] = computePropDesc(
-            this.workspace, this.translate, model.Collection, model.DefinitionId, atom.path, atom.property, atom.modifier);
-        }
-
-        // Built-in params
-        const desc = this.entityDescriptor(model);
-        const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
-        for (const param of builtInParamsDescriptors) {
-          this._getParamPropDescriptorResults[param.key.toLowerCase()] = param.desc;
-        }
-      }
-    }
-
-    return this._getParamPropDescriptorResults[key.toLowerCase()];
-  }
-
-  public showOptions(p: ReportDefinitionParameter, model: ReportDefinition, key: string) {
-    let control = p.Control; // This overrides the default
-    if (!control) {
-      const desc = this.getParamPropDescriptor(model, key);
-      control = !!desc ? desc.control : null;
-    }
-
-    return hasControlOptions(control);
-  }
-
-  public get canApply(): boolean {
-    return this.itemToEditNature === 'parameter' || !!(this.itemToEdit as { Path: string }).Path;
-  }
+  //   return hasControlOptions(control);
+  // }
 
   // Tree of all fields
   public allFields(model: ReportDefinition): FieldInfo[] {
@@ -730,10 +631,14 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return validationErrors(control, serverErrors, this.translate);
   }
 
-  public weakEntityErrors(model: ReportDefinitionRow | ReportDefinitionColumn |
-    ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter) {
+  public weakEntityErrors(model: ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter) {
     return !!model.serverErrors &&
       Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
+  }
+
+  public dimensionErrors(model: ReportDefinitionRow | ReportDefinitionColumn) {
+    return this.weakEntityErrors(model) ||
+      (!!model.Attributes && model.Attributes.some(e => this.weakEntityErrors(e)));
   }
 
   public dataSectionErrors(model: ReportDefinition) {
@@ -744,8 +649,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       areServerErrors(model.serverErrors.OrderBy) ||
       areServerErrors(model.serverErrors.Top)
     )) ||
-      (!!model.Rows && model.Rows.some(e => this.weakEntityErrors(e))) ||
-      (!!model.Columns && model.Columns.some(e => this.weakEntityErrors(e))) ||
+      (!!model.Rows && model.Rows.some(e => this.dimensionErrors(e))) ||
+      (!!model.Columns && model.Columns.some(e => this.dimensionErrors(e))) ||
       (!!model.Measures && model.Measures.some(e => this.weakEntityErrors(e))) ||
       (!!model.Select && model.Select.some(e => this.weakEntityErrors(e)));
   }
@@ -778,135 +683,303 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       areServerErrors(model.serverErrors.MainMenuSortKey));
   }
 
-  public get modifiers(): string[] {
-    return modifiers;
-  }
-
-  public isDate(path: string, model: ReportDefinitionForSave): boolean {
-    // when this function returns true, the field for date functions becomes visible
-    if (!path || !path.trim()) {
-      return false;
-    }
-
-    try {
-      const steps = path.split('/');
-      const prop = steps.pop();
-      const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.workspace, this.translate);
-      const propDesc = desc.properties[prop];
-      return propDesc.control === 'date' || propDesc.control === 'datetime';
-    } catch {
-      return false;
-    }
-  }
-
-  public onPathChanged(itemToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave) {
-    // This removes the modifier if the field isn't of type date
-    if (!this.isDate(itemToEdit.KeyExpression, model)) {
-      delete itemToEdit.Modifier;
-    }
-  }
-
-  public savePreprocessing(entity: ReportDefinition) {
+  public savePreprocessing(model: ReportDefinition) {
     // Server validation on hidden collections will be confusing to the user
-    if (entity.Type === 'Details') {
-      entity.Rows = [];
-      entity.Columns = [];
-      entity.Measures = [];
+    if (model.Type === 'Details') {
+      model.Rows = [];
+      model.Columns = [];
+      model.Measures = [];
+      delete model.Having;
     }
 
-    if (entity.Type === 'Summary') {
-      entity.Select = [];
+    if (model.Type === 'Summary') {
+      if (!model.IsCustomDrilldown) {
+        model.Select = [];
+        delete model.OrderBy;
+      }
     }
   }
 
-  // public onParse(expString: string) {
-  //   try {
-  //     const exp = Queryex.parse(expString);
-  //     console.log(exp.map(e => e.toString()));
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // }
+  ///////////////////// Synchronizing Parameters v2.0
 
-  ///////////////////// Dimension Editing v2.0
+  private synchronizeParameters(model: ReportDefinitionForSave) {
+    // Expressions where parameters are expected...
+  }
+
+  private parameterOverrides(model: ReportDefinitionForSave): { [key: string]: PropVisualDescriptor } {
+    const overrides: { [key: string]: PropVisualDescriptor } = {};
+    for (const p of model.Parameters || []) {
+      if (!!p.Control) {
+        overrides[p.Key.toLowerCase()] = descFromControlOptions(this.ws, p.Control, p.ControlOptions);
+      }
+    }
+
+    return overrides;
+  }
+
+  ///////////////////// Dimensions v2.0
+
   dimToEdit: ReportDefinitionRow | ReportDefinitionColumn;
   dimToEditHasChanged = false;
 
-  dimExpressionError: string = null;
-  dimExpressionIsTree = false;
-  dimExpressionIsNav = false;
-  dimExpressionIsChoiceList = false; // For show empty members
-  dimDesc: PropDescriptor; // For show empty members
+  // Caching
+  _dimKeyExpression: string;
+  _dimKeyExpressionDesc: PropDescriptor;
 
-  public onKeyExpressionChanged(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave) {
-    this.dimExpressionError = null;
-    this.dimExpressionIsNav = false;
-    this.dimExpressionIsTree = false;
-    this.dimExpressionIsChoiceList = false;
+  private dimKeyExpressionDesc(keyExpression: string, model: ReportDefinitionForSave) {
+    if (this._dimKeyExpression !== keyExpression) {
+      this._dimKeyExpression = keyExpression;
+      this._dimKeyExpressionDesc = null;
 
-    if (!dimToEdit || !dimToEdit.KeyExpression) {
-      this.dimExpressionError = `Key Expression cannot be empty.`;
+      const overrides = this.parameterOverrides(model);
+
+      try {
+        // Prepare the expression
+        let exp: QueryexBase;
+        const expTemp = Queryex.parseSingleton(keyExpression);
+        if (!!expTemp) {
+          const aggregations = expTemp.aggregations();
+          if (aggregations.length === 0) {
+            exp = expTemp;
+          }
+        }
+
+        // Prepare the descriptor
+        if (!!exp) {
+          const wss = this.workspace;
+          const trx = this.translate;
+          const keyDesc = QueryexUtil.nativeDesc(exp, overrides, model.Collection, model.DefinitionId, wss, trx);
+          switch (keyDesc.datatype) {
+            case 'boolean':
+            case 'hierarchyid':
+            case 'geography':
+              return;
+          }
+
+          this._dimKeyExpressionDesc = keyDesc;
+        }
+
+      } catch (e) { }
+    }
+
+    return this._dimKeyExpressionDesc;
+  }
+
+  private isDisplayDimensionDesc(desc: PropDescriptor): desc is NavigationPropDescriptor {
+
+    return !!desc && desc.datatype === 'entity';
+  }
+
+  private isDisplayDimension(keyExpression: string, model: ReportDefinitionForSave): boolean {
+    const desc = this.dimKeyExpressionDesc(keyExpression, model);
+    return this.isDisplayDimensionDesc(desc);
+  }
+
+  public showDisplayExpression(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
+    return this.isDisplayDimension(dimToEdit.KeyExpression, model);
+  }
+
+  public showDimensionAttributes(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
+    return this.isDisplayDimension(dimToEdit.KeyExpression, model);
+  }
+
+  public showShowAsTree(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
+    const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
+    return !!desc && desc.datatype === 'entity' &&
+      !!metadata[desc.control](this.workspace, this.translate, desc.definitionId).properties.Parent;
+  }
+
+  public showShowEmptyMembers(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
+    const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
+    return !!desc && (desc.control === 'choice' || desc.datatype === 'bit');
+  }
+
+  public validateDimension(
+    dimension: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave,
+    overrides?: { [name: string]: PropVisualDescriptor },
+    allExpressions?: QueryexBase[]): boolean {
+
+
+    if (!dimension) {
       return;
     }
 
-    try {
-      let exp: QueryexBase;
-      let desc: PropDescriptor;
+    dimension.serverErrors = {};
+    for (const attribute of dimension.Attributes) {
+      attribute.serverErrors = {};
+    }
 
-      // Get the expression
-      const expressions = Queryex.parse(dimToEdit.KeyExpression);
-      if (expressions.length > 1) {
-        this.dimExpressionError = `Key Expression cannot contain top level commas.`;
-        return;
-      } else if (expressions.length === 0) {
-        this.dimExpressionError = `Key Expression cannot be empty.`;
-        return;
-      } else {
-        exp = expressions[0];
+    let hasExpressionErrors = false;
+
+    function addExpresion(exp: QueryexBase) {
+      if (!!allExpressions) {
+        allExpressions.push(exp);
+      }
+    }
+
+    //////////////// Key Expression Validation
+
+    function addKeyExpressionError(err: string) {
+      dimension.serverErrors.KeyExpression = dimension.serverErrors.KeyExpression || [];
+      dimension.serverErrors.KeyExpression.push(err);
+      hasExpressionErrors = true;
+    }
+
+    // reused stuff
+    overrides = overrides || this.parameterOverrides(model);
+    const wss = this.workspace;
+    const trx = this.translate;
+
+    let keyDesc: PropDescriptor;
+    try {
+      // Prepare the expression
+      const exp = Queryex.parseSingleton(dimension.KeyExpression);
+      if (!!exp) {
+        addExpresion(exp);
         const aggregations = exp.aggregations();
         if (aggregations.length > 0) {
-          this.dimExpressionError = `Key Expression cannot contain aggregation functions like '${aggregations[0].name}'.`;
-          return;
+          addKeyExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+        } else {
+          keyDesc = QueryexUtil.nativeDesc(exp, overrides, model.Collection, model.DefinitionId, wss, trx);
+          switch (keyDesc.datatype) {
+            case 'boolean':
+            case 'hierarchyid':
+            case 'geography':
+              addKeyExpressionError(`Expression cannot be of type ${keyDesc.datatype}.`);
+          }
         }
+      } else {
+        addKeyExpressionError(`Expression cannot be empty.`);
       }
-
-      // Get the descriptor
-      desc = QueryexUtil.nativeDescriptor(exp, model.Collection, model.DefinitionId, this.workspace, this.translate);
-      this.dimDesc = desc;
-      if (desc.datatype === 'bit') { // Should be bool not bit
-        this.dimExpressionError = `Key Expression cannot be of type boolean.`;
-        return;
-      }
-
-      // Finally: hydrate all the flags
-      this.dimExpressionIsChoiceList = desc.control === 'choice';
-      if (exp instanceof QueryexColumnAccess) {
-        if (desc.datatype === 'entity') { // Terminates with a nav property
-          this.dimExpressionIsNav = true;
-          this.dimExpressionIsTree = !!metadata[desc.control](this.workspace, this.translate, desc.definitionId).properties.Parent;
-        }
-      }
-
     } catch (e) {
-      this.dimExpressionError = e.message;
+      addKeyExpressionError(e.message);
     }
+
+    //////////////// Display Expression Validation
+
+    function addDisplayExpressionError(err: string) {
+      dimension.serverErrors.DisplayExpression = dimension.serverErrors.DisplayExpression || [];
+      dimension.serverErrors.DisplayExpression.push(err);
+      hasExpressionErrors = true;
+    }
+
+    if (this.isDisplayDimensionDesc(keyDesc)) {
+      try {
+        // Prepare the expression
+        const exp = Queryex.parseSingleton(dimension.DisplayExpression);
+        if (!!exp) {
+          addExpresion(exp);
+          const aggregations = exp.aggregations();
+          if (aggregations.length > 0) {
+            addDisplayExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+          } else {
+            const desc = QueryexUtil.nativeDesc(exp, overrides, keyDesc.control, keyDesc.definitionId, wss, trx);
+            switch (desc.datatype) {
+              case 'boolean':
+              case 'entity':
+              case 'hierarchyid':
+              case 'geography':
+                addDisplayExpressionError(`Display Expression cannot be of type ${desc.datatype}.`);
+            }
+          }
+        }
+      } catch (e) {
+        addDisplayExpressionError(e.message);
+      }
+
+
+      //////////////// Attributes' Expression Validation
+
+      for (const attribute of dimension.Attributes) {
+
+        function addAttributeExpressionError(err: string) {
+          attribute.serverErrors.Expression = attribute.serverErrors.Expression || [];
+          attribute.serverErrors.Expression.push(err);
+          hasExpressionErrors = true;
+        }
+
+        try {
+          // Prepare the expression
+          const exp = Queryex.parseSingleton(attribute.Expression);
+          if (!!exp) {
+            addExpresion(exp);
+            const aggregations = exp.aggregations();
+            if (aggregations.length > 0) {
+              addAttributeExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+            } else {
+              const desc = QueryexUtil.nativeDesc(exp, overrides, keyDesc.control, keyDesc.definitionId, this.workspace, this.translate);
+              switch (desc.datatype) {
+                case 'boolean':
+                case 'entity':
+                case 'hierarchyid':
+                case 'geography':
+                  addAttributeExpressionError(`Expression cannot be of type ${desc.datatype}.`);
+              }
+            }
+          } else {
+            addAttributeExpressionError(`Expression cannot be empty.`);
+          }
+        } catch (e) {
+          addAttributeExpressionError(e.message);
+        }
+      }
+    }
+
+    return hasExpressionErrors;
   }
 
-  public onConfigureRow(index: number, model: ReportDefinition) {
+  public onSetDimOrderDirection(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, setIndex: number) {
+    // This makes sure there is only one order direction per dimension
+    if (setIndex >= 0) {
+      dimToEdit.OrderDirection = null;
+    }
+
+    for (let i = 0; i < dimToEdit.Attributes.length; i++) {
+      if (i !== setIndex) {
+        dimToEdit.Attributes[i].OrderDirection = null;
+      }
+    }
+
+    this.dimToEditHasChanged = true;
+  }
+
+  public getColumns(model: ReportDefinition): ReportDefinitionColumn[] {
+    model.Columns = model.Columns || [];
+    return model.Columns;
+  }
+
+  public getRows(model: ReportDefinition): ReportDefinitionRow[] {
+    model.Rows = model.Rows || [];
+    return model.Rows;
+  }
+
+  private onConfigureDimension(index: number, coll: (ReportDefinitionRow | ReportDefinitionColumn)[], model: ReportDefinition) {
     this.dimToEditHasChanged = false;
-    const dimToEdit = JSON.parse(JSON.stringify(model.Rows[index])) as ReportDefinitionRow;
+    const dimToEdit = JSON.parse(JSON.stringify(coll[index])) as ReportDefinitionRow | ReportDefinitionColumn;
     this.dimToEdit = dimToEdit;
     this.modelRef = model;
 
-    // This will set all the flags
-    this.onKeyExpressionChanged(dimToEdit, model);
-
-    this.modalService.open(this.dimensionConfigModal, { windowClass: 't-dark-theme' }).result.then(() => {
+    this.modalService.open(this.dimensionConfigModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
       if (this.dimToEditHasChanged) {
-        model.Rows[index] = dimToEdit;
+        coll[index] = dimToEdit;
+
+        if (!this.showDisplayExpression(dimToEdit, model)) {
+          delete dimToEdit.DisplayExpression;
+        }
+
+        if (!this.showDimensionAttributes(dimToEdit, model)) {
+          dimToEdit.Attributes = [];
+        }
+
+        // Sync Parameters if the expression has changed
+        this.validateModel(model);
         this.onDefinitionChange(model);
       }
     }, (_: any) => { });
+  }
+
+  public onConfigureRow(index: number, model: ReportDefinition) {
+    this.onConfigureDimension(index, model.Rows, model);
   }
 
   public onDeleteRow(index: number, model: ReportDefinition) {
@@ -915,17 +988,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public onConfigureColumn(index: number, model: ReportDefinition): void {
-    this.dimToEditHasChanged = false;
-    const itemToEdit = JSON.parse(JSON.stringify(model.Columns[index])) as ReportDefinitionColumn;
-    this.dimToEdit = itemToEdit;
-    this.modelRef = model;
-
-    this.modalService.open(this.dimensionConfigModal, { windowClass: 't-dark-theme' }).result.then(() => {
-      if (this.dimToEditHasChanged) {
-        model.Columns[index] = itemToEdit;
-        this.onDefinitionChange(model);
-      }
-    }, (_: any) => { });
+    this.onConfigureDimension(index, model.Columns, model);
   }
 
   public onDeleteColumn(index: number, model: ReportDefinition) {
@@ -933,7 +996,752 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.onDefinitionChange(model);
   }
 
-  public get canApplyDimension(): boolean {
-    return !this.dimExpressionError;
+  public onDeleteAttribute(index: number, dimToEdit: ReportDefinitionRow | ReportDefinitionColumn) {
+    dimToEdit.Attributes.splice(index, 1);
+    this.dimToEditHasChanged = true;
+  }
+
+  public onInsertAttribute(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn) {
+    const att: ReportDefinitionDimensionAttribute = { Localize: true };
+    dimToEdit.Attributes.push(att);
+    this.dimToEditHasChanged = true;
+  }
+
+  public rowDrop(event: CdkDragDrop<any[]>, collection: any[]) {
+    moveItemInArray(collection, event.previousIndex, event.currentIndex);
+  }
+
+  public canApplyDimension(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn): boolean {
+    return !!dimToEdit.KeyExpression;
+  }
+
+  ///////////////////// Measures v2.0
+
+  measureToEdit: ReportDefinitionMeasure;
+  measureToEditHasChanged = false;
+  measureShowAdvancedOptions = false;
+
+  public getMeasures(model: ReportDefinition): ReportDefinitionMeasure[] {
+    model.Measures = model.Measures || [];
+    return model.Measures;
+  }
+
+  public onConfigureMeasure(index: number, model: ReportDefinition) {
+    this.measureToEditHasChanged = false;
+    const measureToEdit = { ...model.Measures[index] } as ReportDefinitionMeasure;
+    this.measureToEdit = measureToEdit;
+    this.modelRef = model;
+
+    this.measureShowAdvancedOptions = !!measureToEdit.Control ||
+      !!measureToEdit.DangerWhen || !!measureToEdit.WarningWhen || !!measureToEdit.SuccessWhen;
+
+    this.modalService.open(this.measureConfigModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.measureToEditHasChanged) {
+        model.Measures[index] = measureToEdit;
+
+        this.validateModel(model);
+        this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  public validateMeasure(
+    measure: ReportDefinitionMeasure, model: ReportDefinitionForSave,
+    overrides?: { [name: string]: PropVisualDescriptor },
+    allExpressions?: QueryexBase[]): boolean {
+
+    if (!measure) {
+      return false;
+    }
+
+    function addExpression(e: QueryexBase) {
+      if (!!allExpressions) {
+        allExpressions.push(e);
+      }
+    }
+
+    let hasExpressionErrors = false;
+    measure.serverErrors = {};
+    function addExpressionError(err: string) {
+      measure.serverErrors.Expression = measure.serverErrors.Expression || [];
+      measure.serverErrors.Expression.push(err);
+      hasExpressionErrors = true;
+    }
+
+    overrides = overrides || this.parameterOverrides(model);
+    const wss = this.workspace;
+    const trx = this.translate;
+    let mainExp: QueryexBase;
+    let mainDesc: PropDescriptor;
+    try {
+      ////////////////// Expression Validation
+
+      mainExp = Queryex.parseSingleton(measure.Expression);
+      if (!!mainExp) {
+        addExpression(mainExp);
+        const unaggregated = mainExp.unaggregatedColumnAccesses();
+        if (unaggregated.length > 0) {
+          addExpressionError(`Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+        } else {
+          mainDesc = QueryexUtil.nativeDesc(mainExp, overrides, model.Collection, model.DefinitionId, wss, trx);
+          switch (mainDesc.datatype) {
+            case 'boolean':
+            case 'hierarchyid':
+            case 'geography':
+            case 'entity':
+              addExpressionError(`Expression cannot be of type ${mainDesc.datatype}.`);
+          }
+        }
+      } else {
+        addExpressionError(`Expression cannot be empty.`);
+      }
+    } catch (e) {
+      addExpressionError(e.message);
+    }
+
+    ////////////////// Highlight Expression Validation (Success, Warning and Danger)
+    if (!!mainExp) {
+      function validateHighlightExpression(expString: string, prop: string): void {
+
+        function addHighlightExpressionError(err: string) {
+          measure.serverErrors[prop] = measure.serverErrors[prop] || [];
+          measure.serverErrors[prop].push(err);
+          hasExpressionErrors = true;
+        }
+
+        try {
+          const exp = Queryex.parseSingleton(expString, { placeholderReplacement: mainExp });
+          if (!!exp) {
+            addExpression(exp);
+            const unaggregated = exp.unaggregatedColumnAccesses();
+            if (unaggregated.length > 0) {
+              addHighlightExpressionError(`Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+            } else {
+              // Prepare the descriptor
+              const desc = QueryexUtil.tryBooleanDesc(exp, overrides, model.Collection, model.DefinitionId, wss, trx);
+              if (!desc) {
+                addHighlightExpressionError(`Expression could not be interpreted as a boolean.`);
+              }
+            }
+          }
+        } catch (e) {
+          addHighlightExpressionError(e.message);
+        }
+      }
+
+      validateHighlightExpression(measure.SuccessWhen, 'SuccessWhen');
+      validateHighlightExpression(measure.WarningWhen, 'WarningWhen');
+      validateHighlightExpression(measure.DangerWhen, 'DangerWhen');
+    }
+
+    ////////////////// Control Validation
+    if (!!mainDesc && !!measure.Control) {
+      const visualDesc = descFromControlOptions(wss.currentTenant, measure.Control, measure.ControlOptions);
+      if (!tryGetDescFromVisual(visualDesc, mainDesc.datatype, () => '', wss, trx)) {
+        const ctrlDisplay = this.controlDisplay(measure.Control);
+        addExpressionError(`Expression (${mainDesc.datatype}) is incompatible with the selected control: ${ctrlDisplay}.`);
+      }
+    }
+
+    return hasExpressionErrors;
+  }
+
+  public onDeleteMeasure(index: number, model: ReportDefinition) {
+    model.Measures.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public onToggleMeasureAdvancedOptions() {
+    this.measureShowAdvancedOptions = !this.measureShowAdvancedOptions;
+  }
+
+  public canApplyMeasure(measure: ReportDefinitionMeasure): boolean {
+    return !!measure.Expression;
+  }
+
+  ///////////////////// Select v2.0
+
+  selectToEdit: ReportDefinitionSelect;
+  selectToEditHasChanged = false;
+
+  public getSelect(model: ReportDefinition): ReportDefinitionSelect[] {
+    model.Select = model.Select || [];
+    return model.Select;
+  }
+
+  public onDeleteSelect(index: number, model: ReportDefinition) {
+    model.Select.splice(index, 1);
+    this.onDefinitionChange(model);
+  }
+
+  public onConfigureSelect(index: number, model: ReportDefinition) {
+    this.selectToEditHasChanged = false;
+    const selectToEdit = { ...model.Select[index] } as ReportDefinitionSelect;
+    this.selectToEdit = selectToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.selectConfigModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.selectToEditHasChanged) {
+        model.Select[index] = selectToEdit;
+
+        this.validateModel(model);
+        this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  public validateSelect(
+    select: ReportDefinitionSelect, model: ReportDefinitionForSave,
+    overrides?: { [name: string]: PropVisualDescriptor },
+    allExpressions?: QueryexBase[]): boolean {
+
+    if (!select) {
+      return false;
+    }
+
+    let hasExpressionErrors = false;
+
+    select.serverErrors = {};
+    function addExpressionError(err: string) {
+      select.serverErrors.Expression = select.serverErrors.Expression || [];
+      select.serverErrors.Expression.push(err);
+      hasExpressionErrors = true;
+    }
+
+    function addExpression(e: QueryexBase) {
+      if (!!allExpressions) {
+        allExpressions.push(e);
+      }
+    }
+
+    overrides = overrides || this.parameterOverrides(model);
+    const wss = this.workspace;
+    const trx = this.translate;
+    let desc: PropDescriptor;
+    try {
+      ////////////////// Expression Validation
+
+      const exp = Queryex.parseSingleton(select.Expression);
+      if (!!exp) {
+        addExpression(exp);
+        const aggregations = exp.aggregations();
+        if (aggregations.length > 0) {
+          addExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+        } else {
+          desc = QueryexUtil.nativeDesc(exp, overrides, model.Collection, model.DefinitionId, wss, trx);
+          switch (desc.datatype) {
+            case 'boolean':
+            case 'hierarchyid':
+            case 'geography':
+            case 'entity':
+              addExpressionError(`Expression cannot be of type ${desc.datatype}.`);
+          }
+        }
+      } else {
+        addExpressionError(`Expression cannot be empty.`);
+      }
+    } catch (e) {
+      addExpressionError(e.message);
+    }
+
+    return hasExpressionErrors;
+
+    // TODO Control Validation
+  }
+
+  public canApplySelect(select: ReportDefinitionSelect): boolean {
+    return !!select.Expression;
+  }
+
+  /////////////////// Parameters v2.0
+
+  paramToEdit: ReportDefinitionParameter;
+  paramToEditHasChanged = false;
+
+  public getParameters(model: ReportDefinition): ReportDefinitionParameter[] {
+    model.Parameters = model.Parameters || [];
+    return model.Parameters;
+  }
+
+  public onConfigureParameter(index: number, model: ReportDefinition) {
+    this.paramToEditHasChanged = false;
+    const itemToEdit = { ...model.Parameters[index] } as ReportDefinitionParameter;
+    this.paramToEdit = itemToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.paramConfigModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.paramToEditHasChanged) {
+        if (!this.showParamDefaultExpression(itemToEdit)) {
+          delete itemToEdit.DefaultExpression;
+        }
+
+        model.Parameters[index] = itemToEdit;
+        this.validateModel(model);
+        this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  public validateParam(
+    param: ReportDefinitionParameter, model: ReportDefinitionForSave,
+    overrides?: { [name: string]: PropVisualDescriptor }): ExpressionInfo {
+
+    if (!param) {
+      return;
+    }
+
+    param.serverErrors = {};
+    function addDefaultExpressionError(err: string) {
+      param.serverErrors.DefaultExpression = param.serverErrors.DefaultExpression || [];
+      param.serverErrors.DefaultExpression.push(err);
+    }
+
+    ////////////////// Default Expression Validation
+    let exp: QueryexBase;
+    let desc: PropDescriptor;
+    try {
+      // Prepare the expression
+      exp = Queryex.parseSingleton(param.DefaultExpression);
+      if (!!exp) {
+        const aggregations = exp.aggregations();
+        const columnAccesses = exp.columnAccesses();
+        const parameters = exp.parameters();
+        if (aggregations.length > 0) {
+          addDefaultExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+        } else if (columnAccesses.length > 0) {
+          addDefaultExpressionError(`Expression cannot contain column access literals like '${columnAccesses[0]}'.`);
+        } else if (parameters.length > 0) {
+          addDefaultExpressionError(`Expression cannot contain parameters like '${parameters[0]}'.`);
+        } else {
+          // Well formed expression, make sure it has sensible datatype
+          overrides = overrides || this.parameterOverrides(model);
+          const wss = this.workspace;
+          const trx = this.translate;
+          desc = QueryexUtil.nativeDesc(exp, overrides, model.Collection, model.DefinitionId, wss, trx);
+          switch (desc.datatype) {
+            case 'boolean':
+            case 'hierarchyid':
+            case 'geography':
+            case 'entity':
+              addDefaultExpressionError(`Expression cannot be of type ${desc.datatype}.`);
+          }
+        }
+      }
+    } catch (e) {
+      addDefaultExpressionError(e.message);
+    }
+
+    // TODO: move this section to model validate
+    const hasDefaultExpression = param.DefaultExpression && param.DefaultExpression.trim();
+    if (!hasDefaultExpression && param.Visibility !== 'Required') {
+      // In this case we must make sure the parameter is not mentioned in a non-boolean expression
+      function paramIsRequired(): boolean {
+        const keyLower = param.Key.toLowerCase();
+        // If the parameter is found in any of these expressions, then it is required
+        const requiredExpStrings: string[] = [];
+        for (const dim of model.Rows.concat(model.Columns)) {
+          requiredExpStrings.push(dim.KeyExpression);
+          requiredExpStrings.push(dim.DisplayExpression);
+          for (const att of dim.Attributes) {
+            requiredExpStrings.push(att.Expression);
+          }
+        }
+
+        for (const measure of model.Measures) {
+          requiredExpStrings.push(measure.Expression);
+        }
+
+        for (const select of model.Select) {
+          requiredExpStrings.push(select.Expression);
+        }
+
+        for (const requiredExpString of requiredExpStrings) {
+          if (!requiredExpString) {
+            continue;
+          }
+
+          try {
+            const requiredExpArray = Queryex.parse(requiredExpString);
+            for (const requiredExp of requiredExpArray) {
+              if (!!requiredExp) {
+                for (const p of requiredExp.parameters()) {
+                  if (p.keyLower === keyLower) {
+                    return true;
+                  }
+                }
+              }
+            }
+          } catch (e) { }
+        }
+
+        return false;
+      }
+
+      if (paramIsRequired()) {
+        addDefaultExpressionError(
+          `Default expression is required since the parameter is used in a non-boolean Expression and the visibility is set to 'Optional'`);
+      }
+    }
+
+    // TODO Make sure the default parameter is consistent with the selected control
+
+    // TODO Control Validation
+
+    return { exp, desc };
+  }
+
+  public showParamDefaultExpression(param: ReportDefinitionParameter): boolean {
+    return param.Visibility === 'Optional';
+  }
+
+  public canApplyParam(_: ReportDefinitionParameter): boolean {
+    return true;
+  }
+
+  ///////////////////// Total Labels v2.0
+
+  totalLabelsToEdit: {
+    ColumnsTotalLabel?: string,
+    ColumnsTotalLabel2?: string,
+    ColumnsTotalLabel3?: string,
+    RowsTotalLabel?: string,
+    RowsTotalLabel2?: string,
+    RowsTotalLabel3?: string,
+  };
+  totalLabelsToEditHasChanged = false;
+
+
+  public onConfigureTotalLabels(model: ReportDefinition) {
+    this.totalLabelsToEditHasChanged = false;
+    const totalLabelsToEdit = {
+      ColumnsTotalLabel: model.ColumnsTotalLabel,
+      ColumnsTotalLabel2: model.ColumnsTotalLabel2,
+      ColumnsTotalLabel3: model.ColumnsTotalLabel3,
+      RowsTotalLabel: model.RowsTotalLabel,
+      RowsTotalLabel2: model.RowsTotalLabel2,
+      RowsTotalLabel3: model.RowsTotalLabel3,
+    };
+
+    this.totalLabelsToEdit = totalLabelsToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.totalLabelsModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.totalLabelsToEditHasChanged) {
+        model.ColumnsTotalLabel = totalLabelsToEdit.ColumnsTotalLabel;
+        model.ColumnsTotalLabel2 = totalLabelsToEdit.ColumnsTotalLabel2;
+        model.ColumnsTotalLabel3 = totalLabelsToEdit.ColumnsTotalLabel3;
+        model.RowsTotalLabel = totalLabelsToEdit.RowsTotalLabel;
+        model.RowsTotalLabel2 = totalLabelsToEdit.RowsTotalLabel2;
+        model.RowsTotalLabel3 = totalLabelsToEdit.RowsTotalLabel3;
+
+        this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  ///////////////////// Model Validation v2.0
+
+  public validateModel(model: ReportDefinition) {
+
+    if (!model) {
+      return;
+    }
+
+    let allExpressions: QueryexBase[];
+    let defaultExpressions: { [keyLower: string]: ExpressionInfo };
+
+    const validateExpressions = (overrides: { [name: string]: PropVisualDescriptor }): boolean => {
+      let hasExpressionErrors = false;
+
+      model.serverErrors = {};
+      function addHavingError(err: string) {
+        model.serverErrors.Having = model.serverErrors.Having || [];
+        model.serverErrors.Having.push(err);
+        hasExpressionErrors = true;
+      }
+      function addFilterError(err: string) {
+        model.serverErrors.Filter = model.serverErrors.Filter || [];
+        model.serverErrors.Filter.push(err);
+        hasExpressionErrors = true;
+      }
+
+      const coll = model.Collection;
+      const defId = model.DefinitionId;
+      const wss = this.workspace;
+      const trx = this.translate;
+
+      // Filter Validation
+      if (!!model.Filter) {
+        try {
+          const exp = Queryex.parseSingleton(model.Filter);
+          if (!!exp) {
+            const aggregations = exp.aggregations();
+            if (aggregations.length > 0) {
+              addFilterError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+            } else {
+              // Prepare the descriptor
+              const desc = QueryexUtil.tryBooleanDesc(exp, overrides, coll, defId, wss, trx);
+              if (!desc) {
+                addFilterError(`Expression could not be interpreted as a boolean.`);
+              } else {
+                allExpressions.push(exp);
+              }
+            }
+          }
+        } catch (e) {
+          addFilterError(e.message);
+        }
+      }
+
+      // Having Validation
+      if (!!model.Having) {
+        try {
+          const exp = Queryex.parseSingleton(model.Having);
+          if (!!exp) {
+            const unaggregated = exp.unaggregatedColumnAccesses();
+            if (unaggregated.length > 0) {
+              addHavingError(`Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+            } else {
+              // Prepare the descriptor
+              const desc = QueryexUtil.tryBooleanDesc(exp, overrides, coll, defId, wss, trx);
+              if (!desc) {
+                // good description
+                addHavingError(`Expression could not be interpreted as a boolean.`);
+              } else {
+                allExpressions.push(exp);
+              }
+            }
+          }
+        } catch (e) {
+          addHavingError(e.message);
+        }
+      }
+
+      for (const col of model.Columns) {
+        if (this.validateDimension(col, model, overrides, allExpressions)) {
+          hasExpressionErrors = true;
+        }
+      }
+
+      for (const row of model.Rows) {
+        if (this.validateDimension(row, model, overrides, allExpressions)) {
+          hasExpressionErrors = true;
+        }
+      }
+
+      for (const measure of model.Measures) {
+        if (this.validateMeasure(measure, model, overrides, allExpressions)) {
+          hasExpressionErrors = true;
+        }
+      }
+
+      for (const select of model.Select) {
+        if (this.validateSelect(select, model, overrides, allExpressions)) {
+          hasExpressionErrors = true;
+        }
+      }
+      for (const param of model.Parameters) {
+        const info = this.validateParam(param, model, overrides);
+        if (!!info && !!info.exp && !!info.desc) {
+          const keyLower = param.Key.toLowerCase();
+          defaultExpressions[keyLower] = info;
+        }
+      }
+
+      return hasExpressionErrors;
+    };
+
+    // This keeps looping until the datatypes of all parameter keys have converged to stable values
+    let paramOverrides = this.parameterOverrides(model);
+    let paramDescriptors: { [key: string]: PropDescriptor };
+    let isError = false;
+    let iterations = 0;
+    do {
+      iterations++;
+      allExpressions = [];
+      defaultExpressions = {};
+      if (validateExpressions(paramOverrides)) { // Error breaks the cycle
+        isError = true;
+        break;
+      } else if (iterations >= 3) {
+        // IF we went round n times without convergence, break the cycle anyways,
+        // almost no real world scenario will call for more than that
+        break;
+      } else {
+        paramDescriptors = QueryexUtil.parameterMaxDescs(allExpressions, defaultExpressions);
+        if (QueryexUtil.differentOverrides(paramOverrides, paramDescriptors)) {
+          // Copy back for next iteration
+          paramOverrides = {};
+          for (const key of Object.keys(paramDescriptors)) {
+            paramOverrides[key.toLowerCase()] = paramDescriptors[key];
+          }
+        } else {
+          break; // Parameter descriptors have stabilized -> break the loop
+        }
+      }
+    } while (true);
+
+    // IF there are no errors: Sync the parameters
+    if (!isError) {
+      const keys = Object.keys(paramDescriptors);
+      if (keys.length === 0) {
+        model.Parameters = []; // Optimization
+      } else {
+
+        // (4) Remove parameters without a matching placeholder (case insensitive)
+        const lowerKeys: { [key: string]: string } = {};
+        keys.forEach(key => lowerKeys[key.toLowerCase()] = key);
+        const parameters = model.Parameters.filter(p => !!lowerKeys[p.Key.toLowerCase()]);
+
+        // (5) Create a tracker for existing model parameters
+        const modelTracker: { [key: string]: ReportDefinitionParameter } = {};
+        parameters.forEach(pa => modelTracker[pa.Key.toLowerCase()] = pa);
+
+        // (6) Add new parameters for new placeholders
+        for (const key of keys) {
+          const keyLower = key.toLowerCase();
+          let parameter: ReportDefinitionParameter = modelTracker[keyLower];
+          if (!parameter) {
+            parameter = {
+              Id: 0,
+              Visibility: 'Optional',
+            };
+
+            modelTracker[keyLower] = parameter;
+            parameters.push(parameter);
+          }
+
+          parameter.Key = key;
+
+          const desc = paramDescriptors[key];
+          if (!parameter.Control && desc.control === 'null') {
+            parameter.serverErrors = parameter.serverErrors || { };
+            parameter.serverErrors.Control = parameter.serverErrors.Control || [];
+            parameter.serverErrors.Control.push(`The parameter usage leaves the control ambiguous, please specify it manually.`);
+          }
+
+          // if (!!parameter.DefaultExpression && !!parameter.DefaultExpression.trim()) {
+          //   // TODO
+          //   QueryexUtil.tryGetDesc(desc)
+          // }
+        }
+
+        model.Parameters = parameters;
+
+        // TODO
+        // Synchronize the parameters
+        // If the parameter datatype is 'null', make Control required
+        // If DefaultExpression cannot be compiled to the datatype, add error
+        // Make Visibility more clever...
+      }
+    }
+
+    // this.sychronizeParameters(model);
+    this.onDefinitionChange(model);
+  }
+
+
+  // private synchronizeFilter(model: ReportDefinition) {
+  //   // Here we synchronize the parameter list with the filter placeholders and the built in parameter descriptors
+  //   try {
+  //     // (1) Get the parameters from the custom filter
+  //     const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(model.Filter));
+  //     const customParamsKeys = placeholderAtoms.map(atom => atom.value.substr(1));
+
+  //     // (2) Get the built-in parameter descriptors
+  //     const desc = this.entityDescriptor(model);
+  //     const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
+
+  //     if (customParamsKeys.length === 0 && builtInParamsDescriptors.length === 0) {
+  //       // Optimization
+  //       model.Parameters = [];
+  //     } else {
+
+  //       // (3) Use a tracker to accumulate all the keys in a case-insensitive fashion
+  //       const paramTracker: { [key: string]: string } = {};
+  //       for (const key of customParamsKeys) {
+  //         const keyLower = key.toLowerCase();
+  //         paramTracker[keyLower] = key;
+  //       }
+  //       for (const param of builtInParamsDescriptors) {
+  //         const key = param.key;
+  //         const keyLower = key.toLowerCase();
+  //         paramTracker[keyLower] = key;
+  //       }
+
+  //       // (4) Remove parameters without a matching placeholder
+  //       const parameters = model.Parameters.filter(p => !!paramTracker[p.Key.toLowerCase()]);
+
+  //       // (5) Create a tracker for existing model parameters
+  //       const modelTracker: { [key: string]: ReportDefinitionParameter } = {};
+  //       parameters.forEach(pa => modelTracker[pa.Key.toLowerCase()] = pa);
+
+  //       // (6) Add new parameters for new placeholders
+  //       const keys = Object.keys(paramTracker).map(k => paramTracker[k]);
+  //       for (const key of keys) {
+  //         const keyLower = key.toLowerCase();
+  //         let parameterDef: ReportDefinitionParameter = modelTracker[keyLower];
+  //         const builtInMatch = builtInParamsDescriptors.find(e => e.key === key);
+  //         if (!parameterDef) {
+  //           parameterDef = {
+  //             Id: 0,
+  //             Key: key,
+  //             Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' :
+  //               !!builtInMatch && !builtInMatch.isRequired ? 'None' : 'Optional',
+  //             Control: this.getParamPropDescriptor(model, key).control
+  //           };
+
+  //           modelTracker[keyLower] = parameterDef;
+  //           parameters.push(parameterDef);
+  //         } else {
+  //           parameterDef.Key = key;
+  //           parameterDef.Control = this.getParamPropDescriptor(model, key).control;
+  //         }
+  //       }
+
+  //       model.Parameters = parameters;
+  //     }
+  //   } catch { } // Errors will be reported by the report preview
+  // }
+
+
+
+
+
+  // Control
+  private _controlChoicesDefinitions: DefinitionsForClient;
+  private _controlDisplayCache: { [key: string]: () => string };
+
+  public controlDisplay = (control: Control) => {
+    const ws = this.ws;
+    const defs = ws.definitions;
+    if (this._controlChoicesDefinitions !== defs) {
+      this._controlChoicesDefinitions = defs;
+
+      // display names
+      this._controlDisplayCache = {};
+      for (const choice of this.controlSimpleChoices()) {
+        this._controlDisplayCache[choice.value] = choice.name;
+      }
+
+      for (const choice of this.controlEntityChoices()) {
+        this._controlDisplayCache[choice.value] = choice.name;
+      }
+    }
+
+    const displayFunc = this._controlDisplayCache[control];
+    return !!displayFunc ? displayFunc() : '';
+  }
+
+  public controlSimpleChoices(): SelectorChoice[] {
+    return simpleControls(this.translate);
+  }
+
+  public controlEntityChoices(): SelectorChoice[] {
+    return collectionsWithEndpoint(this.workspace, this.translate, true);
+  }
+
+  public showOptions(control: Control) {
+    return !!control && hasControlOptions(control);
   }
 }

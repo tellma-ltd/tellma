@@ -186,7 +186,7 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 TitleSingular: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
                 TitleSingular2: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
@@ -321,7 +321,7 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Relation1Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.secondaryPostfix },
                 Relation1Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Relation1') }) + ws.ternaryPostfix },
                 Relation1Visibility: visibilityPropDescriptor('Entity_Relation1', trx),
-                Relation1DefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Relation1DefinitionId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Relation1Definition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') }), foreignKeyName: 'Relation1DefinitionId' },
 
                 AgentVisibility: visibilityPropDescriptor('Relation_Agent', trx),
@@ -330,7 +330,7 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 BankAccountNumberVisibility: visibilityPropDescriptor('Relation_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('RelationDefinition_UserCardinality', trx),
                 HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
-                AttachmentsCategoryDefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('RelationDefinition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AttachmentsCategoryDefinitionId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('RelationDefinition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AttachmentsCategoryDefinition: { datatype: 'entity', label: () => trx.instant('RelationDefinition_AttachmentsCategoryDefinition'), control: 'LookupDefinition', foreignKeyName: 'AttachmentsCategoryDefinitionId' },
 
                 State: statePropDescriptor(trx),
@@ -339,7 +339,7 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
 
                 // IsActive & Audit info
-                SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };

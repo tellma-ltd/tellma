@@ -58,7 +58,7 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -76,7 +76,7 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                     }
                 },
                 Collection: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
-                DefinitionId: { datatype: 'integral', control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DefinitionId: { datatype: 'numeric', control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 MarkupLanguage: {
                     datatype: 'string',
                     control: 'choice',

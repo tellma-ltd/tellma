@@ -393,7 +393,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       switch (aggregation) {
         case 'count':
           desc = {
-            datatype: 'integral', control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right'
+            datatype: 'numeric', control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right'
           };
           break;
         case 'max':
@@ -411,7 +411,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           if (!isNumeric(propDesc)) {
             console.error(`Use of avg aggregation on a non-numeric property ${prop}`);
           } else {
-            desc = { datatype: 'decimal', control: 'number', label: propDesc.label, minDecimalPlaces: 2, maxDecimalPlaces: 2 };
+            desc = { datatype: 'numeric', control: 'number', label: propDesc.label, minDecimalPlaces: 2, maxDecimalPlaces: 2 };
             if (propDesc.control === 'number') {
               desc.minDecimalPlaces = Math.max(desc.minDecimalPlaces, 2);
               desc.maxDecimalPlaces = Math.max(desc.maxDecimalPlaces, 2);

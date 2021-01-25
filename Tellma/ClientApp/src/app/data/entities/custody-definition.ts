@@ -135,7 +135,7 @@ export function metadata_CustodyDefinition(wss: WorkspaceService, trx: Translate
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 TitleSingular: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
                 TitleSingular2: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
@@ -214,7 +214,7 @@ export function metadata_CustodyDefinition(wss: WorkspaceService, trx: Translate
 
                 CustodianVisibility: visibilityPropDescriptor('Custody_Custodian', trx),
                 CustodianDefinitionId: {
-                    datatype: 'integral',
+                    datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('Field0Definition', { 0: trx.instant('Custody_Custodian') }),
                     choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
@@ -229,7 +229,7 @@ export function metadata_CustodyDefinition(wss: WorkspaceService, trx: Translate
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
 
                 // IsActive & Audit info
-                SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };

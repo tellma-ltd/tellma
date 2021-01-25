@@ -59,7 +59,7 @@ export function statePropDescriptor(trx: TranslateService): ChoicePropDescriptor
 
 export function lookupDefinitionIdPropDescriptor(name: string, trx: TranslateService): NumberPropDescriptor {
     return {
-        datatype: 'integral',
+        datatype: 'numeric',
         control: 'number',
         label: () => `${trx.instant('Field0Definition', { 0: trx.instant(name) })} (${trx.instant('Id')})`,
         minDecimalPlaces: 0,
@@ -87,7 +87,7 @@ export function mainMenuSectionPropDescriptor(trx: TranslateService): ChoiceProp
 }
 
 export function mainMenuSortKeyPropDescriptor(trx: TranslateService): NumberPropDescriptor {
-    return { datatype: 'integral', control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 0, maxDecimalPlaces: 0 };
+    return { datatype: 'numeric', control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 0, maxDecimalPlaces: 0 };
 }
 
 export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDescriptor {

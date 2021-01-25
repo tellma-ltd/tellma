@@ -54,12 +54,12 @@ export function metadata_AccountClassification(wss: WorkspaceService, trx: Trans
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
-        AccountTypeParentId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('AccountClassification_AccountTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        AccountTypeParentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountClassification_AccountTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         AccountTypeParent: { datatype: 'entity', control: 'AccountType', label: () => trx.instant('AccountClassification_AccountTypeParent'), foreignKeyName: 'AccountTypeParentId' },
 
         // tree stuff
@@ -69,17 +69,17 @@ export function metadata_AccountClassification(wss: WorkspaceService, trx: Trans
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
         ActiveChildCount: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
           maxDecimalPlaces: 0, alignment: 'right'
         },
         Level: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },

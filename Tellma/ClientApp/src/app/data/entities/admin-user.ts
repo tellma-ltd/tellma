@@ -43,7 +43,7 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             format: (item: AdminUserForSave) => item.Name,
             isAdmin: true,
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') },
                 Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
                 State: {

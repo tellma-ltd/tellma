@@ -1044,11 +1044,11 @@ export function descFromControlOptions(
 
   switch (control) {
     case 'null':
+    case 'unsupported':
     case 'text':
     case 'check':
     case 'date':
     case 'datetime':
-    case 'unsupported':
       return { control };
 
     case 'number':
@@ -1193,7 +1193,7 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
     case 'day':
     case 'week':
       propDesc = {
-        datatype: 'integral',
+        datatype: 'numeric',
         control: 'number',
         label,
         minDecimalPlaces: 0,
@@ -1202,7 +1202,7 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
       break;
     case 'year':
       propDesc = {
-        datatype: 'integral',
+        datatype: 'numeric',
         control: 'choice',
         label,
         choices: [...Array(30).keys()].map(y => y + 2000),
@@ -1211,7 +1211,7 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
       break;
     case 'quarter':
       propDesc = {
-        datatype: 'integral',
+        datatype: 'numeric',
         control: 'choice',
         label,
         choices: [1, 2, 3, 4],
@@ -1220,7 +1220,7 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
       break;
     case 'month':
       propDesc = {
-        datatype: 'integral',
+        datatype: 'numeric',
         control: 'choice',
         label,
         choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -1229,7 +1229,7 @@ export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx
       break;
     case 'weekday':
       propDesc = {
-        datatype: 'integral',
+        datatype: 'numeric',
         control: 'choice',
         label,
         choices: [2 /* Mon */, 3, 4, 5, 6, 7, 1 /* Sun */],

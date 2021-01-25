@@ -1,5 +1,5 @@
 <!-- minDecimalPlaces -->
-<div class="form-group t-form-group t-text-whitish" *ngIf="showDecimalPlaces">
+<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showDecimalPlaces">
     <label class="small" for="mindecimalplaces">{{ 'ControlOptions_minDecimalPlaces' | translate }}</label>
     <div *ngIf="!isEdit; else mindecimalplaces">{{ options.minDecimalPlaces }}&zwnj;</div>
     <ng-template #mindecimalplaces>
@@ -10,7 +10,7 @@
 </div>
 
 <!-- maxDecimalPlaces -->
-<div class="form-group t-form-group t-text-whitish" *ngIf="showDecimalPlaces">
+<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showDecimalPlaces">
     <label class="small" for="maxdecimalplaces">{{ 'ControlOptions_maxDecimalPlaces' | translate }}</label>
     <div *ngIf="!isEdit; else maxdecimalplaces">{{ options.maxDecimalPlaces }}&zwnj;</div>
     <ng-template #maxdecimalplaces>
@@ -21,7 +21,7 @@
 </div>
 
 <!-- prefix -->
-<div class="form-group t-form-group t-text-whitish" *ngIf="showPrefix">
+<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showPrefix">
     <label class="small" for="prefix">{{ 'ControlOptions_prefix' | translate }}</label>
     <div *ngIf="!isEdit; else prefix">{{ options.prefix }}&zwnj;</div>
     <ng-template #prefix>
@@ -31,7 +31,7 @@
 </div>
 
 <!-- codeWidth -->
-<div class="form-group t-form-group t-text-whitish" *ngIf="showCodeWidth">
+<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showCodeWidth">
     <label class="small" for="codewidth">{{ 'ControlOptions_codeWidth' | translate }}</label>
     <div *ngIf="!isEdit; else codewidth">{{ options.codeWidth }}&zwnj;</div>
     <ng-template #codewidth>
@@ -41,7 +41,7 @@
 </div>
 
 <!-- filter -->
-<div class="form-group t-form-group t-text-whitish" *ngIf="showFilter">
+<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showFilter">
     <label class="small" for="filter">{{ 'ControlOptions_filter' | translate }}</label>
     <div *ngIf="!isEdit; else filter">{{ options.filter }}&zwnj;</div>
     <ng-template #filter>
@@ -51,7 +51,7 @@
 </div>
 
 <!-- definitionId -->
-<div class="form-group t-form-group t-text-whitish" *ngIf="showDefinitionId">
+<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showDefinitionId">
     <label class="small" for="definitionid">{{ 'ControlOptions_definitionId' | translate }}</label>
     <div *ngIf="!isEdit; else definitionid">{{ definitionIdDisplay(options.definitionId) }}&zwnj;</div>
     <ng-template #definitionid>

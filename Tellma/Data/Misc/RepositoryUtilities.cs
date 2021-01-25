@@ -539,7 +539,7 @@ namespace Tellma.Data
                 );
         }
 
-        public static (DataTable columns, DataTable rows) DataTableFromReportDefinitionDimensionAttributes(IEnumerable<ReportDefinitionForSave> reports)
+        public static (DataTable rows, DataTable columns) DataTableFromReportDefinitionDimensionAttributes(IEnumerable<ReportDefinitionForSave> reports)
         {
             DataTable rowsAttributesTable = new DataTable();
             rowsAttributesTable.Columns.Add(new DataColumn("Index", typeof(int)));
@@ -611,7 +611,7 @@ namespace Tellma.Data
                 reportIndex++;
             }
 
-            return (colsAttributesTable, rowsAttributesTable);
+            return (rowsAttributesTable, colsAttributesTable);
         }
 
         private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table, IEnumerable<ExtraColumn<T>> extras = null) where T : Entity

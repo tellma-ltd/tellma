@@ -12,7 +12,7 @@
 	[Type]								NVARCHAR (10)		NOT NULL,	-- N'Summary' or N'Details'
 	[Chart]								NVARCHAR (50),					-- N'BarsVertical', N'Pie', etc...
 	[DefaultsToChart]					BIT,							-- Whether the report opens in chart view by default
-	[ChartOptions]						NVARCHAR (1024)		NOT NULL,	-- aka. The fact table
+	[ChartOptions]						NVARCHAR (1024),
 	[Collection]						NVARCHAR (50)		NOT NULL,	-- aka. The fact table
 	[DefinitionId]						INT,
 	[Filter]							NVARCHAR (1024),

@@ -53,14 +53,14 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService):
         Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         NumericCode: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number',
           label: () => trx.instant('Currency_NumericCode'),
           minDecimalPlaces: 0,
           maxDecimalPlaces: 0
         },
         E: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'choice',
           label: () => trx.instant('Currency_DecimalPlaces'),
           choices: [0, 2, 3, 4],

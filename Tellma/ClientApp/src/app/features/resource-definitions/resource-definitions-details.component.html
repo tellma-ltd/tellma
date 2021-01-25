@@ -645,7 +645,7 @@
 
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <ng-container *ngIf="invalid(control, serverErrors)">
-        <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+        <span class="small t-light-danger" *ngFor="let e of errors(control, serverErrors)">
             {{ e() }}
         </span>
     </ng-container>

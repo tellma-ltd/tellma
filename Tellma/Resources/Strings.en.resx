@@ -346,8 +346,8 @@
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>
   </data>
-  <data name="Control_boolean" xml:space="preserve">
-    <value>Yes/No</value>
+  <data name="Control_check" xml:space="preserve">
+    <value>Checkbox</value>
   </data>
   <data name="Control_choice" xml:space="preserve">
     <value>Choice List</value>
@@ -2859,6 +2859,81 @@
   </data>
   <data name="ShortMonth9" xml:space="preserve">
     <value>Sep</value>
+  </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>Meskerem</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>Sene</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>Hamle</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>Nehase</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>Puagme</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>Tikimt</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>Hidar</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>Tahsas</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>Tir</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>Yekatit</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>Megabit</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>Meyazya</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>Ginbot</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Muharram</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Safar</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Rabi' al-Awwal</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Rabi' al-Thani</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Jumada al-Awwal</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Jumada al-Thani</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Rajab</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Sha'ban</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Ramadan</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Shawwal</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Dhu al-Qi'dah</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Dhu al-Hijjah</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>Q1</value>

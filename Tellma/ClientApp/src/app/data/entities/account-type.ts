@@ -96,7 +96,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -108,11 +108,11 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Concept: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Concept') },
         IsAssignable: { datatype: 'bit', control: 'check', label: () => trx.instant('IsAssignable') },
         StandardAndPure: { datatype: 'bit', control: 'check', label: () => trx.instant('AccountType_StandardAndPure') },
-        CustodianDefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('AccountType_CustodianDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        CustodianDefinitionId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_CustodianDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         CustodianDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('AccountType_CustodianDefinition'), foreignKeyName: 'CustodianDefinitionId' },
-        ParticipantDefinitionId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('AccountType_ParticipantDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ParticipantDefinitionId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_ParticipantDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         ParticipantDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('AccountType_ParticipantDefinition'), foreignKeyName: 'ParticipantDefinitionId' },
-        EntryTypeParentId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        EntryTypeParentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('AccountType_EntryTypeParent'), foreignKeyName: 'EntryTypeParentId' },
         Time1Label: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.primaryPostfix },
         Time1Label2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.secondaryPostfix },
@@ -138,17 +138,17 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
 
         // tree stuff
         Path: { datatype: 'string', control: 'text', label: () => trx.instant('TreePath') },
-        ParentId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ParentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Parent: { datatype: 'entity', control: 'AccountType', label: () => trx.instant('TreeParent'), foreignKeyName: 'ParentId' },
-        ChildCount: { datatype: 'integral', control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        ActiveChildCount: { datatype: 'integral', control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        Level: { datatype: 'integral', control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        ChildCount: { datatype: 'numeric', control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        ActiveChildCount: { datatype: 'numeric', control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        Level: { datatype: 'numeric', control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
 
         IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
 
         // Audit info
-        SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
       }
     };

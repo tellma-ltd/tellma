@@ -154,7 +154,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 TitleSingular: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
                 TitleSingular2: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
@@ -261,21 +261,21 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 IdentifierVisibility: visibilityPropDescriptor('Resource_Identifier', trx),
 
                 VatRateVisibility: visibilityPropDescriptor('Resource_VatRate', trx),
-                DefaultVatRate: { datatype: 'decimal', control: 'percent', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_VatRate') })}`, minDecimalPlaces: 2, maxDecimalPlaces: 4 },
+                DefaultVatRate: { datatype: 'numeric', control: 'percent', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_VatRate') })}`, minDecimalPlaces: 2, maxDecimalPlaces: 4 },
 
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),
                 UnitCardinality: cardinalityPropDescriptor('ResourceDefinition_UnitCardinality', trx),
-                DefaultUnitId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_Unit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
+                DefaultUnitId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_Unit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
                 DefaultUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Field0Default', { 0: trx.instant('Resource_Unit') }), foreignKeyName: 'DefaultUnitId' },
                 UnitMassVisibility: visibilityPropDescriptor('Resource_UnitMass', trx),
-                DefaultUnitMassUnitId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
+                DefaultUnitMassUnitId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') })} (${trx.instant('Id')})`, maxDecimalPlaces: 0, minDecimalPlaces: 0 },
                 DefaultUnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') }), foreignKeyName: 'DefaultUnitMassUnitId' },
                 MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
 
                 ParticipantVisibility: visibilityPropDescriptor('Resource_Participant', trx),
                 ParticipantDefinitionId: {
-                    datatype: 'integral',
+                    datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Participant') }),
                     choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
@@ -288,7 +288,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
 
                 // IsActive & Audit info
-                SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };

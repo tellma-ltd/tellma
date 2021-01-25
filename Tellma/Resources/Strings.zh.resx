@@ -2719,6 +2719,9 @@
   <data name="ShortMonth9" xml:space="preserve">
     <value>九月</value>
   </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>Puagme</value>
+  </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>1季度</value>
   </data>
