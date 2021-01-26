@@ -1,5 +1,3 @@
-import { PropDescriptor } from './entities/base/metadata';
-
 class OperatorInfo {
     constructor(public precedence: number, public associativity: 'left' | 'right') { }
 
@@ -137,7 +135,7 @@ function isDirectionKeyword(token: string): QxDirection {
 
 export class Queryex {
 
-    public static parseSingleton(
+    public static parseSingle(
         expressionString: string,
         options?: {
             expectDirKeywords?: boolean,
@@ -147,7 +145,7 @@ export class Queryex {
 
         const expArray = Queryex.parse(expressionString, options);
         if (expArray.length > 1) {
-          throw new Error(`Expression cannot contain top level commas.`);
+            throw new Error(`Expression cannot contain top level commas.`);
         } else if (expArray.length === 1) {
             return expArray[0];
         }
@@ -951,7 +949,6 @@ export class QueryexBit extends QueryexBase {
 
 export class QueryexParameter extends QueryexBase {
     public keyLower: string;
-    public desc: PropDescriptor;
 
     private static properFirstChar(token: string): boolean {
         return !!token && token[0] === '@';

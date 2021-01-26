@@ -72,7 +72,7 @@
 
                 <!-- Fields List -->
                 <div class="t-studio-source-area" cdkDropList #fields="cdkDropList"
-                    [cdkDropListConnectedTo]="[rows, columns, measures, select]"
+                    [cdkDropListConnectedTo]="[rows, columns, measures, select, drilldown_select]"
                     (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="allFields(model)"
                     cdkDropListSortingDisabled>
 
@@ -123,339 +123,6 @@
                 </div>
             </div>
             <div class="flex-grow-1 overflow-auto">
-
-                <!-- Data Section -->
-                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Data')">
-                    &nbsp;
-                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Data'))"
-                        [rotate]="rotateIcon(showSection('Data'))">
-                    </fa-icon>
-                    &nbsp;
-                    {{ 'Data' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="dataSectionErrors(model)">
-                    </fa-icon>
-                </div>
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Data')">
-
-                    <!-- Summary/Details -->
-                    <div class="form-group">
-                        <label class="small d-block">{{ ('ReportDefinition_Type' | translate)}}</label>
-                        <div class="custom-control custom-radio custom-control-inline mx-0">
-                            <input class="custom-control-input" type="radio" name="type" id="type_summary"
-                                value="Summary" [checked]="model.Type === 'Summary'"
-                                (change)="model.Type = 'Summary'; onDefinitionChange(model);">
-                            <label class="custom-control-label" for="type_summary">{{ 'ReportDefinition_Type_Summary' |
-                                translate }}</label>
-                        </div>
-                        &nbsp;&nbsp;
-                        <div class="custom-control custom-radio custom-control-inline mx-0">
-                            <input class="custom-control-input" type="radio" name="type" id="type_details"
-                                value="Details" [checked]="model.Type === 'Details'"
-                                (change)="model.Type = 'Details'; onDefinitionChange(model);">
-                            <label class="custom-control-label" for="type_details">{{ 'ReportDefinition_Type_Details' |
-                                translate }}</label>
-                        </div>
-                    </div>
-
-                    <!-- Rows -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Summary'">
-                        <label class="small">{{ 'ReportDefinition_Rows' | translate }}</label>
-                        <div class="t-studio-drop-area" cdkDropList #rows="cdkDropList"
-                            [cdkDropListConnectedTo]="[fields, columns, measures]"
-                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getRows(model)">
-
-                            <div class="py-1 px-2 t-drag-label" *ngIf="!getRows(model).length">
-                                <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
-                            </div>
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let dim of getRows(model); let i = index;" cdkDrag>
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                                        *ngIf="dimensionErrors(dim)">
-                                    </fa-icon>
-                                    <span class="flex-grow-1 text-truncate">
-                                        <span> {{ dim.KeyExpression }} </span>
-                                    </span>
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureRow(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                    &nbsp;
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onDeleteRow(i, model)" [title]="'Delete' | translate">
-                                        <fa-icon icon="times"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columns -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Summary'">
-                        <label class="small">{{ 'ReportDefinition_Columns' | translate }}</label>
-                        <div class="t-studio-drop-area" cdkDropList #columns="cdkDropList"
-                            [cdkDropListConnectedTo]="[fields, rows, measures]"
-                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getColumns(model)">
-                            <div class="py-1 px-2 t-drag-label" *ngIf="!getColumns(model).length">
-                                <span class="small t-studio-area-watermark ">{{ 'DragFieldsHere' | translate }}</span>
-                            </div>
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let dim of getColumns(model); let i = index;" cdkDrag>
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                                        *ngIf="dimensionErrors(dim)">
-                                    </fa-icon>
-                                    <span class="flex-grow-1 text-truncate">
-                                        <span> {{ dim.KeyExpression }} </span>
-                                    </span>
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureColumn(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                    &nbsp;
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onDeleteColumn(i, model)" [title]="'Delete' | translate">
-                                        <fa-icon icon="times"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Measures -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Summary'">
-                        <label class="small">{{ 'ReportDefinition_Measures' | translate }}</label>
-                        <div class="t-studio-drop-area" cdkDropList #measures="cdkDropList"
-                            [cdkDropListConnectedTo]="[fields, rows, columns]"
-                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getMeasures(model)">
-                            <div class="py-1 px-2 t-drag-label" *ngIf="!getMeasures(model).length">
-                                <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
-                            </div>
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let measure of getMeasures(model); let i = index;" cdkDrag>
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                                        *ngIf="weakEntityErrors(measure)">
-                                    </fa-icon>
-
-                                    <span class="flex-grow-1 text-truncate">
-                                        <span> {{ measure.Expression }} </span>
-                                    </span>
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureMeasure(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                    &nbsp;
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onDeleteMeasure(i, model)" [title]="'Delete' | translate">
-                                        <fa-icon icon="times"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Show Columns Total -->
-                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'"
-                        *ngIf="!!model.Columns?.length">
-                        <input type="checkbox" class="custom-control-input" id="showColumnsTotal"
-                            [(ngModel)]="model.ShowColumnsTotal" (ngModelChange)="onDefinitionChange(model)">
-                        <label class="custom-control-label" for="showColumnsTotal">{{
-                            'ReportDefinition_ShowColumnsTotal' | translate }}</label>
-                    </div>
-
-                    <!-- Show Rows Total -->
-                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'"
-                        *ngIf="!!model.Rows?.length">
-                        <input type="checkbox" class="custom-control-input" id="showRowsTotal"
-                            [(ngModel)]="model.ShowRowsTotal" (ngModelChange)="onDefinitionChange(model)">
-                        <label class="custom-control-label" for="showRowsTotal">{{ 'ReportDefinition_ShowRowsTotal' |
-                            translate }}</label>
-                    </div>
-
-                    <div class="custom-control custom-checkbox"
-                        *ngIf="(!!model.Rows?.length && model.ShowRowsTotal) || (!!model.Columns?.length && model.ShowColumnsTotal)">
-                        <button class="btn btn-sm t-text-whitish btn-link p-0 border-0 font-weight-normal"
-                            (click)="onConfigureTotalLabels(model)">{{ ('CustomizeLabels') | translate }}...</button>
-                    </div>
-
-                    <!-- Select -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Details'">
-                        <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>
-                        <div class="t-studio-drop-area" style="height: 10rem;" cdkDropList #select="cdkDropList"
-                            [cdkDropListConnectedTo]="[fields, rows, columns]"
-                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getSelect(model)">
-                            <div class="py-1 px-2 t-drag-label" *ngIf="!getSelect(model).length">
-                                <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
-                            </div>
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let select of getSelect(model); let i = index;" cdkDrag>
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                                        *ngIf="weakEntityErrors(select)">
-                                    </fa-icon>
-                                    <span class="flex-grow-1 text-truncate">
-                                        {{ select.Expression }}
-                                    </span>
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureSelect(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                    &nbsp;
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onDeleteSelect(i, model)" [title]="'Delete' | translate">
-                                        <fa-icon icon="times"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order By -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Details'"
-                        [class.is-invalid]="invalid(orderby, model.serverErrors?.OrderBy)">
-                        <label class="small" for="orderby">{{ 'ReportDefinition_OrderBy' | translate }}</label>
-                        <input class="form-control t-studio-input" id="orderby" type="text" [(ngModel)]="model.OrderBy"
-                            (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #orderby="ngModel" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: orderby, serverErrors: model.serverErrors?.OrderBy }">
-                        </ng-container>
-                    </div>
-
-                    <!-- Top -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Details'"
-                        [class.is-invalid]="invalid(top, model.serverErrors?.Top)">
-                        <label class="small" for="top">{{ 'ReportDefinition_Top' | translate }}</label>
-                        <input class="form-control t-studio-input" id="top" type="number" [(ngModel)]="model.Top"
-                            (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #top="ngModel" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: top, serverErrors: model.serverErrors?.Top }">
-                        </ng-container>
-                    </div>
-                </div>
-
-                <!-- Filter Section -->
-                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Filter')">
-                    &nbsp;
-                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Filter'))"
-                        [rotate]="rotateIcon(showSection('Filter'))">
-                    </fa-icon>
-                    &nbsp;
-                    {{ 'Filter' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="filterSectionErrors(model)">
-                    </fa-icon>
-                </div>
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Filter')">
-
-                    <!-- Filter -->
-                    <div class="form-group" [class.is-invalid]="invalid(filter, model.serverErrors?.Filter)">
-                        <label class="small" for="filter">{{ 'ReportDefinition_Filter' | translate }}</label>
-                        <textarea class="form-control t-studio-input t-no-resize" rows="6" id="filter" type="text"
-                            [(ngModel)]="model.Filter" (ngModelChange)="validateModel(model)"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
-                            autocapitalize="off" spellcheck="false" #filter="ngModel"
-                            [placeholder]="'Expression' | translate"></textarea>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: filter, serverErrors: model.serverErrors?.Filter }">
-                        </ng-container>
-                    </div>
-
-                    <!-- Having -->
-                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)">
-                        <label class="small" for="having">{{ 'ReportDefinition_Having' | translate }}</label>
-                        <textarea class="form-control t-studio-input t-no-resize" rows="6" id="having" type="text"
-                            [(ngModel)]="model.Having" (ngModelChange)="validateModel(model)"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
-                            autocapitalize="off" spellcheck="false" #having="ngModel"
-                            [placeholder]="'Expression' | translate"></textarea>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: having, serverErrors: model.serverErrors?.Having }">
-                        </ng-container>
-                    </div>
-
-                    <!-- Parameters -->
-                    <div class="form-group" *ngIf="!!getParameters(model).length">
-                        <label class="small">{{ 'ReportDefinition_Parameters' | translate }}</label>
-                        <div class="t-studio-drop-area" style="border-style: solid;" cdkDropList
-                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getParameters(model)">
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let param of getParameters(model); let i = index;" cdkDrag>
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                                        *ngIf="weakEntityErrors(param)">
-                                    </fa-icon>
-                                    <fa-icon icon="lock" *ngIf="!!getParameterDescriptor(param.Key, model)"
-                                        title="{{ 'BuiltInParameter' | translate }}"></fa-icon>
-                                    &nbsp;
-                                    <span class="flex-grow-1 text-truncate">
-                                        {{ '@' + param.Key }}
-                                    </span>
-
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureParameter(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart Section -->
-                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Chart')"
-                    *ngIf="model.Type === 'Summary'">
-                    &nbsp;
-                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Chart'))"
-                        [rotate]="rotateIcon(showSection('Chart'))">
-                    </fa-icon>
-                    &nbsp;
-                    {{ 'Chart' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="chartSectionErrors(model)">
-                    </fa-icon>
-                </div>
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Chart')"
-                    *ngIf="model.Type === 'Summary'">
-
-                    <!-- Chart -->
-                    <div class="form-group" [class.is-invalid]="invalid(chart, model.serverErrors?.Chart)">
-                        <label class="small" for="chart">{{ 'ReportDefinition_Chart' | translate }}</label>
-                        <select class="form-control t-studio-input" id="chart" [ngModel]="model.Chart"
-                            (ngModelChange)="onChartChange($event, model)" #chart="ngModel">
-                            <option value=""></option>
-                            <option *ngFor="let chart of allCharts" value="{{chart.value}}">
-                                {{ chart.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: chart, serverErrors: model.serverErrors?.Chart }">
-                        </ng-container>
-                    </div>
-
-                    <!-- Defaults to Chart -->
-                    <div class="custom-control custom-checkbox" *ngIf="!!model.Chart">
-                        <input type="checkbox" class="custom-control-input" id="defaultsToChart"
-                            [(ngModel)]="model.DefaultsToChart"
-                            (ngModelChange)="onDefinitionChange(model, 'DefaultsToChart')">
-                        <label class="custom-control-label" for="defaultsToChart">{{ 'ReportDefinition_DefaultsToChart'
-                            | translate }}</label>
-                    </div>
-                </div>
 
                 <!-- Title Section -->
                 <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Title')">
@@ -548,6 +215,434 @@
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: description3, serverErrors: model.serverErrors?.Description3 }">
                         </ng-container>
+                    </div>
+                </div>
+
+                <!-- Data Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Data')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Data'))"
+                        [rotate]="rotateIcon(showSection('Data'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Data' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="dataSectionErrors(model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Data')">
+
+                    <!-- Summary/Details -->
+                    <div class="form-group">
+                        <label class="small d-block">{{ ('ReportDefinition_Type' | translate)}}</label>
+                        <div class="custom-control custom-radio custom-control-inline mx-0">
+                            <input class="custom-control-input" type="radio" name="type" id="type_summary"
+                                value="Summary" [checked]="model.Type === 'Summary'"
+                                (change)="model.Type = 'Summary'; onDefinitionChange(model);">
+                            <label class="custom-control-label" for="type_summary">{{ 'ReportDefinition_Type_Summary' |
+                                translate }}</label>
+                        </div>
+                        &nbsp;&nbsp;
+                        <div class="custom-control custom-radio custom-control-inline mx-0">
+                            <input class="custom-control-input" type="radio" name="type" id="type_details"
+                                value="Details" [checked]="model.Type === 'Details'"
+                                (change)="model.Type = 'Details'; onDefinitionChange(model);">
+                            <label class="custom-control-label" for="type_details">{{ 'ReportDefinition_Type_Details' |
+                                translate }}</label>
+                        </div>
+                    </div>
+                    <div [class.d-none]="model.Type !== 'Summary'">
+
+                        <!-- Rows -->
+                        <div class="form-group">
+                            <label class="small">{{ 'ReportDefinition_Rows' | translate }}</label>
+                            <div class="t-studio-drop-area" cdkDropList #rows="cdkDropList"
+                                [cdkDropListConnectedTo]="[fields, columns, measures]"
+                                (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getRows(model)">
+
+                                <div class="py-1 px-2 t-drag-label" *ngIf="!getRows(model).length">
+                                    <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate
+                                        }}</span>
+                                </div>
+                                <div class="t-studio-drop-row t-draggable"
+                                    *ngFor="let dim of getRows(model); let i = index;" cdkDrag>
+                                    <div class="d-flex">
+                                        <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                            *ngIf="dimensionErrors(dim)">
+                                        </fa-icon>
+                                        <span class="flex-grow-1 text-truncate">
+                                            <span> {{ dim.KeyExpression }} </span>
+                                        </span>
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onConfigureRow(i, model)" [title]="'Configure' | translate">
+                                            <fa-icon icon="cog"></fa-icon>
+                                        </button>
+                                        &nbsp;
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onDeleteRow(i, model)" [title]="'Delete' | translate">
+                                            <fa-icon icon="times"></fa-icon>
+                                        </button>
+                                    </div>
+                                    <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                        &zwnj;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columns -->
+                        <div class="form-group">
+                            <label class="small">{{ 'ReportDefinition_Columns' | translate }}</label>
+                            <div class="t-studio-drop-area" cdkDropList #columns="cdkDropList"
+                                [cdkDropListConnectedTo]="[fields, rows, measures]"
+                                (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getColumns(model)">
+                                <div class="py-1 px-2 t-drag-label" *ngIf="!getColumns(model).length">
+                                    <span class="small t-studio-area-watermark ">{{ 'DragFieldsHere' | translate
+                                        }}</span>
+                                </div>
+                                <div class="t-studio-drop-row t-draggable"
+                                    *ngFor="let dim of getColumns(model); let i = index;" cdkDrag>
+                                    <div class="d-flex">
+                                        <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                            *ngIf="dimensionErrors(dim)">
+                                        </fa-icon>
+                                        <span class="flex-grow-1 text-truncate">
+                                            <span> {{ dim.KeyExpression }} </span>
+                                        </span>
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onConfigureColumn(i, model)" [title]="'Configure' | translate">
+                                            <fa-icon icon="cog"></fa-icon>
+                                        </button>
+                                        &nbsp;
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onDeleteColumn(i, model)" [title]="'Delete' | translate">
+                                            <fa-icon icon="times"></fa-icon>
+                                        </button>
+                                    </div>
+                                    <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                        &zwnj;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Measures -->
+                        <div class="form-group">
+                            <label class="small">{{ 'ReportDefinition_Measures' | translate }}</label>
+                            <div class="t-studio-drop-area" cdkDropList #measures="cdkDropList"
+                                [cdkDropListConnectedTo]="[fields, rows, columns]"
+                                (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getMeasures(model)">
+                                <div class="py-1 px-2 t-drag-label" *ngIf="!getMeasures(model).length">
+                                    <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate
+                                        }}</span>
+                                </div>
+                                <div class="t-studio-drop-row t-draggable"
+                                    *ngFor="let measure of getMeasures(model); let i = index;" cdkDrag>
+                                    <div class="d-flex">
+                                        <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                            *ngIf="weakEntityErrors(measure)">
+                                        </fa-icon>
+
+                                        <span class="flex-grow-1 text-truncate">
+                                            <span> {{ measure.Expression }} </span>
+                                        </span>
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onConfigureMeasure(i, model)" [title]="'Configure' | translate">
+                                            <fa-icon icon="cog"></fa-icon>
+                                        </button>
+                                        &nbsp;
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onDeleteMeasure(i, model)" [title]="'Delete' | translate">
+                                            <fa-icon icon="times"></fa-icon>
+                                        </button>
+                                    </div>
+                                    <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                        &zwnj;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Show Columns Total -->
+                        <div class="custom-control custom-checkbox" *ngIf="!!model.Columns?.length">
+                            <input type="checkbox" class="custom-control-input" id="showColumnsTotal"
+                                [(ngModel)]="model.ShowColumnsTotal" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label" for="showColumnsTotal">{{
+                                'ReportDefinition_ShowColumnsTotal' | translate }}</label>
+                        </div>
+
+                        <!-- Show Rows Total -->
+                        <div class="custom-control custom-checkbox" *ngIf="!!model.Rows?.length">
+                            <input type="checkbox" class="custom-control-input" id="showRowsTotal"
+                                [(ngModel)]="model.ShowRowsTotal" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label" for="showRowsTotal">{{ 'ReportDefinition_ShowRowsTotal'
+                                |
+                                translate }}</label>
+                        </div>
+
+                        <!-- Customize Labels -->
+                        <div class="custom-control custom-checkbox"
+                            *ngIf="(!!model.Rows?.length && model.ShowRowsTotal) || (!!model.Columns?.length && model.ShowColumnsTotal)">
+                            <button class="btn btn-sm t-text-whitish btn-link p-0 border-0 font-weight-normal"
+                                (click)="onConfigureTotalLabels(model)">{{ ('CustomizeLabels') | translate
+                                }}...</button>
+
+
+                            <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                *ngIf="customizeLabelsErrors(model)">
+                            </fa-icon>
+                        </div>
+                    </div>
+
+                    <div [class.d-none]="model.Type !== 'Details'">
+
+                        <!-- Select -->
+                        <div class="form-group">
+                            <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>
+                            <div class="t-studio-drop-area" style="height: 10rem;" cdkDropList #select="cdkDropList"
+                                [cdkDropListConnectedTo]="[fields]" (cdkDropListDropped)="drop($event, model)"
+                                [cdkDropListData]="getSelect(model)">
+                                <div class="py-1 px-2 t-drag-label" *ngIf="!getSelect(model).length">
+                                    <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate
+                                        }}</span>
+                                </div>
+                                <div class="t-studio-drop-row t-draggable"
+                                    *ngFor="let select of getSelect(model); let i = index;" cdkDrag>
+                                    <div class="d-flex">
+                                        <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                            *ngIf="weakEntityErrors(select)">
+                                        </fa-icon>
+                                        <span class="flex-grow-1 text-truncate">
+                                            {{ select.Expression }}
+                                        </span>
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onConfigureSelect(i, model)" [title]="'Configure' | translate">
+                                            <fa-icon icon="cog"></fa-icon>
+                                        </button>
+                                        &nbsp;
+                                        <button
+                                            class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                            (click)="onDeleteSelect(i, model)" [title]="'Delete' | translate">
+                                            <fa-icon icon="times"></fa-icon>
+                                        </button>
+                                    </div>
+                                    <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                        &zwnj;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order By -->
+                        <div class="form-group" [class.is-invalid]="invalid(orderby, model.serverErrors?.OrderBy)">
+                            <label class="small" for="orderby">{{ 'ReportDefinition_OrderBy' | translate }}</label>
+                            <input class="form-control t-studio-input" id="orderby" type="text"
+                                [(ngModel)]="model.OrderBy" (ngModelChange)="onDefinitionChange(model)"
+                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #orderby="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: orderby, serverErrors: model.serverErrors?.OrderBy }">
+                            </ng-container>
+                        </div>
+
+                        <!-- Top -->
+                        <div class="form-group" [class.is-invalid]="invalid(top, model.serverErrors?.Top)">
+                            <label class="small" for="top">{{ 'ReportDefinition_Top' | translate }}</label>
+                            <input class="form-control t-studio-input" id="top" type="number" [(ngModel)]="model.Top"
+                                (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
+                                autocomplete="off" #top="ngModel" />
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: top, serverErrors: model.serverErrors?.Top }">
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Filter')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Filter'))"
+                        [rotate]="rotateIcon(showSection('Filter'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Filter' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="filterSectionErrors(model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Filter')">
+
+                    <!-- Filter -->
+                    <div class="form-group" [class.is-invalid]="invalid(filter, model.serverErrors?.Filter)">
+                        <label class="small" for="filter">{{ 'ReportDefinition_Filter' | translate }}</label>
+                        <textarea class="form-control t-studio-input t-no-resize" rows="6" id="filter" type="text"
+                            [(ngModel)]="model.Filter" (ngModelChange)="onFilterChanged(model)"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false" #filter="ngModel"
+                            [placeholder]="'Expression' | translate"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: filter, serverErrors: model.serverErrors?.Filter }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Having -->
+                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)">
+                        <label class="small" for="having">{{ 'ReportDefinition_Having' | translate }}</label>
+                        <textarea class="form-control t-studio-input t-no-resize" rows="6" id="having" type="text"
+                            [(ngModel)]="model.Having" (ngModelChange)="onHavingChanged(model)"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false" #having="ngModel"
+                            [placeholder]="'Expression' | translate"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: having, serverErrors: model.serverErrors?.Having }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Parameters -->
+                    <div class="form-group" *ngIf="!!getParameters(model).length">
+                        <label class="small">{{ 'ReportDefinition_Parameters' | translate }}</label>
+                        <div class="t-studio-drop-area" style="border-style: solid;" cdkDropList
+                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getParameters(model)">
+                            <div class="t-studio-drop-row t-draggable"
+                                *ngFor="let param of getParameters(model); let i = index;" cdkDrag>
+                                <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                        *ngIf="weakEntityErrors(param)">
+                                    </fa-icon>
+                                    <span class="flex-grow-1 text-truncate">
+                                        {{ '@' + param.Key }}
+                                    </span>
+
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                        (click)="onConfigureParameter(i, model)" [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drilldown Section -->
+                <div [class.d-none]="model.Type !== 'Summary'">
+                    <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Drilldown')">
+                        &nbsp;
+                        <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Drilldown'))"
+                            [rotate]="rotateIcon(showSection('Drilldown'))">
+                        </fa-icon>
+                        &nbsp;
+                        {{ 'Drilldown' | translate }}
+                        <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="drilldownSectionErrors(model)">
+                        </fa-icon>
+                    </div>
+                    <div class="p-2 t-studio-section" [class.d-none]="!showSection('Drilldown')">
+
+                        <!-- IsCustomDrilldown -->
+                        <div class="custom-control custom-checkbox pb-3">
+                            <input type="checkbox" class="custom-control-input" id="iscustomdrilldown"
+                                [(ngModel)]="model.IsCustomDrilldown" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label" for="iscustomdrilldown">{{
+                                'ReportDefinition_IsCustomDrilldown' | translate }}</label>
+                        </div>
+
+                        <div [class.d-none]="!model.IsCustomDrilldown">
+
+                            <!-- Select -->
+                            <div class="form-group">
+                                <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>
+                                <div class="t-studio-drop-area" style="height: 10rem;" cdkDropList
+                                    #drilldown_select="cdkDropList" [cdkDropListConnectedTo]="[fields]"
+                                    (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getSelect(model)">
+                                    <div class="py-1 px-2 t-drag-label" *ngIf="!getSelect(model).length">
+                                        <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate
+                                            }}</span>
+                                    </div>
+                                    <div class="t-studio-drop-row t-draggable"
+                                        *ngFor="let select of getSelect(model); let i = index;" cdkDrag>
+                                        <div class="d-flex">
+                                            <fa-icon class="t-light-danger mx-1" icon="exclamation"
+                                                *ngIf="weakEntityErrors(select)">
+                                            </fa-icon>
+                                            <span class="flex-grow-1 text-truncate">
+                                                {{ select.Expression }}
+                                            </span>
+                                            <button
+                                                class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                                (click)="onConfigureSelect(i, model)" [title]="'Configure' | translate">
+                                                <fa-icon icon="cog"></fa-icon>
+                                            </button>
+                                            &nbsp;
+                                            <button
+                                                class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                                (click)="onDeleteSelect(i, model)" [title]="'Delete' | translate">
+                                                <fa-icon icon="times"></fa-icon>
+                                            </button>
+                                        </div>
+                                        <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                            &zwnj;
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order By -->
+                            <div class="form-group" [class.is-invalid]="invalid(orderby, model.serverErrors?.OrderBy)">
+                                <label class="small" for="drilldown_orderby">{{ 'ReportDefinition_OrderBy' | translate
+                                    }}</label>
+                                <input class="form-control t-studio-input" id="drilldown_orderby" type="text"
+                                    [(ngModel)]="model.OrderBy" (ngModelChange)="onDefinitionChange(model)"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #orderby="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: orderby, serverErrors: model.serverErrors?.OrderBy }">
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Chart')"
+                    *ngIf="model.Type === 'Summary'">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Chart'))"
+                        [rotate]="rotateIcon(showSection('Chart'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Chart' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="chartSectionErrors(model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Chart')"
+                    *ngIf="model.Type === 'Summary'">
+
+                    <!-- Chart -->
+                    <div class="form-group" [class.is-invalid]="invalid(chart, model.serverErrors?.Chart)">
+                        <label class="small" for="chart">{{ 'ReportDefinition_Chart' | translate }}</label>
+                        <select class="form-control t-studio-input" id="chart" [ngModel]="model.Chart"
+                            (ngModelChange)="onChartChange($event, model)" #chart="ngModel">
+                            <option value=""></option>
+                            <option *ngFor="let chart of allCharts" value="{{chart.value}}">
+                                {{ chart.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: chart, serverErrors: model.serverErrors?.Chart }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Defaults to Chart -->
+                    <div class="custom-control custom-checkbox" *ngIf="!!model.Chart">
+                        <input type="checkbox" class="custom-control-input" id="defaultsToChart"
+                            [(ngModel)]="model.DefaultsToChart"
+                            (ngModelChange)="onDefinitionChange(model, 'DefaultsToChart')">
+                        <label class="custom-control-label" for="defaultsToChart">{{ 'ReportDefinition_DefaultsToChart'
+                            | translate }}</label>
                     </div>
                 </div>
 
@@ -647,7 +742,7 @@
 
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <ng-container *ngIf="invalid(control, serverErrors)">
-        <div class="small t-light-danger">
+        <div class="small t-light-danger text-wrap">
             <span *ngFor="let e of errors(control, serverErrors)">
                 {{ e() }}
             </span>
@@ -734,12 +829,22 @@
 
             <!-- ShowAsTree -->
             <div class="form-group col-12 col-sm-6" *ngIf="showShowAsTree(dimToEdit, modelRef)">
-                <label class="small">&zwnj;</label>
-                <div class="custom-control custom-checkbox">
+                <label class="small">{{ 'ReportDefinition_ShowAsTree' | translate }}</label>
+                <div class="custom-control custom-checkbox t-labelless-checkbox">
                     <input type="checkbox" class="custom-control-input" id="showastree"
                         [(ngModel)]="dimToEdit.ShowAsTree" (ngModelChange)="dimToEditHasChanged = true">
-                    <label class="custom-control-label" for="showastree">{{ 'ReportDefinition_ShowAsTree' |
-                        translate }}</label>
+                    <label class="custom-control-label" for="showastree">&zwnj;</label>
+                </div>
+            </div>
+
+            <!-- ShowEmptyMembers -->
+            <div class="form-group col-12 col-sm-6" *ngIf="showShowEmptyMembers(dimToEdit, modelRef)">
+                <label class="small">{{ 'ReportDefinition_ShowEmptyMembers' |
+                    translate }}</label>
+                <div class="custom-control custom-checkbox t-labelless-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="showemptymembers"
+                        [(ngModel)]="dimToEdit.ShowEmptyMembers" (ngModelChange)="dimToEditHasChanged = true">
+                    <label class="custom-control-label" for="showemptymembers">&zwnj;</label>
                 </div>
             </div>
 
@@ -758,27 +863,16 @@
             <ng-template #autoexpandlevelfield>
                 <!-- Checkbox -->
                 <div class="form-group col-12 col-sm-6">
-                    <label class="small">&zwnj;</label>
-                    <div class="custom-control custom-checkbox">
+                    <label class="small">{{ 'ReportDefinition_AutoExpand' |
+                        translate }}</label>
+                    <div class="custom-control custom-checkbox t-labelless-checkbox">
                         <input type="checkbox" class="custom-control-input" id="autoexpandlevel"
                             [ngModel]="dimToEdit.AutoExpandLevel > 0"
                             (ngModelChange)="dimToEdit.AutoExpandLevel = ($event ? 1 : 0); dimToEditHasChanged = true">
-                        <label class="custom-control-label" for="autoexpandlevel">{{ 'ReportDefinition_AutoExpand' |
-                            translate }}</label>
+                        <label class="custom-control-label" for="autoexpandlevel">&zwnj;</label>
                     </div>
                 </div>
             </ng-template>
-
-            <!-- ShowEmptyMembers -->
-            <div class="form-group col-12 col-sm-6" *ngIf="showShowEmptyMembers(dimToEdit, modelRef)">
-                <label class="small">&zwnj;</label>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="showemptymembers"
-                        [(ngModel)]="dimToEdit.ShowEmptyMembers" (ngModelChange)="dimToEditHasChanged = true">
-                    <label class="custom-control-label" for="showemptymembers">{{ 'ReportDefinition_ShowEmptyMembers' |
-                        translate }}</label>
-                </div>
-            </div>
 
             <!-- Dimension Attributes -->
             <div class="form-group col-12 overflow-auto" *ngIf="showDimensionAttributes(dimToEdit, modelRef)">
@@ -1259,7 +1353,10 @@
                     <input class="form-control t-studio-input" id="columnstotallabel" type="text"
                         [(ngModel)]="totalLabelsToEdit.ColumnsTotalLabel"
                         (ngModelChange)="totalLabelsToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                        autocomplete="off" #columnstotallabel="ngModel" />
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: columnstotallabel, serverErrors: totalLabelsToEdit?.serverErrors?.ColumnsTotalLabel }">
+                    </ng-container>
                 </div>
 
                 <!-- ColumnsTotalLabel2 -->
@@ -1270,7 +1367,10 @@
                     <input class="form-control t-studio-input" id="columnstotallabel2" type="text"
                         [(ngModel)]="totalLabelsToEdit.ColumnsTotalLabel2"
                         (ngModelChange)="totalLabelsToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                        autocomplete="off" #columnstotallabel2="ngModel" />
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: columnstotallabel2, serverErrors: totalLabelsToEdit?.serverErrors?.ColumnsTotalLabel2 }">
+                    </ng-container>
                 </div>
 
                 <!-- ColumnsTotalLabel3 -->
@@ -1281,7 +1381,10 @@
                     <input class="form-control t-studio-input" id="columnstotallabel3" type="text"
                         [(ngModel)]="totalLabelsToEdit.ColumnsTotalLabel3"
                         (ngModelChange)="totalLabelsToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                        autocomplete="off" #columnstotallabel3="ngModel" />
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: columnstotallabel3, serverErrors: totalLabelsToEdit?.serverErrors?.ColumnsTotalLabel3 }">
+                    </ng-container>
                 </div>
             </ng-container>
 
@@ -1295,7 +1398,10 @@
                     <input class="form-control t-studio-input" id="rowstotallabel" type="text"
                         [(ngModel)]="totalLabelsToEdit.RowsTotalLabel"
                         (ngModelChange)="totalLabelsToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" />
+                        autocomplete="off" #rowstotallabel="ngModel" />
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: rowstotallabel, serverErrors: totalLabelsToEdit?.serverErrors?.RowsTotalLabel }">
+                    </ng-container>
                 </div>
 
                 <!-- RowsTotalLabel2 -->

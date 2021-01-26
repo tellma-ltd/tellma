@@ -1,7 +1,10 @@
 // tslint:disable:max-line-length
 import { TranslateService } from '@ngx-translate/core';
+import { ReportDefinitionDimensionForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
+import { DefinitionVisibility } from './entities/base/definition-common';
 import { Collection, DataType, entityDescriptorImpl, getNavPropertyFromForeignKey, metadata, NavigationPropDescriptor, PropDescriptor, PropVisualDescriptor } from './entities/base/metadata';
-import { QueryexBase, QueryexBinaryOperator, QueryexBit, QueryexColumnAccess, QueryexFunction, QueryexNull, QueryexNumber, QueryexParameter, QueryexQuote, QueryexUnaryOperator } from './queryex';
+import { Queryex, QueryexBase, QueryexBinaryOperator, QueryexBit, QueryexColumnAccess, QueryexFunction, QueryexNull, QueryexNumber, QueryexParameter, QueryexQuote, QueryexUnaryOperator } from './queryex';
+import { descFromControlOptions } from './util';
 import { WorkspaceService } from './workspace.service';
 
 type Calendar = 'GR' | 'ET' | 'UQ';
@@ -75,11 +78,16 @@ function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor,
         // If they're both entities with the same control and defId, return that with the filter conjunction
         if (isNavPropDescriptor(d1) && isNavPropDescriptor(d2)) {
             if (d1.definitionId === d2.definitionId && d1.control === d2.control) {
-                let filter = d1.filter;
-                if (!filter) {
-                    filter = d2.filter;
-                } else if (!!d2.filter) {
-                    filter = `(${filter}) and (${d2.filter})`;
+                let filter: string;
+                if (d1.filter === d2.filter) {
+                    filter = d1.filter;
+                } else {
+                    filter = d1.filter;
+                    if (!filter) {
+                        filter = d2.filter;
+                    } else if (!!d2.filter) {
+                        filter = `(${filter}) and (${d2.filter})`;
+                    }
                 }
 
                 return {
@@ -91,8 +99,22 @@ function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor,
                     foreignKeyName: d1.foreignKeyName
                 };
             }
-
         } else if (d1.control === 'choice' && d2.control === 'choice') {
+            // Optimization for identical descriptors
+            if (d1.choices.length === d2.choices.length) {
+                let identical = true;
+                for (let i = 0; i < d1.choices.length; i++) {
+                    if (d1.choices[i] !== d2.choices[i]) {
+                        identical = false;
+                        break;
+                    }
+                }
+
+                if (identical) {
+                    return { ...d1 };
+                }
+            }
+
             // If they're both choices, merge the choices
             // Efficiently calculate the union of the two choice arrays
             const tracker = {};
@@ -245,7 +267,7 @@ function getLowestPrecedenceDescFromVisual(desc: PropVisualDescriptor, label: ()
 /**
  * Returns a PropDescriptor from a PropVisualDescriptor and a DataType, if they are compatible, else returns undefined
  */
-export function tryGetDescFromVisual(desc: PropVisualDescriptor, datatype: DataType, label: () => string, wss: WorkspaceService, trx: TranslateService): PropDescriptor {
+function tryGetDescFromVisual(desc: PropVisualDescriptor, datatype: DataType, label: () => string, wss: WorkspaceService, trx: TranslateService): PropDescriptor {
     switch (desc.control) {
         case 'unsupported':
             switch (datatype) {
@@ -399,18 +421,58 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
     throw new Error(`[Bug] Merging unhandled datatype ${d1.datatype}.`);
 }
 
+function implicitCast(nativeDesc: PropDescriptor, targetType: DataType, hintDesc?: PropDescriptor): PropDescriptor {
+
+    if (nativeDesc.datatype === targetType) {
+        return nativeDesc;
+    } else if (nativeDesc.datatype === 'null') {
+        let desc: PropDescriptor;
+        if (targetType !== 'boolean') {
+            if (!!hintDesc) {
+                desc = { ...hintDesc };
+            } else {
+                desc = tryGetDescFromDatatype(targetType, nativeDesc.label);
+            }
+        }
+
+        return desc;
+    } else if (nativeDesc.datatype === 'bit') {
+        if (targetType === 'numeric') {
+            return {
+                datatype: targetType,
+                control: 'number',
+                minDecimalPlaces: 0,
+                maxDecimalPlaces: 0,
+                label: nativeDesc.label
+            };
+        } else if (targetType === 'boolean') {
+            return {
+                datatype: targetType,
+                control: 'unsupported',
+                label: nativeDesc.label
+            };
+        }
+    }
+}
+
 export interface ExpressionInfo {
     exp?: QueryexBase;
     desc?: PropDescriptor;
 }
 
+export interface ParameterInfo {
+    key: string;
+    desc: PropDescriptor;
+    isRequired: boolean; // true if mentioned in a non-boolean expression
+}
+
 export class QueryexUtil {
 
-    public static differentOverrides(overrides: { [key: string]: PropVisualDescriptor }, maxDescs: { [key: string]: PropDescriptor }): boolean {
-        for (const key of Object.keys(maxDescs)) {
-            const maxDesc = maxDescs[key];
-            const override = overrides[key];
-            if (!isPropDescriptor(override) || maxDesc.datatype !== override.datatype) {
+    public static differentOverrides(autoOverridesCurr: { [key: string]: PropDescriptor }, autoOverridesPrev: { [key: string]: PropDescriptor }): boolean {
+        for (const key of Object.keys(autoOverridesCurr)) {
+            const autoOverridePrev = autoOverridesPrev[key];
+            const autoOverrideCurr = autoOverridesCurr[key];
+            if (autoOverridePrev.datatype !== autoOverrideCurr.datatype) {
                 return true;
             }
         }
@@ -418,92 +480,399 @@ export class QueryexUtil {
         return false;
     }
 
-    public static parameterMaxDescs(
-        expressions: QueryexBase[],
-        defaultExpressions: { [key: string]: ExpressionInfo }): { [key: string]: PropDescriptor } {
+    public static getParameterDescriptors(
+        model: ReportDefinitionForClient,
+        wss: WorkspaceService,
+        trx: TranslateService): { [keyLower: string]: ParameterInfo } {
 
-        // (1) Group all parameters by key
-        const lowerKeys: { [key: string]: string } = {};
-        const parameters: { [key: string]: QueryexParameter[] } = {};
-        for (const exp of expressions) {
-            for (const p of exp.parameters()) {
-                // This makes the keys case-insensitive while keeping the original keys casing
-                if (!lowerKeys[p.keyLower]) {
-                    lowerKeys[p.keyLower] = p.key;
-                }
-                const key = lowerKeys[p.keyLower];
+        const coll = model.Collection;
+        const defId = model.DefinitionId;
 
-                if (!!parameters[key]) {
-                    parameters[key].push(p);
+        if (!coll) {
+            throw new Error(`The collection was not specified`);
+        }
+
+        // First prepare overrides
+
+        const autoOverrides: { [keyLower: string]: PropDescriptor } = {};
+        const autoOverridesPrev: { [keyLower: string]: PropDescriptor } = {};
+        const userOverrides: { [keyLower: string]: PropVisualDescriptor } = {};
+        const modelParameters: { [keyLower: string]: { defaultExp: QueryexBase, visibility: DefinitionVisibility } } = {};
+        for (const p of model.Parameters || []) {
+            const keyLower = p.Key.toLowerCase();
+            if (!!p.Control) {
+                userOverrides[keyLower] = descFromControlOptions(wss.currentTenant, p.Control, p.ControlOptions);
+            }
+
+            // The default expression
+            const exp = Queryex.parseSingle(p.DefaultExpression);
+            if (!!exp) {
+                const aggregations = exp.aggregations();
+                const columnAccesses = exp.columnAccesses();
+                const parameters = exp.parameters();
+                if (aggregations.length > 0) {
+                    throw new Error(`Parameter: Default Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                } else if (columnAccesses.length > 0) {
+                    throw new Error(`Parameter: Default Expression cannot contain column access literals like '${columnAccesses[0]}'.`);
+                } else if (parameters.length > 0) {
+                    throw new Error(`Parameter: Default Expression cannot contain parameters like '${parameters[0]}'.`);
                 } else {
-                    parameters[key] = [p];
+                    const desc = QueryexUtil.nativeDesc(exp, undefined, undefined, model.Collection, model.DefinitionId, wss, trx);
+                    switch (desc.datatype) {
+                        case 'boolean':
+                        case 'hierarchyid':
+                        case 'geography':
+                        case 'entity':
+                            throw new Error(`Parameter: Default Expression cannot be of type ${desc.datatype}.`);
+                        default:
+                            autoOverrides[keyLower] = desc;
+                            autoOverridesPrev[keyLower] = desc;
+                    }
+
+                    modelParameters[keyLower] = { defaultExp: exp, visibility: p.Visibility };
                 }
             }
         }
 
-        // Results
-        const result: { [key: string]: PropDescriptor } = {};
 
-        for (const key of Object.keys(parameters)) {
-            const paramsOfKey = parameters[key];
-            const defaultExp = defaultExpressions[key];
+        const filterExp = Queryex.parseSingle(model.Filter);
+        {
+            if (!!filterExp) {
+                const aggregations = filterExp.aggregations();
+                if (aggregations.length > 0) {
+                    throw new Error(`Filter: Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                }
+            }
+        }
 
-            let descMax: PropDescriptor;
-            if (paramsOfKey.length > 1 || !!defaultExp) {
-                // A parameter key has a default expression or is used more than once, must check that the datatypes are consistent
-                for (const p of paramsOfKey) {
-                    if (!descMax) {
-                        descMax = p.desc;
-                    } else if (!!p.desc) {
-                        if (precedence(descMax.datatype) > precedence(p.desc.datatype)) {
-                            descMax = p.desc;
-                            // outSecondCheck.required = true; // Multiple usages of same param but with different native datatypes
-                        } else if (p.desc.datatype === descMax.datatype) {
-                            descMax = mergeDescriptors(p.desc, descMax, p.desc.label);
+        const havingExp = Queryex.parseSingle(model.Having);
+        {
+            if (!!havingExp) {
+                const unaggregated = havingExp.unaggregatedColumnAccesses();
+                if (unaggregated.length > 0) {
+                    throw new Error(`Having: Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+                }
+            }
+        }
+
+        for (const dimension of model.Rows.concat(model.Columns)) {
+            const keyExp = Queryex.parseSingle(dimension.KeyExpression);
+            let keyDesc: PropDescriptor;
+            if (!!keyExp) {
+                const aggregations = keyExp.aggregations();
+                const parameters = keyExp.parameters();
+                if (aggregations.length > 0) {
+                    throw new Error(`Dimension: Key Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                } else if (parameters.length > 0) {
+                    throw new Error(`Dimension: Key Expression cannot contain parameters like '${parameters[0]}'.`);
+                } else {
+                    keyDesc = QueryexUtil.nativeDesc(keyExp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
+                    switch (keyDesc.datatype) {
+                        case 'boolean':
+                        case 'hierarchyid':
+                        case 'geography':
+                            throw new Error(`Dimension: Key Expression cannot be of type ${keyDesc.datatype}.`);
+                    }
+                }
+            } else {
+                throw new Error(`Dimension: Key Expression cannot be empty.`);
+            }
+
+            if (keyDesc.datatype === 'entity') {
+                const dispExp = Queryex.parseSingle(dimension.DisplayExpression);
+                if (!!dispExp) {
+                    const aggregations = dispExp.aggregations();
+                    const parameters = dispExp.parameters();
+                    if (aggregations.length > 0) {
+                        throw new Error(`Dimension: Display Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                    } else if (parameters.length > 0) {
+                        throw new Error(`Dimension: Display Expression cannot contain parameters like '${parameters[0]}'.`);
+                    } else {
+                        const dispDesc = QueryexUtil.nativeDesc(dispExp, userOverrides, autoOverrides, keyDesc.control, keyDesc.definitionId, wss, trx);
+                        switch (dispDesc.datatype) {
+                            case 'boolean':
+                            case 'entity':
+                            case 'hierarchyid':
+                            case 'geography':
+                                throw new Error(`Dimension: Display Expression ${dispExp} cannot be of type ${dispDesc.datatype}.`);
                         }
                     }
                 }
 
-                if (!!descMax && !!defaultExp && !!defaultExp.desc && precedence(descMax.datatype) > precedence(defaultExp.desc.datatype)) {
-                    descMax = defaultExp.desc;
-                    // outSecondCheck.required = true; // The default expression uses a different datatype
+                for (const attribute of dimension.Attributes) {
+                    const exp = Queryex.parseSingle(attribute.Expression);
+                    if (!!exp) {
+                        const aggregations = exp.aggregations();
+                        const parameters = exp.parameters();
+                        if (aggregations.length > 0) {
+                            throw new Error(`Dimension: Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                        } else if (parameters.length > 0) {
+                            throw new Error(`Dimension: Expression cannot contain parameters like '${parameters[0]}'.`);
+                        } else {
+                            const desc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, keyDesc.control, keyDesc.definitionId, wss, trx);
+                            switch (desc.datatype) {
+                                case 'boolean':
+                                case 'entity':
+                                case 'hierarchyid':
+                                case 'geography':
+                                    throw new Error(`Dimension: Attribute Expression ${exp} cannot be of type ${desc.datatype}.`);
+                            }
+                        }
+                    } else {
+                        throw new Error(`Dimension: Attribute Expression cannot be empty.`);
+                    }
                 }
-
-            } else {
-                descMax = paramsOfKey[0].desc;
             }
-
-            result[key] = descMax; // Could be 'null'
         }
 
+        const measureExps: { mainExp: QueryexBase, visualDesc: PropVisualDescriptor, success: QueryexBase, warning: QueryexBase, danger: QueryexBase }[] = [];
+        for (const measure of model.Measures) {
+            const mainExp = Queryex.parseSingle(measure.Expression);
+            if (!!mainExp) {
+                const unaggregated = mainExp.unaggregatedColumnAccesses();
+                if (unaggregated.length > 0) {
+                    throw new Error(`Measure: Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+                }
+            } else {
+                throw new Error(`Measure: Expression cannot be empty.`);
+            }
+
+            function validateHighlightExpression(expString: string, prop: string): QueryexBase {
+                const exp = Queryex.parseSingle(expString, { placeholderReplacement: mainExp });
+                if (!!exp) {
+                    const unaggregated = exp.unaggregatedColumnAccesses();
+                    if (unaggregated.length > 0) {
+                        throw new Error(`Measure ${prop}: Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+                    } else {
+                        const desc = QueryexUtil.tryBooleanDesc(exp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
+                        if (!desc) {
+                            throw new Error(`Measure ${prop}: Expression ${exp} could not be interpreted as a boolean.`);
+                        } else {
+                            return exp;
+                        }
+                    }
+                }
+            }
+
+            // The measure's visual descriptor
+            const visualDesc = measure.Control ? descFromControlOptions(wss.currentTenant, measure.Control, measure.ControlOptions) : null;
+
+            measureExps.push({
+                mainExp,
+                visualDesc,
+                success: validateHighlightExpression(measure.SuccessWhen, 'Success When'),
+                warning: validateHighlightExpression(measure.WarningWhen, 'Warning When'),
+                danger: validateHighlightExpression(measure.DangerWhen, 'Danger When'),
+            });
+        }
+
+        const selectExps: QueryexBase[] = [];
+        if (model.Type === 'Details' || model.IsCustomDrilldown) {
+            for (const select of model.Select) {
+                const exp = Queryex.parseSingle(select.Expression);
+                if (!!exp) {
+                    const aggregations = exp.aggregations();
+                    if (aggregations.length > 0) {
+                        throw new Error(`Select: Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                    } else {
+                        selectExps.push(exp);
+                    }
+                } else {
+                    throw new Error(`Select: Expression cannot be empty.`);
+                }
+            }
+        }
+
+
+        while (true) {
+            // Filter
+            if (!!filterExp) {
+                const desc = QueryexUtil.tryBooleanDesc(filterExp, userOverrides, autoOverrides, coll, defId, wss, trx);
+                if (!desc) {
+                    throw new Error(`Filter: Expression could not be interpreted as a boolean.`);
+                }
+            }
+
+            // Having
+            if (!!havingExp) {
+                const desc = QueryexUtil.tryBooleanDesc(havingExp, userOverrides, autoOverrides, coll, defId, wss, trx);
+                if (!desc) {
+                    throw new Error(`Having: Expression could not be interpreted as a boolean.`);
+                }
+            }
+
+            // Measures
+            for (const { mainExp, visualDesc, success, warning, danger } of measureExps) {
+                const mainDesc = QueryexUtil.nativeDesc(mainExp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
+                switch (mainDesc.datatype) {
+                    case 'boolean':
+                    case 'entity':
+                    case 'hierarchyid':
+                    case 'geography':
+                        throw new Error(`Measure: Expression ${mainExp} cannot be of type ${mainDesc.datatype}.`);
+                }
+
+                function validateHighlightExpression(exp: QueryexBase, prop: string): void {
+                    if (!!exp) {
+                        const desc = QueryexUtil.tryBooleanDesc(exp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
+                        if (!desc) {
+                            throw new Error(`Measure ${prop}: Expression ${exp} could not be interpreted as a boolean.`);
+                        }
+                    }
+                }
+
+                validateHighlightExpression(success, 'Success When');
+                validateHighlightExpression(warning, 'Warning When');
+                validateHighlightExpression(danger, 'Danger When');
+
+                if (!!visualDesc && !tryGetDescFromVisual(visualDesc, mainDesc.datatype, () => '', wss, trx)) {
+                    throw new Error(`Measure: Expression ${mainExp} (${mainDesc.datatype}) is incompatible with the selected control.`);
+                }
+            }
+
+            // Select
+            for (const exp of selectExps) {
+                const desc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
+                switch (desc.datatype) {
+                    case 'boolean':
+                    case 'hierarchyid':
+                    case 'geography':
+                        throw new Error(`Select: Expression ${exp} cannot be of type ${desc.datatype}.`);
+                }
+            }
+
+            // Result
+            {
+                // First figure out if the overrides have changed
+                let different = false;
+                for (const key of Object.keys(autoOverrides)) {
+                    const autoOverride = autoOverrides[key];
+                    const autoOverridePrev = autoOverridesPrev[key];
+                    if (!autoOverridePrev || autoOverridePrev.datatype !== autoOverride.datatype) {
+                        different = true;
+                        break;
+                    }
+                }
+
+                if (different) {
+                    // Copy back for next iteration
+                    for (const key of Object.keys(autoOverrides)) {
+                        autoOverridesPrev[key] = autoOverrides[key];
+                    }
+                } else {
+                    // Parameter descriptors have stabilized -> break the loop
+                    break;
+                }
+            }
+        }
+
+        // Gather the prams from all expressions that may contain them
+        const params: QueryexParameter[] = [];
+        const requiredParams: QueryexParameter[] = [];
+        if (!!filterExp) {
+            filterExp.parametersInner(params);
+        }
+        if (!!havingExp) {
+            havingExp.parametersInner(params);
+        }
+        for (const { mainExp, success, warning, danger } of measureExps) {
+            mainExp.parametersInner(params);
+            mainExp.parametersInner(requiredParams);
+            if (!!success) {
+                success.parametersInner(params);
+            }
+            if (!!warning) {
+                warning.parametersInner(params);
+            }
+            if (!!danger) {
+                danger.parametersInner(params);
+            }
+        }
+        for (const exp of selectExps) {
+            exp.parametersInner(params);
+            exp.parametersInner(requiredParams);
+        }
+
+        const keysDic: { [keyLower: string]: string } = {};
+        const keysLower: string[] = [];
+        for (const param of params) {
+            if (!keysDic[param.keyLower]) {
+                keysDic[param.keyLower] = param.key;
+                keysLower.push(param.keyLower);
+            }
+        }
+
+        // Put required parameter keys in a dictionary
+        const requiredKeysDic: { [keyLower: string]: boolean } = {};
+        for (const param of requiredParams) {
+            requiredKeysDic[param.keyLower] = true;
+        }
+
+        const result: { [keyLower: string]: ParameterInfo } = {};
+        for (const keyLower of keysLower) {
+
+            // Get the key in its proper form
+            const key = keysDic[keyLower];
+
+            // Get whether this parameter is required
+            const isRequired = !!requiredKeysDic[keyLower];
+
+            // Get the final descriptor of the parameter
+            const desc = autoOverrides[keyLower];
+
+            // Some last minute validation
+            if (!!modelParameters[keyLower]) { // Could be a brand new parameter
+                const { defaultExp, visibility } = modelParameters[keyLower];
+                if (!defaultExp) {
+                    // Make sure required parameters always have a value at hand.
+                    if (isRequired && visibility !== 'Required') {
+                        throw new Error(`Parameter @${key} is used in a measure or a select expression making it required. Either specify its Default Expression or set its Visibility to Required.`);
+                    }
+                } else {
+                    // Make sure DefaultExpression can be interpreted to the same final datatype of the parameter
+                    const defaultDesc = QueryexUtil.tryDesc(defaultExp, undefined, undefined, desc.datatype, model.Collection, model.DefinitionId, wss, trx);
+                    if (!defaultDesc) {
+                        throw new Error(`Parameter @${key}: Default Expression ${defaultExp} could not be interpreted as a ${defaultDesc.datatype}`);
+                    }
+                }
+            }
+
+            // Add to the result
+            result[keyLower] = { key, desc, isRequired };
+        }
+
+        console.log(result);
         return result;
     }
 
     public static nativeDesc(
         exp: QueryexBase,
-        overrides: { [key: string]: PropVisualDescriptor },
+        userOverrides: { [key: string]: PropVisualDescriptor },
+        autoOverrides: { [key: string]: PropDescriptor },
         coll: Collection,
         defId: number,
         wss: WorkspaceService,
         trx: TranslateService) {
 
-        return QueryexUtil.tryDesc(exp, overrides, null, coll, defId, wss, trx);
+        return QueryexUtil.tryDesc(exp, userOverrides, autoOverrides, null, coll, defId, wss, trx);
     }
 
     public static tryBooleanDesc(
         exp: QueryexBase,
-        overrides: { [key: string]: PropVisualDescriptor },
+        userOverrides: { [key: string]: PropVisualDescriptor },
+        autoOverrides: { [key: string]: PropDescriptor },
         coll: Collection,
         defId: number,
         wss: WorkspaceService,
         trx: TranslateService) {
 
-        return QueryexUtil.tryDesc(exp, overrides, 'boolean', coll, defId, wss, trx);
+        return QueryexUtil.tryDesc(exp, userOverrides, autoOverrides, 'boolean', coll, defId, wss, trx);
     }
 
     public static tryDesc(
         expression: QueryexBase,
-        overrides: { [key: string]: PropVisualDescriptor },
+        userOverrides: { [key: string]: PropVisualDescriptor },
+        autoOverrides: { [key: string]: PropDescriptor },
         t: DataType,
         coll: Collection,
         defId: number,
@@ -600,79 +969,70 @@ export class QueryexUtil {
                         }
                     }
                 }
-            }
+            } else if (ex instanceof QueryexParameter) {
+                const userOverride = userOverrides[ex.keyLower];
+                const label = !!hintDesc ? hintDesc.label : () => ex.key;
+                let autoOverrideNew: PropDescriptor;
+                let result: PropDescriptor;
 
-            // else if (ex instanceof QueryexParameter) {
-            //     if (targetType === 'boolean') {
-            //         ex.desc = {
-            //             datatype: 'bit',
-            //             control: 'check',
-            //             label: () => ''
-            //         };
-            //         return {
-            //             datatype: 'boolean',
-            //             control: 'unsupported',
-            //             label: () => ''
-            //         };
-            //     }
-            // }
-
-            // else if (ex instanceof QueryexParameter) {
-            //     if (targetType !== 'boolean') {
-            //         const overrideDesc = overrides[ex.keyLower];
-            //         // The returned value must have a datatype compatible with overrideDesc
-            //         if (isPropDescriptor(overrideDesc)) {
-            //             if (overrideDesc.datatype === targetType) {
-            //                 ex.desc = { ...overrideDesc };
-            //             } else {
-            //                 ex.desc = null;
-            //             }
-            //         } else {
-            //             const label = !!hintDesc ? hintDesc.label : () => ex.key;
-            //             ex.desc = tryGetDescFromVisual(overrideDesc, targetType, label, wss, trx);
-            //         }
-
-            //         return ex.desc;
-            //     }
-            // }
-
-            // Default
-            const nativeDesc = nativeDescImpl(ex);
-            if (nativeDesc.datatype === targetType) {
-                return nativeDesc;
-            } else if (nativeDesc.datatype === 'null') {
-                let desc: PropDescriptor;
-                if (targetType !== 'boolean') {
-                    if (!!hintDesc) {
-                        desc = { ...hintDesc };
+                // IF we have a userOverride, the result must adhere to both userOverride AND targetType
+                if (!!userOverride) {
+                    autoOverrideNew = tryGetDescFromVisual(userOverride, targetType, label, wss, trx);
+                    if (!!autoOverrideNew) {
+                        // Nice and compatible. E.g. targetType = 'numeric', userOverride = 'percent'
+                        result = autoOverrideNew;
                     } else {
-                        desc = tryGetDescFromDatatype(targetType, nativeDesc.label);
+                        // Not compatible, we hope there is an implicit cast from userOverride to targetType
+                        // E.g. targetType = 'number', userOverride = 'check'
+                        autoOverrideNew = getLowestPrecedenceDescFromVisual(userOverride, label, wss, trx);
+                        result = implicitCast(autoOverrideNew, targetType, hintDesc);
+                    }
+                } else {
+                    // ELSE The result must adhere to targetType
+                    if (!!hintDesc) {
+                        autoOverrideNew = { ...hintDesc };
+                        result = autoOverrideNew;
+                    } else {
+                        if (targetType === 'boolean') {
+                            autoOverrideNew = { datatype: 'bit', control: 'check', label };
+                            result = { datatype: targetType, control: 'unsupported', label };
+                        } else {
+                            autoOverrideNew = tryGetDescFromDatatype(targetType, label);
+                            result = autoOverrideNew;
+                        }
                     }
                 }
 
-                // If this a parameter that has not been overridden, remember the result
-                if (ex instanceof QueryexParameter && !!desc) {
-                    ex.desc = desc;
-                }
-
-                return desc;
-            } else if (nativeDesc.datatype === 'bit') {
-                if (targetType === 'numeric') {
-                    return {
-                        datatype: targetType,
-                        control: 'number',
-                        minDecimalPlaces: 0,
-                        maxDecimalPlaces: 0,
-                        label: nativeDesc.label
-                    };
-                } else if (targetType === 'boolean') {
-                    return {
-                        datatype: targetType,
-                        control: 'unsupported',
-                        label: nativeDesc.label
-                    };
+                if (!!result) {
+                    // We found a valid result, we ensure it does not cause any existing autoOverride
+                    // to downgrade (i.e. go from high precedence to low precedence type)
+                    const autoOverrideOld = autoOverrides[ex.keyLower];
+                    if (!!autoOverrideOld) {
+                        if (precedence(autoOverrideOld.datatype) > precedence(autoOverrideNew.datatype)) {
+                            // If autoOverride has lower precedence -> upgrade it
+                            autoOverrides[ex.keyLower] = autoOverrideNew;
+                            return result;
+                        } else if (autoOverrideOld.datatype === autoOverrideNew.datatype) {
+                            // If they have the same precedence -> merge them
+                            autoOverrides[ex.keyLower] = mergeDescriptors(autoOverrideOld, autoOverrideNew, autoOverrideOld.label);
+                            return result;
+                        } else {
+                            // The same parameter is used elsewhere with a higher precedence
+                            // E.g. Elsewhere is used as a date and here a string is requested
+                            return undefined;
+                        }
+                    } else {
+                        autoOverrides[ex.keyLower] = autoOverrideNew;
+                        return result;
+                    }
+                } else {
+                    return undefined;
                 }
             }
+
+            // Default: try to cast it implicitly
+            const nativeDesc = nativeDescImpl(ex);
+            return implicitCast(nativeDesc, targetType, hintDesc);
         }
 
         function nativeDescImpl(ex: QueryexBase): PropDescriptor {
@@ -767,7 +1127,7 @@ export class QueryexUtil {
                             if (!resultDesc) {
                                 throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a numeric.`);
                             } else {
-                                resultDesc = { ...resultDesc };
+                                resultDesc = mergeArithmeticNumericDescriptors(resultDesc, resultDesc, resultDesc.label);
                             }
                         }
 
@@ -1278,24 +1638,25 @@ export class QueryexUtil {
                     label: () => ex.value ? trx.instant('Yes') : trx.instant('No')
                 };
             } else if (ex instanceof QueryexParameter) {
-                const overrideDesc = overrides[ex.keyLower];
-                if (isPropDescriptor(overrideDesc)) {
-                    ex.desc = { ...overrideDesc };
-                } else if (!!overrideDesc) {
+                const userOverride = userOverrides[ex.keyLower];
+                if (!!userOverride) {
                     const label = () => ex.key;
-                    ex.desc = getLowestPrecedenceDescFromVisual(overrideDesc, label, wss, trx);
+                    const result = getLowestPrecedenceDescFromVisual(userOverride, label, wss, trx);
+                    autoOverrides[ex.keyLower] = result;
+                    return result;
                 } else {
-                    const label = () => ex.key;
-                    ex.desc = {
-                        datatype: 'null',
-                        control: 'null',
-                        label
-                    };
+                    const autoOverride = autoOverrides[ex.keyLower];
+                    if (!!autoOverride) {
+                        return { ...autoOverride };
+                    } else {
+                        const label = () => ex.key;
+                        const result: PropDescriptor = { datatype: 'null', control: 'null', label };
+                        autoOverrides[ex.keyLower] = result;
+                        return result;
+                    }
                 }
-
-                return ex.desc;
             } else {
-                throw Error(`[Bug] ${ex} Has an unknown Queryex type.`);
+                throw Error(`[Bug] ${ex} has an unknown Queryex type.`);
             }
         }
 
