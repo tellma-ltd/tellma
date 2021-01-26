@@ -1330,7 +1330,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
           if (!parameter) {
             parameter = {
               Id: 0,
-              Visibility: paramInfo.isRequired ? 'Required' : 'Optional',
+              Visibility: paramInfo.isRequiredUsage ? 'Required' : 'Optional',
             };
 
             modelTracker[keyLower] = parameter;

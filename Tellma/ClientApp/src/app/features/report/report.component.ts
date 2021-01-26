@@ -8,18 +8,30 @@ import {
   MasterStatus,
   MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
-import { ChoicePropDescriptor, EntityDescriptor, metadata, getChoices, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
+import {
+  ChoicePropDescriptor,
+  EntityDescriptor,
+  metadata,
+  getChoices,
+  PropVisualDescriptor,
+  PropDescriptor
+} from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
-import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, computePropDesc, descFromControlOptions, updateOn } from '~/app/data/util';
+import { isSpecified, descFromControlOptions, updateOn } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { formatNumber } from '@angular/common';
+import { QueryexUtil } from '~/app/data/queryex-util';
 
-interface ParameterInfo { label: () => string; key: string; desc: PropVisualDescriptor; isRequired: boolean; }
+interface OverriddenParameterInfo {
+  key: string;
+  desc: PropVisualDescriptor;
+  label: () => string;
+  isRequired: boolean;
+}
 
 @Component({
   selector: 't-report',
@@ -57,11 +69,9 @@ export class ReportComponent implements OnInit, OnDestroy {
   private _subscriptions: Subscription;
   private refresh$ = new Subject<void>();
   private export$ = new Subject<string>();
-  private _currentFilter: string;
   private _currentDefinition: ReportDefinitionForClient;
   private _currentEntityDescriptor: EntityDescriptor;
-  private _currentParameters: ParameterInfo[] = [];
-  private _parametersErrorMessage: string;
+  private _currentParameters: OverriddenParameterInfo[] = [];
   private _views: { view: ReportView, label: string, icon: string }[] = [
     { view: ReportView.pivot, label: 'Table', icon: 'table' },
     { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
@@ -245,66 +255,23 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._views;
   }
 
-  get parameters(): ParameterInfo[] {
+  get parameters(): OverriddenParameterInfo[] {
     if (!this.definition) {
       this._currentParameters = [];
     } else if (
-      this.definition.Filter !== this._currentFilter ||
       this.definition !== this._currentDefinition ||
       this.entityDescriptor !== this._currentEntityDescriptor) {
 
-      try {
-        this._parametersErrorMessage = null;
-        this._currentParameters = [];
-        this._currentFilter = this.definition.Filter;
-        this._currentDefinition = this.definition;
-        this._currentEntityDescriptor = this.entityDescriptor;
+      this._currentParameters = [];
+      this._currentDefinition = this.definition;
+      this._currentEntityDescriptor = this.entityDescriptor;
 
+      try {
         // Grab a hold of the current tenant
         const ws = this.workspace.currentTenant;
 
-        //////// (1) Get the default parameters from filter and built in parameter descriptors
-        const defaultParams: { [key: string]: ParameterInfo } = {};
-
-        // get the placeholder atoms and the built in parameter descriptors
-        const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(this.definition.Filter));
-        const desc = this.entityDescriptor;
-        const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
-
-        // The filter placeholders
-        for (const atom of placeholderAtoms) {
-          const key = atom.value.substr(1);
-          const keyLower = key.toLowerCase();
-
-          // Auto-calculate the property descriptor of this atom
-          const propDesc = computePropDesc(
-            this.workspace,
-            this.translate,
-            this.definition.Collection,
-            this.definition.DefinitionId,
-            atom.path, atom.property, atom.modifier);
-
-          defaultParams[keyLower] = {
-            label: propDesc.label,
-            key,
-            desc: propDesc,
-            isRequired: false
-          };
-        }
-
-        // The built-in params
-        for (const paramDesc of builtInParamsDescriptors) {
-          const key = paramDesc.key;
-          const keyLower = key.toLowerCase();
-          const propDesc = paramDesc.desc;
-
-          defaultParams[keyLower] = {
-            label: propDesc.label,
-            key,
-            desc: propDesc,
-            isRequired: paramDesc.isRequired
-          };
-        }
+        // (1) Get the default parameters found in all the expressions in the definition
+        const defaultParams = QueryexUtil.getParameterDescriptors(this.definition, this.workspace, this.translate);
 
         // (2) Override defaults using values from definitions.Parameters;
         // The parameter definitions can override 3 things (1) order (2) label (3) is required
@@ -318,24 +285,26 @@ export class ReportComponent implements OnInit, OnDestroy {
           } else {
             const paramInfo = defaultParams[keyLower];
             if (!!paramInfo) {
-              paramInfo.label = !!p.Label ? () => ws.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
-              paramInfo.isRequired = p.Visibility === 'Required';
-              paramInfo.desc = descFromControlOptions(ws, p.Control, p.ControlOptions, paramInfo.desc);
-              this._currentParameters.push(paramInfo);
+              const desc = descFromControlOptions(ws, p.Control, p.ControlOptions, paramInfo.desc);
+              const label = !!p.Label ? () => ws.getMultilingualValueImmediate(p, 'Label') : paramInfo.desc.label;
+              const isRequired = p.Visibility === 'Required';
+
+              this._currentParameters.push({ key: keyLower, label, isRequired, desc });
               delete defaultParams[keyLower];
             }
           }
         }
 
-        // (3) Add the remaining parameters from filter that have no definitions
-        for (const key of Object.keys(defaultParams)) {
-          this._currentParameters.push(defaultParams[key]);
+        // (3) Add the remaining parameters from filter that have no definition override
+        for (const keyLower of Object.keys(defaultParams)) {
+          const paramInfo = defaultParams[keyLower];
+          const label = paramInfo.desc.label;
+          const isRequired = paramInfo.isRequiredUsage;
+          const desc = paramInfo.desc;
+          this._currentParameters.push({ key: keyLower, label, isRequired, desc });
         }
 
-      } catch (ex) {
-        console.error(ex.message);
-        this._parametersErrorMessage = ex;
-      }
+      } catch { } // Problems will be reported by the preview
 
       // When the number of parameters changes it might change the size of
       // the chart underneath it, so we trigger a recalculation of the size
@@ -427,19 +396,11 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get showParametersSection(): boolean {
-    return (this.showParameters && !this.collapseParameters) || this.showParametersErrorMessage;
+    return this.showParameters && !this.collapseParameters;
   }
 
   public get showParameters(): boolean {
     return this.parameters.length > 0;
-  }
-
-  public get showParametersErrorMessage(): boolean {
-    return !!this._parametersErrorMessage;
-  }
-
-  public get parametersErrorMessage(): string {
-    return this._parametersErrorMessage;
   }
 
   public get areAllRequiredParamsSpecified(): boolean {

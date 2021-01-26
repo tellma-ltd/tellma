@@ -463,7 +463,7 @@ export interface ExpressionInfo {
 export interface ParameterInfo {
     key: string;
     desc: PropDescriptor;
-    isRequired: boolean; // true if mentioned in a non-boolean expression
+    isRequiredUsage: boolean; // true if mentioned in a non-boolean expression
 }
 
 export class QueryexUtil {
@@ -498,14 +498,14 @@ export class QueryexUtil {
         const autoOverridesPrev: { [keyLower: string]: PropDescriptor } = {};
         const userOverrides: { [keyLower: string]: PropVisualDescriptor } = {};
         const modelParameters: { [keyLower: string]: { defaultExp: QueryexBase, visibility: DefinitionVisibility } } = {};
-        for (const p of model.Parameters || []) {
-            const keyLower = p.Key.toLowerCase();
-            if (!!p.Control) {
-                userOverrides[keyLower] = descFromControlOptions(wss.currentTenant, p.Control, p.ControlOptions);
+        for (const param of model.Parameters || []) {
+            const keyLower = param.Key.toLowerCase();
+            if (!!param.Control) {
+                userOverrides[keyLower] = descFromControlOptions(wss.currentTenant, param.Control, param.ControlOptions);
             }
 
             // The default expression
-            const exp = Queryex.parseSingle(p.DefaultExpression);
+            const exp = Queryex.parseSingle(param.DefaultExpression);
             if (!!exp) {
                 const aggregations = exp.aggregations();
                 const columnAccesses = exp.columnAccesses();
@@ -528,10 +528,10 @@ export class QueryexUtil {
                             autoOverrides[keyLower] = desc;
                             autoOverridesPrev[keyLower] = desc;
                     }
-
-                    modelParameters[keyLower] = { defaultExp: exp, visibility: p.Visibility };
                 }
             }
+
+            modelParameters[keyLower] = { defaultExp: exp, visibility: param.Visibility };
         }
 
 
@@ -815,7 +815,7 @@ export class QueryexUtil {
             const key = keysDic[keyLower];
 
             // Get whether this parameter is required
-            const isRequired = !!requiredKeysDic[keyLower];
+            const isRequiredUsage = !!requiredKeysDic[keyLower];
 
             // Get the final descriptor of the parameter
             const desc = autoOverrides[keyLower];
@@ -825,7 +825,7 @@ export class QueryexUtil {
                 const { defaultExp, visibility } = modelParameters[keyLower];
                 if (!defaultExp) {
                     // Make sure required parameters always have a value at hand.
-                    if (isRequired && visibility !== 'Required') {
+                    if (isRequiredUsage && visibility !== 'Required') {
                         throw new Error(`Parameter @${key} is used in a measure or a select expression making it required. Either specify its Default Expression or set its Visibility to Required.`);
                     }
                 } else {
@@ -838,7 +838,7 @@ export class QueryexUtil {
             }
 
             // Add to the result
-            result[keyLower] = { key, desc, isRequired };
+            result[keyLower] = { key, desc, isRequiredUsage };
         }
 
         console.log(result);
@@ -1395,7 +1395,7 @@ export class QueryexUtil {
                 switch (opLower) {
                     case '+': {
                         let leftDesc = tryDescImpl(ex.left, 'numeric');
-                        let rightDesc = tryDescImpl(ex.right, 'numeric');
+                        let rightDesc = tryDescImpl(ex.right, leftDesc || 'numeric');
 
                         const label = () => trx.instant('Expression');
 
@@ -1428,7 +1428,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Left operand ${ex.left} could not be interpreted as a numeric.`);
                         }
 
-                        const rightDesc = tryDescImpl(ex.right, 'numeric');
+                        const rightDesc = tryDescImpl(ex.right, leftDesc);
                         if (!rightDesc) {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as a numeric.`);
                         }
@@ -1446,7 +1446,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Left operand ${ex.left} could not be interpreted as a boolean.`);
                         }
 
-                        const rightDesc = tryDescImpl(ex.right, 'boolean');
+                        const rightDesc = tryDescImpl(ex.right, leftDesc);
                         if (!rightDesc) {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as a boolean.`);
                         }
@@ -1552,7 +1552,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Left operand ${ex.left} could not be interpreted as string.`);
                         }
 
-                        const rightDesc = tryDescImpl(ex.right, 'string');
+                        const rightDesc = tryDescImpl(ex.right, leftDesc);
                         if (!rightDesc) {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as string.`);
                         }
