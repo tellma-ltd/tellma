@@ -1,30 +1,29 @@
 import {
-  Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter
+  Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef,
+  OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
-  PivotTable, DimensionCell, MeasureCell, LabelCell, MeasureInfo, DimensionInfo, ChartDimensionCell
+  PivotTable, DimensionCell, MeasureCell, LabelCell, ChartDimensionCell
 } from '~/app/data/workspace.service';
 import { Subscription, Subject, Observable, of } from 'rxjs';
-import { EntityDescriptor, metadata, entityDescriptorImpl, PropDescriptor, isText, isNumeric } from '~/app/data/entities/base/metadata';
+import { EntityDescriptor, metadata, entityDescriptorImpl, isText, isNumeric } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
 import {
-  isSpecified, mergeEntitiesInWorkspace, csvPackage,
-  downloadBlob, composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse, modifiedPropDesc
+  isSpecified, mergeEntitiesInWorkspace, csvPackage, downloadBlob,
+  composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse
 } from '~/app/data/util';
-import {
-  ReportDefinitionForClient, ReportDefinitionDimensionForClient,
-  ReportDefinitionMeasureForClient, ReportDefinitionSelectForClient
-} from '~/app/data/dto/definitions-for-client';
+import { ReportDefinitionForClient, ReportDefinitionSelectForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params } from '@angular/router';
 import { displayEntity, displayValue } from '~/app/data/util';
 import { Entity } from '~/app/data/entities/base/entity';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { ReportOrderDirection, ChartType } from '~/app/data/entities/report-definition';
+import { DimensionInfo, MeasureInfo, QueryexUtil } from '~/app/data/queryex-util';
 
 export enum ReportView {
   pivot = 'pivot',
@@ -179,19 +178,25 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const hasChanges = this.applyChanges();
     if (s.reportStatus !== ReportStatus.loaded || hasChanges) {
       try {
+        const { filter, having, columns, rows, measures, select } =
+          QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
 
-        s.realColumns = this.computeRealDimensions(this.definition.Columns);
-        s.realRows = this.computeRealDimensions(this.definition.Rows);
+        s.filterExp = filter;
+        s.havingExp = having;
+        s.realColumns = columns;
+        s.realRows = rows;
+        s.measures = measures;
+        s.select = select;
         s.uniqueDimensions = this.computeUniqueDimensions(s.realColumns.concat(s.realRows));
-        s.measures = this.computeMeasureInfos(this.definition.Measures);
         s.singleNumericMeasure = this.state.measures.find(m => isNumeric(m.desc));
+        s.badDefinition = false;
 
-        s.disableFetch = false;
-        this.fetch();
+        this.fetch(); // Query the server
       } catch (ex) {
-        s.disableFetch = true;
+        s.badDefinition = true;
         s.reportStatus = ReportStatus.error;
         s.errorMessage = ex;
+
         this.cdr.markForCheck();
       }
     }
@@ -270,7 +275,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   private doFetch(): Observable<void> {
 
     let s = this.state;
-    if (s.disableFetch) {
+    if (s.badDefinition) {
       // bad definition
       return of(null);
     }
@@ -368,127 +373,127 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  private computeMeasureInfos(measures: ReportDefinitionMeasureForClient[]): MeasureInfo[] {
+  // private computeMeasureInfos(measures: ReportDefinitionMeasureForClient[]): MeasureInfo[] {
 
-    if (!measures) {
-      return [];
-    }
+  //   if (!measures) {
+  //     return [];
+  //   }
 
-    return measures.map(measureDef => {
-      const key = `${measureDef.Aggregation}(${measureDef.Expression.split('.').map(e => e.trim()).join('.')})`;
-      const aggregation = measureDef.Aggregation;
-      const steps = measureDef.Expression.split('.').map(e => e.trim());
-      const prop = steps.pop();
-      const collection = this.definition.Collection;
-      const definitionId = this.definition.DefinitionId;
-      const ws = this.workspace;
-      const trx = this.translate;
-      const entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
-      const propDesc = entityDesc.properties[prop];
-      if (!propDesc) {
-        throw new Error(`The path '${measureDef.Expression}' is not valid, the terminal property ${prop} was not found`);
-      }
+  //   return measures.map(measureDef => {
+  //     const key = `${measureDef.Aggregation}(${measureDef.Expression.split('.').map(e => e.trim()).join('.')})`;
+  //     const aggregation = measureDef.Aggregation;
+  //     const steps = measureDef.Expression.split('.').map(e => e.trim());
+  //     const prop = steps.pop();
+  //     const collection = this.definition.Collection;
+  //     const definitionId = this.definition.DefinitionId;
+  //     const ws = this.workspace;
+  //     const trx = this.translate;
+  //     const entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
+  //     const propDesc = entityDesc.properties[prop];
+  //     if (!propDesc) {
+  //       throw new Error(`The path '${measureDef.Expression}' is not valid, the terminal property ${prop} was not found`);
+  //     }
 
-      let desc: PropDescriptor;
-      switch (aggregation) {
-        case 'count':
-          desc = {
-            datatype: 'numeric', control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right'
-          };
-          break;
-        case 'max':
-        case 'min':
-          desc = propDesc;
-          break;
-        case 'sum':
-          if (!isNumeric(propDesc)) {
-            console.error(`Use of sum aggregation on a non-numeric property ${prop}`);
-          } else {
-            desc = propDesc;
-          }
-          break;
-        case 'avg':
-          if (!isNumeric(propDesc)) {
-            console.error(`Use of avg aggregation on a non-numeric property ${prop}`);
-          } else {
-            desc = { datatype: 'numeric', control: 'number', label: propDesc.label, minDecimalPlaces: 2, maxDecimalPlaces: 2 };
-            if (propDesc.control === 'number') {
-              desc.minDecimalPlaces = Math.max(desc.minDecimalPlaces, 2);
-              desc.maxDecimalPlaces = Math.max(desc.maxDecimalPlaces, 2);
-            }
-          }
-          break;
-      }
+  //     let desc: PropDescriptor;
+  //     switch (aggregation) {
+  //       case 'count':
+  //         desc = {
+  //           datatype: 'numeric', control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right'
+  //         };
+  //         break;
+  //       case 'max':
+  //       case 'min':
+  //         desc = propDesc;
+  //         break;
+  //       case 'sum':
+  //         if (!isNumeric(propDesc)) {
+  //           console.error(`Use of sum aggregation on a non-numeric property ${prop}`);
+  //         } else {
+  //           desc = propDesc;
+  //         }
+  //         break;
+  //       case 'avg':
+  //         if (!isNumeric(propDesc)) {
+  //           console.error(`Use of avg aggregation on a non-numeric property ${prop}`);
+  //         } else {
+  //           desc = { datatype: 'numeric', control: 'number', label: propDesc.label, minDecimalPlaces: 2, maxDecimalPlaces: 2 };
+  //           if (propDesc.control === 'number') {
+  //             desc.minDecimalPlaces = Math.max(desc.minDecimalPlaces, 2);
+  //             desc.maxDecimalPlaces = Math.max(desc.maxDecimalPlaces, 2);
+  //           }
+  //         }
+  //         break;
+  //     }
 
-      const label = () => !!measureDef.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(measureDef, 'Label') :
-        this.translate.instant('DefaultAggregationMeasure', {
-          aggregation: this.translate.instant('ReportDefinition_Aggregation_' + aggregation),
-          measure: !!desc ? desc.label() : propDesc.label()
-        });
+  //     const label = () => !!measureDef.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(measureDef, 'Label') :
+  //       this.translate.instant('DefaultAggregationMeasure', {
+  //         aggregation: this.translate.instant('ReportDefinition_Aggregation_' + aggregation),
+  //         measure: !!desc ? desc.label() : propDesc.label()
+  //       });
 
-      return { key, desc, aggregation, label };
-    });
-  }
+  //     return { key, desc, aggregation, label };
+  //   });
+  // }
 
-  private computeRealDimensions(dims: ReportDefinitionDimensionForClient[]): DimensionInfo[] {
+  // private computeRealDimensions(dims: ReportDefinitionDimensionForClient[]): DimensionInfo[] {
 
-    dims = dims || [];
-    return dims.map(dim => {
-      // Normalized the path
-      const path = dim.KeyExpression.split('.').map((e: string) => e.trim()).join('.');
-      const modifier = dim.Modifier;
-      const key = !!dim.Modifier ? `${path}|${dim.Modifier}` : path;
+  //   dims = dims || [];
+  //   return dims.map(dim => {
+  //     // Normalized the path
+  //     const path = dim.KeyExpression.split('.').map((e: string) => e.trim()).join('.');
+  //     const modifier = dim.Modifier;
+  //     const key = !!dim.Modifier ? `${path}|${dim.Modifier}` : path;
 
-      // Get the PropDescriptor describing the target property of the path
-      let propDesc: PropDescriptor;
-      let entityDesc: EntityDescriptor;
+  //     // Get the PropDescriptor describing the target property of the path
+  //     let propDesc: PropDescriptor;
+  //     let entityDesc: EntityDescriptor;
 
-      // Without a modifier, the property descriptor comes from the metadata
-      const collection = this.definition.Collection;
-      const definitionId = this.definition.DefinitionId;
-      const ws = this.workspace;
-      const trx = this.translate;
-      const steps = path.split('.');
-      const prop = steps[steps.length - 1];
-      const parentEntityDesc = entityDescriptorImpl(steps.slice(0, -1), collection, definitionId, ws, trx);
-      propDesc = parentEntityDesc.properties[prop];
-      if (!propDesc) {
-        throw new Error(`Property ${prop} does not exist on collection: '${collection}', definition: '${definitionId || ''}'.`);
-      }
+  //     // Without a modifier, the property descriptor comes from the metadata
+  //     const collection = this.definition.Collection;
+  //     const definitionId = this.definition.DefinitionId;
+  //     const ws = this.workspace;
+  //     const trx = this.translate;
+  //     const steps = path.split('.');
+  //     const prop = steps[steps.length - 1];
+  //     const parentEntityDesc = entityDescriptorImpl(steps.slice(0, -1), collection, definitionId, ws, trx);
+  //     propDesc = parentEntityDesc.properties[prop];
+  //     if (!propDesc) {
+  //       throw new Error(`Property ${prop} does not exist on collection: '${collection}', definition: '${definitionId || ''}'.`);
+  //     }
 
-      // If this is a nav property, get the EntityDescriptor describing the target entity as well
-      if (propDesc.datatype === 'entity') {
-        entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
-      }
+  //     // If this is a nav property, get the EntityDescriptor describing the target entity as well
+  //     if (propDesc.datatype === 'entity') {
+  //       entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
+  //     }
 
-      if (!!modifier) {
-        // A modifier is specified, the prop descriptor is hardcoded per modifier
-        propDesc = modifiedPropDesc(propDesc, modifier, this.translate);
-      }
+  //     if (!!modifier) {
+  //       // A modifier is specified, the prop descriptor is hardcoded per modifier
+  //       propDesc = modifiedPropDesc(propDesc, modifier, this.translate);
+  //     }
 
-      // Create the dimension info
-      const result: DimensionInfo = {
-        key,
-        path,
-        modifier,
-        propDesc,
-        autoExpand: dim.AutoExpandLevel,
-        label: () => !!dim.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
-      };
+  //     // Create the dimension info
+  //     const result: DimensionInfo = {
+  //       key,
+  //       path,
+  //       modifier,
+  //       propDesc,
+  //       autoExpand: dim.AutoExpandLevel,
+  //       label: () => !!dim.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
+  //     };
 
-      // This is a nav property, add a few extra things to allow for
-      // efficient extraction of mock navigation entities from the server results
-      if (!!entityDesc) {
-        const pathDot = !!path ? path + '.' : '';
+  //     // This is a nav property, add a few extra things to allow for
+  //     // efficient extraction of mock navigation entities from the server results
+  //     if (!!entityDesc) {
+  //       const pathDot = !!path ? path + '.' : '';
 
-        result.entityDesc = entityDesc;
-        result.idKey = `${pathDot}Id`;
-        result.selectKeys = entityDesc.select.map(s => ({ path: `${pathDot}${s}`, prop: s }));
-      }
+  //       result.entityDesc = entityDesc;
+  //       result.idKey = `${pathDot}Id`;
+  //       result.selectKeys = entityDesc.select.map(s => ({ path: `${pathDot}${s}`, prop: s }));
+  //     }
 
-      return result;
-    });
-  }
+  //     return result;
+  //   });
+  // }
 
   /**
    * Used for charts, calculates the unique set of dimensions across the combined rows and charts
@@ -656,7 +661,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private computeFilter(): string {
+    const rawExp = this.state.filterExp;
+    if (!rawExp) {
+      return null;
+    }
 
+    const args = this.arguments;
+    return rawExp.toString();
+
+  }
+
+  private computeFilterOld(): string {
     let exp: FilterExpression = FilterTools.parse(this.definition.Filter);
     if (!exp) {
       return null;
@@ -822,10 +837,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
           // Columns
           const columns: ColumnDescriptor[] = this.select.map(e =>
-            ({
-              display: this.workspace.currentTenant.getMultilingualValueImmediate(e, 'Label'),
-              path: e.Expression
-            })
+          ({
+            display: this.workspace.currentTenant.getMultilingualValueImmediate(e, 'Label'),
+            path: e.Expression
+          })
           );
 
           if (!this.definition.Top) {
@@ -1189,13 +1204,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                     hasChildren: dimension !== lastDimension,
                     level,
                     index: 0, // computed below
-                    parent: currentHash.cell,
+                    parent: currentHash.cell, // <- this one should modified for trees
                     isTotal: false
                   },
                   children: []
                 };
 
-                currentHash.children.push(targetHash.cell);
+                currentHash.children.push(targetHash.cell); // and this one should be modified for trees
 
                 if (isSpecified(valueId)) {
                   currentHash.values[valueId] = targetHash;
@@ -1230,10 +1245,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       /////////// Calculate the top half of the report (the "columnHeaders")
       const realColumns = s.realColumns;
-      const columnsResult = dimensionHash(realColumns);
-      const columnCells = columnsResult.cells;
-      const columnHeaders: (DimensionCell | LabelCell)[][] = [];
+      const { hash: columnsHash, cells: columnCells } = dimensionHash(realColumns);
+      const columnGrandTotalIndex = columnCells.length;
 
+      const columnHeaders: (DimensionCell | LabelCell)[][] = [];
       for (const cell of columnCells) {
         if (!columnHeaders[cell.level]) {
           columnHeaders[cell.level] = [cell];
@@ -1242,19 +1257,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      // Prepare the bottom half of the pivot table
-      const realRows = s.realRows;
-      const rowResult = dimensionHash(realRows);
-      const rowCells: DimensionCell[] = rowResult.cells;
-
-      const columnGrandTotalIndex = columnCells.length;
-      const rowGrandTotalIndex = rowCells.length;
-
-      // Whether to show the column or row totals
+      // Columns total
       const showColumnTotals: boolean = s.measures.length > 0 &&
         (this.definition.ShowColumnsTotal || realColumns.length === 0);
-      const showRowTotals: boolean = s.measures.length > 0 &&
-        (this.definition.ShowRowsTotal || realRows.length === 0 && s.measures.length > 0);
 
       if (showColumnTotals) {
         if (realColumns.length > 0) {
@@ -1284,6 +1289,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       /////////// Calculate the bottom half of the report (the "rows")
+      const realRows = s.realRows;
+      const { hash: rowsHash, cells: rowCells } = dimensionHash(realRows);
+      const rowGrandTotalIndex = rowCells.length;
+
       const rows: (DimensionCell | MeasureCell | LabelCell)[][] = [];
       const rowDimensionsColumnCount = realRows.length === 0 ? 0 : 1; // TODO
       for (let r = 0; r < rowCells.length; r++) {
@@ -1311,6 +1320,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
         rows[r] = row;
       }
+
+      // Whether to show row totals
+      const showRowTotals: boolean = s.measures.length > 0 &&
+        (this.definition.ShowRowsTotal || realRows.length === 0 && s.measures.length > 0);
 
       if (showRowTotals) {
         const rowsGrandTotalLabel: LabelCell = {
@@ -1351,9 +1364,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const countKeys = this.definition.Measures.map(m =>
         `count(${m.Expression.split('.').map(e => e.trim()).join('.')})`);
 
-      const columnsHash = columnsResult.hash;
-      const rowHash = rowResult.hash;
-
       // Add nulls at the end if needed to represent the grand totals
       const realColumnsAndGrandTotal = showColumnTotals ? realColumns.concat([null]) : realColumns;
       const realRowsAndGrandTotal = showRowTotals ? realRows.concat([null]) : realRows;
@@ -1382,7 +1392,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             colIndex = currentColHash.cell.index;
           }
 
-          let currentRowHash = rowHash;
+          let currentRowHash = rowsHash;
           for (const row of realRowsAndGrandTotal) {
             let rowIndex: number;
             if (!row) {
@@ -1399,8 +1409,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               rowIndex = currentRowHash.cell.index;
             }
 
+            const measureCell = rows[rowIndex][colIndex + rowDimensionsColumnCount] as MeasureCell;
             s.measures.forEach((m, index) => {
-              const measureCell = rows[rowIndex][colIndex + rowDimensionsColumnCount] as MeasureCell;
               const value = normalize(g[m.key]);
               const total = normalize(measureCell.values[index]);
 

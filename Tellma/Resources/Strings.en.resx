@@ -2531,7 +2531,7 @@
     <value>Having</value>
   </data>
   <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
-    <value>Is Custom Drilldown</value>
+    <value>Use Custom Drilldown</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
@@ -2902,38 +2902,38 @@
   <data name="ShortMonthUq1" xml:space="preserve">
     <value>Muharram</value>
   </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Safar</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Rabi' al-Awwal</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Rabi' al-Thani</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Jumada al-Awwal</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Jumada al-Thani</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Rajab</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Sha'ban</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Ramadan</value>
-  </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
+  <data name="ShortMonthUq10" xml:space="preserve">
     <value>Shawwal</value>
   </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
+  <data name="ShortMonthUq11" xml:space="preserve">
     <value>Dhu al-Qi'dah</value>
   </data>
-  <data name="ShortMonthUq1" xml:space="preserve">
+  <data name="ShortMonthUq12" xml:space="preserve">
     <value>Dhu al-Hijjah</value>
+  </data>
+  <data name="ShortMonthUq2" xml:space="preserve">
+    <value>Safar</value>
+  </data>
+  <data name="ShortMonthUq3" xml:space="preserve">
+    <value>Rabi' al-Awwal</value>
+  </data>
+  <data name="ShortMonthUq4" xml:space="preserve">
+    <value>Rabi' al-Thani</value>
+  </data>
+  <data name="ShortMonthUq5" xml:space="preserve">
+    <value>Jumada al-Awwal</value>
+  </data>
+  <data name="ShortMonthUq6" xml:space="preserve">
+    <value>Jumada al-Thani</value>
+  </data>
+  <data name="ShortMonthUq7" xml:space="preserve">
+    <value>Rajab</value>
+  </data>
+  <data name="ShortMonthUq8" xml:space="preserve">
+    <value>Sha'ban</value>
+  </data>
+  <data name="ShortMonthUq9" xml:space="preserve">
+    <value>Ramadan</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>Q1</value>

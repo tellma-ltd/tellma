@@ -545,14 +545,14 @@
                     <div class="p-2 t-studio-section" [class.d-none]="!showSection('Drilldown')">
 
                         <!-- IsCustomDrilldown -->
-                        <div class="custom-control custom-checkbox pb-3">
+                        <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" id="iscustomdrilldown"
                                 [(ngModel)]="model.IsCustomDrilldown" (ngModelChange)="onDefinitionChange(model)">
                             <label class="custom-control-label" for="iscustomdrilldown">{{
                                 'ReportDefinition_IsCustomDrilldown' | translate }}</label>
                         </div>
 
-                        <div [class.d-none]="!model.IsCustomDrilldown">
+                        <div class="pt-3" [class.d-none]="!model.IsCustomDrilldown">
 
                             <!-- Select -->
                             <div class="form-group">

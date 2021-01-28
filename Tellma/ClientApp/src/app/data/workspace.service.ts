@@ -21,7 +21,7 @@ import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
-import { Aggregation, ReportDefinition, Modifier } from './entities/report-definition';
+import { ReportDefinition } from './entities/report-definition';
 import { Center } from './entities/center';
 import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
@@ -50,6 +50,8 @@ import { DocumentDefinition } from './entities/document-definition';
 import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 import { EmailForQuery } from './entities/email';
 import { SmsMessageForQuery } from './entities/sms-message';
+import { QueryexBase } from './queryex';
+import { DimensionInfo, MeasureInfo, SelectInfo } from './queryex-util';
 
 enum WhichWorkspace {
   /**
@@ -567,6 +569,16 @@ export class TenantWorkspace extends SpecificWorkspace {
 
     return null;
   }
+
+  localize(v1: any, v2: any, v3: any) {
+    if (v2 !== undefined && v2 !== null && this.isSecondaryLanguage) {
+      return v2;
+    } else if (v3 !== undefined && v3 !== null && this.isTernaryLanguage) {
+      return v3;
+    } else {
+      return v1;
+    }
+  }
 }
 
 // This contains the application state during a particular user session
@@ -597,7 +609,7 @@ export class Workspace {
 }
 export type SingleSeries = { name: ChartDimensionCell, value: number, extra?: any }[];
 export type MultiSeries = { name: ChartDimensionCell, series: SingleSeries }[];
-export interface ReportArguments { [key: string]: any; }
+export interface ReportArguments { [keyLower: string]: any; }
 export interface PivotTable {
 
   /**
@@ -611,29 +623,31 @@ export interface PivotTable {
   rows: (DimensionCell | LabelCell | MeasureCell)[][];
 }
 
-export interface MeasureInfo {
-  key: string;
-  desc: PropDescriptor;
-  aggregation: Aggregation;
-  label: () => string;
-}
+// export interface MeasureInfo {
+//   // v1.0
+//   key: string;
+//   desc: PropDescriptor;
+//   aggregation: Aggregation;
+//   label: () => string;
+// }
 
-export interface DimensionInfo {
-  key: string;
-  path: string;
-  modifier: Modifier;
-  propDesc: PropDescriptor;
+// export interface DimensionInfo {
+//   // v1.0
+//   key: string;
+//   path: string;
+//   modifier: Modifier;
+//   propDesc: PropDescriptor;
 
-  /**
-   * This is set in the case of navigation properties
-   */
-  entityDesc?: EntityDescriptor;
-  idKey?: string;
-  selectKeys?: { prop: string, path: string }[];
+//   /**
+//    * This is set in the case of navigation properties
+//    */
+//   entityDesc?: EntityDescriptor;
+//   idKey?: string;
+//   selectKeys?: { prop: string, path: string }[];
 
-  autoExpand: boolean;
-  label: () => string;
-}
+//   autoExpand: boolean;
+//   label: () => string;
+// }
 
 export class DimensionCell {
   type: 'dimension';
@@ -731,10 +745,13 @@ export class ReportStore extends ReportStoreBase {
   response: EntitiesResponse;
   extras: { [key: string]: any };
   filter: string; // the one used to retrieve the result
-  disableFetch = false; // set it to true upon a catastrophic failure from a bad definition
+  badDefinition = false; // set it to true upon a catastrophic failure from a bad definition
   collapseParams = false; // When true hides the report parameters
 
   //////////// Pivot table
+
+  filterExp: QueryexBase;
+  havingExp: QueryexBase;
 
   /**
    * The the actual row dimensions that will be
@@ -763,6 +780,14 @@ export class ReportStore extends ReportStoreBase {
    * the measures
    */
   measures: MeasureInfo[];
+
+  /**
+   * Precalculated values for efficiently displaying
+   * the select
+   */
+  select: SelectInfo[];
+
+
   pivot: PivotTable;
   currentResultForPivot: any;
 

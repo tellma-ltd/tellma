@@ -748,13 +748,12 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public showShowAsTree(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
     const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
-    return !!desc && desc.datatype === 'entity' &&
-      !!metadata[desc.control](this.workspace, this.translate, desc.definitionId).properties.Parent;
+    return QueryexUtil.canShowAsTree(desc, this.workspace, this.translate);
   }
 
   public showShowEmptyMembers(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
     const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
-    return !!desc && (desc.control === 'choice' || desc.datatype === 'bit');
+    return QueryexUtil.canShowEmptyMembers(desc);
   }
 
   public validateDimension(dimension: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): void {
@@ -1309,7 +1308,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public synchronizeParameters(model: ReportDefinition) {
     try {
       const forClient = model as ReportDefinitionForClient;
-      const paramInfos = QueryexUtil.getParameterDescriptors(forClient, this.workspace, this.translate);
+      const { defaultParams: paramInfos } = QueryexUtil.getReportInfos(forClient, this.workspace, this.translate);
       const keysLower = Object.keys(paramInfos);
 
       if (keysLower.length === 0) {

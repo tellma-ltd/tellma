@@ -1,10 +1,10 @@
 // tslint:disable:max-line-length
 import { TranslateService } from '@ngx-translate/core';
-import { ReportDefinitionDimensionForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
+import { ReportDefinitionDimensionForClient, ReportDefinitionForClient, ReportDefinitionMeasureForClient, ReportDefinitionParameterForClient, ReportDefinitionSelectForClient } from './dto/definitions-for-client';
 import { DefinitionVisibility } from './entities/base/definition-common';
 import { Collection, DataType, entityDescriptorImpl, getNavPropertyFromForeignKey, metadata, NavigationPropDescriptor, PropDescriptor, PropVisualDescriptor } from './entities/base/metadata';
 import { Queryex, QueryexBase, QueryexBinaryOperator, QueryexBit, QueryexColumnAccess, QueryexFunction, QueryexNull, QueryexNumber, QueryexParameter, QueryexQuote, QueryexUnaryOperator } from './queryex';
-import { descFromControlOptions } from './util';
+import { descFromControlOptions, isSpecified } from './util';
 import { WorkspaceService } from './workspace.service';
 
 type Calendar = 'GR' | 'ET' | 'UQ';
@@ -455,35 +455,117 @@ function implicitCast(nativeDesc: PropDescriptor, targetType: DataType, hintDesc
     }
 }
 
-export interface ExpressionInfo {
-    exp?: QueryexBase;
-    desc?: PropDescriptor;
-}
-
 export interface ParameterInfo {
     key: string;
-    desc: PropDescriptor;
-    isRequiredUsage: boolean; // true if mentioned in a non-boolean expression
+    datatype: DataType;
+    desc: PropVisualDescriptor;
+    label: () => string;
+    isRequired: boolean; // True if mentioned in a non-boolean expression or if def.visibility = 'Required'
+    defaultExp: QueryexBase;
+}
+
+export interface MeasureInfo {
+    // All these should be possible to evaluate on the client side,
+    // i.e. all aggregations should be tagged with the index to the values array
+    exp: QueryexBase;
+    desc: PropDescriptor; // displaying the measure
+    label: () => string; // Measure labels appear when there is more than 1 measure
+
+    indices?: number[]; // used to copy values from g to an aggregationValues array in the MeasureCell
+
+    success: QueryexBase; // boolean
+    warning: QueryexBase; // boolean
+    danger: QueryexBase; // boolean
+}
+
+export interface DimensionInfo {
+    // v2.0
+    keyExp: QueryexBase; // For query, and for drilldown we say AND keyExpression eq <val>
+    dispExp: QueryexBase; // Display Expression For the query
+    desc: PropVisualDescriptor; // displaying the dimension
+    label: () => string; // Mostly used when converting to a chart
+
+    keyIndex?: number; // Value used for navigating the pivot hash (Id for entities or the value for value)
+    indices?: number[]; // Either entity, multilingual or scalar
+
+    autoExpandLevel: number;
+    showAsTree: boolean;
+    showEmptyMembers: boolean;
+
+    attributes: SelectInfo[];
+}
+
+export interface SelectInfo {
+    exp: QueryexBase; // For the query
+    desc: PropVisualDescriptor; // For displaying the attribute
+    label: () => string; // For labeling the attribute
+
+    indices?: number[]; // Either entity, multilingual or scalar
+}
+
+export interface ReportInfos {
+    rows: DimensionInfo[];
+    columns: DimensionInfo[];
+    measures: MeasureInfo[];
+    select: SelectInfo[];
+    filter: QueryexBase;
+    having: QueryexBase;
+    defaultParams: { [keyLower: string]: ParameterInfo };
 }
 
 export class QueryexUtil {
 
-    public static differentOverrides(autoOverridesCurr: { [key: string]: PropDescriptor }, autoOverridesPrev: { [key: string]: PropDescriptor }): boolean {
-        for (const key of Object.keys(autoOverridesCurr)) {
-            const autoOverridePrev = autoOverridesPrev[key];
-            const autoOverrideCurr = autoOverridesCurr[key];
-            if (autoOverridePrev.datatype !== autoOverrideCurr.datatype) {
-                return true;
-            }
-        }
+    public static stringify(exp: QueryexBase, args: { [keyLower: string]: any }, paramInfos: { [keyLower: string]: ParameterInfo }): string {
+        if (exp instanceof QueryexParameter) {
+            const { desc, isRequiredUsage } = paramInfos[exp.keyLower];
+            const value = args[exp.keyLower];
 
-        return false;
+            if (!desc) {
+                throw new Error(`[Bug] The descriptor for parameter @${exp.key} was not supplied.`);
+            }
+
+            if (isSpecified(value)) {
+                switch (desc.datatype) {
+                    case 'string':
+                    case 'date':
+                    case 'datetime':
+                    case 'datetimeoffset':
+                        return `'${(value + '').replace('\'', '\'\'')}'`;
+                    default:
+                        return value + '';
+                }
+            } else if (isRequiredUsage) {
+                // Should not reach here in theory
+                throw new Error(`[Bug] required parameter @${exp.key} was not supplied.`);
+            } else {
+                return null; // Will pruned out
+            }
+        } else if (exp instanceof QueryexFunction) {
+
+        } else if (exp instanceof QueryexBinaryOperator) {
+
+        } else if (exp instanceof QueryexUnaryOperator) {
+
+        } else {
+
+        }
     }
 
-    public static getParameterDescriptors(
+    public static canShowEmptyMembers(desc: PropVisualDescriptor) {
+        // Those are the controls where we know the full list of members
+        return !!desc && (desc.control === 'choice' || desc.control === 'check');
+    }
+
+    public static canShowAsTree(desc: PropDescriptor, wss: WorkspaceService, trx: TranslateService) {
+        // Those are the controls where we know the full list of members
+        return !!desc && desc.datatype === 'entity' &&
+            !!metadata[desc.control](wss, trx, desc.definitionId).properties.Parent;
+    }
+
+    public static getReportInfos(
         model: ReportDefinitionForClient,
         wss: WorkspaceService,
-        trx: TranslateService): { [keyLower: string]: ParameterInfo } {
+        trx: TranslateService): ReportInfos {
 
         const coll = model.Collection;
         const defId = model.DefinitionId;
@@ -492,12 +574,14 @@ export class QueryexUtil {
             throw new Error(`The collection was not specified`);
         }
 
+        const ws = wss.currentTenant;
+
         // First prepare overrides
 
         const autoOverrides: { [keyLower: string]: PropDescriptor } = {};
         const autoOverridesPrev: { [keyLower: string]: PropDescriptor } = {};
         const userOverrides: { [keyLower: string]: PropVisualDescriptor } = {};
-        const modelParameters: { [keyLower: string]: { defaultExp: QueryexBase, visibility: DefinitionVisibility } } = {};
+        const definitionParameters: { [keyLower: string]: { defExp: QueryexBase, parameter: ReportDefinitionParameterForClient } } = {};
         for (const param of model.Parameters || []) {
             const keyLower = param.Key.toLowerCase();
             if (!!param.Control) {
@@ -511,11 +595,11 @@ export class QueryexUtil {
                 const columnAccesses = exp.columnAccesses();
                 const parameters = exp.parameters();
                 if (aggregations.length > 0) {
-                    throw new Error(`Parameter: Default Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                    throw new Error(`Parameter default Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
                 } else if (columnAccesses.length > 0) {
-                    throw new Error(`Parameter: Default Expression cannot contain column access literals like '${columnAccesses[0]}'.`);
+                    throw new Error(`Parameter default Expression cannot contain column access literals like '${columnAccesses[0]}'.`);
                 } else if (parameters.length > 0) {
-                    throw new Error(`Parameter: Default Expression cannot contain parameters like '${parameters[0]}'.`);
+                    throw new Error(`Parameter default Expression cannot contain parameters like '${parameters[0]}'.`);
                 } else {
                     const desc = QueryexUtil.nativeDesc(exp, undefined, undefined, model.Collection, model.DefinitionId, wss, trx);
                     switch (desc.datatype) {
@@ -523,7 +607,7 @@ export class QueryexUtil {
                         case 'hierarchyid':
                         case 'geography':
                         case 'entity':
-                            throw new Error(`Parameter: Default Expression cannot be of type ${desc.datatype}.`);
+                            throw new Error(`Parameter default Expression cannot be of type ${desc.datatype}.`);
                         default:
                             autoOverrides[keyLower] = desc;
                             autoOverridesPrev[keyLower] = desc;
@@ -531,9 +615,8 @@ export class QueryexUtil {
                 }
             }
 
-            modelParameters[keyLower] = { defaultExp: exp, visibility: param.Visibility };
+            definitionParameters[keyLower] = { defExp: exp, parameter: param };
         }
-
 
         const filterExp = Queryex.parseSingle(model.Filter);
         {
@@ -555,46 +638,51 @@ export class QueryexUtil {
             }
         }
 
-        for (const dimension of model.Rows.concat(model.Columns)) {
+        /////////////////// Rows & Columns
+
+        const addDimensionInfo = (dimension: ReportDefinitionDimensionForClient, infos: DimensionInfo[]): void => {
             const keyExp = Queryex.parseSingle(dimension.KeyExpression);
             let keyDesc: PropDescriptor;
             if (!!keyExp) {
                 const aggregations = keyExp.aggregations();
                 const parameters = keyExp.parameters();
                 if (aggregations.length > 0) {
-                    throw new Error(`Dimension: Key Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                    throw new Error(`Dimension key Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
                 } else if (parameters.length > 0) {
-                    throw new Error(`Dimension: Key Expression cannot contain parameters like '${parameters[0]}'.`);
+                    throw new Error(`Dimension key Expression cannot contain parameters like '${parameters[0]}'.`);
                 } else {
                     keyDesc = QueryexUtil.nativeDesc(keyExp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
                     switch (keyDesc.datatype) {
                         case 'boolean':
                         case 'hierarchyid':
                         case 'geography':
-                            throw new Error(`Dimension: Key Expression cannot be of type ${keyDesc.datatype}.`);
+                            throw new Error(`Dimension key Expression cannot be of type ${keyDesc.datatype}.`);
                     }
                 }
             } else {
-                throw new Error(`Dimension: Key Expression cannot be empty.`);
+                throw new Error(`Dimension key Expression cannot be empty.`);
             }
 
+            let dispExp: QueryexBase;
+            let dispDesc: PropDescriptor;
+            const attributes: SelectInfo[] = [];
             if (keyDesc.datatype === 'entity') {
-                const dispExp = Queryex.parseSingle(dimension.DisplayExpression);
+                dispExp = Queryex.parseSingle(dimension.DisplayExpression);
                 if (!!dispExp) {
                     const aggregations = dispExp.aggregations();
                     const parameters = dispExp.parameters();
                     if (aggregations.length > 0) {
-                        throw new Error(`Dimension: Display Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                        throw new Error(`Dimension display Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
                     } else if (parameters.length > 0) {
-                        throw new Error(`Dimension: Display Expression cannot contain parameters like '${parameters[0]}'.`);
+                        throw new Error(`Dimension display Expression cannot contain parameters like '${parameters[0]}'.`);
                     } else {
-                        const dispDesc = QueryexUtil.nativeDesc(dispExp, userOverrides, autoOverrides, keyDesc.control, keyDesc.definitionId, wss, trx);
+                        dispDesc = QueryexUtil.nativeDesc(dispExp, userOverrides, autoOverrides, keyDesc.control, keyDesc.definitionId, wss, trx);
                         switch (dispDesc.datatype) {
                             case 'boolean':
                             case 'entity':
                             case 'hierarchyid':
                             case 'geography':
-                                throw new Error(`Dimension: Display Expression ${dispExp} cannot be of type ${dispDesc.datatype}.`);
+                                throw new Error(`Dimension display Expression ${dispExp} cannot be of type ${dispDesc.datatype}.`);
                         }
                     }
                 }
@@ -605,36 +693,86 @@ export class QueryexUtil {
                         const aggregations = exp.aggregations();
                         const parameters = exp.parameters();
                         if (aggregations.length > 0) {
-                            throw new Error(`Dimension: Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                            throw new Error(`Dimension attribute expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
                         } else if (parameters.length > 0) {
-                            throw new Error(`Dimension: Expression cannot contain parameters like '${parameters[0]}'.`);
+                            throw new Error(`Dimension attribute expression cannot contain parameters like '${parameters[0]}'.`);
                         } else {
                             const desc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, keyDesc.control, keyDesc.definitionId, wss, trx);
                             switch (desc.datatype) {
                                 case 'boolean':
-                                case 'entity':
                                 case 'hierarchyid':
                                 case 'geography':
-                                    throw new Error(`Dimension: Attribute Expression ${exp} cannot be of type ${desc.datatype}.`);
+                                    throw new Error(`Dimension attribute Expression ${exp} cannot be of type ${desc.datatype}.`);
+                                default: {
+                                    const label = !!attribute.Label ? () => ws.localize(attribute.Label, attribute.Label2, attribute.Label3) : desc.label;
+                                    attributes.push({ exp, desc, label });
+                                }
                             }
                         }
                     } else {
-                        throw new Error(`Dimension: Attribute Expression cannot be empty.`);
+                        throw new Error(`Dimension attribute Expression cannot be empty.`);
                     }
                 }
             }
+
+            // Add the dimension infos
+            {
+                const label = dimension.Label ? () => ws.localize(dimension.Label, dimension.Label2, dimension.Label3) : keyDesc.label;
+                const desc = dispDesc || keyDesc;
+                const autoExpandLevel = dimension.AutoExpandLevel;
+                const showAsTree = dimension.ShowAsTree && QueryexUtil.canShowAsTree(keyDesc, wss, trx);
+                const showEmptyMembers = dimension.ShowEmptyMembers && QueryexUtil.canShowEmptyMembers(keyDesc);
+                if (!showEmptyMembers) {
+                    for (const d of rowInfos) {
+                        // ShowEmptyMembers must true for all subsequent dimensions too
+                        // Otherwise how would you display that dimension with nothing underneath it?
+                        d.showEmptyMembers = false;
+                    }
+                }
+
+                infos.push({
+                    keyExp,
+                    dispExp,
+                    label,
+                    desc,
+                    attributes: [],
+                    autoExpandLevel,
+                    showAsTree, // Only when it's a tree entity
+                    showEmptyMembers // Only when it's supported
+                });
+            }
+        };
+
+        const rowInfos: DimensionInfo[] = [];
+        for (const row of model.Rows) {
+            addDimensionInfo(row, rowInfos);
         }
 
-        const measureExps: { mainExp: QueryexBase, visualDesc: PropVisualDescriptor, success: QueryexBase, warning: QueryexBase, danger: QueryexBase }[] = [];
+        const columnInfos: DimensionInfo[] = [];
+        for (const col of model.Columns) {
+            addDimensionInfo(col, columnInfos);
+        }
+
+        /////////////////// Measures
+
+        const measureExps: {
+            measure: ReportDefinitionMeasureForClient,
+            mainExp: QueryexBase,
+            visualDesc: PropVisualDescriptor,
+            success: QueryexBase,
+            warning: QueryexBase,
+            danger: QueryexBase
+        }[] = [];
+
         for (const measure of model.Measures) {
             const mainExp = Queryex.parseSingle(measure.Expression);
             if (!!mainExp) {
                 const unaggregated = mainExp.unaggregatedColumnAccesses();
                 if (unaggregated.length > 0) {
-                    throw new Error(`Measure: Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+                    throw new Error(`Measure expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
                 }
             } else {
-                throw new Error(`Measure: Expression cannot be empty.`);
+                throw new Error(`Measure expression cannot be empty.`);
             }
 
             function validateHighlightExpression(expString: string, prop: string): QueryexBase {
@@ -642,11 +780,11 @@ export class QueryexUtil {
                 if (!!exp) {
                     const unaggregated = exp.unaggregatedColumnAccesses();
                     if (unaggregated.length > 0) {
-                        throw new Error(`Measure ${prop}: Expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
+                        throw new Error(`Measure ${prop} expression cannot contain unaggregated column accesses like '${unaggregated[0]}'.`);
                     } else {
                         const desc = QueryexUtil.tryBooleanDesc(exp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
                         if (!desc) {
-                            throw new Error(`Measure ${prop}: Expression ${exp} could not be interpreted as a boolean.`);
+                            throw new Error(`Measure ${prop} expression ${exp} could not be interpreted as a boolean.`);
                         } else {
                             return exp;
                         }
@@ -658,6 +796,7 @@ export class QueryexUtil {
             const visualDesc = measure.Control ? descFromControlOptions(wss.currentTenant, measure.Control, measure.ControlOptions) : null;
 
             measureExps.push({
+                measure,
                 mainExp,
                 visualDesc,
                 success: validateHighlightExpression(measure.SuccessWhen, 'Success When'),
@@ -666,30 +805,38 @@ export class QueryexUtil {
             });
         }
 
-        const selectExps: QueryexBase[] = [];
+        /////////////////// Selects
+
+        const selectExps: { exp: QueryexBase, select: ReportDefinitionSelectForClient }[] = [];
         if (model.Type === 'Details' || model.IsCustomDrilldown) {
             for (const select of model.Select) {
                 const exp = Queryex.parseSingle(select.Expression);
                 if (!!exp) {
                     const aggregations = exp.aggregations();
                     if (aggregations.length > 0) {
-                        throw new Error(`Select: Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+                        throw new Error(`Select expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
                     } else {
-                        selectExps.push(exp);
+                        selectExps.push({ exp, select });
                     }
                 } else {
-                    throw new Error(`Select: Expression cannot be empty.`);
+                    throw new Error(`Select expression cannot be empty.`);
                 }
             }
         }
 
+        let measureInfos: MeasureInfo[] = [];
+        let selectInfos: SelectInfo[] = [];
 
         while (true) {
+            // Clear these two first thing
+            measureInfos = [];
+            selectInfos = [];
+
             // Filter
             if (!!filterExp) {
                 const desc = QueryexUtil.tryBooleanDesc(filterExp, userOverrides, autoOverrides, coll, defId, wss, trx);
                 if (!desc) {
-                    throw new Error(`Filter: Expression could not be interpreted as a boolean.`);
+                    throw new Error(`Filter expression could not be interpreted as a boolean.`);
                 }
             }
 
@@ -697,26 +844,26 @@ export class QueryexUtil {
             if (!!havingExp) {
                 const desc = QueryexUtil.tryBooleanDesc(havingExp, userOverrides, autoOverrides, coll, defId, wss, trx);
                 if (!desc) {
-                    throw new Error(`Having: Expression could not be interpreted as a boolean.`);
+                    throw new Error(`Having expression could not be interpreted as a boolean.`);
                 }
             }
 
             // Measures
-            for (const { mainExp, visualDesc, success, warning, danger } of measureExps) {
+            for (const { measure, mainExp, visualDesc, success, warning, danger } of measureExps) {
                 const mainDesc = QueryexUtil.nativeDesc(mainExp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
                 switch (mainDesc.datatype) {
                     case 'boolean':
                     case 'entity':
                     case 'hierarchyid':
                     case 'geography':
-                        throw new Error(`Measure: Expression ${mainExp} cannot be of type ${mainDesc.datatype}.`);
+                        throw new Error(`Measure expression ${mainExp} cannot be of type ${mainDesc.datatype}.`);
                 }
 
                 function validateHighlightExpression(exp: QueryexBase, prop: string): void {
                     if (!!exp) {
                         const desc = QueryexUtil.tryBooleanDesc(exp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
                         if (!desc) {
-                            throw new Error(`Measure ${prop}: Expression ${exp} could not be interpreted as a boolean.`);
+                            throw new Error(`Measure ${prop} expression ${exp} could not be interpreted as a boolean.`);
                         }
                     }
                 }
@@ -726,18 +873,37 @@ export class QueryexUtil {
                 validateHighlightExpression(danger, 'Danger When');
 
                 if (!!visualDesc && !tryGetDescFromVisual(visualDesc, mainDesc.datatype, () => '', wss, trx)) {
-                    throw new Error(`Measure: Expression ${mainExp} (${mainDesc.datatype}) is incompatible with the selected control.`);
+                    throw new Error(`Measure expression ${mainExp} (${mainDesc.datatype}) is incompatible with the selected control.`);
+                }
+
+                // Add the measure info
+                {
+                    const label = !!measure.Label ? () => ws.localize(measure.Label, measure.Label2, measure.Label3) : mainDesc.label;
+                    measureInfos.push({
+                        exp: mainExp,
+                        desc: mainDesc,
+                        label,
+                        success,
+                        warning,
+                        danger
+                    });
                 }
             }
 
             // Select
-            for (const exp of selectExps) {
+            for (const { exp, select } of selectExps) {
                 const desc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, model.Collection, model.DefinitionId, wss, trx);
                 switch (desc.datatype) {
                     case 'boolean':
                     case 'hierarchyid':
                     case 'geography':
-                        throw new Error(`Select: Expression ${exp} cannot be of type ${desc.datatype}.`);
+                        throw new Error(`Select expression ${exp} cannot be of type ${desc.datatype}.`);
+                }
+
+                // Add the measure info
+                {
+                    const label = !!select.Label ? () => ws.localize(select.Label, select.Label2, select.Label3) : desc.label;
+                    selectInfos.push({ exp, desc, label });
                 }
             }
 
@@ -775,9 +941,9 @@ export class QueryexUtil {
         if (!!havingExp) {
             havingExp.parametersInner(params);
         }
-        for (const { mainExp, success, warning, danger } of measureExps) {
-            mainExp.parametersInner(params);
-            mainExp.parametersInner(requiredParams);
+        for (const { exp, success, warning, danger } of measureInfos) {
+            exp.parametersInner(params);
+            exp.parametersInner(requiredParams);
             if (!!success) {
                 success.parametersInner(params);
             }
@@ -788,7 +954,7 @@ export class QueryexUtil {
                 danger.parametersInner(params);
             }
         }
-        for (const exp of selectExps) {
+        for (const { exp } of selectInfos) {
             exp.parametersInner(params);
             exp.parametersInner(requiredParams);
         }
@@ -808,41 +974,62 @@ export class QueryexUtil {
             requiredKeysDic[param.keyLower] = true;
         }
 
-        const result: { [keyLower: string]: ParameterInfo } = {};
+        const defaultParams: { [keyLower: string]: ParameterInfo } = {};
         for (const keyLower of keysLower) {
 
             // Get the key in its proper form
             const key = keysDic[keyLower];
 
-            // Get whether this parameter is required
+            // Get whether this parameter is used in a measure or a select
             const isRequiredUsage = !!requiredKeysDic[keyLower];
 
             // Get the final descriptor of the parameter
             const desc = autoOverrides[keyLower];
 
-            // Some last minute validation
-            if (!!modelParameters[keyLower]) { // Could be a brand new parameter
-                const { defaultExp, visibility } = modelParameters[keyLower];
-                if (!defaultExp) {
-                    // Make sure required parameters always have a value at hand.
-                    if (isRequiredUsage && visibility !== 'Required') {
-                        throw new Error(`Parameter @${key} is used in a measure or a select expression making it required. Either specify its Default Expression or set its Visibility to Required.`);
+            // Defaults, overridden by the definitionParameter
+            let isRequired = isRequiredUsage;
+            let defaultExp: QueryexBase;
+            let label: () => string = desc.label;
+
+            // Override the defaults if there is a definition parameter
+            if (!!definitionParameters[keyLower]) { // Could be a brand new parameter
+                const { defExp, parameter } = definitionParameters[keyLower];
+                isRequired = parameter.Visibility === 'Required';
+                defaultExp = defExp;
+                if (!isRequired) { // Default Expression is only applicable when visibility != 'Required'
+                    if (!defaultExp) {
+                        // Make sure required parameters always have a value at hand.
+                        if (isRequiredUsage) {
+                            throw new Error(`Parameter @${key} is used in a measure or a select expression making it required. Either specify its Default Expression or set its Visibility to Required.`);
+                        }
+                    } else {
+                        // Make sure DefaultExpression can be interpreted to the same final datatype of the parameter
+                        const defaultDesc = QueryexUtil.tryDesc(defaultExp, undefined, undefined, desc.datatype, model.Collection, model.DefinitionId, wss, trx);
+                        if (!defaultDesc) {
+                            throw new Error(`Parameter @${key}: Default Expression ${defaultExp} could not be interpreted as a ${defaultDesc.datatype}`);
+                        }
                     }
-                } else {
-                    // Make sure DefaultExpression can be interpreted to the same final datatype of the parameter
-                    const defaultDesc = QueryexUtil.tryDesc(defaultExp, undefined, undefined, desc.datatype, model.Collection, model.DefinitionId, wss, trx);
-                    if (!defaultDesc) {
-                        throw new Error(`Parameter @${key}: Default Expression ${defaultExp} could not be interpreted as a ${defaultDesc.datatype}`);
-                    }
+                }
+
+                if (!!parameter.Label) {
+                    label = () => ws.localize(parameter.Label, parameter.Label2, parameter.Label3);
                 }
             }
 
             // Add to the result
-            result[keyLower] = { key, desc, isRequiredUsage };
+            defaultParams[keyLower] = { key, desc, datatype: desc.datatype, label, isRequired, defaultExp };
         }
 
-        console.log(result);
-        return result;
+        console.log(defaultParams);
+        return {
+            rows: rowInfos,
+            columns: columnInfos,
+            measures: measureInfos,
+            select: selectInfos,
+            filter: filterExp,
+            having: havingExp,
+            defaultParams // TODO upgrade them to an array
+        };
     }
 
     public static nativeDesc(
@@ -1428,7 +1615,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Left operand ${ex.left} could not be interpreted as a numeric.`);
                         }
 
-                        const rightDesc = tryDescImpl(ex.right, leftDesc);
+                        const rightDesc = tryDescImpl(ex.right, 'numeric');
                         if (!rightDesc) {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as a numeric.`);
                         }
@@ -1446,7 +1633,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Left operand ${ex.left} could not be interpreted as a boolean.`);
                         }
 
-                        const rightDesc = tryDescImpl(ex.right, leftDesc);
+                        const rightDesc = tryDescImpl(ex.right, 'boolean');
                         if (!rightDesc) {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as a boolean.`);
                         }

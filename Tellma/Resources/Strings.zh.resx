@@ -1130,7 +1130,7 @@
     <value>标签“{0}”可匹配于类型{1}的倍数集合，使用数字后缀来消除歧义，像这样“{0} 0.1”。</value>
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
-    <value>标签的“{0}”可匹配于类型{1}的倍数字段，可使用一个数字后缀来消除歧义，像这样“{0} 0.1”。</value>
+    <value>标签“{0}”可匹配于类型{1}的倍数字段，可使用一个数字后缀来消除歧义，像这样“{0} 0.1”。</value>
   </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>线不能代表用户签署“{0}”</value>

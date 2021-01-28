@@ -14,7 +14,7 @@ import {
   metadata,
   getChoices,
   PropVisualDescriptor,
-  PropDescriptor
+  DataType
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
@@ -29,6 +29,7 @@ import { QueryexUtil } from '~/app/data/queryex-util';
 interface OverriddenParameterInfo {
   key: string;
   desc: PropVisualDescriptor;
+  datatype: DataType;
   label: () => string;
   isRequired: boolean;
 }
@@ -125,36 +126,26 @@ export class ReportComponent implements OnInit, OnDestroy {
             urlValue = null;
           } else {
             try {
-              switch (p.desc.control) {
-                case 'unsupported':
-                case 'null':
-                case 'text':
-                case 'date':
+              switch (p.datatype) {
+                case 'datetimeoffset':
                 case 'datetime':
+                case 'date':
+                case 'string':
                   urlValue = urlStringValue;
                   break;
-                case 'number':
-                case 'percent':
-                case 'serial':
+                case 'numeric':
                   urlValue = +urlStringValue;
                   break;
-                case 'check':
+                case 'bit':
                   urlValue = urlStringValue.toLowerCase() === 'true';
                   break;
-                case 'choice':
-                  urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
-                  break;
+                case 'boolean':
+                case 'hierarchyid':
+                case 'geography':
+                case 'entity':
+                case 'null':
                 default:
-                  const navPropDesc = p.desc;
-                  const collection = navPropDesc.control;
-                  const metadataFn = metadata[collection];
-                  if (!metadataFn) {
-                    // developer mistake
-                    console.error(`Collection @${collection} was not found`);
-                  }
-                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definitionId);
-                  urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
-
+                  console.error(`Unsupported parameter datatype ${p.datatype}.`);
                   break;
               }
             } catch (ex) {
@@ -271,25 +262,30 @@ export class ReportComponent implements OnInit, OnDestroy {
         const ws = this.workspace.currentTenant;
 
         // (1) Get the default parameters found in all the expressions in the definition
-        const defaultParams = QueryexUtil.getParameterDescriptors(this.definition, this.workspace, this.translate);
+        const { defaultParams } = QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
 
         // (2) Override defaults using values from definitions.Parameters;
         // The parameter definitions can override 3 things (1) order (2) label (3) is required
-        const params = this.definition.Parameters || [];
-        for (const p of params) {
-          const keyLower = p.Key.toLowerCase();
+        const defParams = this.definition.Parameters || [];
+        for (const defParam of defParams) {
+          const keyLower = defParam.Key.toLowerCase();
 
-          if (p.Visibility === 'None') {
+          if (defParam.Visibility === 'None') {
             // This hides parameters that are explicitly hidden
             delete defaultParams[keyLower];
           } else {
             const paramInfo = defaultParams[keyLower];
             if (!!paramInfo) {
-              const desc = descFromControlOptions(ws, p.Control, p.ControlOptions, paramInfo.desc);
-              const label = !!p.Label ? () => ws.getMultilingualValueImmediate(p, 'Label') : paramInfo.desc.label;
-              const isRequired = p.Visibility === 'Required';
+              const datatype = paramInfo.desc.datatype;
+              let desc: PropVisualDescriptor = paramInfo.desc;
+              if (!!defParam.Control) {
+                desc = descFromControlOptions(ws, defParam.Control, defParam.ControlOptions, paramInfo.desc);
+              }
 
-              this._currentParameters.push({ key: keyLower, label, isRequired, desc });
+              const label = !!defParam.Label ? () => ws.getMultilingualValueImmediate(defParam, 'Label') : paramInfo.desc.label;
+              const isRequired = defParam.Visibility === 'Required';
+
+              this._currentParameters.push({ key: keyLower, label, isRequired, desc, datatype });
               delete defaultParams[keyLower];
             }
           }
@@ -301,7 +297,8 @@ export class ReportComponent implements OnInit, OnDestroy {
           const label = paramInfo.desc.label;
           const isRequired = paramInfo.isRequiredUsage;
           const desc = paramInfo.desc;
-          this._currentParameters.push({ key: keyLower, label, isRequired, desc });
+          const datatype = desc.datatype;
+          this._currentParameters.push({ key: keyLower, label, isRequired, desc, datatype });
         }
 
       } catch { } // Problems will be reported by the preview
@@ -406,8 +403,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   public get areAllRequiredParamsSpecified(): boolean {
     const args = this.arguments;
     return this.parameters
-      .filter(p => p.isRequired)
-      .every(p => isSpecified(args[p.key]));
+      .every(p => !p.isRequired || isSpecified(args[p.key]));
   }
 
   public get refresh(): Observable<void> {
@@ -495,7 +491,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get disableRefresh(): boolean {
-    return !this.areAllRequiredParamsSpecified || this.state.disableFetch;
+    return !this.areAllRequiredParamsSpecified || this.state.badDefinition;
   }
 
   public get showEditDefinition(): boolean {
