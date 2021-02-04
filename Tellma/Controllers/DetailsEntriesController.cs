@@ -238,7 +238,7 @@ namespace Tellma.Controllers
                 Filter = betweenDatesFilter,
             };
 
-            var (data, _, _, count) = await GetFact(factArgs, cancellation);
+            var (data, _, _, count) = await GetEntities(factArgs, cancellation);
 
             // Step 3: Load the opening balances
             string valueExp = $"sum({nameof(DetailsEntry.AlgebraicValue)})";

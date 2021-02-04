@@ -4546,7 +4546,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         };
 
         this.onBarcodeStartLoading(lineDefId, model, barcode);
-        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getFact(args).pipe(
+        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getEntities(args).pipe(
           tap(results => {
             // Hide the spinner and get the number of same scans that happaned while this barcode was loading
             const scanCount = this.onBarcodeFinishedLoading(lineDefId, model, barcode);

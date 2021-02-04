@@ -1,6 +1,6 @@
 ﻿CREATE FUNCTION [wiz].[fn_Ethiopian_DatePart]
 (
-	@DatePart NVARCHAR (15),
+	@DatePart CHAR (1), -- 'y', 'q', 'm' or 'd'
 	@Date DATETIME
 )
 RETURNS INT
@@ -16,13 +16,13 @@ BEGIN
 
 	RETURN 
 	(CASE @DatePart
-		WHEN N'year' THEN 4 * ((@Jdn - @JdOffset) / 1461) + (@R / 365) - (@R / 1460)
-		WHEN N'quarter' THEN 
+		WHEN 'y' THEN 4 * ((@Jdn - @JdOffset) / 1461) + (@R / 365) - (@R / 1460)
+		WHEN 'q' THEN 
 			CASE -- 1 + ((Month - 1) / 3)
 				WHEN 1 + (@N / 90) >= 4 THEN 4 -- Pagume is still Q4 not Q5
 				ELSE 1 + (@N / 90) 
 			END
-		WHEN N'month' THEN (@N / 30) + 1
-		WHEN N'day' THEN (@N % 30) + 1
+		WHEN 'm' THEN (@N / 30) + 1
+		WHEN 'd' THEN (@N % 30) + 1
 	END)
 END;

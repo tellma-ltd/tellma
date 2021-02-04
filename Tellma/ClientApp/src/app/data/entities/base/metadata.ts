@@ -229,11 +229,13 @@ export interface EntityDescriptor {
      * Navigates to the details screen representing the entity with a certain Id, this is a more powerful version of screenUrl
      */
     navigateToDetails?: (entity: Entity, router: Router, statekey?: string) => void;
+    navigateToDetailsFromVals?: (vals: any[], router: Router, statekey?: string) => void;
 
     /**
      * A function that returns a display string representing the entity.
      */
     format: (item: Entity) => string;
+    formatFromVals: (vals: any[]) => string;
 
     /**
      * When applicable: returns all the values that the type parameter can take.
@@ -280,12 +282,8 @@ export interface PropDescriptorBase {
     label: () => string;
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface PropVisualDescriptorBase {
-
-    /**
-     * Whether the field value should be displayed as RTL
-     */
-    alignment?: 'left' | 'right' | 'center';
 }
 
 export interface UnsupportedPropDescriptor extends UnsupportedPropVisualDescriptor, PropDescriptorBase {
@@ -320,6 +318,11 @@ export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
+
+    /**
+     * Whether the field value should be displayed as RTL
+     */
+    isRightAligned?: boolean;
 }
 
 export interface BitPropDescriptor extends BitPropVisualDescriptor, PropDescriptorBase {
@@ -385,6 +388,11 @@ export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
+
+    /**
+     * Whether the field value should be displayed as RTL
+     */
+    isRightAligned?: boolean;
 }
 
 export interface NullPropDescriptor extends NullPropVisualDescriptor, PropDescriptorBase {

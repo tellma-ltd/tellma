@@ -58,6 +58,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
 
         Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -85,17 +86,17 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
         ChildCount: {
           datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          alignment: 'right'
+          isRightAligned: true
         },
         ActiveChildCount: {
           datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
-          maxDecimalPlaces: 0, alignment: 'right'
+          maxDecimalPlaces: 0, isRightAligned: true
         },
         Level: {
           datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          alignment: 'right'
+          isRightAligned: true
         },
 
         IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },

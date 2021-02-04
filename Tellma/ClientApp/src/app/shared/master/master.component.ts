@@ -454,7 +454,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const filter = this.computeFilter(s);
 
       // Retrieve the entities
-      obs$ = this.crud.getFact({
+      obs$ = this.crud.getEntities({
         top,
         skip: skipParam,
         orderby,
@@ -1456,7 +1456,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       });
     } else if (this.exportMode === 'WhatISee') {
       const colPaths = this.tableColumnPaths;
-      obs$ = this.crud.getFact({
+      obs$ = this.crud.getEntities({
         top: this.exportPageSize,
         skip: this.exportSkip,
         orderby: s.orderby,
@@ -1515,7 +1515,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       obs$ = this.crud.exportByIds(ids);
     } else if (mode === 'WhatISee') {
       const colPaths = this.tableColumnPaths;
-      obs$ = this.crud.getByIds(ids, {
+      obs$ = this.crud.getByIds({
         select: this.computeSelectForExport(),
         i: ids
       }).pipe(

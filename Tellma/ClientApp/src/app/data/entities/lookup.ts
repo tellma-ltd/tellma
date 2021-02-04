@@ -63,6 +63,7 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: 'IsActive eq true',
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

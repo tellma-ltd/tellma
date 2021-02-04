@@ -221,6 +221,15 @@ namespace Tellma.Data
             return new AggregateQuery<T>(Factory);
         }
 
+        /// <summary>
+        /// Creates and returns a new <see cref="Queries.FactQuery{T}"/>
+        /// </summary>
+        /// <typeparam name="T">The root type of the <see cref="Queries.FactQuery{T}"/></typeparam>
+        public FactQuery<T> FactQuery<T>() where T : Entity
+        {
+            return new FactQuery<T>(Factory);
+        }
+
         private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
             var conn = await GetConnectionAsync(cancellation);

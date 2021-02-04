@@ -17,7 +17,7 @@ namespace Tellma.Entities
         /// Those strings cannot be used as Ids in Entities with string Ids because they will mess up the routing logic
         /// </summary>
         public static readonly HashSet<string> RESERVED_IDS = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            { "new", "import", "template", "export", "export-by-ids", "aggregate", "children-of", "by-ids", "print" };
+            { "new", "import", "template", "export", "export-by-ids", "aggregate", "fact", "children-of", "by-ids", "print" };
 
         /// <summary>
         /// All inheriting classes will have a strongly typed Id property that is usually an int or a string,

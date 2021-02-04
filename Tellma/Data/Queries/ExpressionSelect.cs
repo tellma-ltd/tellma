@@ -30,7 +30,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Add the given <see cref="SelectAtom"/> to the atoms comprising this <see cref="ExpressionSelect"/>.
+        /// Add the given <see cref="QueryexColumnAccess"/> to the atoms comprising this <see cref="ExpressionSelect"/>.
         /// </summary>
         public void Add(QueryexColumnAccess atom)
         {

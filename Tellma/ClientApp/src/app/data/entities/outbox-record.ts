@@ -38,16 +38,21 @@ export function metadata_OutboxRecord(wss: WorkspaceService, trx: TranslateServi
             select: _select,
             apiEndpoint: 'outbox',
             masterScreenUrl: 'outbox',
-            navigateToDetailsSelect: ['Document.DefinitionId'],
-            navigateToDetails: (outboxRecord: OutboxRecord, router: Router, _: string) => {
+            navigateToDetailsSelect: ['DocumentId', 'Document.DefinitionId'],
+            navigateToDetails: (outboxRecord: OutboxRecord, router: Router) => {
                 const docId = outboxRecord.DocumentId;
                 const definitionId = ws.Document[docId].DefinitionId;
+                entityDesc.navigateToDetailsFromVals([docId, definitionId], router);
+            },
+            navigateToDetailsFromVals: (vals: any[], router: Router) => {
+                const [docId, definitionId] = vals;
                 const extras = { state_key: 'from_outbox' }; // fake state key to hide forward and backward navigation in details screen
                 router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, docId, extras]);
             },
             orderby: () => ['CreatedAt desc'],
             inactiveFilter: null,
-            format: (__: EntityWithKey) => '',
+            format: (_: EntityWithKey) => '',
+            formatFromVals: (_: any[]) => '',
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Assignment_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

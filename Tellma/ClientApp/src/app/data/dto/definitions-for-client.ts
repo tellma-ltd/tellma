@@ -39,6 +39,7 @@ export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
 }
 
 export interface ReportDefinitionForClient extends DefinitionForClient {
+    Id: number;
     Title: string;
     Title2?: string;
     Title3?: string;

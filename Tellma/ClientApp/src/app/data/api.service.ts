@@ -1117,7 +1117,7 @@ export class ApiService {
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
-      getFact: (args: GetArguments, extras?: { [key: string]: any }) => {
+      getEntities: (args: GetArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
         this.addExtras(paramsArray, extras);
 
@@ -1135,7 +1135,7 @@ export class ApiService {
         return obs$;
       },
 
-      getByIds: (ids: (number | string)[], args: GetByIdsArguments, extras?: { [key: string]: any }) => {
+      getByIds: (args: GetByIdsArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
         this.addExtras(paramsArray, extras);
 
@@ -1187,6 +1187,24 @@ export class ApiService {
         return obs$;
       },
 
+      getFact: (args: GetArguments, extras?: { [key: string]: any }) => {
+        const paramsArray = this.stringifyGetArguments(args);
+        this.addExtras(paramsArray, extras);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/fact?${params}`;
+
+        const obs$ = this.http.get<GetFactResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
       getAggregate: (args: GetAggregateArguments, extras?: { [key: string]: any }) => {
         args = args || {};
         const paramsArray: string[] = [];
@@ -1197,6 +1215,10 @@ export class ApiService {
 
         if (!!args.filter) {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!args.having) {
+          paramsArray.push(`having=${encodeURIComponent(args.having)}`);
         }
 
         this.addExtras(paramsArray, extras);
@@ -1464,6 +1486,7 @@ export class ApiService {
         );
         return obs$;
       },
+
       printById: (id: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
         const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
         const params: string = paramsArray.join('&');

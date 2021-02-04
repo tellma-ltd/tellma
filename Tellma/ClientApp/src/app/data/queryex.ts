@@ -122,12 +122,12 @@ function validBinaryOperator(op: string) {
     }
 }
 
-function isDirectionKeyword(token: string): QxDirection {
-    switch ((token || '').toLowerCase()) {
+function isDirectionKeyword(token: string): QueryexDirection {
+    token = (token || '').toLowerCase();
+    switch (token) {
         case 'asc':
-            return QxDirection.asc;
         case 'desc':
-            return QxDirection.desc;
+            return token;
         default:
             return null;
     }
@@ -345,7 +345,7 @@ quotation marks in string literals should be escaped by specifying them twice.`)
 
             const res = output.pop();
 
-            let dir: QxDirection;
+            let dir: QueryexDirection;
             if (dir = isDirectionKeyword(previousToken)) {
                 res.direction = dir;
             }
@@ -445,7 +445,7 @@ quotation marks in string literals should be escaped by specifying them twice.`)
                     // tslint:disable-next-line:max-line-length
                     throw new Error(`Unexpected comma ',' character. Commas are only used to separate function arguments: Func(arg1, arg2, arg3).`);
                 }
-            } else if (!!isDirectionKeyword(previousToken)) {
+            } else if (!!isDirectionKeyword(currentToken)) {
                 if (!expectDirKeywords) {
                     throw new Error(`Unexpected keyword '${currentToken}' in expression: ${expressionString}`);
                 }
@@ -484,9 +484,10 @@ quotation marks in string literals should be escaped by specifying them twice.`)
                             break;
                         }
 
-                        const numberValue = QueryexNumber.isValidNumber(currentToken);
-                        if (numberValue !== undefined) {
-                            exp = new QueryexNumber(numberValue);
+                        const pair = QueryexNumber.isValidNumber(currentToken);
+                        if (pair !== undefined) {
+                            const { value, decimals } = pair;
+                            exp = new QueryexNumber(value, decimals);
                             break;
                         }
 
@@ -532,9 +533,9 @@ class BracketInfo {
 }
 
 export abstract class QueryexBase {
-    public direction: QxDirection;
-    public get isAscending(): boolean { return this.direction === QxDirection.asc; }
-    public get isDescending(): boolean { return this.direction === QxDirection.desc; }
+    public direction: QueryexDirection;
+    public get isAscending(): boolean { return this.direction === 'asc'; }
+    public get isDescending(): boolean { return this.direction === 'desc'; }
 
     public unaggregatedColumnAccesses(): QueryexColumnAccess[] {
         const result: QueryexColumnAccess[] = [];
@@ -562,7 +563,7 @@ export abstract class QueryexBase {
 
     public get isAggregation(): boolean {
         if (this instanceof QueryexFunction) {
-            switch (this.name.toLowerCase()) {
+            switch (this.nameLower) {
                 case 'sum':
                 case 'count':
                 case 'avg':
@@ -587,6 +588,9 @@ export abstract class QueryexBase {
 }
 
 export class QueryexColumnAccess extends QueryexBase {
+    hasSecondary?: boolean; // Column access of a bi-lingual property
+    hasTernary?: boolean; // Column access of a tri-lingual prop
+
     constructor(public path: string[], public property: string) {
         super();
     }
@@ -660,16 +664,25 @@ export class QueryexColumnAccess extends QueryexBase {
     public aggregationsInner(_: QueryexFunction[]) {
     }
 
-    public parametersInner(result: QueryexParameter[]) {
+    public parametersInner(_: QueryexParameter[]) {
     }
 
     public clone(): QueryexBase {
-        return new QueryexColumnAccess(this.path.slice(), this.property);
+        const clone = new QueryexColumnAccess(this.path.slice(), this.property);
+        clone.hasSecondary = this.hasSecondary;
+        clone.hasTernary = this.hasTernary;
+
+        return clone;
     }
 }
 
 export class QueryexFunction extends QueryexBase {
     arguments: QueryexBase[];
+    nameLower: string;
+
+    index?: number; // For aggregation functions
+    sumIndex?: number; // For AVG
+    countIndex?: number; // For AVG
 
     private static properFirstChar(token: string): boolean {
         return !!token && isLetter(token[0]);
@@ -700,6 +713,7 @@ export class QueryexFunction extends QueryexBase {
     constructor(public name: string, args: QueryexBase[]) {
         super();
         this.arguments = args; // Typescript complained when I called constructor parameter "arguments"
+        this.nameLower = name.toLowerCase();
     }
 
     public toString(): string {
@@ -744,6 +758,11 @@ export class QueryexFunction extends QueryexBase {
 
     public clone(): QueryexBase {
         return new QueryexFunction(this.name, this.arguments.map(e => e.clone()));
+    }
+
+    public setName(name: string) {
+        this.name = name;
+        this.nameLower = name.toLowerCase();
     }
 }
 
@@ -856,13 +875,18 @@ export class QueryexQuote extends QueryexBase {
 }
 
 export class QueryexNumber extends QueryexBase {
-    constructor(public value: number) {
+    constructor(public value: number, public decimals: number) {
         super();
     }
 
-    public static isValidNumber(token: string): number {
+    public static isValidNumber(token: string): { value: number, decimals: number } {
         if (isDigit(token[0]) && isDigit(token[token.length - 1]) && token.split('').every(c => isDigit(c) || c === '.')) {
-            return parseFloat(token);
+            const value = parseFloat(token);
+
+            const pieces = token.split('.');
+            const decimals = pieces.length <= 1 ? 0 : pieces.pop().length;
+
+            return { value, decimals };
         }
     }
 
@@ -887,7 +911,7 @@ export class QueryexNumber extends QueryexBase {
     }
 
     public clone(): QueryexBase {
-        return new QueryexNumber(this.value);
+        return new QueryexNumber(this.value, this.decimals);
     }
 }
 
@@ -996,26 +1020,10 @@ export class QueryexParameter extends QueryexBase {
     }
 }
 
-enum QxDirection {
-    asc,
-    desc
-}
-
-export enum QxType {
-    boolean = 1, // highest precedence
-    hierarchyid = 2,
-    geography = 4,
-    datetimeoffset = 8,
-    datetime = 16,
-    date = 32,
-    numeric = 64,
-    bit = 128,
-    string = 256,
-    null = 512,  // (lowest precedence)
-}
+export type QueryexDirection = 'asc' | 'desc';
 
 export function DeBracket(str: string) {
-    if (str.length < 2) {
+    if (!str || str.length < 2) {
         return str;
     }
 

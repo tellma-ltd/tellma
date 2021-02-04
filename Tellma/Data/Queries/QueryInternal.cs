@@ -437,7 +437,7 @@ namespace Tellma.Data.Queries
 
             if (OrderBy != null)
             {
-                allPaths.AddRange(OrderBy.Select(e => e.Path));
+                allPaths.AddRange(OrderBy.ColumnAccesses().Select(e => e.Path));
             }
 
             if (pathToCollection != null)

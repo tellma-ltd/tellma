@@ -33,6 +33,18 @@ namespace Tellma.Controllers.Utilities
             }
         }
 
+        public FactQuery<T> FactQuery<T>() where T : Entity
+        {
+            if (typeof(T) == typeof(TFiltered))
+            {
+                return _repo.FactQuery<T>().Filter(_filter);
+            }
+            else
+            {
+                return _repo.FactQuery<T>();
+            }
+        }
+
         public Query<T> Query<T>() where T : Entity
         {
             if(typeof(T) == typeof(TFiltered))

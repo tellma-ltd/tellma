@@ -4,7 +4,7 @@ import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef, OnChanges,
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { WorkspaceService, ReportStore, ReportStatus, MAXIMUM_COUNT } from '~/app/data/workspace.service';
+import { WorkspaceService, ReportStatus, MAXIMUM_COUNT, StatementStore } from '~/app/data/workspace.service';
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
@@ -280,7 +280,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return resultArray.join(',');
   }
 
-  private computeStatementArguments(s?: ReportStore): StatementArguments {
+  private computeStatementArguments(s?: StatementStore): StatementArguments {
     s = s || this.state;
     const select = this.computeSelect();
     const top = this.DEFAULT_PAGE_SIZE;
@@ -646,13 +646,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  public get state(): ReportStore {
+  public get state(): StatementStore {
 
-    if (!this.workspace.currentTenant.reportState[this.stateKey]) {
-      this.workspace.currentTenant.reportState[this.stateKey] = new ReportStore();
+    const key = this.stateKey;
+    const ws = this.workspace.currentTenant;
+    if (!ws.statementState[key]) {
+      ws.statementState[key] = new StatementStore();
     }
 
-    return this.workspace.currentTenant.reportState[this.stateKey];
+    return ws.statementState[key];
   }
 
   get from(): number {

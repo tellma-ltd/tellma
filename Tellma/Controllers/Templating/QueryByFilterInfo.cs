@@ -5,7 +5,7 @@ using System.Linq;
 namespace Tellma.Controllers.Templating
 {
     /// <summary>
-    /// A <see cref="QueryInfo"/> that encodes an invocation of <see cref="FactServiceBase{TEntity}.GetFact(Dto.GetArguments, System.Threading.CancellationToken)"/>
+    /// A <see cref="QueryInfo"/> that encodes an invocation of <see cref="FactServiceBase{TEntity}.GetEntities(Dto.GetArguments, System.Threading.CancellationToken)"/>
     /// </summary>
     public class QueryByFilterInfo : QueryInfo
     {

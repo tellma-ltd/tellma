@@ -1,0 +1,97 @@
+<div class="h-100 d-flex flex-column">
+    <div class="row border-bottom bg-white">
+
+        <!-- Breadcrumb -->
+        <div class="col-12 p-1" *ngIf="!!title">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ title }}
+                </li>
+            </ul>
+        </div>
+ 
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
+
+            <!-- Left Buttons -->
+            <div>
+                <!-- Export -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
+                    <fa-icon icon="download"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+                </button>
+
+                <t-spinner class="t-vertical-align-middle mx-1" *ngIf="showExportSpinner">
+                </t-spinner>
+            </div>
+
+            <!-- Right Buttons -->
+            <div>
+                <!-- Refresh -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    [disabled]="disableRefresh" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+
+                <!-- Paging -->
+                <div class="d-inline">
+                    <div class="d-inline small mx-2">
+                        <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
+                            <span>{{ to | number }}</span>
+                        </span>
+                        <span class="t-vertical-align-middle"> / {{ totalDisplay }}</span>
+                    </div>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row t-rest-of-screen">
+        <t-report-results class="h-100 w-100"
+            [definition]="modifiedDefinition" [refresh]="refresh"
+            [export]="export" [state]="state" mode="screen" (exportStarting)="onExportStarting()"
+            (exportSuccess)="onExportSuccess()" (exportError)="onExportError($event)" (orderbyChange)="onOrderByChange()">
+        </t-report-results>
+        <ng-template #fillRequiredFields>
+            <div class="w-100 p-3 px-4">
+                <fa-icon icon="info-circle"></fa-icon>
+                &nbsp;
+                {{ 'FillRequiredFields' | translate }}
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ errorMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>

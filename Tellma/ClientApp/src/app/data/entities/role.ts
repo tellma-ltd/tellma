@@ -46,6 +46,7 @@ export function metadata_Role(wss: WorkspaceService, trx: TranslateService): Ent
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
         Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },

@@ -43,11 +43,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet]
-        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
+        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetEntities([FromQuery] GetArguments args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                using var _ = _instrumentation.Block("Controller GetFact");
+                using var _ = _instrumentation.Block("Controller GetEntities");
                 IDisposable block;
 
                 // Calculate server time at the very beginning for consistency
@@ -55,7 +55,7 @@ namespace Tellma.Controllers
 
                 // Retrieves the raw data from the database, unflattend, untrimmed 
                 var service = GetFactService();
-                var (data, extras, isPartial, totalCount) = await service.GetFact(args, cancellation);
+                var (data, extras, isPartial, totalCount) = await service.GetEntities(args, cancellation);
 
                 block = _instrumentation.Block("Flatten and trim");
 
@@ -88,6 +88,33 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
+        [HttpGet("fact")]
+        public virtual async Task<ActionResult<GetFactResponse>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                using var _ = _instrumentation.Block("Controller GetFact");
+
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Retrieves the raw data from the database, unflattend, untrimmed 
+                var service = GetFactService();
+                var (data, isPartial, count) = await service.GetFact(args, cancellation);
+
+                // Prepare the result in a response object
+                var result = new GetFactResponse
+                {
+                    IsPartial = isPartial,
+                    ServerTime = serverTime,
+                    Result = data,
+                    TotalCount = count
+                };
+
+                return Ok(result);
+            }, _logger);
+        }
+
         [HttpGet("aggregate")]
         public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args, CancellationToken cancellation)
         {
@@ -104,7 +131,6 @@ namespace Tellma.Controllers
                 // Finally return the result
                 var result = new GetAggregateResponse
                 {
-                    Top = args.Top,
                     IsPartial = isPartial,
                     ServerTime = serverTime,
 
@@ -356,91 +382,123 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
         /// </summary>
-        public virtual async Task<(List<TEntity> data, Extras extras, bool isPartial, int? count)> GetFact(GetArguments args, CancellationToken cancellation)
+        public virtual async Task<(List<TEntity> data, Extras extras, bool isPartial, int? count)> GetEntities(GetArguments args, CancellationToken cancellation)
         {
-            using var _ = _instrumentation.Block("Service GetFact");
-
-            IDisposable block;
-
-            block = _instrumentation.Block("Parse Filter");
-
-            // Parse the parameters
-            var filter = ExpressionFilter.Parse(args.Filter);
-
-            block.Dispose();
-            block = _instrumentation.Block("Parse OrderBy");
-
-            var orderby = ExpressionOrderBy.Parse(args.OrderBy);
-
-            block.Dispose();
-            block = _instrumentation.Block("Parse Expand");
-
-            var expand = ExpressionExpand.Parse(args.Expand);
-
-            block.Dispose();
-            block = _instrumentation.Block("Parse Select");
-
-            var select = ParseSelect(args.Select);
-
-            block.Dispose();
-            block = _instrumentation.Block("Create Query");
-
-            // Prepare the query
-            var query = GetRepository().Query<TEntity>();
-
-            block.Dispose();
-            block = _instrumentation.Block("Retrieve and Apply Permissions");
-
-            // Apply read permissions
-            var permissionsFilter = await UserPermissionsFilter(Constants.Read, cancellation);
-            query = query.Filter(permissionsFilter);
-            bool isPartial = false;
-
-            block.Dispose();
-            block = _instrumentation.Block("Apply Arguments");
-
-            // Apply search
-            query = Search(query, args);
-
-            // Apply filter
-            query = query.Filter(filter);
-
-            // Apply orderby
-            query = OrderBy(query, orderby);
-
-            // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
-            var top = args.Top;
-            var skip = args.Skip;
-            top = Math.Min(top, MaximumPageSize());
-            query = query.Skip(skip).Top(top);
-
-            // Apply the expand, which has the general format 'Expand=A,B.C,D'
-            query = query.Expand(expand);
-
-            // Apply the select, which has the general format 'Select=A,B.C,D'
-            query = query.Select(select);
-
-            block.Dispose();
-            block = _instrumentation.Block("Load data & count");
-
-            // Load the data and count in memory
-            List<TEntity> data;
-            int? count = 0;
-            if (args.CountEntities)
+            try
             {
-                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
+                // Parse the parameters
+                var filter = ExpressionFilter.Parse(args.Filter);
+                var orderby = ExpressionOrderBy.Parse(args.OrderBy);
+                var expand = ExpressionExpand.Parse(args.Expand);
+                var select = ParseSelect(args.Select);
+
+                // Prepare the query
+                var query = GetRepository().Query<TEntity>();
+
+                // Apply read permissions
+                var permissionsFilter = await UserPermissionsFilter(Constants.Read, cancellation);
+                query = query.Filter(permissionsFilter);
+                bool isPartial = false;
+
+                // Apply search
+                query = Search(query, args);
+
+                // Apply filter
+                query = query.Filter(filter);
+
+                // Apply orderby
+                query = OrderBy(query, orderby);
+
+                // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
+                var top = args.Top;
+                var skip = args.Skip;
+                top = Math.Min(top, MaximumPageSize());
+                query = query.Skip(skip).Top(top);
+
+                // Apply the expand, which has the general format 'Expand=A,B.C,D'
+                query = query.Expand(expand);
+
+                // Apply the select, which has the general format 'Select=A,B.C,D'
+                query = query.Select(select);
+
+                // Load the data and count in memory
+                List<TEntity> data;
+                int? count = null;
+                if (args.CountEntities)
+                {
+                    (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
+                }
+                else
+                {
+                    data = await query.ToListAsync(cancellation);
+                }
+
+                var extras = await GetExtras(data, cancellation);
+
+                // Return
+                return (data, extras, isPartial, count);
             }
-            else
+            catch (QueryException ex)
             {
-                data = await query.ToListAsync(cancellation);
+                throw new BadRequestException(ex.Message);
             }
+        }
 
-            var extras = await GetExtras(data, cancellation);
+        /// <summary>
+        /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
+        /// </summary>
+        public virtual async Task<(IEnumerable<DynamicRow> data, bool isPartial, int? count)> GetFact(GetArguments args, CancellationToken cancellation)
+        {
+            try
+            {
+                // Parse the parameters
+                var filter = ExpressionFilter.Parse(args.Filter);
+                var orderby = ExpressionOrderBy.Parse(args.OrderBy);
+                var select = ExpressionFactSelect.Parse(args.Select);
 
-            block.Dispose();
+                // Prepare the query
+                var query = GetRepository().FactQuery<TEntity>();
 
-            // Return
-            return (data, extras, isPartial, count);
+                // Apply read permissions
+                var permissionsFilter = await UserPermissionsFilter(Constants.Read, cancellation);
+                query = query.Filter(permissionsFilter);
+                bool isPartial = false;
+
+                // Apply filter
+                query = query.Filter(filter);
+
+                // Apply orderby
+                orderby ??= DefaultOrderBy();
+                query = query.OrderBy(orderby);
+
+                // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
+                var top = args.Top;
+                var skip = args.Skip;
+                top = Math.Min(top, MaximumPageSize());
+                query = query.Skip(skip).Top(top);
+
+                // Apply the select
+                query = query.Select(select);
+
+                // Load the data and count in memory
+                List<DynamicRow> data;
+                int? count = null;
+                if (args.CountEntities)
+                {
+                    (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, cancellation);
+                }
+                else
+                {
+                    data = await query.ToListAsync(cancellation);
+                }
+
+                // Return
+                return (data, isPartial, count);
+            }
+            catch (QueryException ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
         }
 
         /// <summary>
@@ -448,47 +506,54 @@ namespace Tellma.Controllers
         /// </summary>
         public virtual async Task<(List<DynamicRow> Data, IEnumerable<TreeDimensionResult> Ancestors, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
-            // Parse the parameters
-            var filter = ExpressionFilter.Parse(args.Filter);
-            var having = ExpressionHaving.Parse(args.Having);
-            var select = ExpressionAggregateSelect.Parse(args.Select);
-            var orderby = ExpressionAggregateOrderBy.Parse(args.OrderBy);
-
-            // Prepare the query
-            var query = GetRepository().AggregateQuery<TEntity>();
-
-            // Retrieve and Apply read permissions
-            var permissionsFilterExp = await UserPermissionsFilter(Constants.Read, cancellation);
-            query = query.Filter(permissionsFilterExp); // Important
-            var isPartial = false;
-
-            // Filter and Having
-            query = query.Filter(filter);
-            query = query.Having(having);
-
-            // Apply the top parameter
-            var top = args.Top == 0 ? int.MaxValue : args.Top; // 0 means get all
-            top = Math.Min(top, MAXIMUM_AGGREGATE_RESULT_SIZE + 1);
-            query = query.Top(top);
-
-            // Apply the select, which has the general format 'Select=A+B.C,Sum(D)'
-            query = query.Select(select);
-
-            // Apply the orderby, which has the general format 'A+B.C desc,Sum(D) asc'
-            query = query.OrderBy(orderby);
-
-            // Load the data in memory
-            var (data, ancestors) = await query.ToListAsync(cancellation);
-
-            // Put a limit on the number of data points returned, to prevent DoS attacks
-            if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
+            try
             {
-                var msg = _localizer["Error_NumberOfDataPointsExceedsMaximum0", MAXIMUM_AGGREGATE_RESULT_SIZE];
-                throw new BadRequestException(msg);
-            }
+                // Parse the parameters
+                var filter = ExpressionFilter.Parse(args.Filter);
+                var having = ExpressionHaving.Parse(args.Having);
+                var select = ExpressionAggregateSelect.Parse(args.Select);
+                var orderby = ExpressionAggregateOrderBy.Parse(args.OrderBy);
 
-            // Return
-            return (data, ancestors, isPartial);
+                // Prepare the query
+                var query = GetRepository().AggregateQuery<TEntity>();
+
+                // Retrieve and Apply read permissions
+                var permissionsFilterExp = await UserPermissionsFilter(Constants.Read, cancellation);
+                query = query.Filter(permissionsFilterExp); // Important
+                var isPartial = false;
+
+                // Filter and Having
+                query = query.Filter(filter);
+                query = query.Having(having);
+
+                // Apply the top parameter
+                var top = args.Top == 0 ? int.MaxValue : args.Top; // 0 means get all
+                top = Math.Min(top, MAXIMUM_AGGREGATE_RESULT_SIZE + 1);
+                query = query.Top(top);
+
+                // Apply the select, which has the general format 'Select=A+B.C,Sum(D)'
+                query = query.Select(select);
+
+                // Apply the orderby, which has the general format 'A+B.C desc,Sum(D) asc'
+                query = query.OrderBy(orderby);
+
+                // Load the data in memory
+                var (data, ancestors) = await query.ToListAsync(cancellation);
+
+                // Put a limit on the number of data points returned, to prevent DoS attacks
+                if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
+                {
+                    var msg = _localizer["Error_NumberOfDataPointsExceedsMaximum0", MAXIMUM_AGGREGATE_RESULT_SIZE];
+                    throw new BadRequestException(msg);
+                }
+
+                // Return
+                return (data, ancestors, isPartial);
+            }
+            catch (QueryException ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
         }
 
         public async Task<(byte[] FileBytes, string FileName)> PrintByFilter([FromRoute] int templateId, [FromQuery] GenerateMarkupByFilterArguments<int> args, CancellationToken cancellation)
@@ -836,7 +901,7 @@ namespace Tellma.Controllers
 
         async Task<(List<Entity> Data, Extras Extras, bool IsPartial, int? Count)> IFactServiceBase.GetFact(GetArguments args, CancellationToken cancellation)
         {
-            var (data, extras, isPartial, count) = await GetFact(args, cancellation);
+            var (data, extras, isPartial, count) = await GetEntities(args, cancellation);
             var genericData = data.Cast<Entity>().ToList();
 
             return (genericData, extras, isPartial, count);

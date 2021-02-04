@@ -13,26 +13,17 @@ import {
   EntityDescriptor,
   metadata,
   getChoices,
-  PropVisualDescriptor,
-  DataType
+  PropVisualDescriptor
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, descFromControlOptions, updateOn } from '~/app/data/util';
+import { isSpecified, updateOn } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { formatNumber } from '@angular/common';
-import { QueryexUtil } from '~/app/data/queryex-util';
-
-interface OverriddenParameterInfo {
-  key: string;
-  desc: PropVisualDescriptor;
-  datatype: DataType;
-  label: () => string;
-  isRequired: boolean;
-}
+import { ParameterInfo, QueryexUtil } from '~/app/data/queryex-util';
 
 @Component({
   selector: 't-report',
@@ -65,6 +56,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  private badDefinition = false;
   private _parameterCount: number = null;
   private _showChart: boolean;
   private _subscriptions: Subscription;
@@ -72,7 +64,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   private export$ = new Subject<string>();
   private _currentDefinition: ReportDefinitionForClient;
   private _currentEntityDescriptor: EntityDescriptor;
-  private _currentParameters: OverriddenParameterInfo[] = [];
+  private _currentParameters: ParameterInfo[] = [];
   private _views: { view: ReportView, label: string, icon: string }[] = [
     { view: ReportView.pivot, label: 'Table', icon: 'table' },
     { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
@@ -120,7 +112,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
         // Read the arguments from the URL
         for (const p of this.parameters) {
-          const urlStringValue = params.get(p.key) || null;
+          const urlStringValue = params.get(p.keyLower) || null;
           let urlValue: any = null;
           if (urlStringValue === null) {
             urlValue = null;
@@ -153,7 +145,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             }
           }
 
-          this.arguments[p.key] = urlValue;
+          this.arguments[p.keyLower] = urlValue;
         }
 
         this.immutableArguments = { ...this.arguments };
@@ -199,12 +191,17 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get state(): ReportStore {
 
+    const key = this.stateKey;
     const rs = this.workspace.currentTenant.reportState;
-    if (!rs[this.stateKey]) {
-      rs[this.stateKey] = new ReportStore();
+    if (!rs[key]) {
+      rs[key] = new ReportStore();
     }
 
-    return rs[this.stateKey];
+    return rs[key];
+  }
+
+  public get stateKey(): string {
+    return this.mode === 'screen' ? this.definitionId.toString() : '<preview>'; // In preview mode a local state is used anyways
   }
 
   private urlStateChanged(): void {
@@ -219,14 +216,21 @@ export class ReportComponent implements OnInit, OnDestroy {
         params.view = this.view;
       }
 
-      if (!!this.definition && this.definition.Type === 'Details' && !!this.state.skip) {
-        params.skip = this.state.skip;
+      if (!!this.definition && this.definition.Type === 'Details') {
+        const s = this.state;
+        if (!!s.skip) {
+          params.skip = s.skip;
+        }
+
+        if (!!s.orderbyKey) {
+          params.$orderby = `${s.orderbyKey} ${s.orderbyDir}`;
+        }
       }
 
       this.parameters.forEach(p => {
-        const value = this.arguments[p.key];
+        const value = this.arguments[p.keyLower];
         if (isSpecified(value)) {
-          params[p.key] = value + '';
+          params[p.keyLower] = value + '';
         }
       });
 
@@ -234,11 +238,15 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  public onOrderByChange() {
+    this.urlStateChanged();
+  }
+
   // UI Bindings
 
   get title(): string {
     const title = this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Title');
-    return title; // this.isScreenMode ? title : `${title} (${this.translate.instant('Preview')})`;
+    return title;
   }
 
   get views() {
@@ -246,62 +254,22 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._views;
   }
 
-  get parameters(): OverriddenParameterInfo[] {
-    if (!this.definition) {
-      this._currentParameters = [];
-    } else if (
-      this.definition !== this._currentDefinition ||
-      this.entityDescriptor !== this._currentEntityDescriptor) {
-
-      this._currentParameters = [];
+  get parameters(): ParameterInfo[] {
+    if (this.definition !== this._currentDefinition || this.entityDescriptor !== this._currentEntityDescriptor) {
       this._currentDefinition = this.definition;
       this._currentEntityDescriptor = this.entityDescriptor;
 
-      try {
-        // Grab a hold of the current tenant
-        const ws = this.workspace.currentTenant;
-
-        // (1) Get the default parameters found in all the expressions in the definition
-        const { defaultParams } = QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
-
-        // (2) Override defaults using values from definitions.Parameters;
-        // The parameter definitions can override 3 things (1) order (2) label (3) is required
-        const defParams = this.definition.Parameters || [];
-        for (const defParam of defParams) {
-          const keyLower = defParam.Key.toLowerCase();
-
-          if (defParam.Visibility === 'None') {
-            // This hides parameters that are explicitly hidden
-            delete defaultParams[keyLower];
-          } else {
-            const paramInfo = defaultParams[keyLower];
-            if (!!paramInfo) {
-              const datatype = paramInfo.desc.datatype;
-              let desc: PropVisualDescriptor = paramInfo.desc;
-              if (!!defParam.Control) {
-                desc = descFromControlOptions(ws, defParam.Control, defParam.ControlOptions, paramInfo.desc);
-              }
-
-              const label = !!defParam.Label ? () => ws.getMultilingualValueImmediate(defParam, 'Label') : paramInfo.desc.label;
-              const isRequired = defParam.Visibility === 'Required';
-
-              this._currentParameters.push({ key: keyLower, label, isRequired, desc, datatype });
-              delete defaultParams[keyLower];
-            }
-          }
+      this._currentParameters = [];
+      if (!!this.definition) {
+        try {
+          const { parameters } = QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
+          this._currentParameters = parameters;
+          this.badDefinition = false;
+        } catch {
+          // Problems will be reported by the preview
+          this.badDefinition = true;
         }
-
-        // (3) Add the remaining parameters from filter that have no definition override
-        for (const keyLower of Object.keys(defaultParams)) {
-          const paramInfo = defaultParams[keyLower];
-          const label = paramInfo.desc.label;
-          const isRequired = paramInfo.isRequiredUsage;
-          const desc = paramInfo.desc;
-          const datatype = desc.datatype;
-          this._currentParameters.push({ key: keyLower, label, isRequired, desc, datatype });
-        }
-
-      } catch { } // Problems will be reported by the preview
+      }
 
       // When the number of parameters changes it might change the size of
       // the chart underneath it, so we trigger a recalculation of the size
@@ -366,10 +334,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     return !!this.definition && this.definition.Type === 'Summary' && !!this.definition.Chart;
   }
 
-  public get stateKey(): string {
-    return this.mode === 'screen' ? this.definitionId.toString() : '<preview>'; // In preview mode a local state is used anyways
-  }
-
   public get isChart(): boolean {
     return this.view === ReportView.chart && !!this.definition && this.definition.Type === 'Summary';
   }
@@ -402,8 +366,16 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get areAllRequiredParamsSpecified(): boolean {
     const args = this.arguments;
-    return this.parameters
-      .every(p => !p.isRequired || isSpecified(args[p.key]));
+    return this.parameters.every(p => !p.isRequired || isSpecified(args[p.keyLower]));
+  }
+
+  public get showPreview(): boolean {
+    // We show the preview in case of bad definition cause it displays the error message
+    return this.badDefinition || this.areAllRequiredParamsSpecified;
+  }
+
+  public get disableRefresh(): boolean {
+    return this.badDefinition || !this.areAllRequiredParamsSpecified;
   }
 
   public get refresh(): Observable<void> {
@@ -490,10 +462,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Description');
   }
 
-  public get disableRefresh(): boolean {
-    return !this.areAllRequiredParamsSpecified || this.state.badDefinition;
-  }
-
   public get showEditDefinition(): boolean {
     return this.isScreenMode;
   }
@@ -531,4 +499,5 @@ export class ReportComponent implements OnInit, OnDestroy {
   public onToggleCollapseParameters() {
     this.collapseParameters = !this.collapseParameters;
   }
+
 }

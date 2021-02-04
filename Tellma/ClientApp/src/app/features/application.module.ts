@@ -264,6 +264,7 @@ import {
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
 import { EditorComponent } from './editor/editor/editor.component';
+import { DrilldownComponent } from './drilldown/drilldown.component';
 
 const routes: Routes = [
   {
@@ -635,6 +636,13 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
 
+      // Drilldown
+      {
+        path: 'drilldown/:definitionId',
+        component: DrilldownComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
       // Account Statement
       {
         path: 'account-statement',
@@ -804,7 +812,8 @@ const routes: Routes = [
     ReportDefinitionsPickerComponent,
     FinancialSettingsComponent,
     ControlOptionsComponent,
-    EditorComponent
+    EditorComponent,
+    DrilldownComponent
   ],
   imports: [
     SharedModule,

@@ -54,9 +54,10 @@ namespace Tellma.Data.Queries
         /// <param name="ps">The parameters needed by SQL</param>
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
         /// <returns>The list of hydrated <see cref="DynamicRow"/>s</returns>            
-        public static async Task<(List<DynamicRow> result, IEnumerable<TreeDimensionResult> treeDimensions)> LoadDynamicStatement(
+        public static async Task<(List<DynamicRow> result, IEnumerable<TreeDimensionResult> treeDimensions, int count)> LoadDynamicStatement(
             SqlDynamicStatement principalStatement,
             IEnumerable<DimensionAncestorsStatement> dimAncestorsStatements,
+            bool includeCount,
             SqlStatementVariables vars,
             SqlStatementParameters ps,
             SqlConnection conn,
@@ -65,6 +66,7 @@ namespace Tellma.Data.Queries
             dimAncestorsStatements ??= new List<DimensionAncestorsStatement>();
             var result = new List<DynamicRow>();
             var treeResults = new List<TreeDimensionResult>();
+            int count = 0;
 
             ////////////// Prepare the complete SQL code
             // Add any variables in the preparatory SQL
@@ -152,6 +154,20 @@ namespace Tellma.Data.Queries
 
                         treeResults.Add(treeResult);
                     }
+
+                    // Load the count if any
+                    if (includeCount)
+                    {
+                        await reader.NextResultAsync(cancellation);
+                        if (await reader.ReadAsync(cancellation))
+                        {
+                            count = reader.GetInt32(0);
+                        }
+                    }
+                }
+                catch (SqlException ex) when (ex.Number is 8134) // Divide by zero
+                {
+                    throw new QueryException("The query caused a division by zero.");
                 }
                 finally
                 {
@@ -167,7 +183,7 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            return (result, treeResults);
+            return (result, treeResults, count);
         }
 
         /// <summary>

@@ -32,6 +32,7 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         orderby: () => ['Subject'],
         inactiveFilter: null, // No inactive filter
         format: (item: EmailForQuery) => item.Subject,
+        formatFromVals: (vals: any[]) => vals[0],
         properties: {
             Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
             ToEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ToEmail') },

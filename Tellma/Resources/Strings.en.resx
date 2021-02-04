@@ -347,7 +347,7 @@
     <value>Confirm Password</value>
   </data>
   <data name="Control_check" xml:space="preserve">
-    <value>Checkbox</value>
+    <value>Yes/No</value>
   </data>
   <data name="Control_choice" xml:space="preserve">
     <value>Choice List</value>
@@ -449,7 +449,7 @@
     <value>Data</value>
   </data>
   <data name="DatePart_day" xml:space="preserve">
-    <value>Month Day</value>
+    <value>Day</value>
   </data>
   <data name="DatePart_month" xml:space="preserve">
     <value>Month</value>

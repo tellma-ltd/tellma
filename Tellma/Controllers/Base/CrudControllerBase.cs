@@ -840,7 +840,7 @@ namespace Tellma.Controllers
 
             // Load entities
             string select = SelectFromMapping(mapping);
-            var (entities, _, _, _) = await GetFact(new GetArguments
+            var (entities, _, _, _) = await GetEntities(new GetArguments
             {
                 Top = args.Top,
                 Skip = args.Skip,

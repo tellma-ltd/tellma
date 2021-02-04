@@ -38,16 +38,21 @@ export function metadata_InboxRecord(wss: WorkspaceService, trx: TranslateServic
             select: _select,
             apiEndpoint: 'inbox',
             masterScreenUrl: 'inbox',
-            navigateToDetailsSelect: ['Document.DefinitionId'],
+            navigateToDetailsSelect: ['Id', 'Document.DefinitionId'],
             navigateToDetails: (entity: InboxRecord, router: Router, stateKey: string) => {
-                const id = entity.Id;
-                const definitionId = ws.Document[id].DefinitionId;
+                const docId = entity.Id;
+                const definitionId = ws.Document[docId].DefinitionId;
+                entityDesc.navigateToDetailsFromVals([docId, definitionId], router, stateKey);
+            },
+            navigateToDetailsFromVals: (vals: any[], router: Router, stateKey: string) => {
+                const [docId, definitionId] = vals;
                 const extras = { state_key: stateKey };
-                router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, id, extras]);
+                router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, docId, extras]);
             },
             orderby: () => ['CreatedAt desc'],
             inactiveFilter: null,
             format: (__: EntityWithKey) => '',
+            formatFromVals: (_: any[]) => '',
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Assignment_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

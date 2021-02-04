@@ -504,10 +504,19 @@ namespace Tellma.Controllers
             return new ReportDefinitionForClient
             {
                 // Basics
-                Code = def.Code,
                 Collection = def.Collection,
                 DefinitionId = def.DefinitionId,
                 Type = def.Type,
+
+                // Title
+                Id = def.Id,
+                Code = def.Code,
+                Title = def.Title,
+                Title2 = def.Title2,
+                Title3 = def.Title3,
+                Description = def.Description,
+                Description2 = def.Description2,
+                Description3 = def.Description3,
 
                 // Data
                 Rows = def.Rows?.Select(r => new ReportDefinitionDimensionForClient
@@ -521,7 +530,16 @@ namespace Tellma.Controllers
                     OrderDirection = r.OrderDirection,
                     AutoExpandLevel = r.AutoExpandLevel ?? 0,
                     ShowAsTree = r.ShowAsTree ?? false,
-                    ShowEmptyMembers = r.ShowEmptyMembers ?? false
+                    ShowEmptyMembers = r.ShowEmptyMembers ?? false,
+                    Attributes = r.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
+                    {
+                        Expression = a.Expression,
+                        Localize = a.Localize ?? false,
+                        Label = a.Label,
+                        Label2 = a.Label2,
+                        Label3 = a.Label3,
+                        OrderDirection = a.OrderDirection,
+                    })?.ToList() ?? new List<ReportDefinitionDimensionAttributeForClient>(),
                 })?.ToList() ?? new List<ReportDefinitionDimensionForClient>(),
                 ShowRowsTotal = def.ShowRowsTotal ?? false,
                 RowsTotalLabel = def.RowsTotalLabel,
@@ -596,18 +614,13 @@ namespace Tellma.Controllers
                     ControlOptions = p.ControlOptions,
                 })?.ToList() ?? new List<ReportDefinitionParameterForClient>(),
 
+                // Drilldown
+                IsCustomDrilldown = def.IsCustomDrilldown ?? false,
+
                 // Chart
                 Chart = def.Chart,
                 DefaultsToChart = def.DefaultsToChart ?? false,
                 ChartOptions = def.ChartOptions,
-
-                // Title
-                Title = def.Title,
-                Title2 = def.Title2,
-                Title3 = def.Title3,
-                Description = def.Description,
-                Description2 = def.Description2,
-                Description3 = def.Description3,
 
                 // Main Menu
                 ShowInMainMenu = def.ShowInMainMenu ?? false,

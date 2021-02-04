@@ -212,7 +212,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           };
 
           // Call the API and return the observable
-          return this.api.getFact(args).pipe(
+          return this.api.getEntities(args).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
               this._errorMessage = friendlyError.error;
@@ -310,7 +310,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     };
 
     // Load the entity from the server
-    return this.api.getFact(args).pipe(
+    return this.api.getEntities(args).pipe(
       tap((response: GetResponse) => {
 
         // Stamp the loaded entity as adhering to additionalSelect

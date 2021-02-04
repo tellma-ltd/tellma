@@ -1371,8 +1371,8 @@ namespace Tellma.Data.Queries
                                 resultSql = calendar switch
                                 {
                                     Gregorian => $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})", // Use SQL's built in function
-                                    UmmAlQura => $"[wiz].[fn_UmmAlQura_DatePart](N'{datePart}', {dateSql.DeBracket()})",
-                                    Ethiopian => $"[wiz].[fn_Ethiopian_DatePart](N'{datePart}', {dateSql.DeBracket()})",
+                                    UmmAlQura => $"[wiz].[fn_UmmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                    Ethiopian => $"[wiz].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
 
                                     _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
                                 };
@@ -1455,8 +1455,8 @@ namespace Tellma.Data.Queries
                         {
                             resultSql = calendar switch
                             {
-                                UmmAlQura => $"[wiz].[fn_UmmAlQura_DateAdd](N'{datePart}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
-                                Ethiopian => $"[wiz].[fn_Ethiopian_DateAdd](N'{datePart}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
+                                UmmAlQura => $"[wiz].[fn_UmmAlQura_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
+                                Ethiopian => $"[wiz].[fn_Ethiopian_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
 
                                 _ => throw new QueryException($"Function '{Name}': The third argument {Arguments[2]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
                             };
@@ -1969,8 +1969,8 @@ namespace Tellma.Data.Queries
                     }
 
                 case "&&":
-                case "||":
                 case "and":
+                case "||":
                 case "or":
                     // These only accept booleans and return a boolean
                     {
@@ -2064,18 +2064,18 @@ namespace Tellma.Data.Queries
                     }
 
                 case "<>":
-                case ">":
-                case ">=":
-                case "<":
-                case "<=":
-                case "=":
                 case "!=":
-                case "eq":
                 case "ne":
+                case ">":
                 case "gt":
+                case ">=":
                 case "ge":
+                case "<":
                 case "lt":
+                case "<=":
                 case "le":
+                case "=":
+                case "eq":
                     // These accept any data type (Except boolean) and always spit out a boolean
                     {
                         resultType = QxType.Boolean;

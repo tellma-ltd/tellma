@@ -38,6 +38,7 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
       orderby: () => ['VoucherTypeId'],
       inactiveFilter: 'IsActive eq true',
       format: (item: VoucherBookletForSave) => item.VoucherTypeId,
+      formatFromVals: (vals: any[]) => vals[0],
       properties: {
         Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
@@ -49,15 +50,15 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
         StringPrefix: { datatype: 'string', control: 'text', label: () => 'String Prefix' },
         NumericLength: {
           datatype: 'numeric',
-          control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
+          control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true
         },
         RangeStarts: {
           datatype: 'numeric',
-          control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
+          control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true
         },
         RangeEnds: {
           datatype: 'numeric',
-          control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
+          control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true
         },
         // End Temp
 

@@ -29,6 +29,7 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
         orderby: () => ['Message'],
         inactiveFilter: null, // No inactive filter
         format: (item: SmsMessageForQuery) => item.Message,
+        formatFromVals: (vals: any[]) => vals[0],
         properties: {
             Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
             ToPhoneNumber: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },

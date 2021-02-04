@@ -35,6 +35,7 @@ export function metadata_IfrsConcept(wss: WorkspaceService, trx: TranslateServic
             orderby: () => ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
             inactiveFilter: null, // No inactive filter
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Label: { datatype: 'string', control: 'text', label: () => trx.instant('Label') + ws.primaryPostfix },

@@ -28,7 +28,6 @@ namespace Tellma.Data.Queries
         private ExpressionHaving _having;
         private ExpressionAggregateSelect _select;
         private ExpressionAggregateOrderBy _orderby;
-        private List<SqlParameter> _additionalParameters;
 
         private Dictionary<QueryexBase, int> _selectHash;
         private Dictionary<QueryexBase, int> SelectIndexDictionary => _selectHash ??= _select
@@ -62,7 +61,6 @@ namespace Tellma.Data.Queries
                 _having = _having,
                 _select = _select,
                 _orderby = _orderby,
-                _additionalParameters = _additionalParameters?.ToList()
             };
 
             return clone;
@@ -80,8 +78,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Applies a <see cref="ExpressionAggregateOrderBy"/> to specify which dimensions and measures
-        /// must be returned, dimensions are specified without an aggregate function, measures do not have an aggregate function
+        /// Applies a <see cref="ExpressionAggregateOrderBy"/> to how to order the result
         /// </summary>
         public AggregateQuery<T> OrderBy(ExpressionAggregateOrderBy orderby)
         {
@@ -140,23 +137,6 @@ namespace Tellma.Data.Queries
         {
             var clone = Clone();
             clone._top = top;
-            return clone;
-        }
-
-        /// <summary>
-        /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
-        /// must be supplied this method must be supplied through this method before loading any data
-        /// </summary>
-        public AggregateQuery<T> AdditionalParameters(params SqlParameter[] parameters)
-        {
-            var clone = Clone();
-            if (clone._additionalParameters == null)
-            {
-                clone._additionalParameters = new List<SqlParameter>();
-            }
-
-            clone._additionalParameters.AddRange(parameters);
-
             return clone;
         }
 
@@ -232,7 +212,7 @@ namespace Tellma.Data.Queries
 
             // If all is good Prepare some universal variables and parameters
             var vars = new SqlStatementVariables();
-            var ps = new SqlStatementParameters(_additionalParameters);
+            var ps = new SqlStatementParameters();
             var today = userToday ?? DateTime.Today;
             var now = DateTimeOffset.Now;
 
@@ -345,24 +325,20 @@ namespace Tellma.Data.Queries
                     selectFromTempSql: principalSelectFromTempSql
                 );
 
-            //  Return the result
+            // ------------------------ Execute SQL and return Result
             var principalStatement = new SqlDynamicStatement(principalSql, principalColumnCount);
 
-
-            // ------------------------ Execute SQL and return Result
-
-            var result = await EntityLoader.LoadDynamicStatement(
+            var (result, trees, _) = await EntityLoader.LoadDynamicStatement(
                 principalStatement: principalStatement,
                 dimAncestorsStatements: ancestorsStatements,
+                includeCount: false,
                 vars: vars,
                 ps: ps,
                 conn: conn,
                 cancellation: cancellation);
 
-            return result;
+            return (result, trees);
         }
-
-
 
         public string GenerateTempTableName()
         {
@@ -495,7 +471,46 @@ ON [S].{nodeColumnName}.IsDescendantOf([P].[Node]) = 1 AND [S].{nodeColumnName} 
         /// </summary>
         private string PreparePrincipalWhereSql(QxCompilationContext ctx)
         {
-            string whereSql = _filter?.Expression?.CompileToBoolean(ctx)?.DeBracket();
+            // (1) Prepare the aggregations filter
+            // If all aggregatiosn have filters Sum(X, A), Count(Y, B)
+            // We append a AND (A OR B) to the filter, to avoid all-Null rows
+            var aggregations = _select.SelectMany(e => e.Aggregations());
+            QueryexBase aggFilter = null;
+            foreach (var agg in aggregations)
+            {
+                if (agg.Arguments.Length < 2)
+                {
+                    // At least one aggregation has no condition, we abandon the aggregation filter
+                    aggFilter = null;
+                    break;
+                }
+                else
+                {
+                    var condition = agg.Arguments[1];
+                    aggFilter = aggFilter == null ? condition : new QueryexBinaryOperator("or", aggFilter, condition);
+                }
+            }
+
+            // (2) Prepare the main filter
+            var mainFilter = _filter?.Expression;
+
+            // (3) Prepare the combined filter
+            QueryexBase combinedFilter = null;
+            if (mainFilter != null && aggFilter != null)
+            {
+                combinedFilter = new QueryexBinaryOperator("and", mainFilter, aggFilter);
+            } 
+            else if (mainFilter != null)
+            {
+                combinedFilter = mainFilter;
+            }
+            else if (aggFilter != null)
+            {
+                combinedFilter = aggFilter;
+            }
+
+            // Prepare the SQL
+            string whereSql = combinedFilter?.CompileToBoolean(ctx)?.DeBracket();
 
             // Add the "WHERE" keyword
             if (!string.IsNullOrEmpty(whereSql))

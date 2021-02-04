@@ -62,6 +62,7 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
             orderby: () => ['Id'],
             inactiveFilter: null, // TODO
             format: (_: EntityWithKey) => '',
+            formatFromVals: (_: any[]) => '',
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

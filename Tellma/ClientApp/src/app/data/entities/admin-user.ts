@@ -41,6 +41,7 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             orderby: () => ['Name'],
             inactiveFilter: 'IsActive eq true',
             format: (item: AdminUserForSave) => item.Name,
+            formatFromVals: (vals: any[]) => vals[0],
             isAdmin: true,
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

@@ -6,28 +6,40 @@ using System.Linq;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// Represents an orderby argument which is a comma separated list of column accesses. 
+    /// Represents an aggregate orderby argument which is a comma separated list of non-aggregated non-boolean expressions. 
+    /// The syntax is anything that can be compiled by <see cref="QueryexBase"/>.
     /// Some expressions may optionally be postfixed with "desc" or "asc" keywords. 
-    /// For example: "Line.PostingDate desc,Id"
+    /// For example: "Line.PostingDate desc,Amount * Value"
     /// </summary>
-    public class ExpressionOrderBy : IEnumerable<QueryexColumnAccess>
+    public class ExpressionOrderBy : IEnumerable<QueryexBase>
     {
-        private readonly IEnumerable<QueryexColumnAccess> _atoms;
+        private readonly IEnumerable<QueryexBase> _atoms;
 
         /// <summary>
         /// Create an instance of <see cref="ExpressionOrderBy"/> containing the provided <see cref="OrderByAtom"/>s
         /// </summary>
-        public ExpressionOrderBy(IEnumerable<QueryexColumnAccess> atoms)
+        public ExpressionOrderBy(IEnumerable<QueryexBase> atoms)
         {
             _atoms = atoms ?? throw new ArgumentNullException(nameof(atoms));
+
+            var aggregation = atoms.SelectMany(e => e.Aggregations()).FirstOrDefault();
+            if (aggregation != null)
+            {
+                throw new QueryException($"OrderBy parameter cannot contain aggregation functions like {aggregation.Name}.");
+            }
         }
 
         /// <summary>
         /// Implementation of <see cref="IEnumerable"/>
         /// </summary>
-        public IEnumerator<QueryexColumnAccess> GetEnumerator()
+        public IEnumerator<QueryexBase> GetEnumerator()
         {
             return _atoms.GetEnumerator();
+        }
+
+        public IEnumerable<QueryexColumnAccess> ColumnAccesses()
+        {
+            return _atoms.SelectMany(e => e.ColumnAccesses());
         }
 
         /// <summary>
@@ -52,12 +64,7 @@ namespace Tellma.Data.Queries
             }
 
             var expressions = QueryexBase.Parse(orderby, expectDirKeywords: true);
-            if (!expressions.All(e => e is QueryexColumnAccess))
-            {
-                throw new QueryException($"OrderBy parameter can only contain column access expressions like this: Id desc,Name asc,CreatedBy.Name");
-            }
-
-            return new ExpressionOrderBy(expressions.Cast<QueryexColumnAccess>());
+            return new ExpressionOrderBy(expressions);
         }
     }
 }

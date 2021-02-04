@@ -1,29 +1,33 @@
 import {
   Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef,
-  OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter
+  OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
-  PivotTable, DimensionCell, MeasureCell, LabelCell, ChartDimensionCell
+  PivotTable, MeasureCell, LabelCell, ChartDimensionCell, DimensionCell, AncestorGroup
 } from '~/app/data/workspace.service';
 import { Subscription, Subject, Observable, of } from 'rxjs';
-import { EntityDescriptor, metadata, entityDescriptorImpl, isText, isNumeric } from '~/app/data/entities/base/metadata';
-import { TranslateService } from '@ngx-translate/core';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
-import { ApiService } from '~/app/data/api.service';
-import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
 import {
-  isSpecified, mergeEntitiesInWorkspace, csvPackage, downloadBlob,
-  composeEntities, ColumnDescriptor, FriendlyError, composeEntitiesFromResponse
-} from '~/app/data/util';
-import { ReportDefinitionForClient, ReportDefinitionSelectForClient } from '~/app/data/dto/definitions-for-client';
-import { Router, Params } from '@angular/router';
-import { displayEntity, displayValue } from '~/app/data/util';
-import { Entity } from '~/app/data/entities/base/entity';
-import { GetResponse } from '~/app/data/dto/get-response';
-import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { ReportOrderDirection, ChartType } from '~/app/data/entities/report-definition';
-import { DimensionInfo, MeasureInfo, QueryexUtil } from '~/app/data/queryex-util';
+  EntityDescriptor,
+  metadata,
+  PropVisualDescriptor,
+  NumberPropVisualDescriptor,
+  PercentPropVisualDescriptor,
+  ChoicePropVisualDescriptor,
+  DataType,
+} from '~/app/data/entities/base/metadata';
+import { TranslateService } from '@ngx-translate/core';
+import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
+import { ApiService } from '~/app/data/api.service';
+import { isSpecified, csvPackage, downloadBlob, FriendlyError } from '~/app/data/util';
+import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
+import { displayScalarValue } from '~/app/data/util';
+import { ChartType } from '~/app/data/entities/report-definition';
+import { DimensionInfo, MeasureInfo, ParameterInfo, QueryexUtil, SelectInfo, UniqueAggregationInfo } from '~/app/data/queryex-util';
+import { DeBracket, Queryex, QueryexColumnAccess, QueryexDirection, QueryexFunction } from '~/app/data/queryex';
+import { DynamicRow, GetAggregateResponse } from '~/app/data/dto/get-aggregate-response';
+import { GetFactResponse } from '~/app/data/dto/get-fact-response';
 
 export enum ReportView {
   pivot = 'pivot',
@@ -35,7 +39,7 @@ export enum ReportView {
  */
 interface PivotHash {
   cell: DimensionCell;
-  children: DimensionCell[];
+  ancestors?: { [id: number]: DimensionCell }; // the ancestors of all the children
   values?: { [value: string]: PivotHash };
   undefined?: PivotHash;
 }
@@ -49,6 +53,12 @@ interface PivotHash {
 export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   static DEFAULT_PAGE_SIZE = 60;
+  static CACHE_BUSTER = 1;
+
+  public maximumColumns = 130; // If the report has more columns than this it will display an error
+
+  public _rowAttributePlacement = ['bottom', 'top', 'bottom-left', 'top-left'];
+  public _rowAttributePlacementRtl = ['bottom', 'top', 'bottom-right', 'top-right'];
 
   @Input()
   state: ReportStore; // immutable
@@ -83,35 +93,26 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   @Output()
   public exportError = new EventEmitter<FriendlyError>();
 
+  @Output()
+  public orderbyChange = new EventEmitter<void>();
+
+  @ViewChild('flatHeader', { static: false })
+  flatHeader: ElementRef<HTMLTableRowElement>;
+
   private _subscriptions: Subscription;
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
-  // Stuff that should go in a service
-  private _currentRows: (DimensionCell | LabelCell | MeasureCell)[][];
-  private _currentColumns: (DimensionCell | LabelCell)[][];
+  private orderbyKey: string;
+  private orderbyDir: QueryexDirection;
 
   /**
    * This is a copy of the state pivot table rows, but with the
    * collapsed rows removed, to support smooth virtual scrolling
    */
-  private _modifiedRows: (DimensionCell | LabelCell | MeasureCell)[][];
-
-  /**
-   * Computed for the blank upper left corner
-   */
-  private _rowSpan: number;
-
-  /**
-   * Computed for the blank upper left corner, 0 when it's hidden
-   */
-  private _colSpan: number;
-
-  /**
-   * The maximum level among column dimensions that is visible
-   */
-  private _maxVisibleLevel: number;
+  private _currentRows: DimensionCell[];
+  private _modifiedRows: DimensionCell[];
 
   // NGX-Charts options
   animations = false;
@@ -137,10 +138,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
-    private api: ApiService, private cdr: ChangeDetectorRef, private router: Router) {
+    private api: ApiService, private cdr: ChangeDetectorRef, private router: Router,
+    private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    this.state = this.state || new ReportStore(); // if no state is provided
+    const s = this.state;
 
     this._subscriptions = new Subscription();
     this._subscriptions.add(this.workspace.stateChanged$.subscribe({
@@ -164,35 +168,69 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         .subscribe());
     }
 
+    if (this.mode === 'screen') {
+      const extractOrderByFields = (params: ParamMap) => {
+        const orderbyUrl = params.get('$orderby');
+        try {
+          const orderbyExp = Queryex.parse(orderbyUrl, { expectDirKeywords: true });
+          this.orderbyKey = orderbyExp[0].toString();
+          this.orderbyDir = orderbyExp[0].direction || 'asc';
+        } catch {
+          delete this.orderbyKey;
+          delete this.orderbyDir;
+        }
+      };
+
+      extractOrderByFields(this.route.snapshot.paramMap);
+      this._subscriptions.add(this.route.paramMap.pipe(skipObservable(1)).subscribe((params: ParamMap) => {
+        extractOrderByFields(params);
+        if (this.applyChanges()) {
+          this.fetch();
+        }
+      }));
+    }
+
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
-
-    // Set to default
     this.view = this.view || (!!this.definition.Chart && !!this.definition.DefaultsToChart ? ReportView.chart : ReportView.pivot);
-
-    this.state = this.state || new ReportStore(); // if no state is provided
 
     // Here we do the usual pattern of checking whether the state in the
     // singleton service is still the same as that supplied by the url
     // parameters in which case we do not have to fetch the data again
-    const s = this.state;
     const hasChanges = this.applyChanges();
     if (s.reportStatus !== ReportStatus.loaded || hasChanges) {
       try {
-        const { filter, having, columns, rows, measures, select } =
+        const { filter, having, columns, rows, measures, select, parameters } =
           QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
 
+        const parameterInfos: { [keyLower: string]: ParameterInfo } = {};
+        parameters.forEach(p => parameterInfos[p.keyLower] = p);
+
+        s.parameterInfos = parameterInfos;
         s.filterExp = filter;
         s.havingExp = having;
-        s.realColumns = columns;
-        s.realRows = rows;
-        s.measures = measures;
-        s.select = select;
-        s.uniqueDimensions = this.computeUniqueDimensions(s.realColumns.concat(s.realRows));
-        s.singleNumericMeasure = this.state.measures.find(m => isNumeric(m.desc));
+        s.columnInfos = columns;
+        s.rowInfos = rows;
+        s.measureInfos = measures;
+        s.uniqueMeasureAggregations = this.computeUniqueMeasureAggregations(measures);
+        s.selectInfos = select;
+        s.dimensionInfos = s.columnInfos.concat(s.rowInfos);
+        s.singleNumericMeasureIndex = this.state.measureInfos.findIndex(m => m.isNumeric);
         s.badDefinition = false;
 
         this.fetch(); // Query the server
       } catch (ex) {
+        // Clear everything and show the error message
+        s.parameterInfos = null;
+        s.filterExp = null;
+        s.havingExp = null;
+        s.columnInfos = null;
+        s.rowInfos = null;
+        s.measureInfos = null;
+        s.uniqueMeasureAggregations = null;
+        s.selectInfos = null;
+        s.dimensionInfos = null;
+        s.singleNumericMeasureIndex = -1;
+
         s.badDefinition = true;
         s.reportStatus = ReportStatus.error;
         s.errorMessage = ex;
@@ -234,6 +272,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     if (this.definition !== s.definition) {
       s.definition = this.definition;
       hasChanged = true;
+    }
+
+    if (this.isDetails && this.canOrderByFlat) {
+      if (this.orderbyKey !== s.orderbyKey) {
+        s.orderbyKey = this.orderbyKey;
+        hasChanged = true;
+      }
+      if (this.orderbyDir !== s.orderbyDir) {
+        s.orderbyDir = this.orderbyDir;
+        hasChanged = true;
+      }
     }
 
     const urlArgs = this.arguments;
@@ -282,35 +331,46 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     s.reportStatus = ReportStatus.loading;
 
-    // FILTER
+    // FILTER & HAVING
     let filter: string;
+    let having: string;
     try {
-      filter = this.computeFilter();
-    } catch (ex) {
+      filter = this.computeFilter(s);
+      having = this.computeHaving(s);
+    } catch (e) {
       s.reportStatus = ReportStatus.error;
-      s.errorMessage = ex;
+      s.errorMessage = e.message;
       return of(null);
     }
 
     // This will show the spinner
     this.cdr.markForCheck();
 
-    let obs$: Observable<EntitiesResponse<Entity>>;
+    let obs$: Observable<any>;
     if (this.showDetails) {
       const top = this.definition.Top || ReportResultsComponent.DEFAULT_PAGE_SIZE;
       const skip = !!this.definition.Top ? 0 : s.skip;
-      const select = this.computeSelect();
-      const orderby = this.definition.OrderBy;
 
-      if (!select) {
-        s.reportStatus = ReportStatus.information;
-        s.information = () => this.translate.instant('DragSelect');
+      // Prepare the select and orderby
+      let select: string;
+      let orderby: string;
+      try {
+        select = this.computeSelect(s);
+        orderby = this.computeOrderBy(s);
+        if (!select) {
+          s.reportStatus = ReportStatus.information;
+          s.information = () => this.translate.instant('DragSelect');
 
+          return of(null);
+        }
+      } catch (e) {
+        s.reportStatus = ReportStatus.error;
+        s.errorMessage = e.message;
         return of(null);
       }
 
-      // EXTRAS
-      const extras = this.computeAdditionalParameters();
+      // To prevent the jarring movemenet of headers when you refresh or orderby
+      this.rememberFlatColumnWidths();
 
       obs$ = this.crud.getFact({
         top,
@@ -319,50 +379,62 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         select,
         filter,
         countEntities: true
-      }, extras).pipe(
-        tap((response: GetResponse) => {
-          s = this.state;
-          s.top = response.Top;
-          s.skip = response.Skip;
+      }).pipe(
+        tap((response: GetFactResponse) => {
+          s.reportStatus = ReportStatus.loaded;
+          s.top = response.Result.length;
+          s.skip = skip;
           s.total = response.TotalCount;
+          s.result = response.Result;
+
+          this.forgetFlatColumnWidths();
         })
       );
     } else { // Show Summary or Chart
       // SELECT
-      const select = this.computeAggregateSelect();
-      if (!select) {
-        s.reportStatus = ReportStatus.information;
-        s.information = () => this.translate.instant('DragDimensionsOrMeasures');
+      let select: string;
+      try {
+        select = this.computeAggregateSelect(s);
+        if (!select) {
+          s.reportStatus = ReportStatus.information;
+          s.information = () => this.translate.instant('DragDimensionsOrMeasures');
 
+          return of(null);
+        }
+      } catch (e) {
+        s.reportStatus = ReportStatus.error;
+        s.errorMessage = e.message;
         return of(null);
       }
 
       // TOP
       const top = this.definition.Top;
-
-      // EXTRAS
-      const extras = this.computeAdditionalParameters();
-
       obs$ = this.crud.getAggregate({
         top,
         select,
-        filter
-      }, extras);
+        filter,
+        having
+      }).pipe(
+        tap((response: GetAggregateResponse) => {
+          s.reportStatus = ReportStatus.loaded;
+          s.result = response.Result;
+
+          // Add the ancestors in fast-to-lookup data structures
+          s.ancestorGroups = {};
+          for (const da of response.DimensionAncestors || []) {
+            const ancestors: { [id: number]: DynamicRow } = {};
+            for (const g of da.Result) {
+              const id = g[da.IdIndex - da.MinIndex];
+              ancestors[id] = g;
+            }
+
+            s.ancestorGroups[da.IdIndex] = { minIndex: da.MinIndex, ancestors };
+          }
+        })
+      );
     }
 
     return obs$.pipe(
-      tap((response: EntitiesResponse) => {
-        s = this.state; // get the source
-        s.reportStatus = ReportStatus.loaded;
-        s.filter = filter;
-        s.response = response;
-        s.result = response.Result;
-        if (!!response.RelatedEntities && Object.keys(response.RelatedEntities).length > 0) {
-          // Merge the entities and Notify everyone
-          mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
-          this.workspace.notifyStateChanged();
-        }
-      }),
       catchError((friendlyError) => {
         s = this.state; // get the source
         s.reportStatus = ReportStatus.error;
@@ -373,491 +445,338 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  // private computeMeasureInfos(measures: ReportDefinitionMeasureForClient[]): MeasureInfo[] {
+  private computeUniqueMeasureAggregations(measures: MeasureInfo[]): UniqueAggregationInfo[] {
+    const tracker: { [stringified: string]: number } = {};
+    const uniqueAggregations: { exp: QueryexFunction }[] = [];
 
-  //   if (!measures) {
-  //     return [];
-  //   }
+    function add(aggregation: QueryexFunction): number {
+      const aggString = aggregation.toString();
+      let uniqueIndex = tracker[aggString];
+      if (uniqueIndex === undefined) {
+        uniqueIndex = uniqueAggregations.length;
+        tracker[aggString] = uniqueIndex;
+        uniqueAggregations.push({ exp: aggregation });
+      }
 
-  //   return measures.map(measureDef => {
-  //     const key = `${measureDef.Aggregation}(${measureDef.Expression.split('.').map(e => e.trim()).join('.')})`;
-  //     const aggregation = measureDef.Aggregation;
-  //     const steps = measureDef.Expression.split('.').map(e => e.trim());
-  //     const prop = steps.pop();
-  //     const collection = this.definition.Collection;
-  //     const definitionId = this.definition.DefinitionId;
-  //     const ws = this.workspace;
-  //     const trx = this.translate;
-  //     const entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
-  //     const propDesc = entityDesc.properties[prop];
-  //     if (!propDesc) {
-  //       throw new Error(`The path '${measureDef.Expression}' is not valid, the terminal property ${prop} was not found`);
-  //     }
+      return uniqueIndex;
+    }
 
-  //     let desc: PropDescriptor;
-  //     switch (aggregation) {
-  //       case 'count':
-  //         desc = {
-  //           datatype: 'numeric', control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right'
-  //         };
-  //         break;
-  //       case 'max':
-  //       case 'min':
-  //         desc = propDesc;
-  //         break;
-  //       case 'sum':
-  //         if (!isNumeric(propDesc)) {
-  //           console.error(`Use of sum aggregation on a non-numeric property ${prop}`);
-  //         } else {
-  //           desc = propDesc;
-  //         }
-  //         break;
-  //       case 'avg':
-  //         if (!isNumeric(propDesc)) {
-  //           console.error(`Use of avg aggregation on a non-numeric property ${prop}`);
-  //         } else {
-  //           desc = { datatype: 'numeric', control: 'number', label: propDesc.label, minDecimalPlaces: 2, maxDecimalPlaces: 2 };
-  //           if (propDesc.control === 'number') {
-  //             desc.minDecimalPlaces = Math.max(desc.minDecimalPlaces, 2);
-  //             desc.maxDecimalPlaces = Math.max(desc.maxDecimalPlaces, 2);
-  //           }
-  //         }
-  //         break;
-  //     }
+    // First gather all the aggregations
+    const allAggregations: QueryexFunction[] = [];
+    for (const measure of measures) {
+      measure.exp.aggregationsInner(allAggregations);
+      if (!!measure.success) {
+        measure.success.aggregationsInner(allAggregations);
+      }
 
-  //     const label = () => !!measureDef.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(measureDef, 'Label') :
-  //       this.translate.instant('DefaultAggregationMeasure', {
-  //         aggregation: this.translate.instant('ReportDefinition_Aggregation_' + aggregation),
-  //         measure: !!desc ? desc.label() : propDesc.label()
-  //       });
+      if (!!measure.warning) {
+        measure.warning.aggregationsInner(allAggregations);
+      }
 
-  //     return { key, desc, aggregation, label };
-  //   });
-  // }
-
-  // private computeRealDimensions(dims: ReportDefinitionDimensionForClient[]): DimensionInfo[] {
-
-  //   dims = dims || [];
-  //   return dims.map(dim => {
-  //     // Normalized the path
-  //     const path = dim.KeyExpression.split('.').map((e: string) => e.trim()).join('.');
-  //     const modifier = dim.Modifier;
-  //     const key = !!dim.Modifier ? `${path}|${dim.Modifier}` : path;
-
-  //     // Get the PropDescriptor describing the target property of the path
-  //     let propDesc: PropDescriptor;
-  //     let entityDesc: EntityDescriptor;
-
-  //     // Without a modifier, the property descriptor comes from the metadata
-  //     const collection = this.definition.Collection;
-  //     const definitionId = this.definition.DefinitionId;
-  //     const ws = this.workspace;
-  //     const trx = this.translate;
-  //     const steps = path.split('.');
-  //     const prop = steps[steps.length - 1];
-  //     const parentEntityDesc = entityDescriptorImpl(steps.slice(0, -1), collection, definitionId, ws, trx);
-  //     propDesc = parentEntityDesc.properties[prop];
-  //     if (!propDesc) {
-  //       throw new Error(`Property ${prop} does not exist on collection: '${collection}', definition: '${definitionId || ''}'.`);
-  //     }
-
-  //     // If this is a nav property, get the EntityDescriptor describing the target entity as well
-  //     if (propDesc.datatype === 'entity') {
-  //       entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
-  //     }
-
-  //     if (!!modifier) {
-  //       // A modifier is specified, the prop descriptor is hardcoded per modifier
-  //       propDesc = modifiedPropDesc(propDesc, modifier, this.translate);
-  //     }
-
-  //     // Create the dimension info
-  //     const result: DimensionInfo = {
-  //       key,
-  //       path,
-  //       modifier,
-  //       propDesc,
-  //       autoExpand: dim.AutoExpandLevel,
-  //       label: () => !!dim.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
-  //     };
-
-  //     // This is a nav property, add a few extra things to allow for
-  //     // efficient extraction of mock navigation entities from the server results
-  //     if (!!entityDesc) {
-  //       const pathDot = !!path ? path + '.' : '';
-
-  //       result.entityDesc = entityDesc;
-  //       result.idKey = `${pathDot}Id`;
-  //       result.selectKeys = entityDesc.select.map(s => ({ path: `${pathDot}${s}`, prop: s }));
-  //     }
-
-  //     return result;
-  //   });
-  // }
-
-  /**
-   * Used for charts, calculates the unique set of dimensions across the combined rows and charts
-   */
-  private computeUniqueDimensions(dims: DimensionInfo[]): DimensionInfo[] {
-    const tracker = {};
-    const result: DimensionInfo[] = [];
-    for (const dim of dims) {
-      if (!tracker[dim.key]) {
-        tracker[dim.key] = dim.key;
-        result.push(dim);
+      if (!!measure.danger) {
+        measure.danger.aggregationsInner(allAggregations);
       }
     }
 
-    return result;
+    // Then use the tracker to get a array of unique aggregations and tag the original aggregation with the unique index
+    for (const aggregation of allAggregations) {
+      // Average is split into Count and Sum
+      if (aggregation.nameLower === 'avg') {
+        const sum = aggregation.clone() as QueryexFunction;
+        sum.setName('sum');
+        aggregation.sumIndex = add(sum);
+
+        const count = aggregation.clone() as QueryexFunction;
+        count.setName('count');
+        aggregation.countIndex = add(count);
+      } else {
+        aggregation.index = add(aggregation);
+      }
+    }
+
+    return uniqueAggregations;
   }
 
-  private computeSelect(): string {
-    const select: ReportDefinitionSelectForClient[] = this.select;
-    if (!select || select.length === 0) {
+  private computeFilter(s?: ReportStore): string {
+    if (!this.definition) {
       return '';
     }
 
-    const resultPaths: { [path: string]: boolean } = {};
-    const baseEntityDescriptor = this.entityDescriptor;
-
-    // (1) append the current entity type default properties (usually 'Name', 'Name2' and 'Name3')
-    baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
-
-    // (2) append the definitoinId if any, it must always be loaded
-    if (!!baseEntityDescriptor.definitionIds) {
-      resultPaths.DefinitionId = true;
-    }
-
-    if (!!baseEntityDescriptor.navigateToDetailsSelect) {
-      baseEntityDescriptor.navigateToDetailsSelect.forEach(e => resultPaths[e] = true);
-    }
-
-    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
-    select.map(col => col.Expression).forEach(path => {
-
-      if (!path) {
-        return;
-      }
-
-      const steps = path.split('.').map(e => e.trim());
-      path = steps.join('.'); // to trim extra spaces
-
-      try {
-        const currentDesc = entityDescriptorImpl(steps, this.collection,
-          this.definitionId, this.workspace, this.translate);
-
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
-      } catch {
-        resultPaths[path] = true;
-      }
-    });
-
-    return Object.keys(resultPaths).join(',');
+    s = s || this.state;
+    return s.filterExp ? DeBracket(QueryexUtil.stringify(s.filterExp, this.arguments, s.parameterInfos)) : null;
   }
 
-  private computeAggregateSelect(): string {
+  private computeHaving(s?: ReportStore): string {
+    if (!this.definition) {
+      return '';
+    }
+
+    s = s || this.state;
+    return s.havingExp ? DeBracket(QueryexUtil.stringify(s.havingExp, this.arguments, s.parameterInfos)) : null;
+  }
+
+  private computeOrderBy(s?: ReportStore): string {
+    s = s || this.state;
+    if (this.isDetails && this.canOrderByFlat && !!s.orderbyKey) {
+      // Prepare the order by based on the selected column
+      const info = s.selectInfos.find(e => e.expToString === s.orderbyKey);
+      const orderDirection = this.orderDirection(info);
+      if (!!orderDirection) {
+        const orderbyBase = QueryexUtil.stringify(info.exp, this.arguments, s.parameterInfos);
+        if (!!info.entityDesc) {
+          return info.entityDesc.orderby().map(e => `${orderbyBase}.${e} ${orderDirection}`).join(',');
+        } else {
+          if (info.localize) {
+            const ws = this.workspace.currentTenant;
+            const lang = ws.isSecondaryLanguage ? 2 : ws.isTernaryLanguage ? 3 : 1;
+
+            const orderbySecondary = QueryexUtil.stringify(info.exp, this.arguments, s.parameterInfos, lang);
+            if (orderbyBase === orderbySecondary) {
+              return orderbyBase;
+            } else {
+              return `${orderbySecondary} ${orderDirection},${orderbyBase} ${orderDirection}`;
+            }
+          } else {
+            return `${orderbyBase} ${orderDirection}`;
+          }
+        }
+      }
+    }
+
+    // Return default from report definition
+    return this.definition.OrderBy;
+  }
+
+  private computeSelect(s?: ReportStore): string {
 
     if (!this.definition) {
       return '';
     }
 
-    const collection = this.definition.Collection;
-    const definitionId = this.definition.DefinitionId;
-    const cols = this.definition.Columns || [];
-    const rows = this.definition.Rows || [];
-    const atomsTracker: { [path: string]: true } = {};
-    const atoms: string[] = [];
-
-    function addAtom(path: string, orderDir?: ReportOrderDirection) {
-      if (!atomsTracker[path]) {
-        atomsTracker[path] = true;
-        atoms.push(`${path} ${orderDir || ''}`.trim());
-      }
-    }
-
-    // (1) Add dimensions (special handling for nav props)
-    cols.concat(rows).forEach(dimensionDef => {
-      const path = dimensionDef.KeyExpression.trim().split('.').map(e => e.trim());
-      const property = path[path.length - 1]; // last element
-      const stringPath = path.join('.');
-      const orderDir = dimensionDef.OrderDirection;
-
-      // get the description of the entity hosting the property
-      const currentDesc = entityDescriptorImpl(path.slice(0, -1), collection,
-        definitionId, this.workspace, this.translate);
-
-      const propDesc = currentDesc.properties[property];
-      if (!!propDesc && propDesc.datatype === 'entity') {
-        // For nav properties, select the Id + the display properties
-        addAtom(`${stringPath}.Id`);
-
-        const desc = entityDescriptorImpl(path, collection, definitionId,
-          this.workspace, this.translate);
-
-        // This is to ensure that ordering of select columns is done in the correct order
-        desc.orderby().forEach(o => {
-          const descSelect = desc.select.find(s => s === o);
-          if (!!descSelect) {
-            const descSelectPath = `${stringPath}.${descSelect}`.trim();
-            addAtom(descSelectPath, orderDir);
-          }
-        });
-
-        desc.select.forEach(descSelect => {
-          const descSelectPath = `${stringPath}.${descSelect}`.trim();
-          addAtom(descSelectPath, orderDir);
-        });
-      } else if (!!dimensionDef.Modifier) {
-        // For properties with a modifier, apply that modifier on the path
-        addAtom(`${stringPath}|${dimensionDef.Modifier}`, orderDir);
-      } else {
-
-        // For non-nav properties and non date properties, simply add the path as is
-        addAtom(stringPath, orderDir);
-      }
-    });
-
-    // (2) Add measures (nav props not allowed)
-    const measures = this.definition.Measures || [];
-    measures.forEach(measureDef => {
-      // extract the relevant values from definition
-      const path = measureDef.Expression.split('.').map(e => e.trim()).join('.');
-      const orderDir = measureDef.OrderDirection;
-      const aggregation = measureDef.Aggregation;
-
-      // construct the atom
-      let selectAtom = path;
-      selectAtom = !!aggregation ? `${aggregation}(${selectAtom})` : selectAtom;
-
-      // add it to the dictionary
-      addAtom(selectAtom, orderDir);
-
-      if (aggregation === 'avg') {
-        // in order to aggregate averages, we will need the count too
-        addAtom(`count(${path})`);
-      }
-    });
-
-    // Return result
-    const select = atoms.join(',');
-    return select;
-  }
-
-  private get completeArguments(): ReportArguments {
-    // Returns user selected arguments AND definition values
-    // User selected
-    const args = { ...this.arguments } as ReportArguments;
-
-    // Definition values override (the user should not be able to specify them anyways)
-    if (!!this.definition.Parameters) {
-      for (const p of this.definition.Parameters) {
-        if (p.Visibility === 'None' && p.DefaultExpression !== null && p.DefaultExpression !== undefined) {
-          args[p.Key] = p.DefaultExpression;
-        }
-      }
-    }
-
-    return args;
-  }
-
-  private computeFilter(): string {
-    const rawExp = this.state.filterExp;
-    if (!rawExp) {
-      return null;
+    s = s || this.state;
+    const selects = s.selectInfos;
+    if (!selects || selects.length === 0) {
+      return '';
     }
 
     const args = this.arguments;
-    return rawExp.toString();
+    const infos = s.parameterInfos;
 
-  }
-
-  private computeFilterOld(): string {
-    let exp: FilterExpression = FilterTools.parse(this.definition.Filter);
-    if (!exp) {
-      return null;
-    }
-
-    const lowerCaseArgs: ReportArguments = {};
-    const args = this.completeArguments;
-    for (const arg of Object.keys(args)) {
-      lowerCaseArgs[arg.toLowerCase()] = args[arg];
-    }
-
-    const lowerCaseIsRequired: { [key: string]: boolean } = {};
-    if (!!this.definition.Parameters) {
-      for (const paramDef of this.definition.Parameters.filter(p => !!p.Key)) {
-        lowerCaseIsRequired[paramDef.Key.toLowerCase()] = paramDef.Visibility === 'Required';
-      }
-    }
-
-    exp = this.replaceFilterPlaceholders(exp, lowerCaseArgs, lowerCaseIsRequired);
-
-    return FilterTools.stringify(exp);
-  }
-
-  /**
-   * Replaces all @ placeholders in the expression tree with their values
-   * or if no value is supplied prunes the atom containing the placeholder
-   * out if it's optional or throws an error if the value is required
-   */
-  private replaceFilterPlaceholders(
-    exp: FilterExpression, lowerCaseArgs: ReportArguments,
-    lowerCaseIsRequired: { [key: string]: boolean }): FilterExpression {
-
-    switch (exp.type) {
-      case 'conjunction':
-      case 'disjunction':
-        const left = this.replaceFilterPlaceholders(exp.left, lowerCaseArgs, lowerCaseIsRequired);
-        const right = this.replaceFilterPlaceholders(exp.right, lowerCaseArgs, lowerCaseIsRequired);
-        if (!!left && !!right) {
-          exp.left = left;
-          exp.right = right;
-          return exp;
-        } else {
-          return !!left ? left : !!right ? right : null;
-        }
-
-      case 'negation':
-        const inner = this.replaceFilterPlaceholders(exp.inner, lowerCaseArgs, lowerCaseIsRequired);
-        if (!!inner) {
-          exp.inner = inner;
-          return exp;
-        } else {
-          return null;
-        }
-
-      case 'atom':
-        // If atom has a parameter that is not in arguments or definitions, remove it
-        if (exp.value.startsWith('@')) {
-          const keyLower = exp.value.substr(1).toLowerCase(); // case insensitive
-          const value = lowerCaseArgs[keyLower];
-          const isRequired = !!lowerCaseIsRequired[keyLower];
-
-          if (isSpecified(value)) {
-            const entityDesc = entityDescriptorImpl(
-              exp.path,
-              this.definition.Collection,
-              this.definition.DefinitionId,
-              this.workspace,
-              this.translate);
-
-            const propDesc = entityDesc.properties[exp.property];
-            if (isText(propDesc)) {
-              exp.value = `'${value.replace('\'', '\'\'')}'`;
-            } else {
-              exp.value = value + '';
-            }
-            return exp;
-
-          } else if (isRequired) {
-            // value is undefined or null but is required
-            throw new Error(`Required parameter ${exp.value} was not set`);
-          } else {
-            // prune this atom out of the filter
-            return null;
-          }
-        } else {
-          // no placeholder (@XYZ) in this atom, all good
-          return exp;
-        }
-    }
-  }
-
-  private computeFilterAtoms(dimension: DimensionCell | ChartDimensionCell): string[] {
+    const atomsTracker: { [atom: string]: number } = {};
     const atoms: string[] = [];
-    let currentDimension = dimension;
-    while (!!currentDimension) {
-      let path = currentDimension.path;
-      let propDesc = currentDimension.propDesc;
 
-      if (!!propDesc) {
-        // (1) Adjust path and propDesc in the case of a nav property
-        if (propDesc.datatype === 'entity') {
-          // Update path
-          const fkName = propDesc.foreignKeyName;
-          const steps = path.split('.').slice(0, -1);
-          path = steps.concat([fkName]).join('.');
+    function addAtom(atom: string): number {
+      atom = DeBracket(atom);
+      let index = atomsTracker[atom];
+      if (index === undefined) {
+        index = atoms.length;
+        atomsTracker[atom] = index;
+        atoms.push(atom);
+      }
 
-          // Update propDesc
-          const entityDesc = currentDimension.entityDesc;
-          propDesc = entityDesc.properties.Id;
-          if (!propDesc) {
-            // Developer mistake
-            throw new Error(`Entity descriptor for ${entityDesc.titlePlural()} is missing an Id descriptor.`);
+      return index;
+    }
+
+    // First we add a few hidden selects, that are needed for navigate-to-details
+    const baseEntityDesc = this.entityDescriptor;
+    if (!!baseEntityDesc.properties.Id) {
+      s.idIndex = addAtom('Id');
+    } else {
+      s.idIndex = -1;
+    }
+
+    if (!baseEntityDesc.definitionId && !!baseEntityDesc.definitionIds) {
+      s.defIdIndex = addAtom('DefinitionId');
+    } else {
+      s.defIdIndex = -1;
+    }
+
+    if (!!baseEntityDesc.navigateToDetailsSelect) {
+      s.navigateToDetailsIndices = baseEntityDesc.navigateToDetailsSelect.map(select => addAtom(select));
+    } else {
+      delete s.navigateToDetailsIndices;
+    }
+
+    // Second we add the selects specified by the user
+    for (const select of selects) {
+      let indices: number[] = [];
+      const { exp, localize, entityDesc } = select;
+      if (!!entityDesc) {
+        const attString = QueryexUtil.stringify(exp, args, infos);
+        for (const selectProp of entityDesc.select) {
+          indices.push(addAtom(attString + '.' + selectProp));
+        }
+      } else {
+        for (const lang of localize ? [1, 2, 3] : [1]) {
+          const attString = QueryexUtil.stringify(exp, args, infos, lang as 1 | 2 | 3);
+          indices.push(addAtom(attString));
+        }
+
+        if (indices.every(i => i === indices[0])) {
+          indices = [indices[0]];
+        }
+      }
+      select.indices = indices;
+    }
+
+    // Return Result
+    return atoms.join(',');
+  }
+
+  private computeAggregateSelect(s?: ReportStore): string {
+
+    if (!this.definition) {
+      return '';
+    }
+
+    s = s || this.state;
+
+    const args = this.arguments;
+    const infos = s.parameterInfos;
+
+    const atomsTracker: { [atom: string]: number } = {};
+    const atoms: string[] = [];
+
+    function addAtom(atom: string): number {
+      atom = DeBracket(atom);
+      let index = atomsTracker[atom];
+      if (index === undefined) {
+        index = atoms.length;
+        atomsTracker[atom] = index;
+        atoms.push(atom);
+      }
+
+      return index;
+    }
+
+    const cols = s.columnInfos;
+    const rows = s.rowInfos;
+
+    // (1) Add dimensions (special handing for nav column accesses)
+    for (const dimInfo of cols.concat(rows)) {
+      const { keyExp, entityDesc, dispExp, localize } = dimInfo;
+
+      const keyString = QueryexUtil.stringify(keyExp, args, infos);
+      if (!!entityDesc) {
+        dimInfo.keyIndex = addAtom(keyString + '.Id');
+
+        if (!!dispExp) {
+          let indices: number[] = [];
+          for (const lang of localize ? [1, 2, 3] : [1]) {
+            const dispString = QueryexUtil.stringify(dispExp, args, infos, lang as 1 | 2 | 3, keyString);
+            indices.push(addAtom(dispString));
+          }
+
+          if (indices.every(i => i === indices[0])) {
+            indices = [indices[0]];
+          }
+          dimInfo.indices = indices;
+        } else {
+          // Get the select from metadata
+          dimInfo.indices = [];
+          for (const selectProp of entityDesc.select) {
+            dimInfo.indices.push(addAtom(keyString + '.' + selectProp));
           }
         }
 
-        // Add the modifier
-        if (!!currentDimension.modifier) {
-          path = `${path}|${currentDimension.modifier}`;
+        for (const attInfo of dimInfo.attributes) {
+          attInfo.indices = [];
+          const { exp: attExp, localize: attLocalize, entityDesc: attEntityDesc } = attInfo;
+          if (!!attEntityDesc) {
+            attInfo.indices = [];
+            const attString = QueryexUtil.stringify(attExp, args, infos, 1, keyString);
+            for (const selectProp of attEntityDesc.select) {
+              attInfo.indices.push(addAtom(attString + '.' + selectProp));
+            }
+          } else {
+            let indices: number[] = [];
+            for (const lang of attLocalize ? [1, 2, 3] : [1]) {
+              const attString = QueryexUtil.stringify(attExp, args, infos, lang as 1 | 2 | 3, keyString);
+              indices.push(addAtom(attString));
+            }
+
+            if (indices.every(i => i === indices[0])) {
+              indices = [indices[0]];
+            }
+            attInfo.indices = indices;
+          }
         }
 
-        // (2) Calculate the filter atom and add it
-        const valueId = currentDimension.valueId;
-        if (!isSpecified(valueId)) {
-          atoms.push(`${path} eq null`);
-        } else if (isText(propDesc)) {
-          atoms.push(`${path} eq '${valueId.replace('\'', '\'\'')}'`);
-        } else {
-          atoms.push(`${path} eq ${valueId + ''}`);
+        if (dimInfo.showAsTree) {
+          // This is the clue for the server to include all the ancestors of keyExp
+          dimInfo.parentKeyIndex = addAtom(keyString + '.ParentId');
         }
+      } else {
+        dimInfo.keyIndex = addAtom(keyString);
       }
-
-      currentDimension = currentDimension.parent;
     }
 
-    return atoms;
-  }
-
-  private computeAdditionalParameters(): { [key: string]: any } {
-    const builtInParams = this.entityDescriptor.parameters;
-    const additionalParams: { [key: string]: any } = {};
-    if (!!builtInParams) {
-      const args = this.completeArguments;
-      builtInParams.forEach(p => {
-        if (!!args[p.key]) {
-          additionalParams[p.key] = args[p.key];
-        }
-      });
+    // (2) Add the measures
+    for (const aggregationInfo of s.uniqueMeasureAggregations) {
+      const exp = aggregationInfo.exp;
+      const aggString = QueryexUtil.stringify(exp, args, infos);
+      aggregationInfo.index = addAtom(aggString);
     }
 
-    return additionalParams;
+    // Return result
+    return atoms.join(',');
   }
 
   public onExport(fileName?: string): void {
     // This function exports the pivot table to a CSV file, the way it would look fully expanded
     try {
-      if (this.state.reportStatus === ReportStatus.loaded) {
+      const s = this.state;
+      if (s.reportStatus === ReportStatus.loaded) {
 
         if (this.isDetails) {
+          const data: string[][] = [];
 
-          // Collection and DefinitionId
-          const collection = this.collection;
-          const definitionId = this.definitionId;
+          const createAndDownload = (flat: any[][]) => {
+            const selectInfos = s.selectInfos;
 
-          // Columns
-          const columns: ColumnDescriptor[] = this.select.map(e =>
-          ({
-            display: this.workspace.currentTenant.getMultilingualValueImmediate(e, 'Label'),
-            path: e.Expression
-          })
-          );
+            // Add the header
+            {
+              const dataRow: string[] = [];
+              data.push(dataRow);
+              for (const info of selectInfos) {
+                dataRow.push(info.label());
+              }
+            }
 
-          if (!this.definition.Top) {
+            // Add the rows
+            for (const row of flat) {
+              const dataRow: string[] = [];
+              data.push(dataRow);
+
+              for (let i = 0; i < selectInfos.length; i++) {
+                const info = selectInfos[i];
+                const display = this.displayValue(row[i], info.desc, info.entityDesc);
+                dataRow.push(display);
+              }
+            }
+
+            this.downloadData(data, fileName);
+            this.exportSuccess.emit();
+          };
+
+          if (!!this.definition.Top) {
+            // All the data we need is already loaded, download immediately
+            createAndDownload(this.flat);
+          } else {
             // Flat report with paging => query the server to get all the data
 
-            // FILTER
+            // Query parameters
             let filter: string;
+            let select: string;
+            let orderby: string;
             try {
-              filter = this.computeFilter();
+              filter = this.computeFilter(s);
+              select = this.computeSelect();
+              orderby = this.computeOrderBy();
             } catch (ex) {
               this.exportError.emit(ex);
               return;
             }
-
-            // SELECT and ORDERBY
-            const select = this.computeSelect();
-            const orderby = this.definition.OrderBy;
 
             if (!select) {
               const msg = this.translate.instant('DragSelect');
@@ -865,21 +784,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               return;
             }
 
-            // EXTRAS
-            const extras = this.computeAdditionalParameters();
-
             this.exportStarting.emit();
             this.crud.getFact({
+              top: 2147483647,
+              skip: 0,
               orderby,
               select,
-              filter,
-              countEntities: true,
-              skip: 0,
-              top: 2147483647 // Everything
-            }, extras).pipe(
-              tap((response: GetResponse) => {
-                const data = composeEntitiesFromResponse(response, columns, collection, definitionId, this.workspace, this.translate);
-                this.downloadData(data, fileName);
+              filter
+            }).pipe(
+              tap((response: GetFactResponse) => {
+                const flat = this.flatInner(response.Result, s);
+                createAndDownload(flat);
                 this.exportSuccess.emit();
               }),
               catchError((err: FriendlyError) => {
@@ -887,156 +802,195 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 return of();
               })
             ).subscribe();
-          } else {
-            // Flat report with all data loaded (no paging) => no need to query the server
-            const entities = this.state.result;
-            const data = composeEntities(entities, columns, collection, definitionId, this.workspace, this.translate);
-            this.downloadData(data, fileName);
-            this.exportSuccess.emit();
           }
 
         } else if (this.isSummary) {
-          // Summary report => no need to query the server
-          const pivot = this.state.pivot;
-          const headers = pivot.columnHeaders;
-          const rows = pivot.rows;
-          const realMeasures = this.state.measures;
-          const rowDimensionsColumnCount = !rows || !rows[0] ? 0 : rows[0].filter(c => c.type === 'dimension').length;
-
-          // Helper function
-          const getDisplay = (cell: DimensionCell) => {
-            let display: string;
-            if (cell.propDesc.datatype === 'entity') {
-              display = displayEntity(cell.value, cell.entityDesc);
-            } else {
-              display = displayValue(cell.value, cell.propDesc, this.translate);
-            }
-
-            return display;
-          };
-
           const data: string[][] = [];
 
-          // Top Headers section
-          for (const row of headers) {
-            const dataRow: string[] = [];
+          // Summary report => no need to query the server
+          const { columnHeaders, columns, rows, colSpan, columnsGrandTotalLabel, rowsGrandTotalLabel, rowsGrandTotalMeasures } = s.pivot;
+          const realMeasures = s.measureInfos;
 
-            // Blank cell in upper left corner
-            for (let i = 0; i < rowDimensionsColumnCount; i++) {
+          // Grab some useful metadata
+          const singleRowDimension = this.singleRowDimension;
+          const singleRowDimensionAttributes = singleRowDimension ? singleRowDimension.attributes : [];
+
+          // column Headers
+          const rowSpanned: { [colIndex: number]: true } = {};
+          let isFirstRow = true;
+          for (const headerRow of columnHeaders) {
+            const dataRow = [];
+            data.push(dataRow);
+
+            // Blank Cell
+            for (let i = 0; i < colSpan; i++) {
               dataRow.push(null);
             }
 
-            let shouldBeLastOne = false;
-            for (const cell of row) {
-              if (shouldBeLastOne) {
-                console.error('Label showed up in the middle of the headers, the export algorithm will produce incorrect result');
-                return;
-              }
-              switch (cell.type) {
-                case 'dimension':
-                  {
-                    let display: string;
-                    if (this.isDefined(cell)) {
-                      display = getDisplay(cell);
-                    } else {
-                      display = this.translate.instant('Undefined');
-                    }
-
-                    dataRow.push(display);
-                  }
-                  break;
-                case 'label':
-                  {
-                    const display = cell.label();
-                    dataRow.push(display);
-                    // Right now we only support one label at the very end
-                    // Labels are the only kind that have a rowspan
-                    // And if they appear in the middle, the algorithm will
-                    // produce a wrong CSV => disaster, so just to be safe
-                    shouldBeLastOne = true;
-                  }
-                  break;
-                default:
-
-                  break;
-              }
-
-              for (let i = 1; i < cell.expandedColSpan; i++) {
-                dataRow.push(null); // Add padding according to colspan
+            // Attributes #1
+            if (singleRowDimension) {
+              if (isFirstRow) {
+                for (const att of singleRowDimensionAttributes) {
+                  dataRow.push(att.label());
+                }
+              } else {
+                for (const _ of singleRowDimensionAttributes) {
+                  dataRow.push(null);
+                }
               }
             }
 
-            data.push(dataRow);
+            // Column Headers
+            for (const colCell of headerRow) {
+              // (1) If the column is occupied by a cell from an upper row with a rowSpan, account for it
+              while (rowSpanned[dataRow.length]) {
+                dataRow.push(null);
+              }
+
+              // (2) If this cell has a row span, flag the index in the rowSpanned so subsequent rows account for it
+              if (colCell.rowSpan > 1) {
+                rowSpanned[dataRow.length] = true;
+              }
+
+              // (3) Add the cell's display
+              let display: string;
+              if (this.isDefined(colCell)) {
+                display = this.displayValue(colCell.value, colCell.info.desc, colCell.info.entityDesc);
+              } else {
+                display = this.translate.instant('Undefined');
+              }
+              dataRow.push(display);
+
+              // (4) Add colSpan if any
+              for (let i = 1; i < colCell.expandedColSpan; i++) {
+                dataRow.push(null);
+              }
+            }
+
+            // Columns Grand Total
+            if (isFirstRow && columnsGrandTotalLabel) {
+              dataRow.push(columnsGrandTotalLabel.label());
+            }
+
+            isFirstRow = false;
           }
 
           // Measure labels
-          if (this.showMeasureLabels) {
+          if (this.showMeasureLabelsRow) {
             const dataRow: string[] = [];
+            data.push(dataRow);
 
             // Blank cell in upper left corner
-            for (let i = 0; i < rowDimensionsColumnCount; i++) {
+            for (let i = 0; i < colSpan; i++) {
               dataRow.push(null);
             }
 
-            for (const cell of rows[0].filter(e => e.type === 'measure')) {
-              if (!cell.parent || !cell.parent.hasChildren) {
+            // Attributes #2
+            if (singleRowDimension) {
+              if (isFirstRow) {
+                for (const att of singleRowDimensionAttributes) {
+                  dataRow.push(att.label());
+                }
+              } else {
+                for (const _ of singleRowDimensionAttributes) {
+                  dataRow.push(null);
+                }
+              }
+            }
+
+            // Measure Labels
+            for (const cell of columns) {
+              if (cell.immediateChildren.length === 0) {
                 for (const measure of realMeasures) {
                   dataRow.push(measure.label());
                 }
               }
             }
 
-            data.push(dataRow);
+            // Columns Grand Totals Measure Labels
+            if (this.showColumnsGrandTotalsMeasureLabels) {
+              for (const measure of realMeasures) {
+                dataRow.push(measure.label());
+              }
+            }
           }
 
-          // Lower section
-          for (const row of rows) {
+          // Rows
+          for (const rowCell of rows) {
             const dataRow: string[] = [];
-            for (const cell of row) {
-              switch (cell.type) {
-                case 'dimension':
-                  {
-                    let display = '';
-                    for (let i = 0; i < cell.level; i++) {
-                      display += '            ';
-                    }
-                    if (this.isDefined(cell)) {
-                      display += getDisplay(cell);
-                    } else {
-                      display += this.translate.instant('Undefined');
-                    }
+            data.push(dataRow);
 
-                    dataRow.push(display);
-                  }
-                  break;
-                case 'measure':
-                  if (!cell.parent || !cell.parent.hasChildren) {
-                    for (let i = 0; i < realMeasures.length; i++) {
-                      const display = displayValue(cell.values[i], realMeasures[i].desc, this.translate);
+            // Add the row label
+            {
+              let display = '';
+              for (let i = 0; i < rowCell.level; i++) {
+                display += '            ';
+              }
+              if (this.isDefined(rowCell)) {
+                display += this.displayValue(rowCell.value, rowCell.info.desc, rowCell.info.entityDesc);
+              } else {
+                display += this.translate.instant('Undefined');
+              }
 
-                      dataRow.push(display);
-                    }
-                  }
-                  break;
-                case 'label':
-                  {
-                    const display = cell.label();
-                    dataRow.push(display);
-                  }
-                  break;
-                default:
+              dataRow.push(display);
+            }
 
-                  break;
+            // Add the attributes
+            if (singleRowDimension) {
+              for (const att of rowCell.attributes) {
+                const display = this.displayValue(att.value, att.info.desc, att.info.entityDesc);
+                dataRow.push(display);
               }
             }
 
+            // Add the measures
+            for (const cell of rowCell.measures) {
+              if (!cell.column || cell.column.immediateChildren.length === 0) {
+                for (let i = 0; i < realMeasures.length; i++) {
+                  const display = displayScalarValue(cell.values[i], realMeasures[i].desc, this.workspace, this.translate);
+                  dataRow.push(display);
+                }
+
+                if (realMeasures.length === 0) {
+                  dataRow.push(null); // empty cell
+                }
+              }
+            }
+          }
+
+          // Rows Grand Total
+          if (rowsGrandTotalMeasures) {
+            const dataRow: string[] = [];
             data.push(dataRow);
+
+            // Rows Grand Total label
+            if (rowsGrandTotalLabel) {
+              dataRow.push(rowsGrandTotalLabel.label());
+            }
+
+            // Empty attributes cells
+            if (singleRowDimension) {
+              for (const _ of singleRowDimensionAttributes) {
+                dataRow.push(null);
+              }
+            }
+
+            // Rows Grand Total measures
+            for (const cell of rowsGrandTotalMeasures) {
+              if (!cell.column || cell.column.immediateChildren.length === 0) {
+                for (let i = 0; i < realMeasures.length; i++) {
+                  const display = displayScalarValue(cell.values[i], realMeasures[i].desc, this.workspace, this.translate);
+                  dataRow.push(display);
+                }
+              }
+            }
           }
 
           this.downloadData(data, fileName);
           this.exportSuccess.emit();
         } else {
           // Nothing to download
+          return;
         }
       }
     } catch (err) {
@@ -1068,11 +1022,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   // UI Bindings
 
-  private get isDetails(): boolean {
+  public get isDetails(): boolean {
     return !!this.definition && this.definition.Type === 'Details';
   }
 
-  private get isSummary(): boolean {
+  public get isSummary(): boolean {
     return !!this.definition && this.definition.Type === 'Summary';
   }
 
@@ -1085,11 +1039,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showChart(): boolean {
-    return this.isSummary && this.view === ReportView.chart && !!this.state.singleNumericMeasure;
+    return this.isSummary && this.view === ReportView.chart && this.state.singleNumericMeasureIndex !== -1;
   }
 
   public get showSpecifyNumericMeasure(): boolean {
-    return this.isSummary && this.view === ReportView.chart && !this.state.singleNumericMeasure;
+    return this.isSummary && this.view === ReportView.chart && this.state.singleNumericMeasureIndex === -1;
   }
 
   public get showResults(): boolean {
@@ -1128,127 +1082,272 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   //////// SUMMARY - PIVOT
 
-  private extractValueAndValueId(g: Entity, dimension: DimensionInfo): { value: any, valueId: any } {
-    let value: any;
-    let valueId: any;
+  private extractValue(g: DynamicRow, dimension: DimensionInfo, offset = 0): any {
     if (!!dimension.entityDesc) {
-      // For navigation properties, the value is an object emulating the real entity, and the id is its Id
-      valueId = g[dimension.idKey];
-      if (isSpecified(valueId)) {
-        value = { Id: valueId };
-        dimension.selectKeys.forEach(key => value[key.prop] = g[key.path]);
-      }
+      // The value is the select array (either from localized display expression or from the entity desc select)
+      return dimension.indices.map(i => g[i - offset]);
     } else {
-      // For simple properties (non-nav) both the id and the value are set to the value of that property
-      valueId = g[dimension.key];
-      value = valueId;
-    }
-
-    return { value, valueId };
-  }
-
-  private extractValueId(g: Entity, dimension: DimensionInfo): any {
-    if (!!dimension.entityDesc) {
-      // For navigation properties, the value is an object emulating the real entity, and the id is its Id
-      return g[dimension.idKey];
-    } else {
-      // For simple properties (non-nav) both the id and the value are set to the value of that property
-      return g[dimension.key];
+      return g[dimension.keyIndex - offset];
     }
   }
 
   public get pivot(): PivotTable {
     // The various parts of the pivot table bind to what is returned by this property
     const s = this.state;
+    const def = this.definition;
+    const ws = this.workspace.currentTenant;
+
     if (s.currentResultForPivot !== s.result) {
       s.currentResultForPivot = s.result;
 
+      // Some booleans related to column and row totals
+      const realColumns = s.columnInfos;
+      const showColumnsTotalsLabel = realColumns.length > 0;
+      const showColumnsTotals: boolean = s.measureInfos.length > 0 &&
+        (def.ShowColumnsTotal || realColumns.length === 0);
+
+      const realRows = s.rowInfos;
+      const showRowsTotalsLabel = realRows.length > 0;
+      const showRowsTotals: boolean = s.measureInfos.length > 0 &&
+        (def.ShowRowsTotal || realRows.length === 0);
+
       // Helper function that builds hashes mapping every combination of dimensions to a dimension index
-      const dimensionHash = (dimensions: DimensionInfo[]): { hash: PivotHash, cells: DimensionCell[] } => {
+      const dimensionHash = (dimensionInfos: DimensionInfo[], columns?: DimensionCell[]): { hash: PivotHash, roots: DimensionCell[] } => {
 
-        const rootHash: PivotHash = { cell: null, children: [] }; // cell == null is the root
+        const rootHash: PivotHash = { cell: null }; // cell == null is the root
+        const roots: DimensionCell[] = [];
 
-        if (dimensions.length > 0) {
+        const addEmptyMeasures = (cell: DimensionCell) => {
+          if (columns) {
+            // When columns are supplied it means these are rows, so we fill the measures array
+            cell.measures = [];
+            const howMany = showColumnsTotals ? columns.length + 1 : columns.length;
+            for (let i = 0; i < howMany; i++) {
+              const column = columns[i];
+              cell.measures.push({
+                aggValues: [],
+                values: [],
+                classes: [],
+                column, // undefined means columns grand total
+                row: cell,
+                isTotal: showColumnsTotalsLabel && !column
+              });
+            }
+          }
+        };
+
+        // Links the parent (and all its ancestors) to the previous hash and returns it
+        const addAncestor = (
+          parentId: number,
+          dimInfo: DimensionInfo,
+          prevHash: PivotHash,
+          ancestorGroup: AncestorGroup): DimensionCell => {
+          let parent: DimensionCell;
+          if (!parentId) {
+            parent = prevHash.cell;
+          } else {
+            parent = prevHash.ancestors[parentId];
+            if (!parent) {
+              const gAncestor = ancestorGroup.ancestors[parentId]; // if this is undefined, the server didn't do its job right
+              const valueParent = this.extractValue(gAncestor, dimInfo, ancestorGroup.minIndex);
+              const grandParentId = gAncestor[dimInfo.parentKeyIndex - ancestorGroup.minIndex];
+              const grandParent = addAncestor(grandParentId, dimInfo, prevHash, ancestorGroup);
+              const prevHashLevel = prevHash.cell ? prevHash.cell.level : -1;
+              const level = grandParent ? grandParent.level + 1 : 0;
+              parent = { // This one is an ancestor, must flag it
+                info: dimInfo,
+                value: valueParent,
+                valueId: parentId,
+                isExpanded: dimInfo.autoExpandLevel > (level - prevHashLevel) - 1, // adjusted in flatten
+                level: grandParent ? grandParent.level + 1 : 0,
+                index: 0, // computed later in flatten()
+                immediateParent: grandParent,
+                parent: prevHash.cell,
+                immediateChildren: [],
+                attributes: []
+              };
+
+              for (const info of dimInfo.attributes) {
+                // Add the attribute value
+                let attValue: any;
+                if (info.entityDesc || info.indices.length > 1) {
+                  attValue = info.indices.map(i => gAncestor[i - ancestorGroup.minIndex]);
+                } else {
+                  const i = info.indices[0];
+                  attValue = gAncestor[i - ancestorGroup.minIndex];
+                }
+                parent.attributes.push({ value: attValue, info });
+
+                // Set the sortValue
+                if (info.isOrdered) {
+                  parent.sortValue = this.sortValue(attValue, info.desc, info.entityDesc);
+                }
+              }
+
+              if (dimInfo.isOrdered) {
+                parent.sortValue = this.sortValue(parent.value, dimInfo.desc, dimInfo.entityDesc);
+              }
+
+              // Add the cell to its parent
+              (grandParent ? grandParent.immediateChildren : roots).push(parent);
+
+              addEmptyMeasures(parent); // Adds measures array if 'columns' are supplied
+              prevHash.ancestors[parentId] = parent; // For future re-use
+            }
+
+            parent.isAncestor = true; // For drilldown
+          }
+
+          return parent;
+        };
+
+        if (dimensionInfos.length > 0) {
           for (const g of s.result) {
-            let currentHash = rootHash;
-            let level = 0;
-            const lastDimension = dimensions[dimensions.length - 1];
-            for (const dimension of dimensions) {
-              const { value, valueId } = this.extractValueAndValueId(g, dimension);
-              let targetHash: PivotHash;
+            let prevHash = rootHash;
+            for (const dimInfo of dimensionInfos) {
+              const valueId = g[dimInfo.keyIndex];
+              const value = this.extractValue(g, dimInfo); // Could be array
+              let currentHash: PivotHash;
 
               // Either go down the values or the undefined route
               if (isSpecified(valueId)) {
-                if (!currentHash.values) {
-                  currentHash.values = {};
+                if (!prevHash.values) {
+                  prevHash.values = {};
                 }
 
-                targetHash = currentHash.values[valueId];
-
+                currentHash = prevHash.values[valueId];
               } else {
-                targetHash = currentHash.undefined;
+                currentHash = prevHash.undefined;
               }
 
-              // If the target hash is null, create it and add it
-              if (!targetHash) {
-                targetHash = {
-                  cell: {
-                    type: 'dimension',
-                    path: dimension.path,
-                    modifier: dimension.modifier,
-                    value,
-                    valueId,
-                    propDesc: dimension.propDesc,
-                    entityDesc: dimension.entityDesc,
-                    isExpanded: dimension !== lastDimension && dimension.autoExpand,
-                    hasChildren: dimension !== lastDimension,
-                    level,
-                    index: 0, // computed below
-                    parent: currentHash.cell, // <- this one should modified for trees
-                    isTotal: false
-                  },
-                  children: []
+              // This section determines the parent of the cell we're about to create
+              if (!currentHash) {
+                let parent: DimensionCell;
+                if (dimInfo.showAsTree) {
+
+                  // If it's a tree dimension, make sure to initialize the ancestors dictionary on the previous hash
+                  if (!prevHash.ancestors) {
+                    prevHash.ancestors = {};
+                  }
+
+                  const ancestorGroup = s.ancestorGroups[dimInfo.keyIndex];
+                  if (ancestorGroup.ancestors[valueId]) {
+                    // The cell itself appears elswhere as an ancestor => we add it underneath itself
+                    // And add its parent-self in the ancestors dictionary. This way parents always are
+                    // the aggregation of their children and the children are homogenous (no currencies between centers)
+                    parent = addAncestor(valueId, dimInfo, prevHash, ancestorGroup);
+                  } else {
+                    // The cell is not an ancestor of another cell, no need to add it underneath itself
+                    const parentId = g[dimInfo.parentKeyIndex];
+                    parent = addAncestor(parentId, dimInfo, prevHash, ancestorGroup);
+                  }
+                } else {
+                  // Flat dimension, the parent is the cell from the previous dimension
+                  parent = prevHash.cell;
+                }
+
+                const level = parent ? parent.level + 1 : 0;
+                const prevHashLevel = prevHash.cell ? prevHash.cell.level : -1;
+                const cell: DimensionCell = {
+                  info: dimInfo,
+                  value,
+                  valueId,
+                  isExpanded: dimInfo.autoExpandLevel > (level - prevHashLevel) - 1, // adjusted in flatten
+                  level,
+                  index: 0, // Computed later in flatten()
+                  immediateParent: parent,
+                  parent: prevHash.cell,
+                  immediateChildren: [],
+                  attributes: []
                 };
 
-                currentHash.children.push(targetHash.cell); // and this one should be modified for trees
+                for (const info of dimInfo.attributes) {
+                  // Add the attribute value
+                  let attValue: any;
+                  if (info.entityDesc || info.indices.length > 1) {
+                    attValue = info.indices.map(i => g[i]);
+                  } else {
+                    const i = info.indices[0];
+                    attValue = g[i];
+                  }
+                  cell.attributes.push({ value: attValue, info });
 
+                  // Set the sortValue
+                  if (info.isOrdered) {
+                    cell.sortValue = this.sortValue(attValue, info.desc, info.entityDesc);
+                  }
+                }
+
+                if (dimInfo.isOrdered) {
+                  cell.sortValue = this.sortValue(cell.value, dimInfo.desc, dimInfo.entityDesc);
+                }
+
+                // Add the cell to its parent
+                (parent ? parent.immediateChildren : roots).push(cell);
+
+                // Adds measures array if 'columns' are supplied
+                addEmptyMeasures(cell);
+
+                // Set the current hash
+                currentHash = { cell };
+
+                // Set the current hash in the correct category inside previous hash
                 if (isSpecified(valueId)) {
-                  currentHash.values[valueId] = targetHash;
+                  prevHash.values[valueId] = currentHash;
                 } else {
-                  currentHash.undefined = targetHash;
+                  prevHash.undefined = currentHash;
                 }
               }
 
-              level++;
-              currentHash = targetHash;
+              // For the next iteration
+              prevHash = currentHash;
             }
           }
         }
 
-        // This recursive function adds the dimension cells
-        // in order, parents always before children
-        const cells: DimensionCell[] = [];
-        let index = 0;
-        function addHash(hash: PivotHash) {
-          for (const cell of hash.children) {
-            cell.index = index++;
-            cells.push(cell);
-            const childHash = isSpecified(cell.valueId) ? hash.values[cell.valueId] : hash.undefined;
-            addHash(childHash);
+        return { hash: rootHash, roots };
+      };
+
+      // This recursive function adds the dimension cells
+      // in order, parents always before children
+      function flatten(cells: DimensionCell[], array: DimensionCell[], index = 0): number {
+
+        // Do the sorting here
+        const orderDir = cells[0].info.orderDir;
+        switch (orderDir) {
+          case 'asc':
+            cells.sort((a, b) => a.sortValue > b.sortValue ? 1 : a.sortValue < b.sortValue ? -1 : 0);
+            break;
+          case 'desc':
+            cells.sort((a, b) => a.sortValue < b.sortValue ? 1 : a.sortValue > b.sortValue ? -1 : 0);
+            break;
+        }
+
+        // Then the flattening
+        for (const cell of cells) {
+          cell.index = index++;
+          array.push(cell);
+          if (!!cell.immediateChildren && cell.immediateChildren.length > 0) {
+            index = flatten(cell.immediateChildren, array, index);
+          } else {
+            cell.isExpanded = false;
           }
         }
 
-        addHash(rootHash);
-
-        return { hash: rootHash, cells };
-      };
+        return index;
+      }
 
       /////////// Calculate the top half of the report (the "columnHeaders")
-      const realColumns = s.realColumns;
-      const { hash: columnsHash, cells: columnCells } = dimensionHash(realColumns);
-      const columnGrandTotalIndex = columnCells.length;
+      const { hash: columnsHash, roots: columnRoots } = dimensionHash(realColumns);
 
-      const columnHeaders: (DimensionCell | LabelCell)[][] = [];
+      // Prepare a flat and sorted list of column cells (parents before children)
+      const columnCells: DimensionCell[] = [];
+      if (columnRoots.length > 0) {
+        flatten(columnRoots, columnCells); // fills columnCells
+      }
+
+      // Add them in a 2-D columnHeaders array, each according to its level
+      const columnHeaders: DimensionCell[][] = [];
       for (const cell of columnCells) {
         if (!columnHeaders[cell.level]) {
           columnHeaders[cell.level] = [cell];
@@ -1257,204 +1356,299 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      // Columns total
-      const showColumnTotals: boolean = s.measures.length > 0 &&
-        (this.definition.ShowColumnsTotal || realColumns.length === 0);
+      let columnsGrandTotalLabel: LabelCell;
+      if (showColumnsTotals && showColumnsTotalsLabel) {
+        columnsGrandTotalLabel = {
+          label: !!def.ColumnsTotalLabel ?
+            () => ws.localize(def.ColumnsTotalLabel, def.ColumnsTotalLabel2, def.ColumnsTotalLabel3) :
+            () => this.translate.instant('GrandTotal'),
+          isTotal: showColumnsTotalsLabel
+        };
+      }
 
-      if (showColumnTotals) {
-        if (realColumns.length > 0) {
-          const columnsGrandTotalLabel: LabelCell = {
-            type: 'label',
-            label: () => this.translate.instant('GrandTotal'),
-            level: 0,
-            parent: null,
-            isTotal: realColumns.length > 0
+      /////////// Calculate the bottom half of the report (the "rows")
+      const { hash: rowsHash, roots: rowsRoots } = dimensionHash(realRows, columnCells);
+
+      let rowsGrandTotalLabel: LabelCell;
+      let rowsGrandTotalMeasures: MeasureCell[];
+      if (showRowsTotals) {
+        // Add the label
+        if (showRowsTotalsLabel) {
+          // The rows totals label is only visible when there is at least one row dimension
+          rowsGrandTotalLabel = {
+            label: !!def.RowsTotalLabel ?
+              () => ws.localize(def.RowsTotalLabel, def.RowsTotalLabel2, def.RowsTotalLabel3) :
+              () => this.translate.instant('GrandTotal'),
+            isTotal: showRowsTotalsLabel
           };
-          columnHeaders[0].push(columnsGrandTotalLabel);
+        }
+
+        // Add the row total measures
+        rowsGrandTotalMeasures = [];
+        const howManyMeasures = showColumnsTotals ? columnCells.length + 1 : columnCells.length;
+        for (let i = 0; i < howManyMeasures; i++) {
+          rowsGrandTotalMeasures.push({
+            aggValues: [],
+            values: [],
+            classes: [],
+            column: columnCells[i], // null means grand total
+            row: null,
+            isTotal: showRowsTotalsLabel
+          });
         }
       }
 
-      // Calculate the expandedColSpan of every cell's parent
+      function normalize(value: any) {
+        return isSpecified(value) ? value : null;
+      }
+
+      // Add the data points and their aggregations
+      if (s.uniqueMeasureAggregations.length > 0) {
+        for (const g of s.result) {
+          let colIndex = columnCells.length; // Columns grand totals index
+          let currentColHash = columnsHash;
+          for (const col of realColumns) {
+            const valueId = g[col.keyIndex];
+            currentColHash = isSpecified(valueId) ?
+              currentColHash.values[valueId] : currentColHash.undefined;
+
+            colIndex = currentColHash.cell.index;
+          }
+
+          let measuresRow: MeasureCell[] = rowsGrandTotalMeasures; // Rows grand totals row
+          let dimRow: DimensionCell;
+          let currentRowHash = rowsHash;
+          for (const row of realRows) {
+            const valueId = g[row.keyIndex];
+            currentRowHash = isSpecified(valueId) ?
+              currentRowHash.values[valueId] :
+              currentRowHash.undefined;
+
+            dimRow = currentRowHash.cell as DimensionCell;
+            dimRow.measures = dimRow.measures || [];
+            measuresRow = dimRow.measures;
+          }
+
+          // Climb up the rows
+          let currentRow = measuresRow;
+          while (!!currentRow) {
+            let currentColIndex = colIndex;
+            let cell = currentRow[currentColIndex];
+            // Climb up the columns
+            while (!!cell) {
+              s.uniqueMeasureAggregations.forEach((aggInfo, index) => {
+                const { exp: aggFunction, index: selectIndex } = aggInfo;
+                const value = normalize(g[selectIndex]);
+                const total = normalize(cell.aggValues[index]);
+
+                switch (aggFunction.nameLower) {
+                  case 'sum':
+                  case 'count':
+                    cell.aggValues[index] = total === null && value === null ? null : total + value;
+                    break;
+                  case 'max':
+                    cell.aggValues[index] = total === null ? value : value === null ? total : total < value ? value : total;
+                    break;
+                  case 'min':
+                    cell.aggValues[index] = total === null ? value : value === null ? total : total < value ? total : value;
+                    break;
+                }
+              });
+
+              if (cell.column && cell.column.immediateParent) {
+                currentColIndex = cell.column.immediateParent.index;
+                cell = currentRow[currentColIndex];
+              } else if (currentColIndex !== columnCells.length) {
+                currentColIndex = columnCells.length; // Columns grand totals index
+                cell = currentRow[currentColIndex];
+              } else {
+                break; // break the column-wise loop
+              }
+            }
+
+            const leafCell = currentRow[colIndex];
+            if (leafCell.row && leafCell.row.immediateParent) {
+              currentRow = leafCell.row.immediateParent.measures;
+            } else if (currentRow !== rowsGrandTotalMeasures) {
+              currentRow = rowsGrandTotalMeasures; // Rows grand totals row
+            } else {
+              break; // break the row-wise loop
+            }
+          }
+        }
+      }
+
+      if (s.measureInfos.length > 0) {
+
+        // Evaluate cell values and classes from the aggregation values
+        const setCellValues = (cell: MeasureCell, isAggregatedRow: boolean) => {
+          s.measureInfos.forEach((m, index) => {
+            const value = QueryexUtil.evaluateExp(m.exp, cell.aggValues, this.arguments, this.workspace);
+            cell.values[index] = value;
+            if (!!m.danger && QueryexUtil.evaluateExp(m.danger, cell.aggValues, this.arguments, this.workspace)) {
+              cell.classes[index] = 't-danger';
+            } else if (!!m.warning && QueryexUtil.evaluateExp(m.warning, cell.aggValues, this.arguments, this.workspace)) {
+              cell.classes[index] = 't-warning';
+            } else if (!!m.success && QueryexUtil.evaluateExp(m.success, cell.aggValues, this.arguments, this.workspace)) {
+              cell.classes[index] = 't-success';
+            } else {
+              cell.classes[index] = '';
+            }
+
+            // Set the disableDrilldown for this cell
+            if (!!s.havingExp) {
+              // There is a having filter
+              if (isAggregatedRow) {
+                cell.disableDrilldown = true; // Has an aggregated row dimension -> disable drilldown
+              } else {
+                const inAggregatedColumn =
+                  (!!cell.column && cell.column.immediateChildren.length > 0) || (!cell.column && s.columnInfos.length > 0);
+
+                if (inAggregatedColumn) {
+                  cell.disableDrilldown = true; // Has an aggregated column dimension -> disable drilldown
+                }
+              }
+            }
+
+            if (m.isOrdered && !!cell.row) {
+              cell.row.sortValue = value; // Measures aren't multi-lingual
+            }
+          });
+        };
+
+        if (!!rowsGrandTotalMeasures) {
+          const isAggregated = s.rowInfos.length > 0;
+          for (const cell of rowsGrandTotalMeasures) {
+            setCellValues(cell, isAggregated);
+          }
+        }
+
+        // Recursive function that applies setCellValues to all the measure cells not in grand total
+        function setAllCellValues(cells: DimensionCell[]) {
+          for (const cell of cells) {
+            const isAggregated = cell.immediateChildren.length > 0;
+            for (const m of cell.measures) {
+              setCellValues(m, isAggregated);
+            }
+
+            if (isAggregated) {
+              setAllCellValues(cell.immediateChildren);
+            }
+          }
+        }
+
+        setAllCellValues(rowsRoots);
+      }
+
+      // Prepare a flat and sorted list of row dimensions (parents before children)
+      const rowCells: DimensionCell[] = [];
+      if (rowsRoots.length > 0) {
+        flatten(rowsRoots, rowCells); // fills rows
+      }
+
+      // Finally... set the pivot
+      s.pivot = {
+        maxVisibleLevel: 0,
+        rowSpan: 0,
+        colSpan: 0,
+        columnHeaders,
+        columns: columnCells,
+        rows: rowCells,
+        rowsGrandTotalMeasures,
+        columnsGrandTotalLabel,
+        rowsGrandTotalLabel,
+        columnsGrandTotalsIncluded: showColumnsTotals,
+      };
+
+      this.recomputeColumnSpans(s.pivot); // Sets maxVisibleLevel, rowSpan and colSpan for the pivot and every cell in columnHeader
+
+      // In this final section we compute expanded colspan and rowspan
+      // Those do not change when the user expands and collapses nodes
+
       columnHeaders.forEach(row => row.forEach(cell => {
         cell.expandedColSpan = 0;
       }));
       for (let i = columnHeaders.length - 1; i >= 0; i--) {
         for (let j = columnHeaders[i].length - 1; j >= 0; j--) {
           const cell = columnHeaders[i][j];
-          cell.expandedColSpan = cell.expandedColSpan || s.measures.length || 1; // measureCount might be 0
-          if (!!cell.parent) {
-            cell.parent.expandedColSpan += cell.expandedColSpan;
+          cell.expandedColSpan = cell.expandedColSpan || s.measureInfos.length || 1; // measureCount might be 0
+          if (!!cell.immediateParent) {
+            cell.immediateParent.expandedColSpan += cell.expandedColSpan;
           }
         }
       }
 
-      /////////// Calculate the bottom half of the report (the "rows")
-      const realRows = s.realRows;
-      const { hash: rowsHash, cells: rowCells } = dimensionHash(realRows);
-      const rowGrandTotalIndex = rowCells.length;
-
-      const rows: (DimensionCell | MeasureCell | LabelCell)[][] = [];
-      const rowDimensionsColumnCount = realRows.length === 0 ? 0 : 1; // TODO
-      for (let r = 0; r < rowCells.length; r++) {
-        const rowCell = rowCells[r];
-        const row: (DimensionCell | LabelCell | MeasureCell)[] = [rowCell];
-        for (let c = 0; c < columnCells.length; c++) {
-          row[c + rowDimensionsColumnCount] = {
-            type: 'measure',
-            parent: columnCells[c],
-            values: [],
-            counts: [],
-          };
-        }
-
-        // Add the column grand total if required
-        if (showColumnTotals) {
-          row[columnGrandTotalIndex + rowDimensionsColumnCount] = {
-            type: 'measure',
-            parent: null,
-            values: [],
-            counts: [],
-            isTotal: realColumns.length > 0
-          };
-        }
-
-        rows[r] = row;
-      }
-
-      // Whether to show row totals
-      const showRowTotals: boolean = s.measures.length > 0 &&
-        (this.definition.ShowRowsTotal || realRows.length === 0 && s.measures.length > 0);
-
-      if (showRowTotals) {
-        const rowsGrandTotalLabel: LabelCell = {
-          type: 'label',
-          label: () => this.translate.instant('GrandTotal'),
-          level: 0,
-          parent: null,
-          isTotal: realRows.length > 0
-        };
-
-        const totalRow: (DimensionCell | LabelCell | MeasureCell)[] = realRows.length > 0 ? [rowsGrandTotalLabel] : [];
-
-        for (let c = 0; c < columnCells.length; c++) {
-          totalRow[c + rowDimensionsColumnCount] = {
-            type: 'measure',
-            parent: columnCells[c] || null,
-            values: [],
-            counts: [],
-            isTotal: rowsGrandTotalLabel.isTotal,
-          };
-        }
-
-        // Add the grand-grand total if required
-        if (showColumnTotals) {
-          totalRow[columnGrandTotalIndex + rowDimensionsColumnCount] = {
-            type: 'measure',
-            parent: null,
-            values: [],
-            counts: [],
-            isTotal: rowsGrandTotalLabel.isTotal || realColumns.length > 0
-          };
-        }
-
-        rows.push(totalRow);
-      }
-
-      // This is only useful if there is an AVG measure
-      const countKeys = this.definition.Measures.map(m =>
-        `count(${m.Expression.split('.').map(e => e.trim()).join('.')})`);
-
-      // Add nulls at the end if needed to represent the grand totals
-      const realColumnsAndGrandTotal = showColumnTotals ? realColumns.concat([null]) : realColumns;
-      const realRowsAndGrandTotal = showRowTotals ? realRows.concat([null]) : realRows;
-
-      function normalize(value: any) {
-        return isSpecified(value) ? value : null;
-      }
-
-      // Add the data points
-      for (const g of s.result) {
-        let currentColHash = columnsHash;
-        for (const col of realColumnsAndGrandTotal) {
-          let colIndex: number;
-          if (!col) {
-            // Grand total
-            colIndex = columnGrandTotalIndex;
-          } else {
-
-            const colValueId = this.extractValueId(g, col);
-            if (isSpecified(colValueId)) {
-              currentColHash = currentColHash.values[colValueId];
-            } else {
-              currentColHash = currentColHash.undefined;
-            }
-
-            colIndex = currentColHash.cell.index;
-          }
-
-          let currentRowHash = rowsHash;
-          for (const row of realRowsAndGrandTotal) {
-            let rowIndex: number;
-            if (!row) {
-              // Grand total
-              rowIndex = rowGrandTotalIndex;
-            } else {
-              const rowValueId = this.extractValueId(g, row);
-              if (isSpecified(rowValueId)) {
-                currentRowHash = currentRowHash.values[rowValueId];
-              } else {
-                currentRowHash = currentRowHash.undefined;
-              }
-
-              rowIndex = currentRowHash.cell.index;
-            }
-
-            const measureCell = rows[rowIndex][colIndex + rowDimensionsColumnCount] as MeasureCell;
-            s.measures.forEach((m, index) => {
-              const value = normalize(g[m.key]);
-              const total = normalize(measureCell.values[index]);
-
-              switch (m.aggregation) {
-                case 'sum':
-                case 'count':
-                  measureCell.values[index] = total === null && value === null ? null : total + value;
-                  break;
-                case 'max':
-                  measureCell.values[index] = total === null ? value : value === null ? total : total < value ? value : total;
-                  break;
-                case 'min':
-                  measureCell.values[index] = total === null ? value : value === null ? total : total < value ? total : value;
-                  break;
-                case 'avg':
-                  const countKey = countKeys[index];
-                  const valueCount = (g[countKey] || 0) as number;
-                  const totalCount = measureCell.counts[index] || 0;
-                  measureCell.counts[index] = valueCount + totalCount;
-                  measureCell.values[index] = total === null ? value : value === null ? total :
-                    ((total * totalCount) + (value * valueCount)) / (totalCount + valueCount);
-                  break;
-              }
-            });
-          }
-        }
-      }
-
-      // Finally... set the pivot
-      s.pivot = {
-        columnHeaders,
-        rows
-      };
+      // Calculate the rowSpan of every cell
+      columnHeaders.forEach(colHeaderRow => colHeaderRow.forEach(cell => {
+        cell.expandedRowSpan = cell.immediateChildren.length === 0 ? columnHeaders.length - cell.level : 1;
+      }));
     }
 
     return s.pivot;
   }
+
+  private recomputeColumnSpans(pivot?: PivotTable) {
+    const s = this.state;
+    pivot = pivot || s.pivot;
+    const cols = pivot.columnHeaders;
+    const measureCount = s.measureInfos.length;
+
+    // Calculte the visibility of every cell and set colSpan to 0
+    cols.forEach(row => row.forEach(cell => {
+      cell.colSpan = 0;
+      cell.isVisible = !cell.immediateParent || (cell.immediateParent.isVisible && cell.immediateParent.isExpanded);
+    }));
+
+    // Calculate the colSpan of every cell's parent
+    for (let i = cols.length - 1; i >= 0; i--) {
+      for (let j = cols[i].length - 1; j >= 0; j--) {
+        const cell = cols[i][j];
+        cell.colSpan = cell.colSpan || measureCount || 1; // measureCount might be 0
+        if (!!cell.immediateParent && !!cell.immediateParent.isExpanded) {
+          cell.immediateParent.colSpan += cell.colSpan;
+        }
+      }
+    }
+
+    // Calculate the maximum visible level
+    pivot.maxVisibleLevel = -1;
+    cols.forEach(row => row.forEach(cell => {
+      if (cell.isVisible && cell.level > pivot.maxVisibleLevel) {
+        pivot.maxVisibleLevel = cell.level;
+      }
+    }));
+
+    // Calculate the rowSpan of every cell
+    cols.forEach(colHeaderRow => colHeaderRow.forEach(cell => {
+      cell.rowSpan = !cell.isExpanded ? pivot.maxVisibleLevel + 1 - cell.level : 1;
+    }));
+
+    // Calculate the rowSpan of the grand columns total
+    {
+      const cell = pivot.columnsGrandTotalLabel;
+      if (!!cell) {
+        cell.colSpan = measureCount || 1;
+        cell.rowSpan = pivot.maxVisibleLevel + 1;
+      }
+    }
+
+    // Calculate the spans of the top left corner cell
+    pivot.colSpan = s.rowInfos.length === 0 ? 0 : 1;
+    pivot.rowSpan = pivot.maxVisibleLevel + 1 + (this.showMeasureLabelsRow ? 1 : 0);
+  }
+
+  public showHeaderRow(index: number) {
+    return index <= this.pivot.maxVisibleLevel;
+  }
+
+  // End Attribute stuff
 
   public onExpandRow(d: DimensionCell): void {
     d.isExpanded = !d.isExpanded;
     this.recomputeVisibleRows();
   }
 
-  public onExpandColumn(d: DimensionCell) {
+  public onExpandColumn(d: DimensionCell): void {
     d.isExpanded = !d.isExpanded;
     this.recomputeColumnSpans();
   }
@@ -1464,60 +1658,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // rows this is to support efficient virtual scrolling
     const rows = this.state.pivot.rows;
 
-    // with a single sweep, recompute which columns are visible
-    rows.forEach(row => {
-      const cell = row[0];
-      if (cell.type === 'dimension') {
-        cell.isVisible = !cell.parent || (cell.parent.isExpanded && cell.parent.isVisible);
-      }
-    });
-
-    // with another single sweep filter out invisible columns
-    this._modifiedRows = rows.filter(e => e.length === 0 || e[0].type !== 'dimension' || (e[0] as DimensionCell).isVisible);
-  }
-
-  private recomputeColumnSpans() {
-    const s = this.state;
-    const cols = s.pivot.columnHeaders;
-    const measureCount = s.measures.length;
-
-    // Calculte the visibility of every cell and set colSpan to 0
-    cols.forEach(row => row.forEach(cell => {
-      cell.colSpan = 0;
-      cell.isVisible = !cell.parent || (cell.parent.isVisible && cell.parent.isExpanded);
-    }));
-
-    // Calculate the colSpan of every cell's parent
-    for (let i = cols.length - 1; i >= 0; i--) {
-      for (let j = cols[i].length - 1; j >= 0; j--) {
-        const cell = cols[i][j];
-        cell.colSpan = cell.colSpan || measureCount || 1; // measureCount might be 0
-        if (!!cell.parent && !!cell.parent.isExpanded) {
-          cell.parent.colSpan += cell.colSpan;
-        }
-      }
-    }
-
-    // Calculate the maximum visible level
-    this._maxVisibleLevel = -1;
-    cols.forEach(row => row.forEach(cell => {
-      if (cell.isVisible && cell.level > this._maxVisibleLevel) {
-        this._maxVisibleLevel = cell.level;
-      }
-    }));
-
-    // Calculate the rowSpan of every cell
-    cols.forEach(row => row.forEach(cell => {
-      cell.rowSpan = cell.type === 'label' || !cell.isExpanded ? this._maxVisibleLevel + 1 - cell.level : 1;
-    }));
-
-    // Calculate the spans of the top left corner cell
-    this._colSpan = s.realRows.length === 0 ? 0 : 1; // TODO: if there is one row dimension and no column dimensions
-    this._rowSpan = this._maxVisibleLevel + 1 + (this.showMeasureLabels ? 1 : 0);
+    // with 2 sweeps, recompute which columns are visible
+    rows.forEach(row => row.isVisible = !row.immediateParent || (row.immediateParent.isExpanded && row.immediateParent.isVisible));
+    this._modifiedRows = rows.filter(e => e.isVisible);
   }
 
   public hasChildren(d: DimensionCell): boolean {
-    return d.hasChildren;
+    return !!d.immediateChildren && d.immediateChildren.length > 0;
   }
 
   public flipArrow(node: DimensionCell): string {
@@ -1525,12 +1672,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.workspace.ws.isRtl && !node.isExpanded ? 'horizontal' : null;
   }
 
+  public get rowAttributePlacement() {
+    return this.workspace.ws.isRtl ? this._rowAttributePlacementRtl : this._rowAttributePlacement;
+  }
+
   public rotateArrow(node: DimensionCell): number {
     return node.isExpanded ? 90 : 0;
   }
 
-  public isMeasureVisible(cell: MeasureCell) {
-    return !cell.parent || (cell.parent.isVisible && !cell.parent.isExpanded);
+  public isMeasureVisible(column: DimensionCell) {
+    // The function accepts the column of that measure
+    return !column || (column.isVisible && !column.isExpanded);
   }
 
   public trackByRow(_: number, row: any[]) {
@@ -1549,39 +1701,27 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.workspace.ws.isRtl ? (node.level * 30) + 'px' : '0';
   }
 
-  public showHeaderRow(index: number) {
-    return index <= this._maxVisibleLevel; // 0 in order to show the blank cell
+  public get columnHeaders(): DimensionCell[][] {
+    // this.checkColumnFreshness();
+    return this.pivot.columnHeaders;
   }
 
-  private checkColumnFreshness() {
-    if (this._currentColumns !== this.pivot.columnHeaders) {
-      this._currentColumns = this.pivot.columnHeaders;
-      this.recomputeColumnSpans();
-    }
+  public get columnCells(): DimensionCell[] {
+    return this.pivot.columns;
   }
 
-  public get columnHeaders(): (DimensionCell | LabelCell)[][] {
-    this.checkColumnFreshness();
-    return this.state.pivot.columnHeaders;
+  public get tooManyColumns(): boolean {
+    return this.pivot.columns.length * (this.measures.length || 1) > this.maximumColumns;
   }
 
-  public get rows(): (DimensionCell | LabelCell | MeasureCell)[][] {
-    if (this._currentRows !== this.pivot.rows) {
-      this._currentRows = this.pivot.rows;
+  public get rows(): DimensionCell[] {
+    const pivot = this.pivot;
+    if (this._currentRows !== pivot.rows) {
+      this._currentRows = pivot.rows;
       this.recomputeVisibleRows();
     }
 
     return this._modifiedRows;
-  }
-
-  public dim(cell: DimensionCell): DimensionCell {
-    // Just to keep the Angular extension happy
-    return cell;
-  }
-
-  public label(cell: LabelCell): LabelCell {
-    // Just to keep the Angular extension happy
-    return cell;
   }
 
   public get showRowDimensionLabel(): boolean {
@@ -1589,32 +1729,162 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return false; // TODO
   }
 
-  public get showMeasureLabels(): boolean {
+  public get singleRowDimension(): DimensionInfo {
+    // Returns the row dimension only if there is a single one
+    const s = this.state;
+    if (!!s.rowInfos && s.rowInfos.length === 1) {
+      return s.rowInfos[0];
+    }
+  }
+
+  public get showMeasureLabelsRow(): boolean {
+    const s = this.state;
+
     // The labels for the measures are hidden when there is only a
     // single measure unless when there are no column dimensions
-    return !!this.rows && !!this.rows.length && this.measures.length !== 0 &&
-      (this.measures.length > 1 || this.state.realColumns.length === 0);
+    if (s.measureInfos.length > 0 && (s.measureInfos.length > 1 || s.columnInfos.length === 0)) {
+      return true;
+    } else {
+      // We also show the measures labels row anyways if there are single row dimension attributes and no column headers to show them
+      const single = this.singleRowDimension;
+      return !this.showHeaderRow(0) && !!single && single.attributes.length > 0;
+    }
+  }
+
+  public get showColumnsGrandTotalsMeasureLabels(): boolean {
+    // The labels for the measures are hidden when there is only a
+    // single measure unless when there are no column dimensions
+    return !!this.pivot.columnsGrandTotalsIncluded;
   }
 
   public get rowSpan(): number {
-    this.checkColumnFreshness();
-    return this._rowSpan;
+    return this.pivot.rowSpan;
   }
 
   public get colSpan(): number {
-    this.checkColumnFreshness();
-    return this._colSpan;
+    return this.pivot.colSpan;
+  }
+
+  public get rowsGrandTotalMeasures(): MeasureCell[] {
+    return this.pivot.rowsGrandTotalMeasures;
+  }
+
+  public get columnsGrandTotalLabel(): LabelCell {
+    return this.pivot.columnsGrandTotalLabel;
+  }
+
+  public get rowsGrandTotalLabel(): LabelCell {
+    return this.pivot.rowsGrandTotalLabel;
   }
 
   public get measures(): MeasureInfo[] {
-    return this.state.measures;
+    return this.state.measureInfos;
   }
 
-  public onMeasureClick(cell: MeasureCell, rowIndex: number) {
-    const col: DimensionCell = cell.parent;
-    const row: DimensionCell = this.rows[rowIndex][0].type === 'dimension' ? this.rows[rowIndex][0] as DimensionCell : null;
-    const atoms = this.computeFilterAtoms(col).concat(this.computeFilterAtoms(row));
-    const filter = !!atoms.length ? atoms.reduce((f, atom) => f + ' and ' + atom) : null;
+  private computeFilterAtoms(dimension: DimensionCell | ChartDimensionCell): string[] {
+    const atoms: string[] = [];
+    let currentDimension = dimension;
+    while (!!currentDimension) {
+      // If the next node is an ancestor AND has the same dimension info, skip it, since it's part of the same tree
+      // (1) Stringify this dimensions key expression
+      const { keyExp, keyDesc, entityDesc } = currentDimension.info;
+
+      let datatype: DataType;
+      let keyString: string;
+
+      if (currentDimension.isAncestor) {
+        // For ancestors we have to specify the Id property itself otherwise descof will throw an error
+        datatype = entityDesc.properties.Id.datatype;
+        keyString = QueryexUtil.stringify(keyExp, undefined, undefined) + '.Id';
+      } else if (keyDesc.datatype === 'entity') {
+        // If it's a nav property update everything to match the associated FK (FK creates less joins than using Id)
+        const columnAccess = keyExp.clone() as QueryexColumnAccess;
+        columnAccess.property = keyDesc.foreignKeyName;
+
+        datatype = entityDesc.properties.Id.datatype;
+        keyString = QueryexUtil.stringify(columnAccess, undefined, undefined);
+      } else {
+        // For scalar values use everything as is
+        datatype = keyDesc.datatype;
+        keyString = QueryexUtil.stringify(keyExp, undefined, undefined);
+      }
+
+      // (2) Stringify the value
+      const valueId = currentDimension.valueId;
+      let valueString: string;
+      if (!isSpecified(valueId)) {
+        valueString = 'null';
+      } else if (QueryexUtil.needsQuotes(datatype)) {
+        valueString = valueId.replace('\'', '\'\'');
+      } else {
+        valueString = valueId + '';
+      }
+
+      // (3) Determine the the operator
+      const op = currentDimension.isAncestor ? 'descof' : 'eq';
+
+      // (4) Assemble the atom and add it
+      atoms.push(`(${keyString} ${op} ${valueString})`);
+
+      // For the next iteration
+      currentDimension = currentDimension.parent;
+    }
+
+    return atoms;
+  }
+
+  public computeMeasureAtoms(measureIndex: number): string[] {
+    if (measureIndex === -1) {
+      return [];
+    }
+    const s = this.state;
+    const info = s.measureInfos[measureIndex];
+    const aggregations = info.exp.aggregations();
+    const atomsTracker: { [key: string]: true } = {};
+    for (const aggregation of aggregations) {
+      if (aggregation.arguments.length < 2) {
+        // One of the aggregations does not have a filter, don't add a filter atom
+        return [];
+      } else {
+        const condition = aggregation.arguments[1];
+        const conditionString = QueryexUtil.stringify(condition, this.arguments, s.parameterInfos);
+        atomsTracker[conditionString] = true;
+      }
+    }
+
+    const atoms = Object.keys(atomsTracker);
+    if (atoms.length === 0) {
+      return [];
+    } else if (atoms.length === 1) {
+      return atoms;
+    } else {
+      const reduced = atoms.reduce((f, atom) => f + ' or ' + atom);
+      return [`(${reduced})`];
+    }
+  }
+
+  public onMeasureClick(cell: MeasureCell, measureIndex: number): void {
+    if (cell.disableDrilldown) {
+      return;
+    }
+
+    const col: DimensionCell = cell.column;
+    const row: DimensionCell = cell.row;
+    const rowAtoms = this.computeFilterAtoms(row);
+    const columnAtoms = this.computeFilterAtoms(col);
+    const measureAtom = this.computeMeasureAtoms(measureIndex); // Returns a singleton or empty array
+
+    const allAtoms = rowAtoms.concat(columnAtoms).concat(measureAtom);
+    let filter: string;
+    if (allAtoms.length === 0) {
+      filter = null;
+    } else if (allAtoms.length === 1) {
+      filter = allAtoms[0];
+    } else {
+      const reduced = allAtoms.reduce((f, atom) => f + ' and ' + atom);
+      filter = `(${reduced})`;
+    }
+
     this.drilldown(filter);
   }
 
@@ -1623,36 +1893,38 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       return; // In popup mode, navigation behavior is strange
     }
 
-    const screenUrl = this.entityDescriptor.masterScreenUrl;
-    if (!!screenUrl) {
-      const tenantId = this.workspace.ws.tenantId;
-      const screenUrlSegments = screenUrl.split('/');
+    // Prepare the filter
+    const s = this.state;
+    const reportFilter = QueryexUtil.stringify(s.filterExp, this.arguments, s.parameterInfos);
+    const combinedFilter =
+      !!reportFilter && !!cellFilter ? `${reportFilter} and ${cellFilter}` :
+        !!cellFilter ? DeBracket(cellFilter) :
+          !!reportFilter ? DeBracket(reportFilter) : null;
 
-      // Prepare the filter
-      const filter = this.state.filter;
-      const combinedFilter =
-        !!filter && !!cellFilter ? `${cellFilter} and (${filter})` :
-          !!cellFilter ? cellFilter : !!filter ? filter : null;
+    // Prepare the navigation parameters
+    const params: Params = {};
+    if (!!combinedFilter) {
+      params.filter = combinedFilter;
+    }
 
-      const params: Params = {
-        inactive: true
-      };
+    // Grab the tenantId
+    const tenantId = this.workspace.ws.tenantId;
 
-      if (!!combinedFilter) {
-        params.filter = combinedFilter;
-      }
+    const def = this.definition;
+    if (def.IsCustomDrilldown && !!def.Id && def.Select && def.Select.length > 0) {
+      // Drilldown to the custom drilldown screen
+      const reportDefId = this.definition.Id;
+      params.cache_buster = ReportResultsComponent.CACHE_BUSTER++;
+      this.router.navigate(['app', tenantId + '', 'drilldown', reportDefId + '', params]);
 
-      // Add any additional parameters
-      const additionalParams = this.computeAdditionalParameters();
-      for (const key of Object.keys(additionalParams)) {
-        const value = additionalParams[key];
-        params[key] = value;
-      }
-
+    } else if (!!this.entityDescriptor.masterScreenUrl) {
+      // Drilldown to the default entity screen
+      const screenUrlSegments = this.entityDescriptor.masterScreenUrl.split('/');
+      params.inactive = true;
       this.router.navigate(['app', tenantId + '', ...screenUrlSegments, params]);
+
     } else {
-      const def = this.definition;
-      console.error(`no screen URL is defined for collection: '${def.Collection}', definitionId '${def.DefinitionId}'`);
+      console.error(`No screen URL is defined for collection: '${def.Collection}', definitionId '${def.DefinitionId}'`);
     }
   }
 
@@ -1662,64 +1934,135 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get addRowExpanders() {
-    return this.state.realRows.length > 1;
+    const infos = this.state.rowInfos;
+    return infos.length > 1 || (infos.length > 0 && infos[0].showAsTree);
+  }
+
+  // Auto Cell
+
+  public displayValue(value: any, desc: PropVisualDescriptor, entityDesc: EntityDescriptor) {
+    if (Array.isArray(value)) {
+      if (!!entityDesc) {
+        return entityDesc.formatFromVals(value);
+      } else {
+        const localizedValue = this.workspace.currentTenant.localize(value[0], value[1], value[2]);
+        return displayScalarValue(localizedValue, desc, this.workspace, this.translate);
+      }
+    } else {
+      return displayScalarValue(value, desc, this.workspace, this.translate);
+    }
+  }
+
+  private sortValue(value: any, _: PropVisualDescriptor, entityDesc: EntityDescriptor) {
+    if (Array.isArray(value)) {
+      if (!!entityDesc) {
+        return entityDesc.formatFromVals(value);
+      } else {
+        return this.workspace.currentTenant.localize(value[0], value[1], value[2]);
+      }
+    } else {
+      return value;
+    }
+  }
+
+  public descAlignment(desc: NumberPropVisualDescriptor | PercentPropVisualDescriptor): 'right' {
+    if (desc.isRightAligned) {
+      return 'right';
+    }
+  }
+
+  public hasColor(desc: ChoicePropVisualDescriptor) {
+    return !!desc.color;
+  }
+
+  public stateColor(value: any, desc: ChoicePropVisualDescriptor) {
+    if (desc.color) {
+      return desc.color(value);
+    }
   }
 
   /////////////////// SUMMARY - CHARTS
 
   public get point(): string {
     // Point charts bind to this property
+    const pivot = this.pivot;
     const s = this.state;
-    if (s.currentResultForPoint !== s.result) {
-      s.currentResultForPoint = s.result;
-      const measure = s.singleNumericMeasure;
+    if (s.currentPivotForPoint !== pivot) {
+      s.currentPivotForPoint = pivot;
+      const measureIndex = s.singleNumericMeasureIndex;
+      const measure = s.measureInfos[measureIndex];
 
-      if (!s.result || !measure || s.result.length < 1) {
+      if (!measure || !pivot.rowsGrandTotalMeasures || pivot.rowsGrandTotalMeasures.length < 1) {
         s.point = null;
-      } else if (s.uniqueDimensions.length === 0) {
-        s.point = displayValue(s.result[0][measure.key], measure.desc, this.translate);
+      } else if (s.dimensionInfos.length === 0) {
+        const cell = pivot.rowsGrandTotalMeasures[0];
+        const value = cell.values[measureIndex] || 0;
+        s.point = displayScalarValue(value, measure.desc, this.workspace, this.translate);
       } else {
-        s.point = null;
+        s.point = null; // Just to make the code look like multi()
       }
     }
 
     return s.point;
   }
 
+  private chartDimensionCellFromDimensionCell = (dimCell: DimensionCell, parent?: ChartDimensionCell): ChartDimensionCell => {
+    const dimValueDisplay = !isSpecified(dimCell.valueId) ? this.translate.instant('Undefined') :
+      this.displayValue(dimCell.value, dimCell.info.desc, dimCell.info.entityDesc);
+
+    return new ChartDimensionCell(dimValueDisplay, dimCell.valueId, dimCell.info, parent);
+  }
+
   public get single(): SingleSeries {
     // Single series charts bind to this property
+    const pivot = this.pivot;
     const s = this.state;
-    if (s.currentResultForSingle !== s.result || s.currentLangForSingle !== this.translate.currentLang) {
-      s.currentResultForSingle = s.result;
+    if (s.currentPivotForSingle !== pivot || s.currentLangForSingle !== this.translate.currentLang) {
+      s.currentPivotForSingle = pivot;
       s.currentLangForSingle = this.translate.currentLang;
-      const measure = s.singleNumericMeasure;
+      const measureIndex = s.singleNumericMeasureIndex;
+      const measure = s.measureInfos[measureIndex];
 
-      if (!s.result || !measure) {
+      if (!measure || !pivot) {
         s.single = null;
-      } else if (s.uniqueDimensions.length === 1) {
+      } else if (s.dimensionInfos.length === 1) {
         try {
-          const dim = s.uniqueDimensions[0];
-          const path = dim.path;
-          const modifier = dim.modifier;
-          const { propDesc, entityDesc } = dim;
+          const measureCells: MeasureCell[] = s.rowInfos.length > 0 ? pivot.rows.map(r => r.measures[0]) : pivot.rowsGrandTotalMeasures;
 
-          s.single = s.result.map(g => {
-            const { value, valueId } = this.extractValueAndValueId(g, dim);
-            const display = !isSpecified(valueId) ? this.translate.instant('Undefined') :
-              !!entityDesc ? displayEntity(value, entityDesc) :
-                displayValue(value, propDesc, this.translate);
+          let singleSum = 0;
+          const single: SingleSeries = [];
+          for (const measureCell of measureCells) {
+            const dimCell = measureCell.row || measureCell.column;
+            if (!dimCell || dimCell.isAncestor) {
+              continue; // Totals and tree ancestors are not displayed in the chart
+            }
 
-            return {
-              name: new ChartDimensionCell(display, path, modifier, valueId, propDesc, entityDesc),
-              value: g[measure.key]
-            };
-          });
+            // Get the measure value
+            const measureValue = measureCell.values[measureIndex] || 0;
+            singleSum += measureValue;
+            single.push({
+              name: this.chartDimensionCellFromDimensionCell(dimCell),
+              value: measureValue
+            });
+          }
+          s.single = single;
+
+          if (!!pivot.rowsGrandTotalMeasures && pivot.rowsGrandTotalMeasures.length > 0) {
+            const grandGrandTotalCell = pivot.rowsGrandTotalMeasures[pivot.rowsGrandTotalMeasures.length - 1];
+
+            // Get the real total
+            const grandGrandTotal = grandGrandTotalCell.values[measureIndex] || 0;
+
+            // Get the sum total
+            s.totalEqualsSum = Math.abs(Math.round(grandGrandTotal * 1000000) - Math.round(singleSum * 1000000)) < 2;
+          }
+
         } catch (ex) {
           s.reportStatus = ReportStatus.error;
           s.errorMessage = ex.message;
         }
       } else {
-        s.single = null;
+        s.single = null; // Just to make the code look like multi()
       }
     }
 
@@ -1728,87 +2071,95 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   public get multi(): MultiSeries {
     // Multi-series charts bind to this property
+    const pivot = this.pivot;
     const s = this.state;
-    if (s.currentResultForMulti !== s.result || s.currentLangForMulti !== this.translate.currentLang) {
-      s.currentResultForMulti = s.result;
+    if (s.currentPivotForMulti !== pivot || s.currentLangForMulti !== this.translate.currentLang) {
+      s.currentPivotForMulti = pivot;
       s.currentLangForMulti = this.translate.currentLang;
-      const measure = s.singleNumericMeasure;
+      const measureIndex = s.singleNumericMeasureIndex;
+      const measure = s.measureInfos[measureIndex];
 
-      if (!s.result || !measure) {
+      if (!measure || !pivot) {
         s.multi = null;
-      } else if (s.uniqueDimensions.length === 1) {
+      } else if (s.dimensionInfos.length === 1) {
         // When the number of dimensions is just one, make the single-series pretend it's a multi-series
         const single = this.single;
         const label = this.firstDimensionLabel;
-        const singletonDimension = new ChartDimensionCell(label, '', null, label, null, null);
+        const singletonDimension = new ChartDimensionCell(label, label, null);
         s.multi = [{
           name: singletonDimension,
           series: single
         }];
-      } else if (s.uniqueDimensions.length === 2) {
-        const dim = s.uniqueDimensions[0];
-        const path = dim.path;
-        const modifier = dim.modifier;
-        const { propDesc, entityDesc } = dim;
+      } else if (s.dimensionInfos.length === 2) {
+        const dim1 = s.dimensionInfos[0];
+        const dim2 = s.dimensionInfos[1];
 
-        const dim2 = s.uniqueDimensions[1];
-        const path2 = dim2.path;
-        const modifier2 = dim2.modifier;
-        const { propDesc: propDesc2, entityDesc: entityDesc2 } = dim2;
+        // const data: { dim1Cell: DimensionCell, values: { dim2Cell: DimensionCell, values: MeasureCell[] }[] }[] = [];
 
-        const valueToChildCollectionMap: { [id: string]: { cell: ChartDimensionCell, value: number }[] } = {};
-        let undefinedChildCollectionMap: { cell: ChartDimensionCell, value: number }[];
-
-        const rootCollection: ChartDimensionCell[] = [];
-
-        for (const g of s.result) {
-          const { value, valueId } = this.extractValueAndValueId(g, dim);
-          let childCollection: { cell: ChartDimensionCell, value: number }[];
-          if (isSpecified(valueId)) {
-            childCollection = valueToChildCollectionMap[valueId];
+        const multi: MultiSeries = [];
+        if (s.rowInfos.length === 2 || s.columnInfos.length === 2) {
+          // Both dimensions are rows or both are columns
+          // These two change when the dimensions are rows or columns, the rest of the Algorithm is the same
+          let getMeasureFn: (dimCell: DimensionCell) => MeasureCell;
+          let dimCells: DimensionCell[];
+          if (s.rowInfos.length === 2) {
+            dimCells = pivot.rows;
+            getMeasureFn = (dimCell) => dimCell.measures[0];
           } else {
-            childCollection = undefinedChildCollectionMap;
+            dimCells = pivot.columns;
+            getMeasureFn = (dimCell) => pivot.rowsGrandTotalMeasures[dimCell.index];
           }
 
-          if (!childCollection) {
-            const display = !isSpecified(valueId) ? this.translate.instant('Undefined') :
-              !!entityDesc ? displayEntity(value, entityDesc) :
-                displayValue(value, propDesc, this.translate);
-            const dimensionCell = new ChartDimensionCell(display, path, modifier, valueId, propDesc, entityDesc);
+          // The Algorithm
+          let currentChartParent: ChartDimensionCell;
+          let currentSeries: SingleSeries;
 
-            rootCollection.push(dimensionCell);
-            childCollection = [];
+          for (const dimCell of dimCells) {
+            if (dimCell.isAncestor) {
+              continue; // Tree ancestors are not included in charts
+            }
 
-            if (isSpecified(valueId)) {
-              valueToChildCollectionMap[valueId] = childCollection;
-            } else {
-              undefinedChildCollectionMap = childCollection;
+            if (dimCell.info === dim1) {
+              currentChartParent = this.chartDimensionCellFromDimensionCell(dimCell);
+              currentSeries = [];
+
+              multi.push({ name: currentChartParent, series: currentSeries });
+            }
+
+            if (dimCell.info === dim2) { // <- must be a child of currentParent
+              const measureCell = getMeasureFn(dimCell);
+              const chartCell = this.chartDimensionCellFromDimensionCell(dimCell, currentChartParent);
+              const value = measureCell.values[measureIndex] || 0;
+
+              currentSeries.push({ name: chartCell, value });
             }
           }
+        } else {
+          // One dimension is row, and one is column
 
-          const { value: value2, valueId: valueId2 } = this.extractValueAndValueId(g, dim2);
-          const display2 = !isSpecified(valueId2) ? this.translate.instant('Undefined') :
-            !!entityDesc2 ? displayEntity(value2, entityDesc2) :
-              displayValue(value2, propDesc2, this.translate);
+          for (const columnCell of pivot.columns) { // Flip to rows
+            if (columnCell.isAncestor) {
+              continue; // Tree ancestors are not included in charts
+            }
 
-          childCollection.push({
-            cell: new ChartDimensionCell(display2, path2, modifier2, valueId2, propDesc2, entityDesc2),
-            value: g[measure.key]
-          });
+            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(columnCell);
+            const currentSeries: SingleSeries = [];
+            multi.push({ name: currentChartParent, series: currentSeries });
+
+            for (const rowCell of pivot.rows) {
+              if (rowCell.isAncestor) {
+                continue; // Totals and ancestors are not included in charts
+              }
+
+              const measureCell = rowCell.measures[columnCell.index];
+              const chartCell = this.chartDimensionCellFromDimensionCell(rowCell, currentChartParent);
+              const value = measureCell.values[measureIndex] || 0;
+              currentSeries.push({ name: chartCell, value });
+            }
+          }
         }
 
-        s.multi = rootCollection.map(cell => {
-          const childCollection = isSpecified(cell.valueId) ?
-            valueToChildCollectionMap[cell.valueId] : undefinedChildCollectionMap;
-
-          // Map children to their parents here
-          childCollection.forEach(child => child.cell.parent = cell);
-
-          return {
-            name: cell,
-            series: childCollection.map(cellValue => ({ name: cellValue.cell, value: cellValue.value }))
-          };
-        });
+        s.multi = multi;
       } else {
         s.multi = null;
       }
@@ -1826,18 +2177,43 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return d.data.name.display;
   }
 
+  public formatChartMeasureValue = (value: number, s?: ReportStore) => {
+    s = s || this.state;
+    const measure = s.measureInfos[s.singleNumericMeasureIndex];
+    return displayScalarValue(value, measure.desc, this.workspace, this.translate);
+  }
+
+  public formatAlternativeChartMeasureValue = (d: { value: number }) => {
+    // For some reason, some chart types pass this data structure instead
+    return this.formatChartMeasureValue(d.value);
+  }
+
+  public formatStringChartMeasureValue = (value: string) => {
+    // For some reason, some chart types pass a formatted string 3,241.2 instead of a number
+    value = value.replace(',', '');
+    return this.formatChartMeasureValue(+value);
+  }
+
+  public showGaugeTotal: () => boolean = () => {
+    // The ngx-guage displays the sum of the values in its inner text
+    // So if the total != sum we need to hide it the inner text
+    return this.state.totalEqualsSum;
+  }
+
   public get firstDimensionLabel() {
-    const dimension = this.state.uniqueDimensions[0];
+    const dimension = this.state.dimensionInfos[0];
     return !!dimension ? dimension.label() : '';
   }
 
   public get secondDimensionLabel() {
-    const dimension = this.state.uniqueDimensions[1];
+    const dimension = this.state.dimensionInfos[1];
     return !!dimension ? dimension.label() : '';
   }
 
   public get measureLabel() {
-    const measure = this.state.singleNumericMeasure;
+    const s = this.state;
+    const measureIndex = s.singleNumericMeasureIndex;
+    const measure = s.measureInfos[measureIndex];
     return !!measure ? measure.label() : '';
   }
 
@@ -1854,7 +2230,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get numberOfDimensions(): number {
-    return this.state.uniqueDimensions.length;
+    return this.state.dimensionInfos.length;
   }
 
   public get supportsPoint() {
@@ -1871,69 +2247,84 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   /////////////////// Details
 
-  public get collection(): string {
-    return !!this.definition ? this.definition.Collection : null;
+  public get selectInfos(): SelectInfo[] {
+    return this.state.selectInfos;
   }
 
-  public get definitionId(): number {
-    return !!this.definition ? this.definition.DefinitionId : null;
+  public get flat(): any[][] {
+    // Flat table headers will remain visible while it's loading, but it won't display any results
+    // This way the user can order columns by clicking on headers without waiting for the results to come back
+    if (!this.showResults) {
+      return [];
+    }
+
+    // The details report table binds to this array of array
+    const s = this.state;
+    const result = s.result;
+    if (s.currentResultForFlat !== result) {
+      s.currentResultForFlat = result;
+      s.flat = this.flatInner(result, s);
+    }
+
+    return s.flat;
   }
 
-  public get select(): ReportDefinitionSelectForClient[] {
-    return !!this.definition ? this.definition.Select : null;
-  }
+  private flatInner(result: DynamicRow[], s: ReportStore) {
+    const flat: any[][] = [];
 
-  // tslint:disable:member-ordering
-  private _alignment: { [path: string]: 'left' | 'right' | 'center' } = {};
-  private _alignmentIsSet: { [path: string]: true } = {};
-  public alignment(path: string): 'left' | 'right' | 'center' {
-    if (!this._alignmentIsSet[path]) {
-      if (!!path) {
-        const steps = path.split(',');
-        const prop = steps.pop();
+    if (!result) {
+      return [];
+    }
 
-        try {
-          const entityDesc = entityDescriptorImpl(steps, this.collection, this.definitionId, this.workspace, this.translate);
-          const propDesc = entityDesc.properties[prop];
-          if (!!propDesc) {
-            this._alignment[path] = propDesc.alignment;
-          }
-        } catch (err) {
-          console.error(err);
+    for (const row of result) {
+      const flatRow = [];
+      for (const info of s.selectInfos) {
+        if (info.entityDesc || info.indices.length > 1) {
+          // If there are multiple indices add them as an array
+          flatRow.push(info.indices.map(i => row[i]));
+        } else {
+          // If there is a single index, add the value directly, not as an array
+          const index = info.indices[0];
+          flatRow.push(row[index]);
         }
       }
 
-      this._alignmentIsSet[path] = true;
+      flat.push(flatRow);
     }
 
-    return this._alignment[path];
+    return flat;
   }
 
-  public get entities(): Entity[] {
-    return this.state.result;
+  public isRightAligned(desc: PropVisualDescriptor) {
+    switch (desc.control) {
+      case 'number':
+      case 'percent':
+        return desc.isRightAligned;
+      default:
+        return false;
+    }
   }
 
-  public selectLabel(s: ReportDefinitionSelectForClient) {
-    return this.workspace.currentTenant.getMultilingualValueImmediate(s, 'Label');
-  }
-
-  public onFlatSelect(entity: Entity): void {
+  public onFlatSelect(rowIndex: number): void {
+    const s = this.state;
+    const row = s.result[rowIndex];
     const desc = this.entityDescriptor;
-    if (!!desc.navigateToDetails) {
-      desc.navigateToDetails(entity, this.router);
+    if (!!desc.navigateToDetailsFromVals) {
+      const navToDetailsVals = s.navigateToDetailsIndices.map(i => row[i]);
+      desc.navigateToDetailsFromVals(navToDetailsVals, this.router);
 
     } else if (!!desc.masterScreenUrl) {
-      // tslint:disable:no-string-literal
-      const id = entity['Id'];
-      if (isSpecified(id)) {
+
+      if (s.idIndex > -1) {
+        const id = row[s.idIndex];
         const tenantId = this.workspace.ws.tenantId;
         const screenUrlSegments = desc.masterScreenUrl.split('/');
 
         // Prepare the commands
         const commands = ['app', tenantId + '', ...screenUrlSegments];
-        if (!desc.definitionId && !!desc.definitionIds) {
+        if (s.defIdIndex > -1) {
           // A definitioned entity, but the report is generic
-          const defId = entity['DefinitionId'];
+          const defId = row[s.defIdIndex];
           commands.push(defId);
         }
         commands.push(id);
@@ -1945,17 +2336,86 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
   }
-}
 
-/*
-  [Dimension Properties Steps]
-  - Add field to ReportDimensionDefinition  (C#)
-  - Add field to ReportDimensionDefinition  (TS)
-  - Add field to ReportDimensionDefinitionForClient
-  - Add field in edit modal
-  - Account for it in computeSelect
-  - Add collection in DimensionInfo
-  - Add collection of DimensionCell in DimensionCell
-  - Add popover to all column and row cells
-  - In case of one row and no columns, add the properties as columns
-*/
+  public get canOrderByFlat(): boolean {
+    return !this.definition.Top;
+  }
+
+  public onOrderByFlat(info: SelectInfo): void {
+    console.log(this.flatHeader);
+    if (!this.canOrderByFlat) {
+      return;
+    }
+
+    if (info.exp.columnAccesses().length === 0) {
+      return; // Cannot order by a constant column
+    }
+
+    // The purpose of this step is to add the orderby to the url in screen mode
+    const s = this.state;
+
+    // Toggle the direction of this column info
+    const key = info.exp.toString();
+    if (s.orderbyKey === key) {
+      if (s.orderbyDir === 'asc') {
+        s.orderbyDir = 'desc'; // Flip to desc
+      } else {
+        // Delete it
+        delete s.orderbyKey;
+        delete s.orderbyDir;
+      }
+    } else {
+      // Add asc
+      s.orderbyKey = key;
+      s.orderbyDir = 'asc';
+    }
+
+    this.orderbyChange.emit(); // Tell the containing component so it updates the url if needed
+
+    this.rememberFlatColumnWidths();
+    this.fetch();
+  }
+
+  private orderDirection(info: SelectInfo): QueryexDirection {
+    if (this.isOrdered(info)) {
+      return this.state.orderbyDir;
+    }
+  }
+
+  public isOrdered(info: SelectInfo): boolean {
+    if (info) {
+      const s = this.state;
+      if (info.expToString === s.orderbyKey) {
+        return !!s.orderbyDir;
+      }
+    }
+  }
+
+  public get isDescending(): boolean {
+    return this.state.orderbyDir === 'desc';
+  }
+
+  private rememberFlatColumnWidths() {
+    if (!this.flatHeader) {
+      return;
+    }
+
+    const tr = this.flatHeader.nativeElement;
+    if (!tr) {
+      return;
+    }
+
+    // This hack prevents the jarring movement when the user clicks
+    // to order by and the data rows go away for a second
+    const infos = this.selectInfos;
+    const leading = 1;
+    const trailing = 1;
+    for (let i = leading; i < tr.cells.length - trailing; i++) {
+      infos[i - leading].width = tr.cells[i].offsetWidth + 'px';
+    }
+  }
+
+  private forgetFlatColumnWidths() {
+    this.state.selectInfos.forEach(e => delete e.width);
+  }
+}

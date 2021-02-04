@@ -84,6 +84,7 @@ namespace Tellma.Controllers.Dto
 
     public class ReportDefinitionForClient : DefinitionForClient
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Title2 { get; set; }
         public string Title3 { get; set; }
@@ -113,6 +114,7 @@ namespace Tellma.Controllers.Dto
         public string RowsTotalLabel { get; set; }
         public string RowsTotalLabel2 { get; set; }
         public string RowsTotalLabel3 { get; set; }
+        public bool IsCustomDrilldown { get; set; }
         public bool ShowInMainMenu { get; set; }
     }
 

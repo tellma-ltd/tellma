@@ -61,6 +61,14 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
             orderby: () => ['Code'].concat(ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]]),
             inactiveFilter: 'IsActive eq true',
             format: (item: Account) => format(item, ws),
+            formatFromVals: (vals: any[]) => {
+                let result = ws.localize(vals[0], vals[1], vals[2]);
+                if (!!vals[3]) { // Code
+                    result = `${vals[3]} - ${result}`;
+                }
+
+                return result;
+            },
             properties: {
                 Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CenterId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

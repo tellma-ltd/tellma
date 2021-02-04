@@ -30,6 +30,7 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
             orderby: () => ['Email'],
             inactiveFilter: null,
             format: (item: IdentityServerUser) => item.Email,
+            formatFromVals: (vals: any[]) => vals[0],
             isAdmin: true,
             properties: {
                 Id: { datatype: 'string', control: 'text', label: () => trx.instant('Id') },

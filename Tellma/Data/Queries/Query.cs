@@ -644,7 +644,7 @@ namespace Tellma.Data.Queries
             if (orderbyExp != null)
             {
                 PathValidator trie = new PathValidator();
-                foreach (var atom in orderbyExp)
+                foreach (var atom in orderbyExp.ColumnAccesses())
                 {
                     // AddPath(atom.Path, atom.Property);
                     trie.AddPath(atom.Path, atom.Property);

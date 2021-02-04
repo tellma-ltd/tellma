@@ -76,7 +76,8 @@
                     (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="allFields(model)"
                     cdkDropListSortingDisabled>
 
-                    <div *ngFor="let node of allFields(model); let i = index;" cdkDrag>
+                    <div *ngFor="let node of allFields(model); let i = index;" cdkDrag
+                        (dblclick)="copyPathToClipboard(node.path)">
                         <div class="t-studio-source-row t-draggable" [class.d-none]="!showTreeNode(node)">
                             <div class="text-truncate d-flex" [style.padding-left]="paddingLeft(node)"
                                 [style.padding-right]="paddingRight(node)">
@@ -386,7 +387,7 @@
                         </div>
 
                         <!-- Customize Labels -->
-                        <div class="custom-control custom-checkbox"
+                        <div class="custom-control custom-checkbox pt-2"
                             *ngIf="(!!model.Rows?.length && model.ShowRowsTotal) || (!!model.Columns?.length && model.ShowColumnsTotal)">
                             <button class="btn btn-sm t-text-whitish btn-link p-0 border-0 font-weight-normal"
                                 (click)="onConfigureTotalLabels(model)">{{ ('CustomizeLabels') | translate
@@ -597,7 +598,7 @@
                                 <label class="small" for="drilldown_orderby">{{ 'ReportDefinition_OrderBy' | translate
                                     }}</label>
                                 <input class="form-control t-studio-input" id="drilldown_orderby" type="text"
-                                    [(ngModel)]="model.OrderBy" (ngModelChange)="onDefinitionChange(model)"
+                                    [(ngModel)]="model.OrderBy" (ngModelChange)="onOrderByChanged(model)"
                                     [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #orderby="ngModel" />
                                 <ng-container
                                     *ngTemplateOutlet="errorsTemplate;context: { control: orderby, serverErrors: model.serverErrors?.OrderBy }">
@@ -783,10 +784,28 @@
                 [class.is-invalid]="invalid(displayexpression, dimToEdit.serverErrors?.DisplayExpression)">
                 <label class="small" for="displayexpression">{{ 'ReportDefinition_DisplayExpression' | translate }} ({{
                     'Visibility_Optional' | translate }})</label>
-                <input class="form-control t-studio-input" id="displayexpression" type="text"
-                    [(ngModel)]="dimToEdit.DisplayExpression" [placeholder]="'Expression' | translate"
-                    (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);"
-                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #displayexpression="ngModel" />
+                <div class="d-flex">
+                    <input class="form-control t-studio-input flex-grow-1" id="displayexpression" type="text"
+                        [(ngModel)]="dimToEdit.DisplayExpression" [placeholder]="'Expression' | translate"
+                        (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);"
+                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #displayexpression="ngModel" />
+
+                    <!-- Localize dropdown -->
+                    <div ngbDropdown [placement]="commandsDropdownPlacement" container="body" class="flex-grow-0 d-none"
+                        *ngIf="isMultilingual">
+                        <button class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1 t-no-arrow"
+                            ngbDropdownToggle tabindex="-1"><span class="small">
+                                <fa-icon icon="ellipsis-v"></fa-icon>
+                            </span></button>
+                        <div ngbDropdownMenu class="t-less-dark" style="border: 1px solid black">
+                            <button ngbDropdownItem class="t-transparent-background t-text-whitish"
+                                (click)="dimToEdit.Localize = !dimToEdit.Localize; dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);">
+                                {{ (dimToEdit.Localize ? 'DoNotLocalize' : 'ReportDefinition_Localize') | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <ng-container
                     *ngTemplateOutlet="errorsTemplate;context: { control: displayexpression, serverErrors: dimToEdit.serverErrors?.DisplayExpression }">
                 </ng-container>
@@ -838,7 +857,7 @@
             </div>
 
             <!-- ShowEmptyMembers -->
-            <div class="form-group col-12 col-sm-6" *ngIf="showShowEmptyMembers(dimToEdit, modelRef)">
+            <div class="form-group col-12 col-sm-6 d-none" *ngIf="showShowEmptyMembers(dimToEdit, modelRef)">
                 <label class="small">{{ 'ReportDefinition_ShowEmptyMembers' |
                     translate }}</label>
                 <div class="custom-control custom-checkbox t-labelless-checkbox">
@@ -868,7 +887,7 @@
                     <div class="custom-control custom-checkbox t-labelless-checkbox">
                         <input type="checkbox" class="custom-control-input" id="autoexpandlevel"
                             [ngModel]="dimToEdit.AutoExpandLevel > 0"
-                            (ngModelChange)="dimToEdit.AutoExpandLevel = ($event ? 1 : 0); dimToEditHasChanged = true">
+                            (ngModelChange)="dimToEdit.AutoExpandLevel = ($event ? 1000 : 0); dimToEditHasChanged = true">
                         <label class="custom-control-label" for="autoexpandlevel">&zwnj;</label>
                     </div>
                 </div>
@@ -967,6 +986,10 @@
                 </button>
 
             </div>
+
+            <div class="col-12" *ngIf="showClearOrderDirectionMessage(dimToEdit)">
+                <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'SettingHereWillClearFromMeasures' | translate }}
+            </div>
         </div>
     </div>
 
@@ -1046,6 +1069,11 @@
                     <option *ngFor="let dir of ['asc', 'desc']" value="{{dir}}">
                         {{ ('ReportDefinition_OrderDirection_' + dir) | translate }}</option>
                 </select>
+            </div>
+
+            <div class="form-group col-12" *ngIf="!!measureToEdit.OrderDirection">
+                <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'SettingHereWillClearFromRowsAndMeasures' |
+                translate }}
             </div>
 
             <div class="form-group col-12">

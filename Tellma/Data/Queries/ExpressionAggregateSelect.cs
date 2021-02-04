@@ -16,28 +16,7 @@ namespace Tellma.Data.Queries
     /// </summary>
     public class ExpressionAggregateSelect : IEnumerable<QueryexBase>
     {
-        private readonly List<QueryexBase> _atoms;
-
-        /// <summary>
-        /// Create an instance of <see cref="ExpressionAggregateSelect"/>
-        /// </summary>
-        public ExpressionAggregateSelect()
-        {
-            _atoms = new List<QueryexBase>();
-        }
-
-        /// <summary>
-        /// Add the given <see cref="QueryexColumnAccess"/> to the atoms comprising this <see cref="ExpressionAggregateSelect"/>.
-        /// </summary>
-        public void Add(QueryexBase atom)
-        {
-            _atoms.Add(atom);
-        }
-
-        /// <summary>
-        /// Returns the number of atoms in this <see cref="ExpressionAggregateSelect"/>.
-        /// </summary>
-        public int Count => _atoms.Count;
+        private readonly IEnumerable<QueryexBase> _atoms;
 
         /// <summary>
         /// Create an instance of <see cref="ExpressionAggregateSelect"/> containing the provided <see cref="QueryexBase"/>s.

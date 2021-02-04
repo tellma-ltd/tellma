@@ -20,7 +20,6 @@ import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
-import { Entity } from './entities/base/entity';
 import { ReportDefinition } from './entities/report-definition';
 import { Center } from './entities/center';
 import { EntryType } from './entities/entry-type';
@@ -44,14 +43,14 @@ import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
 import { CustodyDefinition } from './entities/custody-definition';
 import { Custody } from './entities/custody';
-import { EntitiesResponse } from './dto/entities-response';
 import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
 import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 import { EmailForQuery } from './entities/email';
 import { SmsMessageForQuery } from './entities/sms-message';
-import { QueryexBase } from './queryex';
-import { DimensionInfo, MeasureInfo, SelectInfo } from './queryex-util';
+import { QueryexBase, QueryexDirection } from './queryex';
+import { AttributeInfo, DimensionInfo, MeasureInfo, ParameterInfo, SelectInfo, UniqueAggregationInfo } from './queryex-util';
+import { DynamicRow } from './dto/get-aggregate-response';
 
 enum WhichWorkspace {
   /**
@@ -379,6 +378,11 @@ export class TenantWorkspace extends SpecificWorkspace {
    */
   reportState: { [key: string]: ReportStore };
 
+  /**
+   * Keeps the state of every report widget
+   */
+  statementState: { [key: string]: StatementStore };
+
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
@@ -426,6 +430,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
     this.mdState = {};
     this.reportState = {};
+    this.statementState = {};
 
     this.Unit = {};
     this.Role = {};
@@ -612,77 +617,116 @@ export type MultiSeries = { name: ChartDimensionCell, series: SingleSeries }[];
 export interface ReportArguments { [keyLower: string]: any; }
 export interface PivotTable {
 
-  /**
-   * The upper part of the pivot table featuring the column labels
-   */
-  columnHeaders: (DimensionCell | LabelCell)[][];
+  maxVisibleLevel: number;
 
   /**
-   * The bottom part of the pivot table feature the row labels and the measure values
+   * The colSpan of the empty cell in the upper left hand corner
    */
-  rows: (DimensionCell | LabelCell | MeasureCell)[][];
+  colSpan: number;
+
+  /**
+   * The rowSpan of the empty cell in the upper left hand corner
+   */
+  rowSpan: number;
+
+  /**
+   * The column dimension cells in the upper part of the pivot table, (may come in multiple table rows)
+   */
+  columnHeaders: DimensionCell[][];
+
+  /**
+   * Contains all the column dimension cells, parents before their children
+   */
+  columns: DimensionCell[];
+
+  /**
+   * The rows, each object contains an optional row dimension cell, and an array of measure cells
+   */
+  rows: DimensionCell[];
+
+  /**
+   * Either the rows totals, or just the measures if there are no row dimensions
+   */
+  rowsGrandTotalMeasures: MeasureCell[];
+
+  /**
+   * The label shown over the columns totals column, null if there are no column totals
+   */
+  columnsGrandTotalLabel: LabelCell;
+
+  /**
+   * The label shown over the rows totals row, null if there are no column totals
+   */
+  rowsGrandTotalLabel: LabelCell;
+
+  /**
+   * Simply says that inside rows.measues there is an extra column for column totals
+   */
+  columnsGrandTotalsIncluded: boolean;
 }
 
-// export interface MeasureInfo {
-//   // v1.0
-//   key: string;
-//   desc: PropDescriptor;
-//   aggregation: Aggregation;
-//   label: () => string;
-// }
-
-// export interface DimensionInfo {
-//   // v1.0
-//   key: string;
-//   path: string;
-//   modifier: Modifier;
-//   propDesc: PropDescriptor;
-
-//   /**
-//    * This is set in the case of navigation properties
-//    */
-//   entityDesc?: EntityDescriptor;
-//   idKey?: string;
-//   selectKeys?: { prop: string, path: string }[];
-
-//   autoExpand: boolean;
-//   label: () => string;
-// }
-
-export class DimensionCell {
-  type: 'dimension';
-  path: string;
-  modifier: Modifier;
+export interface DimensionCell {
+  info: DimensionInfo;
   value: any;
   valueId: any;
-  propDesc: PropDescriptor;
-  entityDesc?: EntityDescriptor;
-  isExpanded: boolean;
-  hasChildren: boolean;
-  level: number;
-  index: number;
-  parent: DimensionCell;
-  isTotal?: boolean;
+  sortValue?: any; // Used for sorting if needed
+  isExpanded: boolean; // When false, all children are hidden
+  level: number; // Level in the dimension tree
+  index: number; // Index in the dimension array
+  isTotal?: boolean; // Shows the measures underneath in a bold color
+  isAncestor?: boolean; // For drilldown, when the cell is an ancestor, we use 'descof' instead of 'eq'
 
-  // The column span if all parents were expanded
+  isVisible?: boolean;
+  immediateParent: DimensionCell; // Can be just a tree parent, used to aggregate the measures by traversing the tree
+  immediateChildren: DimensionCell[]; // Used when flattening the dimension, and to show the expand error
+  parent: DimensionCell; // The parent from the previous dimension, used to traverse the dimensions up when constructing the filter
+
+  // The column span if all parents were expanded (columns only), used when exporting the pivot table
   expandedColSpan?: number;
+  expandedRowSpan?: number;
 
-  // These change dynamically
+  // These change dynamically (columns only)
   rowSpan?: number;
   colSpan?: number;
-  isVisible?: boolean;
+
+  // The measures on the same row as this dimension (rows only)
+  measures?: MeasureCell[];
+
+  // The attribute values of this dimension
+  attributes: { value: any, info: AttributeInfo }[];
 }
 
+export interface MeasureCell {
+  aggValues: any[];
+  values: any[];
+  classes: ('t-success' | 't-warning' | 't-danger' | '')[];
+  column: DimensionCell;
+  row: DimensionCell;
+  isTotal?: boolean;
+  disableDrilldown?: boolean; // Auto-calculated
+}
+
+export interface LabelCell {
+  label: () => string;
+  isTotal?: boolean;
+
+  // Change dynamically
+  rowSpan?: number;
+  colSpan?: number;
+}
+
+/**
+ * This plays the role of the dimension "name" in a chart
+ */
 export class ChartDimensionCell {
 
+  public isAncestor?: boolean; // Just to keep the TS compiler happy
+
   constructor(
-    public display: string,
-    public path: string,
-    public modifier: Modifier,
-    public valueId: any,
-    public propDesc: PropDescriptor,
-    public entityDesc: EntityDescriptor,
-    public parent?: ChartDimensionCell) { }
+    public display: string, // To display the dimension in the tooltip and on the axis
+    public valueId: any, // For toString() function
+    public info: DimensionInfo, // For constructing the drilldown filter
+    public parent?: ChartDimensionCell) { }  // For constructing the drilldown filter
 
   toString() {
     // ngx-charts throws an error if you return null
@@ -692,29 +736,6 @@ export class ChartDimensionCell {
   }
 }
 
-export interface LabelCell {
-  type: 'label';
-  label: () => string;
-  level: number;
-  parent: DimensionCell;
-  isTotal?: boolean;
-
-  // The column span if all parents were expanded
-  expandedColSpan?: number;
-
-  // Change dynamically
-  rowSpan?: number;
-  colSpan?: number;
-  isVisible?: boolean;
-}
-
-export interface MeasureCell {
-  type: 'measure';
-  values: any[];
-  counts: number[]; // for aggregating averages
-  parent: DimensionCell; // column
-  isTotal?: boolean;
-}
 
 export class ReportStoreBase {
   reportStatus: ReportStatus;
@@ -735,61 +756,94 @@ export class ReconciliationStore extends ReportStoreBase {
   collapseParams = false; // When true hides the reconciliation parameters
 }
 
+export class StatementStore extends ReportStoreBase {
+  skip = 0;
+  top = 0;
+  total = 0;
+  result: DetailsEntry[];
+  extras: { [key: string]: any };
+  arguments: ReportArguments = {};
+}
+
 export class ReportStore extends ReportStoreBase {
   definition: ReportDefinitionForClient;
   skip = 0;
   top = 0;
   total = 0;
   arguments: ReportArguments = {};
-  result: Entity[] = [];
-  response: EntitiesResponse;
-  extras: { [key: string]: any };
-  filter: string; // the one used to retrieve the result
+  result: DynamicRow[];
+  ancestorGroups: { [id: number]: AncestorGroup };
   badDefinition = false; // set it to true upon a catastrophic failure from a bad definition
   collapseParams = false; // When true hides the report parameters
 
-  //////////// Pivot table
+  // When the user overrides the orderby, these fields are updated
+  orderbyKey: string; // the toString version of the select exp
+  orderbyDir: QueryexDirection; // The sorting direction
+
+  //////////// Summary
 
   filterExp: QueryexBase;
   havingExp: QueryexBase;
 
   /**
+   * A dictionary mapping every parameter key to its info
+   */
+  parameterInfos: { [keyLower: string]: ParameterInfo };
+
+  /**
    * The the actual row dimensions that will be
    * displayed, without the property dimensions.
    */
-  realRows: DimensionInfo[];
+  rowInfos: DimensionInfo[];
 
   /**
    * The the actual column dimensions that will be
    * displayed, without the property dimensions.
    */
-  realColumns: DimensionInfo[];
+  columnInfos: DimensionInfo[];
 
   /**
    * realRows + realColumns unique over the key property
    */
-  uniqueDimensions: DimensionInfo[];
+  dimensionInfos: DimensionInfo[];
 
   /**
    * precomputed and used by the charts
    */
-  singleNumericMeasure: MeasureInfo;
+  singleNumericMeasureIndex: number;
 
   /**
    * Precalculated values for efficiently displaying
    * the measures
    */
-  measures: MeasureInfo[];
+  measureInfos: MeasureInfo[];
+
+  /**
+   * The list of unique aggregations in all the measures
+   */
+  uniqueMeasureAggregations: UniqueAggregationInfo[];
+
+
+  pivot: PivotTable;
+  currentResultForPivot: any;
+
+
+  //////////// Details
 
   /**
    * Precalculated values for efficiently displaying
    * the select
    */
-  select: SelectInfo[];
+  selectInfos: SelectInfo[];
 
+  // Indices of values needed for navigation to details
+  idIndex: number;
+  defIdIndex: number;
+  navigateToDetailsIndices: number[];
 
-  pivot: PivotTable;
-  currentResultForPivot: any;
+  flat: any[][];
+  currentResultForFlat: any;
+
 
   //////////// Charts
 
@@ -797,21 +851,37 @@ export class ReportStore extends ReportStoreBase {
    * For number card
    */
   point: string;
-  currentResultForPoint: any;
+  currentPivotForPoint: any;
 
   /**
    * For single series charts (e.g. bar and pie charts)
    */
   single: SingleSeries;
-  currentResultForSingle: any;
+  totalEqualsSum: boolean; // The ngx-guage displays the sum of the values, so we need to hide it if the total is not equal to the sum
+  currentPivotForSingle: any;
   currentLangForSingle: string;
 
   /**
    * For multi-series charts (e.g. line chart)
    */
   multi: MultiSeries;
-  currentResultForMulti: any;
+  currentPivotForMulti: any;
   currentLangForMulti: string;
+
+
+  //////////// Custom Drilldown
+
+  // If any of these 3 change, we update drilldownDefinition
+  drilldownFilter: string;
+  drilldownCacheBuster: string;
+  drilldownOriginalDefinition: ReportDefinitionForClient;
+
+  drilldownModifiedDefinition: ReportDefinitionForClient;
+}
+
+export interface AncestorGroup {
+  minIndex: number;
+  ancestors: { [id: number]: DynamicRow };
 }
 
 export const DEFAULT_PAGE_SIZE = 25;

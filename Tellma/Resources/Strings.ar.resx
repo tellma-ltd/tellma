@@ -401,7 +401,7 @@
     <value>البيانات</value>
   </data>
   <data name="DatePart_day" xml:space="preserve">
-    <value>يوم الشهر</value>
+    <value>اليوم</value>
   </data>
   <data name="DatePart_month" xml:space="preserve">
     <value>الشهر</value>

@@ -19,8 +19,6 @@ namespace Tellma.Controllers.Dto
 
         public DateTimeOffset ServerTime { get; set; }
 
-        public int Top { get; set; }
-
         public bool IsPartial { get; set; }
     }
 

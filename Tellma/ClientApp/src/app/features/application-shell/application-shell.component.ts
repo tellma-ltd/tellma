@@ -342,7 +342,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
       const tenantId = this.workspace.ws.tenantId;
 
       // Retrieve the inbox items
-      return this.inboxCrud.getFact({ unobtrusive, top, skip, select, countEntities: true }).pipe(
+      return this.inboxCrud.getEntities({ unobtrusive, top, skip, select, countEntities: true }).pipe(
         tap((response: GetResponse) => {
           s = this.inboxState; // get the source
           s.top = response.Top;

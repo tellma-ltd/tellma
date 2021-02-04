@@ -455,7 +455,7 @@
     <value>报告定义</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>节目</value>
+    <value>显示</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -794,7 +794,7 @@
     <value>整数属性2</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
-    <value>位置</value>
+    <value>地点</value>
   </data>
   <data name="Entity_LocationJson" xml:space="preserve">
     <value>位置（以GeoJSON）</value>

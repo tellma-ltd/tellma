@@ -481,7 +481,9 @@ $paper-width: 1150px; // The default font (1rem) is too big
   margin-left: 0.125rem;
 }
 
-input.t-h2, .t-h2 input, .t-h2 .t-prefix {
+input.t-h2,
+.t-h2 input,
+.t-h2 .t-prefix {
   margin-bottom: 0.5rem;
   font-family: inherit;
   line-height: 1.2;
@@ -1645,15 +1647,32 @@ $container-margin: 15px;
   display: flex;
 }
 
-.t-report-dimension {
-  background-color: whitesmoke;
-  // font-weight: 600;
+
+td.t-success {
+  color: #155724;
+  background-color: #d4edda;
 }
 
-// td.report-header, .report-header td {
-//   padding-left: 15px;
-//   padding-right: 15px;
-// }
+td.t-warning {
+  color: #856404;
+  background-color: #fff3cd;
+}
+
+td.t-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+}
+
+tr.t-report-row:hover .t-report-dimension {
+  background-color: #e9e9e9;
+}
+
+.t-report-dimension {
+  background-color:whitesmoke;
+  // font-weight: 600;
+  // font-size: 80%;
+  // font-weight:bold;
+}
 
 table.t-report-table {
   width: auto !important;
@@ -1661,14 +1680,30 @@ table.t-report-table {
   td {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+    vertical-align: middle !important;
   }
 
-  td.t-report-measure {
+  td.t-report-measure:not(.t-disable-drilldown) {
     cursor: pointer;
   }
 
-  td.t-report-measure:hover {
+  td.t-report-measure:not(.t-disable-drilldown):hover {
     color: $dark-primary;
+  }
+
+  td.t-report-measure.t-disable-drilldown {
+    color: $gray-600;
+  }
+
+  // td.t-report-attribute {
+  //   background-color: whitesmoke;
+  // }
+  // tr.t-report-row:hover td.t-report-attribute {
+  //   background-color: #e9e9e9;
+  // }
+
+  tr {
+    height: 31px;
   }
 }
 
