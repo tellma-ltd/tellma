@@ -110,7 +110,8 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = FL.[Id]
 	LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND DLDE.[EntryIndex] = 0
 	WHERE @State >= LDC.[RequiredState]
-	AND L.[DefinitionId] <> @ManualLineLD
+	--AND L.[DefinitionId] <> @ManualLineLD
+	AND L.[DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 1)
 	AND	(
 		FL.Id = N'PostingDate'	AND L.[PostingDate] IS NULL OR
 		FL.Id = N'Memo'			AND L.[Memo] IS NULL

@@ -61,7 +61,9 @@ RETURN (
 			CAST(IIF(RM2.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
 			LS.ReasonId, LS.ReasonDetails
 		FROM ApplicableSignatures RS
-		LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
+		LEFT JOIN dbo.LineSignatures LS ON
+			RS.[RoleId] = LS.[RoleId] AND
+			RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 		LEFT JOIN (
 			SELECT RoleId FROM dbo.RoleMemberships
 			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
@@ -83,12 +85,16 @@ RETURN (
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
 			LS.ReasonId, LS.ReasonDetails
 		FROM ApplicableSignatures RS
-		LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.UserId = LS.OnBehalfOfUserId AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
+		LEFT JOIN dbo.LineSignatures LS ON
+			-- We need to test what happens if two users are required to sign, 
+			-- or two custodians are required to sign
+			-- or one user and one custodian
+			RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.UserId = LS.OnBehalfOfUserId AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 		LEFT JOIN (
 			SELECT RoleId FROM dbo.RoleMemberships
 			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
 		) RM ON RS.ProxyRoleId = RM.RoleId
-		WHERE RS.RuleType IN(N'ByUser', N'ByCustodian')
+		WHERE RS.RuleType IN (N'ByUser', N'ByCustodian')
 		UNION
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
@@ -101,7 +107,8 @@ RETURN (
 			CAST(1 AS BIT) AS CanSignOnBehalf,
 			LS.ReasonId, LS.ReasonDetails
 			FROM ApplicableSignatures RS
-			LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
+			LEFT JOIN dbo.LineSignatures LS ON
+				RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 		WHERE RS.RuleType = N'Public'
 	)
 	SELECT

@@ -271,7 +271,6 @@
     <Build Include="api\Stored Procedures\api.Lookups__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Lookups__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Lookups__Save.sql" />
-    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Save.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
@@ -740,6 +739,11 @@
     <None Include="Provisioning\299\299_22Centers.sql" />
     <None Include="Provisioning\299\299_24Resources.sql" />
     <None Include="Provisioning\299\21_Units.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
+    <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
+    <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

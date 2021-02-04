@@ -46,27 +46,11 @@ SELECT
     Q.[SavedById],
     Q.[ValidFrom],
     Q.[ValidTo],
-    CAST(IIF(    
-        Q.[Code] LIKE N'1110112%' OR -- Construction in progress
-        Q.[Code] LIKE N'111022%' OR -- Investment property under construction or development
-        Q.[Code] LIKE N'112112%' OR -- Current work in progress
-        Q.[Code] LIKE N'112114%' OR -- Current inventories in transit
-        Q.[Code] LIKE N'2%' OR -- Profit Or Loss
-        Q.[Code] LIKE N'3%' -- Other comprehensive income
-    , 0, 1) AS BIT) AS IsBusinessUnit,
+    Q.[IsBusinessUnit],
     [Node].GetAncestor(1)  AS [ParentNode],
     [Node].GetLevel() AS [Level],
     [Node].ToString() AS [Path],
 	Q.[ActiveChildCount],
 	Q.[ChildCount]
-	--CC.[ActiveChildCount],
-	--CC.ChildCount
 FROM [dbo].[AccountTypes] Q
---CROSS APPLY (
---		SELECT COUNT(*) AS [ChildCount],
---		SUM(IIF([IsActive]=1,1,0)) AS  [ActiveChildCount]	
---		FROM [dbo].[AccountTypes]
---		WHERE [Node].IsDescendantOf(Q.[Node]) = 1
---) CC 
-
 );

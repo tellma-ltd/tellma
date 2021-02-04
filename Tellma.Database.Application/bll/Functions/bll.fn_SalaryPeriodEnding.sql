@@ -2,17 +2,30 @@
 RETURNS DATE
 AS
 BEGIN
-	DECLARE @FirstDayOfPeriod TINYINT = 25;
+	DECLARE @ShortCompanyName NVARCHAR (255) = (SELECT [ShortCompanyName] FROM dbo.Settings) ;
+	DECLARE @FirstDayOfPeriod TINYINT = bll.[fn_firstDayOfPeriod]();
 
 	RETURN
-		DATEADD(DAY, -- Backtrack by 1 day
-				-1,
-				DATEADD(MONTH, -- Go Next Month
-						IIF(DAY(@Time2) >= @FirstDayOfPeriod, +2, +1),
-						DATEFROMPARTS( -- Take the first day of the month
-							YEAR(@Time2),
-							MONTH(@Time2),
-							1)
-				)
+		IIF(
+			@FirstDayOfPeriod > 1,
+			
+			DATEADD(MONTH,
+				IIF(DAY(@Time2) < @FirstDayOfPeriod, 0, +1),			
+					DATEFROMPARTS( -- Take the first day of the next cycle
+						YEAR(@Time2),
+						MONTH(@Time2),
+						@FirstDayOfPeriod - 1)
+			),
+			
+			DATEADD(DAY, -- Backtrack by 1 day
+					-1,
+					DATEADD(MONTH, -- Go Next Month
+							1,
+							DATEFROMPARTS( -- Take the first day of the month
+								YEAR(@Time2),
+								MONTH(@Time2),
+								@FirstDayOfPeriod)
+					)
+			)
 		)
 END

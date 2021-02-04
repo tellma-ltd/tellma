@@ -77,81 +77,80 @@ SET NOCOUNT ON;
 	
 
 	WITH ConstructionInProgressAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'ConstructionInProgress'
+		--SELECT ATC.[Id] FROM dbo.[AccountTypes] ATC JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1 WHERE ATP.[Concept] = N'ConstructionInProgress'
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'ConstructionInProgressExpendituresControl'
 	), -- 
 	InvestmentPropertyUnderConstructionOrDevelopmentAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'InvestmentPropertyUnderConstructionOrDevelopment'
+		--SELECT ATC.[Id] FROM dbo.[AccountTypes] ATC JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1 WHERE ATP.[Concept] = N'InvestmentPropertyUnderConstructionOrDevelopment'
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
+
 	), 
 	WorkInProgressAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'WorkInProgress'
+		--SELECT ATC.[Id] FROM dbo.[AccountTypes] ATC JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1 WHERE ATP.[Concept] = N'WorkInProgress'
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'WorkInProgressExpendituresControl'
+		
 	),
 	CurrentInventoriesInTransitAccountTypes AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.[AccountTypes] ATC ON A.AccountTypeId = ATC.[Id]
-		JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-		WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
+		--SELECT ATC.[Id] FROM dbo.[AccountTypes] ATC JOIN dbo.[AccountTypes] ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1 WHERE ATP.[Concept] = N'CurrentInventoriesInTransit'
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'CurrentInventoriesInTransitExpendituresControl'
 	),
-	DirectParentAccountTypes AS (
-		SELECT [Node]
-		FROM dbo.[AccountTypes]
-		WHERE [Concept] IN (
-			N'Revenue', N'CostOfMerchandiseSold'
-		)
-	),
+	--DirectParentAccountTypes AS (
+	--	SELECT [Node] FROM dbo.[AccountTypes] WHERE [Concept] IN (N'Revenue', N'CostOfMerchandiseSold')
+	--),
 	DirectAccountTypes AS (
-		SELECT ATC.[Id]
-		FROM dbo.[AccountTypes] ATC
-		JOIN DirectParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		--SELECT ATC.[Id] FROM dbo.[AccountTypes] ATC JOIN DirectParentAccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'CostOfSales'
 	),
 	ExpendituresAccountTypes AS (
-		SELECT [Id] FROM ConstructionInProgressAccountTypes
-		UNION
-		SELECT [Id] FROM InvestmentPropertyUnderConstructionOrDevelopmentAccountTypes
-		UNION
-		SELECT [Id] FROM WorkInProgressAccountTypes
-		UNION
-		SELECT [Id] FROM CurrentInventoriesInTransitAccountTypes
+		--SELECT [Id] FROM ConstructionInProgressAccountTypes
+		--UNION
+		--SELECT [Id] FROM InvestmentPropertyUnderConstructionOrDevelopmentAccountTypes
+		--UNION
+		--SELECT [Id] FROM WorkInProgressAccountTypes
+		--UNION
+		--SELECT [Id] FROM CurrentInventoriesInTransitAccountTypes
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'Expenditure'
 	),
-	BalanceSheetAccountTypes AS (
-		SELECT [Id]
-		FROM dbo.[AccountTypes]
-		WHERE [Node].IsDescendantOf(@BalanceSheetRootNode) = 1
-	),
-	ProfitLossAccountTypes AS (
-		SELECT [Id]
-		FROM dbo.[AccountTypes]
-		WHERE [Node].IsDescendantOf(@ProfitLossRootNode) = 1
-	),
-	OtherComprehensiveIncomeAccountTypes AS (
-		SELECT [Id]
-		FROM dbo.[AccountTypes]
-		WHERE [Node].IsDescendantOf(@OtherComprehensiveIncomeRootNode) = 1
-	),
+	--BalanceSheetAccountTypes AS (
+	--	SELECT [Id]
+	--	FROM dbo.[AccountTypes]
+	--	WHERE [Node].IsDescendantOf(@BalanceSheetRootNode) = 1
+	--),
+	--ProfitLossAccountTypes AS (
+	--	SELECT [Id]
+	--	FROM dbo.[AccountTypes]
+	--	WHERE [Node].IsDescendantOf(@ProfitLossRootNode) = 1
+	--),
+	--OtherComprehensiveIncomeAccountTypes AS (
+	--	SELECT [Id]
+	--	FROM dbo.[AccountTypes]
+	--	WHERE [Node].IsDescendantOf(@OtherComprehensiveIncomeRootNode) = 1
+	--),
 	BusinessUnitAccountTypes AS (
-		SELECT [Id] FROM AccountTypes
-		EXCEPT
-		SELECT [Id] FROM ExpendituresAccountTypes
-		EXCEPT
-		SELECT [Id] FROM DirectAccountTypes
+		--SELECT [Id] FROM AccountTypes
+		--EXCEPT
+		--SELECT [Id] FROM ExpendituresAccountTypes
+		--EXCEPT
+		--SELECT [Id] FROM DirectAccountTypes
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'BusinessUnit'
 	),
 	OtherPLAccountTypes AS (
-		SELECT [Id] FROM ProfitLossAccountTypes
-		UNION
-		SELECT [Id] FROM OtherComprehensiveIncomeAccountTypes
-		EXCEPT
-		SELECT [Id] FROM ExpendituresAccountTypes
-		EXCEPT
-		SELECT [Id] FROM DirectAccountTypes
+		--SELECT [Id] FROM ProfitLossAccountTypes
+		--UNION
+		--SELECT [Id] FROM OtherComprehensiveIncomeAccountTypes
+		--EXCEPT
+		--SELECT [Id] FROM ExpendituresAccountTypes
+		--EXCEPT
+		--SELECT [Id] FROM DirectAccountTypes
+		SELECT [Id] FROM dbo.[AccountTypes]
+		WHERE [CenterType] = N'OtherPL'
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
