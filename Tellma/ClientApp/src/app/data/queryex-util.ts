@@ -614,6 +614,10 @@ export class QueryexUtil {
         lang: 1 | 2 | 3 = 1,
         navPrefix?: string): string {
 
+        if (!expression) {
+            return null;
+        }
+
         function stringifyInner(exp: QueryexBase): string {
             if (exp instanceof QueryexParameter) {
                 const { desc, datatype, isRequired, defaultExp } = infos[exp.keyLower];
