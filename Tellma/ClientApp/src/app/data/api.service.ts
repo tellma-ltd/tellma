@@ -74,6 +74,7 @@ import {
 import { ExternalEntryForSave } from './entities/external-entry';
 import { Entity } from './entities/base/entity';
 import { SelectExpandArguments } from './dto/select-expand-arguments';
+import { GetFactResponse } from './dto/get-fact-response';
 
 
 @Injectable({

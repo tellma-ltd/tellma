@@ -17,6 +17,10 @@
     </ng-container>
 </ng-template>
 
+<ng-template #undefinedLabel>
+    <span class="font-italic text-muted">{{ 'Undefined' | translate }}</span>
+</ng-template>
+
 <!-- Details -->
 <ng-container *ngIf="isDetails">
 
@@ -73,10 +77,6 @@
                     </tr>
                 </tbody>
             </table>
-        </ng-template>
-
-        <ng-template #undefinedLabel>
-            <span class="font-italic text-muted">{{ 'Undefined' | translate }}</span>
         </ng-template>
 
         <!-- Pivot Table -->
