@@ -271,7 +271,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
+        /// If the Query is for a parametered fact table, the parameters
         /// must be supplied this method must be supplied through this method before loading any data
         /// </summary>
         public Query<T> AdditionalParameters(params SqlParameter[] parameters)

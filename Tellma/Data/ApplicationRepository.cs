@@ -311,7 +311,6 @@ namespace Tellma.Data
                 nameof(Entities.Role) => "[dbo].[Roles]",
                 nameof(Entities.RoleMembership) => "[dbo].[RoleMemberships]",
                 nameof(Entities.SmsMessageForQuery) => "[map].[SmsMessages]()",
-                nameof(Entities.SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
                 nameof(Entities.Unit) => "[map].[Units]()",
                 nameof(Entities.User) => "[map].[Users]()",
                 nameof(Entities.VoucherBooklet) => "[dbo].[VoucherBooklets]",

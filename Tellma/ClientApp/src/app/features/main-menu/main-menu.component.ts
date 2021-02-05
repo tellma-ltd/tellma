@@ -430,13 +430,23 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
               canView = canViewDocuments;
               break;
             default:
-              const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-              canView = this.canView(view);
+              const metadataFn = metadata[definition.Collection];
+              if (!!metadataFn) {
+                const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
+                canView = this.canView(view);
+              } else {
+                canView = false;
+              }
               break;
           }
         } else {
-          const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-          canView = this.canView(view);
+          const metadataFn = metadata[definition.Collection];
+          if (!!metadataFn) {
+            const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
+            canView = this.canView(view);
+          } else {
+            canView = false;
+          }
         }
 
         if (!canView) {
@@ -456,6 +466,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label,
           sortKey: definition.MainMenuSortKey,
           icon: definition.MainMenuIcon || 'folder',
+          paramsFunc: () => this.userSettings.get<Params>(`report/${definitionId}/arguments`),
           link: `../report/${definitionId}`
         });
       }

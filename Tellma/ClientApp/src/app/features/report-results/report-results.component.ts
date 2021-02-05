@@ -308,8 +308,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const coll = this.definition.Collection;
+    if (!coll) {
+      return null;
+    }
+
+    const metadataFn = metadata[coll];
+    if (!metadataFn) {
+      return null;
+    }
+
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
+    return metadataFn(this.workspace, this.translate, definitionId);
   }
 
   get apiEndpoint(): string {
@@ -2411,7 +2420,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const leading = 1;
     const trailing = 1;
     for (let i = leading; i < tr.cells.length - trailing; i++) {
-      infos[i - leading].width = tr.cells[i].offsetWidth + 'px';
+      const info = infos[i - leading];
+      if (!!info) {
+        info.width = tr.cells[i].offsetWidth + 'px';
+      }
     }
   }
 

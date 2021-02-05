@@ -1504,6 +1504,27 @@ namespace Tellma.Data.Queries
                         }
                     }
 
+                case "abs": // (value: numeric) => numeric
+                    {
+                        int expectedArgCount = 1;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        var arg1 = Arguments[0];
+                        if (!arg1.TryCompile(QxType.Numeric, ctx, out string operandSql, out QxNullity operandNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.Numeric}.");
+                        }
+
+                        resultType = QxType.Numeric;
+                        resultNullity = operandNullity;
+                        resultSql = $"ABS({operandSql.DeBracket()})"; // -ve sign
+
+                        break;
+                    }
+
                 case "if":
                     {
                         var (conditionSql, arg2, arg3) = IfParameters(ctx);

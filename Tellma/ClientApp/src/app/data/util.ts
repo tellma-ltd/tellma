@@ -960,14 +960,26 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: Wo
         return '';
       }
       const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return formatAccounting(value, digitsInfo);
+      let result = formatAccounting(value, digitsInfo);
+
+      if (prop.noSeparator) {
+        result = result.replace(',', '');
+      }
+
+      return result;
     }
     case 'percent': {
       if (value === undefined || value === null) {
         return '';
       }
       const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
+      let result = isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
+
+      if (prop.noSeparator) {
+        result = result.replace(',', '');
+      }
+
+      return result;
     }
     case 'date': {
       if (value === undefined || value === null) {
@@ -1072,7 +1084,14 @@ export function descFromControlOptions(
         isRightAligned = desc.isRightAligned;
       }
 
-      return { control, minDecimalPlaces, maxDecimalPlaces, isRightAligned };
+      let noSeparator = false;
+      if (isSpecified(options.noSeparator)) {
+        noSeparator = options.noSeparator;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        noSeparator = desc.noSeparator;
+      }
+
+      return { control, minDecimalPlaces, maxDecimalPlaces, isRightAligned, noSeparator };
 
     case 'choice':
       let choices: (string | number)[] = []; // default value

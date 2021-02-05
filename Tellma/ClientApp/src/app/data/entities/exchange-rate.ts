@@ -42,21 +42,21 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
             format: (item: ExchangeRate) => `${formatDate(item.ValidAsOf, 'yyyy-MM-dd', 'en-GB')}-${item.CurrencyId}`,
             formatFromVals: (vals: any[]) => `${formatDate(vals[0], 'yyyy-MM-dd', 'en-GB')} ${vals[1]}`,
             properties: {
-                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('ExchangeRate_Currency'), foreignKeyName: 'CurrencyId' },
                 ValidAsOf: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
                 ValidTill: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidTill') },
-                AmountInCurrency: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true },
+                AmountInCurrency: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true, noSeparator: false },
                 AmountInFunctional: {
                     datatype: 'numeric',
                     control: 'number',
                     label: () => `${trx.instant('ExchangeRate_AmountInFunctional')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: 6,
-                    isRightAligned: true
+                    isRightAligned: true, noSeparator: false
                 },
-                Rate: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true },
+                Rate: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true, noSeparator: false },
 
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },

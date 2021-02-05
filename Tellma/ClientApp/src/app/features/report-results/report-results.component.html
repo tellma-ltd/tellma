@@ -71,8 +71,8 @@
             <table>
                 <tbody>
                     <tr *ngFor="let att of dim.attributes">
-                        <td class="font-weight-bold p-1">{{ att.info.label() }}</td>
-                        <td class="p-1 align-middle">{{ displayValue(att.value, att.info.desc, att.info.entityDesc)
+                        <td class="font-weight-bold p-1 ">{{ att.info.label() }}</td>
+                        <td class="p-1 align-middle text-truncate">{{ displayValue(att.value, att.info.desc, att.info.entityDesc)
                             }}</td>
                     </tr>
                 </tbody>
@@ -107,7 +107,7 @@
                                 <ng-container *ngFor="let col of headerRow; index as i; trackBy: trackByObject">
                                     <td *ngIf="col.isVisible" class="t-report-dimension" [rowSpan]="col.rowSpan"
                                         [colSpan]="col.colSpan" [ngbPopover]="attributes" container="body"
-                                        placement="bottom-left" triggers="mouseenter:mouseleave"
+                                        placement="bottom-left" triggers="click"
                                         [disablePopover]="col.attributes.length === 0">
                                         <ng-container *ngIf="hasChildren(col)">
                                             <button class="border-0 px-2 h-100 font-weight-normal"

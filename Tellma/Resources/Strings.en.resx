@@ -3061,60 +3061,6 @@
   <data name="String" xml:space="preserve">
     <value>Text</value>
   </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>Summary Entries</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>Summary Entry</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>Closing</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>Closing Mass</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>Closing Amount</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>Closing Quantity</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>Credit</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>Debit</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>Mass In</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>Mass Out</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>Amount In</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>Amount Out</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>Opening</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>Opening Mass</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>Opening Amount</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>Opening Quantity</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>Quantity In</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>Quantity Out</value>
-  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>Culture</value>
   </data>
