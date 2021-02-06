@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
-  PivotTable, MeasureCell, LabelCell, ChartDimensionCell, DimensionCell, AncestorGroup
+  PivotTable, MeasureCell, LabelCell, ChartDimensionCell, DimensionCell, AncestorGroup, HighlightClass
 } from '~/app/data/workspace.service';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import {
@@ -33,6 +33,37 @@ export enum ReportView {
   pivot = 'pivot',
   chart = 'chart'
 }
+
+/**
+ * The color palette for the charts, which is just different shades of teal
+ */
+const palette = [
+  // '#17A2B8',
+  '#1490A3',
+  '#128091',
+  '#10707F',
+  '#0D606D',
+  // '#0B505B',
+  // '#094049',
+  // '#073036',
+  // '#042024',
+  // '#073036',
+  // '#094049',
+  '#0B505B',
+  '#0D606D',
+  '#10707F',
+  '#128091',
+  // '#1490A3',
+
+  // '#80E0EF', '#C9F2F8', '#49D3E9',
+  // '#1BC0DA', '#25CBE4', '#19B0C8',
+];
+
+const monochromeIndex = 1; // If we had to choose one of the above colors we choose the one with this index
+
+const success = '#28a745';
+const warning = '#ffc107';
+const danger = '#dc3545';
 
 /**
  * Hashes one dimension of an aggregate result for the pivot table
@@ -120,21 +151,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   showYAxis = true;
   showXAxisLabel = true;
   showYAxisLabel = true;
-  colorful = {
-    domain: [
-      '#17A2B8', '#1490A3', '#128091',
-      '#10707F', '#0D606D', '#0B505B',
-      '#094049', '#073036', '#042024',
-      '#073036', '#094049', '#0B505B',
-      '#0D606D', '#10707F', '#128091',
-      '#1490A3',
-
-      // '#80E0EF', '#C9F2F8', '#49D3E9',
-      // '#1BC0DA', '#25CBE4', '#19B0C8',
-    ]
-  };
-  monochromatic = { domain: ['#17a2b8'] };
-  heat = { domain: ['#96D5DF', '#17a2b8', '#052429'] }; // different shades of the same color for heat map
+  colorful = { domain: palette };
+  monochromatic = { domain: [palette[monochromeIndex]] };
+  heat = { domain: ['#96D5DF', '#052429'] }; // different shades of the same color for heat map
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
@@ -1501,7 +1520,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             } else if (!!m.success && QueryexUtil.evaluateExp(m.success, cell.aggValues, this.arguments, this.workspace)) {
               cell.classes[index] = 't-success';
             } else {
-              cell.classes[index] = '';
+              cell.classes[index] = null;
             }
 
             // Set the disableDrilldown for this cell
@@ -2007,19 +2026,32 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const cell = pivot.rowsGrandTotalMeasures[0];
         const value = cell.values[measureIndex] || 0;
         s.point = displayScalarValue(value, measure.desc, this.workspace, this.translate);
+        s.pointClass = cell.classes[measureIndex];
       } else {
         s.point = null; // Just to make the code look like multi()
+        s.pointClass = null;
       }
+
+      delete s.singleCellsHash;
     }
 
     return s.point;
   }
 
-  private chartDimensionCellFromDimensionCell = (dimCell: DimensionCell, parent?: ChartDimensionCell): ChartDimensionCell => {
+  public get pointClass(): HighlightClass {
+    const _ = this.point; // To populate the class
+    return this.state.pointClass;
+  }
+
+  private chartDimensionCellFromDimensionCell = (
+    dimCell: DimensionCell,
+    color: string,
+    index: number,
+    parent?: ChartDimensionCell): ChartDimensionCell => {
     const dimValueDisplay = !isSpecified(dimCell.valueId) ? this.translate.instant('Undefined') :
       this.displayValue(dimCell.value, dimCell.info.desc, dimCell.info.entityDesc);
 
-    return new ChartDimensionCell(dimValueDisplay, dimCell.valueId, dimCell.info, parent);
+    return new ChartDimensionCell(dimValueDisplay, dimCell.valueId, dimCell.info, index, color, parent);
   }
 
   public get single(): SingleSeries {
@@ -2040,17 +2072,20 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
           let singleSum = 0;
           const single: SingleSeries = [];
+          let index = 0;
           for (const measureCell of measureCells) {
             const dimCell = measureCell.row || measureCell.column;
             if (!dimCell || dimCell.isAncestor) {
               continue; // Totals and tree ancestors are not displayed in the chart
             }
 
+            const color = this.colorFromClass(measureCell.classes[measureIndex]);
+
             // Get the measure value
             const measureValue = measureCell.values[measureIndex] || 0;
             singleSum += measureValue;
             single.push({
-              name: this.chartDimensionCellFromDimensionCell(dimCell),
+              name: this.chartDimensionCellFromDimensionCell(dimCell, color, index++),
               value: measureValue
             });
           }
@@ -2066,6 +2101,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             s.totalEqualsSum = Math.abs(Math.round(grandGrandTotal * 1000000) - Math.round(singleSum * 1000000)) < 2;
           }
 
+          delete s.singleCellsHash;
+
         } catch (ex) {
           s.reportStatus = ReportStatus.error;
           s.errorMessage = ex.message;
@@ -2076,6 +2113,46 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return s.single;
+  }
+
+  public customColors = (cell: ChartDimensionCell) => {
+    return cell.color || palette[cell.index % palette.length];
+  }
+
+  public alternativeCustomColors = (cellToString: string) => {
+    // This function is only for single series charts that give you cell.toString() instead of cell:
+    // - Pie
+    // - Doughnut
+    // - Tree map
+    // - Number cards
+
+    // Prepare the hash if it's not there
+    const s = this.state;
+    if (!s.singleCellsHash) {
+      s.singleCellsHash = {};
+      for (const point of this.single) {
+        s.singleCellsHash[point.name.toString()] = point.name;
+      }
+    }
+    const cell = s.singleCellsHash[cellToString];
+    return this.customColors(cell);
+  }
+
+  private colorFromClass(c: HighlightClass): string {
+    let color: string;
+    switch (c) {
+      case 't-success':
+        color = success;
+        break;
+      case 't-warning':
+        color = warning;
+        break;
+      case 't-danger':
+        color = danger;
+        break;
+    }
+
+    return color;
   }
 
   public get multi(): MultiSeries {
@@ -2094,7 +2171,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         // When the number of dimensions is just one, make the single-series pretend it's a multi-series
         const single = this.single;
         const label = this.firstDimensionLabel;
-        const singletonDimension = new ChartDimensionCell(label, label, null);
+        const singletonDimension = new ChartDimensionCell(label, label, null, monochromeIndex); // 2 is the default chart color
         s.multi = [{
           name: singletonDimension,
           series: single
@@ -2122,6 +2199,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           // The Algorithm
           let currentChartParent: ChartDimensionCell;
           let currentSeries: SingleSeries;
+          let parentIndex = 0;
+          let index: number;
 
           for (const dimCell of dimCells) {
             if (dimCell.isAncestor) {
@@ -2129,15 +2208,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             if (dimCell.info === dim1) {
-              currentChartParent = this.chartDimensionCellFromDimensionCell(dimCell);
+              currentChartParent = this.chartDimensionCellFromDimensionCell(dimCell, undefined, parentIndex++);
               currentSeries = [];
+              index = 0;
 
               multi.push({ name: currentChartParent, series: currentSeries });
             }
 
             if (dimCell.info === dim2) { // <- must be a child of currentParent
               const measureCell = getMeasureFn(dimCell);
-              const chartCell = this.chartDimensionCellFromDimensionCell(dimCell, currentChartParent);
+              const color = this.colorFromClass(measureCell.classes[measureIndex]);
+              const chartCell = this.chartDimensionCellFromDimensionCell(dimCell, color, index++, currentChartParent);
               const value = measureCell.values[measureIndex] || 0;
 
               currentSeries.push({ name: chartCell, value });
@@ -2145,23 +2226,25 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           }
         } else {
           // One dimension is row, and one is column
-
+          let parentIndex = 0;
           for (const columnCell of pivot.columns) { // Flip to rows
             if (columnCell.isAncestor) {
               continue; // Tree ancestors are not included in charts
             }
 
-            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(columnCell);
+            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(columnCell, undefined, parentIndex++);
             const currentSeries: SingleSeries = [];
             multi.push({ name: currentChartParent, series: currentSeries });
 
+            let index = 0;
             for (const rowCell of pivot.rows) {
               if (rowCell.isAncestor) {
                 continue; // Totals and ancestors are not included in charts
               }
 
               const measureCell = rowCell.measures[columnCell.index];
-              const chartCell = this.chartDimensionCellFromDimensionCell(rowCell, currentChartParent);
+              const color = this.colorFromClass(measureCell.classes[measureIndex]);
+              const chartCell = this.chartDimensionCellFromDimensionCell(rowCell, color, index++, currentChartParent);
               const value = measureCell.values[measureIndex] || 0;
               currentSeries.push({ name: chartCell, value });
             }
@@ -2172,6 +2255,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         s.multi = null;
       }
+
+      delete s.singleCellsHash;
     }
 
     return s.multi;

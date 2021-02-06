@@ -291,14 +291,14 @@
                 <!-- Card -->
                 <ng-container *ngSwitchCase="'Card'">
                     <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
-                        <h1 class="display-3 t-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
+                        <h1 class="display-3 t-report-measure mx-5 {{ pointClass }}" (click)="onPointSelect()"> {{ point }} </h1>
                     </div>
                 </ng-container>
 
                 <!-- Vertical Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsVertical'">
                     <ngx-charts-bar-vertical class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="single" [roundEdges]="false"
+                        [animations]="animations" [scheme]="monochromatic" [customColors]="customColors" [results]="single" [roundEdges]="false"
                         [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                         [xAxisTickFormatting]="formatChartDimension" [yAxisTickFormatting]="formatChartMeasureValue"
@@ -310,10 +310,87 @@
                     </ngx-charts-bar-vertical>
                 </ng-container>
 
+                <!-- Horizontal Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsHorizontal'">
+                    <ngx-charts-bar-horizontal class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="monochromatic" [customColors]="customColors" [results]="single" [roundEdges]="false"
+                        [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
+                        [yAxisTickFormatting]="formatChartDimension" [xAxisTickFormatting]="formatChartMeasureValue"
+                        (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-horizontal>
+                </ng-container>
+                
+                <!-- Pie Chart -->
+                <ng-container *ngSwitchCase="'Pie'">
+                    <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors" [results]="single"
+                        [labelFormatting]="formatChartDimension" [labels]="true" (select)="onChartSelect($event.name)"
+                        [trimLabels]="false">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-pie-chart>
+                </ng-container>
+
+                <!-- Doughnut Chart -->
+                <ng-container *ngSwitchCase="'Doughnut'">
+                    <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors" [results]="single" [doughnut]="true"
+                        [labelFormatting]="formatChartDimension" [labels]="true" (select)="onChartSelect($event.name)"
+                        [trimLabels]="false">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-pie-chart>
+                </ng-container>
+
+                <!-- Tree Map -->
+                <ng-container *ngSwitchCase="'TreeMap'">
+                    <ngx-charts-tree-map class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors" [results]="single"
+                        (select)="onChartSelect($event.name)" [labelFormatting]="formatAlternativeChartDimension"
+                        [valueFormatting]="formatChartMeasureValue">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-tree-map>
+                </ng-container>
+
+                <!-- Number Cards -->
+                <ng-container *ngSwitchCase="'NumberCards'">
+                    <ngx-charts-number-card class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors" [results]="single"
+                        (select)="onChartSelect($event.name)" cardColor="#EAF0F5" textColor="black"
+                        [labelFormatting]="formatAlternativeChartDimension"
+                        [valueFormatting]="formatAlternativeChartMeasureValue">
+                    </ngx-charts-number-card>
+                </ng-container>
+
+                <!-- Gauge -->
+                <ng-container *ngSwitchCase="'Gauge'">
+                    <ngx-charts-gauge class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                        [scheme]="monochromatic" [customColors]="customColors" [results]="single" [max]="0" (select)="onChartSelect($event.name)"
+                        [showText]="showGaugeTotal()" [valueFormatting]="formatChartMeasureValue"
+                        [axisTickFormatting]="formatStringChartMeasureValue">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-gauge>
+                </ng-container>
+
                 <!-- Grouped Vertical Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsVerticalGrouped'">
                     <ngx-charts-bar-vertical-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="multi" [roundEdges]="false"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi" [roundEdges]="false"
                         [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                         [xAxisTickFormatting]="formatChartDimension" [yAxisTickFormatting]="formatChartMeasureValue"
@@ -328,7 +405,7 @@
                 <!-- Stacked Vertical Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsVerticalStacked'">
                     <ngx-charts-bar-vertical-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi" [xAxis]="showXAxis"
                         [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                         [xAxisTickFormatting]="formatChartDimension" [yAxisTickFormatting]="formatChartMeasureValue"
@@ -343,7 +420,7 @@
                 <!-- Normalized Vertical Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsVerticalNormalized'">
                     <ngx-charts-bar-vertical-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi" [xAxis]="showXAxis"
                         [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel"
                         [yAxisLabel]="measureLabel + ' %'" [xAxisTickFormatting]="formatChartDimension"
@@ -355,25 +432,10 @@
                     </ngx-charts-bar-vertical-normalized>
                 </ng-container>
 
-                <!-- Horizontal Bars Chart -->
-                <ng-container *ngSwitchCase="'BarsHorizontal'">
-                    <ngx-charts-bar-horizontal class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="single" [roundEdges]="false"
-                        [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
-                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
-                        [yAxisTickFormatting]="formatChartDimension" [xAxisTickFormatting]="formatChartMeasureValue"
-                        (select)="onChartSelect($event.name)">
-                        <ng-template #tooltipTemplate let-model="model">
-                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                            </ng-container>
-                        </ng-template>
-                    </ngx-charts-bar-horizontal>
-                </ng-container>
-
                 <!-- Grouped Horizontal Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsHorizontalGrouped'">
                     <ngx-charts-bar-horizontal-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="multi" [roundEdges]="false"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi" [roundEdges]="false"
                         [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
                         [yAxisTickFormatting]="formatChartDimension" [xAxisTickFormatting]="formatChartMeasureValue"
@@ -388,7 +450,7 @@
                 <!-- Stacked Horizontal Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsHorizontalStacked'">
                     <ngx-charts-bar-horizontal-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi" [xAxis]="showXAxis"
                         [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
                         [yAxisTickFormatting]="formatChartDimension" [xAxisTickFormatting]="formatChartMeasureValue"
@@ -403,7 +465,7 @@
                 <!-- Normalized Horizontal Bars Chart -->
                 <ng-container *ngSwitchCase="'BarsHorizontalNormalized'">
                     <ngx-charts-bar-horizontal-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi" [xAxis]="showXAxis"
                         [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                         [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel + ' %'"
                         [yAxisLabel]="firstDimensionLabel" [yAxisTickFormatting]="formatChartDimension"
@@ -453,6 +515,22 @@
                     </ngx-charts-area-chart>
                 </ng-container>
 
+
+                <!-- Heat Map -->
+                <ng-container *ngSwitchCase="'HeatMap'">
+                    <ngx-charts-heat-map class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                        [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
+                        [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
+                        [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
+                        (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
+                        [yAxisTickFormatting]="formatChartDimension">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="heatmapTooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-heat-map>
+                </ng-container>
+
                 <!-- Stacked Area Chart -->
                 <!-- <ng-container *ngSwitchCase="'AreaStacked'">
                             <ngx-charts-area-chart-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
@@ -473,47 +551,6 @@
                             </ngx-charts-area-chart-normalized>
                         </ng-container> -->
 
-                <!-- Pie Chart -->
-                <ng-container *ngSwitchCase="'Pie'">
-                    <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="single"
-                        [labelFormatting]="formatChartDimension" [labels]="true" (select)="onChartSelect($event.name)"
-                        [trimLabels]="false">
-                        <ng-template #tooltipTemplate let-model="model">
-                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                            </ng-container>
-                        </ng-template>
-                    </ngx-charts-pie-chart>
-                </ng-container>
-
-                <!-- Doughnut Chart -->
-                <ng-container *ngSwitchCase="'Doughnut'">
-                    <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="single" [doughnut]="true"
-                        [labelFormatting]="formatChartDimension" [labels]="true" (select)="onChartSelect($event.name)"
-                        [trimLabels]="false">
-                        <ng-template #tooltipTemplate let-model="model">
-                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                            </ng-container>
-                        </ng-template>
-                    </ngx-charts-pie-chart>
-                </ng-container>
-
-                <!-- Heat Map -->
-                <ng-container *ngSwitchCase="'HeatMap'">
-                    <ngx-charts-heat-map class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
-                        [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
-                        [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
-                        [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
-                        (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
-                        [yAxisTickFormatting]="formatChartDimension">
-                        <ng-template #tooltipTemplate let-model="model">
-                            <ng-container *ngTemplateOutlet="heatmapTooltip;context: { model: model }">
-                            </ng-container>
-                        </ng-template>
-                    </ngx-charts-heat-map>
-                </ng-container>
-
                 <!-- Radar Chart -->
                 <!-- <ng-container *ngSwitchCase="'Radar'">
                             <ngx-charts-polar-chart class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
@@ -523,42 +560,6 @@
                                 (select)="onChartSelect($event.name)">
                             </ngx-charts-polar-chart>
                         </ng-container> -->
-
-                <!-- Tree Map -->
-                <ng-container *ngSwitchCase="'TreeMap'">
-                    <ngx-charts-tree-map class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="single"
-                        (select)="onChartSelect($event.name)" [labelFormatting]="formatAlternativeChartDimension"
-                        [valueFormatting]="formatChartMeasureValue">
-                        <ng-template #tooltipTemplate let-model="model">
-                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                            </ng-container>
-                        </ng-template>
-                    </ngx-charts-tree-map>
-                </ng-container>
-
-                <!-- Number Cards -->
-                <ng-container *ngSwitchCase="'NumberCards'">
-                    <ngx-charts-number-card class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                        [animations]="animations" [scheme]="colorful" [results]="single"
-                        (select)="onChartSelect($event.name)" cardColor="#EAF0F5" textColor="black"
-                        [labelFormatting]="formatAlternativeChartDimension"
-                        [valueFormatting]="formatAlternativeChartMeasureValue">
-                    </ngx-charts-number-card>
-                </ng-container>
-
-                <!-- Gauge -->
-                <ng-container *ngSwitchCase="'Gauge'">
-                    <ngx-charts-gauge class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                        [scheme]="colorful" [results]="single" [max]="0" (select)="onChartSelect($event.name)"
-                        [showText]="showGaugeTotal()" [valueFormatting]="formatChartMeasureValue"
-                        [axisTickFormatting]="formatStringChartMeasureValue">
-                        <ng-template #tooltipTemplate let-model="model">
-                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                            </ng-container>
-                        </ng-template>
-                    </ngx-charts-gauge>
-                </ng-container>
 
                 <!-- Not supported message -->
                 <ng-template #notsupported>

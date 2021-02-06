@@ -1098,7 +1098,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get filterEntryType_Manual(): string {
     const accountType = this.accountType();
-    return `IsAssignable eq true and Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and Id descof ${accountType.EntryTypeParentId}`;
   }
 
   // Center

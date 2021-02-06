@@ -1676,6 +1676,18 @@ td.t-danger {
   background-color: #f8d7da;
 }
 
+h1.t-success {
+  color: $success;
+}
+
+h1.t-warning {
+  color: $warning;
+}
+
+h1.t-danger {
+  color: $danger;
+}
+
 tr.t-report-row:hover .t-report-dimension {
   background-color: #e9e9e9;
 }

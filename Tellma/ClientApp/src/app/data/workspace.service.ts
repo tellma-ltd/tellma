@@ -696,10 +696,12 @@ export interface DimensionCell {
   attributes: { value: any, info: AttributeInfo }[];
 }
 
+export type HighlightClass = 't-success' | 't-warning' | 't-danger';
+
 export interface MeasureCell {
   aggValues: any[];
   values: any[];
-  classes: ('t-success' | 't-warning' | 't-danger' | '')[];
+  classes: HighlightClass[];
   column: DimensionCell;
   row: DimensionCell;
   isTotal?: boolean;
@@ -726,16 +728,17 @@ export class ChartDimensionCell {
     public display: string, // To display the dimension in the tooltip and on the axis
     public valueId: any, // For toString() function
     public info: DimensionInfo, // For constructing the drilldown filter
+    public index: number, // To retrieve the color from the palette
+    public color?: string, // Custom color to override the default one
     public parent?: ChartDimensionCell) { }  // For constructing the drilldown filter
 
   toString() {
     // ngx-charts throws an error if you return null
     // The value returned must uniquely identify the dimension
     // formatting will be handled in the tooltip template
-    return isSpecified(this.valueId) ? this.valueId.toString() : '';
+  return isSpecified(this.valueId) ? this.valueId.toString() : '';
   }
 }
-
 
 export class ReportStoreBase {
   reportStatus: ReportStatus;
@@ -851,12 +854,14 @@ export class ReportStore extends ReportStoreBase {
    * For number card
    */
   point: string;
+  pointClass: HighlightClass;
   currentPivotForPoint: any;
 
   /**
    * For single series charts (e.g. bar and pie charts)
    */
   single: SingleSeries;
+  singleCellsHash: { [value: string]: ChartDimensionCell }; // To color charts that for some reason only supply the values in customColors
   totalEqualsSum: boolean; // The ngx-guage displays the sum of the values, so we need to hide it if the total is not equal to the sum
   currentPivotForSingle: any;
   currentLangForSingle: string;

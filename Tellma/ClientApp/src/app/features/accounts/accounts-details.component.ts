@@ -435,7 +435,7 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
     let result = 'IsAssignable eq true';
     const accountType = this.accountType(model);
     if (!!accountType && !!accountType.EntryTypeParentId) {
-      result += ` and Node descof ${accountType.EntryTypeParentId}`;
+      result += ` and Id descof ${accountType.EntryTypeParentId}`;
     }
 
     return result;
@@ -468,7 +468,7 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
     // Add account type parent Id from classification
     const classification = this.ws.get('AccountClassification', model.ClassificationId) as AccountClassification;
     if (!!classification && !!classification.AccountTypeParentId) {
-      return `Node descof ${classification.AccountTypeParentId}`;
+      return `Id descof ${classification.AccountTypeParentId}`;
     }
 
     return '';
