@@ -691,7 +691,7 @@ namespace Tellma.Data.Queries
                             return opsPeek != "(" &&
                                 (
                                     isFunction ||
-                                    opsPeekInfo.Precedence < opInfo.Precedence ||
+                                    opsPeekInfo.Precedence < opInfo.Precedence || // less than means greater precedence
                                     (opsPeekInfo.Precedence == opInfo.Precedence && opsPeekInfo.IsLeftAssociative)
                                 );
                         }

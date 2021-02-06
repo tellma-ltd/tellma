@@ -533,6 +533,7 @@ export interface DimensionInfo {
     desc: PropVisualDescriptor; // For displaying the dimension (display desc || key desc)
     entityDesc: EntityDescriptor; // Set when the key expression is a nav property
     label: () => string; // Mostly used when converting to a chart
+    // allMembers?: any[];
 
     keyIndex?: number; // Value used for navigating the pivot hash (Id for entities or the value for value)
     parentKeyIndex?: number;
@@ -540,7 +541,6 @@ export interface DimensionInfo {
 
     autoExpandLevel: number;
     showAsTree: boolean;
-    showEmptyMembers: boolean;
     orderDir: QueryexDirection; // The order direction (whether from the dimension or from one of its attributes)
     isOrdered: boolean; // If this is true, we set the sortValue of the dimension cell to the dimension value
 
@@ -736,9 +736,17 @@ export class QueryexUtil {
         return stringifyInner(expression);
     }
 
-    public static canShowEmptyMembers(desc: PropVisualDescriptor) {
+    public static canShowEmptyMembers(desc: PropDescriptor): any[] {
         // Those are the controls where we know the full list of members
-        return !!desc && (desc.control === 'choice' || desc.control === 'check');
+        if (!!desc) {
+            if (desc.control === 'choice') {
+                return desc.choices;
+            } else if (desc.control === 'check') {
+                return [true, false];
+            } else if (desc.control === 'date') {
+                return []; // Determined by the data, every day from min to max dates
+            }
+        }
     }
 
     public static canShowAsTree(desc: PropDescriptor, wss: WorkspaceService, trx: TranslateService) {
@@ -938,14 +946,14 @@ export class QueryexUtil {
                 }
                 const autoExpandLevel = dimension.AutoExpandLevel;
                 const showAsTree = dimension.ShowAsTree && QueryexUtil.canShowAsTree(keyDesc, wss, trx);
-                const showEmptyMembers = dimension.ShowEmptyMembers && QueryexUtil.canShowEmptyMembers(keyDesc);
-                if (!showEmptyMembers) {
-                    for (const d of rowInfos) {
-                        // ShowEmptyMembers must true for all subsequent dimensions too
-                        // Otherwise how would you display that dimension with nothing underneath it?
-                        d.showEmptyMembers = false;
-                    }
-                }
+                // const allMembers = dimension.ShowEmptyMembers ? QueryexUtil.canShowEmptyMembers(keyDesc) : undefined;
+                // // if (!allMembers) {
+                // for (const d of infos) {
+                //     // ShowEmptyMembers must true for all subsequent dimensions too
+                //     // Otherwise how would you display that dimension with nothing underneath it?
+                //     delete d.allMembers;
+                // }
+                // // }
 
                 infos.push({
                     keyExp,
@@ -960,7 +968,7 @@ export class QueryexUtil {
                     attributes,
                     autoExpandLevel,
                     showAsTree, // Only when it's a tree entity
-                    showEmptyMembers // Only when it's supported
+                    // allMembers // Only when it's supported
                 });
             }
         };
@@ -1037,7 +1045,7 @@ export class QueryexUtil {
 
         /////////////////// Selects
 
-        const selectExps: { exp: QueryexBase, localize: boolean, select: ReportDefinitionSelectForClient }[] = [];
+        const selectExps: { exp: QueryexBase, visualDesc: PropVisualDescriptor, localize: boolean, select: ReportDefinitionSelectForClient }[] = [];
         if (definition.Type === 'Details' || definition.IsCustomDrilldown) {
             for (const select of definition.Select) {
                 const localize = select.Localize;
@@ -1050,7 +1058,9 @@ export class QueryexUtil {
                     } else if (definition.Type === 'Summary' && definition.IsCustomDrilldown && parameters.length > 0) {
                         throw new Error(`Expression cannot contain parameters like '${parameters[0]}'.`);
                     } else {
-                        selectExps.push({ exp, localize, select });
+
+                        const visualDesc = select.Control ? descFromControlOptions(wss.currentTenant, select.Control, select.ControlOptions) : null;
+                        selectExps.push({ exp, visualDesc, localize, select });
                     }
                 } else {
                     throw new Error(`Select expression cannot be empty.`);
@@ -1134,22 +1144,29 @@ export class QueryexUtil {
             }
 
             // Select
-            for (const { exp, localize, select } of selectExps) {
+            for (const { exp, visualDesc, localize, select } of selectExps) {
                 const expToString = exp.toString();
-                const desc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, coll, defId, wss, trx);
+                const mainDesc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, coll, defId, wss, trx);
                 let entityDesc: EntityDescriptor;
-                switch (desc.datatype) {
+                switch (mainDesc.datatype) {
                     case 'boolean':
                     case 'hierarchyid':
                     case 'geography':
-                        throw new Error(`Select expression ${exp} cannot be of type ${desc.datatype}.`);
+                        throw new Error(`Select expression ${exp} cannot be of type ${mainDesc.datatype}.`);
                     case 'entity':
-                        entityDesc = metadata[desc.control](wss, trx, desc.definitionId);
+                        entityDesc = metadata[mainDesc.control](wss, trx, mainDesc.definitionId);
+                }
+
+                if (!!visualDesc && !tryGetDescFromVisual(visualDesc, mainDesc.datatype, () => '', wss, trx)) {
+                    throw new Error(`Select expression ${exp} (${mainDesc.datatype}) is incompatible with the selected control.`);
                 }
 
                 // Add the measure info
-                const label = !!select.Label ? () => ws.localize(select.Label, select.Label2, select.Label3) : desc.label;
-                selectInfos.push({ exp, expToString, localize, desc, entityDesc, label });
+                {
+                    const desc = visualDesc || mainDesc;
+                    const label = !!select.Label ? () => ws.localize(select.Label, select.Label2, select.Label3) : mainDesc.label;
+                    selectInfos.push({ exp, expToString, localize, desc, entityDesc, label });
+                }
             }
 
             // Result
@@ -1554,7 +1571,7 @@ export class QueryexUtil {
                             definitionId: defId,
                             foreignKeyName: null, // Not needed
                             label: propDesc.label, // Id
-                            labelForParameter:  metadata[coll](wss, trx, defId).titleSingular // Details Entry
+                            labelForParameter: metadata[coll](wss, trx, defId).titleSingular // Details Entry
                         };
 
                         return result;

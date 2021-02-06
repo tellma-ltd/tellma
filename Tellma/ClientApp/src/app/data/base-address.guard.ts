@@ -23,7 +23,7 @@ export class BaseAddressGuard implements CanActivate {
 
     return this.auth.isSignedIn$.pipe(
       map(isAuthenticated => {
-        const lastVisited = this.storage.getItem('last_visited_url');
+        const lastVisited = this.storage.getItem('last_visited_url_v2');
         const url = isAuthenticated ? (lastVisited || '/root/companies') : '/root/welcome';
         this.router.navigateByUrl(url);
 

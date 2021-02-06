@@ -1116,14 +1116,14 @@ export function descFromControlOptions(
 
     case 'serial':
       let prefix = '';
-      if (isSpecified(options.prefx)) {
+      if (isSpecified(options.prefix)) {
         prefix = options.prefix;
       } else if (desc.control === 'serial') {
         prefix = desc.prefix;
       }
 
       let codeWidth = 4;
-      if (isSpecified(options.prefx)) {
+      if (isSpecified(options.codeWidth)) {
         codeWidth = options.codeWidth;
       } else if (desc.control === 'serial') {
         codeWidth = desc.codeWidth;

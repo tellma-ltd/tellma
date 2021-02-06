@@ -123,7 +123,7 @@ SET NOCOUNT ON;
 	)
 	MERGE INTO BS AS t
 	USING (
-		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Expression], L.[Localize], L.[Label], L.[Label2], L.[Label3]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Expression], L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[Control], L.[ControlOptions]
 		FROM @Select L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
 	) AS s ON (t.Id = s.Id)
@@ -135,13 +135,15 @@ SET NOCOUNT ON;
 			t.[Localize]			= s.[Localize],
 			t.[Label]				= s.[Label],
 			t.[Label2]				= s.[Label2],
-			t.[Label3]				= s.[Label3]
+			t.[Label3]				= s.[Label3],
+			t.[Control]				= s.[Control],
+			t.[ControlOptions]		= s.[ControlOptions]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[Index], [ReportDefinitionId], [Expression], [Localize], [Label], [Label2], [Label3]
+			[Index], [ReportDefinitionId], [Expression], [Localize], [Label], [Label2], [Label3], [Control], [ControlOptions]
 		)
 		VALUES (
-			s.[Index], s.[ReportDefinitionId], s.[Expression], s.[Localize], s.[Label], s.[Label2], s.[Label3]
+			s.[Index], s.[ReportDefinitionId], s.[Expression], s.[Localize], s.[Label], s.[Label2], s.[Label3], s.[Control], s.[ControlOptions]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

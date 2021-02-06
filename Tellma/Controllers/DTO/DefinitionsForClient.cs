@@ -137,6 +137,8 @@ namespace Tellma.Controllers.Dto
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     public class ReportDefinitionDimensionForClient

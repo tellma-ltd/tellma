@@ -1276,6 +1276,33 @@
                     (ngModelChange)="selectToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
                     autocomplete="off" />
             </div>
+
+            <!-- Control -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="orderdirection">{{ 'Definition_Control' | translate }}</label>
+                <select class="form-control t-studio-input" [(ngModel)]="selectToEdit.Control"
+                    (ngModelChange)="selectToEditHasChanged = true; validateSelect(selectToEdit, modelRef);"
+                    #selectcontrol="ngModel">
+                    <option value=""></option>
+                    <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
+                        {{ c.name() }}</option>
+                </select>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: selectcontrol, serverErrors: selectToEdit?.serverErrors?.Control }">
+                </ng-container>
+            </div>
+
+            <!-- Control Options-->
+            <div class="form-group w-100" *ngIf="showOptions(selectToEdit.Control)">
+                <t-control-options [control]="selectToEdit.Control" [isEdit]="true"
+                    [(ngModel)]="selectToEdit.ControlOptions" (ngModelChange)="selectToEditHasChanged = true"
+                    #selectcontroloptions="ngModel">
+                </t-control-options>
+
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: selectcontroloptions, serverErrors: selectToEdit?.serverErrors?.ControlOptions }">
+                </ng-container>
+            </div>
         </div>
     </div>
 

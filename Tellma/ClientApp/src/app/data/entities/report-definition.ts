@@ -89,6 +89,8 @@ export interface ReportDefinitionSelectForSave extends EntityForSave {
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Control?: Control;
+    ControlOptions?: string; // JSON
 }
 
 // tslint:disable-next-line:no-empty-interface

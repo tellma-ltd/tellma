@@ -594,6 +594,8 @@ namespace Tellma.Controllers
                     Label = s.Label,
                     Label2 = s.Label2,
                     Label3 = s.Label3,
+                    Control = s.Control,
+                    ControlOptions = s.ControlOptions,
                 })?.ToList() ?? new List<ReportDefinitionSelectForClient>(),
 
                 OrderBy = def.OrderBy,

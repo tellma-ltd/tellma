@@ -824,7 +824,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public showShowEmptyMembers(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
     const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
-    return QueryexUtil.canShowEmptyMembers(desc);
+    return !!QueryexUtil.canShowEmptyMembers(desc);
   }
 
   public validateDimension(dimension: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): void {

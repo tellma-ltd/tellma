@@ -90,6 +90,8 @@ export interface ReportDefinitionSelectForClient {
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
 export interface ReportDefinitionMeasureForClient {

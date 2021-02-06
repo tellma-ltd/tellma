@@ -308,6 +308,16 @@ namespace Tellma.Entities
         [StringLength(255)]
         [AlwaysAccessible]
         public string Label3 { get; set; }
+
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
     }
 
     public class ReportDefinitionSelect : ReportDefinitionSelectForSave

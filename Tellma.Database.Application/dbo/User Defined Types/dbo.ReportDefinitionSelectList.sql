@@ -8,5 +8,7 @@
 	[Localize]					BIT,
 	[Label]						NVARCHAR (255),
 	[Label2]					NVARCHAR (255),
-	[Label3]					NVARCHAR (255)
+	[Label3]					NVARCHAR (255),
+	[Control]					NVARCHAR (50),
+	[ControlOptions]			NVARCHAR (1024)
 )
