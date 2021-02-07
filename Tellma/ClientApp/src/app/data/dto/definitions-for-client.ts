@@ -1,4 +1,4 @@
-import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
+import { ReportOrderDirection, ReportType, ChartType } from '../entities/report-definition';
 import { PositiveLineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
@@ -39,6 +39,7 @@ export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
 }
 
 export interface ReportDefinitionForClient extends DefinitionForClient {
+    Id: number;
     Title: string;
     Title2?: string;
     Title3?: string;
@@ -48,56 +49,85 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Type: ReportType; // summary or details
     Chart?: ChartType;
     DefaultsToChart: boolean; // ?
+    ChartOptions?: string;
     Collection: Collection;
     DefinitionId?: number;
-    Select: ReportSelectDefinitionForClient[];
-    Parameters?: ReportParameterDefinitionForClient[];
+    Select: ReportDefinitionSelectForClient[];
+    Parameters?: ReportDefinitionParameterForClient[];
     Filter?: string;
+    Having?: string;
     OrderBy?: string;
-    Rows: ReportDimensionDefinitionForClient[];
-    Columns: ReportDimensionDefinitionForClient[];
-    Measures: ReportMeasureDefinitionForClient[];
+    Rows: ReportDefinitionDimensionForClient[];
+    Columns: ReportDefinitionDimensionForClient[];
+    Measures: ReportDefinitionMeasureForClient[];
     Top?: number;
     ShowColumnsTotal: boolean;
+    ColumnsTotalLabel?: string;
+    ColumnsTotalLabel2?: string;
+    ColumnsTotalLabel3?: string;
     ShowRowsTotal: boolean;
+    RowsTotalLabel?: string;
+    RowsTotalLabel2?: string;
+    RowsTotalLabel3?: string;
+    IsCustomDrilldown: boolean;
     ShowInMainMenu: boolean;
 }
 
-export interface ReportParameterDefinitionForClient {
+export interface ReportDefinitionParameterForClient {
     Key: string; // e.g. 'FromDate'
     Label?: string;
     Label2?: string;
     Label3?: string;
     Visibility?: Visibility;
-    Value?: string;
+    DefaultExpression?: string;
     Control?: Control;
     ControlOptions?: string;
 }
 
-export interface ReportSelectDefinitionForClient {
-    Path: string;
+export interface ReportDefinitionSelectForClient {
+    Expression: string;
+    Localize: boolean;
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
-export interface ReportMeasureDefinitionForClient {
-    Path: string;
+export interface ReportDefinitionMeasureForClient {
+    Expression: string;
     Label?: string;
     Label2?: string;
     Label3?: string;
     OrderDirection?: ReportOrderDirection;
-    Aggregation: Aggregation;
+    Control?: Control;
+    ControlOptions?: string;
+    DangerWhen?: string;
+    WarningWhen?: string;
+    SuccessWhen?: string;
 }
 
-export interface ReportDimensionDefinitionForClient {
-    Path: string;
-    Modifier?: Modifier;
+export interface ReportDefinitionDimensionForClient {
+    KeyExpression: string;
+    DisplayExpression?: string;
+    Localize: boolean;
     Label?: string;
     Label2?: string;
     Label3?: string;
     OrderDirection?: ReportOrderDirection;
-    AutoExpand: boolean;
+    AutoExpandLevel: number;
+    ShowAsTree?: boolean;
+    Attributes?: ReportDefinitionDimensionAttributeForClient[];
+}
+
+export interface ReportDefinitionDimensionAttributeForClient {
+    Expression?: string;
+    Localize: boolean;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+
 }
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
@@ -705,13 +735,6 @@ export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForCl
     Lookup4Label3: string;
     Lookup4Visibility: Visibility;
     Lookup4DefinitionId: number;
-
-    //// Lookup 5
-    // Lookup5Label: string;
-    // Lookup5Label2: string;
-    // Lookup5Label3: string;
-    // Lookup5Visibility: Visibility;
-    // Lookup5DefinitionId: number;
 
     // Text 1
     Text1Label: string;

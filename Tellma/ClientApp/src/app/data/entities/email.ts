@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -32,13 +33,14 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         orderby: () => ['Subject'],
         inactiveFilter: null, // No inactive filter
         format: (item: EmailForQuery) => item.Subject,
+        formatFromVals: (vals: any[]) => vals[0],
         properties: {
-            Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
             ToEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ToEmail') },
             Subject: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Subject') },
             Body: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Body') },
             State: {
-                datatype: 'integral',
+                datatype: 'numeric',
                 control: 'choice',
                 label: () => trx.instant('State'),
                 choices: emailStates,

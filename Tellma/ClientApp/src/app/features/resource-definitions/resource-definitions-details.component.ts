@@ -10,7 +10,7 @@ import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metad
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ResourceDefinitionForSave, metadata_ResourceDefinition, ResourceDefinition } from '~/app/data/entities/resource-definition';
 import { DefinitionVisibility, DefinitionCardinality } from '~/app/data/entities/base/definition-common';
-import { ResourceDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
@@ -33,7 +33,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `DefaultUnit,DefaultUnitMassUnit,ReportDefinitions/ReportDefinition,
+  public expand = `DefaultUnit,DefaultUnitMassUnit,ReportDefinitions.ReportDefinition,
 Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,ParticipantDefinition`;
 
   create = () => {

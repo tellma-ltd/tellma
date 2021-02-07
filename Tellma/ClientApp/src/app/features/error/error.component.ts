@@ -103,12 +103,12 @@ export class ErrorComponent implements OnInit {
   }
 
   public onBack() {
-    this.storage.removeItem('last_visited_url');
+    this.storage.removeItem('last_visited_url_v2');
     this.location.back();
   }
 
   public onHome() {
-    this.storage.removeItem('last_visited_url');
+    this.storage.removeItem('last_visited_url_v2');
     this.router.navigateByUrl('/root/welcome');
   }
 

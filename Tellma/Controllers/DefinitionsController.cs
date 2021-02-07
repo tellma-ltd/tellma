@@ -504,82 +504,123 @@ namespace Tellma.Controllers
             return new ReportDefinitionForClient
             {
                 // Basics
-                Code = def.Code,
                 Collection = def.Collection,
                 DefinitionId = def.DefinitionId,
                 Type = def.Type,
 
-                // Data
-                Rows = def.Rows?.Select(r => new ReportDimensionDefinitionForClient
-                {
-                    Path = r.Path,
-                    Label = r.Label,
-                    Label2 = r.Label2,
-                    Label3 = r.Label3,
-                    AutoExpand = r.AutoExpand ?? false,
-                    Modifier = r.Modifier,
-                    OrderDirection = r.OrderDirection,
-                })?.ToList() ?? new List<ReportDimensionDefinitionForClient>(),
-                ShowRowsTotal = def.ShowRowsTotal ?? false,
-
-                Columns = def.Columns?.Select(c => new ReportDimensionDefinitionForClient
-                {
-                    Path = c.Path,
-                    Label = c.Label,
-                    Label2 = c.Label2,
-                    Label3 = c.Label3,
-                    AutoExpand = c.AutoExpand ?? false,
-                    Modifier = c.Modifier,
-                    OrderDirection = c.OrderDirection,
-                })?.ToList() ?? new List<ReportDimensionDefinitionForClient>(),
-                ShowColumnsTotal = def.ShowColumnsTotal ?? false,
-
-                Measures = def.Measures?.Select(m => new ReportMeasureDefinitionForClient
-                {
-                    Path = m.Path,
-                    Label = m.Label,
-                    Label2 = m.Label2,
-                    Label3 = m.Label3,
-                    OrderDirection = m.OrderDirection,
-                    Aggregation = m.Aggregation,
-                })?.ToList() ?? new List<ReportMeasureDefinitionForClient>(),
-
-                Select = def.Select?.Select(s => new ReportSelectDefinitionForClient
-                {
-                    Path = s.Path,
-                    Label = s.Label,
-                    Label2 = s.Label2,
-                    Label3 = s.Label3,
-                })?.ToList() ?? new List<ReportSelectDefinitionForClient>(),
-
-                OrderBy = def.OrderBy,
-                Top = def.Top ?? 0,
-
-                // Filter
-                Filter = def.Filter,
-                Parameters = def.Parameters?.Select(p => new ReportParameterDefinitionForClient
-                {
-                    Key = p.Key,
-                    Label = p.Label,
-                    Label2 = p.Label2,
-                    Label3 = p.Label3,
-                    Visibility = p.Visibility,
-                    Value = p.Value,
-                    Control = p.Control,
-                    ControlOptions = p.ControlOptions,
-                })?.ToList() ?? new List<ReportParameterDefinitionForClient>(),
-
-                // Chart
-                Chart = def.Chart,
-                DefaultsToChart = def.DefaultsToChart ?? false,
-
                 // Title
+                Id = def.Id,
+                Code = def.Code,
                 Title = def.Title,
                 Title2 = def.Title2,
                 Title3 = def.Title3,
                 Description = def.Description,
                 Description2 = def.Description2,
                 Description3 = def.Description3,
+
+                // Data
+                Rows = def.Rows?.Select(r => new ReportDefinitionDimensionForClient
+                {
+                    KeyExpression = r.KeyExpression,
+                    DisplayExpression = r.DisplayExpression,
+                    Localize = r.Localize ?? false,
+                    Label = r.Label,
+                    Label2 = r.Label2,
+                    Label3 = r.Label3,
+                    OrderDirection = r.OrderDirection,
+                    AutoExpandLevel = r.AutoExpandLevel ?? 0,
+                    ShowAsTree = r.ShowAsTree ?? false,
+                    Attributes = r.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
+                    {
+                        Expression = a.Expression,
+                        Localize = a.Localize ?? false,
+                        Label = a.Label,
+                        Label2 = a.Label2,
+                        Label3 = a.Label3,
+                        OrderDirection = a.OrderDirection,
+                    })?.ToList() ?? new List<ReportDefinitionDimensionAttributeForClient>(),
+                })?.ToList() ?? new List<ReportDefinitionDimensionForClient>(),
+                ShowRowsTotal = def.ShowRowsTotal ?? false,
+                RowsTotalLabel = def.RowsTotalLabel,
+                RowsTotalLabel2 = def.RowsTotalLabel2,
+                RowsTotalLabel3 = def.RowsTotalLabel3,
+
+                Columns = def.Columns?.Select(c => new ReportDefinitionDimensionForClient
+                {
+                    KeyExpression = c.KeyExpression,
+                    DisplayExpression = c.DisplayExpression,
+                    Localize = c.Localize ?? false,
+                    Label = c.Label,
+                    Label2 = c.Label2,
+                    Label3 = c.Label3,
+                    OrderDirection = c.OrderDirection,
+                    AutoExpandLevel = c.AutoExpandLevel ?? 0,
+                    ShowAsTree = c.ShowAsTree ?? false,
+                    Attributes = c.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
+                    {
+                        Expression = a.Expression,
+                        Localize = a.Localize ?? false,
+                        Label = a.Label,
+                        Label2 = a.Label2,
+                        Label3 = a.Label3,
+                        OrderDirection = a.OrderDirection,
+                    })?.ToList() ?? new List<ReportDefinitionDimensionAttributeForClient>(),
+                })?.ToList() ?? new List<ReportDefinitionDimensionForClient>(),
+                ShowColumnsTotal = def.ShowColumnsTotal ?? false,
+                ColumnsTotalLabel = def.ColumnsTotalLabel,
+                ColumnsTotalLabel2 = def.ColumnsTotalLabel2,
+                ColumnsTotalLabel3 = def.ColumnsTotalLabel3,
+
+                Measures = def.Measures?.Select(m => new ReportDefinitionMeasureForClient
+                {
+                    Expression = m.Expression,
+                    Label = m.Label,
+                    Label2 = m.Label2,
+                    Label3 = m.Label3,
+                    OrderDirection = m.OrderDirection,
+                    Control = m.Control,
+                    ControlOptions = m.ControlOptions,
+                    DangerWhen = m.DangerWhen,
+                    WarningWhen = m.WarningWhen,
+                    SuccessWhen = m.SuccessWhen,
+                })?.ToList() ?? new List<ReportDefinitionMeasureForClient>(),
+
+                Select = def.Select?.Select(s => new ReportDefinitionSelectForClient
+                {
+                    Expression = s.Expression,
+                    Localize = s.Localize ?? false,
+                    Label = s.Label,
+                    Label2 = s.Label2,
+                    Label3 = s.Label3,
+                    Control = s.Control,
+                    ControlOptions = s.ControlOptions,
+                })?.ToList() ?? new List<ReportDefinitionSelectForClient>(),
+
+                OrderBy = def.OrderBy,
+                Top = def.Top ?? 0,
+
+                // Filter
+                Filter = def.Filter,
+                Having = def.Having,
+                Parameters = def.Parameters?.Select(p => new ReportDefinitionParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    Visibility = p.Visibility,
+                    DefaultExpression = p.DefaultExpression,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions,
+                })?.ToList() ?? new List<ReportDefinitionParameterForClient>(),
+
+                // Drilldown
+                IsCustomDrilldown = def.IsCustomDrilldown ?? false,
+
+                // Chart
+                Chart = def.Chart,
+                DefaultsToChart = def.DefaultsToChart ?? false,
+                ChartOptions = def.ChartOptions,
 
                 // Main Menu
                 ShowInMainMenu = def.ShowInMainMenu ?? false,

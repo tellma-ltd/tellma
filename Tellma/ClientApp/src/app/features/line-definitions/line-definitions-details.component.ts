@@ -39,9 +39,9 @@ export class LineDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   // private lineDefinitionsApi = this.api.lineDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Columns,Entries/ParentAccountType,Entries/EntryType,Entries/CustodyDefinitions/CustodyDefinition,
-Entries/ResourceDefinitions/ResourceDefinition,GenerateParameters,
-Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRole,StateReasons`;
+  public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.CustodyDefinitions.CustodyDefinition,
+Entries.ResourceDefinitions.ResourceDefinition,GenerateParameters,
+Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
 
   create = () => {
     const result: LineDefinitionForSave = {};

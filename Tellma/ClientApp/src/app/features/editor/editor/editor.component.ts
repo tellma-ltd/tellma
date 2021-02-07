@@ -128,6 +128,15 @@ export class EditorComponent implements ControlValueAccessor {
     return 0;
   }
 
+  public get noSeparator(): boolean {
+    if (this.desc.control === 'number' || this.desc.control === 'percent') {
+      return this.desc.noSeparator;
+    }
+
+    console.error(`Editor error: requesting noSeparator from a ${this.desc.control}`);
+    return true;
+  }
+
   public get prefix(): string {
     if (this.desc.control === 'serial') {
       return this.desc.prefix;

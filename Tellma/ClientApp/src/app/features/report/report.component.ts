@@ -10,19 +10,21 @@ import {
 } from '~/app/data/workspace.service';
 import {
   ChoicePropDescriptor,
-  EntityDescriptor, metadata, getChoices, NavigationPropDescriptor, PropVisualDescriptor
+  EntityDescriptor,
+  metadata,
+  getChoices,
+  PropVisualDescriptor
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
-import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, computePropDesc, descFromControlOptions, updateOn } from '~/app/data/util';
+import { isSpecified, updateOn } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { formatNumber } from '@angular/common';
-
-interface ParameterInfo { label: () => string; key: string; desc: PropVisualDescriptor; isRequired: boolean; }
+import { ParameterInfo, QueryexUtil } from '~/app/data/queryex-util';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 
 @Component({
   selector: 't-report',
@@ -55,16 +57,15 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  private badDefinition = false;
   private _parameterCount: number = null;
   private _showChart: boolean;
   private _subscriptions: Subscription;
   private refresh$ = new Subject<void>();
   private export$ = new Subject<string>();
-  private _currentFilter: string;
   private _currentDefinition: ReportDefinitionForClient;
   private _currentEntityDescriptor: EntityDescriptor;
   private _currentParameters: ParameterInfo[] = [];
-  private _parametersErrorMessage: string;
   private _views: { view: ReportView, label: string, icon: string }[] = [
     { view: ReportView.pivot, label: 'Table', icon: 'table' },
     { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
@@ -78,7 +79,8 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute, public modalService: NgbModal) { }
+    private router: Router, private route: ActivatedRoute, public modalService: NgbModal,
+    private customUserSettings: CustomUserSettingsService) { }
 
   ngOnInit() {
     // Pick up state from the URL
@@ -112,40 +114,32 @@ export class ReportComponent implements OnInit, OnDestroy {
 
         // Read the arguments from the URL
         for (const p of this.parameters) {
-          const urlStringValue = params.get(p.key) || null;
+          const urlStringValue = params.get(p.keyLower) || null;
           let urlValue: any = null;
           if (urlStringValue === null) {
             urlValue = null;
           } else {
             try {
-              switch (p.desc.control) {
-                case 'text':
-                case 'date':
+              switch (p.datatype) {
+                case 'datetimeoffset':
                 case 'datetime':
+                case 'date':
+                case 'string':
                   urlValue = urlStringValue;
                   break;
-                case 'number':
-                case 'percent':
-                case 'serial':
+                case 'numeric':
                   urlValue = +urlStringValue;
                   break;
-                case 'boolean':
+                case 'bit':
                   urlValue = urlStringValue.toLowerCase() === 'true';
                   break;
-                case 'choice':
-                  urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
-                  break;
+                case 'boolean':
+                case 'hierarchyid':
+                case 'geography':
+                case 'entity':
+                case 'null':
                 default:
-                  const navPropDesc = p.desc;
-                  const collection = navPropDesc.control;
-                  const metadataFn = metadata[collection];
-                  if (!metadataFn) {
-                    // developer mistake
-                    console.error(`Collection @${collection} was not found`);
-                  }
-                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definitionId);
-                  urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
-
+                  console.error(`Unsupported parameter datatype ${p.datatype}.`);
                   break;
               }
             } catch (ex) {
@@ -153,7 +147,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             }
           }
 
-          this.arguments[p.key] = urlValue;
+          this.arguments[p.keyLower] = urlValue;
         }
 
         this.immutableArguments = { ...this.arguments };
@@ -188,8 +182,17 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
 
     const coll = this.definition.Collection;
+    if (!coll) {
+      return null;
+    }
+
+    const metadataFn = metadata[coll];
+    if (!metadataFn) {
+      return null;
+    }
+
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
+    return metadataFn(this.workspace, this.translate, definitionId);
   }
 
   get apiEndpoint(): string {
@@ -199,12 +202,17 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get state(): ReportStore {
 
+    const key = this.stateKey;
     const rs = this.workspace.currentTenant.reportState;
-    if (!rs[this.stateKey]) {
-      rs[this.stateKey] = new ReportStore();
+    if (!rs[key]) {
+      rs[key] = new ReportStore();
     }
 
-    return rs[this.stateKey];
+    return rs[key];
+  }
+
+  public get stateKey(): string {
+    return this.mode === 'screen' ? this.definitionId.toString() : `${this.definition.Id || 'new'}/preview`;
   }
 
   private urlStateChanged(): void {
@@ -219,14 +227,21 @@ export class ReportComponent implements OnInit, OnDestroy {
         params.view = this.view;
       }
 
-      if (!!this.definition && this.definition.Type === 'Details' && !!this.state.skip) {
-        params.skip = this.state.skip;
+      if (!!this.definition && this.definition.Type === 'Details') {
+        const s = this.state;
+        if (!!s.skip) {
+          params.skip = s.skip;
+        }
+
+        if (!!s.orderbyKey) {
+          params.$orderby = `${s.orderbyKey} ${s.orderbyDir}`;
+        }
       }
 
       this.parameters.forEach(p => {
-        const value = this.arguments[p.key];
+        const value = this.arguments[p.keyLower];
         if (isSpecified(value)) {
-          params[p.key] = value + '';
+          params[p.keyLower] = value + '';
         }
       });
 
@@ -234,11 +249,15 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  public onOrderByChange() {
+    this.urlStateChanged();
+  }
+
   // UI Bindings
 
   get title(): string {
     const title = this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Title');
-    return title; // this.isScreenMode ? title : `${title} (${this.translate.instant('Preview')})`;
+    return title;
   }
 
   get views() {
@@ -247,95 +266,20 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   get parameters(): ParameterInfo[] {
-    if (!this.definition) {
+    if (this.definition !== this._currentDefinition || this.entityDescriptor !== this._currentEntityDescriptor) {
+      this._currentDefinition = this.definition;
+      this._currentEntityDescriptor = this.entityDescriptor;
+
       this._currentParameters = [];
-    } else if (
-      this.definition.Filter !== this._currentFilter ||
-      this.definition !== this._currentDefinition ||
-      this.entityDescriptor !== this._currentEntityDescriptor) {
-
-      try {
-        this._parametersErrorMessage = null;
-        this._currentParameters = [];
-        this._currentFilter = this.definition.Filter;
-        this._currentDefinition = this.definition;
-        this._currentEntityDescriptor = this.entityDescriptor;
-
-        // Grab a hold of the current tenant
-        const ws = this.workspace.currentTenant;
-
-        //////// (1) Get the default parameters from filter and built in parameter descriptors
-        const defaultParams: { [key: string]: ParameterInfo } = {};
-
-        // get the placeholder atoms and the built in parameter descriptors
-        const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(this.definition.Filter));
-        const desc = this.entityDescriptor;
-        const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
-
-        // The filter placeholders
-        for (const atom of placeholderAtoms) {
-          const key = atom.value.substr(1);
-          const keyLower = key.toLowerCase();
-
-          // Auto-calculate the property descriptor of this atom
-          const propDesc = computePropDesc(
-            this.workspace,
-            this.translate,
-            this.definition.Collection,
-            this.definition.DefinitionId,
-            atom.path, atom.property, atom.modifier);
-
-          defaultParams[keyLower] = {
-            label: propDesc.label,
-            key,
-            desc: propDesc,
-            isRequired: false
-          };
+      if (!!this.definition) {
+        try {
+          const { parameters } = QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
+          this._currentParameters = parameters;
+          this.badDefinition = false;
+        } catch {
+          // Problems will be reported by the preview
+          this.badDefinition = true;
         }
-
-        // The built-in params
-        for (const paramDesc of builtInParamsDescriptors) {
-          const key = paramDesc.key;
-          const keyLower = key.toLowerCase();
-          const propDesc = paramDesc.desc;
-
-          defaultParams[keyLower] = {
-            label: propDesc.label,
-            key,
-            desc: propDesc,
-            isRequired: paramDesc.isRequired
-          };
-        }
-
-        // (2) Override defaults using values from definitions.Parameters;
-        // The parameter definitions can override 3 things (1) order (2) label (3) is required
-        const params = this.definition.Parameters || [];
-        for (const p of params) {
-          const keyLower = p.Key.toLowerCase();
-
-          if (p.Visibility === 'None') {
-            // This hides parameters that are explicitly hidden
-            delete defaultParams[keyLower];
-          } else {
-            const paramInfo = defaultParams[keyLower];
-            if (!!paramInfo) {
-              paramInfo.label = !!p.Label ? () => ws.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
-              paramInfo.isRequired = p.Visibility === 'Required';
-              paramInfo.desc = descFromControlOptions(ws, p.Control, p.ControlOptions, paramInfo.desc);
-              this._currentParameters.push(paramInfo);
-              delete defaultParams[keyLower];
-            }
-          }
-        }
-
-        // (3) Add the remaining parameters from filter that have no definitions
-        for (const key of Object.keys(defaultParams)) {
-          this._currentParameters.push(defaultParams[key]);
-        }
-
-      } catch (ex) {
-        console.error(ex.message);
-        this._parametersErrorMessage = ex;
       }
 
       // When the number of parameters changes it might change the size of
@@ -401,16 +345,19 @@ export class ReportComponent implements OnInit, OnDestroy {
     return !!this.definition && this.definition.Type === 'Summary' && !!this.definition.Chart;
   }
 
-  public get stateKey(): string {
-    return this.mode === 'screen' ? this.definitionId.toString() : '<preview>'; // In preview mode a local state is used anyways
-  }
-
   public get isChart(): boolean {
     return this.view === ReportView.chart && !!this.definition && this.definition.Type === 'Summary';
   }
 
   public onArgumentChange() {
     this.immutableArguments = { ...this.arguments };
+
+    if (this.isScreenMode) {
+      // Save the arguments in user settings so the main menu uses them to launch the screen next time
+      const argsString = JSON.stringify(this.arguments);
+      this.customUserSettings.save(`report/${this.definitionId}/arguments`, argsString);
+    }
+
     this.urlStateChanged();
   }
 
@@ -428,26 +375,25 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get showParametersSection(): boolean {
-    return (this.showParameters && !this.collapseParameters) || this.showParametersErrorMessage;
+    return this.showParameters && !this.collapseParameters;
   }
 
   public get showParameters(): boolean {
     return this.parameters.length > 0;
   }
 
-  public get showParametersErrorMessage(): boolean {
-    return !!this._parametersErrorMessage;
-  }
-
-  public get parametersErrorMessage(): string {
-    return this._parametersErrorMessage;
-  }
-
   public get areAllRequiredParamsSpecified(): boolean {
     const args = this.arguments;
-    return this.parameters
-      .filter(p => p.isRequired)
-      .every(p => isSpecified(args[p.key]));
+    return this.parameters.every(p => !p.isRequired || isSpecified(args[p.keyLower]));
+  }
+
+  public get showPreview(): boolean {
+    // We show the preview in case of bad definition cause it displays the error message
+    return this.badDefinition || this.areAllRequiredParamsSpecified;
+  }
+
+  public get disableRefresh(): boolean {
+    return this.badDefinition || !this.areAllRequiredParamsSpecified;
   }
 
   public get refresh(): Observable<void> {
@@ -534,10 +480,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Description');
   }
 
-  public get disableRefresh(): boolean {
-    return !this.areAllRequiredParamsSpecified || this.state.disableFetch;
-  }
-
   public get showEditDefinition(): boolean {
     return this.isScreenMode;
   }
@@ -575,4 +517,5 @@ export class ReportComponent implements OnInit, OnDestroy {
   public onToggleCollapseParameters() {
     this.collapseParameters = !this.collapseParameters;
   }
+
 }

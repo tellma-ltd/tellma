@@ -8,7 +8,7 @@ using Tellma.Entities.Descriptors;
 namespace Tellma.Data.Queries
 {
     /// <summary>
-    /// This represents a query without any one-to-many path steps (e.g. expand=Order/LineItems is not allowed).
+    /// This represents a query without any one-to-many path steps (e.g. expand=Document.Lines is not allowed).
     /// This is a helper class used internally in the implementation of <see cref="Query{T}"/> and should not be used elsewhere in the solution
     /// </summary>
     public class QueryInternal
@@ -54,13 +54,13 @@ namespace Tellma.Data.Queries
         /// </summary>
         public List<ArraySegment<string>> PathsToParentEntitiesWithExpandedAncestors { get; set; } = new List<ArraySegment<string>>();
 
-        public SelectExpression Select { get; set; } // Should NOT contain collection nav properties
+        public ExpressionSelect Select { get; set; } // Should NOT contain collection nav properties
 
-        public ExpandExpression Expand { get; set; } // Should NOT contain collection nav properties
+        public ExpressionExpand Expand { get; set; } // Should NOT contain collection nav properties
 
-        public FilterExpression Filter { get; set; }
+        public ExpressionFilter Filter { get; set; }
 
-        public OrderByExpression OrderBy { get; set; }
+        public ExpressionOrderBy OrderBy { get; set; }
 
         public IEnumerable<object> Ids { get; set; }
 
@@ -86,20 +86,26 @@ namespace Tellma.Data.Queries
 
         public string PrepareCountSql(
             Func<Type, string> sources,
+            SqlStatementVariables vars,
             SqlStatementParameters ps,
             int userId,
             DateTime? userToday,
             int maxCount)
         {
             // (1) Prepare the JOIN's clause
-            var joinTree = PrepareJoin();
-            var joinSql = joinTree.GetSql(sources, FromSql);
+            var joinTrie = PrepareJoin();
+            var joinSql = joinTrie.GetSql(sources, FromSql);
+
+            // Compilation context
+            var today = userToday ?? DateTime.Today;
+            var now = DateTimeOffset.Now;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
             string selectSql = maxCount > 0 ? $"SELECT TOP {maxCount} [P].*" : "SELECT [P].*";
 
             // (3) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
+            string whereSql = PrepareWhereSql(ctx);
 
             // (4) Finally put together the final SQL statement and return it
             string sql = QueryTools.CombineSql(
@@ -109,7 +115,9 @@ namespace Tellma.Data.Queries
                        whereSql: whereSql,
                        orderbySql: null,
                        offsetFetchSql: null,
-                       groupbySql: null
+                       groupbySql: null,
+                       havingSql: null,
+                       selectFromTempSql: null
                    );
 
             sql = $@"SELECT COUNT(*) As [Count] FROM (
@@ -126,26 +134,32 @@ namespace Tellma.Data.Queries
         /// </summary>
         public SqlStatement PrepareStatement(
             Func<Type, string> sources,
+            SqlStatementVariables vars,
             SqlStatementParameters ps,
             int userId,
             DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
-            var joinTree = PrepareJoin();
-            var joinSql = joinTree.GetSql(sources, FromSql);
+            var joinTrie = PrepareJoin();
+            var joinSql = joinTrie.GetSql(sources, FromSql);
+
+            // Compilation context
+            var today = userToday ?? DateTime.Today;
+            var now = DateTimeOffset.Now;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
-            SqlSelectClause selectClause = PrepareSelect(joinTree);
+            SqlSelectClause selectClause = PrepareSelect(joinTrie);
             var selectSql = selectClause.ToSql(IsAncestorExpand);
 
             // (3) Prepare the inner join with the principal query (if any)
-            string principalQuerySql = PreparePrincipalQuery(sources, ps, userId, userToday);
+            string principalQuerySql = PreparePrincipalQuerySql(ctx);
 
             // (4) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
+            string whereSql = PrepareWhereSql(ctx);
 
             // (5) Prepare the ORDERBY clause
-            string orderbySql = PrepareOrderBy(joinTree);
+            string orderbySql = PrepareOrderBySql(ctx);
 
             // (6) Prepare the OFFSET and FETCH clauses
             string offsetFetchSql = PrepareOffsetFetch();
@@ -158,7 +172,9 @@ namespace Tellma.Data.Queries
                     whereSql: whereSql,
                     orderbySql: orderbySql,
                     offsetFetchSql: offsetFetchSql,
-                    groupbySql: null
+                    groupbySql: null,
+                    havingSql: null,
+                    selectFromTempSql: null
                 );
 
             // (8) Return the result
@@ -172,28 +188,6 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Creates the SQL WHERE clause of the current query
-        /// </summary>
-        public string WhereSql(
-            Func<Type, string> sources,
-            JoinTrie joins,
-            SqlStatementParameters ps,
-            int userId,
-            DateTime? userToday)
-        {
-            return PrepareWhere(sources, joins, ps, userId, userToday);
-        }
-
-        /// <summary>
-        /// Creates the <see cref="JoinTrie"/> of the current query
-        /// </summary>
-        public JoinTrie JoinSql()
-        {
-            return PrepareJoin();
-        }
-
-
-        /// <summary>
         /// Create a <see cref="SqlStatement"/> that contains all the needed information to execute the query
         /// as an INNER JOIN of any one of the other queries that uses it as a principal query
         /// IMPORTANT: Calling this method will keep a permanent cache of some parts of the result, therefore
@@ -201,6 +195,7 @@ namespace Tellma.Data.Queries
         /// </summary>
         private string PrepareStatementAsPrincipal(
             Func<Type, string> sources,
+            SqlStatementVariables vars,
             SqlStatementParameters ps,
             bool isAncestorExpand,
             ArraySegment<string> pathToCollectionProperty,
@@ -208,21 +203,26 @@ namespace Tellma.Data.Queries
             DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
-            JoinTrie joinTree = PrepareJoin(pathToCollectionProperty);
-            var joinSql = joinTree.GetSql(sources, FromSql);
+            JoinTrie joinTrie = PrepareJoin(pathToCollectionProperty);
+            var joinSql = joinTrie.GetSql(sources, FromSql);
+
+            // Compilation context
+            var today = userToday ?? DateTime.Today;
+            var now = DateTimeOffset.Now;
+            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
-            SqlSelectClause selectClause = PrepareSelectAsPrincipal(joinTree, pathToCollectionProperty, isAncestorExpand);
+            SqlSelectClause selectClause = PrepareSelectAsPrincipal(joinTrie, pathToCollectionProperty, isAncestorExpand);
             var selectSql = selectClause.ToSql(IsAncestorExpand);
 
             // (3) Prepare the inner join with the principal query (if any)
-            string principalQuerySql = PreparePrincipalQuery(sources, ps, userId, userToday);
+            string principalQuerySql = PreparePrincipalQuerySql(ctx);
 
             // (4) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
+            string whereSql = PrepareWhereSql(ctx);
 
             // (5) Prepare the ORDERBY clause
-            string orderbySql = PrepareOrderBy(joinTree);
+            string orderbySql = PrepareOrderBySql(ctx);
 
             // (6) Prepare the OFFSET and FETCH clauses
             string offsetFetchSql = PrepareOffsetFetch();
@@ -241,7 +241,9 @@ namespace Tellma.Data.Queries
                     whereSql: whereSql,
                     orderbySql: orderbySql,
                     offsetFetchSql: offsetFetchSql,
-                    groupbySql: null
+                    groupbySql: null,
+                    havingSql: null,
+                    selectFromTempSql: null
                 );
 
             // (8) Return the result
@@ -279,8 +281,8 @@ namespace Tellma.Data.Queries
             HashSet<JoinTrie> selectedJoins = new HashSet<JoinTrie>();
 
             // For every expanded entity that has not been tainted by a select argument, we add all its properties to the list of selects
-            Expand ??= ExpandExpression.Empty;
-            foreach (var expand in Expand.Union(ExpandExpression.RootSingleton))
+            Expand ??= ExpressionExpand.Empty;
+            foreach (var expand in Expand.Union(ExpressionExpand.RootSingleton))
             {
                 string[] path = expand.Path;
                 for (int i = 0; i <= path.Length; i++)
@@ -293,7 +295,7 @@ namespace Tellma.Data.Queries
                         if (join == null)
                         {
                             // Developer mistake
-                            throw new InvalidOperationException($"The path '{string.Join('/', subpath)}' was not found in the joinTree");
+                            throw new InvalidOperationException($"The path '{string.Join('.', subpath)}' was not found in the joinTree");
                         }
                         else if (selectedJoins.Contains(join))
                         {
@@ -333,7 +335,7 @@ namespace Tellma.Data.Queries
                         if (join == null)
                         {
                             // Developer mistake
-                            throw new InvalidOperationException($"The path '{string.Join('/', subpath)}' was not found in the joinTree");
+                            throw new InvalidOperationException($"The path '{string.Join('.', subpath)}' was not found in the joinTree");
                         }
                         else if (selectedJoins.Contains(join))
                         {
@@ -400,7 +402,7 @@ namespace Tellma.Data.Queries
             if (string.IsNullOrWhiteSpace(symbol))
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Could not find the path {string.Join("/", pathToCollectionEntity)} in the joinTree");
+                throw new InvalidOperationException($"Could not find the path {string.Join(".", pathToCollectionEntity)} in the joinTree");
             }
 
             var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName)>
@@ -430,12 +432,12 @@ namespace Tellma.Data.Queries
 
             if (Filter != null)
             {
-                allPaths.AddRange(Filter.Select(e => e.Path));
+                allPaths.AddRange(Filter.ColumnAccesses().Select(e => e.Path));
             }
 
             if (OrderBy != null)
             {
-                allPaths.AddRange(OrderBy.Select(e => e.Path));
+                allPaths.AddRange(OrderBy.ColumnAccesses().Select(e => e.Path));
             }
 
             if (pathToCollection != null)
@@ -456,13 +458,21 @@ namespace Tellma.Data.Queries
         /// If this query has a principal query, this method returns the SQL of the principal query in the form of an
         /// INNER JOIN to restrict the result to those entities that are related to the principal query
         /// </summary>
-        private string PreparePrincipalQuery(Func<Type, string> sources, SqlStatementParameters ps, int userId, DateTime? userToday)
+        private string PreparePrincipalQuerySql(QxCompilationContext ctx)
         {
             string principalQuerySql = "";
             if (PrincipalQuery != null)
             {
                 // Get the inner sql and append 4 spaces before each line for aesthetics
-                string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(sources, ps, IsAncestorExpand, PathToCollectionPropertyInPrincipal, userId, userToday);
+                string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(
+                    ctx.Sources, 
+                    ctx.Variables, 
+                    ctx.Parameters,
+                    IsAncestorExpand, 
+                    PathToCollectionPropertyInPrincipal, 
+                    ctx.UserId, 
+                    ctx.Today);
+
                 innerSql = QueryTools.IndentLines(innerSql);
 
                 if (IsAncestorExpand)
@@ -473,12 +483,6 @@ namespace Tellma.Data.Queries
                 }
                 else
                 {
-                    // Old Version
-                    //                    principalQuerySql = $@"INNER JOIN (
-                    //{innerSql}
-                    //) As [S] ON [S].[Id] = [P].[{ForeignKeyToPrincipalQuery}]";
-
-                    // New Version
                     // This works since when there is a principal query, there is no WHERE clause
                     principalQuerySql = $@"WHERE [P].[{ForeignKeyToPrincipalQuery}] IN (
 {innerSql}
@@ -492,8 +496,10 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTrie joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
+        private string PrepareWhereSql(QxCompilationContext ctx)
         {
+            var ps = ctx.Parameters;
+
             // WHERE is cached 
             if (_cachedWhere == null)
             {
@@ -504,7 +510,7 @@ namespace Tellma.Data.Queries
 
                 if (Filter != null)
                 {
-                    whereFilter = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday);
+                    whereFilter = Filter.Expression.CompileToBoolean(ctx);
                 }
 
                 if (Ids != null && Ids.Any())
@@ -625,7 +631,7 @@ namespace Tellma.Data.Queries
                 // The final WHERE clause (if any)
                 string whereSql = "";
 
-                var clauses = new List<string> { whereFilter, whereInIds, whereInParentIds, whereInPropValues }.Where(e => e != null);
+                var clauses = new List<string> { whereFilter, whereInIds, whereInParentIds, whereInPropValues }.Where(e => !string.IsNullOrWhiteSpace(e));
                 if (clauses.Any())
                 {
                     whereSql = clauses.Aggregate((c1, c2) => $"{c1}) AND ({c2}");
@@ -641,32 +647,31 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the ORDER BY clause of the SQL query using the <see cref="OrderBy"/> argument: ORDER BY ABC
         /// </summary>
-        private string PrepareOrderBy(JoinTrie joinTree)
+        private string PrepareOrderBySql(QxCompilationContext ctx)
         {
-            List<string> orderbys = new List<string>(OrderBy?.Count() ?? 0);
-            if (OrderBy != null)
+            var orderByAtomsCount = OrderBy?.Count() ?? 0;
+            if (orderByAtomsCount == 0)
             {
-                foreach (var atom in OrderBy)
+                return "";
+            }
+
+            List<string> orderbys = new List<string>(orderByAtomsCount);
+            foreach (var expression in OrderBy)
+            {
+                string orderby = expression.CompileToNonBoolean(ctx);
+                if (expression.IsDescending)
                 {
-                    var join = joinTree[atom.Path];
-                    if (join == null)
-                    {
-                        // Developer mistake
-                        throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
-                    }
-                    var symbol = join.Symbol;
-                    string orderby = $"[{symbol}].[{atom.Property}] {(atom.Desc ? "DESC" : "ASC")}";
-                    orderbys.Add(orderby);
+                    orderby += " DESC";
                 }
+                else
+                {
+                    orderby += " ASC";
+                }
+
+                orderbys.Add(orderby);
             }
 
-            string orderbySql = "";
-            if (orderbys.Count > 0)
-            {
-                orderbySql = "ORDER BY " + string.Join(", ", orderbys);
-            }
-
-            return orderbySql;
+            return "ORDER BY " + string.Join(", ", orderbys);
         }
 
         /// <summary>

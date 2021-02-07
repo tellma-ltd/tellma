@@ -10,7 +10,7 @@ import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metad
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { CustodyDefinitionForSave, metadata_CustodyDefinition, CustodyDefinition } from '~/app/data/entities/custody-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
-import { CustodyDefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { CustodyDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
@@ -33,7 +33,7 @@ export class CustodyDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private custodyDefinitionsApi = this.api.custodyDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `ReportDefinitions/ReportDefinition,
+  public expand = `ReportDefinitions.ReportDefinition,
 Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,CustodianDefinition`;
 
   create = () => {

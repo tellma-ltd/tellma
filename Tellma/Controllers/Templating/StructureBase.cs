@@ -35,7 +35,7 @@ namespace Tellma.Controllers.Templating
             var expLower = exp.ToLower();
             if (expLower.StartsWith(_define + " "))
             {
-                var removedDefine = exp.Substring(_define.Length + 1);
+                var removedDefine = exp[(_define.Length + 1)..];
                 var pieces = removedDefine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (pieces.Length < 3 || pieces[1].ToLower() != "as")
                 {
@@ -45,27 +45,27 @@ namespace Tellma.Controllers.Templating
                 var varName = pieces[0];
                 var expression = string.Join(' ', pieces.Skip(2));
 
-                ExpressionVariable.ValidateIteratorVariableName(varName);
+                TemplexVariable.ValidateIteratorVariableName(varName);
 
                 return new StructureDefine
                 {
                     VariableName = varName,
-                    Value = ExpressionBase.Parse(expression?.Trim()) ?? throw new TemplateException($"Define expression should take the form: {_define} <var> as <expression>"),
+                    Value = TemplexBase.Parse(expression?.Trim()) ?? throw new TemplateException($"Define expression should take the form: {_define} <var> as <expression>"),
                     Template = null, // Handled by the caller
                 };
             }
             else if (expLower.StartsWith(_if + " "))
             {
-                var removedIf = exp.Substring(_if.Length + 1);
+                var removedIf = exp[(_if.Length + 1)..];
                 return new StructureIf
                 {
-                    ConditionCandidate = ExpressionBase.Parse(removedIf?.Trim()) ?? throw new TemplateException($"If expression should take the form: {_if} <expression>"),
+                    ConditionCandidate = TemplexBase.Parse(removedIf?.Trim()) ?? throw new TemplateException($"If expression should take the form: {_if} <expression>"),
                     Template = null, // Handled by the caller
                 };
             }
             else if (expLower.StartsWith(_foreach + " "))
             {
-                var removedForeach = exp.Substring(_foreach.Length + 1);
+                var removedForeach = exp[(_foreach.Length + 1)..];
                 var pieces = removedForeach.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (pieces.Length < 3 || pieces[1].ToLower() != "in")
                 {
@@ -76,12 +76,12 @@ namespace Tellma.Controllers.Templating
                 var expression = string.Join(' ', pieces.Skip(2));
 
                 // This throws exceptions if the variable name violates any rules 
-                ExpressionVariable.ValidateIteratorVariableName(varName);
+                TemplexVariable.ValidateIteratorVariableName(varName);
 
                 return new StructureForeach
                 {
                     IteratorVariableName = varName,
-                    ListCandidate = ExpressionBase.Parse(expression?.Trim()) ?? throw new TemplateException($"Foreach expression should take the form: {_foreach} <var> in <expression>"),
+                    ListCandidate = TemplexBase.Parse(expression?.Trim()) ?? throw new TemplateException($"Foreach expression should take the form: {_foreach} <var> in <expression>"),
                     Template = null, // Handled by the caller
                 };
             }

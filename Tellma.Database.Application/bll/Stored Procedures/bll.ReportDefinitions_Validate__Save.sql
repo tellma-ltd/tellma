@@ -1,10 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[ReportDefinitions_Validate__Save]
 	@Entities [ReportDefinitionList] READONLY,
-	@Parameters [ReportParameterDefinitionList] READONLY,
-	@Select [ReportSelectDefinitionList] READONLY,
-	@Rows [ReportDimensionDefinitionList] READONLY,
-	@Columns [ReportDimensionDefinitionList] READONLY,
-	@Measures [ReportMeasureDefinitionList] READONLY,
+	@Parameters [ReportDefinitionParameterList] READONLY,
+	@Select [ReportDefinitionSelectList] READONLY,
+	@Rows [ReportDefinitionDimensionList] READONLY,
+	@RowsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
+	@Columns [ReportDefinitionDimensionList] READONLY,
+	@ColumnsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
+	@Measures [ReportDefinitionMeasureList] READONLY,
 	@Top INT = 10
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

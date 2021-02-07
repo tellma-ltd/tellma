@@ -44,7 +44,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   private _viewsForSelector: SelectorChoice[] = null;
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions,Members/User';
+  public expand = 'Permissions,Members.User';
 
   create = () => {
     const result: RoleForSave = { };

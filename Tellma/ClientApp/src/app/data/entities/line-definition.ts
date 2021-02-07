@@ -80,8 +80,9 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: null,
             format: (item: LineDefinition) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
@@ -92,11 +93,11 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 TitlePlural: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
                 TitlePlural2: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
                 TitlePlural3: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
-                AllowSelectiveSigning: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
-                ViewDefaultsToForm: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
+                AllowSelectiveSigning: { datatype: 'bit', control: 'check', label: () => trx.instant('LineDefinition_AllowSelectiveSigning') },
+                ViewDefaultsToForm: { datatype: 'bit', control: 'check', label: () => trx.instant('LineDefinition_ViewDefaultsToForm') },
 
                 // New barcode stuff
-                BarcodeColumnIndex: { datatype: 'integral', control: 'number', label: () => trx.instant('LineDefinition_BarcodeColumnIndex'), minDecimalPlaces: 0, maxDecimalPlaces: 0  },
+                BarcodeColumnIndex: { datatype: 'numeric', control: 'number', label: () => trx.instant('LineDefinition_BarcodeColumnIndex'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true },
                 BarcodeProperty: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_BarcodeProperty') },
                 BarcodeExistingItemHandling: {
                     datatype: 'string',
@@ -105,7 +106,7 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                     choices: existingItemHandlingChoices,
                     format: (choice: string) => !!choice ? trx.instant('LineDefinition_Handling_' + choice) : ''
                 },
-                BarcodeBeepsEnabled: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
+                BarcodeBeepsEnabled: { datatype: 'bit', control: 'check', label: () => trx.instant('LineDefinition_BarcodeBeepsEnabled') },
 
                 GenerateLabel: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.primaryPostfix },
                 GenerateLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateLabel') + ws.secondaryPostfix },
@@ -113,7 +114,7 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 GenerateScript: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
                 PreprocessScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
                 ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
-                SavedById: { datatype: 'integral', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };

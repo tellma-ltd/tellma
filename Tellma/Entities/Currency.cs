@@ -10,6 +10,7 @@ namespace Tellma.Entities
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -26,6 +27,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Description { get; set; }
@@ -41,10 +43,12 @@ namespace Tellma.Entities
         public string Description3 { get; set; }
 
         [Display(Name = "Currency_NumericCode")]
+        [NotNull]
         public short? NumericCode { get; set; }
 
         [Display(Name = "Currency_DecimalPlaces")]
         [Required]
+        [NotNull]
         [ChoiceList(new object[] { (short)0, (short)2, (short)3 })]
         public short? E { get; set; }
     }
@@ -52,19 +56,24 @@ namespace Tellma.Entities
     public class Currency : CurrencyForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

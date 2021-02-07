@@ -38,24 +38,29 @@ export function metadata_OutboxRecord(wss: WorkspaceService, trx: TranslateServi
             select: _select,
             apiEndpoint: 'outbox',
             masterScreenUrl: 'outbox',
-            navigateToDetailsSelect: ['Document/DefinitionId'],
-            navigateToDetails: (outboxRecord: OutboxRecord, router: Router, _: string) => {
+            navigateToDetailsSelect: ['DocumentId', 'Document.DefinitionId'],
+            navigateToDetails: (outboxRecord: OutboxRecord, router: Router) => {
                 const docId = outboxRecord.DocumentId;
                 const definitionId = ws.Document[docId].DefinitionId;
+                entityDesc.navigateToDetailsFromVals([docId, definitionId], router);
+            },
+            navigateToDetailsFromVals: (vals: any[], router: Router) => {
+                const [docId, definitionId] = vals;
                 const extras = { state_key: 'from_outbox' }; // fake state key to hide forward and backward navigation in details screen
                 router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, docId, extras]);
             },
             orderby: () => ['CreatedAt desc'],
             inactiveFilter: null,
-            format: (__: EntityWithKey) => '',
+            format: (_: EntityWithKey) => '',
+            formatFromVals: (_: any[]) => '',
             properties: {
-                Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DocumentId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Assignment_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DocumentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Assignment_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Document: { datatype: 'entity', control: 'Document', label: () => trx.instant('Assignment_Document'), foreignKeyName: 'DocumentId' },
                 Comment: { datatype: 'string', control: 'text', label: () => trx.instant('Document_Comment') },
 
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
-                AssigneeId: { datatype: 'integral', control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AssigneeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_Assignee'), foreignKeyName: 'AssigneeId' },
                 OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_OpenedAt') }
             }

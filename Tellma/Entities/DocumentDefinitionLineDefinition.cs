@@ -8,6 +8,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "DocumentDefinitionLineDefinition_LineDefinition")]
         [Required]
+        [NotNull]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "DocumentDefinitionLineDefinition_IsVisibleByDefault")]
@@ -17,12 +18,15 @@ namespace Tellma.Entities
     public class DocumentDefinitionLineDefinition : DocumentDefinitionLineDefinitionForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
         [Display(Name = "DocumentDefinition")]
+        [NotNull]
         public int? DocumentDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         [Display(Name = "DocumentDefinitionLineDefinition_LineDefinition")]

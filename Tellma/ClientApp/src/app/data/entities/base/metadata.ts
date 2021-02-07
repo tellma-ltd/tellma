@@ -15,7 +15,6 @@ import { metadata_ReportDefinition } from '../report-definition';
 import { metadata_Center } from '../center';
 import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
-import { metadata_SummaryEntry } from '../summary-entry';
 import { metadata_DetailsEntry } from '../details-entry';
 import { metadata_LineForQuery } from '../line';
 import { metadata_AdminUser } from '../admin-user';
@@ -66,7 +65,6 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
-    SummaryEntry: metadata_SummaryEntry,
     MarkupTemplate: metadata_MarkupTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
@@ -91,28 +89,33 @@ export const metadata: {
  * Array of all possible DataType values
  */
 export const datatypesArray: DataType[] =
-    ['string', 'integral', 'decimal', 'date', 'datetime', 'datetimeoffset', 'boolean', 'entity'];
-
-/**
- * Array of all possible SimpleControl values
- */
-export const simpleControlsArray: SimpleControl[] =
-    ['text', 'serial', 'choice', 'number', 'percent', 'date', 'datetime', 'boolean'];
+    ['boolean', 'hierarchyid', 'geography', 'datetimeoffset', 'datetime', 'date',
+        'numeric', 'bit', 'string', 'null', 'entity'];
 
 /**
  * Names of all datatypes
  */
-export type DataType = 'string' | 'integral' | 'decimal' | 'date' | 'datetime' | 'datetimeoffset' | 'boolean' | 'entity';
+export type DataType =
+    'boolean' | 'hierarchyid' | 'geography' | 'datetimeoffset' | 'datetime' | 'date' |
+    'numeric' | 'bit' | 'string' | 'null' | 'entity';
 
 /**
  * Combines simple and entity controls
  */
 export type Control = SimpleControl | Collection;
 
+
+/**
+ * Array of all possible SimpleControl values
+ */
+export const simpleControlsArray: SimpleControl[] =
+    ['text', 'serial', 'choice', 'number', 'percent', 'date', 'datetime', 'check', 'null', 'unsupported'];
+
 /**
  * Names of simple (scalar) editors
  */
-export type SimpleControl = 'text' | 'serial' | 'choice' | 'number' | 'percent' | 'date' | 'datetime' | 'boolean';
+export type SimpleControl =
+    'text' | 'serial' | 'choice' | 'number' | 'percent' | 'date' | 'datetime' | 'check' | 'null' | 'unsupported';
 
 /**
  * Names of collections that support the standard tellma API (Get Fact)
@@ -137,7 +140,6 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
-    'SummaryEntry' |
     'MarkupTemplate' |
     'InboxRecord' |
     'OutboxRecord' |
@@ -152,46 +154,6 @@ export type Collection =
     'AdminUser' |
     'IdentityServerUser' |
     'VoucherBooklet';
-
-let _collectionsSingular: SelectorChoice[];
-let _collectionsPlural: SelectorChoice[];
-
-export function collectionsWithEndpoint(ws: WorkspaceService, trx: TranslateService, singular = false): SelectorChoice[] {
-    if (!_collectionsSingular) {
-        const source = Object.keys(metadata)
-            .filter(key => {
-                const meta = metadata[key](ws, trx, null);
-                return !!meta && !meta.isAdmin && !!meta.apiEndpoint;
-            });
-
-        _collectionsSingular = source
-            .map(key => ({
-                value: key,
-                name: metadata[key](ws, trx, null).titleSingular
-            }))
-            .sort((a, b) => a.name() < b.name() ? - 1 : a.name() > b.name() ? 1 : 0);
-
-        _collectionsPlural = source
-            .map(key => ({
-                value: key,
-                name: metadata[key](ws, trx, null).titlePlural
-            }))
-            .sort((a, b) => a.name() < b.name() ? - 1 : a.name() > b.name() ? 1 : 0);
-    }
-
-    return singular ? _collectionsSingular : _collectionsPlural;
-}
-
-let _simpleControls: SelectorChoice[];
-
-export function simpleControls(trx: TranslateService): SelectorChoice[] {
-    if (!_simpleControls) {
-        _simpleControls = simpleControlsArray
-            .map(c => ({ value: c, name: () => trx.instant('Control_' + c) }));
-    }
-
-    return _simpleControls;
-}
 
 export interface EntityDescriptor {
 
@@ -264,11 +226,13 @@ export interface EntityDescriptor {
      * Navigates to the details screen representing the entity with a certain Id, this is a more powerful version of screenUrl
      */
     navigateToDetails?: (entity: Entity, router: Router, statekey?: string) => void;
+    navigateToDetailsFromVals?: (vals: any[], router: Router, statekey?: string) => void;
 
     /**
      * A function that returns a display string representing the entity.
      */
     format: (item: Entity) => string;
+    formatFromVals: (vals: any[]) => string;
 
     /**
      * When applicable: returns all the values that the type parameter can take.
@@ -284,6 +248,11 @@ export interface EntityDescriptor {
      * Used for caching the list of definitions
      */
     definitionIdsArray?: SelectorChoice[];
+
+    /**
+     * Used for caching the foreign keys
+     */
+    foreignKeys?: { [fk: string]: NavigationPropDescriptor };
 
     /**
      * True for entities that belong to the admin workspace
@@ -308,14 +277,67 @@ export interface PropDescriptorBase {
      * The label of this field, typically shown on table headers
      */
     label: () => string;
+
+    /**
+     * Used by quereyex logic to determine the default parameter label
+     */
+    labelForParameter?: () => string;
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface PropVisualDescriptorBase {
+}
+
+export interface UnsupportedPropDescriptor extends UnsupportedPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'boolean' | 'hierarchyid' | 'geography';
+}
+export interface UnsupportedPropVisualDescriptor extends PropVisualDescriptorBase {
+    control: 'unsupported';
+}
+
+export interface DatetimePropDescriptor extends DatetimePropVisualDescriptor, PropDescriptorBase {
+    datatype: 'datetimeoffset' | 'datetime';
+}
+export interface DatetimePropVisualDescriptor extends PropVisualDescriptorBase {
+    control: 'datetime';
+}
+
+export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescriptorBase {
+    datatype: 'datetimeoffset' | 'datetime' | 'date';
+}
+export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
+    control: 'date';
+}
+
+export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'numeric';
+}
+export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
+    control: 'number';
+
+    /**
+     * Number of decimal places to display
+     */
+    minDecimalPlaces: number;
+    maxDecimalPlaces: number;
+    noSeparator: boolean;
 
     /**
      * Whether the field value should be displayed as RTL
      */
-    alignment?: 'left' | 'right' | 'center';
+    isRightAligned?: boolean;
+}
+
+export interface BitPropDescriptor extends BitPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'bit';
+}
+export interface BitPropVisualDescriptor extends PropVisualDescriptorBase {
+    control: 'check';
+
+    /**
+     * Optional function for formatting the boolean values, defaults are 'Yes' and 'No'
+     */
+    format?: (b: boolean) => string;
 }
 
 export interface TextPropDescriptor extends TextPropVisualDescriptor, PropDescriptorBase {
@@ -326,7 +348,7 @@ export interface TextPropVisualDescriptor extends PropVisualDescriptorBase {
 }
 
 export interface SerialPropDescriptor extends SerialPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'integral';
+    datatype: 'numeric';
 }
 export interface SerialPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'serial';
@@ -335,9 +357,8 @@ export interface SerialPropVisualDescriptor extends PropVisualDescriptorBase {
     codeWidth: number;
 }
 
-
 export interface ChoicePropDescriptor extends ChoicePropVisualDescriptor, PropDescriptorBase {
-    datatype: 'integral' | 'string';
+    datatype: 'numeric' | 'string';
 }
 export interface ChoicePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'choice';
@@ -359,26 +380,8 @@ export interface ChoicePropVisualDescriptor extends PropVisualDescriptorBase {
     selector?: { value: string | number; name: () => string }[];
 }
 
-export function getChoices(desc: ChoicePropVisualDescriptor): SelectorChoice[] {
-    desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
-    return desc.selector;
-}
-
-export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'integral' | 'decimal';
-}
-export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
-    control: 'number';
-
-    /**
-     * Number of decimal places to display
-     */
-    minDecimalPlaces: number;
-    maxDecimalPlaces: number;
-}
-
 export interface PercentPropDescriptor extends PercentPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'decimal';
+    datatype: 'numeric';
 }
 export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'percent';
@@ -388,36 +391,24 @@ export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
-}
-
-export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescriptorBase {
-    datatype: 'date' | 'datetime' | 'datetimeoffset';
-}
-export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
-    control: 'date';
-}
-
-export interface DatetimePropDescriptor extends DatetimePropVisualDescriptor, PropDescriptorBase {
-    datatype: 'datetime' | 'datetimeoffset';
-}
-export interface DatetimePropVisualDescriptor extends PropVisualDescriptorBase {
-    control: 'datetime';
-}
-
-export interface BooleanPropDescriptor extends BooleanPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'boolean';
-}
-export interface BooleanPropVisualDescriptor extends PropVisualDescriptorBase {
-    control: 'boolean';
+    noSeparator: boolean;
 
     /**
-     * Optional function for formatting the boolean values, defaults are 'Yes' and 'No'
+     * Whether the field value should be displayed as RTL
      */
-    format?: (b: boolean) => string;
+    isRightAligned?: boolean;
+}
+
+export interface NullPropDescriptor extends NullPropVisualDescriptor, PropDescriptorBase {
+    datatype: 'null';
+}
+
+export interface NullPropVisualDescriptor extends PropVisualDescriptorBase {
+    control: 'null';
 }
 
 export interface NavigationPropDescriptor extends NavigationPropVisualDescriptor, PropDescriptorBase {
-    datatype: 'entity';
+    datatype: 'entity' | 'numeric' | 'string';
     /**
      * The name of the foreign key property
      */
@@ -437,13 +428,15 @@ export interface NavigationPropVisualDescriptor extends PropVisualDescriptorBase
     filter?: string;
 }
 
-export declare type PropVisualDescriptor = TextPropVisualDescriptor | ChoicePropVisualDescriptor |
-    BooleanPropVisualDescriptor | NumberPropVisualDescriptor | PercentPropVisualDescriptor |
-    DatePropVisualDescriptor | DatetimePropVisualDescriptor | NavigationPropVisualDescriptor | SerialPropVisualDescriptor;
+export declare type PropVisualDescriptor = UnsupportedPropVisualDescriptor | DatetimePropVisualDescriptor |
+    DatePropVisualDescriptor | NumberPropVisualDescriptor | BitPropVisualDescriptor | TextPropVisualDescriptor |
+    NullPropVisualDescriptor | NavigationPropVisualDescriptor | ChoicePropVisualDescriptor | PercentPropVisualDescriptor |
+    SerialPropVisualDescriptor;
 
-export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
-    BooleanPropDescriptor | NumberPropDescriptor | PercentPropDescriptor |
-    DatePropDescriptor | DatetimePropDescriptor | NavigationPropDescriptor | SerialPropDescriptor;
+export declare type PropDescriptor = UnsupportedPropDescriptor | DatetimePropDescriptor |
+    DatePropDescriptor | NumberPropDescriptor | BitPropDescriptor | TextPropDescriptor |
+    NullPropDescriptor | NavigationPropDescriptor | ChoicePropDescriptor | PercentPropDescriptor |
+    SerialPropDescriptor;
 
 export function entityDescriptorImpl(
     pathArray: string[], baseCollection: string, baseDefinition: number,
@@ -453,16 +446,20 @@ export function entityDescriptorImpl(
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the Entity descriptor`);
     }
 
-    let currentEntityDesc = metadata[baseCollection](wss, trx, baseDefinition);
+    const metadataFn = metadata[baseCollection];
+    if (!metadataFn) {
+        throw new Error(`Unknown collection '${baseCollection}'.`);
+    }
 
+    let currentEntityDesc = metadataFn(wss, trx, baseDefinition);
     for (const step of pathArray) {
         const propDesc = currentEntityDesc.properties[step];
 
         if (!propDesc) {
-            throw new Error(`Property ${step} does not exist`);
+            throw new Error(`Property '${step}' does not exist on type ${currentEntityDesc.titleSingular()}.`);
 
         } else if (propDesc.datatype !== 'entity') {
-            throw new Error(`Property ${step} is not a navigation property`);
+            throw new Error(`Property '${step}' on type ${currentEntityDesc.titleSingular()} is not a navigation property.`);
 
         } else {
 
@@ -476,12 +473,36 @@ export function entityDescriptorImpl(
     return currentEntityDesc;
 }
 
+//////// Helper functions
+
+export function getChoices(desc: ChoicePropVisualDescriptor): SelectorChoice[] {
+    desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
+    return desc.selector;
+}
+
+/**
+ * Returns the navigation property (if any) whose foreign key is the given string.
+ */
+export function getNavPropertyFromForeignKey(entityDesc: EntityDescriptor, fkName: string): NavigationPropDescriptor {
+    if (!entityDesc.foreignKeys) {
+        entityDesc.foreignKeys = {};
+        for (const key of Object.keys(entityDesc.properties)) {
+            const propDesc = entityDesc.properties[key];
+            if (propDesc.datatype === 'entity') {
+                entityDesc.foreignKeys[propDesc.foreignKeyName] = propDesc;
+            }
+        }
+    }
+
+    return entityDesc.foreignKeys[fkName];
+}
+
 export function isText(propDesc: PropDescriptor): boolean {
     return !!propDesc && propDesc.datatype === 'string';
 }
 
 export function isNumeric(propDesc: PropDescriptor): boolean {
-    return !!propDesc && (propDesc.datatype === 'integral' || propDesc.datatype === 'decimal');
+    return !!propDesc && propDesc.datatype === 'numeric';
 }
 
 export function hasControlOptions(control: Control) {
@@ -493,10 +514,53 @@ export function hasControlOptions(control: Control) {
         case 'text':
         case 'date':
         case 'datetime':
-        case 'boolean':
+        case 'check':
+        case 'unsupported':
             // Those controls do not have additional options
             return false;
         default:
             return true;
     }
 }
+
+let _collectionsSingular: SelectorChoice[];
+let _collectionsPlural: SelectorChoice[];
+
+export function collectionsWithEndpoint(ws: WorkspaceService, trx: TranslateService, singular = false): SelectorChoice[] {
+    if (!_collectionsSingular) {
+        const source = Object.keys(metadata)
+            .filter(key => {
+                const meta = metadata[key](ws, trx, null);
+                return !!meta && !meta.isAdmin && !!meta.apiEndpoint;
+            });
+
+        _collectionsSingular = source
+            .map(key => ({
+                value: key,
+                name: metadata[key](ws, trx, null).titleSingular
+            }))
+            .sort((a, b) => a.name() < b.name() ? - 1 : a.name() > b.name() ? 1 : 0);
+
+        _collectionsPlural = source
+            .map(key => ({
+                value: key,
+                name: metadata[key](ws, trx, null).titlePlural
+            }))
+            .sort((a, b) => a.name() < b.name() ? - 1 : a.name() > b.name() ? 1 : 0);
+    }
+
+    return singular ? _collectionsSingular : _collectionsPlural;
+}
+
+let _simpleControls: SelectorChoice[];
+
+export function simpleControls(trx: TranslateService): SelectorChoice[] {
+    if (!_simpleControls) {
+        _simpleControls = simpleControlsArray
+            .filter(c => c !== 'null' && c !== 'unsupported')
+            .map(c => ({ value: c, name: () => trx.instant('Control_' + c) }));
+    }
+
+    return _simpleControls;
+}
+

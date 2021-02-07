@@ -94,7 +94,7 @@ namespace Tellma.Controllers
                 var name3 = nameof(EntryType.Name3);
                 var code = nameof(EntryType.Code);
 
-                query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query = query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}'");
             }
 
             return query;

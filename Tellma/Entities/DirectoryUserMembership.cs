@@ -2,8 +2,10 @@
 {
     public class DirectoryUserMembershipForSave : EntityWithKey<int>
     {
+        [NotNull]
         public int? UserId { get; set; }
 
+        [NotNull]
         public int? DatabaseId { get; set; }
     }
 

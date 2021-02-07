@@ -1,10 +1,10 @@
 ﻿CREATE PROCEDURE [api].[ReportDefinitions__Save]
 	@Entities [ReportDefinitionList] READONLY,
-	@Parameters [ReportParameterDefinitionList] READONLY,
-	@Select [ReportSelectDefinitionList] READONLY,
-	@Rows [ReportDimensionDefinitionList] READONLY,
-	@Columns [ReportDimensionDefinitionList] READONLY,
-	@Measures [ReportMeasureDefinitionList] READONLY,
+	@Parameters [ReportDefinitionParameterList] READONLY,
+	@Select [ReportDefinitionSelectList] READONLY,
+	@Rows [ReportDefinitionDimensionList] READONLY,
+	@Columns [ReportDefinitionDimensionList] READONLY,
+	@Measures [ReportDefinitionMeasureList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS

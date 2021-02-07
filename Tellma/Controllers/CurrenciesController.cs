@@ -97,8 +97,8 @@ namespace Tellma.Controllers
                 var desc2 = nameof(Currency.Description2);
                 var desc3 = nameof(Currency.Description3);
 
-                var filterString = $"{id} {Ops.contains} '{search}' or {name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{id} contains '{search}' or {name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
@@ -168,7 +168,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
             // By default: Order currencies by name
             var tenantInfo = _repo.GetTenantInfo();
@@ -182,7 +182,7 @@ namespace Tellma.Controllers
                 nameProperty = $"{nameof(Currency.Name3)},{nameof(Currency.Name)}";
             }
 
-            return OrderByExpression.Parse(nameProperty);
+            return ExpressionOrderBy.Parse(nameProperty);
         }
 
         public Task<(List<Currency>, Extras)> Activate(List<string> ids, ActionArguments args)

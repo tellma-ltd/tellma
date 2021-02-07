@@ -4,8 +4,6 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
@@ -90,8 +88,8 @@ namespace Tellma.Controllers
                 var name2 = nameof(Agent.Name2);
                 var name3 = nameof(Agent.Name3);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;

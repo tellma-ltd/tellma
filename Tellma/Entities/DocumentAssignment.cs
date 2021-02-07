@@ -10,15 +10,18 @@ namespace Tellma.Entities
         public int? DocumentId { get; set; }
 
         [Display(Name = "Document_Assignee")]
+        [NotNull]
         public int? AssigneeId { get; set; }
 
         [Display(Name = "Document_Comment")]
         public string Comment { get; set; }
 
         [Display(Name = "Document_AssignedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "Document_OpenedAt")]

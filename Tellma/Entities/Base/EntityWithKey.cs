@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,7 +16,8 @@ namespace Tellma.Entities
         /// <summary>
         /// Those strings cannot be used as Ids in Entities with string Ids because they will mess up the routing logic
         /// </summary>
-        public static readonly string[] RESERVED_IDS = { "new", "import", "template", "export", "export-by-ids", "aggregate", "children-of", "by-ids", "print" };
+        public static readonly HashSet<string> RESERVED_IDS = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "new", "import", "template", "export", "export-by-ids", "aggregate", "fact", "children-of", "by-ids", "print" };
 
         /// <summary>
         /// All inheriting classes will have a strongly typed Id property that is usually an int or a string,
@@ -43,6 +45,7 @@ namespace Tellma.Entities
         /// so much shared logic for tracking resources and caching them
         /// </summary>
         [Display(Name = "Id")]
+        [NotNull]
         public TKey Id { get; set; }
 
         // The below method is used by implementations that benefit from a generic object Id, such as Object Loader
@@ -50,7 +53,7 @@ namespace Tellma.Entities
         private object _id;
         public override object GetId()
         {
-            if(_id == null) // Optimization: if statement is faster than boxing TKey Id into Object every single time
+            if (_id == null) // Optimization: if statement is faster than boxing TKey Id into Object every single time
             {
                 _id = Id;
             }
@@ -70,7 +73,7 @@ namespace Tellma.Entities
             if (typeof(TKey) == typeof(string))
             {
                 string id = GetId()?.ToString();
-                if (id != null && RESERVED_IDS.Any(ri => id.Equals(ri)))
+                if (id != null && RESERVED_IDS.Contains(id))
                 {
                     var localizer = validationContext.GetRequiredService<IStringLocalizer<Strings>>();
                     var errorMessage = localizer["Error_TheFollowingKeyWordsAreReserved0", string.Join(", ", RESERVED_IDS)];

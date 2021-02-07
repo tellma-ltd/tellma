@@ -209,7 +209,7 @@ namespace Tellma.Controllers
                 var desc2 = nameof(MarkupTemplate.Description2);
                 var desc3 = nameof(MarkupTemplate.Description3);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
                 query = query.Filter(filterString);
             }
 
@@ -345,9 +345,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(MarkupTemplate.Name));
+            return ExpressionOrderBy.Parse(nameof(MarkupTemplate.Name));
         }
     }
 }

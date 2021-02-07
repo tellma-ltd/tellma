@@ -1,4 +1,8 @@
 <ng-container [ngSwitch]="desc?.control">
+    <!-- Unsupported -->
+    <span *ngSwitchCase="'unsupported'" class="font-italic text-muted">
+        {{ 'NotSupportedForDisplay' | translate }}
+    </span>
 
     <!-- Text -->
     <t-text-editor *ngSwitchCase="'text'" [(ngModel)]="value">
@@ -6,12 +10,12 @@
 
     <!-- Decimal -->
     <t-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
-        [maxDecimalPlaces]="maxDecimalPlaces">
+        [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator">
     </t-decimal-editor>
 
     <!-- Percent -->
     <t-decimal-editor *ngSwitchCase="'percent'" [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
-        [maxDecimalPlaces]="maxDecimalPlaces" [isPercentage]="true">
+        [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator" [isPercentage]="true">
     </t-decimal-editor>
 
     <!-- Serial -->
@@ -31,7 +35,7 @@
     </t-selector>
 
     <!-- Boolean -->
-    <div *ngSwitchCase="'boolean'" class="custom-control custom-checkbox t-labelless-checkbox">
+    <div *ngSwitchCase="'check'" class="custom-control custom-checkbox t-labelless-checkbox">
         <input type="checkbox" class="custom-control-input" [(ngModel)]="value" id="{{checkboxId}}">
         <label class="custom-control-label t-pointer" for="{{checkboxId}}">&zwnj;</label>
     </div>

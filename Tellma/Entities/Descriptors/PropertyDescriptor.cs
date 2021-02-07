@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace Tellma.Entities.Descriptors
@@ -61,6 +62,16 @@ namespace Tellma.Entities.Descriptors
         public int MaxLength { get; }
 
         /// <summary>
+        /// Indicates that a <see cref="DateTime"/> property can store time as well as date (maps to a DateTime column in the database)
+        /// </summary>
+        public bool IncludesTime { get; set; }
+
+        /// <summary>
+        /// Indicates that this property is NOT NULL in the database
+        /// </summary>
+        public bool IsNotNull { get; set; }
+
+        /// <summary>
         /// For self referencing foreign keys like ParentId (FKs that reference the same entity type),
         /// there should always be an associated index property ParentIndex, to allow for referecing 
         /// another entity in the saved list (may not have an ID yet) while saving such entities in bulk.
@@ -108,17 +119,15 @@ namespace Tellma.Entities.Descriptors
         /// </summary>
         public PropertyDescriptor(
             PropertyInfo propInfo,
-            string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
             string indexPropName = null,
             Action<Entity, int?> indexPropSetter = null,
-            Func<Entity, int?> indexPropGetter = null,
-            int maxLength = -1)
+            Func<Entity, int?> indexPropGetter = null)
         {
             PropertyInfo = propInfo ?? throw new ArgumentNullException(nameof(propInfo));
             Type = PropertyInfo.PropertyType;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = PropertyInfo.Name;
             _setter = setter ?? throw new ArgumentNullException(nameof(setter));
             _getter = getter ?? throw new ArgumentNullException(nameof(getter));
 
@@ -131,7 +140,31 @@ namespace Tellma.Entities.Descriptors
 
             IsHierarchyId = Type == typeof(HierarchyId);
             IsGeography = Type == typeof(Geography);
-            MaxLength = maxLength;
+
+            // Some attributes
+
+            #region MaxLength
+
+            MaxLength = -1;
+            var stringLengthAttribute = propInfo.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+            if (stringLengthAttribute != null)
+            {
+                MaxLength = stringLengthAttribute.MaximumLength;
+            }
+
+            #endregion
+
+            #region IncludesTime
+
+            IncludesTime = propInfo.GetCustomAttribute<IncludesTimeAttribute>(inherit: true) != null;
+
+            #endregion
+
+            #region Not Null
+
+            IsNotNull = propInfo.GetCustomAttribute<NotNullAttribute>(inherit: true) != null;
+
+            #endregion
         }
     }
 }

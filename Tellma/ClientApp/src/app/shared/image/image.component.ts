@@ -3,8 +3,8 @@ import {
   ElementRef, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subject, of, Observable, Observer, Subscription } from 'rxjs';
-import { switchMap, map, catchError, tap, finalize } from 'rxjs/operators';
+import { Subject, of, Observable, Subscription } from 'rxjs';
+import { switchMap, catchError, tap, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

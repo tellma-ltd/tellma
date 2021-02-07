@@ -28,7 +28,7 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { moveItemInArray, CdkDragDrop, DropListOrientation } from '@angular/cdk/drag-drop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 't-application-shell',
@@ -329,8 +329,8 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     const unobtrusive = true;
     const top = 25; // Only get the top 25 items
     const skip = 0;
-    const select = `Comment,CreatedAt,CreatedBy/Name,CreatedBy/Name2,CreatedBy/Name3,
-      CreatedBy/ImageId,OpenedAt,Document/DefinitionId,Document/SerialNumber,Document/Memo`;
+    const select = `Comment,CreatedAt,CreatedBy.Name,CreatedBy.Name2,CreatedBy.Name3,
+      CreatedBy.ImageId,OpenedAt,Document.DefinitionId,Document.SerialNumber,Document.Memo`;
 
     if (!count) {
       s.total = count;
@@ -342,7 +342,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
       const tenantId = this.workspace.ws.tenantId;
 
       // Retrieve the inbox items
-      return this.inboxCrud.getFact({ unobtrusive, top, skip, select, countEntities: true }).pipe(
+      return this.inboxCrud.getEntities({ unobtrusive, top, skip, select, countEntities: true }).pipe(
         tap((response: GetResponse) => {
           s = this.inboxState; // get the source
           s.top = response.Top;

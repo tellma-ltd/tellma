@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
@@ -63,8 +64,9 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: UserForSave) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -79,10 +81,10 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
         ContactEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactEmail') },
         ContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactMobile') },
         NormalizedContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
-        PushEnabled: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_PushEnabled') },
-        EmailNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_EmailNewInboxItem') },
-        SmsNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_SmsNewInboxItem') },
-        PushNewInboxItem: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('User_PushNewInboxItem') },
+        PushEnabled: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushEnabled') },
+        EmailNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_EmailNewInboxItem') },
+        SmsNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_SmsNewInboxItem') },
+        PushNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushNewInboxItem') },
         State: {
           datatype: 'string',
           control: 'choice',
@@ -104,7 +106,7 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
           }
         },
         LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity') },
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
         ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

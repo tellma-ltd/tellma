@@ -133,7 +133,7 @@ namespace Tellma.Data
             return table;
         }
 
-        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries, DataTable attachments) DataTableFromDocuments(IEnumerable<DocumentForSave> documents, bool includeAttachments = true)
+        public static (DataTable documents, DataTable lineDefinitionEntries, DataTable lines, DataTable entries, DataTable attachments) DataTableFromDocuments(IEnumerable<DocumentForSave> documents)
         {
             // Prepare the documents table skeleton
             DataTable docsTable = new DataTable();
@@ -364,7 +364,7 @@ namespace Tellma.Data
                             lineDefinitionEntriesRow[prop.Name] = value ?? DBNull.Value;
                         }
 
-                        // Entries/CustodyDefinitions
+                        // Entries.CustodyDefinitions
                         if (lineDefinitionEntry.CustodyDefinitions != null)
                         {
                             int lineDefinitionEntryCustodyDefinitionIndex = 0;
@@ -387,7 +387,7 @@ namespace Tellma.Data
                             });
                         }
 
-                        // Entries/ResourceDefinitions
+                        // Entries.ResourceDefinitions
                         if (lineDefinitionEntry.ResourceDefinitions != null)
                         {
                             int lineDefinitionEntryResourceDefinitionIndex = 0;
@@ -494,7 +494,7 @@ namespace Tellma.Data
                             workflowsRow[prop.Name] = value ?? DBNull.Value;
                         }
 
-                        // Workflows/Signatures
+                        // Workflows.Signatures
                         if (workflow.Signatures != null)
                         {
                             int workflowSignatureIndex = 0;
@@ -537,6 +537,81 @@ namespace Tellma.Data
                 workflowsTable,
                 workflowSignaturesTable
                 );
+        }
+
+        public static (DataTable rows, DataTable columns) DataTableFromReportDefinitionDimensionAttributes(IEnumerable<ReportDefinitionForSave> reports)
+        {
+            DataTable rowsAttributesTable = new DataTable();
+            rowsAttributesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            rowsAttributesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            rowsAttributesTable.Columns.Add(new DataColumn("ReportDefinitionIndex", typeof(int)));
+
+            AddColumnsFromProperties<ReportDefinitionDimensionAttributeForSave>(rowsAttributesTable);
+
+            DataTable colsAttributesTable = new DataTable();
+            colsAttributesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            colsAttributesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            colsAttributesTable.Columns.Add(new DataColumn("ReportDefinitionIndex", typeof(int)));
+
+            var attributeProps = AddColumnsFromProperties<ReportDefinitionDimensionAttributeForSave>(colsAttributesTable);
+
+            int reportIndex = 0;
+            foreach (var report in reports)
+            {
+                int rowIndex = 0;
+                foreach (var row in report.Rows)
+                {
+                    int attIndex = 0;
+                    foreach (var att in row.Attributes)
+                    {
+                        DataRow rowAttributeRow = rowsAttributesTable.NewRow();
+
+                        rowAttributeRow["Index"] = attIndex;
+                        rowAttributeRow["HeaderIndex"] = rowIndex;
+                        rowAttributeRow["ReportDefinitionIndex"] = reportIndex;
+
+                        foreach (var attributeProp in attributeProps)
+                        {
+                            var propValue = attributeProp.GetValue(att);
+                            rowAttributeRow[attributeProp.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        rowsAttributesTable.Rows.Add(rowAttributeRow);
+                        attIndex++;
+                    }
+
+                    rowIndex++;
+                }
+
+                int colIndex = 0;
+                foreach (var col in report.Columns)
+                {
+                    int attIndex = 0;
+                    foreach (var att in col.Attributes)
+                    {
+                        DataRow colAttributeRow = colsAttributesTable.NewRow();
+
+                        colAttributeRow["Index"] = attIndex;
+                        colAttributeRow["HeaderIndex"] = colIndex;
+                        colAttributeRow["ReportDefinitionIndex"] = reportIndex;
+
+                        foreach (var attributeProp in attributeProps)
+                        {
+                            var propValue = attributeProp.GetValue(att);
+                            colAttributeRow[attributeProp.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        colsAttributesTable.Rows.Add(colAttributeRow);
+                        attIndex++;
+                    }
+
+                    colIndex++;
+                }
+
+                reportIndex++;
+            }
+
+            return (rowsAttributesTable, colsAttributesTable);
         }
 
         private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table, IEnumerable<ExtraColumn<T>> extras = null) where T : Entity
@@ -589,7 +664,6 @@ namespace Tellma.Data
                 GetValue = getValue
             };
         }
-
 
         /// <summary>
         /// Determines whether the given exception is a foreign key violation on delete

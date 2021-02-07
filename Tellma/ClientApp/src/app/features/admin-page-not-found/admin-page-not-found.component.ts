@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router } from '@angular/router';
 
 @Component({

@@ -4,7 +4,6 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { TranslateService } from '@ngx-translate/core';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
-import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 't-outbox',

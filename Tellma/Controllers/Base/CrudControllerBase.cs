@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +19,6 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Entities.Descriptors;
-using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
@@ -241,7 +239,7 @@ namespace Tellma.Controllers
                 block = _instrumentation.Block("Check Permissions");
 
                 // Check that any updated Ids are 
-                FilterExpression updateFilter = await CheckUpdatePermissionBefore(entities);
+                ExpressionFilter updateFilter = await CheckUpdatePermissionBefore(entities);
 
                 block.Dispose();
                 block = _instrumentation.Block("Validate Unique Ids");
@@ -400,7 +398,7 @@ namespace Tellma.Controllers
         /// </summary>
         /// <param name="entities">The entities being saved</param>
         /// <returns>True if post save check is required</returns>
-        private async Task<FilterExpression> CheckUpdatePermissionBefore(List<TEntityForSave> entities)
+        private async Task<ExpressionFilter> CheckUpdatePermissionBefore(List<TEntityForSave> entities)
         {
             if (entities == null || !entities.Any())
             {
@@ -842,7 +840,7 @@ namespace Tellma.Controllers
 
             // Load entities
             string select = SelectFromMapping(mapping);
-            var (entities, _, _, _) = await GetFact(new GetArguments
+            var (entities, _, _, _) = await GetEntities(new GetArguments
             {
                 Top = args.Top,
                 Skip = args.Skip,
@@ -1194,15 +1192,15 @@ namespace Tellma.Controllers
                     if (prefix != null)
                     {
                         bldr.Append(prefix);
-                        bldr.Append("/");
+                        bldr.Append(".");
                     }
 
                     // Append the property name
                     if (simpleProp is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
                     {
-                        // Append navigation property name followed by key. E.g. Resource/Code
+                        // Append navigation property name followed by key. E.g. Resource.Code
                         bldr.Append(fkProp.NavPropertyMetadata.Descriptor.Name);
-                        bldr.Append("/");
+                        bldr.Append(".");
                         bldr.Append(fkProp.KeyPropertyMetadata.Descriptor.Name);
                     }
                     else
@@ -1221,7 +1219,7 @@ namespace Tellma.Controllers
                     }
                     else
                     {
-                        nextPrefix = $"{prefix}/{collProp.ParentCollectionPropertyMetadata.Descriptor.Name}";
+                        nextPrefix = $"{prefix}.{collProp.ParentCollectionPropertyMetadata.Descriptor.Name}";
                     }
 
                     SelectFromMappingInner(collProp, bldr, nextPrefix, notFirstAtom);
