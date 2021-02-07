@@ -17,7 +17,7 @@ import {
     QueryexQuote,
     QueryexUnaryOperator
 } from './queryex';
-import { descFromControlOptions, isSpecified, toLocalDateISOString } from './util';
+import { dateFromISOString, descFromControlOptions, isSpecified, toLocalDateISOString } from './util';
 import { WorkspaceService } from './workspace.service';
 
 type Calendar = 'GR' | 'ET' | 'UQ';
@@ -668,7 +668,7 @@ export class QueryexUtil {
                     return defaultExp.toString(); // It can't contain parameters anyways
                 } else if (isRequired) {
                     // Validation should prevent reaching here
-                    throw new Error(`[Bug] required parameter @${exp.key} was not supplied.`);
+                    throw new Error(`Required parameter @${exp.key} was not supplied.`);
                 } else {
                     return null; // Will be pruned out
                 }
@@ -1489,7 +1489,7 @@ export class QueryexUtil {
                             return result;
                         } else if (autoOverrideOld.datatype === autoOverrideNew.datatype) {
                             // If they have the same precedence -> merge them
-                            autoOverrides[ex.keyLower] = mergeDescriptors(autoOverrideOld, autoOverrideNew, autoOverrideOld.label);
+                            autoOverrides[ex.keyLower] = mergeDescriptors(autoOverrideOld, autoOverrideNew, autoOverrideNew.label);
                             return result;
                         } else {
                             // The same parameter is used elsewhere with a higher precedence
@@ -1506,11 +1506,12 @@ export class QueryexUtil {
             }
 
             // Default: try to cast it implicitly
-            const nativeDesc = nativeDescImpl(ex);
+            const labelForParameter =  !!hintDesc ? hintDesc.labelForParameter : undefined;
+            const nativeDesc = nativeDescImpl(ex, labelForParameter);
             return implicitCast(nativeDesc, targetType, hintDesc);
         }
 
-        function nativeDescImpl(ex: QueryexBase): PropDescriptor {
+        function nativeDescImpl(ex: QueryexBase, paramLabel?: () => string): PropDescriptor {
 
             if (ex instanceof QueryexColumnAccess) {
                 const entityDesc = entityDescriptorImpl(ex.path, coll, defId, wss, trx);
@@ -1983,7 +1984,7 @@ export class QueryexUtil {
                         }
 
                         const right = ex.right;
-                        let rightDesc = nativeDescImpl(right);
+                        let rightDesc = nativeDescImpl(right, leftDesc.labelForParameter);
                         const rightType = rightDesc.datatype;
                         if (rightType === 'boolean' || rightType === 'entity') {
                             throw new Error(`Operator '${ex.operator}': The right operand ${right} cannot have type ${rightType}.`);
@@ -2026,7 +2027,7 @@ export class QueryexUtil {
                         }
 
                         const right = ex.right;
-                        let rightDesc = nativeDescImpl(right);
+                        let rightDesc = nativeDescImpl(right, leftDesc.labelForParameter);
                         const rightType = rightDesc.datatype;
                         if (rightType === 'boolean' || rightType === 'entity') {
                             throw new Error(`Operator '${ex.operator}': The right operand ${right} cannot have type ${rightType}.`);
@@ -2151,7 +2152,7 @@ export class QueryexUtil {
             } else if (ex instanceof QueryexParameter) {
                 const userOverride = userOverrides[ex.keyLower];
                 if (!!userOverride) {
-                    const label = () => ex.key;
+                    const label = paramLabel || (() => ex.key);
                     const result = getLowestPrecedenceDescFromVisual(userOverride, label, wss, trx);
                     autoOverrides[ex.keyLower] = result;
                     return result;
@@ -2160,7 +2161,7 @@ export class QueryexUtil {
                     if (!!autoOverride) {
                         return { ...autoOverride };
                     } else {
-                        const label = () => ex.key;
+                        const label = paramLabel || (() => ex.key);
                         const result: PropDescriptor = { datatype: 'null', control: 'null', label };
                         autoOverrides[ex.keyLower] = result;
                         return result;

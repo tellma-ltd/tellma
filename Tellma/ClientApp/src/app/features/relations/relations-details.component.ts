@@ -854,7 +854,7 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   public onExpandReport(reportId: number, model: Relation) {
-    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
+    this.router.navigate(['../../../report', reportId, { id: model.Id }], { relativeTo: this.route });
   }
 
   /////////////// Attachments - START

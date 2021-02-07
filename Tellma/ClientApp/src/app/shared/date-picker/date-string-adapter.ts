@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgbDateAdapter, NgbDateStruct, NgbDateNativeAdapter } from '@ng-bootstrap/ng-bootstrap';
-import { toLocalDateISOString } from '~/app/data/util';
+import { dateFromISOString, toLocalDateISOString } from '~/app/data/util';
 
 // In our DTOs we always use ISO string representation instead of native JS Date objects,
 // since JSON parse and stringify are unable to handle the native JS Date object on both
@@ -18,6 +18,7 @@ export class NgbDateStringAdapter implements NgbDateAdapter<string> {
             return null;
         }
 
+        // const ngbDate = this.nativeAdapter.fromModel(new Date(value));
         const ngbDate = this.nativeAdapter.fromModel(new Date(value));
         return ngbDate;
     }

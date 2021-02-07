@@ -198,6 +198,6 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
   }
 
   public onExpandReport(reportId: number, model: Lookup) {
-    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
+    this.router.navigate(['../../../report', reportId, { id: model.Id }], { relativeTo: this.route });
   }
 }

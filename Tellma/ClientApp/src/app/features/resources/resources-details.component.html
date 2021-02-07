@@ -528,7 +528,7 @@
                     <ng-template ngbNavContent>
                         <div class="bg-light" style="height: 450px">
                             <t-report-results class="h-100 w-100" [definition]="reportDefinition(reportDef)"
-                                [arguments]="{ Id: model?.Id, CacheBuster: model?.EntityMetadata?.$refresh }"
+                                [arguments]="{ id: model?.Id, cache_buster: model?.EntityMetadata?.$refresh }"
                                 [view]="reportView(reportDef)" [state]="state(reportDef)" mode="embedded">
                             </t-report-results>
                         </div>

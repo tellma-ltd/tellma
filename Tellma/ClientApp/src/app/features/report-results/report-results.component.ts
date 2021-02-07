@@ -19,7 +19,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateISOString, toLocalDateTimeISOString } from '~/app/data/util';
+import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateTimeISOString, dateFromISOString } from '~/app/data/util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
 import { displayScalarValue } from '~/app/data/util';
@@ -2087,16 +2087,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     if (info.keyDesc.datatype === 'date' && info.isOrdered && info.orderDir === 'asc') {
       // We need to expand all dates between measureCells[0] and measureCells[length - 1]
       let dimCell = dimCell1;
-      let min = dimCell.valueId;
-      if (!min && !!dimCell2) {
+      minString = dimCell.valueId;
+      if (!minString && !!dimCell2) {
         dimCell = dimCell2;
-        min = dimCell.valueId; // In case the first one was undefined
+        minString = dimCell.valueId; // In case the first one was undefined
       }
 
-      if (!!min) {
-        const pieces = min.split('T')[0].split('-');
-        minDate = new Date(+pieces[0], +pieces[1] - 1, +pieces[2]);
-        minString = toLocalDateTimeISOString(minDate);
+      if (!!minString) {
+        minDate = dateFromISOString(minString);
       }
     }
 

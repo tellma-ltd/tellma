@@ -421,6 +421,17 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
 }
 
 /**
+ * Returns a date object in the local time zone with the date part (year, month, day) matching the input
+ * @param stringDate An ISO date representation of the form 2020-01-21T00:00:00
+ */
+export function dateFromISOString(stringDate: string): Date {
+  if (!!stringDate) {
+    const pieces = stringDate.split('T')[0].split('-');
+    return new Date(+pieces[0], +pieces[1] - 1, +pieces[2]);
+  }
+}
+
+/**
  * Returns the date part of the argument as per the local time formatted as ISO 8601, for example: '2020-03-17'
  */
 export function toLocalDateISOString(date: Date): string {
