@@ -5,7 +5,8 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
+	DECLARE @Documents DocumentList, @DocumentLineDefinitionEntries DocumentLineDefinitionEntryList,
+			@Lines LineList, @Entries EntryList;
 	
 	-- Cannot close it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -25,8 +26,6 @@ SET NOCOUNT ON;
 		JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 		JOIN map.Documents() D ON FE.[Id] = D.[Id]
 		WHERE
-		--	LD.[HasWorkflow] = 1 AND L.[State] = D.[LastLineState]
-		--OR	LD.[HasWorkflow] = 0 AND L.[State] = 0
 			L.[State] = D.[LastLineState]
 		OR	LD.[HasWorkflow] = 0 AND L.[State] >= 0
 	)
@@ -132,14 +131,28 @@ SET NOCOUNT ON;
 		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
-	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+	SELECT Ids.[Index], D.[Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
-	FROM dbo.Documents
-	WHERE [Id] IN (SELECT [Id] FROM @Ids)
+	FROM dbo.Documents D JOIN @Ids Ids ON D.[Id] = Ids.[Id]
+
+	INSERT INTO @DocumentLineDefinitionEntries(
+		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [CustodianId], [CustodianIsCommon], [CustodyId], [CustodyIsCommon],
+		[ParticipantId], [ParticipantIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
+		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
+		[InternalReferenceIsCommon])
+	SELECT 	DLDE.[Id], Ids.[Index], DLDE.[Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [CustodianId], [CustodianIsCommon], [CustodyId], [CustodyIsCommon],
+		[ParticipantId], [ParticipantIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
+		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
+		[InternalReferenceIsCommon]
+	FROM DocumentLineDefinitionEntries DLDE
+	JOIN @Ids Ids ON DLDE.[DocumentId] = Ids.[Id]
+	AND [LineDefinitionId]  IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
 
 	INSERT INTO @Lines(
-			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],		[Memo])
+			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM dbo.Lines L
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
@@ -164,7 +177,8 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = 4;
+		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, @Entries = @Entries, @State = 4;
 
 -- Verify that workflow-less lines in Events can be in state authorized
 	DELETE FROM @Lines; DELETE FROM @Entries;
@@ -174,7 +188,7 @@ SET NOCOUNT ON;
 	FROM dbo.Lines L
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN map.Documents() D ON FE.[Id] = D.[Id]
-	WHERE D.[LastLineState] = 2 -- event
+	WHERE D.[LastLineState] = 2 -- template
 	AND L.[DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
 	
 	INSERT INTO @Entries (
@@ -194,7 +208,8 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = 2;
+		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, @Entries = @Entries, @State = 2;
 
 	IF EXISTS(SELECT * FROM @ValidationErrors)
 	BEGIN

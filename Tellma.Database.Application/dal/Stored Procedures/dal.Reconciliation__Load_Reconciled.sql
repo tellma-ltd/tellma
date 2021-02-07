@@ -25,7 +25,8 @@ AS
 	AND (@ExternalReferenceContains IS NULL OR EE.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
 
 	INSERT INTO @ReconciliationIds
-	SELECT R.[Id]
+	SELECT DISTINCT [Id] FROM (
+	SELECT R.[Id], EE.[PostingDate], EE.[MonetaryValue], EE.[ExternalReference]
 	FROM dbo.Reconciliations  R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
@@ -37,7 +38,8 @@ AS
 	AND (@ToAmount IS NULL OR EE.[MonetaryValue] <= @ToAmount)
 	AND (@ExternalReferenceContains IS NULL OR EE.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
 	ORDER BY EE.[PostingDate], EE.[MonetaryValue], EE.[ExternalReference]
-	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
+	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY
+	) T;
 
 	SELECT *
 	FROM dbo.Reconciliations
