@@ -18,7 +18,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// The list to iterate the template over
         /// </summary>
-        public ExpressionBase ListCandidate { get; set; }
+        public TemplexBase ListCandidate { get; set; }
 
         /// <summary>
         /// The name of the iterator variable

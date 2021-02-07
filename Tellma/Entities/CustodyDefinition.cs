@@ -12,6 +12,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Code")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
@@ -34,6 +35,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
@@ -53,18 +55,23 @@ namespace Tellma.Entities
         #region Common with Resources
 
         [VisibilityDisplay(Name = "Entity_Currency"), VisibilityChoiceList]
+        [NotNull]
         public string CurrencyVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Center"), VisibilityChoiceList]
+        [NotNull]
         public string CenterVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Image"), VisibilityChoiceList]
+        [NotNull]
         public string ImageVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Description"), VisibilityChoiceList]
+        [NotNull]
         public string DescriptionVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Location"), VisibilityChoiceList]
+        [NotNull]
         public string LocationVisibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_FromDate", Language = Language.Primary)]
@@ -80,6 +87,7 @@ namespace Tellma.Entities
         public string FromDateLabel3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_FromDate"), VisibilityChoiceList]
+        [NotNull]
         public string FromDateVisibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_ToDate", Language = Language.Primary)]
@@ -95,6 +103,7 @@ namespace Tellma.Entities
         public string ToDateLabel3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_ToDate"), VisibilityChoiceList]
+        [NotNull]
         public string ToDateVisibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Decimal1", Language = Language.Primary)]
@@ -110,6 +119,7 @@ namespace Tellma.Entities
         public string Decimal1Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Decimal1"), VisibilityChoiceList]
+        [NotNull]
         public string Decimal1Visibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Decimal2", Language = Language.Primary)]
@@ -125,6 +135,7 @@ namespace Tellma.Entities
         public string Decimal2Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Decimal2"), VisibilityChoiceList]
+        [NotNull]
         public string Decimal2Visibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Int1", Language = Language.Primary)]
@@ -140,6 +151,7 @@ namespace Tellma.Entities
         public string Int1Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Int1"), VisibilityChoiceList]
+        [NotNull]
         public string Int1Visibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Int2", Language = Language.Primary)]
@@ -155,6 +167,7 @@ namespace Tellma.Entities
         public string Int2Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Int2"), VisibilityChoiceList]
+        [NotNull]
         public string Int2Visibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Lookup1", Language = Language.Primary)]
@@ -170,6 +183,7 @@ namespace Tellma.Entities
         public string Lookup1Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Lookup1"), VisibilityChoiceList]
+        [NotNull]
         public string Lookup1Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
@@ -188,6 +202,7 @@ namespace Tellma.Entities
         public string Lookup2Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Lookup2"), VisibilityChoiceList]
+        [NotNull]
         public string Lookup2Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
@@ -206,6 +221,7 @@ namespace Tellma.Entities
         public string Lookup3Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Lookup3"), VisibilityChoiceList]
+        [NotNull]
         public string Lookup3Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup3")]
@@ -224,6 +240,7 @@ namespace Tellma.Entities
         public string Lookup4Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Lookup4"), VisibilityChoiceList]
+        [NotNull]
         public string Lookup4Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
@@ -242,6 +259,7 @@ namespace Tellma.Entities
         public string Text1Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Text1"), VisibilityChoiceList]
+        [NotNull]
         public string Text1Visibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Text2", Language = Language.Primary)]
@@ -257,6 +275,7 @@ namespace Tellma.Entities
         public string Text2Label3 { get; set; }
 
         [VisibilityDisplay(Name = "Entity_Text2"), VisibilityChoiceList]
+        [NotNull]
         public string Text2Visibility { get; set; }
 
         [Display(Name = "Definition_PreprocessScript")]
@@ -270,12 +289,14 @@ namespace Tellma.Entities
         #region Custody Only
 
         [VisibilityDisplay(Name = "Custody_Custodian"), VisibilityChoiceList]
+        [NotNull]
         public string CustodianVisibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Custody_Custodian")]
         public int? CustodianDefinitionId { get; set; }
 
         [VisibilityDisplay(Name = "Custody_ExternalReference"), VisibilityChoiceList]
+        [NotNull]
         public string ExternalReferenceVisibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Custody_ExternalReference", Language = Language.Primary)]
@@ -324,10 +345,12 @@ namespace Tellma.Entities
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },
             new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
+        [NotNull]
         [AlwaysAccessible]
         public string State { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

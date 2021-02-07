@@ -8,12 +8,14 @@ namespace Tellma.Entities
     public class AccountTypeResourceDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "Account_ResourceDefinition")]
+        [NotNull]
         [Required]
         public int? ResourceDefinitionId { get; set; }
     }
 
     public class AccountTypeResourceDefinition : AccountTypeResourceDefinitionForSave
     {
+        [NotNull]
         public int? AccountTypeId { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
@@ -21,6 +23,7 @@ namespace Tellma.Entities
         public ResourceDefinition ResourceDefinition { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

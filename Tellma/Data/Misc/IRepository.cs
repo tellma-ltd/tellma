@@ -7,6 +7,8 @@ namespace Tellma.Data
     {
         Query<T> Query<T>() where T : Entity;
 
+        FactQuery<T> FactQuery<T>() where T : Entity;
+
         AggregateQuery<T> AggregateQuery<T>() where T : Entity;
     }
 }

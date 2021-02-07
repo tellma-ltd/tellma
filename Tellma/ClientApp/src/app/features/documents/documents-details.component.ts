@@ -1435,7 +1435,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const entryDef = lineDef.Entries[entryIndex];
       if (!!entryDef && !!entryDef.ParentAccountTypeId) {
         // Account Type Id
-        let filter = `AccountType/Node descof ${entryDef.ParentAccountTypeId}`;
+        let filter = `AccountType.Id descof ${entryDef.ParentAccountTypeId}`;
 
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
@@ -1833,7 +1833,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public filterEntryType_Manual(entry: Entry): string {
     const accountType = this.accountType(entry);
-    return `IsAssignable eq true and Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and Id descof ${accountType.EntryTypeParentId}`;
   }
 
   // External Reference
@@ -3230,7 +3230,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Filter for smart line
     // TODO: What about EntryTypeId ??
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
+    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Id descof ${entryDef.EntryTypeParentId}` : null;
 
     const customFilter = this.getFilter(lineDefId, columnIndex);
 
@@ -4546,7 +4546,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         };
 
         this.onBarcodeStartLoading(lineDefId, model, barcode);
-        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getFact(args).pipe(
+        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getEntities(args).pipe(
           tap(results => {
             // Hide the spinner and get the number of same scans that happaned while this barcode was loading
             const scanCount = this.onBarcodeFinishedLoading(lineDefId, model, barcode);
@@ -4636,16 +4636,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           if (!!colDef) {
             switch (colDef.ColumnName) {
               case 'CustodianId':
-                tracker[`Lines/Entries/Custodian/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Custodian.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'ParticipantId':
-                tracker[`Lines/Entries/Participant/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Participant.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'CustodyId':
-                tracker[`Lines/Entries/Custody/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Custody.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'ResourceId':
-                tracker[`Lines/Entries/Resource/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Resource.${lineDef.BarcodeProperty}`] = true;
                 break;
             }
           }

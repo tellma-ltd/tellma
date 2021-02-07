@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
@@ -20,8 +19,8 @@ export class AccountsMasterComponent extends MasterBaseComponent {
   public expand = '';
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private router: Router,
-    private route: ActivatedRoute, private translate: TranslateService) {
+    private workspace: WorkspaceService, private api: ApiService,
+    private translate: TranslateService) {
     super();
 
     this.accountsApi = this.api.accountsApi(this.notifyDestruct$);

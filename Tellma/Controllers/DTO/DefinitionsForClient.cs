@@ -84,6 +84,7 @@ namespace Tellma.Controllers.Dto
 
     public class ReportDefinitionForClient : DefinitionForClient
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Title2 { get; set; }
         public string Title3 { get; set; }
@@ -92,61 +93,90 @@ namespace Tellma.Controllers.Dto
         public string Description3 { get; set; }
         public string Type { get; set; } // "Summary" or "Details"
         public string Chart { get; set; } // 'Card' | 'BarsVertical' | 'BarsHorizontal' | 'Line' | 'Pie'
+        public string ChartOptions { get; set; }
         public bool DefaultsToChart { get; set; }
         public string Collection { get; set; }
-        public string DefinitionId { get; set; }
-        public List<ReportParameterDefinitionForClient> Parameters { get; set; }
+        public int? DefinitionId { get; set; }
+        public List<ReportDefinitionParameterForClient> Parameters { get; set; }
         public string Filter { get; set; } // On drill down for summary
+        public string Having { get; set; }
         public string OrderBy { get; set; } // On drill down for summary
-        public List<ReportSelectDefinitionForClient> Select { get; set; }
-        public List<ReportDimensionDefinitionForClient> Rows { get; set; }
-        public List<ReportDimensionDefinitionForClient> Columns { get; set; }
-        public List<ReportMeasureDefinitionForClient> Measures { get; set; }
+        public List<ReportDefinitionSelectForClient> Select { get; set; }
+        public List<ReportDefinitionDimensionForClient> Rows { get; set; }
+        public List<ReportDefinitionDimensionForClient> Columns { get; set; }
+        public List<ReportDefinitionMeasureForClient> Measures { get; set; }
         public int Top { get; set; }
         public bool ShowColumnsTotal { get; set; }
+        public string ColumnsTotalLabel { get; set; }
+        public string ColumnsTotalLabel2 { get; set; }
+        public string ColumnsTotalLabel3 { get; set; }
         public bool ShowRowsTotal { get; set; }
+        public string RowsTotalLabel { get; set; }
+        public string RowsTotalLabel2 { get; set; }
+        public string RowsTotalLabel3 { get; set; }
+        public bool IsCustomDrilldown { get; set; }
         public bool ShowInMainMenu { get; set; }
     }
 
-    public class ReportParameterDefinitionForClient
+    public class ReportDefinitionParameterForClient
     {
         public string Key { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string Visibility { get; set; }
-        public string Value { get; set; }
+        public string DefaultExpression { get; set; }
         public string Control { get; set; }
         public string ControlOptions { get; set; }
     }
 
-    public class ReportSelectDefinitionForClient
+    public class ReportDefinitionSelectForClient
     {
-        public string Path { get; set; }
+        public string Expression { get; set; }
+        public bool Localize { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
-    public class ReportDimensionDefinitionForClient
+    public class ReportDefinitionDimensionForClient
     {
-        public string Path { get; set; }
-        public string Modifier { get; set; }
+        public string KeyExpression { get; set; }
+        public string DisplayExpression { get; set; }
+        public bool Localize { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string OrderDirection { get; set; }
-        public bool AutoExpand { get; set; }
+        public int AutoExpandLevel { get; set; }
+        public bool ShowAsTree { get; set; }
+        public List<ReportDefinitionDimensionAttributeForClient> Attributes { get; set; }
     }
 
-    public class ReportMeasureDefinitionForClient
+    public class ReportDefinitionDimensionAttributeForClient
     {
-        public string Path { get; set; }
+        public string Expression { get; set; }
+        public bool Localize { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string OrderDirection { get; set; }
-        public string Aggregation { get; set; }
+    }
+
+    public class ReportDefinitionMeasureForClient
+    {
+        public string Expression { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public string OrderDirection { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
+        public string DangerWhen { get; set; }
+        public string WarningWhen { get; set; }
+        public string SuccessWhen { get; set; }
     }
 
     ///////////////////// Document Definitions

@@ -29,7 +29,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private documentDefinitionsApi = this.api.documentDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'LineDefinitions/LineDefinition';
+  public expand = 'LineDefinitions.LineDefinition';
 
   create = () => {
     const result: DocumentDefinitionForSave = {};

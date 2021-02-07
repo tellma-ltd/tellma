@@ -44,6 +44,7 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService):
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
         Id: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
@@ -53,21 +54,22 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService):
         Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         NumericCode: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'number',
           label: () => trx.instant('Currency_NumericCode'),
           minDecimalPlaces: 0,
-          maxDecimalPlaces: 0
+          maxDecimalPlaces: 0,
+          noSeparator: true
         },
         E: {
-          datatype: 'integral',
+          datatype: 'numeric',
           control: 'choice',
           label: () => trx.instant('Currency_DecimalPlaces'),
           choices: [0, 2, 3, 4],
           format: (c: number | string) => (c === null || c === undefined) ? '' : c.toString()
         },
 
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
         ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },

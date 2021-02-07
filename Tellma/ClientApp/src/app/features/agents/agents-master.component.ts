@@ -2,12 +2,10 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { metadata_Agent } from '~/app/data/entities/agent';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 't-agents-master',

@@ -26,8 +26,8 @@
 
                     <!-- Account -->
                     <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
-                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="CustodyDefinitionId,Currency/E"
-                            filter="AccountType/Concept eq 'BalancesWithBanks'" [ensureAdditionalSelect]="true"
+                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="CustodyDefinitionId,Currency.E"
+                            filter="AccountType.Concept eq 'BalancesWithBanks'" [ensureAdditionalSelect]="true"
                             (entityLoaded)="onParameterLoaded()" [showCreate]="false" [disabled]="isDirty">
                         </t-accounts-picker>
                     </t-form-group>
@@ -35,7 +35,7 @@
                     <!-- Custody -->
                     <t-form-group class="t-form-group" [label]="labelCustody_Manual" *ngIf="showCustodyParameter">
                         <t-custodies-picker *ngIf="!readonlyCustody_Manual" [(ngModel)]="custodyId"
-                            additionalSelect="Currency/E" [definitionIds]="definitionIdsCustody_Manual"
+                            additionalSelect="Currency.E" [definitionIds]="definitionIdsCustody_Manual"
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false"
                             [disabled]="isDirty">
                         </t-custodies-picker>

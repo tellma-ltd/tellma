@@ -57,7 +57,7 @@ namespace Tellma.Controllers
 
                 // Prepare the filter string
                 var message = nameof(SmsMessageForQuery.Message);
-                var filterString = $"{message} {Ops.contains} '{search}'";
+                var filterString = $"{message} contains '{search}'";
 
                 // If the search term looks like a phone number, include the contact mobile in the search
                 if (phoneAtt.IsValid(search))
@@ -65,7 +65,7 @@ namespace Tellma.Controllers
                     var e164 = ControllerUtilities.ToE164(search);
                     var toPhone = nameof(SmsMessageForQuery.ToPhoneNumber);
 
-                    filterString += $" or {toPhone} {Ops.startsw} '{e164}'";
+                    filterString += $" or {toPhone} startsw '{e164}'";
                 }
 
                 // Apply the filter

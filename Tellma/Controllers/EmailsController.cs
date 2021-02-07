@@ -56,10 +56,10 @@ namespace Tellma.Controllers
                 var subject = nameof(EmailForQuery.Subject);
 
                 // Prepare the filter string
-                var filterString = $"{toEmail} {Ops.contains} '{search}' or {subject} {Ops.contains} '{search}'";
+                var filterString = $"{toEmail} contains '{search}' or {subject} contains '{search}'";
 
                 // Apply the filter
-                query = query.Filter(FilterExpression.Parse(filterString));
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;

@@ -230,7 +230,7 @@ namespace Tellma.Controllers.Templating
                     }
                     else // Inside the curlies, does not start with an asterisk *: An expression
                     {
-                        currentTemplate.Contents.Add(ExpressionBase.Parse(token));
+                        currentTemplate.Contents.Add(TemplexBase.Parse(token));
                     }
                 }
                 else // Outside the curlies: Plain markup

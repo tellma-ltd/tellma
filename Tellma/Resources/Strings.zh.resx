@@ -400,6 +400,21 @@
   <data name="Data" xml:space="preserve">
     <value>数据</value>
   </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>月日</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>美分硬币</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>本周日</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>年</value>
+  </data>
   <data name="DateTime" xml:space="preserve">
     <value>日期</value>
   </data>
@@ -440,7 +455,7 @@
     <value>报告定义</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>节目</value>
+    <value>显示</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -779,7 +794,7 @@
     <value>整数属性2</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
-    <value>位置</value>
+    <value>地点</value>
   </data>
   <data name="Entity_LocationJson" xml:space="preserve">
     <value>位置（以GeoJSON）</value>
@@ -2035,27 +2050,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>修改者</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>月日</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>年度日</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>月</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>美分硬币</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>周</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>本周日</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>年</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>名称</value>
   </data>
@@ -2335,24 +2329,6 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>报告定义</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>聚集功能</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>平均</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>计数</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>最大值</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>最低限度</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>和</value>
-  </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>自动扩展</value>
   </data>
@@ -2443,9 +2419,6 @@
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>措施</value>
   </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>功能</value>
-  </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>排序</value>
   </data>
@@ -2460,9 +2433,6 @@
   </data>
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>参数</value>
-  </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>路径</value>
   </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>行</value>
@@ -2490,9 +2460,6 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>摘要</value>
-  </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>值</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>
@@ -2752,6 +2719,9 @@
   <data name="ShortMonth9" xml:space="preserve">
     <value>九月</value>
   </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>Puagme</value>
+  </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>1季度</value>
   </data>
@@ -2877,60 +2847,6 @@
   </data>
   <data name="String" xml:space="preserve">
     <value>文本</value>
-  </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>摘要条目</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>摘要入口</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>闭幕</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>闭幕弥撒</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>关闭量</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>关闭数量</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>信用</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>借方</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>大众在</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>质量超限</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>量</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>挤出量</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>开盘</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>开幕弥撒</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>开口量</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>开业数量</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>在数量</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>量输出</value>
   </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>文化</value>

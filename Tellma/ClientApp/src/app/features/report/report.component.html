@@ -16,15 +16,12 @@
                 <div class="row m-0 px-0 px-lg-1 py-1">
                     <t-form-group *ngFor="let p of parameters" class="t-form-group"
                         [label]="p.label() + (p.isRequired ? ' *' : '')">
-                        <t-editor [(ngModel)]="arguments[p.key]" [ngModelOptions]="{ updateOn: updateOn(p.desc) }"
+                        <t-editor [(ngModel)]="arguments[p.keyLower]" [ngModelOptions]="{ updateOn: updateOn(p.desc) }"
                             [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [desc]="p.desc">
                         </t-editor>
                     </t-form-group>
                 </div>
             </div>
-            <t-error-message *ngIf="showParametersErrorMessage">
-                {{ parametersErrorMessage }}
-            </t-error-message>
         </div>
 
         <!-- Toolbar -->
@@ -111,11 +108,11 @@
         </div>
     </div>
     <div class="row t-rest-of-screen" [style.overflow]="overflow">
-        <t-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified; else fillRequiredFields"
+        <t-report-results class="h-100 w-100" *ngIf="showPreview; else fillRequiredFields"
             [definition]="definition" [arguments]="immutableArguments" [view]="view" [refresh]="refresh"
             [export]="export" [state]="state" [mode]="mode" (exportStarting)="onExportStarting()"
             (exportSuccess)="onExportSuccess()" (exportError)="onExportError($event)"
-            [disableDrilldown]="disableDrilldown">
+            [disableDrilldown]="disableDrilldown" (orderbyChange)="onOrderByChange()">
         </t-report-results>
         <ng-template #fillRequiredFields>
             <div class="w-100 p-3 px-4">

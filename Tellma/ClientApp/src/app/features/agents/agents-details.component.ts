@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Agent, AgentForSave, metadata_Agent } from '~/app/data/entities/agent';
+import { Agent, AgentForSave } from '~/app/data/entities/agent';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 't-agents-details',
@@ -16,7 +14,6 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 })
 export class AgentsDetailsComponent extends DetailsBaseComponent {
 
-  private _agentTypeChoices: SelectorChoice[];
   private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';

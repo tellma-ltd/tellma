@@ -66,7 +66,7 @@ namespace Tellma.Controllers
 
                 var stringPrefix = nameof(VoucherBooklet.StringPrefix); // TODO: Search the 
 
-                query = query.Filter($"{stringPrefix} {Ops.contains} '{search}'");
+                query = query.Filter($"{stringPrefix} contains '{search}'");
             }
 
             return query;

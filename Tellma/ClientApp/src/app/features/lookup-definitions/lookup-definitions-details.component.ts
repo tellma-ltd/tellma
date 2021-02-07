@@ -29,7 +29,7 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'ReportDefinitions/ReportDefinition';
+  public expand = 'ReportDefinitions.ReportDefinition';
 
   create = () => {
     const result: LookupDefinitionForSave = {};

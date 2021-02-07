@@ -1,19 +1,16 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -50,7 +47,6 @@ namespace Tellma.Controllers
 
     public class ReportDefinitionsService : CrudServiceBase<ReportDefinitionForSave, ReportDefinition, int>
     {
-
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
         private readonly IDefinitionsCache _defCache;
@@ -88,8 +84,8 @@ namespace Tellma.Controllers
                 var desc2 = nameof(ReportDefinition.Description2);
                 var desc3 = nameof(ReportDefinition.Description3);
 
-                var filterString = $"{title} {Ops.contains} '{search}' or {title2} {Ops.contains} '{search}' or {title3} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{title} contains '{search}' or {title2} contains '{search}' or {title3} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
@@ -101,7 +97,16 @@ namespace Tellma.Controllers
 
             entities.ForEach(entity =>
             {
-                // Default Id
+                // Makes subsequent code simpler
+                entity.Rows ??= new List<ReportDefinitionRowForSave>();
+                entity.Rows.ForEach(row => row.Attributes ??= new List<ReportDefinitionDimensionAttributeForSave>());
+                entity.Columns ??= new List<ReportDefinitionColumnForSave>();
+                entity.Columns.ForEach(col => col.Attributes ??= new List<ReportDefinitionDimensionAttributeForSave>());
+                entity.Measures ??= new List<ReportDefinitionMeasureForSave>();
+                entity.Select ??= new List<ReportDefinitionSelectForSave>();
+                entity.Parameters ??= new List<ReportDefinitionParameterForSave>();
+
+                // Default Values
                 if (string.IsNullOrWhiteSpace(entity.Code))
                 {
                     entity.Code = Guid.NewGuid().ToString("D");
@@ -110,39 +115,60 @@ namespace Tellma.Controllers
                 // Summary reports
                 if (entity.Type == "Summary")
                 {
-                    // Those properties aren't needed
-                    entity.Select = new List<ReportSelectDefinitionForSave>();
-                    entity.Top = null;
-                    entity.OrderBy = null;
+                    if (!(entity.IsCustomDrilldown ?? false))
+                    {
+                        // Those properties aren't needed
+                        entity.Select = new List<ReportDefinitionSelectForSave>();
+                        entity.Top = null;
+                        entity.OrderBy = null;
+                    }
 
                     // Defaults for Show Totals
                     entity.ShowColumnsTotal ??= false;
-                    if (entity.Columns == null || entity.Columns.Count == 0)
+                    if (entity.Columns.Count == 0)
                     {
-                        entity.ShowColumnsTotal = false;
+                        entity.ShowColumnsTotal = true;
+                    }
+
+                    if (!entity.ShowColumnsTotal.Value || entity.Columns.Count == 0)
+                    {
+                        entity.ColumnsTotalLabel = null;
+                        entity.ColumnsTotalLabel2 = null;
+                        entity.ColumnsTotalLabel3 = null;
                     }
 
                     entity.ShowRowsTotal ??= false;
-                    if (entity.Rows == null || entity.Rows.Count == 0)
+                    if (entity.Rows.Count == 0)
                     {
-                        entity.ShowRowsTotal = false;
+                        entity.ShowRowsTotal = true;
+                    }
+
+                    if (!entity.ShowRowsTotal.Value || entity.Rows.Count == 0)
+                    {
+                        entity.RowsTotalLabel = null;
+                        entity.RowsTotalLabel2 = null;
+                        entity.RowsTotalLabel3 = null;
                     }
                 }
 
                 // Details Report
                 if (entity.Type == "Details")
                 {
-                    entity.Rows = new List<ReportRowDefinitionForSave>();
-                    entity.Columns = new List<ReportColumnDefinitionForSave>();
-                    entity.Measures = new List<ReportMeasureDefinitionForSave>();
-                    entity.ShowColumnsTotal = null;
-                    entity.ShowRowsTotal = null;
+                    // Those properties aren't needed
+                    entity.Rows = new List<ReportDefinitionRowForSave>();
+                    entity.Columns = new List<ReportDefinitionColumnForSave>();
+                    entity.Measures = new List<ReportDefinitionMeasureForSave>();
+                    entity.ShowColumnsTotal = false;
+                    entity.ShowRowsTotal = false;
+                    entity.IsCustomDrilldown = false;
+                    entity.Having = null;
                 }
 
                 // Defaults to Chart
                 if (string.IsNullOrWhiteSpace(entity.Chart))
                 {
-                    entity.DefaultsToChart = null;
+                    entity.DefaultsToChart = false;
+                    entity.ChartOptions = null;
                 }
                 else
                 {
@@ -161,9 +187,26 @@ namespace Tellma.Controllers
                 // Generate Parameters
                 entity.Parameters.ForEach(parameter =>
                 {
-                    if (parameter.Control != null) // TODO: Need to figure out how to retrieve the default control
+                    if (parameter.Control != null)
                     {
                         parameter.ControlOptions = ControllerUtilities.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        parameter.ControlOptions = null;
+                    }
+                });
+
+                // Generate Parameters
+                entity.Measures.ForEach(measure =>
+                {
+                    if (measure.Control != null)
+                    {
+                        measure.ControlOptions = ControllerUtilities.PreprocessControlOptions(measure.Control, measure.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        measure.ControlOptions = null;
                     }
                 });
             });
@@ -242,7 +285,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
             // By default: Order report definitions by name
             var tenantInfo = _repo.GetTenantInfo();
@@ -256,7 +299,7 @@ namespace Tellma.Controllers
                 orderby = $"{nameof(ReportDefinition.Title3)},{nameof(ReportDefinition.Title)},{nameof(ReportDefinition.Id)}";
             }
 
-            return OrderByExpression.Parse(orderby);
+            return ExpressionOrderBy.Parse(orderby);
 
         }
     }

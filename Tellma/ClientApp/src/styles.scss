@@ -281,6 +281,10 @@ ngb-tabset li.nav-item .small {
   // border-color: #dee2e6 #dee2e6 #ffffff;
 }
 
+.popover-body {
+  overflow-x: hidden;
+}
+
 ///////////////////////////////// Tellma /////////////////////////////////
 
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
@@ -481,7 +485,9 @@ $paper-width: 1150px; // The default font (1rem) is too big
   margin-left: 0.125rem;
 }
 
-input.t-h2, .t-h2 input, .t-h2 .t-prefix {
+input.t-h2,
+.t-h2 input,
+.t-h2 .t-prefix {
   margin-bottom: 0.5rem;
   font-family: inherit;
   line-height: 1.2;
@@ -521,6 +527,14 @@ input.t-h2, .t-h2 input, .t-h2 .t-prefix {
   color: white !important;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
   background-color: $secondary !important;
+}
+
+.t-studio-dropdown {
+  background-color: $gray-700;
+  border: 1px solid $gray-800;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  color: $whitish;
 }
 
 .t-studio-input.t-code {
@@ -666,6 +680,7 @@ $slightly-less-white: rgba(255, 255, 255, 0.9);
 .t-collapsed-studio-pane {
   color: $whitish !important;
   border-right: $studio-pane-border solid $gray-900;
+  min-width: 38px;
 }
 
 .t-collapsed-studio-pane span {
@@ -1645,15 +1660,44 @@ $container-margin: 15px;
   display: flex;
 }
 
-.t-report-dimension {
-  background-color: whitesmoke;
-  // font-weight: 600;
+
+td.t-success {
+  color: #155724;
+  background-color: #d4edda;
 }
 
-// td.report-header, .report-header td {
-//   padding-left: 15px;
-//   padding-right: 15px;
-// }
+td.t-warning {
+  color: #856404;
+  background-color: #fff3cd;
+}
+
+td.t-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+}
+
+h1.t-success {
+  color: $success;
+}
+
+h1.t-warning {
+  color: $warning;
+}
+
+h1.t-danger {
+  color: $danger;
+}
+
+tr.t-report-row:hover .t-report-dimension {
+  background-color: #e9e9e9;
+}
+
+.t-report-dimension {
+  background-color:whitesmoke;
+  // font-weight: 600;
+  // font-size: 80%;
+  // font-weight:bold;
+}
 
 table.t-report-table {
   width: auto !important;
@@ -1661,14 +1705,30 @@ table.t-report-table {
   td {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+    vertical-align: middle !important;
   }
 
-  td.t-report-measure {
+  td.t-report-measure:not(.t-disable-drilldown) {
     cursor: pointer;
   }
 
-  td.t-report-measure:hover {
+  td.t-report-measure:not(.t-disable-drilldown):hover {
     color: $dark-primary;
+  }
+
+  td.t-report-measure.t-disable-drilldown {
+    color: $gray-600;
+  }
+
+  // td.t-report-attribute {
+  //   background-color: whitesmoke;
+  // }
+  // tr.t-report-row:hover td.t-report-attribute {
+  //   background-color: #e9e9e9;
+  // }
+
+  tr {
+    height: 31px;
   }
 }
 
@@ -1931,3 +1991,4 @@ th.t-slimfit {
 tr.t-draw-attention {
   background: lightgreen;
 }
+

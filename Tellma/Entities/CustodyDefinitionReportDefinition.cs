@@ -8,6 +8,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "Definition_ReportDefinition")]
         [Required]
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
         public string Name { get; set; }
         public string Name2 { get; set; }
@@ -17,11 +18,14 @@ namespace Tellma.Entities
     public class CustodyDefinitionReportDefinition : CustodyDefinitionReportDefinitionForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
+        [NotNull]
         public int? CustodyDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         [Display(Name = "Definition_ReportDefinition")]

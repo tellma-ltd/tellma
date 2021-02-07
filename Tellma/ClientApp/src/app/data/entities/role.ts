@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { Permission, PermissionForSave } from './permission';
 import { RoleMembershipForSave, RoleMembership } from './role-membership';
@@ -46,14 +47,15 @@ export function metadata_Role(wss: WorkspaceService, trx: TranslateService): Ent
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-        Id: { datatype: 'integral', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
-        IsPublic: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('Role_IsPublic') },
-        IsActive: { datatype: 'boolean', control: 'boolean', label: () => trx.instant('IsActive') },
+        IsPublic: { datatype: 'bit', control: 'check', label: () => trx.instant('Role_IsPublic') },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
         SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
       }
     };

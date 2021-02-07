@@ -96,7 +96,7 @@ namespace Tellma.Controllers
         public virtual async Task<(List<TEntity>, Extras)> GetByIds(List<TKey> ids, SelectExpandArguments args, string action, CancellationToken cancellation)
         {
             // Parse the parameters
-            var expand = ExpandExpression.Parse(args?.Expand);
+            var expand = ExpressionExpand.Parse(args?.Expand);
             var select = ParseSelect(args?.Select);
 
             // Prepare the permissions filter
@@ -111,15 +111,15 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="ExpandExpression"/> and <see cref="SelectExpression"/>,
+        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="ExpressionExpand"/> and <see cref="ExpressionSelect"/>,
         /// after verifying the user's permissions, returns the entities in the same order as the supplied Ids.
         /// If null was supplied for permission filter, the function by default uses the filter for the read permissions filter
         /// </summary>
         protected virtual async Task<List<TEntity>> GetEntitiesByIds(
             List<TKey> ids,
-            ExpandExpression expand,
-            SelectExpression select,
-            FilterExpression permissionsFilter,
+            ExpressionExpand expand,
+            ExpressionSelect select,
+            ExpressionFilter permissionsFilter,
             CancellationToken cancellation)
         {
             if (ids == null || ids.Count == 0)
@@ -156,7 +156,7 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Returns a <see cref="List{TEntity}"/> as per the propName, values and the specifications in the <see cref="ExpandExpression"/> and <see cref="SelectExpression"/>,
+        /// Returns a <see cref="List{TEntity}"/> as per the propName, values and the specifications in the <see cref="ExpressionExpand"/> and <see cref="ExpressionSelect"/>,
         /// after verifying the user's READ permissions, returns the entities in the same order as the supplied Ids
         /// </summary>
         public virtual async Task<(List<TEntity>, Extras)> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
@@ -175,7 +175,7 @@ namespace Tellma.Controllers
             else
             {
                 // Parse the parameters
-                var expand = ExpandExpression.Parse(args?.Expand);
+                var expand = ExpressionExpand.Parse(args?.Expand);
                 var select = ParseSelect(args?.Select);
 
                 data = await GetEntitiesByCustomQuery(q => q.FilterByPropertyValues(propName, values), expand, select, null, null, cancellation);
@@ -200,10 +200,10 @@ namespace Tellma.Controllers
         /// <param name="cancellation">Optional select argument</param>
         protected async Task<List<TEntity>> GetEntitiesByCustomQuery(
             Func<Query<TEntity>, Query<TEntity>> filterFunc,
-            ExpandExpression expand,
-            SelectExpression select,
-            OrderByExpression orderby,
-            FilterExpression permissionsFilter,
+            ExpressionExpand expand,
+            ExpressionSelect select,
+            ExpressionOrderBy orderby,
+            ExpressionFilter permissionsFilter,
             CancellationToken cancellation)
         {
             // Prepare a query of the result, and clone it
@@ -218,7 +218,7 @@ namespace Tellma.Controllers
             query = query.Filter(permissionsFilter);
 
             // Expand, Select and Order the result as specified in the OData agruments
-            var expandedQuery = query.Expand(expand).Select(select).OrderBy(orderby ?? OrderByExpression.Parse("Id")); // Required
+            var expandedQuery = query.Expand(expand).Select(select).OrderBy(orderby ?? ExpressionOrderBy.Parse("Id")); // Required
 
             // Load the result into memory
             var data = await expandedQuery.ToListAsync(cancellation); // this is potentially unordered, should that be a concern?
@@ -231,9 +231,9 @@ namespace Tellma.Controllers
             return data;
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse("Id desc");
+            return ExpressionOrderBy.Parse("Id desc");
         }
 
         ///// <summary>
@@ -514,7 +514,7 @@ namespace Tellma.Controllers
         /// or do not exist, in that case it returns a watered down list of Ids the user can perform the
         /// action on. Handling missing and invisible Ids are up to the API implementation
         /// </summary>
-        protected virtual async Task<List<TKey>> CheckActionPermissionsBefore(FilterExpression actionFilter, List<TKey> ids)
+        protected virtual async Task<List<TKey>> CheckActionPermissionsBefore(ExpressionFilter actionFilter, List<TKey> ids)
         {
             if (actionFilter == null)
             {
@@ -563,11 +563,11 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Compliments <see cref="CheckActionPermissionsBefore(FilterExpression, List{TKey})"/> when the user has partial (Row level) access on a table
+        /// Compliments <see cref="CheckActionPermissionsBefore(ExpressionFilter, List{TKey})"/> when the user has partial (Row level) access on a table
         /// This utility method checks (after the action has been perfromed) that the permission criteria predicate is still true for all actioned
         /// Ids, otherwise throws a <see cref="ForbiddenException"/> to roll back the transaction (the method must be called before committing the transaction
         /// </summary>
-        protected async Task CheckActionPermissionsAfter(FilterExpression actionFilter, List<TKey> actionedIds, List<TEntity> data)
+        protected async Task CheckActionPermissionsAfter(ExpressionFilter actionFilter, List<TKey> actionedIds, List<TEntity> data)
         {
             if (actionFilter != null)
             {

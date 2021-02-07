@@ -346,7 +346,7 @@
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>
   </data>
-  <data name="Control_boolean" xml:space="preserve">
+  <data name="Control_check" xml:space="preserve">
     <value>Yes/No</value>
   </data>
   <data name="Control_choice" xml:space="preserve">
@@ -447,6 +447,21 @@
   </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
+  </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>Week Day</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="DateTime" xml:space="preserve">
     <value>Date</value>
@@ -2122,27 +2137,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>Modified By</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>Day of Month</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>Day of Year</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>Month</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>Quarter</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>Week</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>Week Day</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>Year</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -2169,6 +2163,9 @@
   </data>
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>Dispatch Failed</value>
+  </data>
+  <data name="NotSupportedForDisplay" xml:space="preserve">
+    <value>(Cannot Display)</value>
   </data>
   <data name="Or" xml:space="preserve">
     <value>Or</value>
@@ -2422,26 +2419,14 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>Report Definition</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>Aggregation Function</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>Average</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>Maximum</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>Minimum</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>Sum</value>
+  <data name="ReportDefinition_Attributes" xml:space="preserve">
+    <value>Attributes</value>
   </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>Auto Expand</value>
+  </data>
+  <data name="ReportDefinition_AutoExpandLevel" xml:space="preserve">
+    <value>Auto-Expand Level</value>
   </data>
   <data name="ReportDefinition_Chart" xml:space="preserve">
     <value>Chart</value>
@@ -2506,11 +2491,23 @@
   <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
     <value>Tree Map</value>
   </data>
+  <data name="ReportDefinition_ChartOptions" xml:space="preserve">
+    <value>Chart Options</value>
+  </data>
   <data name="ReportDefinition_Collection" xml:space="preserve">
     <value>Collection</value>
   </data>
   <data name="ReportDefinition_Columns" xml:space="preserve">
     <value>Columns</value>
+  </data>
+  <data name="ReportDefinition_ColumnsTotalLabel" xml:space="preserve">
+    <value>Columns Total Label</value>
+  </data>
+  <data name="ReportDefinition_DangerWhen" xml:space="preserve">
+    <value>Danger When</value>
+  </data>
+  <data name="ReportDefinition_DefaultExpression" xml:space="preserve">
+    <value>Default Expression</value>
   </data>
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>Defaults To Chart</value>
@@ -2521,17 +2518,32 @@
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>Definition</value>
   </data>
+  <data name="ReportDefinition_DisplayExpression" xml:space="preserve">
+    <value>Display Expression</value>
+  </data>
+  <data name="ReportDefinition_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
+  </data>
+  <data name="ReportDefinition_Having" xml:space="preserve">
+    <value>Having</value>
+  </data>
+  <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
+    <value>Use Custom Drilldown</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
   </data>
+  <data name="ReportDefinition_KeyExpression" xml:space="preserve">
+    <value>Key Expression</value>
+  </data>
+  <data name="ReportDefinition_Localize" xml:space="preserve">
+    <value>Auto-Localize</value>
+  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>Measures</value>
-  </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>Modifier</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>Order By</value>
@@ -2548,14 +2560,17 @@
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>Parameters</value>
   </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>Path</value>
-  </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>Rows</value>
   </data>
+  <data name="ReportDefinition_RowsTotalLabel" xml:space="preserve">
+    <value>Rows Total Label</value>
+  </data>
   <data name="ReportDefinition_Select" xml:space="preserve">
     <value>Select</value>
+  </data>
+  <data name="ReportDefinition_ShowAsTree" xml:space="preserve">
+    <value>Show As Tree</value>
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>Show Columns Total</value>
@@ -2565,6 +2580,9 @@
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>Show Rows Total</value>
+  </data>
+  <data name="ReportDefinition_SuccessWhen" xml:space="preserve">
+    <value>Success When</value>
   </data>
   <data name="ReportDefinition_Top" xml:space="preserve">
     <value>Top</value>
@@ -2578,8 +2596,8 @@
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>Summary</value>
   </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>Value</value>
+  <data name="ReportDefinition_WarningWhen" xml:space="preserve">
+    <value>Warning When</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
@@ -2839,6 +2857,81 @@
   <data name="ShortMonth9" xml:space="preserve">
     <value>Sep</value>
   </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>Meskerem</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>Sene</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>Hamle</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>Nehase</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>Puagme</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>Tikimt</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>Hidar</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>Tahsas</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>Tir</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>Yekatit</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>Megabit</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>Meyazya</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>Ginbot</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Muharram</value>
+  </data>
+  <data name="ShortMonthUq10" xml:space="preserve">
+    <value>Shawwal</value>
+  </data>
+  <data name="ShortMonthUq11" xml:space="preserve">
+    <value>Dhu al-Qi'dah</value>
+  </data>
+  <data name="ShortMonthUq12" xml:space="preserve">
+    <value>Dhu al-Hijjah</value>
+  </data>
+  <data name="ShortMonthUq2" xml:space="preserve">
+    <value>Safar</value>
+  </data>
+  <data name="ShortMonthUq3" xml:space="preserve">
+    <value>Rabi' al-Awwal</value>
+  </data>
+  <data name="ShortMonthUq4" xml:space="preserve">
+    <value>Rabi' al-Thani</value>
+  </data>
+  <data name="ShortMonthUq5" xml:space="preserve">
+    <value>Jumada al-Awwal</value>
+  </data>
+  <data name="ShortMonthUq6" xml:space="preserve">
+    <value>Jumada al-Thani</value>
+  </data>
+  <data name="ShortMonthUq7" xml:space="preserve">
+    <value>Rajab</value>
+  </data>
+  <data name="ShortMonthUq8" xml:space="preserve">
+    <value>Sha'ban</value>
+  </data>
+  <data name="ShortMonthUq9" xml:space="preserve">
+    <value>Ramadan</value>
+  </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>Q1</value>
   </data>
@@ -2964,60 +3057,6 @@
   </data>
   <data name="String" xml:space="preserve">
     <value>Text</value>
-  </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>Summary Entries</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>Summary Entry</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>Closing</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>Closing Mass</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>Closing Amount</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>Closing Quantity</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>Credit</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>Debit</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>Mass In</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>Mass Out</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>Amount In</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>Amount Out</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>Opening</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>Opening Mass</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>Opening Amount</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>Opening Quantity</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>Quantity In</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>Quantity Out</value>
   </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>Culture</value>

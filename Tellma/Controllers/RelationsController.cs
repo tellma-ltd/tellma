@@ -173,7 +173,7 @@ namespace Tellma.Controllers
             string attachments = nameof(Relation.Attachments);
             var (entity, _) = await GetById(docId, new GetByIdArguments
             {
-                Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
+                Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
             },
             cancellation);
 
@@ -209,7 +209,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Relation.DefinitionId)} {Ops.eq} {DefinitionId}";
+            string filter = $"{nameof(Relation.DefinitionId)} eq {DefinitionId}";
             return new FilteredRepository<Relation>(_repo, filter);
         }
 
@@ -458,7 +458,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override SelectExpression ParseSelect(string select) => RelationServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+        protected override ExpressionSelect ParseSelect(string select) => RelationServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
 
         public Task<(List<Relation>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
@@ -561,7 +561,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
                 }
 
-                string definitionPredicate = $"{nameof(Relation.DefinitionId)} {Ops.eq} {definitionId}";
+                string definitionPredicate = $"{nameof(Relation.DefinitionId)} eq {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
@@ -581,7 +581,7 @@ namespace Tellma.Controllers
             return RelationServiceUtil.SearchImpl(query, args);
         }
 
-        protected override SelectExpression ParseSelect(string select) => RelationServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+        protected override ExpressionSelect ParseSelect(string select) => RelationServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
     }
 
     internal class RelationServiceUtil
@@ -602,14 +602,14 @@ namespace Tellma.Controllers
                 var code = nameof(Relation.Code);
                 var tin = nameof(Relation.TaxIdentificationNumber);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {tin} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {tin} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
         }
 
-        public static SelectExpression ParseSelect(string select, Func<string, SelectExpression> baseFunc)
+        public static ExpressionSelect ParseSelect(string select, Func<string, ExpressionSelect> baseFunc)
         {
             string shorthand = "$DocumentDetails";
             if (select == null)

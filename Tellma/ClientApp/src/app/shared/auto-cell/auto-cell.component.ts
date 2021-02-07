@@ -3,7 +3,7 @@ import { metadata, ChoicePropDescriptor, NumberPropDescriptor, EntityDescriptor,
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { displayValue, displayEntity } from '~/app/data/util';
+import { displayScalarValue, displayEntity } from '~/app/data/util';
 
 @Component({
   selector: 't-auto-cell',
@@ -104,7 +104,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
           throw new Error(`The collection is not specified`);
         }
 
-        const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+        const pathArray = (this.path || '').split('.').map(e => e.trim()).filter(e => !!e);
         this._entityDescriptor = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definitionId);
 
         if (pathArray.length === 0) {
@@ -197,7 +197,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get displayValue(): string {
-    return displayValue(this._value, this._propDescriptor, this.translate);
+    return displayScalarValue(this._value, this._propDescriptor, this.workspace, this.translate);
   }
 
   get stateColor(): string {
@@ -212,7 +212,9 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get alignment(): string {
-    return (this._propDescriptor as NumberPropDescriptor).alignment;
+    if ((this._propDescriptor as NumberPropDescriptor).isRightAligned) {
+      return 'right';
+    }
   }
 
   get navigationValue(): any {

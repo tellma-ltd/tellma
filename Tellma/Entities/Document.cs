@@ -14,10 +14,12 @@ namespace Tellma.Entities
     {
         [Display(Name = "Document_SerialNumber")]
         [AlwaysAccessible]
+        [NotNull]
         [UserKey]
         public int? SerialNumber { get; set; }
 
         [Display(Name = "Document_Clearance")]
+        [NotNull]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
         public byte? Clearance { get; set; }
@@ -26,6 +28,7 @@ namespace Tellma.Entities
         public DateTime? PostingDate { get; set; }
 
         [IsCommonDisplay(Name = "Document_PostingDate")]
+        [NotNull]
         public bool? PostingDateIsCommon { get; set; }
 
         [Display(Name = "Memo")]
@@ -33,6 +36,7 @@ namespace Tellma.Entities
         public string Memo { get; set; }
 
         [IsCommonDisplay(Name = "Memo")]
+        [NotNull]
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
@@ -41,60 +45,72 @@ namespace Tellma.Entities
         public string CurrencyId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Currency")]
+        [NotNull]
         public bool? CurrencyIsCommon { get; set; }
 
         [Display(Name = "Document_Center")]
         public int? CenterId { get; set; }
 
         [IsCommonDisplay(Name = "Document_Center")]
+        [NotNull]
         public bool? CenterIsCommon { get; set; }
 
         [Display(Name = "Entry_Custodian")]
         public int? CustodianId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Custodian")]
+        [NotNull]
         public bool? CustodianIsCommon { get; set; }
 
         [Display(Name = "Entry_Custody")]
         public int? CustodyId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Custody")]
+        [NotNull]
         public bool? CustodyIsCommon { get; set; }
 
         [Display(Name = "Entry_Participant")]
         public int? ParticipantId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Participant")]
+        [NotNull]
         public bool? ParticipantIsCommon { get; set; }
 
         [Display(Name = "Entryt_Resource")]
         public int? ResourceId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Resource")]
+        [NotNull]
         public bool? ResourceIsCommon { get; set; }
 
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Quantity")]
+        [NotNull]
         public bool? QuantityIsCommon { get; set; }
 
         [Display(Name = "Entry_Unit")]
         public int? UnitId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Unit")]
+        [NotNull]
         public bool? UnitIsCommon { get; set; }
 
         [Display(Name = "Entry_Time1")]
+        [IncludesTime]
         public DateTime? Time1 { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Time1")]
+        [NotNull]
         public bool? Time1IsCommon { get; set; }
 
         [Display(Name = "Entry_Time2")]
+        [IncludesTime]
         public DateTime? Time2 { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Time2")]
+        [NotNull]
         public bool? Time2IsCommon { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
@@ -102,6 +118,7 @@ namespace Tellma.Entities
         public string ExternalReference { get; set; }
 
         [IsCommonDisplay(Name = "Entry_ExternalReference")]
+        [NotNull]
         public bool? ExternalReferenceIsCommon { get; set; }
 
         [Display(Name = "Entry_InternalReference")]
@@ -109,6 +126,7 @@ namespace Tellma.Entities
         public string InternalReference { get; set; }
 
         [IsCommonDisplay(Name = "Entry_InternalReference")]
+        [NotNull]
         public bool? InternalReferenceIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
@@ -130,14 +148,17 @@ namespace Tellma.Entities
     public class Document : DocumentForSave<Line, DocumentLineDefinitionEntry, Attachment>
     {
         [Display(Name = "Definition")]
+        [NotNull]
         public int? DefinitionId { get; set; }
 
         [Display(Name = "Code")]
+        [NotNull]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "Document_State")]
         [AlwaysAccessible]
+        [NotNull]
         [ChoiceList(new object[] {
             DocState.Current,
             DocState.Posted,
@@ -151,6 +172,7 @@ namespace Tellma.Entities
         public short? State { get; set; }
 
         [Display(Name = "Document_StateAt")]
+        [NotNull]
         public DateTimeOffset? StateAt { get; set; }
 
         [Display(Name = "Document_Comment")]
@@ -169,15 +191,19 @@ namespace Tellma.Entities
         public DateTimeOffset? OpenedAt { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query
@@ -294,11 +320,11 @@ namespace Tellma.Entities
             .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
 
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
 
         public static IEnumerable<string> LinePaths(string path = null) => LineProps
             .Concat(EntryPaths(nameof(Line.Entries)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
@@ -309,58 +335,58 @@ namespace Tellma.Entities
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AttachmentPaths(string path = null) => AttachmentProps
             .Concat(UserPaths(nameof(Attachment.CreatedBy)))
             .Concat(UserPaths(nameof(Attachment.ModifiedBy)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> DocumentStateChangePaths(string path = null) => DocumentStateChangeProps
             .Concat(UserPaths(nameof(DocumentStateChange.ModifiedBy)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> DocumentAssignmentPaths(string path = null) => DocumentAssignmentProps
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> CustodyPaths(string path = null) => CustodyProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountCustodyPaths(string path = null) => CustodyPaths(path)
             // This is used in account, it does not need currency or center, since they already come with the account
-            .Concat(RelationPaths(nameof(Custody.Custodian)).Select(p => path == null ? p : $"{path}/{p}"));
+            .Concat(RelationPaths(nameof(Custody.Custodian)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> EntryCustodyPaths(string path = null) => AccountCustodyPaths(path)
             // Entry Custody also adds the Custodian, Currency and Center
-            .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
-            .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}/{p}"));
+            .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountResourcePaths(string path = null) => ResourcePaths(path)
             // This is used in account, it does not need currency or center, since they already come with the account
-            .Concat(RelationPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}/{p}"))
-            .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}/{p}"))
-            .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}/{p}"));
+            .Concat(RelationPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)
             // Entry Resource also adds the Currency, Center, cost center and participant
-            .Concat(CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}"))
-            .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}"))
-            .Concat(CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}/{p}"));
+            .Concat(CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
             .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> CenterPaths(string path = null) => CenterProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> UnitPaths(string path = null) => UnitProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> CurrencyPaths(string path = null) => CurrencyProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> UserPaths(string path = null) => UserProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         //public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
-        //    .Select(p => path == null ? p : $"{path}/{p}");
+        //    .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> EntryTypeParentPaths(string path = null) => EntryTypeParentProps
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountPaths(string path = null) => AccountProps
             .Concat(AccountTypePaths(nameof(Account.AccountType)))
             .Concat(CenterPaths(nameof(Account.Center)))
@@ -370,10 +396,10 @@ namespace Tellma.Entities
             .Concat(AccountResourcePaths(nameof(Account.Resource)))
             .Concat(RelationPaths(nameof(Account.Participant)))
             .Concat(RelationPaths(nameof(Account.Custodian)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
             .Concat(EntryTypeParentPaths(nameof(AccountType.EntryTypeParent)))
-            .Select(p => path == null ? p : $"{path}/{p}");
+            .Select(p => path == null ? p : $"{path}.{p}");
 
         // -------------------------------------------------------------
         // Simple properties to include on the level of each entity type

@@ -1,8 +1,8 @@
 <t-master collection="InboxRecord" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
     [additionalSelect]="additionalSelect" [masterCrumb]="'Inbox' | translate" [showImportButton]="false"
     [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-    [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Document/Memo,CreatedAt,CreatedBy,Comment,OpenedAt"
-    selectForTiles="Comment,CreatedAt,CreatedBy/Name,CreatedBy/Name2,CreatedBy/Name3,CreatedBy/ImageId,OpenedAt,Document/DefinitionId,Document/SerialNumber,Document/Memo"
+    [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Document.Memo,CreatedAt,CreatedBy,Comment,OpenedAt"
+    selectForTiles="Comment,CreatedAt,CreatedBy.Name,CreatedBy.Name2,CreatedBy.Name3,CreatedBy.ImageId,OpenedAt,Document.DefinitionId,Document.SerialNumber,Document.Memo"
     [multiselectActions]="[]" [filterDefinition]="{
         'OpenedAt' : [
           { template: notopened, expression: 'OpenedAt eq null'},

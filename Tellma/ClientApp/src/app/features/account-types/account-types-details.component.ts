@@ -17,7 +17,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,
-CustodyDefinitions/CustodyDefinition,ResourceDefinitions/ResourceDefinition`;
+CustodyDefinitions.CustodyDefinition,ResourceDefinitions.ResourceDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {

@@ -22,7 +22,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   private _languageChoices: SelectorChoice[];
   private usersApi = this.api.usersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Roles/Role';
+  public expand = 'Roles.Role';
 
   create = () => {
     const result: UserForSave = {};

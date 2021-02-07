@@ -221,6 +221,15 @@ namespace Tellma.Data
             return new AggregateQuery<T>(Factory);
         }
 
+        /// <summary>
+        /// Creates and returns a new <see cref="Queries.FactQuery{T}"/>
+        /// </summary>
+        /// <typeparam name="T">The root type of the <see cref="Queries.FactQuery{T}"/></typeparam>
+        public FactQuery<T> FactQuery<T>() where T : Entity
+        {
+            return new FactQuery<T>(Factory);
+        }
+
         private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
             var conn = await GetConnectionAsync(cancellation);
@@ -236,7 +245,7 @@ namespace Tellma.Data
         /// Returns a function that maps every <see cref="Entity"/> type in <see cref="ApplicationRepository"/> 
         /// to the default SQL query that retrieves it + some optional parameters
         /// </summary>
-        private static string Sources(Type t)
+        public static string Sources(Type t)
         {
             var result = t.Name switch
             {
@@ -287,12 +296,13 @@ namespace Tellma.Data
                 nameof(Entities.RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
                 nameof(Entities.RelationUser) => "[map].[RelationUsers]()",
                 nameof(Entities.RelationAttachment) => "[map].[RelationAttachments]()",
-                nameof(Entities.ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
+                nameof(Entities.ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
                 nameof(Entities.ReportDefinition) => "[map].[ReportDefinitions]()",
-                nameof(Entities.ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
-                nameof(Entities.ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
-                nameof(Entities.ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
-                nameof(Entities.ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
+                nameof(Entities.ReportDefinitionMeasure) => "[map].[ReportDefinitionMeasures]()",
+                nameof(Entities.ReportDefinitionParameter) => "[map].[ReportDefinitionParameters]()",
+                nameof(Entities.ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
+                nameof(Entities.ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
+                nameof(Entities.ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
                 nameof(Entities.RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
                 nameof(Entities.Resource) => "[map].[Resources]()",
                 nameof(Entities.ResourceDefinition) => "[map].[ResourceDefinitions]()",
@@ -301,7 +311,6 @@ namespace Tellma.Data
                 nameof(Entities.Role) => "[dbo].[Roles]",
                 nameof(Entities.RoleMembership) => "[dbo].[RoleMemberships]",
                 nameof(Entities.SmsMessageForQuery) => "[map].[SmsMessages]()",
-                nameof(Entities.SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
                 nameof(Entities.Unit) => "[map].[Units]()",
                 nameof(Entities.User) => "[map].[Users]()",
                 nameof(Entities.VoucherBooklet) => "[dbo].[VoucherBooklets]",
@@ -843,12 +852,12 @@ namespace Tellma.Data
                 }
 
                 // Parameters
-                var reportParameterDefinitionProps = TypeDescriptor.Get<ReportParameterDefinition>().SimpleProperties;
+                var reportDefinitionParameterProps = TypeDescriptor.Get<ReportDefinitionParameter>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportParameterDefinition();
-                    foreach (var prop in reportParameterDefinitionProps)
+                    var entity = new ReportDefinitionParameter();
+                    foreach (var prop in reportDefinitionParameterProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -858,17 +867,17 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Parameters ??= new List<ReportParameterDefinition>();
+                    reportDefinition.Parameters ??= new List<ReportDefinitionParameter>();
                     reportDefinition.Parameters.Add(entity);
                 }
 
                 // Select
-                var reportSelectDefinitionProps = TypeDescriptor.Get<ReportSelectDefinition>().SimpleProperties;
+                var reportDefinitionSelectProps = TypeDescriptor.Get<ReportDefinitionSelect>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportSelectDefinition();
-                    foreach (var prop in reportSelectDefinitionProps)
+                    var entity = new ReportDefinitionSelect();
+                    foreach (var prop in reportDefinitionSelectProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -878,17 +887,18 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Select ??= new List<ReportSelectDefinition>();
+                    reportDefinition.Select ??= new List<ReportDefinitionSelect>();
                     reportDefinition.Select.Add(entity);
                 }
 
                 // Rows
-                var reportRowDefinitionProps = TypeDescriptor.Get<ReportRowDefinition>().SimpleProperties;
+                var attributesDic = new Dictionary<int, List<ReportDefinitionDimensionAttribute>>(); // Dimension Id => Attributes list
+                var reportDefinitionRowProps = TypeDescriptor.Get<ReportDefinitionRow>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportRowDefinition();
-                    foreach (var prop in reportRowDefinitionProps)
+                    var entity = new ReportDefinitionRow();
+                    foreach (var prop in reportDefinitionRowProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -898,17 +908,20 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Rows ??= new List<ReportRowDefinition>();
+                    reportDefinition.Rows ??= new List<ReportDefinitionRow>();
                     reportDefinition.Rows.Add(entity);
+
+                    entity.Attributes ??= new List<ReportDefinitionDimensionAttribute>();
+                    attributesDic[entity.Id] = entity.Attributes;
                 }
 
                 // Columns
-                var reportColumnDefinitionProps = TypeDescriptor.Get<ReportColumnDefinition>().SimpleProperties;
+                var reportDefinitionColumnProps = TypeDescriptor.Get<ReportDefinitionColumn>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportColumnDefinition();
-                    foreach (var prop in reportColumnDefinitionProps)
+                    var entity = new ReportDefinitionColumn();
+                    foreach (var prop in reportDefinitionColumnProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -918,17 +931,38 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Columns ??= new List<ReportColumnDefinition>();
+                    reportDefinition.Columns ??= new List<ReportDefinitionColumn>();
                     reportDefinition.Columns.Add(entity);
+
+                    entity.Attributes ??= new List<ReportDefinitionDimensionAttribute>();
+                    attributesDic[entity.Id] = entity.Attributes;
+                }
+
+                // Dimension Attributes
+                var reportDefinitionAttributeProps = TypeDescriptor.Get<ReportDefinitionDimensionAttribute>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new ReportDefinitionDimensionAttribute();
+                    foreach (var prop in reportDefinitionAttributeProps)
+                    {                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var attributesList = attributesDic[entity.ReportDefinitionDimensionId.Value];
+                    attributesList.Add(entity);
                 }
 
                 // Measures
-                var reportMeasureDefinitionProps = TypeDescriptor.Get<ReportMeasureDefinition>().SimpleProperties;
+                var reportDefinitionMeasureProps = TypeDescriptor.Get<ReportDefinitionMeasure>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportMeasureDefinition();
-                    foreach (var prop in reportMeasureDefinitionProps)
+                    var entity = new ReportDefinitionMeasure();
+                    foreach (var prop in reportDefinitionMeasureProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -938,7 +972,7 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Measures ??= new List<ReportMeasureDefinition>();
+                    reportDefinition.Measures ??= new List<ReportDefinitionMeasure>();
                     reportDefinition.Measures.Add(entity);
                 }
 
@@ -1443,7 +1477,7 @@ namespace Tellma.Data
         public async Task<(List<string> deletedImageIds, List<int> ids)> Custodies__Save(int definitionId, List<CustodyForSave> entities, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Save));
-            
+
             var deletedImageIds = new List<string>();
             var ids = new List<IndexedId>();
 
@@ -2445,7 +2479,7 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
-            
+
             // Parameters
             var entitiesTvp = UsersTvp(entities);
 
@@ -4900,7 +4934,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents, includeAttachments: true);
+                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
@@ -5866,35 +5900,47 @@ namespace Tellma.Data
             DataTable parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
             var parametersTvp = new SqlParameter("@Parameters", parametersTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportParameterDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionParameter)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
             var selectTvp = new SqlParameter("@Select", selectTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportSelectDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionSelect)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
             var rowsTvp = new SqlParameter("@Rows", rowsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
             var columnsTvp = new SqlParameter("@Columns", columnsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var (rowsAttributesTable, colsAttributesTable) = RepositoryUtilities.DataTableFromReportDefinitionDimensionAttributes(entities);
+            var rowsAttributesTvp = new SqlParameter("@RowsAttributes", rowsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var columnsAttributesTvp = new SqlParameter("@ColumnsAttributes", colsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
             var measuresTvp = new SqlParameter("@Measures", measuresTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportMeasureDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionMeasure)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -5902,7 +5948,9 @@ namespace Tellma.Data
             cmd.Parameters.Add(parametersTvp);
             cmd.Parameters.Add(selectTvp);
             cmd.Parameters.Add(rowsTvp);
+            cmd.Parameters.Add(rowsAttributesTvp);
             cmd.Parameters.Add(columnsTvp);
+            cmd.Parameters.Add(columnsAttributesTvp);
             cmd.Parameters.Add(measuresTvp);
             cmd.Parameters.Add("@Top", top);
 
@@ -5934,35 +5982,47 @@ namespace Tellma.Data
             DataTable parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
             var parametersTvp = new SqlParameter("@Parameters", parametersTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportParameterDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionParameter)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
             var selectTvp = new SqlParameter("@Select", selectTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportSelectDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionSelect)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
             var rowsTvp = new SqlParameter("@Rows", rowsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
             var columnsTvp = new SqlParameter("@Columns", columnsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var (rowsAttributesTable, colsAttributesTable) = RepositoryUtilities.DataTableFromReportDefinitionDimensionAttributes(entities);
+            var rowsAttributesTvp = new SqlParameter("@RowsAttributes", rowsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var columnsAttributesTvp = new SqlParameter("@ColumnsAttributes", colsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
             var measuresTvp = new SqlParameter("@Measures", measuresTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportMeasureDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionMeasure)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -5970,7 +6030,9 @@ namespace Tellma.Data
             cmd.Parameters.Add(parametersTvp);
             cmd.Parameters.Add(selectTvp);
             cmd.Parameters.Add(rowsTvp);
+            cmd.Parameters.Add(rowsAttributesTvp);
             cmd.Parameters.Add(columnsTvp);
+            cmd.Parameters.Add(columnsAttributesTvp);
             cmd.Parameters.Add(measuresTvp);
             cmd.Parameters.Add("@ReturnIds", returnIds);
 

@@ -31,12 +31,11 @@ namespace Tellma.Entities.Descriptors
         /// </summary>
         public NavigationPropertyDescriptor(
             PropertyInfo propInfo,
-            string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
             bool isParent,
             PropertyDescriptor foreignKey,
-            Func<TypeDescriptor> getTypeDescriptor) : base(propInfo, name, setter, getter)
+            Func<TypeDescriptor> getTypeDescriptor) : base(propInfo, setter, getter)
         {
             _getTypeDescriptor = getTypeDescriptor;
             IsParent = isParent;

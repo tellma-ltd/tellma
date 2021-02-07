@@ -400,6 +400,21 @@
   <data name="Data" xml:space="preserve">
     <value>ወሂብ</value>
   </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>የወር ቀን</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>ወር</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>ሩብ</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>በሳምንት ቀን</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>አመት</value>
+  </data>
   <data name="DateTime" xml:space="preserve">
     <value>ቀን</value>
   </data>
@@ -2035,27 +2050,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>የተቀየሩ</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>የወር ቀን</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>የዓመቱ ቀን</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>ወር</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>ሩብ</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>ሳምንት</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>በሳምንት ቀን</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>አመት</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>ስም</value>
   </data>
@@ -2219,7 +2213,7 @@
     <value>ልዩ ልዩ</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
-    <value>ሌሎች የገንዘብ ንብረቶች</value>
+    <value>ሌሎች ገንዘብ ነክ ንብረቶች</value>
   </data>
   <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
     <value>ሌሎች የገንዘብ ተጠያቂነቶች</value>
@@ -2335,24 +2329,6 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>ሪፖርት ፍቺ</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>ውሁድ ተግባር</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>አማካይ</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>ቁጠር</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>ከፍተኛ</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>ዝቅተኛ</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>ድምር</value>
-  </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>ራስ ዘርጋ</value>
   </data>
@@ -2443,9 +2419,6 @@
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>እርምጃዎች</value>
   </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>መቀየሪያ</value>
-  </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>ትዕዛዝ</value>
   </data>
@@ -2460,9 +2433,6 @@
   </data>
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>መለኪያዎች</value>
-  </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>ዱካ</value>
   </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>ረድፎች</value>
@@ -2490,9 +2460,6 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>ማጠቃለያ</value>
-  </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>ዋጋ</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>ሪፖርት ፍቺዎች</value>
@@ -2573,7 +2540,7 @@
     <value>የመገልገያ ፍቺ</value>
   </data>
   <data name="ResourceDefinition_ResourceDefinitionType" xml:space="preserve">
-    <value>ሀብት ፍቺ አይነት</value>
+    <value>የመገልገያ ፍቺ አይነት</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
     <value>ክፍል የቁጥሮች</value>
@@ -2752,6 +2719,45 @@
   <data name="ShortMonth9" xml:space="preserve">
     <value>መሰከ</value>
   </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>መስከረም</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>ሰኔ</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>ሐምሌ</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>ነሐሴ</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>ጳጐሜን</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>ጥቅምት</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>ኅዳር</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>ታኅሣሥ</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>ጥር</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>የካቲት</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>መጋቢት</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>ሚያዝያ</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>ግንቦት</value>
+  </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>ሩብ 1</value>
   </data>
@@ -2877,60 +2883,6 @@
   </data>
   <data name="String" xml:space="preserve">
     <value>ጽሑፍ</value>
-  </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>ማጠቃለያ ምዝግቦችን</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>ማጠቃለያ Entry</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>በመዝጋት ላይ</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>የመገናኛ መዝጋት</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>የመዝጊያ መጠን</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>መዝጊያ ብዛት</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>ክሬዲት</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>ዴቢት</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>የጅምላ ውስጥ</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>የጅምላ ውጪ</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>መጠን</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>መጠን ውጪ</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>ቀዳዳ</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>በመክፈት ላይ ቅዳሴ</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>የመክፈቻ መጠን</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>በመክፈት ላይ ብዛት</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>ብዛት ውስጥ</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>ብዛት ውጪ</value>
   </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>ባህል</value>

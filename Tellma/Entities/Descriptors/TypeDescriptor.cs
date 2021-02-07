@@ -205,12 +205,7 @@ namespace Tellma.Entities.Descriptors
                 // The purpose of the OrderBy is to ensure that navigation properties come after their foreign key properties
                 foreach (var propInfo in propInfos.OrderBy(p => (p.PropertyType.IsSubclassOf(typeof(Entity)) || p.PropertyType.IsList()) ? 1 : 0))
                 {
-                    #region Type && Name
-
                     var propType = propInfo.PropertyType;
-                    var name = propInfo.Name;
-
-                    #endregion
 
                     #region Setter
 
@@ -269,7 +264,7 @@ namespace Tellma.Entities.Descriptors
                         #endregion
 
                         // Collection
-                        propDesc = new CollectionPropertyDescriptor(propInfo, name, setter, getter, foreignKeyName, getCollectionEntityDescriptor);
+                        propDesc = new CollectionPropertyDescriptor(propInfo, setter, getter, foreignKeyName, getCollectionEntityDescriptor);
                     }
                     else if (propInfo.PropertyType.IsSubclassOf(typeof(Entity)))
                     {
@@ -303,21 +298,10 @@ namespace Tellma.Entities.Descriptors
                         #endregion
 
                         // Navigation
-                        propDesc = new NavigationPropertyDescriptor(propInfo, name, setter, getter, isParent, foreignKeyDesc, getEntityDesc);
+                        propDesc = new NavigationPropertyDescriptor(propInfo, setter, getter, isParent, foreignKeyDesc, getEntityDesc);
                     }
                     else
                     {
-                        #region MaxLength
-
-                        int maxLength = -1;
-                        var stringLengthAttribute = propInfo.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                        if (stringLengthAttribute != null)
-                        {
-                            maxLength = stringLengthAttribute.MaximumLength;
-                        }
-
-                        #endregion
-
                         #region IndexPropertyName
 
                         // (e, v) => e.Name = (string)v
@@ -359,7 +343,7 @@ namespace Tellma.Entities.Descriptors
                         #endregion
 
                         // Simple
-                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, indexPropName, indexPropSetter, indexPropGetter, maxLength);
+                        propDesc = new PropertyDescriptor(propInfo, setter, getter, indexPropName, indexPropSetter, indexPropGetter);
                     }
 
                     propertiesDic.Add(propInfo.Name, propDesc);

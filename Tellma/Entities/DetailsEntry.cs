@@ -9,13 +9,16 @@ namespace Tellma.Entities
     public class DetailsEntry : EntityWithKey<int>
     {
         [Display(Name = "Entry_Line")]
+        [NotNull]
         public int? LineId { get; set; }
 
         [Display(Name = "Entry_Center")]
+        [NotNull]
         public int? CenterId { get; set; }
 
         [Display(Name = "Entry_Direction")]
         [ChoiceList(new object[] { (short)-1, (short)1 })]
+        [NotNull]
         public short? Direction { get; set; }
 
         [Display(Name = "Entry_Account")]
@@ -58,6 +61,7 @@ namespace Tellma.Entities
         public decimal? NegativeAlgebraicMonetaryValue { get; set; }
 
         [Display(Name = "Entry_Currency")]
+        [NotNull]
         public string CurrencyId { get; set; }
 
         [Display(Name = "DetailsEntry_Count")]
@@ -109,9 +113,11 @@ namespace Tellma.Entities
         public decimal? ValuePerUnit { get; set; }
 
         [Display(Name = "Entry_Time1")]
+        [IncludesTime]
         public DateTime? Time1 { get; set; }
 
         [Display(Name = "Entry_Time2")]
+        [IncludesTime]
         public DateTime? Time2 { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]

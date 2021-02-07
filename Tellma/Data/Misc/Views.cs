@@ -148,12 +148,6 @@
                         Actions = new ActionInfo[] { }
                     },
                     new ViewInfo {
-                        Id = "summary-entries",
-                        Name = "SummaryEntries",
-                        Read = true,
-                        Actions = new ActionInfo[] {}
-                    },
-                    new ViewInfo {
                         Id = "details-entries",
                         Name = "DetailsEntries",
                         Read = true,

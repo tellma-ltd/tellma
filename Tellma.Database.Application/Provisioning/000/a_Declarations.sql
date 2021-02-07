@@ -54,11 +54,11 @@
 	DECLARE @AccountTypeCustodyDefinitions AccountTypeCustodyDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
-	DECLARE @Columns ReportDimensionDefinitionList;
-	DECLARE @Rows ReportDimensionDefinitionList;
-	DECLARE @Measures ReportMeasureDefinitionList;
-	DECLARE @Parameters ReportParameterDefinitionList;
-	DECLARE @Select ReportSelectDefinitionList;
+	DECLARE @Columns ReportDefinitionDimensionList;
+	DECLARE @Rows ReportDefinitionDimensionList;
+	DECLARE @Measures ReportDefinitionMeasureList;
+	DECLARE @Parameters ReportDefinitionParameterList;
+	DECLARE @Select ReportDefinitionSelectList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 	DECLARE @RelationDefinitions dbo.[RelationDefinitionList], @CustodyDefinitions dbo.[CustodyDefinitionList];

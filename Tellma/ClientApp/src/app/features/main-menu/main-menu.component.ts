@@ -1,10 +1,10 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject, AfterViewChecked } from '@angular/core';
-import { Router, ActivatedRoute, Params, ParamMap } from '@angular/router';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Key } from '~/app/data/util';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
-import { Subscription, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
@@ -430,13 +430,23 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
               canView = canViewDocuments;
               break;
             default:
-              const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-              canView = this.canView(view);
+              const metadataFn = metadata[definition.Collection];
+              if (!!metadataFn) {
+                const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
+                canView = this.canView(view);
+              } else {
+                canView = false;
+              }
               break;
           }
         } else {
-          const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-          canView = this.canView(view);
+          const metadataFn = metadata[definition.Collection];
+          if (!!metadataFn) {
+            const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
+            canView = this.canView(view);
+          } else {
+            canView = false;
+          }
         }
 
         if (!canView) {
@@ -456,6 +466,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label,
           sortKey: definition.MainMenuSortKey,
           icon: definition.MainMenuIcon || 'folder',
+          paramsFunc: () => this.userSettings.get<Params>(`report/${definitionId}/arguments`),
           link: `../report/${definitionId}`
         });
       }
@@ -486,7 +497,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       titleFunc = titleFunc || (d => this.workspace.currentTenant.getMultilingualValueImmediate(d, 'TitlePlural')
         || this.translate.instant('Untitled'));
-      for (const definitionId of Object.keys(definitions).filter(e => this.canView(`${url}/${e}`))) {
+      for (const definitionId of Object.keys(definitions).filter(defId => this.canView(`${url}/${defId}`))) {
 
         // get the definition
         const definition = definitions[definitionId];
