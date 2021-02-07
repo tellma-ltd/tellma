@@ -867,17 +867,6 @@
                 </div>
             </div>
 
-            <!-- ShowEmptyMembers -->
-            <div class="form-group col-12 col-sm-6 d-none" *ngIf="showShowEmptyMembers(dimToEdit, modelRef)">
-                <label class="small">{{ 'ReportDefinition_ShowEmptyMembers' |
-                    translate }}</label>
-                <div class="custom-control custom-checkbox t-labelless-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="showemptymembers"
-                        [(ngModel)]="dimToEdit.ShowEmptyMembers" (ngModelChange)="dimToEditHasChanged = true">
-                    <label class="custom-control-label" for="showemptymembers">&zwnj;</label>
-                </div>
-            </div>
-
             <!-- AutoExpandLevel -->
             <ng-container
                 *ngIf="showShowAsTree(dimToEdit, modelRef) && dimToEdit.ShowAsTree; else autoexpandlevelfield">
@@ -1343,6 +1332,7 @@
                 <span class="form-control t-studio-input" id="key" style="opacity: 0.5;">{{ '@' + paramToEdit.Key
                     }}</span>
             </div>
+            <div class="w-100"></div>
 
             <!-- Label -->
             <div class="form-group col-12 col-sm-6">

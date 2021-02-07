@@ -160,7 +160,7 @@ SET NOCOUNT ON;
 		MERGE INTO BR AS t
 		USING (
 			SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[KeyExpression], L.[DisplayExpression], 
-			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree], L.[ShowEmptyMembers]
+			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree]
 			FROM @Rows L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 			JOIN @IndexedIds II ON H.[Index] = II.[Index]
 		) AS s ON (t.Id = s.Id)
@@ -176,16 +176,15 @@ SET NOCOUNT ON;
 				t.[Label3]				= s.[Label3],
 				t.[OrderDirection]		= s.[OrderDirection],
 				t.[AutoExpandLevel]		= s.[AutoExpandLevel],
-				t.[ShowAsTree]			= s.[ShowAsTree],
-				t.[ShowEmptyMembers]	= s.[ShowEmptyMembers]
+				t.[ShowAsTree]			= s.[ShowAsTree]
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Index], [Discriminator], [ReportDefinitionId], [KeyExpression], [DisplayExpression], [Localize], 
-				[Label], [Label2], [Label3], [OrderDirection], [AutoExpandLevel], [ShowAsTree], [ShowEmptyMembers]
+				[Label], [Label2], [Label3], [OrderDirection], [AutoExpandLevel], [ShowAsTree]
 			)
 			VALUES (
 				s.[Index], N'Row', s.[ReportDefinitionId], s.[KeyExpression], s.[DisplayExpression], s.[Localize], 
-				s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpandLevel], s.[ShowAsTree], s.[ShowEmptyMembers]
+				s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpandLevel], s.[ShowAsTree]
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
@@ -259,7 +258,7 @@ SET NOCOUNT ON;
 		MERGE INTO BC AS t
 		USING (
 			SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[KeyExpression], L.[DisplayExpression], 
-			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree], L.[ShowEmptyMembers]
+			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree]
 			FROM @Columns L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 			JOIN @IndexedIds II ON H.[Index] = II.[Index]
 		) AS s ON (t.Id = s.Id)
@@ -275,16 +274,15 @@ SET NOCOUNT ON;
 				t.[Label3]				= s.[Label3],
 				t.[OrderDirection]		= s.[OrderDirection],
 				t.[AutoExpandLevel]		= s.[AutoExpandLevel],
-				t.[ShowAsTree]			= s.[ShowAsTree],
-				t.[ShowEmptyMembers]	= s.[ShowEmptyMembers]
+				t.[ShowAsTree]			= s.[ShowAsTree]
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Index], [Discriminator], [ReportDefinitionId], [KeyExpression], [DisplayExpression], [Localize], 
-				[Label], [Label2], [Label3], [OrderDirection], [AutoExpandLevel], [ShowAsTree], [ShowEmptyMembers]
+				[Label], [Label2], [Label3], [OrderDirection], [AutoExpandLevel], [ShowAsTree]
 			)
 			VALUES (
 				s.[Index], N'Column', s.[ReportDefinitionId], s.[KeyExpression], s.[DisplayExpression], s.[Localize], 
-				s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpandLevel], s.[ShowAsTree], s.[ShowEmptyMembers]
+				s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpandLevel], s.[ShowAsTree]
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE

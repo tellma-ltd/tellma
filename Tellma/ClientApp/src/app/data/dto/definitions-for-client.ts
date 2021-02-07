@@ -117,7 +117,6 @@ export interface ReportDefinitionDimensionForClient {
     OrderDirection?: ReportOrderDirection;
     AutoExpandLevel: number;
     ShowAsTree?: boolean;
-    ShowEmptyMembers?: boolean;
     Attributes?: ReportDefinitionDimensionAttributeForClient[];
 }
 

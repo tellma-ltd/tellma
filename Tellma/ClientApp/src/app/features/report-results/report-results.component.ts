@@ -19,7 +19,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateISOString } from '~/app/data/util';
+import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateISOString, toLocalDateTimeISOString } from '~/app/data/util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
 import { displayScalarValue } from '~/app/data/util';
@@ -2060,14 +2060,47 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private chartDimensionCellFromDimensionCell = (
-    dimCell: DimensionCell,
+    info: DimensionInfo,
+    value: any,
+    valueId: any,
     color: string,
     index: number,
     parent?: ChartDimensionCell): ChartDimensionCell => {
-    const dimValueDisplay = !isSpecified(dimCell.valueId) ? this.translate.instant('Undefined') :
-      this.displayValue(dimCell.value, dimCell.info.desc, dimCell.info.entityDesc);
+    const dimValueDisplay = !isSpecified(valueId) ? this.translate.instant('Undefined') :
+      this.displayValue(value, info.desc, info.entityDesc);
 
-    return new ChartDimensionCell(dimValueDisplay, dimCell.valueId, dimCell.info, index, color, parent);
+    return new ChartDimensionCell(dimValueDisplay, valueId, info, index, color, parent);
+  }
+
+  private incrementDate(d: Date): string {
+    // Increments the date and returns its ISO Date Time representation
+    d.setDate(d.getDate() + 1);
+    return toLocalDateTimeISOString(d);
+  }
+
+  private minDate(dimCell1: DimensionCell, dimCell2: DimensionCell): { minDate: Date, minString: string } {
+    // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+    let minDate: Date;
+    let minString: string;
+
+    const info = dimCell1.info;
+    if (info.keyDesc.datatype === 'date' && info.isOrdered && info.orderDir === 'asc') {
+      // We need to expand all dates between measureCells[0] and measureCells[length - 1]
+      let dimCell = dimCell1;
+      let min = dimCell.valueId;
+      if (!min && !!dimCell2) {
+        dimCell = dimCell2;
+        min = dimCell.valueId; // In case the first one was undefined
+      }
+
+      if (!!min) {
+        const pieces = min.split('T')[0].split('-');
+        minDate = new Date(+pieces[0], +pieces[1] - 1, +pieces[2]);
+        minString = toLocalDateTimeISOString(minDate);
+      }
+    }
+
+    return { minDate, minString };
   }
 
   public get single(): SingleSeries {
@@ -2087,27 +2120,15 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         try {
           const measureCells: MeasureCell[] = s.rowInfos.length > 0 ? pivot.rows.map(r => r.measures[0]) : pivot.rowsGrandTotalMeasures;
 
-          const info = s.dimensionInfos[0];
-          if (info.keyDesc.datatype === 'date' && info.isOrdered) {
-            // // We need to expand all dates between measureCells[0] and measureCells[length - 1]
-            // const min = measureCells[0].values[measureIndex];
-            // const max = measureCells[measureCells.length - 1].values[measureIndex];
+          // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+          const dimCell1 = measureCells[0].row || measureCells[0].column;
+          const dimCell2 = measureCells[1] ? measureCells[1].row || measureCells[1].column : undefined;
+          const { minDate, minString } = this.minDate(dimCell1, dimCell2);
 
-            // if (!!min) {
-            //   const minPcs = min.split('T')[0].split('-');
-            //   const minDate = new Date(+minPcs[0], +minPcs[1] - 1, +minPcs[2]);
+          const currentDate = !!minDate ? new Date(minDate.getTime()) : null;
+          let current = minString;
 
-            //   const currentDate = minDate;
-            //   let current = toLocalDateISOString(currentDate) + 'T00:00:00';
-            //   while (current < max) {
-            //     allMembers.push(current);
-            //     currentDate.setDate(currentDate.getDate() + 1);
-            //     current = toLocalDateISOString(currentDate) + 'T00:00:00';
-            //   }
-            // }
-          }
-
-          let singleSum = 0;
+          let sumTotal = 0;
           const single: SingleSeries = [];
           let index = 0;
           for (const measureCell of measureCells) {
@@ -2116,26 +2137,36 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               continue; // Totals and tree ancestors are not displayed in the chart
             }
 
-            const color = this.colorFromClass(measureCell.classes[measureIndex]);
+            // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+            while (!!current && dimCell.valueId > current) {
+              single.push({
+                name: this.chartDimensionCellFromDimensionCell(dimCell.info, current, current, undefined, index++),
+                value: 0
+              });
 
-            // Get the measure value
+              current = this.incrementDate(currentDate);
+            }
+
+            // Get the measure color and value
+            const color = this.colorFromClass(measureCell.classes[measureIndex]);
             const measureValue = measureCell.values[measureIndex] || 0;
-            singleSum += measureValue;
+            sumTotal += measureValue;
             single.push({
-              name: this.chartDimensionCellFromDimensionCell(dimCell, color, index++),
+              name: this.chartDimensionCellFromDimensionCell(dimCell.info, dimCell.value, dimCell.valueId, color, index++),
               value: measureValue
             });
+
+            if (!!current) {
+              current = this.incrementDate(currentDate);
+            }
           }
           s.single = single;
 
           if (!!pivot.rowsGrandTotalMeasures && pivot.rowsGrandTotalMeasures.length > 0) {
+            // Check if the real total equals the sum total, to see if we can let the gauage chart display its inner text
             const grandGrandTotalCell = pivot.rowsGrandTotalMeasures[pivot.rowsGrandTotalMeasures.length - 1];
-
-            // Get the real total
-            const grandGrandTotal = grandGrandTotalCell.values[measureIndex] || 0;
-
-            // Get the sum total
-            s.totalEqualsSum = Math.abs(Math.round(grandGrandTotal * 1000000) - Math.round(singleSum * 1000000)) < 2;
+            const realTotal = grandGrandTotalCell.values[measureIndex] || 0;
+            s.totalEqualsSum = Math.abs(Math.round(realTotal * 1000000) - Math.round(sumTotal * 1000000)) < 2;
           }
 
           delete s.singleCellsHash;
@@ -2231,8 +2262,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const dim1 = s.dimensionInfos[0];
         const dim2 = s.dimensionInfos[1];
 
-        // const data: { dim1Cell: DimensionCell, values: { dim2Cell: DimensionCell, values: MeasureCell[] }[] }[] = [];
-
         const multi: MultiSeries = [];
         if (s.rowInfos.length === 2 || s.columnInfos.length === 2) {
           // Both dimensions are rows or both are columns
@@ -2259,7 +2288,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             if (dimCell.info === dim1) {
-              currentChartParent = this.chartDimensionCellFromDimensionCell(dimCell, undefined, parentIndex++);
+              currentChartParent = this.chartDimensionCellFromDimensionCell(
+                dimCell.info, dimCell.value, dimCell.valueId, undefined, parentIndex++);
+
               currentSeries = [];
               index = 0;
 
@@ -2269,34 +2300,60 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             if (dimCell.info === dim2) { // <- must be a child of currentParent
               const measureCell = getMeasureFn(dimCell);
               const color = this.colorFromClass(measureCell.classes[measureIndex]);
-              const chartCell = this.chartDimensionCellFromDimensionCell(dimCell, color, index++, currentChartParent);
+              const chartCell = this.chartDimensionCellFromDimensionCell(
+                dimCell.info, dimCell.value, dimCell.valueId, color, index++, currentChartParent);
+
               const value = measureCell.values[measureIndex] || 0;
               currentSeries.push({ name: chartCell, value });
             }
           }
         } else {
           // One dimension is row, and one is column
+
+          // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+          const dimCell1 = pivot.rows[0];
+          const dimCell2 = pivot.rows[1];
+          const { minDate, minString } = this.minDate(dimCell1, dimCell2);
+
           let parentIndex = 0;
           for (const columnCell of pivot.columns) { // Flip to rows
             if (columnCell.isAncestor) {
               continue; // Tree ancestors are not included in charts
             }
 
-            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(columnCell, undefined, parentIndex++);
+            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(
+              columnCell.info, columnCell.value, columnCell.valueId, undefined, parentIndex++);
             const currentSeries: SingleSeries = [];
             multi.push({ name: currentChartParent, series: currentSeries });
 
             let index = 0;
+            const currentDate = minDate ? new Date(minDate.getTime()) : null;
+            let current = minString;
             for (const rowCell of pivot.rows) {
               if (rowCell.isAncestor) {
                 continue; // Totals and ancestors are not included in charts
               }
 
+              // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+              while (!!current && rowCell.valueId > current) {
+                currentSeries.push({
+                  name: this.chartDimensionCellFromDimensionCell(rowCell.info, current, current, undefined, index++),
+                  value: 0
+                });
+
+                current = this.incrementDate(currentDate);
+              }
+
               const measureCell = rowCell.measures[columnCell.index];
               const color = this.colorFromClass(measureCell.classes[measureIndex]);
-              const chartCell = this.chartDimensionCellFromDimensionCell(rowCell, color, index++, currentChartParent);
+              const chartCell = this.chartDimensionCellFromDimensionCell(
+                rowCell.info, rowCell.value, rowCell.valueId, color, index++, currentChartParent);
               const value = measureCell.values[measureIndex] || 0;
               currentSeries.push({ name: chartCell, value });
+
+              if (!!current) {
+                current = this.incrementDate(currentDate);
+              }
             }
           }
         }

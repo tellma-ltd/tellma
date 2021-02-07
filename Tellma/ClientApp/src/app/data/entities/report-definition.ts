@@ -108,7 +108,6 @@ export interface ReportDefinitionDimension<TAttribute> extends EntityForSave {
     OrderDirection?: ReportOrderDirection;
     AutoExpandLevel?: number;
     ShowAsTree?: boolean;
-    ShowEmptyMembers?: boolean;
     Attributes?: TAttribute[];
 }
 
@@ -212,7 +211,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         // 2 Dimensions
                         'BarsVerticalGrouped', 'BarsVerticalStacked', 'BarsVerticalNormalized', 'BarsHorizontalGrouped',
                         'BarsHorizontalStacked', 'BarsHorizontalNormalized', /* 'AreaStacked', 'AreaNormalized', 'Radar', */ 'HeatMap'],
-                    format: (c: string) => trx.instant(`ReportDefinition_Chart_${c}`)
+                    format: (c: string) => !!c ? trx.instant(`ReportDefinition_Chart_${c}`) : c
                 },
                 DefaultsToChart: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
                 ChartOptions: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ChartOptions') },

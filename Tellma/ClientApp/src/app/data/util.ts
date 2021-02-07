@@ -448,6 +448,11 @@ export function toLocalDateISOString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+export function toLocalDateTimeISOString(date: Date): string {
+  // This result looks like how the JSON.NET-based server serializes C#'s DateTime
+  return `${toLocalDateISOString(date)}T00:00:00`;
+}
+
 function closePrint() {
   // Cleanup duty once the user closes the print dialog
   document.body.removeChild(this.__container__);
@@ -1013,8 +1018,8 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: Wo
       return trx.instant('NotSupported');
     }
     default:
-      return (value === undefined || value === null) ? '' : value + '' ;
-      // throw new Error(`calling "displayValue" on a property of an unknown control ${prop.control}`);
+      return (value === undefined || value === null) ? '' : value + '';
+    // throw new Error(`calling "displayValue" on a property of an unknown control ${prop.control}`);
   }
 }
 
@@ -1077,7 +1082,7 @@ export function descFromControlOptions(
         maxDecimalPlaces = desc.maxDecimalPlaces;
       }
 
-      let isRightAligned = true ;
+      let isRightAligned = true;
       if (isSpecified(options.isRightAligned)) {
         isRightAligned = options.isRightAligned;
       } else if (desc.control === 'number' || desc.control === 'percent') {

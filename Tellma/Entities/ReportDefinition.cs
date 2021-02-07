@@ -372,11 +372,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? ShowAsTree { get; set; }
 
-        [Display(Name = "ReportDefinition_ShowEmptyMembers")]
-        [AlwaysAccessible]
-        public bool? ShowEmptyMembers { get; set; }
-
-
         [Display(Name = "ReportDefinition_Attributes")]
         [ForeignKey(nameof(ReportDefinitionDimensionAttribute.ReportDefinitionDimensionId))]
         [AlwaysAccessible]

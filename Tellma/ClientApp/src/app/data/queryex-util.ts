@@ -533,7 +533,6 @@ export interface DimensionInfo {
     desc: PropVisualDescriptor; // For displaying the dimension (display desc || key desc)
     entityDesc: EntityDescriptor; // Set when the key expression is a nav property
     label: () => string; // Mostly used when converting to a chart
-    // allMembers?: any[];
 
     keyIndex?: number; // Value used for navigating the pivot hash (Id for entities or the value for value)
     parentKeyIndex?: number;
@@ -736,19 +735,6 @@ export class QueryexUtil {
         return stringifyInner(expression);
     }
 
-    public static canShowEmptyMembers(desc: PropDescriptor): any[] {
-        // Those are the controls where we know the full list of members
-        if (!!desc) {
-            if (desc.control === 'choice') {
-                return desc.choices;
-            } else if (desc.control === 'check') {
-                return [true, false];
-            } else if (desc.control === 'date') {
-                return []; // Determined by the data, every day from min to max dates
-            }
-        }
-    }
-
     public static canShowAsTree(desc: PropDescriptor, wss: WorkspaceService, trx: TranslateService) {
         // Those are the controls where we know the full list of members
         return !!desc && desc.datatype === 'entity' &&
@@ -946,14 +932,6 @@ export class QueryexUtil {
                 }
                 const autoExpandLevel = dimension.AutoExpandLevel;
                 const showAsTree = dimension.ShowAsTree && QueryexUtil.canShowAsTree(keyDesc, wss, trx);
-                // const allMembers = dimension.ShowEmptyMembers ? QueryexUtil.canShowEmptyMembers(keyDesc) : undefined;
-                // // if (!allMembers) {
-                // for (const d of infos) {
-                //     // ShowEmptyMembers must true for all subsequent dimensions too
-                //     // Otherwise how would you display that dimension with nothing underneath it?
-                //     delete d.allMembers;
-                // }
-                // // }
 
                 infos.push({
                     keyExp,
@@ -968,7 +946,6 @@ export class QueryexUtil {
                     attributes,
                     autoExpandLevel,
                     showAsTree, // Only when it's a tree entity
-                    // allMembers // Only when it's supported
                 });
             }
         };

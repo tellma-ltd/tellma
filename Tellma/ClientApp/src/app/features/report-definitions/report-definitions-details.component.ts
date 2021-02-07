@@ -331,7 +331,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
         Localize: true,
         AutoExpandLevel: 1000,
         ShowAsTree: true,
-        ShowEmptyMembers: false,
         Attributes: [],
       };
       destination.splice(destinationIndex, 0, dimension);
@@ -820,11 +819,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public showShowAsTree(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
     const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
     return QueryexUtil.canShowAsTree(desc, this.workspace, this.translate);
-  }
-
-  public showShowEmptyMembers(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
-    const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
-    return !!QueryexUtil.canShowEmptyMembers(desc);
   }
 
   public validateDimension(dimension: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): void {
