@@ -491,7 +491,7 @@
                     </div>
 
                     <!-- Having -->
-                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)">
+                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)" *ngIf="showHaving(model)">
                         <label class="small" for="having">{{ 'ReportDefinition_Having' | translate }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="6" id="having" type="text"
                             [(ngModel)]="model.Having" (ngModelChange)="onHavingChanged(model)"
@@ -603,6 +603,13 @@
                                 <ng-container
                                     *ngTemplateOutlet="errorsTemplate;context: { control: orderby, serverErrors: model.serverErrors?.OrderBy }">
                                 </ng-container>
+                            </div>
+
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="previewdrilldown"
+                                    (ngModelChange)="togglePreviewDrilldown(model)" [ngModel]="previewDrilldown" (ngModelChange)="onDefinitionChange(model)">
+                                <label class="custom-control-label" for="previewdrilldown">{{
+                                    'Preview' | translate }}</label>
                             </div>
                         </div>
                     </div>
@@ -791,17 +798,21 @@
                         [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #displayexpression="ngModel" />
 
                     <!-- Localize dropdown -->
-                    <div ngbDropdown [placement]="commandsDropdownPlacement" container="body" class="flex-grow-0 d-none"
+                    <div ngbDropdown [placement]="commandsDropdownPlacement" container="body" class="flex-grow-0"
                         *ngIf="isMultilingual">
                         <button class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1 t-no-arrow"
                             ngbDropdownToggle tabindex="-1"><span class="small">
                                 <fa-icon icon="ellipsis-v"></fa-icon>
                             </span></button>
-                        <div ngbDropdownMenu class="t-less-dark" style="border: 1px solid black">
-                            <button ngbDropdownItem class="t-transparent-background t-text-whitish"
-                                (click)="dimToEdit.Localize = !dimToEdit.Localize; dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);">
-                                {{ (dimToEdit.Localize ? 'DoNotLocalize' : 'ReportDefinition_Localize') | translate }}
-                            </button>
+                        <div ngbDropdownMenu class="t-studio-dropdown">
+                            <!-- Localize -->
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="dimlocalize"
+                                    [(ngModel)]="dimToEdit.Localize"
+                                    (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);">
+                                <label class="custom-control-label t-large" for="dimlocalize">{{
+                                    'ReportDefinition_Localize' | translate }}</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -853,17 +864,6 @@
                     <input type="checkbox" class="custom-control-input" id="showastree"
                         [(ngModel)]="dimToEdit.ShowAsTree" (ngModelChange)="dimToEditHasChanged = true">
                     <label class="custom-control-label" for="showastree">&zwnj;</label>
-                </div>
-            </div>
-
-            <!-- ShowEmptyMembers -->
-            <div class="form-group col-12 col-sm-6 d-none" *ngIf="showShowEmptyMembers(dimToEdit, modelRef)">
-                <label class="small">{{ 'ReportDefinition_ShowEmptyMembers' |
-                    translate }}</label>
-                <div class="custom-control custom-checkbox t-labelless-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="showemptymembers"
-                        [(ngModel)]="dimToEdit.ShowEmptyMembers" (ngModelChange)="dimToEditHasChanged = true">
-                    <label class="custom-control-label" for="showemptymembers">&zwnj;</label>
                 </div>
             </div>
 
@@ -928,11 +928,35 @@
                             <!-- Expression -->
                             <td class="p-0"
                                 [class.is-invalid]="invalid(attexpression, attribute.serverErrors?.Expression)">
-                                <input class="form-control t-studio-input" type="text"
-                                    [(ngModel)]="attribute.Expression" [placeholder]="'Expression' | translate"
-                                    (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);"
-                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                                    #attexpression="ngModel" />
+                                <div class="d-flex">
+                                    <div class="flex-grow-1">
+                                        <input class="form-control t-studio-input" type="text"
+                                            [(ngModel)]="attribute.Expression" [placeholder]="'Expression' | translate"
+                                            (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);"
+                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                                            #attexpression="ngModel" />
+                                    </div>
+
+                                    <!-- Localize dropdown -->
+                                    <div ngbDropdown [placement]="commandsDropdownPlacement" container="body"
+                                        class="flex-grow-0" *ngIf="isMultilingual">
+                                        <button
+                                            class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal m-0 t-no-arrow"
+                                            ngbDropdownToggle tabindex="-1"><span class="small">
+                                                <fa-icon icon="ellipsis-v"></fa-icon>
+                                            </span></button>
+                                        <div ngbDropdownMenu class="t-studio-dropdown">
+                                            <!-- Localize -->
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="attlocalize{{i}}" [(ngModel)]="attribute.Localize"
+                                                    (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);">
+                                                <label class="custom-control-label t-large" for="attlocalize{{i}}">{{
+                                                    'ReportDefinition_Localize' | translate }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <ng-container
                                     *ngTemplateOutlet="errorsTemplate;context: { control: attexpression, serverErrors: attribute?.serverErrors?.Expression }">
                                 </ng-container>
@@ -1187,10 +1211,32 @@
             <div class="form-group col-12"
                 [class.is-invalid]="invalid(expression, selectToEdit.serverErrors?.Expression)">
                 <label class="small" for="expression">{{ 'ReportDefinition_Expression' | translate }}</label>
-                <input class="form-control t-studio-input" id="expression" type="text"
-                    [(ngModel)]="selectToEdit.Expression" [placeholder]="'Expression' | translate"
-                    (ngModelChange)="selectToEditHasChanged = true; validateSelect(selectToEdit, modelRef);"
-                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #expression="ngModel" />
+
+                <div class="d-flex">
+                    <input class="form-control t-studio-input flex-grow-1" id="expression" type="text"
+                        [(ngModel)]="selectToEdit.Expression" [placeholder]="'Expression' | translate"
+                        (ngModelChange)="selectToEditHasChanged = true; validateSelect(selectToEdit, modelRef);"
+                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #expression="ngModel" />
+
+                    <!-- Localize dropdown -->
+                    <div ngbDropdown [placement]="commandsDropdownPlacement" container="body" class="flex-grow-0"
+                        *ngIf="isMultilingual">
+                        <button class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1 t-no-arrow"
+                            ngbDropdownToggle tabindex="-1"><span class="small">
+                                <fa-icon icon="ellipsis-v"></fa-icon>
+                            </span></button>
+                        <div ngbDropdownMenu class="t-studio-dropdown">
+                            <!-- Localize -->
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="selectlocalize"
+                                    [(ngModel)]="selectToEdit.Localize"
+                                    (ngModelChange)="selectToEditHasChanged = true; validateSelect(selectToEdit, modelRef);">
+                                <label class="custom-control-label t-large" for="selectlocalize">{{
+                                    'ReportDefinition_Localize' | translate }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <ng-container
                     *ngTemplateOutlet="errorsTemplate;context: { control: expression, serverErrors: selectToEdit.serverErrors?.Expression }">
                 </ng-container>
@@ -1218,6 +1264,33 @@
                 <input class="form-control t-studio-input" id="label3" type="text" [(ngModel)]="selectToEdit.Label3"
                     (ngModelChange)="selectToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
                     autocomplete="off" />
+            </div>
+
+            <!-- Control -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="orderdirection">{{ 'Definition_Control' | translate }}</label>
+                <select class="form-control t-studio-input" [(ngModel)]="selectToEdit.Control"
+                    (ngModelChange)="selectToEditHasChanged = true; validateSelect(selectToEdit, modelRef);"
+                    #selectcontrol="ngModel">
+                    <option value=""></option>
+                    <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
+                        {{ c.name() }}</option>
+                </select>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: selectcontrol, serverErrors: selectToEdit?.serverErrors?.Control }">
+                </ng-container>
+            </div>
+
+            <!-- Control Options-->
+            <div class="form-group w-100" *ngIf="showOptions(selectToEdit.Control)">
+                <t-control-options [control]="selectToEdit.Control" [isEdit]="true"
+                    [(ngModel)]="selectToEdit.ControlOptions" (ngModelChange)="selectToEditHasChanged = true"
+                    #selectcontroloptions="ngModel">
+                </t-control-options>
+
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: selectcontroloptions, serverErrors: selectToEdit?.serverErrors?.ControlOptions }">
+                </ng-container>
             </div>
         </div>
     </div>
@@ -1259,6 +1332,7 @@
                 <span class="form-control t-studio-input" id="key" style="opacity: 0.5;">{{ '@' + paramToEdit.Key
                     }}</span>
             </div>
+            <div class="w-100"></div>
 
             <!-- Label -->
             <div class="form-group col-12 col-sm-6">

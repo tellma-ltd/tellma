@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,7 +35,7 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         format: (item: EmailForQuery) => item.Subject,
         formatFromVals: (vals: any[]) => vals[0],
         properties: {
-            Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
             ToEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ToEmail') },
             Subject: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Subject') },
             Body: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Body') },

@@ -70,18 +70,18 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 return result;
             },
             properties: {
-                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CenterId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Account_Center'), foreignKeyName: 'CenterId' },
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
-                AccountTypeId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Type')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AccountTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Type')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountType: { datatype: 'entity', control: 'AccountType', label: () => trx.instant('Account_Type'), foreignKeyName: 'AccountTypeId' },
-                ClassificationId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ClassificationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Classification: { datatype: 'entity', control: 'AccountClassification', label: () => trx.instant('Account_Classification'), foreignKeyName: 'ClassificationId' },
-                CustodianId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Custodian'), foreignKeyName: 'CustodianId' },
                 CustodyDefinitionId: {
                     datatype: 'numeric',
@@ -91,9 +91,9 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                     format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Custodies[defId], 'TitlePlural')
                 },
                 CustodyDefinition: { datatype: 'entity', control: 'CustodyDefinition', label: () => trx.instant('Account_CustodyDefinition'), foreignKeyName: 'CustodyDefinitionId' },
-                CustodyId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CustodyId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Custody: { datatype: 'entity', control: 'Custody', label: () => trx.instant('Account_Custody'), foreignKeyName: 'CustodyId' },
-                ParticipantId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Participant'), foreignKeyName: 'ParticipantId' },
                 ResourceDefinitionId: {
                     datatype: 'numeric',
@@ -103,11 +103,11 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                     format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Resources[defId], 'TitlePlural')
                 },
                 ResourceDefinition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Account_ResourceDefinition'), foreignKeyName: 'ResourceDefinitionId' },
-                ResourceId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Account_Resource'), foreignKeyName: 'ResourceId' },
                 CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})` },
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Account_Currency'), foreignKeyName: 'CurrencyId' },
-                EntryTypeId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                EntryTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('Account_EntryType'), foreignKeyName: 'EntryTypeId' },
 
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },

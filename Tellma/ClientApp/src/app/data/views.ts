@@ -170,11 +170,6 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         actions: []
     },
-    'summary-entries': {
-        name: 'SummaryEntries',
-        read: true,
-        actions: []
-    },
     'markup-templates': {
         name: 'MarkupTemplates',
         read: true,

@@ -10,12 +10,12 @@
 
     <!-- Decimal -->
     <t-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
-        [maxDecimalPlaces]="maxDecimalPlaces">
+        [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator">
     </t-decimal-editor>
 
     <!-- Percent -->
     <t-decimal-editor *ngSwitchCase="'percent'" [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
-        [maxDecimalPlaces]="maxDecimalPlaces" [isPercentage]="true">
+        [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator" [isPercentage]="true">
     </t-decimal-editor>
 
     <!-- Serial -->

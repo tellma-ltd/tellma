@@ -58,7 +58,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CenterType: {
                     datatype: 'string',
                     control: 'choice',
@@ -80,7 +80,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                ManagerId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ManagerId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Manager: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Center_Manager'), foreignKeyName: 'ManagerId' },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
 
@@ -88,19 +88,19 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                 Level: {
                     datatype: 'numeric',
                     control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-                    isRightAligned: true
+                    isRightAligned: true, noSeparator: false
                 },
                 ActiveChildCount: {
                     datatype: 'numeric',
                     control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
-                    maxDecimalPlaces: 0, isRightAligned: true
+                    maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
                 },
                 ChildCount: {
                     datatype: 'numeric',
                     control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-                    isRightAligned: true
+                    isRightAligned: true, noSeparator: false
                 },
-                ParentId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ParentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Parent: {
                     datatype: 'entity', control: 'Center', label: () => trx.instant('TreeParent'),
                     foreignKeyName: 'ParentId'

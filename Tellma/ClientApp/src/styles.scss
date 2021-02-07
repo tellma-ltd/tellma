@@ -281,6 +281,10 @@ ngb-tabset li.nav-item .small {
   // border-color: #dee2e6 #dee2e6 #ffffff;
 }
 
+.popover-body {
+  overflow-x: hidden;
+}
+
 ///////////////////////////////// Tellma /////////////////////////////////
 
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
@@ -525,6 +529,14 @@ input.t-h2,
   background-color: $secondary !important;
 }
 
+.t-studio-dropdown {
+  background-color: $gray-700;
+  border: 1px solid $gray-800;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  color: $whitish;
+}
+
 .t-studio-input.t-code {
   background-color: $gray-900 !important;
 }
@@ -668,6 +680,7 @@ $slightly-less-white: rgba(255, 255, 255, 0.9);
 .t-collapsed-studio-pane {
   color: $whitish !important;
   border-right: $studio-pane-border solid $gray-900;
+  min-width: 38px;
 }
 
 .t-collapsed-studio-pane span {
@@ -1663,6 +1676,18 @@ td.t-danger {
   background-color: #f8d7da;
 }
 
+h1.t-success {
+  color: $success;
+}
+
+h1.t-warning {
+  color: $warning;
+}
+
+h1.t-danger {
+  color: $danger;
+}
+
 tr.t-report-row:hover .t-report-dimension {
   background-color: #e9e9e9;
 }
@@ -1966,3 +1991,4 @@ th.t-slimfit {
 tr.t-draw-attention {
   background: lightgreen;
 }
+

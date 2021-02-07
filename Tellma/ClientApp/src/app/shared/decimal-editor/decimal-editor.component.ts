@@ -21,6 +21,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   minDecimalPlaces: number = null;
 
   @Input()
+  noSeparator = false;
+
+  @Input()
   theme: 'light' | 'dark' = 'light';
 
   @Input()
@@ -133,7 +136,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
       : '';
 
     // Insert the thousands separator in the integer part
-    integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandsSeparator);
+    if (!this.noSeparator) {
+      integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandsSeparator);
+    }
 
     // Combine for final result
     let result = integer + fraction;

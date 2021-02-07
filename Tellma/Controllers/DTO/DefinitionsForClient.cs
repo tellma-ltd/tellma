@@ -137,6 +137,8 @@ namespace Tellma.Controllers.Dto
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     public class ReportDefinitionDimensionForClient
@@ -150,7 +152,6 @@ namespace Tellma.Controllers.Dto
         public string OrderDirection { get; set; }
         public int AutoExpandLevel { get; set; }
         public bool ShowAsTree { get; set; }
-        public bool ShowEmptyMembers { get; set; }
         public List<ReportDefinitionDimensionAttributeForClient> Attributes { get; set; }
     }
 

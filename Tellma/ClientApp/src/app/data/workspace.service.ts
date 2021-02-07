@@ -677,9 +677,9 @@ export interface DimensionCell {
   isAncestor?: boolean; // For drilldown, when the cell is an ancestor, we use 'descof' instead of 'eq'
 
   isVisible?: boolean;
-  immediateParent: DimensionCell; // Can be just a tree parent, used to aggregate the measures by traversing the tree
-  immediateChildren: DimensionCell[]; // Used when flattening the dimension, and to show the expand error
-  parent: DimensionCell; // The parent from the previous dimension, used to traverse the dimensions up when constructing the filter
+  parent: DimensionCell; // Can be just a tree parent, used to aggregate the measures by traversing the tree
+  children: DimensionCell[]; // Immediate children, used when flattening the dimension, and to show the expand arrow
+  prevDimensionParent: DimensionCell; // Parent from the previous dimension, used to traverse the dimensions up when constructing the filter
 
   // The column span if all parents were expanded (columns only), used when exporting the pivot table
   expandedColSpan?: number;
@@ -696,10 +696,12 @@ export interface DimensionCell {
   attributes: { value: any, info: AttributeInfo }[];
 }
 
+export type HighlightClass = 't-success' | 't-warning' | 't-danger';
+
 export interface MeasureCell {
   aggValues: any[];
   values: any[];
-  classes: ('t-success' | 't-warning' | 't-danger' | '')[];
+  classes: HighlightClass[];
   column: DimensionCell;
   row: DimensionCell;
   isTotal?: boolean;
@@ -726,16 +728,24 @@ export class ChartDimensionCell {
     public display: string, // To display the dimension in the tooltip and on the axis
     public valueId: any, // For toString() function
     public info: DimensionInfo, // For constructing the drilldown filter
-    public parent?: ChartDimensionCell) { }  // For constructing the drilldown filter
+    public index: number, // To retrieve the color from the palette
+    public color?: string, // Custom color to override the default one
+    public prevDimensionParent?: ChartDimensionCell) { }  // For constructing the drilldown filter
 
   toString() {
     // ngx-charts throws an error if you return null
     // The value returned must uniquely identify the dimension
     // formatting will be handled in the tooltip template
-    return isSpecified(this.valueId) ? this.valueId.toString() : '';
+  return isSpecified(this.valueId) ? this.valueId.toString() : undefinedToString; // hopefully it won't be replicated
   }
 }
 
+function veryRandomString() {
+  return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+  .replace(/[xy]/g, _ => Math.floor(Math.random() * 16).toString(16));
+}
+
+export const undefinedToString = `UNDEFINED-${veryRandomString()}`; // Hopefully this will never clash with a user entered value
 
 export class ReportStoreBase {
   reportStatus: ReportStatus;
@@ -851,12 +861,15 @@ export class ReportStore extends ReportStoreBase {
    * For number card
    */
   point: string;
+  pointClass: HighlightClass;
   currentPivotForPoint: any;
 
   /**
    * For single series charts (e.g. bar and pie charts)
    */
   single: SingleSeries;
+  singleCellsHash: { [value: string]: ChartDimensionCell }; // To color charts that for some reason only supply the values in customColors
+  singleCellsUndefined: ChartDimensionCell; // To color charts that for some reason only supply the values in customColors
   totalEqualsSum: boolean; // The ngx-guage displays the sum of the values, so we need to hide it if the total is not equal to the sum
   currentPivotForSingle: any;
   currentLangForSingle: string;

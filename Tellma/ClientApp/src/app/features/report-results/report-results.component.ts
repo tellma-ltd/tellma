@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
-  PivotTable, MeasureCell, LabelCell, ChartDimensionCell, DimensionCell, AncestorGroup
+  PivotTable, MeasureCell, LabelCell, ChartDimensionCell, DimensionCell, AncestorGroup, HighlightClass, undefinedToString
 } from '~/app/data/workspace.service';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import {
@@ -19,7 +19,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { isSpecified, csvPackage, downloadBlob, FriendlyError } from '~/app/data/util';
+import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateISOString, toLocalDateTimeISOString } from '~/app/data/util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
 import { displayScalarValue } from '~/app/data/util';
@@ -33,6 +33,37 @@ export enum ReportView {
   pivot = 'pivot',
   chart = 'chart'
 }
+
+/**
+ * The color palette for the charts, which is just different shades of teal
+ */
+const palette = [
+  // '#17A2B8',
+  '#1490A3',
+  '#128091',
+  '#10707F',
+  '#0D606D',
+  // '#0B505B',
+  // '#094049',
+  // '#073036',
+  // '#042024',
+  // '#073036',
+  // '#094049',
+  '#0B505B',
+  '#0D606D',
+  '#10707F',
+  '#128091',
+  // '#1490A3',
+
+  // '#80E0EF', '#C9F2F8', '#49D3E9',
+  // '#1BC0DA', '#25CBE4', '#19B0C8',
+];
+
+const monochromeIndex = 1; // If we had to choose one of the above colors we choose the one with this index
+
+const success = '#28a745';
+const warning = '#ffc107';
+const danger = '#dc3545';
 
 /**
  * Hashes one dimension of an aggregate result for the pivot table
@@ -120,21 +151,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   showYAxis = true;
   showXAxisLabel = true;
   showYAxisLabel = true;
-  colorful = {
-    domain: [
-      '#17A2B8', '#1490A3', '#128091',
-      '#10707F', '#0D606D', '#0B505B',
-      '#094049', '#073036', '#042024',
-      '#073036', '#094049', '#0B505B',
-      '#0D606D', '#10707F', '#128091',
-      '#1490A3',
-
-      // '#80E0EF', '#C9F2F8', '#49D3E9',
-      // '#1BC0DA', '#25CBE4', '#19B0C8',
-    ]
-  };
-  monochromatic = { domain: ['#17a2b8'] };
-  heat = { domain: ['#96D5DF', '#17a2b8', '#052429'] }; // different shades of the same color for heat map
+  colorful = { domain: palette };
+  monochromatic = { domain: [palette[monochromeIndex]] };
+  heat = { domain: ['#96D5DF', '#052429'] }; // different shades of the same color for heat map
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
@@ -308,8 +327,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const coll = this.definition.Collection;
+    if (!coll) {
+      return null;
+    }
+
+    const metadataFn = metadata[coll];
+    if (!metadataFn) {
+      return null;
+    }
+
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
+    return metadataFn(this.workspace, this.translate, definitionId);
   }
 
   get apiEndpoint(): string {
@@ -900,7 +928,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
             // Measure Labels
             for (const cell of columns) {
-              if (cell.immediateChildren.length === 0) {
+              if (cell.children.length === 0) {
                 for (const measure of realMeasures) {
                   dataRow.push(measure.label());
                 }
@@ -945,7 +973,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
             // Add the measures
             for (const cell of rowCell.measures) {
-              if (!cell.column || cell.column.immediateChildren.length === 0) {
+              if (!cell.column || cell.column.children.length === 0) {
                 for (let i = 0; i < realMeasures.length; i++) {
                   const display = displayScalarValue(cell.values[i], realMeasures[i].desc, this.workspace, this.translate);
                   dataRow.push(display);
@@ -977,7 +1005,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
             // Rows Grand Total measures
             for (const cell of rowsGrandTotalMeasures) {
-              if (!cell.column || cell.column.immediateChildren.length === 0) {
+              if (!cell.column || cell.column.children.length === 0) {
                 for (let i = 0; i < realMeasures.length; i++) {
                   const display = displayScalarValue(cell.values[i], realMeasures[i].desc, this.workspace, this.translate);
                   dataRow.push(display);
@@ -1161,9 +1189,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 isExpanded: dimInfo.autoExpandLevel > (level - prevHashLevel) - 1, // adjusted in flatten
                 level: grandParent ? grandParent.level + 1 : 0,
                 index: 0, // computed later in flatten()
-                immediateParent: grandParent,
-                parent: prevHash.cell,
-                immediateChildren: [],
+                parent: grandParent,
+                prevDimensionParent: prevHash.cell,
+                children: [],
                 attributes: []
               };
 
@@ -1189,7 +1217,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               }
 
               // Add the cell to its parent
-              (grandParent ? grandParent.immediateChildren : roots).push(parent);
+              (grandParent ? grandParent.children : roots).push(parent);
 
               addEmptyMeasures(parent); // Adds measures array if 'columns' are supplied
               prevHash.ancestors[parentId] = parent; // For future re-use
@@ -1255,9 +1283,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                   isExpanded: dimInfo.autoExpandLevel > (level - prevHashLevel) - 1, // adjusted in flatten
                   level,
                   index: 0, // Computed later in flatten()
-                  immediateParent: parent,
-                  parent: prevHash.cell,
-                  immediateChildren: [],
+                  parent,
+                  prevDimensionParent: prevHash.cell,
+                  children: [],
                   attributes: []
                 };
 
@@ -1283,7 +1311,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 }
 
                 // Add the cell to its parent
-                (parent ? parent.immediateChildren : roots).push(cell);
+                (parent ? parent.children : roots).push(cell);
 
                 // Adds measures array if 'columns' are supplied
                 addEmptyMeasures(cell);
@@ -1310,25 +1338,40 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       // This recursive function adds the dimension cells
       // in order, parents always before children
-      function flatten(cells: DimensionCell[], array: DimensionCell[], index = 0): number {
+      function flatten(siblings: DimensionCell[], result: DimensionCell[], index = 0): number {
 
         // Do the sorting here
-        const orderDir = cells[0].info.orderDir;
+        const info = siblings[0].info;
+        const orderDir = info.orderDir;
         switch (orderDir) {
           case 'asc':
-            cells.sort((a, b) => a.sortValue > b.sortValue ? 1 : a.sortValue < b.sortValue ? -1 : 0);
+            siblings.sort((a, b) => {
+              if (a.sortValue === b.sortValue) { return 0; }
+              if (a.sortValue === null) { return -1; } // null is the smallest
+              if (b.sortValue === null) { return 1; }
+              if (a.sortValue > b.sortValue) { return 1; }
+              if (a.sortValue < b.sortValue) { return -1; }
+              return 0;
+            });
             break;
           case 'desc':
-            cells.sort((a, b) => a.sortValue < b.sortValue ? 1 : a.sortValue > b.sortValue ? -1 : 0);
+            siblings.sort((a, b) => {
+              if (a.sortValue === b.sortValue) { return 0; }
+              if (a.sortValue === null) { return 1; } // null is the smallest
+              if (b.sortValue === null) { return -1; }
+              if (a.sortValue > b.sortValue) { return -1; }
+              if (a.sortValue < b.sortValue) { return 1; }
+              return 0;
+            });
             break;
         }
 
         // Then the flattening
-        for (const cell of cells) {
+        for (const cell of siblings) {
           cell.index = index++;
-          array.push(cell);
-          if (!!cell.immediateChildren && cell.immediateChildren.length > 0) {
-            index = flatten(cell.immediateChildren, array, index);
+          result.push(cell);
+          if (!!cell.children && cell.children.length > 0) {
+            index = flatten(cell.children, result, index);
           } else {
             cell.isExpanded = false;
           }
@@ -1455,8 +1498,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 }
               });
 
-              if (cell.column && cell.column.immediateParent) {
-                currentColIndex = cell.column.immediateParent.index;
+              if (cell.column && cell.column.parent) {
+                currentColIndex = cell.column.parent.index;
                 cell = currentRow[currentColIndex];
               } else if (currentColIndex !== columnCells.length) {
                 currentColIndex = columnCells.length; // Columns grand totals index
@@ -1467,8 +1510,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             const leafCell = currentRow[colIndex];
-            if (leafCell.row && leafCell.row.immediateParent) {
-              currentRow = leafCell.row.immediateParent.measures;
+            if (leafCell.row && leafCell.row.parent) {
+              currentRow = leafCell.row.parent.measures;
             } else if (currentRow !== rowsGrandTotalMeasures) {
               currentRow = rowsGrandTotalMeasures; // Rows grand totals row
             } else {
@@ -1492,7 +1535,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             } else if (!!m.success && QueryexUtil.evaluateExp(m.success, cell.aggValues, this.arguments, this.workspace)) {
               cell.classes[index] = 't-success';
             } else {
-              cell.classes[index] = '';
+              cell.classes[index] = null;
             }
 
             // Set the disableDrilldown for this cell
@@ -1502,7 +1545,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 cell.disableDrilldown = true; // Has an aggregated row dimension -> disable drilldown
               } else {
                 const inAggregatedColumn =
-                  (!!cell.column && cell.column.immediateChildren.length > 0) || (!cell.column && s.columnInfos.length > 0);
+                  (!!cell.column && cell.column.children.length > 0) || (!cell.column && s.columnInfos.length > 0);
 
                 if (inAggregatedColumn) {
                   cell.disableDrilldown = true; // Has an aggregated column dimension -> disable drilldown
@@ -1526,13 +1569,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         // Recursive function that applies setCellValues to all the measure cells not in grand total
         function setAllCellValues(cells: DimensionCell[]) {
           for (const cell of cells) {
-            const isAggregated = cell.immediateChildren.length > 0;
+            const isAggregated = cell.children.length > 0;
             for (const m of cell.measures) {
               setCellValues(m, isAggregated);
             }
 
             if (isAggregated) {
-              setAllCellValues(cell.immediateChildren);
+              setAllCellValues(cell.children);
             }
           }
         }
@@ -1572,15 +1615,15 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         for (let j = columnHeaders[i].length - 1; j >= 0; j--) {
           const cell = columnHeaders[i][j];
           cell.expandedColSpan = cell.expandedColSpan || s.measureInfos.length || 1; // measureCount might be 0
-          if (!!cell.immediateParent) {
-            cell.immediateParent.expandedColSpan += cell.expandedColSpan;
+          if (!!cell.parent) {
+            cell.parent.expandedColSpan += cell.expandedColSpan;
           }
         }
       }
 
       // Calculate the rowSpan of every cell
       columnHeaders.forEach(colHeaderRow => colHeaderRow.forEach(cell => {
-        cell.expandedRowSpan = cell.immediateChildren.length === 0 ? columnHeaders.length - cell.level : 1;
+        cell.expandedRowSpan = cell.children.length === 0 ? columnHeaders.length - cell.level : 1;
       }));
     }
 
@@ -1596,7 +1639,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // Calculte the visibility of every cell and set colSpan to 0
     cols.forEach(row => row.forEach(cell => {
       cell.colSpan = 0;
-      cell.isVisible = !cell.immediateParent || (cell.immediateParent.isVisible && cell.immediateParent.isExpanded);
+      cell.isVisible = !cell.parent || (cell.parent.isVisible && cell.parent.isExpanded);
     }));
 
     // Calculate the colSpan of every cell's parent
@@ -1604,8 +1647,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       for (let j = cols[i].length - 1; j >= 0; j--) {
         const cell = cols[i][j];
         cell.colSpan = cell.colSpan || measureCount || 1; // measureCount might be 0
-        if (!!cell.immediateParent && !!cell.immediateParent.isExpanded) {
-          cell.immediateParent.colSpan += cell.colSpan;
+        if (!!cell.parent && !!cell.parent.isExpanded) {
+          cell.parent.colSpan += cell.colSpan;
         }
       }
     }
@@ -1659,12 +1702,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const rows = this.state.pivot.rows;
 
     // with 2 sweeps, recompute which columns are visible
-    rows.forEach(row => row.isVisible = !row.immediateParent || (row.immediateParent.isExpanded && row.immediateParent.isVisible));
+    rows.forEach(row => row.isVisible = !row.parent || (row.parent.isExpanded && row.parent.isVisible));
     this._modifiedRows = rows.filter(e => e.isVisible);
   }
 
   public hasChildren(d: DimensionCell): boolean {
-    return !!d.immediateChildren && d.immediateChildren.length > 0;
+    return !!d.children && d.children.length > 0;
   }
 
   public flipArrow(node: DimensionCell): string {
@@ -1815,7 +1858,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       if (!isSpecified(valueId)) {
         valueString = 'null';
       } else if (QueryexUtil.needsQuotes(datatype)) {
-        valueString = valueId.replace('\'', '\'\'');
+        valueString = `'${valueId.replace('\'', '\'\'')}'`;
       } else {
         valueString = valueId + '';
       }
@@ -1827,7 +1870,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       atoms.push(`(${keyString} ${op} ${valueString})`);
 
       // For the next iteration
-      currentDimension = currentDimension.parent;
+      currentDimension = currentDimension.prevDimensionParent;
     }
 
     return atoms;
@@ -1998,19 +2041,66 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const cell = pivot.rowsGrandTotalMeasures[0];
         const value = cell.values[measureIndex] || 0;
         s.point = displayScalarValue(value, measure.desc, this.workspace, this.translate);
+        s.pointClass = cell.classes[measureIndex];
       } else {
         s.point = null; // Just to make the code look like multi()
+        s.pointClass = null;
       }
+
+      delete s.singleCellsHash;
+      delete s.singleCellsUndefined;
     }
 
     return s.point;
   }
 
-  private chartDimensionCellFromDimensionCell = (dimCell: DimensionCell, parent?: ChartDimensionCell): ChartDimensionCell => {
-    const dimValueDisplay = !isSpecified(dimCell.valueId) ? this.translate.instant('Undefined') :
-      this.displayValue(dimCell.value, dimCell.info.desc, dimCell.info.entityDesc);
+  public get pointClass(): HighlightClass {
+    const _ = this.point; // To populate the class
+    return this.state.pointClass;
+  }
 
-    return new ChartDimensionCell(dimValueDisplay, dimCell.valueId, dimCell.info, parent);
+  private chartDimensionCellFromDimensionCell = (
+    info: DimensionInfo,
+    value: any,
+    valueId: any,
+    color: string,
+    index: number,
+    parent?: ChartDimensionCell): ChartDimensionCell => {
+    const dimValueDisplay = !isSpecified(valueId) ? this.translate.instant('Undefined') :
+      this.displayValue(value, info.desc, info.entityDesc);
+
+    return new ChartDimensionCell(dimValueDisplay, valueId, info, index, color, parent);
+  }
+
+  private incrementDate(d: Date): string {
+    // Increments the date and returns its ISO Date Time representation
+    d.setDate(d.getDate() + 1);
+    return toLocalDateTimeISOString(d);
+  }
+
+  private minDate(dimCell1: DimensionCell, dimCell2: DimensionCell): { minDate: Date, minString: string } {
+    // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+    let minDate: Date;
+    let minString: string;
+
+    const info = dimCell1.info;
+    if (info.keyDesc.datatype === 'date' && info.isOrdered && info.orderDir === 'asc') {
+      // We need to expand all dates between measureCells[0] and measureCells[length - 1]
+      let dimCell = dimCell1;
+      let min = dimCell.valueId;
+      if (!min && !!dimCell2) {
+        dimCell = dimCell2;
+        min = dimCell.valueId; // In case the first one was undefined
+      }
+
+      if (!!min) {
+        const pieces = min.split('T')[0].split('-');
+        minDate = new Date(+pieces[0], +pieces[1] - 1, +pieces[2]);
+        minString = toLocalDateTimeISOString(minDate);
+      }
+    }
+
+    return { minDate, minString };
   }
 
   public get single(): SingleSeries {
@@ -2026,36 +2116,61 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       if (!measure || !pivot) {
         s.single = null;
       } else if (s.dimensionInfos.length === 1) {
+
         try {
           const measureCells: MeasureCell[] = s.rowInfos.length > 0 ? pivot.rows.map(r => r.measures[0]) : pivot.rowsGrandTotalMeasures;
 
-          let singleSum = 0;
+          // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+          const dimCell1 = measureCells[0].row || measureCells[0].column;
+          const dimCell2 = measureCells[1] ? measureCells[1].row || measureCells[1].column : undefined;
+          const { minDate, minString } = this.minDate(dimCell1, dimCell2);
+
+          const currentDate = !!minDate ? new Date(minDate.getTime()) : null;
+          let current = minString;
+
+          let sumTotal = 0;
           const single: SingleSeries = [];
+          let index = 0;
           for (const measureCell of measureCells) {
             const dimCell = measureCell.row || measureCell.column;
             if (!dimCell || dimCell.isAncestor) {
               continue; // Totals and tree ancestors are not displayed in the chart
             }
 
-            // Get the measure value
+            // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+            while (!!current && dimCell.valueId > current) {
+              single.push({
+                name: this.chartDimensionCellFromDimensionCell(dimCell.info, current, current, undefined, index++),
+                value: 0
+              });
+
+              current = this.incrementDate(currentDate);
+            }
+
+            // Get the measure color and value
+            const color = this.colorFromClass(measureCell.classes[measureIndex]);
             const measureValue = measureCell.values[measureIndex] || 0;
-            singleSum += measureValue;
+            sumTotal += measureValue;
             single.push({
-              name: this.chartDimensionCellFromDimensionCell(dimCell),
+              name: this.chartDimensionCellFromDimensionCell(dimCell.info, dimCell.value, dimCell.valueId, color, index++),
               value: measureValue
             });
+
+            if (!!current) {
+              current = this.incrementDate(currentDate);
+            }
           }
           s.single = single;
 
           if (!!pivot.rowsGrandTotalMeasures && pivot.rowsGrandTotalMeasures.length > 0) {
+            // Check if the real total equals the sum total, to see if we can let the gauage chart display its inner text
             const grandGrandTotalCell = pivot.rowsGrandTotalMeasures[pivot.rowsGrandTotalMeasures.length - 1];
-
-            // Get the real total
-            const grandGrandTotal = grandGrandTotalCell.values[measureIndex] || 0;
-
-            // Get the sum total
-            s.totalEqualsSum = Math.abs(Math.round(grandGrandTotal * 1000000) - Math.round(singleSum * 1000000)) < 2;
+            const realTotal = grandGrandTotalCell.values[measureIndex] || 0;
+            s.totalEqualsSum = Math.abs(Math.round(realTotal * 1000000) - Math.round(sumTotal * 1000000)) < 2;
           }
+
+          delete s.singleCellsHash;
+          delete s.singleCellsUndefined;
 
         } catch (ex) {
           s.reportStatus = ReportStatus.error;
@@ -2067,6 +2182,59 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return s.single;
+  }
+
+  public customColors = (cell: ChartDimensionCell) => {
+    return cell.color || palette[cell.index % palette.length];
+  }
+
+  public alternativeCustomColors = (cellToString: string) => {
+    // This function is only for single series charts that give you cell.toString() instead of cell:
+    // - Pie
+    // - Doughnut
+    // - Tree map
+    // - Number cards
+
+    console.log(cellToString);
+
+    // Prepare the hash if it's not there
+    const s = this.state;
+    if (!s.singleCellsHash) {
+      s.singleCellsHash = {};
+      for (const point of this.single) {
+        const nameToString = point.name.toString();
+        if (nameToString === undefinedToString) {
+          s.singleCellsUndefined = point.name;
+        } else {
+          s.singleCellsHash[nameToString] = point.name;
+        }
+      }
+    }
+
+    let cell: ChartDimensionCell;
+    if (cellToString === undefinedToString) {
+      cell = s.singleCellsUndefined;
+    } else {
+      cell = s.singleCellsHash[cellToString];
+    }
+    return this.customColors(cell);
+  }
+
+  private colorFromClass(c: HighlightClass): string {
+    let color: string;
+    switch (c) {
+      case 't-success':
+        color = success;
+        break;
+      case 't-warning':
+        color = warning;
+        break;
+      case 't-danger':
+        color = danger;
+        break;
+    }
+
+    return color;
   }
 
   public get multi(): MultiSeries {
@@ -2084,8 +2252,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else if (s.dimensionInfos.length === 1) {
         // When the number of dimensions is just one, make the single-series pretend it's a multi-series
         const single = this.single;
-        const label = this.firstDimensionLabel;
-        const singletonDimension = new ChartDimensionCell(label, label, null);
+        const label = measure.label();
+        const singletonDimension = new ChartDimensionCell(label, label, null, monochromeIndex); // 2 is the default chart color
         s.multi = [{
           name: singletonDimension,
           series: single
@@ -2093,8 +2261,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else if (s.dimensionInfos.length === 2) {
         const dim1 = s.dimensionInfos[0];
         const dim2 = s.dimensionInfos[1];
-
-        // const data: { dim1Cell: DimensionCell, values: { dim2Cell: DimensionCell, values: MeasureCell[] }[] }[] = [];
 
         const multi: MultiSeries = [];
         if (s.rowInfos.length === 2 || s.columnInfos.length === 2) {
@@ -2113,6 +2279,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           // The Algorithm
           let currentChartParent: ChartDimensionCell;
           let currentSeries: SingleSeries;
+          let parentIndex = 0;
+          let index: number;
 
           for (const dimCell of dimCells) {
             if (dimCell.isAncestor) {
@@ -2120,41 +2288,72 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             if (dimCell.info === dim1) {
-              currentChartParent = this.chartDimensionCellFromDimensionCell(dimCell);
+              currentChartParent = this.chartDimensionCellFromDimensionCell(
+                dimCell.info, dimCell.value, dimCell.valueId, undefined, parentIndex++);
+
               currentSeries = [];
+              index = 0;
 
               multi.push({ name: currentChartParent, series: currentSeries });
             }
 
             if (dimCell.info === dim2) { // <- must be a child of currentParent
               const measureCell = getMeasureFn(dimCell);
-              const chartCell = this.chartDimensionCellFromDimensionCell(dimCell, currentChartParent);
-              const value = measureCell.values[measureIndex] || 0;
+              const color = this.colorFromClass(measureCell.classes[measureIndex]);
+              const chartCell = this.chartDimensionCellFromDimensionCell(
+                dimCell.info, dimCell.value, dimCell.valueId, color, index++, currentChartParent);
 
+              const value = measureCell.values[measureIndex] || 0;
               currentSeries.push({ name: chartCell, value });
             }
           }
         } else {
           // One dimension is row, and one is column
 
+          // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+          const dimCell1 = pivot.rows[0];
+          const dimCell2 = pivot.rows[1];
+          const { minDate, minString } = this.minDate(dimCell1, dimCell2);
+
+          let parentIndex = 0;
           for (const columnCell of pivot.columns) { // Flip to rows
             if (columnCell.isAncestor) {
               continue; // Tree ancestors are not included in charts
             }
 
-            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(columnCell);
+            const currentChartParent: ChartDimensionCell = this.chartDimensionCellFromDimensionCell(
+              columnCell.info, columnCell.value, columnCell.valueId, undefined, parentIndex++);
             const currentSeries: SingleSeries = [];
             multi.push({ name: currentChartParent, series: currentSeries });
 
+            let index = 0;
+            const currentDate = minDate ? new Date(minDate.getTime()) : null;
+            let current = minString;
             for (const rowCell of pivot.rows) {
               if (rowCell.isAncestor) {
                 continue; // Totals and ancestors are not included in charts
               }
 
+              // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
+              while (!!current && rowCell.valueId > current) {
+                currentSeries.push({
+                  name: this.chartDimensionCellFromDimensionCell(rowCell.info, current, current, undefined, index++),
+                  value: 0
+                });
+
+                current = this.incrementDate(currentDate);
+              }
+
               const measureCell = rowCell.measures[columnCell.index];
-              const chartCell = this.chartDimensionCellFromDimensionCell(rowCell, currentChartParent);
+              const color = this.colorFromClass(measureCell.classes[measureIndex]);
+              const chartCell = this.chartDimensionCellFromDimensionCell(
+                rowCell.info, rowCell.value, rowCell.valueId, color, index++, currentChartParent);
               const value = measureCell.values[measureIndex] || 0;
               currentSeries.push({ name: chartCell, value });
+
+              if (!!current) {
+                current = this.incrementDate(currentDate);
+              }
             }
           }
         }
@@ -2163,6 +2362,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         s.multi = null;
       }
+
+      delete s.singleCellsHash;
+      delete s.singleCellsUndefined;
     }
 
     return s.multi;
@@ -2411,7 +2613,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const leading = 1;
     const trailing = 1;
     for (let i = leading; i < tr.cells.length - trailing; i++) {
-      infos[i - leading].width = tr.cells[i].offsetWidth + 'px';
+      const info = infos[i - leading];
+      if (!!info) {
+        info.width = tr.cells[i].offsetWidth + 'px';
+      }
     }
   }
 

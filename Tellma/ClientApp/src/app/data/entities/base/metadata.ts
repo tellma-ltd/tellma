@@ -15,7 +15,6 @@ import { metadata_ReportDefinition } from '../report-definition';
 import { metadata_Center } from '../center';
 import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
-import { metadata_SummaryEntry } from '../summary-entry';
 import { metadata_DetailsEntry } from '../details-entry';
 import { metadata_LineForQuery } from '../line';
 import { metadata_AdminUser } from '../admin-user';
@@ -66,7 +65,6 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
-    SummaryEntry: metadata_SummaryEntry,
     MarkupTemplate: metadata_MarkupTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
@@ -142,7 +140,6 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
-    'SummaryEntry' |
     'MarkupTemplate' |
     'InboxRecord' |
     'OutboxRecord' |
@@ -280,6 +277,11 @@ export interface PropDescriptorBase {
      * The label of this field, typically shown on table headers
      */
     label: () => string;
+
+    /**
+     * Used by quereyex logic to determine the default parameter label
+     */
+    labelForParameter?: () => string;
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -318,6 +320,7 @@ export interface NumberPropVisualDescriptor extends PropVisualDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
+    noSeparator: boolean;
 
     /**
      * Whether the field value should be displayed as RTL
@@ -388,6 +391,7 @@ export interface PercentPropVisualDescriptor extends PropVisualDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
+    noSeparator: boolean;
 
     /**
      * Whether the field value should be displayed as RTL
@@ -442,8 +446,12 @@ export function entityDescriptorImpl(
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the Entity descriptor`);
     }
 
-    let currentEntityDesc = metadata[baseCollection](wss, trx, baseDefinition);
+    const metadataFn = metadata[baseCollection];
+    if (!metadataFn) {
+        throw new Error(`Unknown collection '${baseCollection}'.`);
+    }
 
+    let currentEntityDesc = metadataFn(wss, trx, baseDefinition);
     for (const step of pathArray) {
         const propDesc = currentEntityDesc.properties[step];
 

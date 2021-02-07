@@ -58,7 +58,8 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService):
           control: 'number',
           label: () => trx.instant('Currency_NumericCode'),
           minDecimalPlaces: 0,
-          maxDecimalPlaces: 0
+          maxDecimalPlaces: 0,
+          noSeparator: true
         },
         E: {
           datatype: 'numeric',

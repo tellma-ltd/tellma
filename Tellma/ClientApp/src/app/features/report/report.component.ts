@@ -24,6 +24,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { formatNumber } from '@angular/common';
 import { ParameterInfo, QueryexUtil } from '~/app/data/queryex-util';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 
 @Component({
   selector: 't-report',
@@ -78,7 +79,8 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute, public modalService: NgbModal) { }
+    private router: Router, private route: ActivatedRoute, public modalService: NgbModal,
+    private customUserSettings: CustomUserSettingsService) { }
 
   ngOnInit() {
     // Pick up state from the URL
@@ -180,8 +182,17 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
 
     const coll = this.definition.Collection;
+    if (!coll) {
+      return null;
+    }
+
+    const metadataFn = metadata[coll];
+    if (!metadataFn) {
+      return null;
+    }
+
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
+    return metadataFn(this.workspace, this.translate, definitionId);
   }
 
   get apiEndpoint(): string {
@@ -201,7 +212,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get stateKey(): string {
-    return this.mode === 'screen' ? this.definitionId.toString() : '<preview>'; // In preview mode a local state is used anyways
+    return this.mode === 'screen' ? this.definitionId.toString() : `${this.definition.Id || 'new'}/preview`;
   }
 
   private urlStateChanged(): void {
@@ -340,6 +351,13 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public onArgumentChange() {
     this.immutableArguments = { ...this.arguments };
+
+    if (this.isScreenMode) {
+      // Save the arguments in user settings so the main menu uses them to launch the screen next time
+      const argsString = JSON.stringify(this.arguments);
+      this.customUserSettings.save(`report/${this.definitionId}/arguments`, argsString);
+    }
+
     this.urlStateChanged();
   }
 

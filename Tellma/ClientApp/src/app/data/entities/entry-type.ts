@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
@@ -60,8 +61,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-
-        Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -76,7 +76,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
         ParentId: {
           datatype: 'numeric',
           control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
-          minDecimalPlaces: 0, maxDecimalPlaces: 0
+          minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true
         },
         Parent: {
           datatype: 'entity',
@@ -86,17 +86,17 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
         ChildCount: {
           datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          isRightAligned: true
+          isRightAligned: true, noSeparator: false
         },
         ActiveChildCount: {
           datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
-          maxDecimalPlaces: 0, isRightAligned: true
+          maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
         },
         Level: {
           datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          isRightAligned: true
+          isRightAligned: true, noSeparator: false
         },
 
         IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },

@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -48,7 +49,7 @@ export function metadata_Unit(wss: WorkspaceService, trx: TranslateService): Ent
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-        Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -74,10 +75,10 @@ export function metadata_Unit(wss: WorkspaceService, trx: TranslateService): Ent
           }
         },
         UnitAmount: {
-          datatype: 'numeric', control: 'number', label: () => trx.instant('Unit_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9
+          datatype: 'numeric', control: 'number', label: () => trx.instant('Unit_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9, noSeparator: false
         },
         BaseAmount: {
-          datatype: 'numeric', control: 'number', label: () => trx.instant('Unit_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9
+          datatype: 'numeric', control: 'number', label: () => trx.instant('Unit_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9, noSeparator: false
         },
 
         IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },

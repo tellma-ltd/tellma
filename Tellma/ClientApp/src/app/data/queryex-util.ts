@@ -23,6 +23,8 @@ import { WorkspaceService } from './workspace.service';
 type Calendar = 'GR' | 'ET' | 'UQ';
 const calendarsArray: Calendar[] = ['GR', 'ET', 'UQ'];
 
+const giveupLabel = (trx: TranslateService) => () => trx.instant('Expression');
+
 // Type Guards
 function isPropDescriptor(target: DataType | PropDescriptor | PropVisualDescriptor): target is PropDescriptor {
     return !!target && !!(target as PropDescriptor).datatype;
@@ -41,7 +43,6 @@ function precedence(datatype: DataType) {
         case 'datetime': return 16;
         case 'date': return 32;
         case 'numeric': return 64;
-        case 'numeric': return 65; // TODO: delete
         case 'bit': return 128;
         case 'string': return 256;
         case 'null': return 512;
@@ -50,7 +51,7 @@ function precedence(datatype: DataType) {
     }
 }
 
-function mergeArithmeticNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string): PropDescriptor {
+function mergeArithmeticNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string, labelForParameter?: () => string): PropDescriptor {
     // This is for arithmetic operations (+ /)
     if (d1.datatype === 'numeric' && d2.datatype === 'numeric') {
         if (d1.control === 'percent' && d2.control === 'percent') {
@@ -60,7 +61,9 @@ function mergeArithmeticNumericDescriptors(d1: PropDescriptor, d2: PropDescripto
                 minDecimalPlaces: Math.max(d1.minDecimalPlaces, d2.minDecimalPlaces),
                 maxDecimalPlaces: Math.max(d1.maxDecimalPlaces, d2.maxDecimalPlaces),
                 label,
-                isRightAligned: d1.isRightAligned || d2.isRightAligned
+                labelForParameter,
+                isRightAligned: d1.isRightAligned || d2.isRightAligned,
+                noSeparator: d1.noSeparator && d2.noSeparator
             };
         } else {
             const leftMinDecimals = d1.control === 'number' ? d1.minDecimalPlaces :
@@ -73,6 +76,8 @@ function mergeArithmeticNumericDescriptors(d1: PropDescriptor, d2: PropDescripto
                 d2.control === 'percent' ? d2.maxDecimalPlaces - 2 : 0;
             const leftRightAligned = (d1.control === 'number' || d1.control === 'percent') && d1.isRightAligned;
             const rightRightAligned = (d2.control === 'number' || d2.control === 'percent') && d2.isRightAligned;
+            const leftNoSeparator = (d1.control === 'number' || d1.control === 'percent') && d1.noSeparator;
+            const rightNoSeparator = (d2.control === 'number' || d2.control === 'percent') && d2.noSeparator;
 
             return {
                 datatype: 'numeric',
@@ -80,7 +85,9 @@ function mergeArithmeticNumericDescriptors(d1: PropDescriptor, d2: PropDescripto
                 minDecimalPlaces: Math.max(leftMinDecimals, rightMinDecimals),
                 maxDecimalPlaces: Math.max(leftMaxDecimals, rightMaxDecimals),
                 label,
-                isRightAligned: leftRightAligned || rightRightAligned
+                labelForParameter,
+                isRightAligned: leftRightAligned || rightRightAligned,
+                noSeparator: leftNoSeparator && rightNoSeparator
             };
         }
     } else {
@@ -88,7 +95,7 @@ function mergeArithmeticNumericDescriptors(d1: PropDescriptor, d2: PropDescripto
     }
 }
 
-function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string): PropDescriptor {
+function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string, labelForParameter?: () => string): PropDescriptor {
     // This is for fallback operations like If and IsNull
     if (d1.datatype === 'numeric' && d2.datatype === 'numeric') {
 
@@ -113,6 +120,7 @@ function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor,
                     definitionId: d1.definitionId,
                     filter,
                     label,
+                    labelForParameter,
                     foreignKeyName: d1.foreignKeyName
                 };
             }
@@ -160,6 +168,7 @@ function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor,
                 color,
                 choices,
                 label,
+                labelForParameter,
             };
         } else if (d1.control === 'serial' && d2.control === 'serial') {
             if (d1.prefix === d2.prefix && d1.codeWidth === d2.codeWidth) {
@@ -168,20 +177,21 @@ function mergeFallbackNumericDescriptors(d1: PropDescriptor, d2: PropDescriptor,
                     control: 'serial',
                     prefix: d1.prefix,
                     codeWidth: d1.codeWidth,
-                    label
+                    label,
+                    labelForParameter
                 };
             }
         }
 
         // Last resort, merge as you would for arithmetic
-        return mergeArithmeticNumericDescriptors(d1, d2, label);
+        return mergeArithmeticNumericDescriptors(d1, d2, label, labelForParameter);
 
     } else {
         throw new Error(`[Bug] Merging non numeric datatypes ${d1} and ${d2}.`);
     }
 }
 
-function mergeFallbackStringDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string): PropDescriptor {
+function mergeFallbackStringDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string, labelForParameter?: () => string): PropDescriptor {
     // This is for fallback operations like If and IsNull
     if (d1.datatype === 'string' && d2.datatype === 'string') {
 
@@ -201,6 +211,7 @@ function mergeFallbackStringDescriptors(d1: PropDescriptor, d2: PropDescriptor, 
                     definitionId: d1.definitionId,
                     filter,
                     label,
+                    labelForParameter,
                     foreignKeyName: d1.foreignKeyName
                 };
             }
@@ -233,7 +244,8 @@ function mergeFallbackStringDescriptors(d1: PropDescriptor, d2: PropDescriptor, 
                 format,
                 color,
                 choices,
-                label
+                label,
+                labelForParameter
             };
         }
 
@@ -241,40 +253,46 @@ function mergeFallbackStringDescriptors(d1: PropDescriptor, d2: PropDescriptor, 
         return {
             datatype: 'string',
             control: 'text',
-            label
+            label,
+            labelForParameter
         };
     }
 }
 
-function getLowestPrecedenceDescFromVisual(desc: PropVisualDescriptor, label: () => string, wss: WorkspaceService, trx: TranslateService): PropDescriptor {
+function getLowestPrecedenceDescFromVisual(
+    desc: PropVisualDescriptor,
+    label: () => string,
+    wss: WorkspaceService,
+    trx: TranslateService,
+    labelForParameter?: () => string): PropDescriptor {
     switch (desc.control) {
         case 'unsupported':
-            return { datatype: 'boolean', ...desc, label };
+            return { datatype: 'boolean', ...desc, label, labelForParameter };
         case 'datetime':
-            return { datatype: 'datetime', ...desc, label };
+            return { datatype: 'datetime', ...desc, label, labelForParameter };
         case 'date':
-            return { datatype: 'date', ...desc, label };
+            return { datatype: 'date', ...desc, label, labelForParameter };
         case 'number':
-            return { datatype: 'numeric', ...desc, label };
+            return { datatype: 'numeric', ...desc, label, labelForParameter };
         case 'check':
-            return { datatype: 'bit', ...desc, label };
+            return { datatype: 'bit', ...desc, label, labelForParameter };
         case 'text':
-            return { datatype: 'string', ...desc, label };
+            return { datatype: 'string', ...desc, label, labelForParameter };
         case 'serial':
-            return { datatype: 'numeric', ...desc, label };
+            return { datatype: 'numeric', ...desc, label, labelForParameter };
         case 'choice':
-            return { datatype: 'string', ...desc, label };
+            return { datatype: 'string', ...desc, label, labelForParameter };
         case 'percent':
-            return { datatype: 'numeric', ...desc, label };
+            return { datatype: 'numeric', ...desc, label, labelForParameter };
         case 'null':
-            return { datatype: 'null', ...desc, label };
+            return { datatype: 'null', ...desc, label, labelForParameter };
         default:
             const entityDesc = metadata[desc.control](wss, trx, desc.definitionId);
             const idDesc = entityDesc.properties.Id.datatype;
             if (idDesc === 'numeric') {
-                return { datatype: 'numeric', ...desc, foreignKeyName: null, label };
+                return { datatype: 'numeric', ...desc, foreignKeyName: null, label, labelForParameter };
             } else if (idDesc === 'string') {
-                return { datatype: 'string', ...desc, foreignKeyName: null, label };
+                return { datatype: 'string', ...desc, foreignKeyName: null, label, labelForParameter };
             } else {
                 throw new Error(`[Bug] type ${entityDesc.titleSingular()} has an Id that is neither string nor numeric`);
             }
@@ -284,21 +302,21 @@ function getLowestPrecedenceDescFromVisual(desc: PropVisualDescriptor, label: ()
 /**
  * Returns a PropDescriptor from a PropVisualDescriptor and a DataType, if they are compatible, else returns undefined
  */
-function tryGetDescFromVisual(desc: PropVisualDescriptor, datatype: DataType, label: () => string, wss: WorkspaceService, trx: TranslateService): PropDescriptor {
+function tryGetDescFromVisual(desc: PropVisualDescriptor, datatype: DataType, label: () => string, wss: WorkspaceService, trx: TranslateService, labelForParameter?: () => string): PropDescriptor {
     switch (desc.control) {
         case 'unsupported':
             switch (datatype) {
                 case 'boolean':
                 case 'hierarchyid':
                 case 'geography':
-                    return { datatype, ...desc, label };
+                    return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'datetime':
             switch (datatype) {
                 case 'datetimeoffset':
                 case 'datetime':
-                    return { datatype, ...desc, label };
+                    return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'date':
@@ -306,78 +324,78 @@ function tryGetDescFromVisual(desc: PropVisualDescriptor, datatype: DataType, la
                 case 'datetimeoffset':
                 case 'datetime':
                 case 'date':
-                    return { datatype, ...desc, label };
+                    return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'number':
             if (datatype === 'numeric') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'check':
             if (datatype === 'bit') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'text':
             if (datatype === 'string') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'serial':
             if (datatype === 'numeric') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'choice':
             if (datatype === 'string') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             } else if (datatype === 'numeric' && desc.choices.every(c => !isNaN(+c))) {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'percent':
             if (datatype === 'numeric') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         case 'null':
             if (datatype === 'null') {
-                return { datatype, ...desc, label };
+                return { datatype, ...desc, label, labelForParameter };
             }
             break;
         default:
             const idDesc = metadata[desc.control](wss, trx, desc.definitionId).properties.Id.datatype;
             if (datatype === 'numeric' && idDesc === 'numeric') {
-                return { datatype, ...desc, foreignKeyName: null, label };
+                return { datatype, ...desc, foreignKeyName: null, label, labelForParameter };
             }
             if (datatype === 'string' && idDesc === 'string') {
-                return { datatype, ...desc, foreignKeyName: null, label };
+                return { datatype, ...desc, foreignKeyName: null, label, labelForParameter };
             }
     }
 }
 
-function tryGetDescFromDatatype(targetType: DataType, label: () => string): PropDescriptor {
+function tryGetDescFromDatatype(targetType: DataType, label: () => string, labelForParameter?: () => string): PropDescriptor {
     // A null can be implicitly cast to any one of these
     switch (targetType) {
         case 'string':
-            return { datatype: targetType, control: 'text', label };
+            return { datatype: targetType, control: 'text', label, labelForParameter };
         case 'numeric':
-            return { datatype: targetType, control: 'number', label, minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: false };
+            return { datatype: targetType, control: 'number', label, labelForParameter, minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: false, noSeparator: false };
         case 'bit':
-            return { datatype: targetType, control: 'check', label };
+            return { datatype: targetType, control: 'check', label, labelForParameter };
         case 'date':
-            return { datatype: targetType, control: 'date', label };
+            return { datatype: targetType, control: 'date', label, labelForParameter };
         case 'datetime':
         case 'datetimeoffset':
-            return { datatype: targetType, control: 'date', label };
+            return { datatype: targetType, control: 'date', label, labelForParameter };
         case 'geography':
         case 'hierarchyid':
-            return { datatype: targetType, control: 'unsupported', label };
+            return { datatype: targetType, control: 'unsupported', label, labelForParameter };
     }
 }
 
-function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string): PropDescriptor {
+function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => string, labelForParameter?: () => string): PropDescriptor {
 
     if (d1.datatype !== d2.datatype) {
         throw new Error(`[Bug] Merging two different datatypes ${d1.datatype} and ${d2.datatype}.`);
@@ -385,37 +403,41 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
 
     switch (d1.datatype) {
         case 'string': {
-            return mergeFallbackStringDescriptors(d1, d2, label);
+            return mergeFallbackStringDescriptors(d1, d2, label, labelForParameter);
         }
         case 'numeric':
-            return mergeFallbackNumericDescriptors(d1, d2, label);
+            return mergeFallbackNumericDescriptors(d1, d2, label, labelForParameter);
 
         case 'date':
             return {
                 datatype: 'date',
                 control: 'date',
-                label
+                label,
+                labelForParameter
             };
 
         case 'datetime':
             return {
                 datatype: 'datetime',
                 control: 'datetime',
-                label
+                label,
+                labelForParameter
             };
 
         case 'datetimeoffset':
             return {
                 datatype: 'datetimeoffset',
                 control: 'datetime',
-                label
+                label,
+                labelForParameter
             };
 
         case 'bit':
             return {
                 datatype: 'bit',
                 control: 'check',
-                label
+                label,
+                labelForParameter
             };
 
         case 'geography':
@@ -424,14 +446,16 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
             return {
                 datatype: d1.datatype,
                 control: 'unsupported',
-                label
+                label,
+                labelForParameter
             };
 
         case 'null':
             return {
                 datatype: 'null',
                 control: 'null',
-                label
+                label,
+                labelForParameter
             };
     }
 
@@ -448,7 +472,7 @@ function implicitCast(nativeDesc: PropDescriptor, targetType: DataType, hintDesc
             if (!!hintDesc) {
                 desc = { ...hintDesc };
             } else {
-                desc = tryGetDescFromDatatype(targetType, nativeDesc.label);
+                desc = tryGetDescFromDatatype(targetType, nativeDesc.label, nativeDesc.labelForParameter);
             }
         }
 
@@ -461,13 +485,16 @@ function implicitCast(nativeDesc: PropDescriptor, targetType: DataType, hintDesc
                 minDecimalPlaces: 0,
                 maxDecimalPlaces: 0,
                 label: nativeDesc.label,
-                isRightAligned: true
+                labelForParameter: nativeDesc.labelForParameter,
+                isRightAligned: true,
+                noSeparator: false
             };
         } else if (targetType === 'boolean') {
             return {
                 datatype: targetType,
                 control: 'unsupported',
-                label: nativeDesc.label
+                label: nativeDesc.label,
+                labelForParameter: nativeDesc.labelForParameter
             };
         }
     }
@@ -513,7 +540,6 @@ export interface DimensionInfo {
 
     autoExpandLevel: number;
     showAsTree: boolean;
-    showEmptyMembers: boolean;
     orderDir: QueryexDirection; // The order direction (whether from the dimension or from one of its attributes)
     isOrdered: boolean; // If this is true, we set the sortValue of the dimension cell to the dimension value
 
@@ -553,42 +579,47 @@ export interface ReportInfos {
 
 export class QueryexUtil {
 
-    public static yearOrDayDesc(label: () => string, _: TranslateService): PropDescriptor {
+    public static yearOrDayDesc(label: () => string, _: TranslateService, labelForParameter?: () => string): PropDescriptor {
         return {
             datatype: 'numeric',
             control: 'number',
             label,
+            labelForParameter,
             minDecimalPlaces: 0,
             maxDecimalPlaces: 0,
-            isRightAligned: false
+            isRightAligned: false,
+            noSeparator: true
         };
     }
 
-    public static quarterDesc(label: () => string, trx: TranslateService): PropDescriptor {
+    public static quarterDesc(label: () => string, trx: TranslateService, labelForParameter?: () => string): PropDescriptor {
         return {
             datatype: 'numeric',
             control: 'choice',
             label,
+            labelForParameter,
             choices: [1, 2, 3, 4],
             format: (c: number | string) => !c ? '' : trx.instant(`ShortQuarter${c}`)
         };
     }
 
-    public static monthDesc(label: () => string, trx: TranslateService): PropDescriptor {
+    public static monthDesc(label: () => string, trx: TranslateService, labelForParameter?: () => string): PropDescriptor {
         return {
             datatype: 'numeric',
             control: 'choice',
             label,
+            labelForParameter,
             choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             format: (c: number | string) => !c ? '' : trx.instant(`ShortMonth${c}`)
         };
     }
 
-    public static weekdayDesc(label: () => string, trx: TranslateService): PropDescriptor {
+    public static weekdayDesc(label: () => string, trx: TranslateService, labelForParameter?: () => string): PropDescriptor {
         return {
             datatype: 'numeric',
             control: 'choice',
             label,
+            labelForParameter,
             choices: [2 /* Mon */, 3, 4, 5, 6, 7, 1 /* Sun */],
             // SQL Server numbers the days differently from ngb-datepicker
             format: (c: number) => !c ? '' : trx.instant(`ShortDay${(c - 1) === 0 ? 7 : c - 1}`)
@@ -704,11 +735,6 @@ export class QueryexUtil {
         return stringifyInner(expression);
     }
 
-    public static canShowEmptyMembers(desc: PropVisualDescriptor) {
-        // Those are the controls where we know the full list of members
-        return !!desc && (desc.control === 'choice' || desc.control === 'check');
-    }
-
     public static canShowAsTree(desc: PropDescriptor, wss: WorkspaceService, trx: TranslateService) {
         // Those are the controls where we know the full list of members
         return !!desc && desc.datatype === 'entity' &&
@@ -753,18 +779,6 @@ export class QueryexUtil {
                     throw new Error(`Parameter default Expression cannot contain column access literals like '${columnAccesses[0]}'.`);
                 } else if (parameters.length > 0) {
                     throw new Error(`Parameter default Expression cannot contain parameters like '${parameters[0]}'.`);
-                } else {
-                    const desc = QueryexUtil.nativeDesc(exp, undefined, undefined, coll, defId, wss, trx);
-                    switch (desc.datatype) {
-                        case 'boolean':
-                        case 'hierarchyid':
-                        case 'geography':
-                        case 'entity':
-                            throw new Error(`Parameter default Expression cannot be of type ${desc.datatype}.`);
-                        default:
-                            autoOverrides[keyLower] = desc;
-                            autoOverridesPrev[keyLower] = desc;
-                    }
                 }
             }
 
@@ -918,14 +932,6 @@ export class QueryexUtil {
                 }
                 const autoExpandLevel = dimension.AutoExpandLevel;
                 const showAsTree = dimension.ShowAsTree && QueryexUtil.canShowAsTree(keyDesc, wss, trx);
-                const showEmptyMembers = dimension.ShowEmptyMembers && QueryexUtil.canShowEmptyMembers(keyDesc);
-                if (!showEmptyMembers) {
-                    for (const d of rowInfos) {
-                        // ShowEmptyMembers must true for all subsequent dimensions too
-                        // Otherwise how would you display that dimension with nothing underneath it?
-                        d.showEmptyMembers = false;
-                    }
-                }
 
                 infos.push({
                     keyExp,
@@ -940,7 +946,6 @@ export class QueryexUtil {
                     attributes,
                     autoExpandLevel,
                     showAsTree, // Only when it's a tree entity
-                    showEmptyMembers // Only when it's supported
                 });
             }
         };
@@ -1017,7 +1022,7 @@ export class QueryexUtil {
 
         /////////////////// Selects
 
-        const selectExps: { exp: QueryexBase, localize: boolean, select: ReportDefinitionSelectForClient }[] = [];
+        const selectExps: { exp: QueryexBase, visualDesc: PropVisualDescriptor, localize: boolean, select: ReportDefinitionSelectForClient }[] = [];
         if (definition.Type === 'Details' || definition.IsCustomDrilldown) {
             for (const select of definition.Select) {
                 const localize = select.Localize;
@@ -1030,7 +1035,9 @@ export class QueryexUtil {
                     } else if (definition.Type === 'Summary' && definition.IsCustomDrilldown && parameters.length > 0) {
                         throw new Error(`Expression cannot contain parameters like '${parameters[0]}'.`);
                     } else {
-                        selectExps.push({ exp, localize, select });
+
+                        const visualDesc = select.Control ? descFromControlOptions(wss.currentTenant, select.Control, select.ControlOptions) : null;
+                        selectExps.push({ exp, visualDesc, localize, select });
                     }
                 } else {
                     throw new Error(`Select expression cannot be empty.`);
@@ -1114,22 +1121,29 @@ export class QueryexUtil {
             }
 
             // Select
-            for (const { exp, localize, select } of selectExps) {
+            for (const { exp, visualDesc, localize, select } of selectExps) {
                 const expToString = exp.toString();
-                const desc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, coll, defId, wss, trx);
+                const mainDesc = QueryexUtil.nativeDesc(exp, userOverrides, autoOverrides, coll, defId, wss, trx);
                 let entityDesc: EntityDescriptor;
-                switch (desc.datatype) {
+                switch (mainDesc.datatype) {
                     case 'boolean':
                     case 'hierarchyid':
                     case 'geography':
-                        throw new Error(`Select expression ${exp} cannot be of type ${desc.datatype}.`);
+                        throw new Error(`Select expression ${exp} cannot be of type ${mainDesc.datatype}.`);
                     case 'entity':
-                        entityDesc = metadata[desc.control](wss, trx, desc.definitionId);
+                        entityDesc = metadata[mainDesc.control](wss, trx, mainDesc.definitionId);
+                }
+
+                if (!!visualDesc && !tryGetDescFromVisual(visualDesc, mainDesc.datatype, () => '', wss, trx)) {
+                    throw new Error(`Select expression ${exp} (${mainDesc.datatype}) is incompatible with the selected control.`);
                 }
 
                 // Add the measure info
-                const label = !!select.Label ? () => ws.localize(select.Label, select.Label2, select.Label3) : desc.label;
-                selectInfos.push({ exp, expToString, localize, desc, entityDesc, label });
+                {
+                    const desc = visualDesc || mainDesc;
+                    const label = !!select.Label ? () => ws.localize(select.Label, select.Label2, select.Label3) : mainDesc.label;
+                    selectInfos.push({ exp, expToString, localize, desc, entityDesc, label });
+                }
             }
 
             // Result
@@ -1261,7 +1275,7 @@ export class QueryexUtil {
                             // Make sure DefaultExpression can be interpreted to the same final datatype as the parameter
                             const defaultDesc = QueryexUtil.tryDesc(defaultExp, undefined, undefined, paramInfo.datatype, coll, defId, wss, trx);
                             if (!defaultDesc) {
-                                throw new Error(`Parameter @${dfnParam.Key}: Default Expression ${defaultExp} could not be interpreted as a ${defaultDesc.datatype}`);
+                                throw new Error(`Parameter @${dfnParam.Key}: Default Expression ${defaultExp} could not be interpreted as a ${paramInfo.datatype}`);
                             } else {
                                 paramInfo.defaultExp = defaultExp;
                             }
@@ -1385,7 +1399,7 @@ export class QueryexUtil {
                         const arg3Desc = tryDescImpl(arg3, target);
 
                         if (!!arg2Desc && !!arg3Desc) {
-                            return mergeDescriptors(arg2Desc, arg3Desc, () => trx.instant('Expression'));
+                            return mergeDescriptors(arg2Desc, arg3Desc, giveupLabel(trx));
                         } else {
                             return undefined;
                         }
@@ -1398,7 +1412,7 @@ export class QueryexUtil {
                         const arg2Desc = tryDescImpl(arg2, target);
 
                         if (!!arg1Desc && !!arg2Desc) {
-                            return mergeDescriptors(arg1Desc, arg2Desc, () => trx.instant('Expression'));
+                            return mergeDescriptors(arg1Desc, arg2Desc, giveupLabel(trx));
                         } else {
                             return undefined;
                         }
@@ -1415,7 +1429,7 @@ export class QueryexUtil {
                             if (!!hintDesc) {
                                 return hintDesc;
                             } else {
-                                const label = () => trx.instant('Expression');
+                                const label = giveupLabel(trx);
                                 if (targetType === 'date') {
                                     const control = 'date';
                                     return { datatype: targetType, control, label };
@@ -1432,7 +1446,7 @@ export class QueryexUtil {
                 }
             } else if (ex instanceof QueryexParameter) {
                 const userOverride = userOverrides[ex.keyLower];
-                const label = !!hintDesc ? hintDesc.label : () => ex.key;
+                const label = !!hintDesc && !!hintDesc.labelForParameter ? hintDesc.labelForParameter : () => ex.key;
                 let autoOverrideNew: PropDescriptor;
                 let result: PropDescriptor;
 
@@ -1451,7 +1465,7 @@ export class QueryexUtil {
                 } else {
                     // ELSE The result must adhere to targetType
                     if (!!hintDesc) {
-                        autoOverrideNew = { ...hintDesc };
+                        autoOverrideNew = { ...hintDesc, label };
                         result = autoOverrideNew;
                     } else {
                         if (targetType === 'boolean') {
@@ -1510,9 +1524,11 @@ export class QueryexUtil {
                         const datatype = !!fkDesc ? fkDesc.datatype as 'string' | 'numeric' : 'numeric';
                         const result = {
                             ...navPropDesc,
+                            datatype,
+                            label: fkDesc.label, // Account (Id)
+                            labelForParameter: navPropDesc.label // Account
                         };
 
-                        result.datatype = datatype;
                         return result;
                     }
                 }
@@ -1525,24 +1541,28 @@ export class QueryexUtil {
                 // Special case for Ids
                 if (ex.property === 'Id' && (propDesc.datatype === 'numeric' || propDesc.datatype === 'string')) {
                     if (ex.path.length === 0) {
-                        const label = metadata[coll](wss, trx, defId).titleSingular;
+                        // This is the Id of the root collection
                         const result = {
                             datatype: propDesc.datatype,
                             control: coll,
                             definitionId: defId,
                             foreignKeyName: null, // Not needed
-                            label
+                            label: propDesc.label, // Id
+                            labelForParameter: metadata[coll](wss, trx, defId).titleSingular // Details Entry
                         };
 
                         return result;
                     } else {
+                        // This is the Id after a navigation property
                         const navEntityDesc = entityDescriptorImpl(ex.path.slice(0, -1), coll, defId, wss, trx);
                         const navPropDesc = navEntityDesc.properties[ex.path[ex.path.length - 1]] as NavigationPropDescriptor;
                         const result = {
                             ...navPropDesc,
+                            datatype: propDesc.datatype,
+                            label: propDesc.label, // Id
+                            labelForParameter: navPropDesc.label // Account
                         };
 
-                        result.datatype = propDesc.datatype;
                         return result;
                     }
                 }
@@ -1566,6 +1586,7 @@ export class QueryexUtil {
                 }
 
                 // Finally return as is
+                propDesc.labelForParameter = propDesc.label;
                 return propDesc;
 
             } else if (ex instanceof QueryexFunction) {
@@ -1592,7 +1613,9 @@ export class QueryexUtil {
                                     maxDecimalPlaces: 0,
                                     minDecimalPlaces: 0,
                                     isRightAligned: true,
-                                    label: resultDesc.label
+                                    label: resultDesc.label,
+                                    labelForParameter: resultDesc.labelForParameter,
+                                    noSeparator: false
                                 };
                             } else {
                                 resultDesc = { ...resultDesc };
@@ -1602,7 +1625,7 @@ export class QueryexUtil {
                             if (!resultDesc) {
                                 throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a numeric.`);
                             } else {
-                                resultDesc = mergeArithmeticNumericDescriptors(resultDesc, resultDesc, resultDesc.label);
+                                resultDesc = mergeArithmeticNumericDescriptors(resultDesc, resultDesc, resultDesc.label, resultDesc.labelForParameter);
                             }
                         }
 
@@ -1612,7 +1635,17 @@ export class QueryexUtil {
                             1: originalLabel()
                         });
 
+                        const originalLabelForParameter = resultDesc.labelForParameter;
+                        let aggregationLabelForParameter: () => string;
+                        if (!!originalLabelForParameter) {
+                            aggregationLabelForParameter = () => trx.instant('DefaultAggregationMeasure', {
+                                0: trx.instant('Aggregation_' + nameLower),
+                                1: originalLabelForParameter()
+                            });
+                        }
+
                         resultDesc.label = aggregationLabel;
+                        resultDesc.labelForParameter = aggregationLabelForParameter;
                         return resultDesc;
                     }
 
@@ -1643,22 +1676,24 @@ export class QueryexUtil {
                             }
 
                             const label = () => `${arg1Desc.label()} (${trx.instant('DatePart_' + datePart)})`;
+                            const labelForParameter = arg1Desc.labelForParameter ? () => `${arg1Desc.labelForParameter()} (${trx.instant('DatePart_' + datePart)})` : undefined;
                             switch (datePart) {
                                 case 'day':
                                 case 'year':
-                                    return QueryexUtil.yearOrDayDesc(label, trx);
+                                    return QueryexUtil.yearOrDayDesc(label, trx, labelForParameter);
                                 case 'quarter':
-                                    return QueryexUtil.quarterDesc(label, trx);
+                                    return QueryexUtil.quarterDesc(label, trx, labelForParameter);
                                 case 'month':
                                     if (calendar === 'GR') {
-                                        return QueryexUtil.monthDesc(label, trx);
+                                        return QueryexUtil.monthDesc(label, trx, labelForParameter);
                                     } else if (calendar === 'UQ') {
                                         return {
                                             datatype: 'numeric',
                                             control: 'choice',
                                             label,
                                             choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                            format: (c: number | string) => !c ? '' : trx.instant(`ShortMonthUq${c}`)
+                                            format: (c: number | string) => !c ? '' : trx.instant(`ShortMonthUq${c}`),
+                                            labelForParameter
                                         };
                                     } else if (calendar === 'ET') {
                                         return {
@@ -1666,7 +1701,8 @@ export class QueryexUtil {
                                             control: 'choice',
                                             label,
                                             choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-                                            format: (c: number | string) => !c ? '' : trx.instant(`ShortMonthEt${c}`)
+                                            format: (c: number | string) => !c ? '' : trx.instant(`ShortMonthEt${c}`),
+                                            labelForParameter
                                         };
                                     } else {
                                         // Should not reach here
@@ -1675,7 +1711,7 @@ export class QueryexUtil {
                                         throw new Error(msg);
                                     }
                                 case 'weekday':
-                                    return QueryexUtil.weekdayDesc(label, trx);
+                                    return QueryexUtil.weekdayDesc(label, trx, labelForParameter);
                                 default:
                                     throw new Error('Never'); // To keep compiler happy
                             }
@@ -1741,6 +1777,22 @@ export class QueryexUtil {
                         }
                     }
 
+                    case 'abs': {
+                        const expectedArgCount = 1;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        const arg1Desc = tryDescImpl(arg1, 'numeric');
+                        if (!!arg1Desc) {
+                            return { ...arg1Desc };
+
+                        } else {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a numeric.`);
+                        }
+                    }
+
                     case 'if': {
                         const { arg2, arg3 } = ifParameters(ex);
 
@@ -1766,7 +1818,7 @@ export class QueryexUtil {
                             throw new Error(`Function '${ex.name}' cannot be used on expressions ${arg2} (${arg2Type}) and ${arg3} (${arg3Type}) because they have incompatible data types.`);
                         }
 
-                        return mergeDescriptors(arg2Desc, arg3Desc, () => trx.instant('Expression'));
+                        return mergeDescriptors(arg2Desc, arg3Desc, giveupLabel(trx));
                     }
 
                     case 'isnull': {
@@ -1794,7 +1846,7 @@ export class QueryexUtil {
                             throw new Error(`Function '${ex.name}' cannot be used on expressions ${arg1} (${arg1Type}) and ${arg2} (${arg2Type}) because they have incompatible data types.`);
                         }
 
-                        return mergeDescriptors(arg1Desc, arg2Desc, () => trx.instant('Expression'));
+                        return mergeDescriptors(arg1Desc, arg2Desc, giveupLabel(trx));
                     }
 
                     case 'today': {
@@ -1832,7 +1884,8 @@ export class QueryexUtil {
                             minDecimalPlaces: 0,
                             maxDecimalPlaces: 0,
                             label: () => trx.instant('CurrentUser'),
-                            isRightAligned: false
+                            isRightAligned: false,
+                            noSeparator: true
                         };
                     }
 
@@ -1848,7 +1901,7 @@ export class QueryexUtil {
                         let leftDesc = tryDescImpl(ex.left, 'numeric');
                         let rightDesc = tryDescImpl(ex.right, leftDesc || 'numeric');
 
-                        const label = () => trx.instant('Expression');
+                        const label = giveupLabel(trx);
 
                         if (!leftDesc || !rightDesc) {
                             leftDesc = tryDescImpl(ex.left, 'string');
@@ -1884,7 +1937,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as a numeric.`);
                         }
 
-                        const label = () => trx.instant('Expression');
+                        const label = giveupLabel(trx);
                         return mergeArithmeticNumericDescriptors(leftDesc, rightDesc, label);
                     }
 
@@ -1905,9 +1958,10 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: () => trx.instant('Expression')
+                            label: giveupLabel(trx)
                         };
                     }
+
                     case '<>':
                     case '!=':
                     case 'ne':
@@ -1948,7 +2002,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: () => trx.instant('Expression')
+                            label: giveupLabel(trx)
                         };
                     }
 
@@ -1991,7 +2045,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: () => trx.instant('Expression')
+                            label: giveupLabel(trx)
                         };
                     }
 
@@ -2011,7 +2065,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: () => trx.instant('Expression')
+                            label: giveupLabel(trx)
                         };
                     }
                 }
@@ -2034,8 +2088,9 @@ export class QueryexUtil {
                                 control: desc.control,
                                 maxDecimalPlaces: desc.maxDecimalPlaces,
                                 minDecimalPlaces: desc.minDecimalPlaces,
-                                label: () => trx.instant('Expression'),
-                                isRightAligned: desc.isRightAligned
+                                label: giveupLabel(trx),
+                                isRightAligned: desc.isRightAligned,
+                                noSeparator: desc.noSeparator
                             };
                         } else { // serial, choice, entity
                             // Serial, choice, entity: turn it into plain number
@@ -2044,8 +2099,9 @@ export class QueryexUtil {
                                 control: 'number',
                                 maxDecimalPlaces: 0,
                                 minDecimalPlaces: 0,
-                                label: () => trx.instant('Expression'),
-                                isRightAligned: false
+                                label: giveupLabel(trx),
+                                isRightAligned: false,
+                                noSeparator: false
                             };
                         }
                     }
@@ -2060,7 +2116,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: () => trx.instant('Expression')
+                            label: giveupLabel(trx)
                         };
                     }
                 }
@@ -2077,7 +2133,8 @@ export class QueryexUtil {
                     minDecimalPlaces: ex.decimals,
                     maxDecimalPlaces: ex.decimals,
                     label: () => ex.toString(),
-                    isRightAligned: true
+                    isRightAligned: true,
+                    noSeparator: false
                 };
             } else if (ex instanceof QueryexNull) {
                 return {
@@ -2226,6 +2283,11 @@ export class QueryexUtil {
                     case 'not': {
                         const arg = evaluate(ex.arguments[0]) as boolean;
                         return !arg;
+                    }
+
+                    case 'abs': {
+                        const value = evaluate(ex.arguments[0]) as number;
+                        return value === null ? null : Math.abs(value);
                     }
 
                     case 'if': {

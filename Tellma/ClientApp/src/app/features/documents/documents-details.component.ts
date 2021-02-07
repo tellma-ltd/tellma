@@ -1833,7 +1833,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public filterEntryType_Manual(entry: Entry): string {
     const accountType = this.accountType(entry);
-    return `IsAssignable eq true and Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and Id descof ${accountType.EntryTypeParentId}`;
   }
 
   // External Reference
@@ -3230,7 +3230,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Filter for smart line
     // TODO: What about EntryTypeId ??
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
+    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Id descof ${entryDef.EntryTypeParentId}` : null;
 
     const customFilter = this.getFilter(lineDefId, columnIndex);
 

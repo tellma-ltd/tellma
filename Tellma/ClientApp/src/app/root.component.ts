@@ -64,7 +64,7 @@ export class RootComponent {
     // gets automatically redirected to the last visited url
     this.router.events.subscribe(e => {
       if (e instanceof NavigationEnd && e.url.indexOf('/app/') !== -1) {
-        this.storage.setItem('last_visited_url', e.url);
+        this.storage.setItem('last_visited_url_v2', e.url);
       }
 
       // Hide any active context menu before navigating

@@ -13,6 +13,5 @@
 	[Label3]					NVARCHAR (255),
 	[OrderDirection]			NVARCHAR (10), -- N'asc', N'desc'
 	[AutoExpandLevel]			INT,
-	[ShowAsTree]				BIT NOT NULL DEFAULT 1,
-	[ShowEmptyMembers]			BIT NOT NULL DEFAULT 0 -- For choice lists
+	[ShowAsTree]				BIT NOT NULL DEFAULT 1
 );

@@ -90,6 +90,8 @@ export interface ReportDefinitionSelectForClient {
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
 export interface ReportDefinitionMeasureForClient {
@@ -115,7 +117,6 @@ export interface ReportDefinitionDimensionForClient {
     OrderDirection?: ReportOrderDirection;
     AutoExpandLevel: number;
     ShowAsTree?: boolean;
-    ShowEmptyMembers?: boolean;
     Attributes?: ReportDefinitionDimensionAttributeForClient[];
 }
 

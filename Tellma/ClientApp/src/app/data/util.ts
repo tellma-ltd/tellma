@@ -448,6 +448,11 @@ export function toLocalDateISOString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+export function toLocalDateTimeISOString(date: Date): string {
+  // This result looks like how the JSON.NET-based server serializes C#'s DateTime
+  return `${toLocalDateISOString(date)}T00:00:00`;
+}
+
 function closePrint() {
   // Cleanup duty once the user closes the print dialog
   document.body.removeChild(this.__container__);
@@ -960,14 +965,26 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: Wo
         return '';
       }
       const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return formatAccounting(value, digitsInfo);
+      let result = formatAccounting(value, digitsInfo);
+
+      if (prop.noSeparator) {
+        result = result.replace(',', '');
+      }
+
+      return result;
     }
     case 'percent': {
       if (value === undefined || value === null) {
         return '';
       }
       const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
+      let result = isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
+
+      if (prop.noSeparator) {
+        result = result.replace(',', '');
+      }
+
+      return result;
     }
     case 'date': {
       if (value === undefined || value === null) {
@@ -1001,8 +1018,8 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: Wo
       return trx.instant('NotSupported');
     }
     default:
-      return (value === undefined || value === null) ? '' : value + '' ;
-      // throw new Error(`calling "displayValue" on a property of an unknown control ${prop.control}`);
+      return (value === undefined || value === null) ? '' : value + '';
+    // throw new Error(`calling "displayValue" on a property of an unknown control ${prop.control}`);
   }
 }
 
@@ -1065,14 +1082,21 @@ export function descFromControlOptions(
         maxDecimalPlaces = desc.maxDecimalPlaces;
       }
 
-      let isRightAligned = true ;
+      let isRightAligned = true;
       if (isSpecified(options.isRightAligned)) {
         isRightAligned = options.isRightAligned;
       } else if (desc.control === 'number' || desc.control === 'percent') {
         isRightAligned = desc.isRightAligned;
       }
 
-      return { control, minDecimalPlaces, maxDecimalPlaces, isRightAligned };
+      let noSeparator = false;
+      if (isSpecified(options.noSeparator)) {
+        noSeparator = options.noSeparator;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        noSeparator = desc.noSeparator;
+      }
+
+      return { control, minDecimalPlaces, maxDecimalPlaces, isRightAligned, noSeparator };
 
     case 'choice':
       let choices: (string | number)[] = []; // default value
@@ -1097,14 +1121,14 @@ export function descFromControlOptions(
 
     case 'serial':
       let prefix = '';
-      if (isSpecified(options.prefx)) {
+      if (isSpecified(options.prefix)) {
         prefix = options.prefix;
       } else if (desc.control === 'serial') {
         prefix = desc.prefix;
       }
 
       let codeWidth = 4;
-      if (isSpecified(options.prefx)) {
+      if (isSpecified(options.codeWidth)) {
         codeWidth = options.codeWidth;
       } else if (desc.control === 'serial') {
         codeWidth = desc.codeWidth;

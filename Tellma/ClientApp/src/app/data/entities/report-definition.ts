@@ -89,6 +89,8 @@ export interface ReportDefinitionSelectForSave extends EntityForSave {
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Control?: Control;
+    ControlOptions?: string; // JSON
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -106,7 +108,6 @@ export interface ReportDefinitionDimension<TAttribute> extends EntityForSave {
     OrderDirection?: ReportOrderDirection;
     AutoExpandLevel?: number;
     ShowAsTree?: boolean;
-    ShowEmptyMembers?: boolean;
     Attributes?: TAttribute[];
 }
 
@@ -182,7 +183,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
             format: (item: EntityWithKey) => (ws.getMultilingualValueImmediate(item, _select[0]) || trx.instant('Untitled')),
             formatFromVals: (vals: any[]) => (ws.localize(vals[0], vals[1], vals[2]) || trx.instant('Untitled')),
             properties: {
-                Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Title: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.primaryPostfix },
                 Title2: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.secondaryPostfix },
                 Title3: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.ternaryPostfix },
@@ -210,16 +211,16 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         // 2 Dimensions
                         'BarsVerticalGrouped', 'BarsVerticalStacked', 'BarsVerticalNormalized', 'BarsHorizontalGrouped',
                         'BarsHorizontalStacked', 'BarsHorizontalNormalized', /* 'AreaStacked', 'AreaNormalized', 'Radar', */ 'HeatMap'],
-                    format: (c: string) => trx.instant(`ReportDefinition_Chart_${c}`)
+                    format: (c: string) => !!c ? trx.instant(`ReportDefinition_Chart_${c}`) : c
                 },
                 DefaultsToChart: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_DefaultsToChart') },
                 ChartOptions: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ChartOptions') },
                 Collection: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Collection') },
-                DefinitionId: { datatype: 'numeric', control: 'number', label: () => trx.instant('ReportDefinition_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('ReportDefinition_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Filter: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Filter') },
                 Having: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_Having') },
                 OrderBy: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_OrderBy') },
-                Top: { datatype: 'numeric', control: 'number', label: () => trx.instant('ReportDefinition_Top'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Top: { datatype: 'numeric', control: 'number', label: () => trx.instant('ReportDefinition_Top'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
                 ShowColumnsTotal: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_ShowColumnsTotal') },
                 ColumnsTotalLabel: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ColumnsTotalLabel') + ws.primaryPostfix },
                 ColumnsTotalLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('ReportDefinition_ColumnsTotalLabel') + ws.secondaryPostfix },

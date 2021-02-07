@@ -1,6 +1,7 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityWithKey } from './base/entity-with-key';
-import { TenantWorkspace, WorkspaceService } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -40,25 +41,25 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
       format: (item: VoucherBookletForSave) => item.VoucherTypeId,
       formatFromVals: (vals: any[]) => vals[0],
       properties: {
-        Id: { datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
 
         // Temp
-        VoucherTypeId: { datatype: 'numeric', control: 'number', label: () => 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        VoucherTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         StringPrefix: { datatype: 'string', control: 'text', label: () => 'String Prefix' },
         NumericLength: {
           datatype: 'numeric',
-          control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true
+          control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
         },
         RangeStarts: {
           datatype: 'numeric',
-          control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true
+          control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
         },
         RangeEnds: {
           datatype: 'numeric',
-          control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true
+          control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
         },
         // End Temp
 

@@ -378,7 +378,7 @@ quotation marks in string literals should be escaped by specifying them twice.`)
                         return opsPeek !== '(' &&
                             (
                                 isFunction ||
-                                opsPeekInfo.precedence < opInfo.precedence ||
+                                opsPeekInfo.precedence < opInfo.precedence || // less than means greater precedence
                                 (opsPeekInfo.precedence === opInfo.precedence && opsPeekInfo.isLeftAssociative)
                             );
                     };

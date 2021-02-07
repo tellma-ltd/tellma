@@ -158,7 +158,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public onDefinitionChange(model: ReportDefinition, prop?: string) {
 
     if (!this.showDefinitionIdSelector(model)) {
-      model.DefinitionId = null;
+      delete model.DefinitionId;
     }
 
     if (!!prop) {
@@ -204,6 +204,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
       // The mapping is trivial since the two data structures are identical
       this.modelForClient = { ...model } as ReportDefinitionForClient;
+
+      if (this.previewDrilldown && this._isEdit) {
+        this.modelForClient.Type = 'Details';
+      }
     }
 
     return this.modelForClient;
@@ -214,6 +218,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     if (this._isEdit !== isEdit) {
       this._isEdit = isEdit;
       window.dispatchEvent(new Event('resize')); // So the chart would resize
+
+      this.previewDrilldown = false;
     }
 
     return true;
@@ -239,7 +245,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showDefinitionIdSelector(model: ReportDefinition): boolean {
-    return !!model && !!model.Collection && !!metadata[model.Collection](this.workspace, this.translate, null).definitionIds;
+    return !!model && !!model.Collection && !!metadata[model.Collection] &&
+      !!metadata[model.Collection](this.workspace, this.translate, null).definitionIds;
   }
 
   public allDefinitionIds(model: ReportDefinition): SelectorChoice[] {
@@ -324,7 +331,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
         Localize: true,
         AutoExpandLevel: 1000,
         ShowAsTree: true,
-        ShowEmptyMembers: false,
         Attributes: [],
       };
       destination.splice(destinationIndex, 0, dimension);
@@ -470,7 +476,12 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       return [];
     }
 
-    const entityDesc = metadata[collection](this.workspace, this.translate, definitionId);
+    const metadataFn = metadata[collection];
+    if (!metadataFn) {
+      return [];
+    }
+
+    const entityDesc = metadataFn(this.workspace, this.translate, definitionId);
     const level = !!parent ? parent.level + 1 : 0;
     const parentPath = !!parent ? `${parent.path}.` : '';
     return Object.keys(entityDesc.properties).map(prop => ({
@@ -810,11 +821,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return QueryexUtil.canShowAsTree(desc, this.workspace, this.translate);
   }
 
-  public showShowEmptyMembers(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
-    const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
-    return QueryexUtil.canShowEmptyMembers(desc);
-  }
-
   public validateDimension(dimension: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): void {
     if (!dimension) {
       return;
@@ -873,34 +879,43 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       } catch (e) {
         addDisplayExpressionError(e.message);
       }
+    }
 
-      //////////////// Attributes' Expression Validation
-      if (this.showDimensionAttributes(dimension, model)) {
-        for (const attribute of dimension.Attributes) {
+    //////////////// Attributes' Expression Validation
+    if (this.showDimensionAttributes(dimension, model)) {
+      for (const attribute of dimension.Attributes) {
 
-          function addAttributeExpressionError(err: string) {
-            attribute.serverErrors.Expression = attribute.serverErrors.Expression || [];
-            attribute.serverErrors.Expression.push(err);
-          }
-
-          try {
-            // Prepare the expression
-            const exp = Queryex.parseSingle(attribute.Expression);
-            if (!!exp) {
-              const aggregations = exp.aggregations();
-              const parameters = exp.parameters();
-              if (aggregations.length > 0) {
-                addAttributeExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
-              } else if (parameters.length > 0) {
-                addAttributeExpressionError(`Expression cannot contain parameters like '${parameters[0]}'.`);
-              }
-            } else {
-              addAttributeExpressionError(`Expression cannot be empty.`);
-            }
-          } catch (e) {
-            addAttributeExpressionError(e.message);
-          }
+        function addAttributeExpressionError(err: string) {
+          attribute.serverErrors.Expression = attribute.serverErrors.Expression || [];
+          attribute.serverErrors.Expression.push(err);
         }
+
+        try {
+          // Prepare the expression
+          const exp = Queryex.parseSingle(attribute.Expression);
+          if (!!exp) {
+            const aggregations = exp.aggregations();
+            const parameters = exp.parameters();
+            if (aggregations.length > 0) {
+              addAttributeExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
+            } else if (parameters.length > 0) {
+              addAttributeExpressionError(`Expression cannot contain parameters like '${parameters[0]}'.`);
+            }
+          } else {
+            addAttributeExpressionError(`Expression cannot be empty.`);
+          }
+        } catch (e) {
+          addAttributeExpressionError(e.message);
+        }
+      }
+    }
+
+    if (Object.keys(dimension.serverErrors).length === 0) {
+      delete dimension.serverErrors;
+    }
+    for (const attribute of dimension.Attributes) {
+      if (Object.keys(attribute.serverErrors).length === 0) {
+        delete attribute.serverErrors;
       }
     }
   }
@@ -1112,6 +1127,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       validateHighlightExpression(measure.WarningWhen, 'WarningWhen');
       validateHighlightExpression(measure.DangerWhen, 'DangerWhen');
     }
+
+    if (Object.keys(measure.serverErrors).length === 0) {
+      delete measure.serverErrors;
+    }
   }
 
   public onDeleteMeasure(index: number, model: ReportDefinition) {
@@ -1196,6 +1215,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     // TODO Control Validation
+
+    if (Object.keys(select.serverErrors).length === 0) {
+      delete select.serverErrors;
+    }
   }
 
   public canApplySelect(select: ReportDefinitionSelect): boolean {
@@ -1264,6 +1287,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     } catch (e) {
       addDefaultExpressionError(e.message);
     }
+
+    if (Object.keys(param.serverErrors).length === 0) {
+      delete param.serverErrors;
+    }
   }
 
   public showParamDefaultExpression(param: ReportDefinitionParameter): boolean {
@@ -1326,6 +1353,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   ///////////////////// Having v.20
+
+  public showHaving(model: ReportDefinition) {
+    return model.Type === 'Summary';
+  }
 
   public onHavingChanged(model: ReportDefinition) {
     this.validateModel(model);
@@ -1447,6 +1478,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     for (const param of model.Parameters) {
       this.validateParam(param, model);
     }
+
+    if (Object.keys(model.serverErrors).length === 0) {
+      delete model.serverErrors;
+    }
   }
 
   public synchronizeParameters(model: ReportDefinition) {
@@ -1536,5 +1571,13 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public get isMultilingual(): boolean {
     return !!this.ws.settings.SecondaryLanguageId || !!this.ws.settings.TernaryLanguageId;
+  }
+
+  public previewDrilldown = false;
+
+  public togglePreviewDrilldown(model: ReportDefinition) {
+    this.previewDrilldown = !this.previewDrilldown;
+    this._currentModelModified = true;
+    this.onDefinitionChange(model);
   }
 }
