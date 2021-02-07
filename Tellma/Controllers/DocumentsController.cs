@@ -17,6 +17,7 @@ using Tellma.Controllers.Utiltites;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Entities.Descriptors;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.Email;

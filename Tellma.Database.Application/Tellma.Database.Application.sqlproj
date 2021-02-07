@@ -739,6 +739,11 @@
     <None Include="Provisioning\299\299_22Centers.sql" />
     <None Include="Provisioning\299\299_24Resources.sql" />
     <None Include="Provisioning\299\21_Units.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
+    <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
+    <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
     <Build Include="wiz\Functions\wiz.fn_Ethiopian_DatePart.sql" />
     <Build Include="wiz\Functions\wiz.fn_UmmAlQura_DatePart.sql" />
     <Build Include="wiz\Functions\wiz.fn_JulianDayNumber.sql" />
