@@ -41,20 +41,21 @@
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[IsSystem]					BIT					NOT NULL DEFAULT 0,
 	--
-	[IsBusinessUnit] AS CAST(
-		IIF (
-			[CenterType] IN (
-				N'ConstructionInProgressExpendituresControl',
-				N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
-				N'WorkInProgressExpendituresControl',
-				N'CurrentInventoriesInTransitExpendituresControl',
-				N'CostOfSales',
-				N'Expenditure',
-				N'OtherPL'
-			)
-			, 0, 1
-		) AS BIT
-	) PERSISTED,
+	--[IsBusinessUnit] AS CAST(
+	--	IIF (
+	--		[CenterType] IN (
+	--			N'ConstructionInProgressExpendituresControl',
+	--			N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
+	--			N'WorkInProgressExpendituresControl',
+	--			N'CurrentInventoriesInTransitExpendituresControl',
+	--			N'CostOfSales',
+	--			N'Expenditure',
+	--			N'OtherPL'
+	--		)
+	--		, 0, 1
+	--	) AS BIT
+	--) PERSISTED,
+	[IsBusinessUnit] BIT,
 	-- Computed property by Insert Trigger
 	[CenterType]				NVARCHAR (255) CONSTRAINT [CK_AccountTypes__CenterType] CHECK ([CenterType] IN (
 		N'ConstructionInProgressExpendituresControl',
