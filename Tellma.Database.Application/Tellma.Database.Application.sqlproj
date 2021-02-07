@@ -752,6 +752,11 @@
     <Build Include="dbo\Tables\dbo.ReportDefinitionDimensionAttribute.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReportDefinitionDimensionAttributeList.sql" />
     <Build Include="map\map.ReportDefinitionDimensionAttributes.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
+    <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
+    <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

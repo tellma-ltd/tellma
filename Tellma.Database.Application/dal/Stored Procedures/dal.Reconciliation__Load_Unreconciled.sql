@@ -20,17 +20,7 @@ AS
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate;
 
-	With SpecialEntries AS (
-		SELECT DISTINCT RE.[EntryId]
-		FROM dbo.ReconciliationEntries RE
-		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
-		JOIN dbo.ReconciliationExternalEntries REE ON REE.ReconciliationId = R.Id
-		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
-		WHERE EE.PostingDate <=  @AsOfDate	
-		AND EE.[AccountId] = @AccountId
-		AND EE.[CustodyId] = @CustodyId
-	)
-	SELECT
+	SELECT 
 		@UnreconciledEntriesCount = COUNT(*),
 		@UnreconciledEntriesBalance = SUM(
 			IIF (L.[PostingDate] <= @AsOfDate , E.[Direction] * E.[MonetaryValue], -E.[Direction] * E.[MonetaryValue])
@@ -40,13 +30,17 @@ AS
 	WHERE E.[CustodyId] = @CustodyId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
-	AND (
-		L.[PostingDate] > @AsOfDate 
-		AND E.[Id] IN (SELECT EntryId FROM SpecialEntries)
-		OR
-		L.[PostingDate] <= @AsOfDate  
-		AND E.[Id] NOT IN (SELECT EntryId FROM SpecialEntries)
-	);
+	AND E.[Id] NOT IN (
+		SELECT DISTINCT RE.[EntryId]
+		FROM dbo.ReconciliationEntries RE
+		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
+		JOIN dbo.ReconciliationExternalEntries REE ON REE.ReconciliationId = R.Id
+		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
+		WHERE EE.PostingDate <=  @AsOfDate	
+		AND EE.[AccountId] = @AccountId
+		AND EE.[CustodyId] = @CustodyId
+	)
+	AND L.[PostingDate] <= @AsOfDate
 
 	SELECT @UnreconciledExternalEntriesCount = COUNT(*), @UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.ExternalEntries E
@@ -64,7 +58,6 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND E.[Id] NOT IN (
-		-- SELECT [EntryId] FROM dbo.ReconciliationEntries
 		SELECT DISTINCT RE.[EntryId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
