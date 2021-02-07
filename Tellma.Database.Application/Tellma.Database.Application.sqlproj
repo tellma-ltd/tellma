@@ -752,6 +752,8 @@
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
     <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
+    <Build Include="bll\Functions\bll.fi_CenterMovements.sql" />
+    <Build Include="bll\Functions\bll.fi_SalaryAgreements__Basic.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
