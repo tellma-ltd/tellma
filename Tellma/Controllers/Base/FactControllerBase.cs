@@ -125,6 +125,12 @@ namespace Tellma.Controllers
                 // Calculate server time at the very beginning for consistency
                 var serverTime = DateTimeOffset.UtcNow;
 
+                // Sometimes select is so huge that it is passed as a header instead
+                if (string.IsNullOrWhiteSpace(args.Select))
+                {
+                    args.Select = Request.Headers["X-Select"].FirstOrDefault();
+                }
+
                 // Load the data
                 var (data, ancestors, isPartial) = await GetFactService().GetAggregate(args, cancellation);
 
