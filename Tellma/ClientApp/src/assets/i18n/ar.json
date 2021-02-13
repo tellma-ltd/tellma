@@ -165,7 +165,7 @@
   "DateTime": "تاريخ",
   "Deactivate": "إيقاف النشاط",
   "Debit": "مدين",
-  "DefaultAggregationMeasure": "{{aggregation}} {{measure}}",
+  "DefaultAggregationMeasure": "{{0}} {{1}}",
   "Definition": "التعريف",
   "Definition_Archive": "أرشفة",
   "Definition_Control": "نوع الحقل",

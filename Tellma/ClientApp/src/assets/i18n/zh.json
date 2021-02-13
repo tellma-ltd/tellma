@@ -161,7 +161,7 @@
   "DateTime": "日期",
   "Deactivate": "停用",
   "Debit": "博士",
-  "DefaultAggregationMeasure": "{{aggregation}} {{measure}}",
+  "DefaultAggregationMeasure": "{{0}} {{1}}",
   "Definition": "定义",
   "Definition_Archive": "档案",
   "Definition_Control": "控制",

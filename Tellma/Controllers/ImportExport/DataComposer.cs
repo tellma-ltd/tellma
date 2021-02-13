@@ -18,8 +18,6 @@ namespace Tellma.Controllers.ImportExport
         public IEnumerable<string[]> Compose<TEntityForSave>(List<TEntityForSave> entities, MappingInfo mapping)
             where TEntityForSave : EntityWithKey
         {
-            mapping.ColumnCount();
-
             var result = new List<string[]>(entities.Count); // it will be at least that long, so might as well
             int columnCount = mapping.ColumnCount();
 
@@ -44,7 +42,7 @@ namespace Tellma.Controllers.ImportExport
         /// <param name="rowIndex">The row index at which to start adding the raw data</param>
         /// <param name="columnCount">The total number of columns in the result, calculated once and passed to the recursive function for efficiency</param>
         /// <returns>The number of rows occupied in the result</returns>
-        private int ComposeDataRowsFromEntity(EntityWithKey entity, MappingInfo mapping, List<string[]> result, int rowIndex, int columnCount)
+        private int ComposeDataRowsFromEntity(EntityWithKey baseEntity, MappingInfo mapping, List<string[]> result, int rowIndex, int columnCount)
         {
             // Get the row, or create it if missing
             string[] dataRow = null;
@@ -58,9 +56,10 @@ namespace Tellma.Controllers.ImportExport
             // Hydrate the simple props
             foreach (var simpleProp in mapping.SimpleProperties)
             {
+                var entity = simpleProp.GetEntityForRead(baseEntity);
                 if (!entity.EntityMetadata.IsLoaded(simpleProp.Metadata.Descriptor.Name))
                 {
-                    throw new InvalidOperationException($"Bug: Attempt to export unloaded property {simpleProp.Metadata.Descriptor.Name} from type {mapping.Metadata.Descriptor.Name}");
+                    throw new InvalidOperationException($"Bug: Attempt to export unloaded property {simpleProp.Metadata.Descriptor.Name} from type {entity.GetType().Name}");
                 }
 
                 if (simpleProp is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
@@ -68,7 +67,7 @@ namespace Tellma.Controllers.ImportExport
                     var navPropertyDesc = fkProp.NavPropertyMetadata.Descriptor;
                     if (!entity.EntityMetadata.IsLoaded(navPropertyDesc.Name))
                     {
-                        throw new InvalidOperationException($"Bug: Attempt to export unloaded property {navPropertyDesc.Name} from type {mapping.Metadata.Descriptor.Name}");
+                        throw new InvalidOperationException($"Bug: Attempt to export unloaded property {navPropertyDesc.Name} from type {entity.GetType().Name}");
                     }
 
                     object navObj = navPropertyDesc.GetValue(entity);
@@ -76,13 +75,13 @@ namespace Tellma.Controllers.ImportExport
                     {
                         if (navObj is EntityWithKey navEntity)
                         {
-                            var fkPropertyDesc = fkProp.KeyPropertyMetadata.Descriptor;
-                            if (!navEntity.EntityMetadata.IsLoaded(fkPropertyDesc.Name))
+                            var keyPropertyDesc = fkProp.KeyPropertyMetadata.Descriptor;
+                            if (!navEntity.EntityMetadata.IsLoaded(keyPropertyDesc.Name))
                             {
-                                throw new InvalidOperationException($"Bug: Attempt to export unloaded property {fkPropertyDesc.Name} from type {navEntity.GetType().Name}");
+                                throw new InvalidOperationException($"Bug: Attempt to export unloaded property {keyPropertyDesc.Name} from type {navEntity.GetType().Name}");
                             }
 
-                            var keyValue = fkPropertyDesc.GetValue(navEntity);
+                            var keyValue = keyPropertyDesc.GetValue(navEntity);
                             var keyStringValue = fkProp.KeyPropertyMetadata.Format(keyValue);
                             if (string.IsNullOrWhiteSpace(keyStringValue))
                             {
@@ -93,7 +92,7 @@ namespace Tellma.Controllers.ImportExport
                         }
                         else
                         {
-                            throw new InvalidOperationException($"Bug: Navigation Property {navPropertyDesc.Name} from type {mapping.Metadata.Descriptor.Name} returned a non-EntityWithKey");
+                            throw new InvalidOperationException($"Bug: Navigation Property {navPropertyDesc.Name} from type {entity.GetType().Name} returned a non-EntityWithKey");
                         }
                     }
                 }
@@ -102,8 +101,6 @@ namespace Tellma.Controllers.ImportExport
                     var value = simpleProp.Metadata.Descriptor.GetValue(entity);
                     var stringValue = simpleProp.Metadata.Format(value);
 
-                    // Possible improvement; set entity key to '_____<id>' if it's empty
-
                     dataRow[simpleProp.Index] = stringValue;
                 }
             }
@@ -111,11 +108,11 @@ namespace Tellma.Controllers.ImportExport
             int numberOfRows = 1; // Number of rows occupied by 
             foreach (var nextMapping in mapping.CollectionProperties)
             {
-                IList list = nextMapping.GetOrCreateList(entity);
+                IEnumerable nextEntities = nextMapping.GetEntitiesForRead(baseEntity);
 
                 // Number of rows occupied by the list (may be larger than the list if the list entities contain collection properties of their own
                 int listNumberOfRows = 0;
-                foreach (var nextEntity in list)
+                foreach (var nextEntity in nextEntities)
                 {
                     // recursive call
                     listNumberOfRows += ComposeDataRowsFromEntity(nextEntity as EntityWithKey, nextMapping, result, rowIndex + listNumberOfRows, columnCount);

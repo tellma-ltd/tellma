@@ -55,7 +55,7 @@ namespace Tellma.Controllers
                     if (!ModelState.IsValid)
                     {
                         return BadRequest("Body was empty");
-                    } 
+                    }
                     else
                     {
                         return UnprocessableEntity(ModelState);
@@ -403,7 +403,7 @@ namespace Tellma.Controllers
             if (entities == null || !entities.Any())
             {
                 // No point verifying anything
-                return null; 
+                return null;
             }
 
             var updateFilter = await UserPermissionsFilter(Constants.Update, cancellation: default);
@@ -411,9 +411,9 @@ namespace Tellma.Controllers
             {
                 // User has unfiltered update permission on the table => Cleared to proceed, no post check required
                 return null;
-            } 
+            }
             else
-            {                
+            {
                 // First determine the entities that are being UPDATED
                 IEnumerable<object> updatedIds;
                 if (typeof(TKey) == typeof(int))
@@ -758,7 +758,7 @@ namespace Tellma.Controllers
             var (entities, _) = await GetByIds(args.I, new SelectExpandArguments
             {
                 Select = select
-            }, 
+            },
             Constants.Read,
             cancellation);
 
@@ -771,61 +771,6 @@ namespace Tellma.Controllers
             var csvHandler = new CsvPackager();
             return csvHandler.Package(data);
         }
-
-        //private (string[] headers, Func<TEntity, string>[] dataGetters) SoftMappingFromSelect(string select)
-        //{
-        //    var selectExp = SelectExpression.Parse(select);
-        //    var dataGetters = new Func<TEntity, string>[selectExp.Count];
-        //    var headers = new string[selectExp.Count];
-
-        //    var meta = GetMetadata();
-
-        //    foreach (var (atom, index) in selectExp.Select((a, i) => (a, i)))
-        //    {
-        //        List<Func<Entity, object>> entityGetters = new List<Func<Entity, object>>(atom.Path.Length);
-        //        List<string> headersTrail = new List<string>(atom.Path.Length + 1);
-
-        //        // Do the path
-        //        var currentMeta = meta;
-        //        foreach (var step in atom.Path)
-        //        {
-        //            var navPropMeta = currentMeta.NavigationProperty(step) ?? throw new BadRequestException($"Navigation property {step} does not exist on type {currentMeta.Descriptor.Name}");
-        //            entityGetters.Add(navPropMeta.Descriptor.GetValue);
-        //            headersTrail.Add(navPropMeta.Display());
-
-        //            currentMeta = navPropMeta.EntityMetadata;
-        //        }
-
-        //        // Do the property
-        //        var propMeta = currentMeta.Property(atom.Property) ?? throw new BadRequestException($"Property {atom.Property} does not exist on type {currentMeta.Descriptor.Name}");
-        //        Func<Entity, object> getPropertyValue = propMeta.Descriptor.GetValue;
-        //        Func<object, string> formatValue = propMeta.Format;
-
-        //        headersTrail.Add(propMeta.Display());
-
-        //        // Get the header
-        //        headers[index] = string.Join(" / ", headersTrail);
-
-        //        // Build the data getter
-        //        dataGetters[index] = (entity) =>
-        //        {
-        //            Entity current = entity;
-        //            foreach (var getEntity in entityGetters)
-        //            {
-        //                current = getEntity(current) as Entity;
-        //                if (current == null)
-        //                {
-        //                    return null;
-        //                }
-        //            }
-
-        //            object value = getPropertyValue(current);
-        //            return formatValue(value);
-        //        };
-        //    }
-
-        //    return (headers, dataGetters);
-        //}
 
         public async Task<Stream> Export(ExportArguments args, CancellationToken cancellation)
         {
@@ -1061,7 +1006,7 @@ namespace Tellma.Controllers
                         {
                             if (matches.Skip(1).Any())
                             {
-                                var typeDisplay = mapping.Metadata.SingularDisplay();
+                                var typeDisplay = mapping.MetadataForSave.SingularDisplay();
                                 var keyPropDisplay = propMeta.Display();
                                 var stringField = key.ToString();
                                 if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
@@ -1078,7 +1023,7 @@ namespace Tellma.Controllers
                         }
                         else if (args.Mode == ImportModes.Update)
                         {
-                            var typeDisplay = mapping.Metadata.SingularDisplay();
+                            var typeDisplay = mapping.MetadataForSave.SingularDisplay();
                             var keyPropDisplay = propMeta.Display();
                             var stringField = key.ToString();
                             if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
@@ -1092,54 +1037,59 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
+        /// Gets the default <see cref="PropertyMappingInfo"/> of an entity type, without the weak collections
+        /// </summary>
+        protected static List<PropertyMappingInfo> GetDefaultSimplePropertyMappings(TypeMetadata metaForSave, TypeMetadata meta, int nextAvailableIndex)
+        {
+            var fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+
+            // Prepare simple props
+            var simpleProps = new List<PropertyMappingInfo>();
+            foreach (var propMetaForSave in metaForSave.SimpleProperties)
+            {
+                string propName = propMetaForSave.Descriptor.Name;
+                var propMeta = meta.Property(propName) ??
+                    throw new InvalidOperationException($"Bug: Property '{propName}' exists on type for save {metaForSave.Descriptor.Name} but not on {meta.Descriptor.Name}");
+
+                if (propMeta.Descriptor.Name == "Id" && propMeta.Descriptor.Type != typeof(string))
+                {
+                    continue; // INT properties are autogenerated
+                }
+
+                if (fkNames.TryGetValue(propMeta.Descriptor.Name, out NavigationPropertyMetadata navPropMetadata))
+                {
+                    // Foreign Key
+                    simpleProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty)
+                    {
+                        Index = nextAvailableIndex++,
+                    });
+                }
+                else
+                {
+                    // Simple property
+                    simpleProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+                    {
+                        Index = nextAvailableIndex++,
+                    });
+                }
+            }
+
+            return simpleProps;
+        }
+
+        /// <summary>
         /// Returns the default mapping based on the properties in meta (not meta for save)
         /// </summary>
         protected virtual MappingInfo GetDefaultMapping(TypeMetadata metaForSave, TypeMetadata meta)
         {
             // Inner recursive function, returns the mapping and the next available column index
-            static (MappingInfo mapping, int nextAvailableIndex) GetDefaultMappingInner(TypeMetadata metaForSave, TypeMetadata meta, int nextAvailableIndex, CollectionPropertyMetadata collPropMeta = null)
+            static (MappingInfo mapping, int nextAvailableIndex) GetDefaultMappingInner(TypeMetadata metaForSave, TypeMetadata meta, int nextAvailableIndex, CollectionPropertyMetadata collPropMetaForSave = null, CollectionPropertyMetadata collPropMeta = null)
             {
-                Dictionary<string, NavigationPropertyMetadata> fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
-
-                // Prepare simple props
-                List<PropertyMappingInfo> simpleProps = new List<PropertyMappingInfo>();
-                foreach (var propMetaForSave in metaForSave.SimpleProperties)
-                {
-                    string propName = propMetaForSave.Descriptor.Name;
-                    var propMeta = meta.Property(propName) ??
-                        throw new InvalidOperationException($"Bug: Property '{propName}' exists on type for save {metaForSave.Descriptor.Name} but not on {meta.Descriptor.Name}");
-
-                    if (propMeta.Descriptor.Name == "Id" && propMeta.Descriptor.Type != typeof(string))
-                    {
-                        continue; // INT properties are autogenerated
-                    }
-
-                    if (fkNames.TryGetValue(propMeta.Descriptor.Name, out NavigationPropertyMetadata navPropMetadata))
-                    {
-                        // Foreign Key
-                        simpleProps.Add(new ForeignKeyMappingInfo
-                        {
-                            Index = nextAvailableIndex++,
-                            Metadata = propMeta,
-
-                            // FK stuff
-                            NavPropertyMetadata = navPropMetadata,
-                            KeyPropertyMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty
-                        });
-                    }
-                    else
-                    {
-                        // Simple property
-                        simpleProps.Add(new PropertyMappingInfo
-                        {
-                            Index = nextAvailableIndex++,
-                            Metadata = propMeta
-                        });
-                    }
-                }
+                var simpleProps = GetDefaultSimplePropertyMappings(metaForSave, meta, nextAvailableIndex);
+                nextAvailableIndex += simpleProps.Count;
 
                 // Prepare collection props
-                List<MappingInfo> collectionProps = new List<MappingInfo>();
+                var collectionProps = new List<MappingInfo>();
                 foreach (var nextCollPropMetaForSave in metaForSave.CollectionProperties)
                 {
                     string propName = nextCollPropMetaForSave.Descriptor.Name;
@@ -1150,13 +1100,13 @@ namespace Tellma.Controllers
                     TypeMetadata nextMeta = nextCollPropMeta.CollectionTargetTypeMetadata;
 
                     // Recursive call
-                    var (nextMapping, nextIndex) = GetDefaultMappingInner(nextMetaForSave, nextMeta, nextAvailableIndex, nextCollPropMeta);
+                    var (nextMapping, nextIndex) = GetDefaultMappingInner(nextMetaForSave, nextMeta, nextAvailableIndex, nextCollPropMetaForSave, nextCollPropMeta);
                     collectionProps.Add(nextMapping);
                     nextAvailableIndex = nextIndex;
                 }
 
                 // Return the mapping and the next available index
-                var mapping = new MappingInfo(meta, simpleProps, collectionProps, collPropMeta);
+                var mapping = new MappingInfo(metaForSave, meta, simpleProps, collectionProps, collPropMetaForSave, collPropMeta);
                 return (mapping, nextAvailableIndex);
             }
 
@@ -1174,61 +1124,54 @@ namespace Tellma.Controllers
             return mapping;
         }
 
+        protected virtual IEnumerable<string> AdditionalSelectForExport()
+        {
+            yield break;
+        }
+
         private string SelectFromMapping(MappingInfo mapping)
         {
-            static void SelectFromMappingInner(MappingInfo mapping, StringBuilder bldr, string prefix, bool notFirstAtom)
+            static void SelectFromMappingInner(MappingInfo mapping, HashSet<string> selectHash, string prefix)
             {
+                string prefixDot = prefix == null ? "" : $"{prefix}.";
                 foreach (var simpleProp in mapping.SimpleProperties)
                 {
-                    // Append a comma if this is the second atom onward
-                    if (notFirstAtom)
+                    string select = prefixDot;
+                    if (simpleProp.SelectPrefix != null)
                     {
-                        bldr.Append(",");
-                    }
-
-                    notFirstAtom = true;
-
-                    // Append the prefix if any
-                    if (prefix != null)
-                    {
-                        bldr.Append(prefix);
-                        bldr.Append(".");
+                        select += $"{simpleProp.SelectPrefix}.";
                     }
 
                     // Append the property name
                     if (simpleProp is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
                     {
                         // Append navigation property name followed by key. E.g. Resource.Code
-                        bldr.Append(fkProp.NavPropertyMetadata.Descriptor.Name);
-                        bldr.Append(".");
-                        bldr.Append(fkProp.KeyPropertyMetadata.Descriptor.Name);
+                        select += $"{fkProp.NavPropertyMetadata.Descriptor.Name}.{fkProp.KeyPropertyMetadata.Descriptor.Name}";
                     }
                     else
                     {
-                        // Append simple property name. E.g. DateOfBirth
-                        bldr.Append(simpleProp.Metadata.Descriptor.Name);
+                        // Append simple property name. E.g. PostingDate
+                        select += simpleProp.Metadata.Descriptor.Name;
                     }
+
+                    selectHash.Add(select);
                 }
 
                 foreach (var collProp in mapping.CollectionProperties)
                 {
-                    string nextPrefix;
-                    if (prefix == null)
-                    {
-                        nextPrefix = collProp.ParentCollectionPropertyMetadata.Descriptor.Name;
-                    }
-                    else
-                    {
-                        nextPrefix = $"{prefix}.{collProp.ParentCollectionPropertyMetadata.Descriptor.Name}";
-                    }
-
-                    SelectFromMappingInner(collProp, bldr, nextPrefix, notFirstAtom);
+                    string nextPrefix = $"{prefixDot}{collProp.Select}";
+                    SelectFromMappingInner(collProp, selectHash, nextPrefix);
                 }
             }
 
-            StringBuilder bldr = new StringBuilder();
-            SelectFromMappingInner(mapping, bldr, prefix: null, notFirstAtom: false);
-            return bldr.ToString();
+            HashSet<string> selectHash = new HashSet<string>();
+            SelectFromMappingInner(mapping, selectHash, prefix: null);
+            foreach (var s in AdditionalSelectForExport())
+            {
+                selectHash.Add(s);
+            }
+
+            return string.Join(',', selectHash);
         }
 
         private string[] HeadersFromMapping(MappingInfo mapping)
@@ -1240,7 +1183,7 @@ namespace Tellma.Controllers
 
             static void PopulateHeadersArray(string[] headers, MappingInfo mapping, string path = null)
             {
-                foreach (var g in mapping.SimpleProperties.GroupBy(e => e.Metadata.Display()))
+                foreach (var g in mapping.SimpleProperties.GroupBy(e => e.Display()))
                 {
                     string escapedDisplay = Escape(g.Key);
                     int counter = 1;
@@ -1275,7 +1218,7 @@ namespace Tellma.Controllers
                     }
                 }
 
-                foreach (var g in mapping.CollectionProperties.GroupBy(e => e.ParentCollectionPropertyMetadata.Display()))
+                foreach (var g in mapping.CollectionProperties.GroupBy(e => e.Display()))
                 {
                     string escapedDisplay = Escape(g.Key);
                     int counter = 1;
@@ -1315,9 +1258,9 @@ namespace Tellma.Controllers
             return headers;
         }
 
-        protected virtual MappingInfo MappingFromHeaders(string[] headers, ImportErrors errors)
+        private MappingInfo MappingFromHeaders(string[] headers, ImportErrors errors)
         {
-            // Create the trie of 
+            // Create the trie of labels
             var trie = new LabelPathTrie();
             for (int i = 0; i < headers.Length; i++)
             {
@@ -1339,7 +1282,8 @@ namespace Tellma.Controllers
             var rootMetadataForSave = GetMetadataForSave();
 
             // Create the mapping recurisvely using the trie
-            var result = trie.CreateMapping(rootMetadata, rootMetadataForSave, errors, _localizer);
+            var defaultMapping = GetDefaultMapping(rootMetadataForSave, rootMetadata);
+            var result = trie.CreateMapping(defaultMapping, errors, _localizer);
             return result;
         }
 
@@ -1384,14 +1328,11 @@ namespace Tellma.Controllers
                 });
             }
 
-            public MappingInfo CreateMapping(TypeMetadata meta, TypeMetadata metaForSave, ImportErrors errors, IStringLocalizer localizer, CollectionPropertyMetadata collPropMeta = null)
+            public MappingInfo CreateMapping(MappingInfo defaultMapping, ImportErrors errors, IStringLocalizer localizer)
             {
-                // Collect the names of all foreign keys in a dictionary
-                var fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
-
-                // Collect the display names of all the simple properties in a dictionary
-                Dictionary<string, PropertyMetadata> simpleProps = new Dictionary<string, PropertyMetadata>();
-                foreach (var g in metaForSave.SimpleProperties.GroupBy(p => p.Display()))
+                ///////// (1) Simple Properties
+                var simpleProps = new Dictionary<string, PropertyMappingInfo>();
+                foreach (var g in defaultMapping.SimpleProperties.GroupBy(p => p.Display()))
                 {
                     string display = g.Key;
                     if (g.Count() > 1)
@@ -1409,59 +1350,47 @@ namespace Tellma.Controllers
                     }
                 }
 
-                // Collect the mappings of this level in a list
-                List<PropertyMappingInfo> simplePropMappings = new List<PropertyMappingInfo>();
-
+                var simplePropMappings = new List<PropertyMappingInfo>();
                 HashSet<string> simplePropsLabels = null;
                 HashSet<string> simplePropsLabelsIgnoreCase = null;
                 foreach (var prop in _props)
                 {
-
-                    // Try to match the property, if no match is found add a suitable error
-                    if (prop.PropLabel == "###" && false) // Maybe this isn't needed
+                    if (!simpleProps.TryGetValue(prop.PropLabel, out PropertyMappingInfo propMapping))
                     {
-                        // This here is a simple placeholder to trigger creation of entity but not set any property on it
-                        simplePropMappings.Add(new PropertyMappingInfo
-                        {
-                            Ignore = true,
-                            Index = prop.Index
-                        });
-                    }
-                    else if (!simpleProps.TryGetValue(prop.PropLabel, out PropertyMetadata propMetadata))
-                    {
-                        simplePropsLabels ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet();
-                        simplePropsLabelsIgnoreCase ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                        simplePropsLabels ??= defaultMapping.SimpleProperties.Select(e => e.Display()).ToHashSet();
+                        simplePropsLabelsIgnoreCase ??= defaultMapping.SimpleProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                         if (simplePropsLabels.Contains(prop.PropLabel))
                         {
                             // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
-                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0MatchesMultipleFieldsOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0MatchesMultipleFieldsOnType1", prop.PropLabel, defaultMapping.MetadataForSave.SingularDisplay()]);
                         }
                         else if (simplePropsLabelsIgnoreCase.TryGetValue(prop.PropLabel, out string actualLabel))
                         {
                             // Common mistake: using the wrong case
-                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", prop.PropLabel, metaForSave.SingularDisplay(), actualLabel]);
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", prop.PropLabel, defaultMapping.MetadataForSave.SingularDisplay(), actualLabel]);
                         }
                         else
                         {
-                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", prop.PropLabel, defaultMapping.MetadataForSave.SingularDisplay()]);
                         }
 
                         continue;
                     }
-                    else if (fkNames.TryGetValue(propMetadata.Descriptor.Name, out NavigationPropertyMetadata navPropMeta))
+                    else if (propMapping is ForeignKeyMappingInfo fkPropMapping)
                     {
-                        // This is a foreign key
+                        // Foreign Key
                         string keyLabel = prop.KeyLabel;
                         if (string.IsNullOrWhiteSpace(keyLabel))
                         {
                             // FK without a key property
-                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_KeyPropertyIsRequiredToSet0Field", propMetadata.Display()]);
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_KeyPropertyIsRequiredToSet0Field", propMapping.Display()]);
                             continue;
                         }
 
+                        var navPropMeta = fkPropMapping.NavPropertyMetadata;
                         TypeMetadata targetTypeMeta = navPropMeta.TargetTypeMetadata;
-                        PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel);
+                        PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel); 
                         if (keyPropMetadata == null)
                         {
                             // FK with a key property that doesn't exist
@@ -1480,30 +1409,24 @@ namespace Tellma.Controllers
                             continue;
                         }
 
-                        simplePropMappings.Add(new ForeignKeyMappingInfo
+                        simplePropMappings.Add(new ForeignKeyMappingInfo(fkPropMapping, keyPropMetadata)
                         {
-                            Metadata = propMetadata,
                             Index = prop.Index,
-
-                            // FK stuff
-                            NavPropertyMetadata = navPropMeta,
-                            KeyPropertyMetadata = keyPropMetadata
                         });
                     }
                     else
                     {
-                        // This is a simpe prop
-                        simplePropMappings.Add(new PropertyMappingInfo
+                        // This is a simple prop
+                        simplePropMappings.Add(new PropertyMappingInfo(propMapping)
                         {
-                            Metadata = propMetadata,
                             Index = prop.Index,
                         });
                     }
                 }
 
-                // Collect the display names of all the collection properties in a dictionary
-                Dictionary<string, CollectionPropertyMetadata> collectionProps = new Dictionary<string, CollectionPropertyMetadata>();
-                foreach (var g in metaForSave.CollectionProperties.GroupBy(p => p.Display()))
+                ///////// (2) Collection Properties
+                var collectionProps = new Dictionary<string, MappingInfo>();
+                foreach (var g in defaultMapping.CollectionProperties.GroupBy(p => p.Display()))
                 {
                     string display = g.Key;
                     if (g.Count() > 1)
@@ -1521,44 +1444,198 @@ namespace Tellma.Controllers
                     }
                 }
 
-                // Collect the mappings of the next levels in a list
                 List<MappingInfo> collectionPropMappings = new List<MappingInfo>();
                 HashSet<string> collectionPropsLabels = null;
                 HashSet<string> collectionPropsLabelsIgnoreCase = null;
                 foreach (var (collectionPropName, trie) in this)
                 {
-                    if (!collectionProps.TryGetValue(collectionPropName, out CollectionPropertyMetadata propMetadataForSave))
+                    if (!collectionProps.TryGetValue(collectionPropName, out MappingInfo collectionMapping))
                     {
-                        collectionPropsLabels ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet();
-                        collectionPropsLabelsIgnoreCase ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                        collectionPropsLabels ??= defaultMapping.CollectionProperties.Select(e => e.Display()).ToHashSet();
+                        collectionPropsLabelsIgnoreCase ??= defaultMapping.CollectionProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                         if (collectionPropsLabels.Contains(collectionPropName))
                         {
                             // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
-                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0MatchesMultipleCollectionsOnType1", collectionPropName, metaForSave.SingularDisplay()]);
+                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0MatchesMultipleCollectionsOnType1", collectionPropName, defaultMapping.MetadataForSave.SingularDisplay()]);
                         }
                         else if (collectionPropsLabelsIgnoreCase.TryGetValue(collectionPropName, out string actualLabel))
                         {
                             // Common mistake: using the wrong case
-                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2", collectionPropName, metaForSave.SingularDisplay(), actualLabel]);
+                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2", collectionPropName, defaultMapping.MetadataForSave.SingularDisplay(), actualLabel]);
                         }
                         else
                         {
-                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1", collectionPropName, metaForSave.SingularDisplay()]);
+                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1", collectionPropName, defaultMapping.MetadataForSave.SingularDisplay()]);
                         }
 
                         continue;
                     }
 
-                    var propTypeMetadataForSave = propMetadataForSave.CollectionTargetTypeMetadata;
-                    var propTypeMetadata = meta.CollectionProperty(propMetadataForSave.Descriptor.Name)?.CollectionTargetTypeMetadata ??
-                        throw new InvalidOperationException($"Property {propMetadataForSave.Descriptor.Name} is present on {metaForSave.Descriptor.Name} but not {meta.Descriptor.Name}");
-
-                    collectionPropMappings.Add(trie.CreateMapping(propTypeMetadata, propTypeMetadataForSave, errors, localizer, propMetadataForSave));
+                    collectionPropMappings.Add(trie.CreateMapping(collectionMapping, errors, localizer));
                 }
 
-                return new MappingInfo(metaForSave, simplePropMappings, collectionPropMappings, collPropMeta);
+                return new MappingInfo(defaultMapping, simplePropMappings, collectionPropMappings);
             }
+
+            //public MappingInfo CreateMappingOld(TypeMetadata meta, TypeMetadata metaForSave, ImportErrors errors, IStringLocalizer localizer, CollectionPropertyMetadata collPropMeta = null)
+            //{
+            //    // Collect the names of all foreign keys in a dictionary
+            //    var fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+
+            //    // Collect the display names of all the simple properties in a dictionary
+            //    Dictionary<string, PropertyMetadata> simpleProps = new Dictionary<string, PropertyMetadata>();
+            //    foreach (var g in metaForSave.SimpleProperties.GroupBy(p => p.Display()))
+            //    {
+            //        string display = g.Key;
+            //        if (g.Count() > 1)
+            //        {
+            //            // If multiple properties have the same name, disambiguate them with a postfix number
+            //            int counter = 1;
+            //            foreach (var propMetadata in g)
+            //            {
+            //                simpleProps.Add($"{display}.{counter++}", propMetadata);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            simpleProps.Add(display, g.Single());
+            //        }
+            //    }
+
+            //    // Collect the mappings of this level in a list
+            //    List<PropertyMappingInfo> simplePropMappings = new List<PropertyMappingInfo>();
+            //    HashSet<string> simplePropsLabels = null;
+            //    HashSet<string> simplePropsLabelsIgnoreCase = null;
+            //    foreach (var prop in _props)
+            //    {
+            //        // Try to match the property, if no match is found add a suitable error
+            //        if (!simpleProps.TryGetValue(prop.PropLabel, out PropertyMetadata propMetadata))
+            //        {
+            //            simplePropsLabels ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet();
+            //            simplePropsLabelsIgnoreCase ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            //            if (simplePropsLabels.Contains(prop.PropLabel))
+            //            {
+            //                // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
+            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0MatchesMultipleFieldsOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
+            //            }
+            //            else if (simplePropsLabelsIgnoreCase.TryGetValue(prop.PropLabel, out string actualLabel))
+            //            {
+            //                // Common mistake: using the wrong case
+            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", prop.PropLabel, metaForSave.SingularDisplay(), actualLabel]);
+            //            }
+            //            else
+            //            {
+            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
+            //            }
+
+            //            continue;
+            //        }
+            //        else if (fkNames.TryGetValue(propMetadata.Descriptor.Name, out NavigationPropertyMetadata navPropMeta))
+            //        {
+            //            // This is a foreign key
+            //            string keyLabel = prop.KeyLabel;
+            //            if (string.IsNullOrWhiteSpace(keyLabel))
+            //            {
+            //                // FK without a key property
+            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_KeyPropertyIsRequiredToSet0Field", propMetadata.Display()]);
+            //                continue;
+            //            }
+
+            //            TypeMetadata targetTypeMeta = navPropMeta.TargetTypeMetadata;
+            //            PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel);
+            //            if (keyPropMetadata == null)
+            //            {
+            //                // FK with a key property that doesn't exist
+            //                PropertyMetadata caseInsensitiveMatch = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display().ToLower() == keyLabel.ToLower());
+            //                if (caseInsensitiveMatch != null)
+            //                {
+            //                    // There is a case insensitive match: suggest
+            //                    string suggestion = caseInsensitiveMatch.Display();
+            //                    errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", keyLabel, targetTypeMeta.SingularDisplay(), suggestion]);
+            //                }
+            //                else
+            //                {
+            //                    // Error without suggestion
+            //                    errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", keyLabel, targetTypeMeta.SingularDisplay()]);
+            //                }
+            //                continue;
+            //            }
+
+            //            simplePropMappings.Add(new ForeignKeyMappingInfo(propMetadata, navPropMeta, keyPropMetadata)
+            //            {
+            //                Index = prop.Index,
+            //            });
+            //        }
+            //        else
+            //        {
+            //            // This is a simple prop
+            //            simplePropMappings.Add(new PropertyMappingInfo(propMetadata)
+            //            {
+            //                Index = prop.Index,
+            //            });
+            //        }
+            //    }
+
+            //    // Collect the display names of all the collection properties in a dictionary
+            //    Dictionary<string, CollectionPropertyMetadata> collectionProps = new Dictionary<string, CollectionPropertyMetadata>();
+            //    foreach (var g in metaForSave.CollectionProperties.GroupBy(p => p.Display()))
+            //    {
+            //        string display = g.Key;
+            //        if (g.Count() > 1)
+            //        {
+            //            // If multiple properties have the same name, disambiguate them with a postfix number
+            //            int counter = 1;
+            //            foreach (var propMetadata in g)
+            //            {
+            //                collectionProps.Add($"{display}.{counter++}", propMetadata);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            collectionProps.Add(display, g.Single());
+            //        }
+            //    }
+
+            //    // Collect the mappings of the next levels in a list
+            //    List<MappingInfo> collectionPropMappings = new List<MappingInfo>();
+            //    HashSet<string> collectionPropsLabels = null;
+            //    HashSet<string> collectionPropsLabelsIgnoreCase = null;
+            //    foreach (var (collectionPropName, trie) in this)
+            //    {
+            //        if (!collectionProps.TryGetValue(collectionPropName, out CollectionPropertyMetadata propMetadataForSave))
+            //        {
+            //            collectionPropsLabels ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet();
+            //            collectionPropsLabelsIgnoreCase ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            //            if (collectionPropsLabels.Contains(collectionPropName))
+            //            {
+            //                // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
+            //                errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0MatchesMultipleCollectionsOnType1", collectionPropName, metaForSave.SingularDisplay()]);
+            //            }
+            //            else if (collectionPropsLabelsIgnoreCase.TryGetValue(collectionPropName, out string actualLabel))
+            //            {
+            //                // Common mistake: using the wrong case
+            //                errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2", collectionPropName, metaForSave.SingularDisplay(), actualLabel]);
+            //            }
+            //            else
+            //            {
+            //                errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1", collectionPropName, metaForSave.SingularDisplay()]);
+            //            }
+
+            //            continue;
+            //        }
+
+            //        var propTypeMetadataForSave = propMetadataForSave.CollectionTargetTypeMetadata;
+            //        var propTypeMetadata = meta.CollectionProperty(propMetadataForSave.Descriptor.Name)?.CollectionTargetTypeMetadata ??
+            //            throw new InvalidOperationException($"Property {propMetadataForSave.Descriptor.Name} is present on {metaForSave.Descriptor.Name} but not {meta.Descriptor.Name}");
+
+            //        collectionPropMappings.Add(trie.CreateMappingOld(propTypeMetadata, propTypeMetadataForSave, errors, localizer, propMetadataForSave));
+            //    }
+
+            //    return new MappingInfo(metaForSave, simplePropMappings, collectionPropMappings, collPropMeta);
+            //}
 
             private int FirstColumnNumber()
             {
@@ -1582,11 +1659,10 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Splits header label into a collection of steps
+        /// Splits header label into a collection of steps and an optional key.
+        /// Header example: "Step1 / Step2 / Step3 - Key", non structural slashes and minus signs should be escaped by repeating them.
         /// </summary>
-        /// <param name="headerLabel"></param>
-        /// <returns></returns>
-        private (IEnumerable<string>, string) SplitHeader(string headerLabel)
+        protected (List<string> steps, string key) SplitHeader(string headerLabel)
         {
             List<string> result = new List<string>();
             var builder = new StringBuilder();
@@ -1670,13 +1746,13 @@ namespace Tellma.Controllers
                 var steps = key.Split('.').Select(e => e.Trim());
 
                 // Get the root index
-                string firstStep = steps.First().Trim();
+                string firstStep = steps.First();
                 if (!firstStep.StartsWith('[') || !firstStep.EndsWith(']'))
                 {
                     throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets []");
                 }
 
-                var rootIndexString = firstStep.Remove(firstStep.Length - 1)[1..]; // = Substring(1)
+                var rootIndexString = firstStep[1..^1]; // = Substring(1)
                 if (!int.TryParse(rootIndexString, out int rootIndex))
                 {
                     throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer");

@@ -2377,7 +2377,7 @@ export class QueryexUtil {
                     case '+':
                         return operand;
                     case '-':
-                        return -operand;
+                        return operand === null ? null : -operand;
                     case '!':
                     case 'not':
                         return !operand;

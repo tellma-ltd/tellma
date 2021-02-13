@@ -151,6 +151,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   showYAxis = true;
   showXAxisLabel = true;
   showYAxisLabel = true;
+  legend = false;
   colorful = { domain: palette };
   monochromatic = { domain: [palette[monochromeIndex]] };
   heat = { domain: ['#96D5DF', '#052429'] }; // different shades of the same color for heat map

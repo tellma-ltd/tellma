@@ -183,7 +183,7 @@ namespace Tellma.Controllers.ImportExport
                     }
 
                     // The code above might override the definition Id of the service calling it, here we fix that
-                    _sp.FactWithIdServiceByEntityType(navType.Name, mapping.Metadata.DefinitionId);
+                    _sp.FactWithIdServiceByEntityType(navType.Name, mapping.MetadataForSave.DefinitionId);
                 }));
             }
 
@@ -212,18 +212,13 @@ namespace Tellma.Controllers.ImportExport
                 {
                     if (!entityCreated)
                     {
-                        mapping.Entity = mapping.Metadata.Descriptor.Create();
+                        mapping.Entity = mapping.CreateEntity();
                         mapping.Entity.EntityMetadata.RowNumber = rowNumber; // for validation reporting
                         mapping.List.Add(mapping.Entity);
                         entityCreated = true;
                     }
 
-                    // If it's a # placeholder to trigger entity creation => continue
-                    if (prop.Ignore)
-                    {
-                        // This is just a # placeholder to trigger entity creation
-                        continue;
-                    }
+                    var entity = prop.GetOrCreateEntityForSave(mapping.Entity);
 
                     // Hydrate the property
                     if (prop is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
@@ -248,7 +243,7 @@ namespace Tellma.Controllers.ImportExport
                         // other items in the imported sheet in the self referencing FK
                         if (IsSelfReferencing(fkProp, mapping))
                         {
-                            var matchPairsArray = mapping.Entity.EntityMetadata.MatchPairs ??= new (object userKey, IEnumerable<EntityWithKey> matches)[selfRefPropertiesCount];
+                            var matchPairsArray = entity.EntityMetadata.MatchPairs ??= new (object userKey, IEnumerable<EntityWithKey> matches)[selfRefPropertiesCount];
                             matchPairsArray[fkProp.EntityMetadataMatchesIndex] = (userKeyValue, matches);
                             continue;
                         }
@@ -275,15 +270,17 @@ namespace Tellma.Controllers.ImportExport
                         {
                             var single = matches.Single();
                             var id = single.GetId();
-                            prop.Metadata.Descriptor.SetValue(mapping.Entity, id);
+                            // prop.SetValue(mapping.Entity, id);
+                            prop.MetadataForSave.Descriptor.SetValue(entity, id);
                         }
                     }
                     else
                     {
                         try
                         {
-                            object parsedField = prop.Metadata.Parse(stringField);
-                            prop.Metadata.Descriptor.SetValue(mapping.Entity, parsedField);
+                            object parsedField = prop.MetadataForSave.Parse(stringField);
+                            prop.MetadataForSave.Descriptor.SetValue(entity, parsedField);
+                            // prop.SetValue(mapping.Entity, parsedField);
                         }
                         catch (ParseException ex)
                         {
@@ -310,7 +307,7 @@ namespace Tellma.Controllers.ImportExport
             {
                 if (entityCreated)
                 {
-                    nextMapping.List = nextMapping.GetOrCreateList(mapping.Entity);
+                    nextMapping.List = nextMapping.GetOrCreateListForSave(mapping.Entity);
                 }
 
                 bool keepGoing = ParseRow(dataRow, rowNumber, nextMapping, entities, errors);
@@ -357,8 +354,9 @@ namespace Tellma.Controllers.ImportExport
                     .ToDictionary(g => g.Key, g => g.Select(e => e.index));
 
                 // Hydrate the entities one by one
-                foreach (var entity in result)
+                foreach (var entityBase in result)
                 {
+                    var entity = selfRefProp.GetOrCreateEntityForSave(entityBase);
                     if (entity.EntityMetadata.TryGetMatchPairs(selfRefProp.EntityMetadataMatchesIndex, out (object, IEnumerable<EntityWithKey>) matchesPair))
                     {
                         var (userKey, matches) = matchesPair;
@@ -395,7 +393,8 @@ namespace Tellma.Controllers.ImportExport
                                 {
                                     var single = matches.Single();
                                     var id = single.GetId();
-                                    selfRefProp.Metadata.Descriptor.SetValue(entity, id);
+                                    selfRefProp.MetadataForSave.Descriptor.SetValue(entity, id);
+                                    // selfRefProp.SetValue(entity, id);
                                 }
                             }
                         }
@@ -413,7 +412,7 @@ namespace Tellma.Controllers.ImportExport
                         else
                         {
                             // Single match from the uploaded list, set it in the index
-                            selfRefProp.Metadata.Descriptor.SetIndexProperty(entity, indices.Single());
+                            selfRefProp.SetIndexProperty(entity, indices.Single());
                         }
                     }
                 }
@@ -430,7 +429,7 @@ namespace Tellma.Controllers.ImportExport
         {
             // A property is self referencing if it lives in the root entity type being uploaded AND it is adoned with SelfReferencingAttribute, and it has a matching definition Id as the target type it references
             return mapping.IsRoot && fkProp.IsSelfReferencing &&
-                (fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == null || fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == mapping.Metadata.DefinitionId);
+                (fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == null || fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == mapping.MetadataForSave.DefinitionId);
         }
 
         /// <summary>

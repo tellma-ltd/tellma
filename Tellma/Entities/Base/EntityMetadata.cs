@@ -81,5 +81,10 @@ namespace Tellma.Entities
         /// Used for entity collections that undergo culling (empty records removed) to preserve the index in the original collection
         /// </summary>
         public int OriginalIndex { get; set; }
+
+        /// <summary>
+        /// Used by document export and import
+        /// </summary>
+        public object ManualLine { get; set; }
     }
 }
