@@ -192,8 +192,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const orderbyUrl = params.get('$orderby');
         try {
           const orderbyExp = Queryex.parse(orderbyUrl, { expectDirKeywords: true });
-          this.orderbyKey = orderbyExp[0].toString();
-          this.orderbyDir = orderbyExp[0].direction || 'asc';
+          if (orderbyExp.length > 0) {
+            this.orderbyKey = orderbyExp[0].toString();
+            this.orderbyDir = orderbyExp[0].direction || 'asc';
+          } else {
+            delete this.orderbyKey;
+            delete this.orderbyDir;
+          }
         } catch {
           delete this.orderbyKey;
           delete this.orderbyDir;

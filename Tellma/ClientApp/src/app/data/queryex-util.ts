@@ -1526,7 +1526,7 @@ export class QueryexUtil {
                         const result = {
                             ...navPropDesc,
                             datatype,
-                            label: fkDesc.label, // Account (Id)
+                            label: !!fkDesc ? fkDesc.label : (() => `${navPropDesc.label()} (${trx.instant('Id')})`), // Account (Id)
                             labelForParameter: navPropDesc.label // Account
                         };
 
