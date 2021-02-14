@@ -353,8 +353,15 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.immutableArguments = { ...this.arguments };
 
     if (this.isScreenMode) {
+      const args = {};
+      for (const key of Object.keys(this.arguments)) {
+        if (isSpecified(this.arguments[key])) {
+          args[key] = this.arguments[key];
+        }
+      }
+
       // Save the arguments in user settings so the main menu uses them to launch the screen next time
-      const argsString = JSON.stringify(this.arguments);
+      const argsString = JSON.stringify(args);
       this.customUserSettings.save(`report/${this.definitionId}/arguments`, argsString);
     }
 
@@ -516,6 +523,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public onToggleCollapseParameters() {
     this.collapseParameters = !this.collapseParameters;
+    window.dispatchEvent(new Event('resize')); // So the chart would resize
   }
 
 }

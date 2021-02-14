@@ -574,16 +574,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
               closingRow.push(this.translate.instant('ClosingBalance'));
               break;
             case 'QuantityAccumulation':
-              openingRow.push(this.openingQuantityDisplay);
-              closingRow.push(this.closingQuantityDisplay);
+              openingRow.push(formatAccounting(response.OpeningQuantity, '1.0-4'));
+              closingRow.push(formatAccounting(response.ClosingQuantity, '1.0-4'));
               break;
             case 'MonetaryValueAccumulation':
-              openingRow.push(this.openingMonetaryValueDisplay);
-              closingRow.push(this.closingMonetaryValueDisplay);
+              openingRow.push(formatAccounting(response.OpeningMonetaryValue, this.monetaryValueDigitsInfo));
+              closingRow.push(formatAccounting(response.ClosingMonetaryValue, this.monetaryValueDigitsInfo));
               break;
             case 'Accumulation':
-              openingRow.push(this.openingDisplay);
-              closingRow.push(this.closingDisplay);
+              openingRow.push(formatAccounting(response.Opening, this.functionalDigitsInfo));
+              closingRow.push(formatAccounting(response.Closing, this.functionalDigitsInfo));
               break;
             default:
               openingRow.push('');
@@ -1184,10 +1184,17 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.isLoaded && this.to === this.total;
   }
 
+  private get monetaryValueDigitsInfo(): string {
+    const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
+    const digitsInfo = this.digitsInfo(currencyId);
+
+    return digitsInfo;
+  }
+
   public get openingDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const opening = s.extras.opening || 0;
+    const extras = this.state.extras;
+    if (extras) {
+      const opening = extras.opening || 0;
       return formatAccounting(opening, this.functionalDigitsInfo);
     }
 
@@ -1195,9 +1202,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get openingQuantityDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const opening = s.extras.openingQuantity || 0;
+    const extras = this.state.extras;
+    if (!!extras) {
+      const opening = extras.openingQuantity || 0;
       return formatAccounting(opening, '1.0-4');
     }
 
@@ -1205,21 +1212,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get openingMonetaryValueDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const opening = s.extras.openingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
-      const digitsInfo = this.digitsInfo(currencyId);
-      return formatAccounting(opening, digitsInfo);
+    const extras = this.state.extras;
+    if (extras) {
+      const opening = extras.openingMonetaryValue || 0;
+      return formatAccounting(opening, this.monetaryValueDigitsInfo);
     }
 
     return '';
   }
 
   public get closingDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const closing = s.extras.closing || 0;
+    const extras = this.state.extras;
+    if (extras) {
+      const closing = extras.closing || 0;
       return formatAccounting(closing, this.functionalDigitsInfo);
     }
 
@@ -1227,9 +1232,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get closingQuantityDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const closing = s.extras.closingQuantity || 0;
+    const extras = this.state.extras;
+    if (extras) {
+      const closing = extras.closingQuantity || 0;
       return formatAccounting(closing, '1.0-4');
     }
 
@@ -1237,12 +1242,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get closingMonetaryValueDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const closing = s.extras.closingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
-      const digitsInfo = this.digitsInfo(currencyId);
-      return formatAccounting(closing, digitsInfo);
+    const extras = this.state.extras;
+    if (extras) {
+      const closing = extras.closingMonetaryValue || 0;
+      return formatAccounting(closing, this.monetaryValueDigitsInfo);
     }
 
     return '';

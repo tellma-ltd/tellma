@@ -423,7 +423,7 @@ namespace Tellma.Controllers
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
             // Remove the RoleId property from the template, it's supposed to be hidden
-            var wkbProp = mapping.SimpleProperty(nameof(Resource.LocationWkb));
+            var wkbProp = mapping.SimplePropertyByName(nameof(Resource.LocationWkb));
 
             if (wkbProp != null)
             {
