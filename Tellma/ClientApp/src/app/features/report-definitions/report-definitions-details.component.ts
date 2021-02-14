@@ -1046,8 +1046,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       if (this.measureToEditHasChanged) {
         model.Measures[index] = measureToEdit;
 
-        // If one measure has order direction, rows can't have it
         if (!!measureToEdit.OrderDirection) {
+          // If one measure has order direction, rows can't have it
           if (!!model.Rows) {
             model.Rows.forEach(row => {
               delete row.OrderDirection;
@@ -1056,14 +1056,14 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
               }
             });
           }
-        }
 
-        // If one measure has order direction, none of the other measures can
-        model.Measures.forEach(m => {
-          if (m !== measureToEdit) {
-            delete m.OrderDirection;
-          }
-        });
+          // If one measure has order direction, none of the other measures can
+          model.Measures.forEach(m => {
+            if (m !== measureToEdit) {
+              delete m.OrderDirection;
+            }
+          });
+        }
 
         this.validateModel(model);
         this.synchronizeParameters(model);
