@@ -17,7 +17,7 @@ namespace Tellma.Entities
         public bool IsLoaded(string propName) => propName == "Id" || TryGetValue(propName, out FieldMetadata meta) && meta == FieldMetadata.Loaded;
 
         /// <summary>
-        /// Used for import/export to map entities to the row they came from.
+        /// Used for import to map entities to the row they came from.
         /// Since the containing entity is a dictionary, JSON.NET will not serialize this value
         /// </summary>
         public int RowNumber { get; set; }

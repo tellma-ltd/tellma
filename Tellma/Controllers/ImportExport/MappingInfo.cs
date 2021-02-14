@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Tellma.Entities;
 
 namespace Tellma.Controllers.ImportExport
@@ -41,11 +42,11 @@ namespace Tellma.Controllers.ImportExport
         // Other stuff
 
         public MappingInfo(
-            TypeMetadata typeMetadataForSave, 
-            TypeMetadata typeMetadata, 
-            IEnumerable<PropertyMappingInfo> simpleProps, 
-            IEnumerable<MappingInfo> collectionProps, 
-            CollectionPropertyMetadata parentCollectionPropMetaForSave, 
+            TypeMetadata typeMetadataForSave,
+            TypeMetadata typeMetadata,
+            IEnumerable<PropertyMappingInfo> simpleProps,
+            IEnumerable<MappingInfo> collectionProps,
+            CollectionPropertyMetadata parentCollectionPropMetaForSave,
             CollectionPropertyMetadata parentCollectionPropMeta)
         {
             MetadataForSave = typeMetadataForSave ?? throw new ArgumentNullException(nameof(typeMetadataForSave));
@@ -57,7 +58,12 @@ namespace Tellma.Controllers.ImportExport
             ParentCollectionPropertyMetadataForSave = parentCollectionPropMetaForSave;
             ParentCollectionPropertyMetadata = parentCollectionPropMeta;
 
-            CreateEntity = MetadataForSave.Descriptor.Create;
+            CreateEntity = (int rowNumber) =>
+            {
+                var entity = MetadataForSave.Descriptor.Create();
+                entity.EntityMetadata.RowNumber = rowNumber; // For validation reporting
+                return entity;
+            };
 
             // All these can be overridden
             if (parentCollectionPropMeta != null)
@@ -128,7 +134,7 @@ namespace Tellma.Controllers.ImportExport
 
         public IEnumerable<MappingInfo> CollectionProperties { get; set; } // Some APIs override this
 
-        public Func<Entity> CreateEntity { get; set; }
+        public Func<int, Entity> CreateEntity { get; set; }
 
         public Func<Entity, IEnumerable> GetEntitiesForRead { get; set; }
 

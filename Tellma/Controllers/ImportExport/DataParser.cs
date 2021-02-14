@@ -212,8 +212,7 @@ namespace Tellma.Controllers.ImportExport
                 {
                     if (!entityCreated)
                     {
-                        mapping.Entity = mapping.CreateEntity();
-                        mapping.Entity.EntityMetadata.RowNumber = rowNumber; // for validation reporting
+                        mapping.Entity = mapping.CreateEntity(rowNumber);
                         mapping.List.Add(mapping.Entity);
                         entityCreated = true;
                     }

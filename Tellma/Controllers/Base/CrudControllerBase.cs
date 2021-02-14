@@ -923,14 +923,14 @@ namespace Tellma.Controllers
                 throw new BadRequestException(_localizer["Error_KeyProperty0MustBeInTheImportedFile", args.Key]);
             }
 
-            var propMeta = propMapping.Metadata;
-            var propDesc = propMeta.Descriptor;
-            if (propDesc.Type != typeof(string) && propDesc.Type != typeof(int) && propDesc.Type != typeof(int?))
+            var propMetaForSave = propMapping.MetadataForSave;
+            var propDescForSave = propMetaForSave.Descriptor;
+            if (propDescForSave.Type != typeof(string) && propDescForSave.Type != typeof(int) && propDescForSave.Type != typeof(int?))
             {
-                throw new BadRequestException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", propMeta.Display()]);
+                throw new BadRequestException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", propMetaForSave.Display()]);
             }
 
-            Func<Entity, object> forSaveKeyGet = propDesc.GetValue;
+            Func<Entity, object> forSaveKeyGet = propDescForSave.GetValue;
 
             // For update mode, check that all keys are present
             if (args.Mode == ImportModes.Update)
@@ -938,7 +938,7 @@ namespace Tellma.Controllers
                 foreach (var entity in entities.Where(e => forSaveKeyGet(e) == null || forSaveKeyGet(e).Equals(0)))
                 {
                     // In update mode, the 
-                    string errorMsg = _localizer["Error_Property0IsKeyPropertyThereforeRequiredForUpdate", propMeta.Display()];
+                    string errorMsg = _localizer["Error_Property0IsKeyPropertyThereforeRequiredForUpdate", propMetaForSave.Display()];
                     if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, errorMsg))
                     {
                         return;
@@ -953,7 +953,7 @@ namespace Tellma.Controllers
                 {
                     // In update mode, the 
                     var duplicateKeyValue = forSaveKeyGet(entity).ToString();
-                    string errorMsg = _localizer["Error_Value0IsDuplicatedEvenThoughItIsKey1", duplicateKeyValue, propMeta.Display()];
+                    string errorMsg = _localizer["Error_Value0IsDuplicatedEvenThoughItIsKey1", duplicateKeyValue, propMetaForSave.Display()];
                     if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, errorMsg))
                     {
                         return;
@@ -975,8 +975,8 @@ namespace Tellma.Controllers
 
             // Load entities from the DB
             var userKeys = entities.Select(e => forSaveKeyGet(e)).Where(e => e != null);
-            var getArgs = new SelectExpandArguments { Select = propDesc.Name };
-            var (dbEntities, _) = await GetByPropertyValues(propDesc.Name, userKeys, getArgs, cancellation: default);
+            var getArgs = new SelectExpandArguments { Select = propDescForSave.Name };
+            var (dbEntities, _) = await GetByPropertyValues(propDescForSave.Name, userKeys, getArgs, cancellation: default);
             if (dbEntities.Any())
             {
                 // Prepare the key property description of TEntity
@@ -1007,7 +1007,7 @@ namespace Tellma.Controllers
                             if (matches.Skip(1).Any())
                             {
                                 var typeDisplay = mapping.MetadataForSave.SingularDisplay();
-                                var keyPropDisplay = propMeta.Display();
+                                var keyPropDisplay = propMetaForSave.Display();
                                 var stringField = key.ToString();
                                 if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
                                 {
@@ -1024,7 +1024,7 @@ namespace Tellma.Controllers
                         else if (args.Mode == ImportModes.Update)
                         {
                             var typeDisplay = mapping.MetadataForSave.SingularDisplay();
-                            var keyPropDisplay = propMeta.Display();
+                            var keyPropDisplay = propMetaForSave.Display();
                             var stringField = key.ToString();
                             if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
                             {
@@ -1390,7 +1390,7 @@ namespace Tellma.Controllers
 
                         var navPropMeta = fkPropMapping.NavPropertyMetadata;
                         TypeMetadata targetTypeMeta = navPropMeta.TargetTypeMetadata;
-                        PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel); 
+                        PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel);
                         if (keyPropMetadata == null)
                         {
                             // FK with a key property that doesn't exist
@@ -1734,6 +1734,11 @@ namespace Tellma.Controllers
             return (prop?.Trim(), key?.Trim());
         }
 
+        //protected PropertyMappingInfo GetMappingInfo(string path, MappingInfo mapping)
+        //{
+        //    var steps = path.Split('.');
+        //}
+
         private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)
         {
             foreach (var (key, errorMessages) in errorsDic.AllErrors)
@@ -1763,10 +1768,10 @@ namespace Tellma.Controllers
                     throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}");
                 }
 
-                MappingInfo currentMapping = mapping;
+                //   MappingInfo currentMapping = mapping;
                 Entity currentEntity = entities[rootIndex];
                 TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
-                PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
+                PropertyDescriptor propertyDesc = null; // They property that the error key may optionally terminate with
                 bool lastPropWasCollectionWithoutIndexer = false;
                 bool lastPropWasSimple = false;
 
@@ -1814,7 +1819,7 @@ namespace Tellma.Controllers
                         currentTypeDesc = propDesc.CollectionTypeDescriptor;
 
                         // Retrieve the next mapping if possible
-                        var nextMapping = currentMapping?.CollectionProperty(propName);
+                        //       var nextMapping = currentMapping?.CollectionProperty(propName);
                     }
                     else // Property: either collection, navigation, or simple
                     {
@@ -1838,15 +1843,20 @@ namespace Tellma.Controllers
                         else // Simple prop
                         {
                             // Retrieve the property mapping if possible
-                            propertyMapping = currentMapping?.SimpleProperty(propName);
+                            //        propertyMapping = currentMapping?.SimpleProperty(propName);
+                            propertyDesc = currentTypeDesc.Property(propName);
                             lastPropWasSimple = true; // To prevent further steps
                         }
                     }
                 }
 
+                // Retrieve the property mapping (if any) by matching with the property info (this way we avoid issues with entities that use custom mapping infos)
+                //var currentMapping = currentEntity.EntityMetadata.MappingInfo as MappingInfo;
+                //var propertyMapping = currentMapping.SimpleProperties.FirstOrDefault(e => e.Metadata.Descriptor.PropertyInfo == propertyDesc.PropertyInfo);
+
                 // Now to use the goods
                 int row = currentEntity.EntityMetadata.RowNumber;
-                int? column = propertyMapping?.ColumnNumber;
+                int? column = null; // propertyMapping?.ColumnNumber;
 
                 foreach (var errorMessage in errorMessages)
                 {
@@ -1854,6 +1864,128 @@ namespace Tellma.Controllers
                 }
             }
         }
+
+
+        //private void MapErrorsOld(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)
+        //{
+        //    foreach (var (key, errorMessages) in errorsDic.AllErrors)
+        //    {
+        //        if (string.IsNullOrWhiteSpace(key))
+        //        {
+        //            throw new InvalidOperationException($"Bug: Empty validation error key");
+        //        }
+
+        //        var steps = key.Split('.').Select(e => e.Trim());
+
+        //        // Get the root index
+        //        string firstStep = steps.First();
+        //        if (!firstStep.StartsWith('[') || !firstStep.EndsWith(']'))
+        //        {
+        //            throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets []");
+        //        }
+
+        //        var rootIndexString = firstStep[1..^1]; // = Substring(1)
+        //        if (!int.TryParse(rootIndexString, out int rootIndex))
+        //        {
+        //            throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer");
+        //        }
+
+        //        if (rootIndex >= entities.Count)
+        //        {
+        //            throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}");
+        //        }
+
+        //        MappingInfo currentMapping = mapping;
+        //        Entity currentEntity = entities[rootIndex];
+        //        TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
+        //        PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
+        //        bool lastPropWasCollectionWithoutIndexer = false;
+        //        bool lastPropWasSimple = false;
+
+        //        foreach (var step in steps.Skip(1))
+        //        {
+        //            if (currentEntity == null)
+        //            {
+        //                throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a null entity");
+        //            }
+        //            if (lastPropWasCollectionWithoutIndexer)
+        //            {
+        //                throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a list");
+        //            }
+        //            if (lastPropWasSimple)
+        //            {
+        //                throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a simple property");
+        //            }
+
+        //            var trimmedStep = step.Trim();
+        //            if (trimmedStep.EndsWith(']')) // Collection Property + Index
+        //            {
+        //                // Remove the ']' at the end;
+        //                trimmedStep = trimmedStep.Remove(trimmedStep.Length - 1);
+        //                var split = trimmedStep.Split('[');
+
+        //                var indexString = split.Last();
+        //                if (!int.TryParse(indexString, out int index))
+        //                {
+        //                    throw new InvalidOperationException($"Bug: validation error key '{key}' contains index '{rootIndexString}' that could not be parsed into an integer");
+        //                }
+
+        //                var propName = string.Join('[', split.SkipLast(1));
+        //                if (string.IsNullOrWhiteSpace(propName))
+        //                {
+        //                    throw new InvalidOperationException($"Bug: validation error key '{key}' cannot contain a lone indexer in the middle of it");
+        //                }
+
+        //                // Retrieve the next entity using descriptors
+        //                var propDesc = currentTypeDesc.CollectionProperty(propName) ??
+        //                    throw new InvalidOperationException($"Bug: collection property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
+
+        //                currentEntity = ((propDesc.GetValue(currentEntity) as IList)[index] as Entity) ??
+        //                    throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' refers to a null entity");
+
+        //                currentTypeDesc = propDesc.CollectionTypeDescriptor;
+
+        //                // Retrieve the next mapping if possible
+        //                var nextMapping = currentMapping?.CollectionProperty(propName);
+        //            }
+        //            else // Property: either collection, navigation, or simple
+        //            {
+        //                var propName = step;
+        //                var propDesc = currentTypeDesc.Property(propName);
+
+        //                if (propDesc is null)
+        //                {
+        //                    throw new InvalidOperationException($"Bug: property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
+        //                }
+        //                else if (propDesc is CollectionPropertyDescriptor collPropDesc)
+        //                {
+        //                    // A collection property without indexer cannot by succeeded by more steps
+        //                    lastPropWasCollectionWithoutIndexer = true; // To prevent further steps
+        //                }
+        //                else if (propDesc is NavigationPropertyDescriptor)
+        //                {
+        //                    // Won't implement for now, there aren't any cases in our model
+        //                    throw new NotImplementedException("Navigation property errors not implemented");
+        //                }
+        //                else // Simple prop
+        //                {
+        //                    // Retrieve the property mapping if possible
+        //                    propertyMapping = currentMapping?.SimpleProperty(propName);
+        //                    lastPropWasSimple = true; // To prevent further steps
+        //                }
+        //            }
+        //        }
+
+        //        // Now to use the goods
+        //        int row = currentEntity.EntityMetadata.RowNumber;
+        //        int? column = propertyMapping?.ColumnNumber;
+
+        //        foreach (var errorMessage in errorMessages)
+        //        {
+        //            errors.AddImportError(row, column, errorMessage);
+        //        }
+        //    }
+        //}
 
         #endregion
     }

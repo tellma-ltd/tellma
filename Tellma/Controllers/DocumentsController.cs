@@ -2458,7 +2458,7 @@ namespace Tellma.Controllers
                     tabMappings.Add(new MappingInfo(entryMetaForSave, entryMeta, adjustmentSimpleProps, new List<MappingInfo>(), entriesCollectionPropertyMetaForSave, entriesCollectionPropertyMeta)
                     {
                         // Like onNewManualEntry
-                        CreateEntity = () => new Entry { Id = 0, Direction = 1 },
+                        CreateEntity = (int row) => new Entry { Id = 0, Direction = 1, EntityMetadata = new EntityMetadata { RowNumber = row } },
                         GetEntitiesForRead = (Entity entity) =>
                         {
                             var doc = entity as Document;
@@ -2670,13 +2670,15 @@ namespace Tellma.Controllers
 
                 tabMappings.Add(new MappingInfo(lineMetaForSave, lineMeta, pivotedLineProps, new List<MappingInfo>(), linesCollectionPropertyMetaForSave, linesCollectionPropertyMeta)
                 {
-                    CreateEntity = () =>
+                    CreateEntity = (int row) =>
                     {
                         var line = new LineForSave
                         {
                             DefinitionId = lineDefId,
                             Boolean1 = false,
-                            Entries = new List<EntryForSave>()
+                            Entries = new List<EntryForSave>(),
+
+                            EntityMetadata = new EntityMetadata { RowNumber = row }
                         };
 
                         foreach (var entry in lineDef.Entries)
@@ -2686,6 +2688,8 @@ namespace Tellma.Controllers
                                 Id = 0,
                                 Direction = entry.Direction,
                                 Value = 0,
+
+                                EntityMetadata = new EntityMetadata { RowNumber = row }
                             });
                         }
 
@@ -2702,7 +2706,7 @@ namespace Tellma.Controllers
 
             return new MappingInfo(docMetaForSave, docMeta, docProps, tabMappings, null, null)
             {
-                CreateEntity = () => new DocumentForSave
+                CreateEntity = (int row) => new DocumentForSave
                 {
                     PostingDateIsCommon = true,
                     MemoIsCommon = true,
@@ -2724,6 +2728,8 @@ namespace Tellma.Controllers
 
                     LineDefinitionEntries = new List<DocumentLineDefinitionEntryForSave>(),
                     Lines = new List<LineForSave>(),
+
+                    EntityMetadata = new EntityMetadata { RowNumber = row }
                 },
             };
         }
