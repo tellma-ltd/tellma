@@ -2458,7 +2458,7 @@ namespace Tellma.Controllers
                     tabMappings.Add(new MappingInfo(entryMetaForSave, entryMeta, adjustmentSimpleProps, new List<MappingInfo>(), entriesCollectionPropertyMetaForSave, entriesCollectionPropertyMeta)
                     {
                         // Like onNewManualEntry
-                        CreateEntity = (int row) => new Entry { Id = 0, Direction = 1, EntityMetadata = new EntityMetadata { RowNumber = row } },
+                        CreateEntity = () => new Entry { Id = 0, Direction = 1 },
                         GetEntitiesForRead = (Entity entity) =>
                         {
                             var doc = entity as Document;
@@ -2518,6 +2518,7 @@ namespace Tellma.Controllers
                                 tabEntry = MakeDefaultTabEntryForSave();
                                 tabEntry.EntryIndex = entryIndex;
                                 tabEntry.LineDefinitionId = lineDefId;
+                                tabEntry.EntityMetadata.BaseEntity = doc;
                                 doc.LineDefinitionEntries.Add(tabEntry);
                             }
 
@@ -2543,8 +2544,8 @@ namespace Tellma.Controllers
                                 Display = Display,
                                 Index = index,
                                 SelectPrefix = selectPrefixForTabHeaderProperties,
-                                GetOrCreateEntityForSave = GetOrCreateEntityForSave,
-                                GetEntityForRead = GetEntityForRead,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave,
+                                GetTerminalEntityForRead = GetEntityForRead,
                             });
                         }
                         else
@@ -2555,8 +2556,8 @@ namespace Tellma.Controllers
                                 Display = Display,
                                 Index = index,
                                 SelectPrefix = selectPrefixForTabHeaderProperties,
-                                GetOrCreateEntityForSave = GetOrCreateEntityForSave,
-                                GetEntityForRead = GetEntityForRead,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave,
+                                GetTerminalEntityForRead = GetEntityForRead,
                             });
                         }
 
@@ -2569,8 +2570,8 @@ namespace Tellma.Controllers
                             Index = nextAvailableIndex++,
                             Display = () => $"{TabDisplay()}: {_localizer["Field0IsCommon", settings.Localize(column.Label, column.Label2, column.Label3)]}",
                             SelectPrefix = selectPrefixForTabHeaderProperties,
-                            GetOrCreateEntityForSave = GetOrCreateEntityForSave,
-                            GetEntityForRead = GetEntityForRead,
+                            GetTerminalEntityForSave = GetOrCreateEntityForSave,
+                            GetTerminalEntityForRead = GetEntityForRead,
                         });
                     }
                 }
@@ -2650,8 +2651,8 @@ namespace Tellma.Controllers
                                 Index = index,
                                 Display = Display,
                                 SelectPrefix = selectPrefixForSmartEntries,
-                                GetEntityForRead = GetEntityForRead,
-                                GetOrCreateEntityForSave = GetOrCreateEntityForSave
+                                GetTerminalEntityForRead = GetEntityForRead,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave
                             });
                         }
                         else
@@ -2661,8 +2662,8 @@ namespace Tellma.Controllers
                                 Index = index,
                                 Display = Display,
                                 SelectPrefix = selectPrefixForSmartEntries,
-                                GetEntityForRead = GetEntityForRead,
-                                GetOrCreateEntityForSave = GetOrCreateEntityForSave
+                                GetTerminalEntityForRead = GetEntityForRead,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave
                             });
                         }
                     }
@@ -2670,15 +2671,13 @@ namespace Tellma.Controllers
 
                 tabMappings.Add(new MappingInfo(lineMetaForSave, lineMeta, pivotedLineProps, new List<MappingInfo>(), linesCollectionPropertyMetaForSave, linesCollectionPropertyMeta)
                 {
-                    CreateEntity = (int row) =>
+                    CreateEntity = () =>
                     {
                         var line = new LineForSave
                         {
                             DefinitionId = lineDefId,
                             Boolean1 = false,
                             Entries = new List<EntryForSave>(),
-
-                            EntityMetadata = new EntityMetadata { RowNumber = row }
                         };
 
                         foreach (var entry in lineDef.Entries)
@@ -2689,7 +2688,7 @@ namespace Tellma.Controllers
                                 Direction = entry.Direction,
                                 Value = 0,
 
-                                EntityMetadata = new EntityMetadata { RowNumber = row }
+                                EntityMetadata = new EntityMetadata { BaseEntity = line }
                             });
                         }
 
@@ -2706,7 +2705,7 @@ namespace Tellma.Controllers
 
             return new MappingInfo(docMetaForSave, docMeta, docProps, tabMappings, null, null)
             {
-                CreateEntity = (int row) => new DocumentForSave
+                CreateEntity = () => new DocumentForSave
                 {
                     PostingDateIsCommon = true,
                     MemoIsCommon = true,
@@ -2728,8 +2727,6 @@ namespace Tellma.Controllers
 
                     LineDefinitionEntries = new List<DocumentLineDefinitionEntryForSave>(),
                     Lines = new List<LineForSave>(),
-
-                    EntityMetadata = new EntityMetadata { RowNumber = row }
                 },
             };
         }

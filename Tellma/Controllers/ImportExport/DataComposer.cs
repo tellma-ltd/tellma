@@ -56,7 +56,7 @@ namespace Tellma.Controllers.ImportExport
             // Hydrate the simple props
             foreach (var simpleProp in mapping.SimpleProperties)
             {
-                var entity = simpleProp.GetEntityForRead(baseEntity);
+                var entity = simpleProp.GetTerminalEntityForRead(baseEntity);
                 if (!entity.EntityMetadata.IsLoaded(simpleProp.Metadata.Descriptor.Name))
                 {
                     throw new InvalidOperationException($"Bug: Attempt to export unloaded property {simpleProp.Metadata.Descriptor.Name} from type {entity.GetType().Name}");

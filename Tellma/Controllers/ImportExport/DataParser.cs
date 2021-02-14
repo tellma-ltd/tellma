@@ -212,12 +212,12 @@ namespace Tellma.Controllers.ImportExport
                 {
                     if (!entityCreated)
                     {
-                        mapping.Entity = mapping.CreateEntity(rowNumber);
+                        mapping.Entity = mapping.CreateBaseEntity(rowNumber);
                         mapping.List.Add(mapping.Entity);
                         entityCreated = true;
                     }
 
-                    var entity = prop.GetOrCreateEntityForSave(mapping.Entity);
+                    var entity = prop.GetTerminalEntityForSave(mapping.Entity);
 
                     // Hydrate the property
                     if (prop is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
@@ -355,7 +355,7 @@ namespace Tellma.Controllers.ImportExport
                 // Hydrate the entities one by one
                 foreach (var entityBase in result)
                 {
-                    var entity = selfRefProp.GetOrCreateEntityForSave(entityBase);
+                    var entity = selfRefProp.GetTerminalEntityForSave(entityBase);
                     if (entity.EntityMetadata.TryGetMatchPairs(selfRefProp.EntityMetadataMatchesIndex, out (object, IEnumerable<EntityWithKey>) matchesPair))
                     {
                         var (userKey, matches) = matchesPair;

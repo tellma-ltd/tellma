@@ -11,8 +11,8 @@ namespace Tellma.Controllers.ImportExport
             MetadataForSave = metadataForSave ?? throw new ArgumentNullException(nameof(metadataForSave));
 
             Display = metadata.Display;
-            GetOrCreateEntityForSave = e => e;
-            GetEntityForRead = e => e;
+            GetTerminalEntityForSave = e => e;
+            GetTerminalEntityForRead = e => e;
             SelectPrefix = null;
         }
 
@@ -28,8 +28,8 @@ namespace Tellma.Controllers.ImportExport
             }
 
             Display = original.Display;
-            GetOrCreateEntityForSave = original.GetOrCreateEntityForSave;
-            GetEntityForRead = original.GetEntityForRead;
+            GetTerminalEntityForSave = original.GetTerminalEntityForSave;
+            GetTerminalEntityForRead = original.GetTerminalEntityForRead;
             SelectPrefix = original.SelectPrefix;
         }
 
@@ -47,16 +47,16 @@ namespace Tellma.Controllers.ImportExport
 
         public void SetIndexProperty(Entity entity, int index)
         {
-            Metadata.Descriptor.SetIndexProperty(entity, index);
+            MetadataForSave.Descriptor.SetIndexProperty(entity, index);
         }
 
         /////////////////// These you can override
 
         public Func<string> Display { get; set; }
 
-        public Func<Entity, Entity> GetOrCreateEntityForSave { get; set; } = e => e;
+        public Func<Entity, Entity> GetTerminalEntityForSave { get; set; } // Takes base entity and returns terminal entity
 
-        public Func<Entity, Entity> GetEntityForRead { get; set; } = e => e;
+        public Func<Entity, Entity> GetTerminalEntityForRead { get; set; }
 
         /// <summary>
         /// Adds a prefix to the auto-constructed select of the this property (useful for scenarios like document tab header properties)

@@ -917,7 +917,7 @@ namespace Tellma.Controllers
 
         private async Task HydrateIds(IEnumerable<TEntityForSave> entities, ImportArguments args, MappingInfo mapping, ImportErrors errors)
         {
-            var propMapping = mapping.SimpleProperty(args.Key);
+            var propMapping = mapping.SimplePropertyByName(args.Key);
             if (propMapping == null)
             {
                 throw new BadRequestException(_localizer["Error_KeyProperty0MustBeInTheImportedFile", args.Key]);
@@ -1768,10 +1768,9 @@ namespace Tellma.Controllers
                     throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}");
                 }
 
-                //   MappingInfo currentMapping = mapping;
                 Entity currentEntity = entities[rootIndex];
                 TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
-                PropertyDescriptor propertyDesc = null; // They property that the error key may optionally terminate with
+                PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
                 bool lastPropWasCollectionWithoutIndexer = false;
                 bool lastPropWasSimple = false;
 
@@ -1843,20 +1842,20 @@ namespace Tellma.Controllers
                         else // Simple prop
                         {
                             // Retrieve the property mapping if possible
-                            //        propertyMapping = currentMapping?.SimpleProperty(propName);
-                            propertyDesc = currentTypeDesc.Property(propName);
+                            var baseEntity = currentEntity.EntityMetadata.BaseEntity ?? currentEntity;
+                            var baseMapping = baseEntity.EntityMetadata.MappingInfo as MappingInfo;
+                            var simpleProps = baseMapping.SimplePropertiesByName(propName);
+                            propertyMapping = simpleProps?.FirstOrDefault(p => p.GetTerminalEntityForSave(baseEntity) == currentEntity);
+
                             lastPropWasSimple = true; // To prevent further steps
                         }
                     }
                 }
 
-                // Retrieve the property mapping (if any) by matching with the property info (this way we avoid issues with entities that use custom mapping infos)
-                //var currentMapping = currentEntity.EntityMetadata.MappingInfo as MappingInfo;
-                //var propertyMapping = currentMapping.SimpleProperties.FirstOrDefault(e => e.Metadata.Descriptor.PropertyInfo == propertyDesc.PropertyInfo);
-
                 // Now to use the goods
+                currentEntity = currentEntity.EntityMetadata.BaseEntity ?? currentEntity;
                 int row = currentEntity.EntityMetadata.RowNumber;
-                int? column = null; // propertyMapping?.ColumnNumber;
+                int? column = propertyMapping?.ColumnNumber;
 
                 foreach (var errorMessage in errorMessages)
                 {

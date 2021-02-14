@@ -14,8 +14,8 @@ namespace Tellma.Controllers.ImportExport
     public class MappingInfo
     {
         // private fields
-        private Dictionary<string, PropertyMappingInfo> _simplePropsDic;
-        private Dictionary<string, MappingInfo> _collectionPropsDic; // Maps type name to mapping info
+        private Dictionary<string, IEnumerable<PropertyMappingInfo>> _simplePropsDic;
+        private Dictionary<string, IEnumerable<MappingInfo>> _collectionPropsDic; // Maps type name to mapping info
 
         /// <summary>
         /// This is the <see cref="CollectionPropertyMetadata"/> of the list property that this <see cref="MappingInfo"/> is based on.
@@ -57,13 +57,7 @@ namespace Tellma.Controllers.ImportExport
 
             ParentCollectionPropertyMetadataForSave = parentCollectionPropMetaForSave;
             ParentCollectionPropertyMetadata = parentCollectionPropMeta;
-
-            CreateEntity = (int rowNumber) =>
-            {
-                var entity = MetadataForSave.Descriptor.Create();
-                entity.EntityMetadata.RowNumber = rowNumber; // For validation reporting
-                return entity;
-            };
+            CreateEntity = MetadataForSave.Descriptor.Create;
 
             // All these can be overridden
             if (parentCollectionPropMeta != null)
@@ -134,7 +128,16 @@ namespace Tellma.Controllers.ImportExport
 
         public IEnumerable<MappingInfo> CollectionProperties { get; set; } // Some APIs override this
 
-        public Func<int, Entity> CreateEntity { get; set; }
+        public Func<Entity> CreateEntity { get; set; }
+
+        public Entity CreateBaseEntity(int row)
+        {
+            var entity = CreateEntity();
+            entity.EntityMetadata.RowNumber = row;
+            entity.EntityMetadata.MappingInfo = this;
+
+            return entity;
+        }
 
         public Func<Entity, IEnumerable> GetEntitiesForRead { get; set; }
 
@@ -151,20 +154,48 @@ namespace Tellma.Controllers.ImportExport
 
         // Methods
 
-        public PropertyMappingInfo SimpleProperty(string name)
+        private IEnumerable<T> Enumerable<T>(IEnumerable<T> e) => e; // To keep C# compiler happy        
+
+        /// <summary>
+        /// Returns all the simple properties with the given name (e.g. "PostingDate")
+        /// </summary>
+        public IEnumerable<PropertyMappingInfo> SimplePropertiesByName(string name)
         {
-            _simplePropsDic ??= SimpleProperties.ToDictionary(p => p.Metadata.Descriptor.Name);
-            _simplePropsDic.TryGetValue(name, out PropertyMappingInfo result);
+            _simplePropsDic ??= SimpleProperties
+                .GroupBy(e => e.Metadata.Descriptor.Name)
+                .ToDictionary(g => g.Key, g => Enumerable(g));
+
+            _simplePropsDic.TryGetValue(name, out IEnumerable<PropertyMappingInfo> result);
             return result;
         }
 
-        public MappingInfo CollectionProperty(string name)
+        /// <summary>
+        /// Retrieves the single Simple Property that has the given name (or null if non was found). Throws and exception if multiple matches were found
+        /// </summary>
+        public PropertyMappingInfo SimplePropertyByName(string name)
         {
-            _collectionPropsDic ??= CollectionProperties.ToDictionary(p => p.ParentCollectionPropertyMetadata?.Descriptor?.Name ??
-                    throw new InvalidOperationException($"Bug: {nameof(ParentCollectionPropertyMetadata)} was null in {nameof(MappingInfo)} for {p.MetadataForSave.SingularDisplay()}"));
+            return SimplePropertiesByName(name)?.SingleOrDefault();
+        }
 
-            _collectionPropsDic.TryGetValue(name, out MappingInfo result);
+        /// <summary>
+        /// Returns all the collection properties with the given name (e.g. "Lines")
+        /// </summary>
+        public IEnumerable<MappingInfo> CollectionPropertiesByName(string name)
+        {
+            _collectionPropsDic ??= CollectionProperties
+                .GroupBy(e => e.ParentCollectionPropertyMetadata?.Descriptor?.Name ?? throw new InvalidOperationException($"Bug: {nameof(ParentCollectionPropertyMetadata)} was null in {nameof(MappingInfo)} for {e.MetadataForSave.SingularDisplay()}"))
+                .ToDictionary(g => g.Key, g => Enumerable(g));
+
+            _collectionPropsDic.TryGetValue(name, out IEnumerable<MappingInfo> result);
             return result;
+        }
+
+        /// <summary>
+        /// Retrieves the single Collection Property that has the given name (or null if non was found). Throws and exception if multiple matches were found
+        /// </summary>
+        public MappingInfo CollectionPropertyByName(string name)
+        {
+            return CollectionPropertiesByName(name)?.SingleOrDefault();
         }
 
         /// <summary>

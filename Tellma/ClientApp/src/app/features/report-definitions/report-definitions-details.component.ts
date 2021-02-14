@@ -966,7 +966,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
         }
 
         // When the row dimension is ordered, measures cannot be ordered
-        if (this.showClearOrderDirectionMessage(dimToEdit)) {
+        if (this.showClearOrderDirectionMessage(dimToEdit) && !!dimToEdit.OrderDirection) {
           if (!!model.Measures) {
             model.Measures.forEach(m => delete m.OrderDirection);
           }
