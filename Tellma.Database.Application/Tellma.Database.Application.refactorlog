@@ -217,4 +217,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ReportDefinitionSelects]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d08e038a-0e16-4f65-8f78-9d24014afb29" ChangeDateTime="02/12/2021 07:37:22">
+    <Property Name="ElementName" Value="[rpt].[DuplicateSalesInvoices]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[SalesInvoices__Duplicates]" />
+  </Operation>
 </Operations>
