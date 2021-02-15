@@ -668,7 +668,7 @@
     <value>የሰነድ ፍቺ መስመር ፍቺ</value>
   </data>
   <data name="DocumentDefinitionLineDefinition_IsVisibleByDefault" xml:space="preserve">
-    <value>በነባሪ የሚታይ ነው</value>
+    <value>ነባሪ በ የሚታይ ነው</value>
   </data>
   <data name="DocumentDefinitionLineDefinition_LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>

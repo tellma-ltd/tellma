@@ -578,6 +578,6 @@ export class CustodiesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onExpandReport(reportId: number, model: Custody) {
-    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
+    this.router.navigate(['../../../report', reportId, { id: model.Id }], { relativeTo: this.route });
   }
 }

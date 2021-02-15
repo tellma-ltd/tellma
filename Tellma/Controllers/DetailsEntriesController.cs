@@ -213,14 +213,14 @@ namespace Tellma.Controllers
 
             if (args.FromDate != null)
             {
-                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} lt {args.FromDate.Value:yyyy-MM-dd}"); // <
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} ge {args.FromDate.Value:yyyy-MM-dd}"); // >=
+                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} lt '{args.FromDate.Value:yyyy-MM-dd}'"); // <
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} ge '{args.FromDate.Value:yyyy-MM-dd}'"); // >=
             }
 
             if (args.ToDate != null)
             {
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le {args.ToDate.Value:yyyy-MM-dd}"); // <=
-                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le {args.ToDate.Value:yyyy-MM-dd}"); // <=
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le '{args.ToDate.Value:yyyy-MM-dd}'"); // <=
+                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le '{args.ToDate.Value:yyyy-MM-dd}'"); // <=
             }
 
             string beforeOpeningFilter = beforeOpeningFilterBldr.ToString();

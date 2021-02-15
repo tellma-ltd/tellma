@@ -716,6 +716,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onExpandReport(reportId: number, model: Resource) {
-    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
+    this.router.navigate(['../../../report', reportId, { id: model.Id }], { relativeTo: this.route });
   }
 }

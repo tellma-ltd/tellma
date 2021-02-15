@@ -1412,7 +1412,7 @@ namespace Tellma.Data.Queries
                         }
 
                         // Argument #2 Date
-                        var arg2 = Arguments[0];
+                        var arg2 = Arguments[1];
                         if (arg2.TryCompile(QxType.Date, ctx, out string dateSql, out QxNullity dateNullity))
                         {
                             resultType = QxType.Date;

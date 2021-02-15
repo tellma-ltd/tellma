@@ -19,7 +19,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateISOString, toLocalDateTimeISOString } from '~/app/data/util';
+import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateTimeISOString, dateFromISOString } from '~/app/data/util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
 import { displayScalarValue } from '~/app/data/util';
@@ -151,6 +151,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   showYAxis = true;
   showXAxisLabel = true;
   showYAxisLabel = true;
+  legend = false;
   colorful = { domain: palette };
   monochromatic = { domain: [palette[monochromeIndex]] };
   heat = { domain: ['#96D5DF', '#052429'] }; // different shades of the same color for heat map
@@ -192,8 +193,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const orderbyUrl = params.get('$orderby');
         try {
           const orderbyExp = Queryex.parse(orderbyUrl, { expectDirKeywords: true });
-          this.orderbyKey = orderbyExp[0].toString();
-          this.orderbyDir = orderbyExp[0].direction || 'asc';
+          if (orderbyExp.length > 0) {
+            this.orderbyKey = orderbyExp[0].toString();
+            this.orderbyDir = orderbyExp[0].direction || 'asc';
+          } else {
+            delete this.orderbyKey;
+            delete this.orderbyDir;
+          }
         } catch {
           delete this.orderbyKey;
           delete this.orderbyDir;
@@ -2087,16 +2093,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     if (info.keyDesc.datatype === 'date' && info.isOrdered && info.orderDir === 'asc') {
       // We need to expand all dates between measureCells[0] and measureCells[length - 1]
       let dimCell = dimCell1;
-      let min = dimCell.valueId;
-      if (!min && !!dimCell2) {
+      minString = dimCell.valueId;
+      if (!minString && !!dimCell2) {
         dimCell = dimCell2;
-        min = dimCell.valueId; // In case the first one was undefined
+        minString = dimCell.valueId; // In case the first one was undefined
       }
 
-      if (!!min) {
-        const pieces = min.split('T')[0].split('-');
-        minDate = new Date(+pieces[0], +pieces[1] - 1, +pieces[2]);
-        minString = toLocalDateTimeISOString(minDate);
+      if (!!minString) {
+        minDate = dateFromISOString(minString);
       }
     }
 

@@ -22,6 +22,7 @@ export interface ReportDefinitionForSave<
     TMeasure = ReportDefinitionMeasureForSave,
     TSelect = ReportDefinitionSelectForSave> extends EntityForSave {
 
+    Code?: string;
     Title?: string;
     Title2?: string;
     Title3?: string;
@@ -184,6 +185,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
             formatFromVals: (vals: any[]) => (ws.localize(vals[0], vals[1], vals[2]) || trx.instant('Untitled')),
             properties: {
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 Title: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.primaryPostfix },
                 Title2: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.secondaryPostfix },
                 Title3: { datatype: 'string', control: 'text', label: () => trx.instant('Title') + ws.ternaryPostfix },

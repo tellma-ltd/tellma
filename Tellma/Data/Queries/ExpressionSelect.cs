@@ -85,9 +85,10 @@ namespace Tellma.Data.Queries
             }
 
             var expressions = QueryexBase.Parse(select);
-            if (!expressions.All(e => e is QueryexColumnAccess))
+            var nonColumnAccess = expressions.FirstOrDefault(e => !(e is QueryexColumnAccess));
+            if (nonColumnAccess != null)
             {
-                throw new QueryException($"Select parameter can only contain column access expressions like this: Id,Name,CreatedBy.Name");
+                throw new QueryException($"Select parameter cannot contain an expression like {nonColumnAccess}, only column access expressions are allowed.");
             }
 
             return new ExpressionSelect(expressions.Cast<QueryexColumnAccess>());

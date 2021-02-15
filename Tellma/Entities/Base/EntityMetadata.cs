@@ -17,10 +17,22 @@ namespace Tellma.Entities
         public bool IsLoaded(string propName) => propName == "Id" || TryGetValue(propName, out FieldMetadata meta) && meta == FieldMetadata.Loaded;
 
         /// <summary>
-        /// Used for import/export to map entities to the row they came from.
+        /// Used by import to map entities to the row they came from.
         /// Since the containing entity is a dictionary, JSON.NET will not serialize this value
         /// </summary>
         public int RowNumber { get; set; }
+
+        /// <summary>
+        /// Used by import to map properties to the column they came from.
+        /// Since the containing entity is a dictionary, JSON.NET will not serialize this value
+        /// </summary>
+        public object MappingInfo { get; set; }
+
+        /// <summary>
+        /// Used by import to map properties to the column they came from.
+        /// Since the containing entity is a dictionary, JSON.NET will not serialize this value
+        /// </summary>
+        public Entity BaseEntity { get; set; }
 
         /// <summary>
         /// Used by the flatten and trim logic to remember which entities have already been flattened and trimmed
@@ -81,5 +93,10 @@ namespace Tellma.Entities
         /// Used for entity collections that undergo culling (empty records removed) to preserve the index in the original collection
         /// </summary>
         public int OriginalIndex { get; set; }
+
+        /// <summary>
+        /// Used by document export and import
+        /// </summary>
+        public Entity ManualLine { get; set; }
     }
 }

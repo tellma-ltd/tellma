@@ -1209,9 +1209,15 @@ export class ApiService {
       getAggregate: (args: GetAggregateArguments, extras?: { [key: string]: any }) => {
         args = args || {};
         const paramsArray: string[] = [];
+        const headers: { [key: string]: string } = {};
 
         if (!!args.select) {
-          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+          if (args.select.length > 512) {
+            headers['X-Select'] = args.select;
+            paramsArray.push(`select_hash=${this.hashCode(args.select)}`);
+          } else {
+            paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+          }
         }
 
         if (!!args.filter) {
@@ -1227,7 +1233,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/aggregate?${params}`;
 
-        const obs$ = this.http.get<GetAggregateResponse>(url).pipe(
+        const obs$ = this.http.get<GetAggregateResponse>(url, { headers }).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -1633,6 +1639,19 @@ export class ApiService {
 
       return obs$;
     };
+  }
+
+  private hashCode(s: string) {
+    const l = s.length;
+    let h = 0;
+    let i = 0;
+    if (l > 0) {
+      while (i < l) {
+        // tslint:disable-next-line:no-bitwise
+        h = (h << 5) - h + s.charCodeAt(i++) | 0;
+      }
+    }
+    return h;
   }
 
   stringifyGetArguments(args: GetArguments): string[] {
