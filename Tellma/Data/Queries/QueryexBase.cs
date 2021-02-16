@@ -2851,7 +2851,7 @@ namespace Tellma.Data.Queries
 
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
         {
-            string format = $"N{Decimals}";
+            string format = $"F{Decimals}";
             return (Value.ToString(format), QxType.Numeric, QxNullity.NotNull);
         }
 
