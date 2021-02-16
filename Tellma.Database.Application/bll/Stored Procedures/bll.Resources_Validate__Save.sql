@@ -44,7 +44,7 @@ SET NOCOUNT ON;
 	WHERE [Id] = @DefinitionId
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-    SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.Code
@@ -71,7 +71,7 @@ SET NOCOUNT ON;
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]
@@ -84,9 +84,41 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+-- Identifier must be unique
+	DECLARE @IdentifierLabel NVARCHAR (255) =  (
+			SELECT dbo.fn_Localize([IdentifierLabel], [IdentifierLabel2], [IdentifierLabel3])
+			FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId
+		);
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Identifier',
+		N'Error_TheIdentifier01IsUsed',
+		@IdentifierLabel,
+		FE.Identifier
+	FROM @Entities FE 
+	JOIN [dbo].[Resources] BE ON FE.Identifier = BE.Identifier AND BE.[DefinitionId] = @DefinitionId
+	JOIN [dbo].[ResourceDefinitions] RD ON BE.[DefinitionId] = RD.[Id]
+	WHERE (FE.Id <> BE.Id);
+
+	-- Identifier must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP(@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Identifier',
+		N'Error_TheIdentifier01IsDuplicated',
+		@IdentifierLabel,
+		[Identifier]
+	FROM @Entities
+	WHERE [Identifier] IN (
+		SELECT [Identifier]
+		FROM @Entities
+		WHERE [Identifier] IS NOT NULL
+		GROUP BY [Identifier]
+		HAVING COUNT(*) > 1
+	);
+
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsUsed',
 		FE.[Name]
@@ -97,7 +129,7 @@ SET NOCOUNT ON;
 
 	-- Name2 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
@@ -108,7 +140,7 @@ SET NOCOUNT ON;
 
 	-- Name3 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
@@ -119,7 +151,7 @@ SET NOCOUNT ON;
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsDuplicated',
 		[Name]
@@ -133,7 +165,7 @@ SET NOCOUNT ON;
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsDuplicated',
 		[Name2]
@@ -148,7 +180,7 @@ SET NOCOUNT ON;
 
 	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsDuplicated',
 		[Name3]
@@ -163,7 +195,7 @@ SET NOCOUNT ON;
 
 	-- Unit in ResourceUnits must be of same type of Header unit or be of type Mass
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].Units[' + CAST(RU.[Index] AS NVARCHAR(255)) + '].UnitId',
 		N'Error_TheUnit0HasIncompatibleUnitTypeMustBeType1',
 		[dbo].[fn_Localize](URU.[Name], URU.[Name2], URU.[Name3]) AS [NameOfIncompatibleUnitName],
@@ -177,7 +209,7 @@ SET NOCOUNT ON;
 
 	-- Cannot change currency if resource is already used in Entries with different currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CurrencyId',
 		N'Error_TheResource0WasUsedInDocument1WithCurrency2',
 		@TitleSingular,
@@ -191,7 +223,7 @@ SET NOCOUNT ON;
 
 	-- Cannot change currency if resource is already used in Account with different currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CurrencyId',
 		N'Error_TheResource0WasUsedInAccount1WithCurrency2',
 		@TitleSingular,
@@ -203,7 +235,7 @@ SET NOCOUNT ON;
 
 	-- Cannot change Center if resource is already used in Entries with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_TheResource0WasUsedInDocument1WithCenter2',
 		@TitleSingular,
@@ -220,7 +252,7 @@ SET NOCOUNT ON;
 
 	-- Only business units may be assigned to resources
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_CenterMustBeBusinessUnit'
 	FROM @Entities R
@@ -229,7 +261,7 @@ SET NOCOUNT ON;
 
 	-- Cannot change Center if resource is already used in Account with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(R.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_TheResource0WasUsedInAccount1WithCenter2',
 		@TitleSingular,
@@ -241,7 +273,7 @@ SET NOCOUNT ON;
 
 	-- Cannot assign an inactive participant
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParticipantId',
 		N'Error_TheParticipant01IsInactive',
 		dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]),
@@ -253,7 +285,7 @@ SET NOCOUNT ON;
 
 	-- Cannot assign an inactive center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
 		N'Error_TheCenter0IsInactive',
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
@@ -263,7 +295,7 @@ SET NOCOUNT ON;
 
 	-- Cannot assign an inactive currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP(@Top)
+	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CurrencyId',
 		N'Error_TheCurrency0IsInactive',
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
