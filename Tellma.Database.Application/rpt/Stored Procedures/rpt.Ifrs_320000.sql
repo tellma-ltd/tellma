@@ -20,7 +20,7 @@ BEGIN
 			[Value]
 	)
 
-	SELECT [AT].[Concept], SUM(E.[AlgebraicValue]) AS [Value]
+	SELECT [AT].[Concept], SUM(E.[Direction] * E.[Value]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]

@@ -10,10 +10,14 @@ BEGIN
 	Actual([ResourceId], [Mass], [Quantity]) AS (
 		SELECT
 			J.[ResourceId],
-			SUM(J.[AlgebraicMass]) AS [Mass],
-			SUM(J.[AlgebraicQuantity]) AS [Quantity]
+			SUM(J.[Direction] * J.[BaseQuantity] * 
+			IIF(RBU.[UnitType] = N'Mass', RBU.[BaseAmount] / RBU.[UnitAmount] , R.[UnitMass])
+			) AS [Mass],
+			SUM(J.[Direction] * J.[BaseQuantity]) AS [Quantity]
 		FROM [map].[DetailsEntries]() J
 		JOIN dbo.Lines L ON J.LineId = L.Id
+		JOIN dbo.Resources R ON J.[ResourceId] = R.[Id]
+		JOIN dbo.[Units] RBU ON R.[UnitId] = RBU.[Id]
 		JOIN dbo.[Accounts] A ON J.AccountId = A.[Id]
 		WHERE J.[EntryTypeId] = @InventoryProductionExtension 
 		AND A.[AccountTypeId] = @FinishedGoods
