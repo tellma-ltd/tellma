@@ -380,7 +380,6 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Delete.sql" />
     <Build Include="map\map.DetailsEntries.sql" />
-    <Build Include="map\map.SummaryEntries.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Delete.sql" />

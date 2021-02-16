@@ -532,68 +532,17 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>Acc.</value>
   </data>
-  <data name="DetailsEntry_Actual" xml:space="preserve">
-    <value>Actual</value>
+  <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
+    <value>Base Quantity</value>
   </data>
-  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>Algebraic Count</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>Algebraic Mass</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>Algebraic Amount</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
-    <value>Algebraic Quantity</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>Algebraic Time</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>Algebraic Value</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>Algebraic Volume</value>
-  </data>
-  <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>Mass</value>
+  <data name="DetailsEntry_BaseUnit" xml:space="preserve">
+    <value>Base Unit</value>
   </data>
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>Amount Acc.</value>
   </data>
-  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
-    <value>Amount Per Unit</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
-    <value>Negative Algebraic Monetary Value</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
-    <value>Negative Algebraic Quantity</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
-    <value>Negative Algebraic Value</value>
-  </data>
-  <data name="DetailsEntry_Planned" xml:space="preserve">
-    <value>Planned</value>
-  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>Quantity Acc.</value>
-  </data>
-  <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>Time</value>
-  </data>
-  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
-    <value>Value Per Unit</value>
-  </data>
-  <data name="DetailsEntry_Variance" xml:space="preserve">
-    <value>Variance</value>
-  </data>
-  <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>Volume</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>Disable Two-Factor Authentication (2FA)</value>
@@ -1305,6 +1254,12 @@
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>Ternary language cannot be the same as the secondary language.</value>
+  </data>
+  <data name="Error_The01IsDuplicated" xml:space="preserve">
+    <value>The {0} '{1}' is duplicated.</value>
+  </data>
+  <data name="Error_The01IsUsed" xml:space="preserve">
+    <value>The {0} '{1}' is already used.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>

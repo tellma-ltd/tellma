@@ -1531,9 +1531,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         if (baseUnitDefined) {
           this._columns.push({
             id: 'QuantityAccumulation',
-            select: ['AlgebraicQuantity'], // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
+            select: ['Direction', 'BaseQuantity'],
             label: () => {
-              // Algebraic Quantity is always in the base unit defined in the resource
               return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', baseUnitId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {

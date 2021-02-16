@@ -21,4 +21,9 @@ export class DetailsEntriesComponent extends MasterBaseComponent {
   public get ws() {
     return this.workspace.currentTenant;
   }
+
+  public get functional_format(): string {
+    const decimals = this.ws.settings.FunctionalCurrencyDecimals;
+    return `1.${decimals}-${decimals}`;
+  }
 }

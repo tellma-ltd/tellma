@@ -484,68 +484,17 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>إجمالي</value>
   </data>
-  <data name="DetailsEntry_Actual" xml:space="preserve">
-    <value>الفعلي</value>
+  <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
+    <value>القيمة بالوحدة الأساسية</value>
   </data>
-  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>العدد الجبري</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>الكتلة الجبرية</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>المبلغ الجبري</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
-    <value>الكمية الجبرية</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>الزمن الجبري</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>القيمة الجبرية</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>الحجم الجبري</value>
-  </data>
-  <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>العدد</value>
-  </data>
-  <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>الوزن</value>
+  <data name="DetailsEntry_BaseUnit" xml:space="preserve">
+    <value>الوحدة الأساسية</value>
   </data>
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>إجمالي المبلغ</value>
   </data>
-  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
-    <value>مبلغ الوحدة</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
-    <value>سالب المبلغ الجبري</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
-    <value>سالب الكمية الجبرية</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
-    <value>سالب القيمة الجبرية</value>
-  </data>
-  <data name="DetailsEntry_Planned" xml:space="preserve">
-    <value>المخطط</value>
-  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>إجمالي الكمية</value>
-  </data>
-  <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>الزمن</value>
-  </data>
-  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
-    <value>قيمة الوحدة</value>
-  </data>
-  <data name="DetailsEntry_Variance" xml:space="preserve">
-    <value>الانحراف</value>
-  </data>
-  <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>الحجم</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>تعطيل التوثيق مزدوج العوامل</value>
@@ -1218,6 +1167,12 @@
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة هي نفسها اللغة الثانية.</value>
+  </data>
+  <data name="Error_The01IsDuplicated" xml:space="preserve">
+    <value>{0} ({1}) مكرر</value>
+  </data>
+  <data name="Error_The01IsUsed" xml:space="preserve">
+    <value>{0} ({1}) مستخدم حاليا</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>

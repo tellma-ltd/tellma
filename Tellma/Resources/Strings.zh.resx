@@ -212,7 +212,7 @@
     <value>从账户</value>
   </data>
   <data name="Assignment_Document" xml:space="preserve">
-    <value>文件</value>
+    <value>文档</value>
   </data>
   <data name="Assignment_E" xml:space="preserve">
     <value>从入门</value>
@@ -221,7 +221,7 @@
     <value>没有</value>
   </data>
   <data name="Attachment" xml:space="preserve">
-    <value>附件</value>
+    <value>依恋</value>
   </data>
   <data name="Attachment_Category" xml:space="preserve">
     <value>类别</value>
@@ -251,13 +251,13 @@
     <value>取消</value>
   </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
-    <value>多</value>
+    <value>多种的</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
     <value>没有</value>
   </data>
   <data name="Cardinality_Single" xml:space="preserve">
-    <value>单</value>
+    <value>单身的</value>
   </data>
   <data name="Cell0" xml:space="preserve">
     <value>细胞{0}</value>
@@ -269,7 +269,7 @@
     <value>责任类型</value>
   </data>
   <data name="Center_CenterType_Abstract" xml:space="preserve">
-    <value>抽象</value>
+    <value>抽象的</value>
   </data>
   <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
     <value>业务部</value>
@@ -455,7 +455,7 @@
     <value>报告定义</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>显示</value>
+    <value>展示</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -467,7 +467,7 @@
     <value>隐</value>
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
-    <value>可见</value>
+    <value>可见的</value>
   </data>
   <data name="Definition_ValidateScript" xml:space="preserve">
     <value>验证脚本</value>
@@ -484,68 +484,17 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>加。</value>
   </data>
-  <data name="DetailsEntry_Actual" xml:space="preserve">
-    <value>实际</value>
+  <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
+    <value>基本数量</value>
   </data>
-  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>代数计数</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>代数质量</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>代数货币价值</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
-    <value>代数量</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>代数时间</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>代数值</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>代数卷</value>
-  </data>
-  <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>计数</value>
-  </data>
-  <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>块</value>
+  <data name="DetailsEntry_BaseUnit" xml:space="preserve">
+    <value>基本单位</value>
   </data>
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>量ACC。</value>
   </data>
-  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
-    <value>量每单位</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
-    <value>负代数货币价值</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
-    <value>负代数量</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
-    <value>负代数价值</value>
-  </data>
-  <data name="DetailsEntry_Planned" xml:space="preserve">
-    <value>计划</value>
-  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>数量加速。</value>
-  </data>
-  <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>时间</value>
-  </data>
-  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
-    <value>值单位</value>
-  </data>
-  <data name="DetailsEntry_Variance" xml:space="preserve">
-    <value>方差</value>
-  </data>
-  <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>体积</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>禁用双因素认证（2FA）</value>
@@ -722,7 +671,7 @@
     <value>开盘报</value>
   </data>
   <data name="Email_State_3" xml:space="preserve">
-    <value>交付</value>
+    <value>发表</value>
   </data>
   <data name="Email_State_4" xml:space="preserve">
     <value>开业</value>
@@ -845,7 +794,7 @@
     <value>可直到</value>
   </data>
   <data name="Entry" xml:space="preserve">
-    <value>条目</value>
+    <value>入口</value>
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
@@ -1219,6 +1168,12 @@
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>三元语言不能与第二语言相同。</value>
   </data>
+  <data name="Error_The01IsDuplicated" xml:space="preserve">
+    <value>在{0} '{1}' 被复制。</value>
+  </data>
+  <data name="Error_The01IsUsed" xml:space="preserve">
+    <value>在{0} '{1}' 已被使用。</value>
+  </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>'{1}' 中的帐户中使用{0} '{2}'</value>
   </data>
@@ -1511,16 +1466,16 @@
     <value>汇率</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
-    <value>量</value>
+    <value>数量</value>
   </data>
   <data name="ExchangeRate_AmountInFunctional" xml:space="preserve">
-    <value>当量</value>
+    <value>相等的</value>
   </data>
   <data name="ExchangeRate_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
   <data name="ExchangeRate_Rate" xml:space="preserve">
-    <value>率</value>
+    <value>速度</value>
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>有效的作为</value>
@@ -1760,7 +1715,7 @@
     <value>模板</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
-    <value>文字1</value>
+    <value>文本1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -1826,7 +1781,7 @@
     <value>项索引</value>
   </data>
   <data name="LineDefinitionColumn_Filter" xml:space="preserve">
-    <value>过滤</value>
+    <value>筛选</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
     <value>继承</value>
@@ -1943,7 +1898,7 @@
     <value>身体</value>
   </data>
   <data name="MarkupTemplate_Collection" xml:space="preserve">
-    <value>采集</value>
+    <value>收藏</value>
   </data>
   <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
     <value>定义</value>
@@ -2054,7 +2009,7 @@
     <value>名称</value>
   </data>
   <data name="Never" xml:space="preserve">
-    <value>决不</value>
+    <value>绝不</value>
   </data>
   <data name="NewPassword" xml:space="preserve">
     <value>新密码</value>
@@ -2210,7 +2165,7 @@
     <value>投资性房地产</value>
   </data>
   <data name="RD_Type_Miscellaneous" xml:space="preserve">
-    <value>杂</value>
+    <value>各种各样的</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
     <value>其他金融资产</value>
@@ -2786,7 +2741,7 @@
     <value>发送</value>
   </data>
   <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>交付</value>
+    <value>发表</value>
   </data>
   <data name="SmsMessage_State_minus_3" xml:space="preserve">
     <value>发送失败</value>
@@ -3101,7 +3056,7 @@
     <value>用户</value>
   </data>
   <data name="WorkflowSignature_Value" xml:space="preserve">
-    <value>值</value>
+    <value>价值</value>
   </data>
   <data name="WorkflowSignature_Workflow" xml:space="preserve">
     <value>工作流程</value>
