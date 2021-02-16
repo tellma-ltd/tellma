@@ -20,7 +20,7 @@ BEGIN
 
 	DECLARE @CapitalEmployed DECIMAL (19,4);
 
-	SELECT @SalesRevenues = ISNULL(SUM(AlgebraicValue), 0)
+	SELECT @SalesRevenues = ISNULL(SUM(E.[Direction] * E.[Value]), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
@@ -29,7 +29,7 @@ BEGIN
 		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
 	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@RevenueNode) = 1;
-	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(AlgebraicValue), 0)
+	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(E.[Direction] * E.[Value]), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
@@ -39,7 +39,7 @@ BEGIN
 		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
 	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@ExpenseByNatureAbstractNode) = 1;
-	SELECT @CapitalEmployed = ISNULL(SUM(AlgebraicValue), 0)
+	SELECT @CapitalEmployed = ISNULL(SUM(E.[Direction] * E.[Value]), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]

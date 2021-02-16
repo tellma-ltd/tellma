@@ -81,10 +81,10 @@ AS
 				[AlgebraicQuantity], [AlgebraicMonetaryValue], [AlgebraicValue],
 				[RunningQuantity], [RunningMonetaryValue], [RunningValue])
 	SELECT L.PostingDate, L.[Id], E.[Direction], E.[CustodyId], E.[ResourceId],
-		E.[AlgebraicQuantity], E.[AlgebraicMonetaryValue], E.[AlgebraicValue],
-			SUM([AlgebraicQuantity]) OVER (Partition BY  [ResourceId], [CustodyId] ORDER BY [PostingDate], [LineId]) AS RunningQuantity,
-			SUM([AlgebraicMonetaryValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
-			SUM([AlgebraicValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
+		E.[Direction] * E.[BaseQuantity], E.[Direction] * E.[MonetaryValue], E.[Direction] * E.[Value],
+			SUM(E.[Direction] * E.[BaseQuantity]) OVER (Partition BY  [ResourceId], [CustodyId] ORDER BY [PostingDate], [LineId]) AS RunningQuantity,
+			SUM(E.[Direction] * E.[MonetaryValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
+			SUM(E.[Direction] * E.[Value]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
 	FROM map.DetailsEntries() E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	WHERE AccountId IN (SELECT [Id] FROM InventoryAccounts)

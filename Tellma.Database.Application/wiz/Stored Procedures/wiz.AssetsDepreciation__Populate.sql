@@ -17,6 +17,17 @@ BEGIN
 			SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@PPENode) = 1
 		)
 	),
+	FirstDepreciationDates AS (
+		SELECT
+				E.[ResourceId], MIN(E.[Time1]) AS FirstDepreciationDate
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON E.LineId = L.Id
+		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
+		WHERE L.[State] = 4
+		AND E.UnitId <> @PureUnitId
+		AND E.EntryTypeId = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment')
+		GROUP BY E.[ResourceId]
+	),
 	LastDepreciationDates AS (
 		SELECT
 				E.[ResourceId], MAX(E.[Time2]) AS LastDepreciationDate
@@ -41,16 +52,21 @@ BEGIN
 	),
 	DepreciablePPEs AS (
 		SELECT
-				E.[ResourceId], MIN(E.[Time1]) AS AcquisitionDate
+				E.[ResourceId], FirstDepreciationDate, LastDepreciationDate
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
+		JOIN FirstDepreciationDates FDD ON E.[ResourceId] = FDD.[ResourceId]
 		LEFT JOIN LastDepreciationDates LDD ON E.[ResourceId] = LDD.[ResourceId]
 		WHERE L.[State] = 4
 		AND E.UnitId <> @PureUnitId
-		GROUP BY E.[ResourceId], LDD.LastDepreciationDate
-		HAVING SUM(E.[Direction] * E.[MonetaryValue]) > 0
+		-- never depreciated for the period
 		AND (LDD.LastDepreciationDate IS NULL OR LDD.LastDepreciationDate < @DepreciationPeriodEnds)
+		-- depreciation date start has passed
+		AND FDD.FirstDepreciationDate >= @DepreciationPeriodEnds
+		GROUP BY E.[ResourceId]
+		-- there is value to depreciate
+		HAVING SUM(E.[Direction] * E.[MonetaryValue]) > 0
 	)
 	INSERT INTO @WideLines([Index], [DefinitionId],
 		[DocumentIndex],[ResourceId1],
@@ -59,7 +75,7 @@ BEGIN
 		)
 	SELECT ROW_NUMBER() OVER(ORDER BY R.[Id]) - 1, @LineDefinitionId,
 			@DocumentIndex, R.[Id],
-			ISNULL(DATEADD(DAY, 1,LDD.LastDepreciationDate), DPPE.AcquisitionDate),
+			ISNULL(DATEADD(DAY, 1,LDD.LastDepreciationDate), DPPE.FirstDepreciationDate),
 			R.[CurrencyId], R.[CurrencyId], LCC.[CostCenter]
 	FROM dbo.[Resources] R
 	JOIN dbo.Units U ON R.[UnitId] = U.[Id]
