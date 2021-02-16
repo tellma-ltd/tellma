@@ -523,8 +523,9 @@ namespace Tellma.Controllers
                 var name2 = nameof(Resource.Name2);
                 var name3 = nameof(Resource.Name3);
                 var code = nameof(Resource.Code);
+                var identifier = nameof(Resource.Identifier);
 
-                query = query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}'");
+                query = query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {identifier} contains '{search}'");
             }
 
             return query;

@@ -28,6 +28,7 @@ import { DimensionInfo, MeasureInfo, ParameterInfo, QueryexUtil, SelectInfo, Uni
 import { DeBracket, Queryex, QueryexColumnAccess, QueryexDirection, QueryexFunction } from '~/app/data/queryex';
 import { DynamicRow, GetAggregateResponse } from '~/app/data/dto/get-aggregate-response';
 import { GetFactResponse } from '~/app/data/dto/get-fact-response';
+import { DateGranularity } from '~/app/data/entities/base/metadata-types';
 
 export enum ReportView {
   pivot = 'pivot',
@@ -2078,10 +2079,23 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return new ChartDimensionCell(dimValueDisplay, valueId, info, index, color, parent);
   }
 
-  private incrementDate(d: Date): string {
+  private incrementDate(d: Date, dimCell: DimensionCell): string {
     // Increments the date and returns its ISO Date Time representation
-    d.setDate(d.getDate() + 1);
-    return toLocalDateTimeISOString(d);
+    const desc = dimCell.info.keyDesc;
+    if (desc.datatype === 'date') {
+      switch (desc.granularity) {
+        case DateGranularity.years:
+          d.setFullYear(d.getFullYear() + 1);
+          break;
+        case DateGranularity.months:
+          d.setMonth(d.getMonth() + 1);
+          break;
+        case DateGranularity.days:
+          d.setDate(d.getDate() + 1);
+          break;
+      }
+      return toLocalDateTimeISOString(d);
+    }
   }
 
   private minDate(dimCell1: DimensionCell, dimCell2: DimensionCell): { minDate: Date, minString: string } {
@@ -2148,7 +2162,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 value: 0
               });
 
-              current = this.incrementDate(currentDate);
+              current = this.incrementDate(currentDate, dimCell);
             }
 
             // Get the measure color and value
@@ -2161,7 +2175,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             });
 
             if (!!current) {
-              current = this.incrementDate(currentDate);
+              current = this.incrementDate(currentDate, dimCell);
             }
           }
           s.single = single;
@@ -2198,8 +2212,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // - Doughnut
     // - Tree map
     // - Number cards
-
-    console.log(cellToString);
 
     // Prepare the hash if it's not there
     const s = this.state;
@@ -2345,7 +2357,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                   value: 0
                 });
 
-                current = this.incrementDate(currentDate);
+                current = this.incrementDate(currentDate, rowCell);
               }
 
               const measureCell = rowCell.measures[columnCell.index];
@@ -2356,7 +2368,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               currentSeries.push({ name: chartCell, value });
 
               if (!!current) {
-                current = this.incrementDate(currentDate);
+                current = this.incrementDate(currentDate, rowCell);
               }
             }
           }
@@ -2548,7 +2560,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onOrderByFlat(info: SelectInfo): void {
-    console.log(this.flatHeader);
     if (!this.canOrderByFlat) {
       return;
     }
@@ -2559,6 +2570,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     // The purpose of this step is to add the orderby to the url in screen mode
     const s = this.state;
+
+    // Always return to first page when changing the order by
+    s.skip = 0;
 
     // Toggle the direction of this column info
     const key = info.exp.toString();

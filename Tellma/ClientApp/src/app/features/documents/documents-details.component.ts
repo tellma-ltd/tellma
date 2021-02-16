@@ -16,7 +16,9 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected, descFromControlOptions, updateOn
+  toLocalDateOnlyISOString, FriendlyError,
+  isSpecified, colorFromExtension, iconFromExtension,
+  onFileSelected, descFromControlOptions, updateOn, todayISOString
 } from '~/app/data/util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -298,7 +300,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (this.isJV) {
 
       // Posting Date
-      result.PostingDate = toLocalDateISOString(new Date());
+      result.PostingDate = todayISOString();
 
       // Is Common
       result.PostingDateIsCommon = true;
@@ -323,7 +325,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       // Posting Date
       if (!def.HasWorkflow) {
-        result.PostingDate = toLocalDateISOString(new Date());
+        result.PostingDate = todayISOString();
       }
 
       // Is Common
@@ -542,23 +544,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       const mappedAssignmentsHistory: DocumentEvent[] = assignmentsHistory
         .map(e =>
-          ({
-            type: 'reassignment',
-            time: e.CreatedAt,
-            userId: e.CreatedById,
-            assigneeId: e.AssigneeId,
-            comment: e.Comment,
-          }));
+        ({
+          type: 'reassignment',
+          time: e.CreatedAt,
+          userId: e.CreatedById,
+          assigneeId: e.AssigneeId,
+          comment: e.Comment,
+        }));
 
       const mappedStatesHistory: DocumentEvent[] = statesHistory
         .map(e =>
-          ({
-            type: 'state',
-            userId: e.ModifiedById,
-            time: e.ModifiedAt,
-            fromState: e.FromState,
-            toState: e.ToState
-          }));
+        ({
+          type: 'state',
+          userId: e.ModifiedById,
+          time: e.ModifiedAt,
+          fromState: e.FromState,
+          toState: e.ToState
+        }));
 
       const mappedHistory = mappedAssignmentsHistory.concat(mappedStatesHistory);
       if (!!doc.CreatedById) {
@@ -572,7 +574,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       const result: { [date: string]: DocumentEvent[] } = {};
       for (const entry of sortedHistory) {
-        const date = toLocalDateISOString(new Date(entry.time));
+        const date = toLocalDateOnlyISOString(new Date(entry.time));
         if (!result[date]) {
           result[date] = [];
         }
@@ -2687,7 +2689,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     let manualLine = this.manualLine(model);
     if (!manualLine) {
       manualLine = {
-        PostingDate: toLocalDateISOString(new Date()),
+        PostingDate: todayISOString(),
         DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
         Entries: [],
         _flags: { isModified: true }
@@ -3900,7 +3902,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       entry.Value = 0;
       return;
     } else {
-      const date = doc.PostingDate || toLocalDateISOString(new Date());
+      const date = doc.PostingDate || todayISOString();
       const currencyId = this.readonlyValueCurrencyId(pair.entry);
       if (!!currencyId) {
         pair.direction = direction;

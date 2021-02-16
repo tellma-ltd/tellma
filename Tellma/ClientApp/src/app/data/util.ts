@@ -6,13 +6,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { from, Observable, Observer, throwError } from 'rxjs';
 import {
-  EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control, PropVisualDescriptor, Collection, entityDescriptorImpl
+  EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control, PropVisualDescriptor
 } from './entities/base/metadata';
 import { formatNumber, formatDate, formatPercent } from '@angular/common';
 import { Entity } from './entities/base/entity';
 import { insert, set, getSelection } from 'text-field-edit';
 import { concatMap, map } from 'rxjs/operators';
 import { formatSerial } from './entities/document';
+import { DateGranularity, DateTimeGranularity, TimeGranularity } from './entities/base/metadata-types';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -421,20 +422,45 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
 }
 
 /**
+ * Returns today on the client machine as an ISO 8601 string like this 2021-01-16T00:00:00.000.
+ * The format matches how Tellma's web server formats DateTime objects into JSON.
+ */
+export function todayISOString(): string {
+  return `${toLocalDateOnlyISOString(new Date())}T00:00:00.000`;
+}
+
+/**
+ * Returns the current time on the client machine as an ISO 8601 string like this 2021-02-16T21:17:08.0723404Z
+ * The format matches how Tellma's web server formats DateTimeOffset objects into JSON.
+ */
+export function nowISOString(): string {
+  return new Date().toISOString().replace('Z', '0000Z');
+}
+
+/**
  * Returns a date object in the local time zone with the date part (year, month, day) matching the input
- * @param stringDate An ISO date representation of the form 2020-01-21T00:00:00
+ * @param stringDate An ISO date representation of the form 2020-01-21T00:00:00.000
  */
 export function dateFromISOString(stringDate: string): Date {
   if (!!stringDate) {
+    // Extract the pieces
     const pieces = stringDate.split('T')[0].split('-');
-    return new Date(+pieces[0], +pieces[1] - 1, +pieces[2]);
+    const year = +pieces[0];
+    const month = (+pieces[1] || 1) - 1;
+    const day = +pieces[2] || 1;
+
+    // Prepare the result
+    const result = new Date(year, month, day);
+    result.setFullYear(year); // Avoid 30 -> 1930 conversion
+    return result;
   }
 }
 
 /**
- * Returns the date part of the argument as per the local time formatted as ISO 8601, for example: '2020-03-17'
+ * Returns the date part of the argument as per the local time zone, formatted as ISO 8601, for example: '2020-03-17'
  */
-export function toLocalDateISOString(date: Date): string {
+export function toLocalDateOnlyISOString(date: Date): string {
+  // We don't rely on Date.toISOString cause it changes the date parts to UTC, causing nasty off-by-1-day bugs
 
   // Year
   let year = date.getFullYear().toString();
@@ -457,9 +483,33 @@ export function toLocalDateISOString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * Returns the datetime part of the argument as per the local time zone, formatted as ISO 8601, for example: '2020-03-17T11:24:13.345'
+ */
 export function toLocalDateTimeISOString(date: Date): string {
-  // This result looks like how the JSON.NET-based server serializes C#'s DateTime
-  return `${toLocalDateISOString(date)}T00:00:00`;
+  // We don't rely on Date.toISOString cause it changes the date parts to UTC, causing nasty off-by-1-day bugs
+  let hours = date.getHours().toString();
+  if (hours.length < 2) {
+    hours = '0' + hours;
+  }
+
+  let minutes = date.getMinutes().toString();
+  if (minutes.length < 2) {
+    minutes = '0' + minutes;
+  }
+
+  let seconds = date.getSeconds().toString();
+  if (seconds.length < 2) {
+    seconds = '0' + seconds;
+  }
+
+  let milliseconds = date.getMilliseconds().toString();
+  if (milliseconds.length < 2) {
+    milliseconds = '00'.substring(0, 3 - milliseconds.length) + milliseconds;
+  }
+
+  // This result matches how the JSON.NET-based server serializes C#'s DateTime
+  return `${toLocalDateOnlyISOString(date)}T${hours}:${minutes}:${seconds}.${milliseconds}`;
 }
 
 function closePrint() {
@@ -955,6 +1005,18 @@ export function iconFromExtension(extension: string): string {
     }
   }
 }
+
+function formatFromGranularity(g: DateTimeGranularity): string {
+  switch (g) {
+    case DateGranularity.years: return 'yyyy';
+    case DateGranularity.months: return 'yyyy-MM';
+    case DateGranularity.days: return 'yyyy-MM-dd';
+    case TimeGranularity.hours: return 'yyyy-MM-dd HH';
+    case TimeGranularity.minutes: return 'yyyy-MM-dd HH:mm';
+    case TimeGranularity.seconds: return 'yyyy-MM-dd HH:mm:ss';
+  }
+}
+
 /**
  * Returns a string representation of the value based on the property descriptor.
  * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
@@ -999,7 +1061,7 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: Wo
       if (value === undefined || value === null) {
         return '';
       }
-      const format = 'yyyy-MM-dd';
+      const format = formatFromGranularity(prop.granularity);
       const locale = 'en-GB';
       return formatDate(value, format, locale);
     }
@@ -1007,7 +1069,7 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: Wo
       if (value === undefined || value === null) {
         return '';
       }
-      const format = 'yyyy-MM-dd HH:mm';
+      const format = formatFromGranularity(prop.granularity);
       const locale = 'en-GB';
       return formatDate(value, format, locale);
     }
@@ -1071,9 +1133,27 @@ export function descFromControlOptions(
     case 'unsupported':
     case 'text':
     case 'check':
-    case 'date':
-    case 'datetime':
       return { control };
+
+    case 'date': {
+      let granularity: DateGranularity = DateGranularity.days;
+      if (isSpecified(options.granularity)) {
+        granularity = options.granularity;
+      } else if (desc.control === 'date') {
+        granularity = desc.granularity;
+      }
+
+      return { control, granularity };
+    }
+    case 'datetime': {
+      let granularity: DateTimeGranularity = TimeGranularity.minutes;
+      if (isSpecified(options.granularity)) {
+        granularity = options.granularity;
+      } else if (desc.control === 'datetime') {
+        granularity = desc.granularity;
+      }
+      return { control, granularity };
+    }
 
     case 'number':
     case 'percent':

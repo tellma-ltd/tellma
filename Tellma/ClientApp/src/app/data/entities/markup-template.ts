@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
-import { supportedCultures } from '../supported-cultures';
+import { TimeGranularity } from './base/metadata-types';
 
 export type MarkupTemplateUsage = 'QueryByFilter' | 'QueryById';
 
@@ -96,9 +96,9 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                 DownloadName: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
                 Body: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
                 IsDeployed: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_IsDeployed') },
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

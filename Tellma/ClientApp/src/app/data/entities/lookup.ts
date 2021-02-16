@@ -7,6 +7,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface LookupForSave extends EntityForSave {
     Name?: string;
@@ -75,9 +76,9 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
                 SortKey: { datatype: 'numeric', control: 'number', label: () => trx.instant('SortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2, noSeparator: false },
 
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

@@ -5,7 +5,8 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface InboxRecord extends EntityWithKey {
     DocumentId?: number;
@@ -59,10 +60,10 @@ export function metadata_InboxRecord(wss: WorkspaceService, trx: TranslateServic
                 Document: { datatype: 'entity', control: 'Document', label: () => trx.instant('Assignment_Document'), foreignKeyName: 'DocumentId' },
                 Comment: { datatype: 'string', control: 'text', label: () => trx.instant('Document_Comment') },
 
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_AssignedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_AssignedAt'), granularity: TimeGranularity.minutes },
                 CreatedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_AssignedBy'), foreignKeyName: 'CreatedById' },
-                OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_OpenedAt') }
+                OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_OpenedAt'), granularity: TimeGranularity.minutes }
             }
         };
 

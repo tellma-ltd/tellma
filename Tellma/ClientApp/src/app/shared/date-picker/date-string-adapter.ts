@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgbDateAdapter, NgbDateStruct, NgbDateNativeAdapter } from '@ng-bootstrap/ng-bootstrap';
-import { dateFromISOString, toLocalDateISOString } from '~/app/data/util';
+import { toLocalDateTimeISOString } from '~/app/data/util';
 
 // In our DTOs we always use ISO string representation instead of native JS Date objects,
 // since JSON parse and stringify are unable to handle the native JS Date object on both
@@ -30,6 +30,7 @@ export class NgbDateStringAdapter implements NgbDateAdapter<string> {
 
         // The code below turns the JS date into a local date formatted in ISO 8601
         const date = this.nativeAdapter.toModel(ngbDate);
-        return toLocalDateISOString(date);
+        date.setHours(0); // I don't know why the adapter sets it to 12
+        return toLocalDateTimeISOString(date);
     }
 }

@@ -20,7 +20,7 @@ import { User } from '~/app/data/entities/user';
 import { ApiService } from '~/app/data/api.service';
 import { switchMap, tap, catchError, filter } from 'rxjs/operators';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { addSingleToWorkspace, addToWorkspace, toLocalDateISOString, isSpecified } from '~/app/data/util';
+import { addSingleToWorkspace, addToWorkspace, isSpecified } from '~/app/data/util';
 import { clearServerErrors, applyServerErrors } from '~/app/shared/details/details.component';
 import { Document as TellmaDocument } from '~/app/data/entities/document';
 import { InboxRecord } from '~/app/data/entities/inbox-record';
@@ -416,8 +416,13 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     return this.workspace.currentTenant.Document;
   }
 
-  public isToday(date: string) {
-    return date.startsWith(toLocalDateISOString(new Date()));
+  public isToday(dateString: string) {
+    const date = new Date(dateString);
+    const now = new Date();
+
+    return date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
   }
 
   private checkInbox() {
@@ -553,10 +558,10 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   private showEditFavoriteModal() {
     this.workspace.ignoreKeyDownEvents = true;
     this.modalService.open(this.favoriteModal)
-    .result.then(
-      (confirm) => this.onCloseEditFavorite(confirm),
-      () => this.onCloseEditFavorite(),
-    );
+      .result.then(
+        (confirm) => this.onCloseEditFavorite(confirm),
+        () => this.onCloseEditFavorite(),
+      );
   }
 
   private onCloseEditFavorite(confirm = false) {

@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface UnitForSave extends EntityForSave {
   UnitType?: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'MonetaryValue';
@@ -82,9 +83,9 @@ export function metadata_Unit(wss: WorkspaceService, trx: TranslateService): Ent
         },
 
         IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
-        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
         ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };

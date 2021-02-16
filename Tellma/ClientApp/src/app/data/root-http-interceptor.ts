@@ -28,7 +28,7 @@ import { DefinitionsForClient } from './dto/definitions-for-client';
 import { AdminSettingsForClient } from './dto/admin-settings-for-client';
 import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
-import { toLocalDateISOString } from './util';
+import { todayISOString } from './util';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
@@ -167,7 +167,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       const params: { [key: string]: string } = {};
 
       // Today
-      headers['X-Today'] = toLocalDateISOString(new Date());
+      headers['X-Today'] = todayISOString();
 
       if (!!this.authStorage) {
         const accessToken = this.authStorage.getItem('access_token');

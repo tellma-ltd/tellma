@@ -8,6 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 import { EntityForSave } from './base/entity-for-save';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
     // Common with Relation
@@ -116,8 +117,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
                 LocationJson: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_LocationJson') },
 
-                FromDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_FromDate') },
-                ToDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_ToDate') },
+                FromDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_FromDate'), granularity: DateGranularity.days },
+                ToDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_ToDate'), granularity: DateGranularity.days },
                 Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Decimal2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Int1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
@@ -152,9 +153,9 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 // Standard
 
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

@@ -11,6 +11,7 @@ import { AttachmentForSave, Attachment } from './attachment';
 import { EntityForSave } from './base/entity-for-save';
 import { DocumentStateChange } from './document-state-change';
 import { DocumentLineDefinitionEntry, DocumentLineDefinitionEntryForSave } from './document-line-definition-entry';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export type DocumentState = 0 | 1 | -1;
 export type DocumentClearance = 0 | 1 | 2;
@@ -123,7 +124,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     choices: [0, 1, 2],
                     format: (c: number) => trx.instant('Document_Clearance_' + c)
                 },
-                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Document_PostingDate') },
+                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Document_PostingDate'), granularity: DateGranularity.days },
                 PostingDateIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
                 Memo: { datatype: 'string', control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
@@ -153,9 +154,9 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 UnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Entry_Unit'), foreignKeyName: 'UnitId' },
                 UnitIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Unit') }) },
-                Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1') },
+                Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1'), granularity: DateGranularity.days },
                 Time1IsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time1') }) },
-                Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), },
+                Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), granularity: DateGranularity.days },
                 Time2IsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time2') }) },
 
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
@@ -191,18 +192,18 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                         }
                     }
                 },
-                StateAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_StateAt') },
+                StateAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_StateAt'), granularity: TimeGranularity.minutes },
 
                 AssigneeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_Assignee'), foreignKeyName: 'AssigneeId' },
                 AssignedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AssignedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_AssignedBy'), foreignKeyName: 'AssignedById' },
-                AssignedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_AssignedAt') },
+                AssignedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_AssignedAt'), granularity: TimeGranularity.minutes },
 
                 // Audit
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }            }
         };
 

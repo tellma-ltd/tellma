@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 import { AdminSettingsForClient } from '../dto/admin-settings-for-client';
 import { AdminPermissionForSave, AdminPermission } from './admin-permission';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface AdminUserForSave<TPermission = AdminPermissionForSave> extends EntityForSave {
     Name?: string;
@@ -68,11 +69,11 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                         }
                     }
                 },
-                LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity') },
+                LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity'), granularity: TimeGranularity.minutes },
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

@@ -6,6 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityWithKey } from './base/entity-with-key';
 import { Router } from '@angular/router';
+import { DateGranularity } from './base/metadata-types';
 
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
@@ -199,13 +200,13 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     isRightAligned: true, noSeparator: false
                 },
-                Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1') },
-                Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2') },
+                Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1'), granularity: DateGranularity.days },
+                Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), granularity: DateGranularity.days },
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 NotedAgentName: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
-                NotedDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entry_NotedDate') },
+                NotedDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entry_NotedDate'), granularity: DateGranularity.days },
             }
         };
 
