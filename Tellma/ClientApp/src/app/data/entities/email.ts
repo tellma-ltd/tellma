@@ -3,6 +3,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export type EmailState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5;
 const emailStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
@@ -69,10 +70,10 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
                 }
             },
             ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ErrorMessage') },
-            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince') },
-            DeliveredAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_DeliveredAt') },
-            OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_OpenedAt') },
-            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },
+            DeliveredAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_DeliveredAt'), granularity: TimeGranularity.minutes },
+            OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_OpenedAt'), granularity: TimeGranularity.minutes },
+            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         }
     };
 

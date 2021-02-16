@@ -1,9 +1,11 @@
 // tslint:disable:max-line-length
 import { TranslateService } from '@ngx-translate/core';
 import { ReportDefinitionDimensionForClient, ReportDefinitionForClient, ReportDefinitionMeasureForClient, ReportDefinitionSelectForClient } from './dto/definitions-for-client';
-import { Collection, DataType, EntityDescriptor, entityDescriptorImpl, getNavPropertyFromForeignKey, isNumeric, metadata, NavigationPropDescriptor, PropDescriptor, PropVisualDescriptor } from './entities/base/metadata';
+import { DateGranularity, TimeGranularity } from './entities/base/metadata-types';
+import { Collection, DataType, DatePropDescriptor, DateTimePropDescriptor, EntityDescriptor, entityDescriptorImpl, getNavPropertyFromForeignKey, isNumeric, metadata, NavigationPropDescriptor, PropDescriptor, PropVisualDescriptor } from './entities/base/metadata';
 import {
     DeBracket,
+    isDigit,
     Queryex,
     QueryexBase,
     QueryexBinaryOperator,
@@ -17,13 +19,13 @@ import {
     QueryexQuote,
     QueryexUnaryOperator
 } from './queryex';
-import { dateFromISOString, descFromControlOptions, isSpecified, toLocalDateISOString } from './util';
+import { descFromControlOptions, isSpecified, nowISOString, todayISOString, toLocalDateOnlyISOString, toLocalDateTimeISOString } from './util';
 import { WorkspaceService } from './workspace.service';
 
 type Calendar = 'GR' | 'ET' | 'UQ';
 const calendarsArray: Calendar[] = ['GR', 'ET', 'UQ'];
 
-const giveupLabel = (trx: TranslateService) => () => trx.instant('Expression');
+const noLabel = (trx: TranslateService) => () => trx.instant('Expression');
 
 // Type Guards
 function isPropDescriptor(target: DataType | PropDescriptor | PropVisualDescriptor): target is PropDescriptor {
@@ -385,10 +387,10 @@ function tryGetDescFromDatatype(targetType: DataType, label: () => string, label
         case 'bit':
             return { datatype: targetType, control: 'check', label, labelForParameter };
         case 'date':
-            return { datatype: targetType, control: 'date', label, labelForParameter };
+            return { datatype: targetType, control: 'date', label, labelForParameter, granularity: DateGranularity.days };
         case 'datetime':
         case 'datetimeoffset':
-            return { datatype: targetType, control: 'date', label, labelForParameter };
+            return { datatype: targetType, control: 'datetime', label, labelForParameter, granularity: TimeGranularity.minutes };
         case 'geography':
         case 'hierarchyid':
             return { datatype: targetType, control: 'unsupported', label, labelForParameter };
@@ -409,28 +411,40 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
             return mergeFallbackNumericDescriptors(d1, d2, label, labelForParameter);
 
         case 'date':
-            return {
-                datatype: 'date',
-                control: 'date',
-                label,
-                labelForParameter
-            };
+            if (d2.datatype === 'date') {
+                return {
+                    datatype: 'date',
+                    control: 'date',
+                    granularity: Math.max(d1.granularity, d2.granularity),
+                    label,
+                    labelForParameter
+                };
+            }
+            break;
 
         case 'datetime':
-            return {
-                datatype: 'datetime',
-                control: 'datetime',
-                label,
-                labelForParameter
-            };
+            if (d2.datatype === 'datetime') {
+                return {
+                    datatype: 'datetime',
+                    control: d1.control === 'date' && d2.control === 'date' ? 'date' : 'datetime',
+                    granularity: Math.max(d1.granularity, d2.granularity),
+                    label,
+                    labelForParameter
+                };
+            }
+            break;
 
         case 'datetimeoffset':
-            return {
-                datatype: 'datetimeoffset',
-                control: 'datetime',
-                label,
-                labelForParameter
-            };
+            if (d2.datatype === 'datetimeoffset') {
+                return {
+                    datatype: 'datetimeoffset',
+                    control: d1.control === 'date' && d2.control === 'date' ? 'date' : 'datetime',
+                    granularity: Math.max(d1.granularity, d2.granularity),
+                    label,
+                    labelForParameter
+                };
+            }
+            break;
 
         case 'bit':
             return {
@@ -1392,6 +1406,23 @@ export class QueryexUtil {
                         }
                     }
 
+                    case 'adddays':
+                    case 'addmonths':
+                    case 'addyears': {
+                        // Arg #2 Date
+                        if (targetType === 'date' || targetType === 'datetime' || targetType === 'datetimeoffset') {
+                            const arg2 = addDatePartParameters(ex);
+                            const arg2Desc = tryDescImpl(arg2, target);
+                            if (!!arg2Desc) {
+                                return { ...arg2Desc, label: noLabel(trx) };
+                            } else {
+                                return undefined;
+                            }
+                        } else {
+                            return undefined;
+                        }
+                    }
+
                     case 'if': {
                         const { arg2, arg3 } = ifParameters(ex);
 
@@ -1399,7 +1430,7 @@ export class QueryexUtil {
                         const arg3Desc = tryDescImpl(arg3, target);
 
                         if (!!arg2Desc && !!arg3Desc) {
-                            return mergeDescriptors(arg2Desc, arg3Desc, giveupLabel(trx));
+                            return mergeDescriptors(arg2Desc, arg3Desc, noLabel(trx));
                         } else {
                             return undefined;
                         }
@@ -1412,9 +1443,29 @@ export class QueryexUtil {
                         const arg2Desc = tryDescImpl(arg2, target);
 
                         if (!!arg1Desc && !!arg2Desc) {
-                            return mergeDescriptors(arg1Desc, arg2Desc, giveupLabel(trx));
+                            return mergeDescriptors(arg1Desc, arg2Desc, noLabel(trx));
                         } else {
                             return undefined;
+                        }
+                    }
+
+                    case 'today': {
+                        if (ex.arguments.length > 0) {
+                            throw new Error(`Function '${ex.name}' does not accept any arguments.`);
+                        }
+
+                        switch (targetType) {
+                            case 'date':
+                            case 'datetime':
+                                return {
+                                    datatype: targetType,
+                                    control: 'date',
+                                    label: () => trx.instant('Today'),
+                                    granularity: DateGranularity.days
+                                };
+
+                            default:
+                                return undefined;
                         }
                     }
                 }
@@ -1429,19 +1480,167 @@ export class QueryexUtil {
                             if (!!hintDesc) {
                                 return hintDesc;
                             } else {
-                                const label = giveupLabel(trx);
+                                const label = noLabel(trx);
                                 if (targetType === 'date') {
-                                    const control = 'date';
-                                    return { datatype: targetType, control, label };
-
+                                    return { datatype: targetType, control: 'date', label, granularity: DateGranularity.days };
                                 } else {
-                                    const control = 'datetime';
-                                    return { datatype: targetType, control, label };
+                                    return { datatype: targetType, control: 'datetime', label, granularity: TimeGranularity.minutes };
                                 }
                             }
                         } else {
                             return undefined;
                         }
+
+                        // Valid inputs are ones that do not mess up client side date functions:
+                        // 2021
+                        // 2021-1
+                        // 2021-01
+                        // 2021-02-4
+                        // 2021-02-04
+                        // 2021-02-04T11:28
+                        // 2021-02-04T11:28:13.457
+                        // 2021-02-14T11:28:13.4573204Z
+                        // const sections = ex.value.split('T');
+                        // const dateSection = sections[0];
+                        // if (dateSection.includes('.')) {
+                        //     return undefined;
+                        // }
+
+                        // const dateParts = dateSection.split('-');
+
+                        // const year = dateParts[0].trim();
+                        // if (year.length !== 4) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < year.length; i++) {
+                        //     const c = year.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+
+                        // let month = dateParts[1].trim() || '01';
+                        // if (month.length > 2) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < month.length; i++) {
+                        //     const c = month.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+                        // if (month.length < 2) {
+                        //   month = '0' + month;
+                        // }
+
+                        // let day = dateParts[2].trim() || '01';
+                        // if (day.length > 2) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < day.length; i++) {
+                        //     const c = day.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+                        // if (day.length < 2) {
+                        //     day = '0' + day;
+                        // }
+
+                        // const timeSection = sections[1] || '';
+                        // const timeParts = timeSection.split(':');
+
+                        // let hour = timeParts[0] || '00';
+                        // if (hour.length > 2) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < hour.length; i++) {
+                        //     const c = hour.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+                        // if (hour.length < 2) {
+                        //     hour = '0' + hour;
+                        // }
+
+                        // let minute = timeParts[1] || '00';
+                        // if (minute.length > 2) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < minute.length; i++) {
+                        //     const c = minute.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+                        // if (minute.length < 2) {
+                        //     minute = '0' + minute;
+                        // }
+
+                        // const secondSection = timeParts[2] || '';
+                        // const secondParts = secondSection.split('.');
+                        // let second = secondParts[0] || '00';
+                        // if (second.length > 2) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < second.length; i++) {
+                        //     const c = second.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+                        // if (second.length < 2) {
+                        //     second = '0' + second;
+                        // }
+
+                        // let milliseconds = secondParts[1];
+                        // if (!milliseconds) {
+                        //     if (targetType === 'datetimeoffset') {
+                        //         milliseconds = '0000000';
+                        //     } else {
+                        //         milliseconds = '000';
+                        //     }
+                        // }
+                        // let endsWithZ = false;
+                        // if (milliseconds.endsWith('Z')) {
+                        //     milliseconds = milliseconds.slice(0, -1);
+                        //     endsWithZ = true;
+                        // }
+
+                        // if (milliseconds.length > 7) {
+                        //     return undefined;
+                        // }
+                        // for (let i = 0; i < milliseconds.length; i++) {
+                        //     const c = milliseconds.charAt(i);
+                        //     if (!isDigit(c)) {
+                        //         return undefined;
+                        //     }
+                        // }
+                        // let z = '';
+                        // if (targetType === 'datetimeoffset') {
+                        //     if (milliseconds.length < 7) {
+                        //         milliseconds = '000000'.substring(0, 7 - milliseconds.length) + milliseconds;
+                        //     }
+                        //     z = 'Z';
+                        // } else {
+                        //     if (endsWithZ) {
+                        //         return undefined; // Date and date time cannot end with Z
+                        //     }
+                        //     if (milliseconds.length < 3) {
+                        //         milliseconds = '00'.substring(0, 3 - milliseconds.length) + milliseconds;
+                        //     } else if (milliseconds.length > 3) {
+                        //         milliseconds = milliseconds.substr(0, 3);
+                        //     }
+                        // }
+
+                        // // Create the final output
+                        // const isoDate = `${year}-${month}-${day}T${hour}:${minute}:${second}.${milliseconds}${z}`;
+
+                        // // Check if the parts make up a valid date
+                        // if (isNaN(Date.parse(isoDate))) {
+                        //     return undefined;
+                        // }
                     }
                 }
             } else if (ex instanceof QueryexParameter) {
@@ -1506,7 +1705,7 @@ export class QueryexUtil {
             }
 
             // Default: try to cast it implicitly
-            const labelForParameter =  !!hintDesc ? hintDesc.labelForParameter : undefined;
+            const labelForParameter = !!hintDesc ? hintDesc.labelForParameter : undefined;
             const nativeDesc = nativeDescImpl(ex, labelForParameter);
             return implicitCast(nativeDesc, targetType, hintDesc);
         }
@@ -1725,41 +1924,48 @@ export class QueryexUtil {
                     case 'adddays':
                     case 'addmonths':
                     case 'addyears': {
-                        if (ex.arguments.length < 2 || ex.arguments.length > 3) {
-                            throw new Error(`No overload for function '${ex.name}' accepts ${ex.arguments.length} arguments.`);
-                        }
-
-                        // Arg #1 Number
-                        const arg1 = ex.arguments[0];
-                        const arg1Desc = tryDescImpl(arg1, 'numeric');
-                        if (!!arg1Desc) {
-                            // Hopefully not a nullable expression
-                        } else {
-                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a numeric.`);
-                        }
-
                         // Arg #2 Date
-                        const arg2 = ex.arguments[1];
-                        const arg2Desc = tryDescImpl(arg2, 'date') || tryDescImpl(arg2, 'datetime') || tryDescImpl(arg2, 'datetimeoffset');
+                        const arg2 = addDatePartParameters(ex);
+
+                        const arg2Desc = (tryDescImpl(arg2, 'date') || tryDescImpl(arg2, 'datetime') || tryDescImpl(arg2, 'datetimeoffset')) as DatePropDescriptor | DateTimePropDescriptor;
                         if (!arg2Desc) {
                             throw new Error(`Function '${ex.name}': The second argument ${arg2} could not be interpreted as a date, datetime or datetimeoffset.`);
                         }
 
-                        // Arg #3 Calendar
-                        let calendar: Calendar = 'GR'; // Gregorian
-                        if (ex.arguments.length >= 3) {
-                            const arg3 = ex.arguments[2];
-                            if (arg3 instanceof QueryexQuote) {
-                                calendar = arg3.value.toUpperCase() as Calendar;
-                                if (calendarsArray.indexOf(calendar) < 0) {
-                                    throw new Error(`Function '${ex.name}': The third argument ${arg3} must be one of the supported calendars: '${calendarsArray.join(`', '`)}'.`);
-                                }
-                            } else {
-                                throw new Error(`Function '${ex.name}': The third argument must be a simple quote like this: 'UQ'.`);
+                        let granularity: DateGranularity;
+                        if (arg2Desc.control === 'date' || arg2Desc.control === 'datetime') {
+                            granularity = arg2Desc.granularity as DateGranularity;
+                            if (nameLower === 'adddays') {
+                                granularity = Math.max(granularity, DateGranularity.days);
+                            } else if (nameLower === 'addmonths') {
+                                granularity = Math.max(granularity, DateGranularity.months);
                             }
                         }
 
-                        return { ...arg2Desc };
+                        return { ...arg2Desc, granularity, label: noLabel(trx) };
+                    }
+
+                    case 'date':
+                    case 'startofmonth':
+                    case 'startofyear': {
+                        const expectedArgCount = 1;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        const arg1Desc = tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset');
+                        if (!!arg1Desc) {
+                            const granularity = nameLower === 'startofyear' ? DateGranularity.years : nameLower === 'startofmonth' ? DateGranularity.months : DateGranularity.days;
+                            return {
+                                datatype: 'date',
+                                control: 'date',
+                                label: noLabel(trx),
+                                granularity
+                            };
+                        } else {
+                            throw new Error(`Function '${ex.name}': The argument ${arg1} could not be interpreted as a date, datetime or datetimeoffset.`);
+                        }
                     }
 
                     case 'not': {
@@ -1774,7 +1980,7 @@ export class QueryexUtil {
                             return { ...arg1Desc };
 
                         } else {
-                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a boolean.`);
+                            throw new Error(`Function '${ex.name}': The argument ${arg1} could not be interpreted as a boolean.`);
                         }
                     }
 
@@ -1790,7 +1996,7 @@ export class QueryexUtil {
                             return { ...arg1Desc };
 
                         } else {
-                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a numeric.`);
+                            throw new Error(`Function '${ex.name}': The argument ${arg1} could not be interpreted as a numeric.`);
                         }
                     }
 
@@ -1819,7 +2025,7 @@ export class QueryexUtil {
                             throw new Error(`Function '${ex.name}' cannot be used on expressions ${arg2} (${arg2Type}) and ${arg3} (${arg3Type}) because they have incompatible data types.`);
                         }
 
-                        return mergeDescriptors(arg2Desc, arg3Desc, giveupLabel(trx));
+                        return mergeDescriptors(arg2Desc, arg3Desc, noLabel(trx));
                     }
 
                     case 'isnull': {
@@ -1847,7 +2053,7 @@ export class QueryexUtil {
                             throw new Error(`Function '${ex.name}' cannot be used on expressions ${arg1} (${arg1Type}) and ${arg2} (${arg2Type}) because they have incompatible data types.`);
                         }
 
-                        return mergeDescriptors(arg1Desc, arg2Desc, giveupLabel(trx));
+                        return mergeDescriptors(arg1Desc, arg2Desc, noLabel(trx));
                     }
 
                     case 'today': {
@@ -1858,7 +2064,8 @@ export class QueryexUtil {
                         return {
                             datatype: 'date',
                             control: 'date',
-                            label: () => trx.instant('Today')
+                            label: () => trx.instant('Today'),
+                            granularity: DateGranularity.days
                         };
                     }
 
@@ -1870,7 +2077,8 @@ export class QueryexUtil {
                         return {
                             datatype: 'datetimeoffset',
                             control: 'datetime',
-                            label: () => trx.instant('Now')
+                            label: () => trx.instant('Now'),
+                            granularity: TimeGranularity.minutes
                         };
                     }
 
@@ -1902,7 +2110,7 @@ export class QueryexUtil {
                         let leftDesc = tryDescImpl(ex.left, 'numeric');
                         let rightDesc = tryDescImpl(ex.right, leftDesc || 'numeric');
 
-                        const label = giveupLabel(trx);
+                        const label = noLabel(trx);
 
                         if (!leftDesc || !rightDesc) {
                             leftDesc = tryDescImpl(ex.left, 'string');
@@ -1938,7 +2146,7 @@ export class QueryexUtil {
                             throw new Error(`Operator '${ex.operator}': Right operand ${ex.right} could not be interpreted as a numeric.`);
                         }
 
-                        const label = giveupLabel(trx);
+                        const label = noLabel(trx);
                         return mergeArithmeticNumericDescriptors(leftDesc, rightDesc, label);
                     }
 
@@ -1959,7 +2167,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: giveupLabel(trx)
+                            label: noLabel(trx)
                         };
                     }
 
@@ -2003,7 +2211,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: giveupLabel(trx)
+                            label: noLabel(trx)
                         };
                     }
 
@@ -2046,7 +2254,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: giveupLabel(trx)
+                            label: noLabel(trx)
                         };
                     }
 
@@ -2066,7 +2274,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: giveupLabel(trx)
+                            label: noLabel(trx)
                         };
                     }
                 }
@@ -2089,7 +2297,7 @@ export class QueryexUtil {
                                 control: desc.control,
                                 maxDecimalPlaces: desc.maxDecimalPlaces,
                                 minDecimalPlaces: desc.minDecimalPlaces,
-                                label: giveupLabel(trx),
+                                label: noLabel(trx),
                                 isRightAligned: desc.isRightAligned,
                                 noSeparator: desc.noSeparator
                             };
@@ -2100,7 +2308,7 @@ export class QueryexUtil {
                                 control: 'number',
                                 maxDecimalPlaces: 0,
                                 minDecimalPlaces: 0,
-                                label: giveupLabel(trx),
+                                label: noLabel(trx),
                                 isRightAligned: false,
                                 noSeparator: false
                             };
@@ -2117,7 +2325,7 @@ export class QueryexUtil {
                         return {
                             datatype: 'boolean',
                             control: 'unsupported',
-                            label: giveupLabel(trx)
+                            label: noLabel(trx)
                         };
                     }
                 }
@@ -2222,6 +2430,25 @@ export class QueryexUtil {
             return { arg1, arg2 };
         }
 
+        function addDatePartParameters(ex: QueryexFunction): QueryexBase {
+            const expectedArgCount = 2;
+            if (ex.arguments.length !== expectedArgCount) {
+                throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+            }
+
+            // Arg #1 Number
+            const arg1 = ex.arguments[0];
+            const arg1Desc = tryDescImpl(arg1, 'numeric');
+            if (!!arg1Desc) {
+                // Hopefully not a nullable expression
+            } else {
+                throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a numeric.`);
+            }
+
+            // Arg #2 Date
+            return ex.arguments[1];
+        }
+
         if (!!t) {
             return tryDescImpl(expression, t);
         } else {
@@ -2242,7 +2469,7 @@ export class QueryexUtil {
         function evaluate(ex: QueryexBase) {
 
             if (ex instanceof QueryexColumnAccess) {
-
+                throw new Error(`Client side evaluation of QueryexColumnAccess not possible.`);
             } else if (ex instanceof QueryexFunction) {
                 const nameLower = ex.name.toLowerCase();
                 switch (nameLower) {
@@ -2262,23 +2489,96 @@ export class QueryexUtil {
                     case 'month':
                     case 'day':
                     case 'weekday': {
-                        throw new Error(`Not implemented`);
+                        const inputDateString = evaluate(ex.arguments[0]);
+                        if (inputDateString === null) {
+                            return null;
+                        }
+
+                        let calendar: Calendar = 'GR';
+                        if (ex.arguments.length > 1) {
+                            calendar = (evaluate(ex.arguments[1]) as Calendar) || 'GR';
+                        }
+
+                        if (calendar === 'GR') {
+                            const date = new Date(inputDateString) as Date;
+                            switch (nameLower) {
+                                case 'year':
+                                    return date.getFullYear();
+                                case 'quarter':
+                                    return Math.floor(date.getMonth() / 3) + 1;
+                                case 'month':
+                                    return date.getMonth() + 1; // Javascript months are 0-based
+                                case 'day':
+                                    return date.getDate();
+                                case 'weekday':
+                                    return (date.getDay() + 1) % 7; // SQL's weekday is 1 ahead of javascript's
+                                default:
+                                    return; // To keep the TS compiler happy
+                            }
+
+                        } else {
+                            throw new Error(`Calendars other than Gregorian are not yet implemented on the client side.`);
+                        }
                     }
 
-                    case 'adddays': {
+                    case 'adddays':
+                    case 'addmonths':
+                    case 'addyears': {
                         const n = evaluate(ex.arguments[0]);
                         if (n === null) {
                             return null;
                         }
 
-                        const date = new Date(evaluate(ex.arguments[1]));
-                        date.setDate(date.getDate() + n);
-                        return toLocalDateISOString(date); // TODO: handle datetimeoffset
+                        const inputDateString = evaluate(ex.arguments[1]);
+                        if (inputDateString === null) {
+                            return null;
+                        }
+
+                        const date = new Date(inputDateString) as Date;
+                        switch (nameLower) {
+                            case 'adddays':
+                                date.setDate(date.getDate() + n);
+                                break;
+                            case 'addmonths':
+                                date.setMonth(date.getMonth() + n);
+                                break;
+                            case 'addyears':
+                                date.setFullYear(date.getFullYear() + n);
+                                break;
+                        }
+
+                        if (inputDateString.endsWith('Z')) {
+                            // With datetimeoffsets we can safely use toISOString but we have to adjust
+                            // the number of decimal places from 3 to 7 as per our web server format
+                            const outputDateString = date.toISOString(); // yyyy-MM-ddThh:mm:ss.fffZ
+                            const dateUpToSeconds = outputDateString.split('.')[0]; // yyyy-MM-ddThh:mm:ss
+                            const millisecondsAndZ = inputDateString.split('.')[1]; // fffffffZ
+                            return `${dateUpToSeconds}.${millisecondsAndZ}`; // yyyy-MM-ddThh:mm:ss.fffffffZ
+                        } else {
+                            return toLocalDateTimeISOString(date); // yyyy-MM-ddThh:mm:ss.fff
+                        }
                     }
 
-                    case 'addmonths':
-                    case 'addyears': {
-                        throw new Error(`Not implemented`);
+                    case 'date':
+                    case 'startofmonth':
+                    case 'startofyear': {
+                        const inputDateString = evaluate(ex.arguments[0]);
+                        if (inputDateString === null) {
+                            return null;
+                        }
+
+                        const date = new Date(inputDateString) as Date;
+                        switch (nameLower) {
+                            case 'startofmonth':
+                                date.setDate(1);
+                                break;
+                            case 'startofyear':
+                                date.setDate(1);
+                                date.setMonth(0);
+                                break;
+                        }
+
+                        return `${toLocalDateOnlyISOString(date)}T00:00:00.000`;
                     }
 
                     case 'not': {
@@ -2302,10 +2602,10 @@ export class QueryexUtil {
                     }
 
                     case 'today':
-                        return toLocalDateISOString(new Date());
+                        return todayISOString();
 
                     case 'now':
-                        return new Date().toISOString();
+                        return nowISOString();
 
                     case 'me':
                         return wss.currentTenant.userSettings.UserId;
@@ -2358,7 +2658,7 @@ export class QueryexUtil {
                         return left === right; // JS handles nulls the way we want it
 
                     case 'descof': {
-                        // Not possible in theory
+                        // Not possible to reach here in theory
                         throw new Error(`descof not implemented`);
                     }
 

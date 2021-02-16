@@ -7,6 +7,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { Collection, Control, EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionVisibility as Visibility, MainMenuSection, MainMenuIcon, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
+import { TimeGranularity } from './base/metadata-types';
 
 export type ReportOrderDirection = 'asc' | 'desc';
 export type ReportType = 'Summary' | 'Details';
@@ -236,9 +237,9 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
                 ShowInMainMenu: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

@@ -241,9 +241,9 @@ namespace Tellma.Controllers
             var (data, _, _, count) = await GetEntities(factArgs, cancellation);
 
             // Step 3: Load the opening balances
-            string valueExp = $"sum({nameof(DetailsEntry.AlgebraicValue)})";
-            string quantityExp = $"sum({nameof(DetailsEntry.AlgebraicQuantity)})";
-            string monetaryValueExp = $"sum({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
+            string valueExp = $"sum({nameof(DetailsEntry.Value)} * {nameof(DetailsEntry.Direction)})";
+            string quantityExp = $"sum({nameof(DetailsEntry.Quantity)} * {nameof(DetailsEntry.Direction)})";
+            string monetaryValueExp = $"sum({nameof(DetailsEntry.MonetaryValue)} * {nameof(DetailsEntry.Direction)})";
             var openingArgs = new GetAggregateArguments
             {
                 Filter = beforeOpeningFilter,
@@ -266,7 +266,7 @@ namespace Tellma.Controllers
                 entry.Accumulation = acc;
                 entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
 
-                accQuantity += entry.AlgebraicQuantity ?? 0m; // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
+                accQuantity += (entry.BaseQuantity ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
                 entry.QuantityAccumulation = accQuantity;
                 entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
 

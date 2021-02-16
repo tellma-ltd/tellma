@@ -7,6 +7,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export type PositiveLineState = 0 | 1 | 2 | 3 | 4;
 export type NegativeLineState = -1 | -2 | -3 | -4;
@@ -70,7 +71,7 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
                 DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { datatype: 'entity', control: 'LineDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
-                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Line_PostingDate') },
+                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Line_PostingDate'), granularity: DateGranularity.days },
                 TemplateLineId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 TemplateLine: { datatype: 'entity', control: 'LineForQuery', label: () => trx.instant('Line_TemplateLine'), foreignKeyName: 'TemplateLineId' },
                 Multiplier: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
@@ -107,9 +108,9 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 },
 
                 // Audit
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

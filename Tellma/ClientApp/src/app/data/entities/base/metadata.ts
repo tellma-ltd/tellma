@@ -37,6 +37,7 @@ import { metadata_LineDefinition } from '../line-definition';
 import { metadata_DocumentDefinition } from '../document-definition';
 import { metadata_Email } from '../email';
 import { metadata_SmsMessage } from '../sms-message';
+import { DateGranularity, DateTimeGranularity } from './metadata-types';
 
 export const metadata: {
     [collection: string]: (
@@ -295,11 +296,12 @@ export interface UnsupportedPropVisualDescriptor extends PropVisualDescriptorBas
     control: 'unsupported';
 }
 
-export interface DatetimePropDescriptor extends DatetimePropVisualDescriptor, PropDescriptorBase {
+export interface DateTimePropDescriptor extends DateTimePropVisualDescriptor, PropDescriptorBase {
     datatype: 'datetimeoffset' | 'datetime';
 }
-export interface DatetimePropVisualDescriptor extends PropVisualDescriptorBase {
+export interface DateTimePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'datetime';
+    granularity: DateTimeGranularity;
 }
 
 export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescriptorBase {
@@ -307,6 +309,7 @@ export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescri
 }
 export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'date';
+    granularity: DateGranularity;
 }
 
 export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {
@@ -428,12 +431,12 @@ export interface NavigationPropVisualDescriptor extends PropVisualDescriptorBase
     filter?: string;
 }
 
-export declare type PropVisualDescriptor = UnsupportedPropVisualDescriptor | DatetimePropVisualDescriptor |
+export declare type PropVisualDescriptor = UnsupportedPropVisualDescriptor | DateTimePropVisualDescriptor |
     DatePropVisualDescriptor | NumberPropVisualDescriptor | BitPropVisualDescriptor | TextPropVisualDescriptor |
     NullPropVisualDescriptor | NavigationPropVisualDescriptor | ChoicePropVisualDescriptor | PercentPropVisualDescriptor |
     SerialPropVisualDescriptor;
 
-export declare type PropDescriptor = UnsupportedPropDescriptor | DatetimePropDescriptor |
+export declare type PropDescriptor = UnsupportedPropDescriptor | DateTimePropDescriptor |
     DatePropDescriptor | NumberPropDescriptor | BitPropDescriptor | TextPropDescriptor |
     NullPropDescriptor | NavigationPropDescriptor | ChoicePropDescriptor | PercentPropDescriptor |
     SerialPropDescriptor;

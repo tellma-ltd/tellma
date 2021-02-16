@@ -2408,15 +2408,6 @@ namespace Tellma.Controllers
             // Step #1 - Add the header properties of the document
             var def = Definition();
             var docProps = GetDefaultSimplePropertyMappings(docMetaForSave, docMeta, 0);
-            if (def.IsOriginalDocument)
-            {
-                // Original documents auto-compute the serial number
-                docProps = docProps.Where(e => e.Metadata.Descriptor.Name != nameof(Document.SerialNumber)).ToList();
-                foreach (var (docProp, index) in docProps.Select((e, i) => (e, i)))
-                {
-                    docProp.Index = index;
-                }
-            }
             int nextAvailableIndex = docProps.Count;
 
             // Step #2 - Add the tabs

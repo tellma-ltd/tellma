@@ -5,6 +5,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { formatDate } from '@angular/common';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export interface ExchangeRateForSave extends EntityWithKey {
     CurrencyId?: string;
@@ -45,8 +46,8 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('ExchangeRate_Currency'), foreignKeyName: 'CurrencyId' },
-                ValidAsOf: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
-                ValidTill: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidTill') },
+                ValidAsOf: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf'), granularity: DateGranularity.days },
+                ValidTill: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidTill'), granularity: DateGranularity.days },
                 AmountInCurrency: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true, noSeparator: false },
                 AmountInFunctional: {
                     datatype: 'numeric',
@@ -58,9 +59,9 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
                 },
                 Rate: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true, noSeparator: false },
 
-                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
-                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
                 ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };

@@ -42,75 +42,18 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 
-        [Display(Name = "DetailsEntry_AlgebraicQuantity")]
-        public decimal? AlgebraicQuantity { get; set; }
-
-        [Display(Name = "DetailsEntry_NegativeAlgebraicQuantity")]
-        public decimal? NegativeAlgebraicQuantity { get; set; }
-
         [Display(Name = "Entry_Unit")]
         public int? UnitId { get; set; }
 
         [Display(Name = "Entry_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
 
-        [Display(Name = "DetailsEntry_AlgebraicMonetaryValue")]
-        public decimal? AlgebraicMonetaryValue { get; set; }
-
-        [Display(Name = "DetailsEntry_NegativeAlgebraicMonetaryValue")]
-        public decimal? NegativeAlgebraicMonetaryValue { get; set; }
-
         [Display(Name = "Entry_Currency")]
         [NotNull]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "DetailsEntry_Count")]
-        public decimal? Count { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicCount")]
-        public decimal? AlgebraicCount { get; set; }
-
-        [Display(Name = "DetailsEntry_Mass")]
-        public decimal? Mass { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicMass")]
-        public decimal? AlgebraicMass { get; set; }
-
-        [Display(Name = "DetailsEntry_Volume")]
-        public decimal? Volume { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicVolume")]
-        public decimal? AlgebraicVolume { get; set; }
-
-        [Display(Name = "DetailsEntry_Time")]
-        public decimal? Time { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicTime")]
-        public decimal? AlgebraicTime { get; set; }
-
         [Display(Name = "Entry_Value")]
         public decimal? Value { get; set; }
-
-        [Display(Name = "DetailsEntry_Actual")]
-        public decimal? Actual { get; set; }
-
-        [Display(Name = "DetailsEntry_Planned")]
-        public decimal? Planned { get; set; }
-
-        [Display(Name = "DetailsEntry_Variance")]
-        public decimal? Variance { get; set; }
-
-        [Display(Name = "Entry_AlgebraicValue")]
-        public decimal? AlgebraicValue { get; set; }
-
-        [Display(Name = "Entry_NegativeAlgebraicValue")]
-        public decimal? NegativeAlgebraicValue { get; set; }
-
-        [Display(Name = "DetailsEntry_MonetaryValuePerUnit")]
-        public decimal? MonetaryValuePerUnit { get; set; }
-
-        [Display(Name = "DetailsEntry_ValuePerUnit")]
-        public decimal? ValuePerUnit { get; set; }
 
         [Display(Name = "Entry_Time1")]
         [IncludesTime]
@@ -134,6 +77,12 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_NotedDate")]
         public DateTime? NotedDate { get; set; }
+
+        [Display(Name = "DetailsEntry_BaseQuantity")]
+        public decimal? BaseQuantity { get; set; }
+
+        [Display(Name = "DetailsEntry_BaseUnit")]
+        public int? BaseUnitId { get; set; }
 
         [NotMapped]
         [Display(Name = "DetailsEntry_Accumulation")]
@@ -188,5 +137,9 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Unit")]
         [ForeignKey(nameof(UnitId))]
         public Unit Unit { get; set; }
+
+        [Display(Name = "DetailsEntry_BaseUnit")]
+        [ForeignKey(nameof(CurrencyId))]
+        public Unit BaseUnit { get; set; }
     }
 }

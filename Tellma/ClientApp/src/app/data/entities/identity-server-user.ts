@@ -3,6 +3,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { AdminSettingsForClient } from '../dto/admin-settings-for-client';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface IdentityServerUser extends EntityWithKey {
     Email?: string;
@@ -41,7 +42,10 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
                     datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled')
                 },
                 LockoutEnd: {
-                    datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('IdentityServerUser_LockoutEnd')
+                    datatype: 'datetimeoffset',
+                    control: 'datetime',
+                    label: () => trx.instant('IdentityServerUser_LockoutEnd'),
+                    granularity: TimeGranularity.minutes
                 },
             }
         };

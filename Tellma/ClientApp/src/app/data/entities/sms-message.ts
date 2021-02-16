@@ -3,6 +3,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export type SmsMessageState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4;
 const smsStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
@@ -65,8 +66,8 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
                 }
             },
             ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
-            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince') },
-            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt') },
+            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },
+            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         }
     };
 

@@ -184,7 +184,7 @@ export class Queryex {
             let matchingSymbol = symbols.find(symbol => (expArray.length - i) >= symbol.length &&
                 Array.from(Array(symbol.length).keys()).every(j => symbol[j] === expArray[i + j].toLowerCase()));
 
-            // TODO: all alphabetic operators
+            // all alphabetic operators
             if (isAlphabeticOperator(matchingSymbol)) {
                 const prevIndex = i - 1;
                 const precededProperly = prevIndex < 0 || !QueryexColumnAccess.properChar(expArray[prevIndex]);
@@ -891,7 +891,7 @@ export class QueryexNumber extends QueryexBase {
     }
 
     public toString(): string {
-        return this.value.toString();
+        return this.value.toFixed(this.decimals);
     }
 
     public children(): QueryexBase[] {
@@ -1051,14 +1051,14 @@ export function DeBracket(str: string) {
     return str;
 }
 
-function isDigit(c: string): boolean {
+export function isDigit(c: string): boolean {
     return c >= '0' && c <= '9';
 }
 
-function isLetter(c: string): boolean {
+export function isLetter(c: string): boolean {
     return c.toLowerCase() !== c.toUpperCase(); // Only true for A-Z
 }
 
-function isLetterOrDigit(c: string): boolean {
+export function isLetterOrDigit(c: string): boolean {
     return isLetter(c) || isDigit(c);
 }

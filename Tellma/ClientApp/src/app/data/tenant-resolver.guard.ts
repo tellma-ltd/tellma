@@ -23,7 +23,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 export const SETTINGS_METAVERSION = '1.6';
 export const DEFINITIONS_METAVERSION = '4.99';
 export const PERMISSIONS_METAVERSION = '1.0';
-export const USER_SETTINGS_METAVERSION = '1.0';
+export const USER_SETTINGS_METAVERSION = '1.1';
 
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }
