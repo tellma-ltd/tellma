@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[DuplicateSalesInvoices]
+﻿CREATE PROCEDURE [rpt].[SalesInvoices__Duplicates]
 AS
 	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenue');
 	WITH RevenueAccounts AS (
@@ -8,7 +8,7 @@ AS
 			WHERE [Node].IsDescendantOf(@RevenueNode) = 1
 		)
 	)
-	SELECT DISTINCT E.[ExternalReference] As Invoice, D.[Code]
+	SELECT DISTINCT E.[InternalReference] As Invoice, D.[Code]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]

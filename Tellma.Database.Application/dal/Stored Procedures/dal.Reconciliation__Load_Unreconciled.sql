@@ -49,8 +49,11 @@ AS
 	AND E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 	AND E.[PostingDate] <= @AsOfDate
 	
-	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber],
-			CAST(IIF(E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries), 1, 0) AS BIT) AS IsReconciledLater
+	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue],
+--		E.[ExternalReference],
+		IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
+		L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber],
+		CAST(IIF(E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
