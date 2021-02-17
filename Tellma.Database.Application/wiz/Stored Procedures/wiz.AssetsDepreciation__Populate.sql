@@ -9,7 +9,7 @@ BEGIN
 	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEDepreciation');
 	DECLARE @PureUnitId INT = (SELECT [Id] FROM dbo.Units WHERE [Code] = N'Pure');
-/*
+
 	WITH PPEAccountIds AS (
 		SELECT [Id] FROM dbo.[Accounts]
 		WHERE [IsActive] = 1
@@ -63,8 +63,8 @@ BEGIN
 		-- never depreciated for the period
 		AND (LDD.LastDepreciationDate IS NULL OR LDD.LastDepreciationDate < @DepreciationPeriodEnds)
 		-- depreciation date start has passed
-		AND FDD.FirstDepreciationDate >= @DepreciationPeriodEnds
-		GROUP BY E.[ResourceId]
+		AND FDD.FirstDepreciationDate <= @DepreciationPeriodEnds
+		GROUP BY E.[ResourceId], FirstDepreciationDate, LastDepreciationDate
 		-- there is value to depreciate
 		HAVING SUM(E.[Direction] * E.[MonetaryValue]) > 0
 	)
@@ -82,7 +82,7 @@ BEGIN
 	JOIN DepreciablePPEs DPPE ON R.[Id] = DPPE.[ResourceId]
 	LEFT JOIN LastDepreciationDates LDD ON DPPE.[ResourceId] = LDD.[ResourceId]
 	LEFT JOIN LastCostCenters LCC ON R.[Id] = LCC.[ResourceId]
-	*/
+
 	SELECT * FROM @WideLines;
 END
 GO

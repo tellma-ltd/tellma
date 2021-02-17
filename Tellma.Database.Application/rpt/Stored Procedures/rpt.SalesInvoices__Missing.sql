@@ -13,9 +13,9 @@ AS
 	INSERT INTO @IssuedInvoices VALUES
 	(1, 698), -- 671 Sebeta
 	(662, 2996), -- Assela
-	(1357, 1486), -- HQ
-	(451, 1177), -- Aman
-	(1, 205);-- Gadisa
+	(1357, 1490), -- HQ
+	(451, 1179), -- Aman
+	(1, 224);-- Gadisa
 
 	DECLARE @InvoiceRepetitions TABLE (
 		InvoiceId		INT PRIMARY KEY,
