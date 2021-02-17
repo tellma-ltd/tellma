@@ -20,16 +20,19 @@ namespace Tellma.Entities
             "Entry_ExternalReference", "Entry_InternalReference",
             "Entry_NotedAgentName", "Entry_NotedAmount", "Entry_NotedDate" })]
         [Required]
+        [NotNull]
         public string ColumnName { get; set; }
 
         [Display(Name = "LineDefinitionColumn_EntryIndex")]
         [Required]
+        [NotNull]
         public int? EntryIndex { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(50)]
         [AlwaysAccessible]
         [Required]
+        [NotNull]
         public string Label { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Secondary)]
@@ -46,11 +49,13 @@ namespace Tellma.Entities
         public string Filter { get; set; }
 
         [Display(Name = "LineDefinitionColumn_InheritsFromHeader")]
+        [NotNull]
         [ChoiceList(new object[] { InheritsFrom.None, InheritsFrom.TabHeader, InheritsFrom.DocumentHeader },
             new string[] { "InheritsFrom_0", "InheritsFrom_1", "InheritsFrom_2" })]
         public byte? InheritsFromHeader { get; set; }
 
         [Display(Name = "LineDefinitionColumn_VisibleState")]
+        [NotNull]
         [ChoiceList(new object[] {
             LineState.Draft,
             LineState.Requested,
@@ -70,6 +75,7 @@ namespace Tellma.Entities
         public short? VisibleState { get; set; }
 
         [Display(Name = "LineDefinitionColumn_RequiredState")]
+        [NotNull]
         [ChoiceList(new object[] {
             LineState.Draft,
             LineState.Requested,
@@ -89,6 +95,7 @@ namespace Tellma.Entities
         public short? RequiredState { get; set; }
 
         [Display(Name = "LineDefinitionColumn_ReadOnlyState")]
+        [NotNull]
         [ChoiceList(new object[] {
             LineState.Draft,
             LineState.Requested,
@@ -111,12 +118,15 @@ namespace Tellma.Entities
     public class LineDefinitionColumn : LineDefinitionColumnForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
         [Display(Name = "LineDefinitionColumn_LineDefinition")]
+        [NotNull]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

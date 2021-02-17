@@ -8,11 +8,13 @@ namespace Tellma.Entities
     {
         [Display(Name = "Parameter_Key")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Key { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Label { get; set; }
@@ -28,12 +30,14 @@ namespace Tellma.Entities
         public string Label3 { get; set; }
 
         [Display(Name = "Parameter_Visibility")]
+        [NotNull]
         [AlwaysAccessible]
         [VisibilityChoiceList]
         public string Visibility { get; set; }
 
         [Display(Name = "Definition_Control")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Control { get; set; }
@@ -47,12 +51,15 @@ namespace Tellma.Entities
     public class LineDefinitionGenerateParameter : LineDefinitionGenerateParameterForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
         [Display(Name = "Parameter_LineDefinition")]
+        [NotNull]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

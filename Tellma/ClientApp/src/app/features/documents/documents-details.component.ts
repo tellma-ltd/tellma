@@ -1668,7 +1668,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Quantity + Unit
 
-  public showQuantityAndUnit(entry: Entry): boolean {
+  public showQuantity(entry: Entry): boolean {
+    return !!this.resource(entry);
+  }
+
+  public showUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
     const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
     return !!resourceDef && !!resourceDef.UnitCardinality;

@@ -491,7 +491,8 @@
                     </div>
 
                     <!-- Having -->
-                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)" *ngIf="showHaving(model)">
+                    <div class="form-group" [class.is-invalid]="invalid(having, model.serverErrors?.Having)"
+                        *ngIf="showHaving(model)">
                         <label class="small" for="having">{{ 'ReportDefinition_Having' | translate }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="6" id="having" type="text"
                             [(ngModel)]="model.Having" (ngModelChange)="onHavingChanged(model)"
@@ -607,7 +608,8 @@
 
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="previewdrilldown"
-                                    (ngModelChange)="togglePreviewDrilldown(model)" [ngModel]="previewDrilldown" (ngModelChange)="onDefinitionChange(model)">
+                                    (ngModelChange)="togglePreviewDrilldown(model)" [ngModel]="previewDrilldown"
+                                    (ngModelChange)="onDefinitionChange(model)">
                                 <label class="custom-control-label" for="previewdrilldown">{{
                                     'Preview' | translate }}</label>
                             </div>
@@ -1011,6 +1013,42 @@
 
             </div>
 
+            <ng-container *ngIf="showDimensionControl(dimToEdit, modelRef)">
+
+                <!-- Control -->
+                <div class="form-group col-12 col-sm-6">
+                    <label class="small" for="orderdirection">{{ 'Definition_Control' | translate }}</label>
+                    <select class="form-control t-studio-input" [(ngModel)]="dimToEdit.Control"
+                        (ngModelChange)="dimToEditHasChanged = true; validateDimension(dimToEdit, modelRef);"
+                        #dimcontrol="ngModel">
+                        <option value=""></option>
+                        <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
+                            {{ c.name() }}</option>
+                        <option disabled>
+                            &#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;
+                        </option>
+                        <option *ngFor="let c of controlEntityChoices()" value="{{c.value}}">
+                            {{ c.name() }}</option>
+                    </select>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: dimcontrol, serverErrors: dimToEdit?.serverErrors?.Control }">
+                    </ng-container>
+                </div>
+
+                <!-- Control Options-->
+                <div class="form-group w-100" *ngIf="showOptions(dimToEdit.Control)">
+                    <t-control-options [control]="dimToEdit.Control" [isEdit]="true"
+                        [(ngModel)]="dimToEdit.ControlOptions" (ngModelChange)="dimToEditHasChanged = true"
+                        #dimcontroloptions="ngModel">
+                    </t-control-options>
+
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: dimcontroloptions, serverErrors: dimToEdit?.serverErrors?.ControlOptions }">
+                    </ng-container>
+                </div>
+
+            </ng-container>
+
             <div class="col-12" *ngIf="showClearOrderDirectionMessage(dimToEdit)">
                 <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'SettingHereWillClearFromMeasures' | translate }}
             </div>
@@ -1381,7 +1419,6 @@
                     *ngTemplateOutlet="errorsTemplate;context: { control: defaultexpression, serverErrors: paramToEdit.serverErrors?.DefaultExpression }">
                 </ng-container>
             </div>
-
 
             <!-- Control -->
             <div class="form-group col-12 col-sm-6">

@@ -9,6 +9,7 @@ namespace Tellma.Entities
     public class WorkflowForSave<TWorkflowSignature> : EntityWithKey<int>
     {
         [Display(Name = "Workflow_ToState")]
+        [NotNull]
         [ChoiceList(new object[] {
             LineState.Requested,
             LineState.Authorized,
@@ -35,9 +36,11 @@ namespace Tellma.Entities
     public class Workflow : WorkflowForSave<WorkflowSignature>
     {
         [Display(Name = "Workflow_LineDefinition")]
+        [NotNull]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

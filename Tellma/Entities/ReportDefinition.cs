@@ -10,6 +10,7 @@ namespace Tellma.Entities
     public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
@@ -46,6 +47,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ReportDefinition_Type")]
         [Required]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "Summary", "Details" },
             new string[] { "ReportDefinition_Type_Summary", "ReportDefinition_Type_Details" })]
@@ -88,6 +90,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ReportDefinition_Collection")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Collection { get; set; }
@@ -210,15 +213,19 @@ namespace Tellma.Entities
     public class ReportDefinition : ReportDefinitionForSave<ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect>
     {
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query
@@ -236,6 +243,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "Parameter_Key")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Key { get; set; }
@@ -278,8 +286,10 @@ namespace Tellma.Entities
 
     public class ReportDefinitionParameter : ReportDefinitionParameterForSave
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
@@ -287,11 +297,13 @@ namespace Tellma.Entities
     {
         [Display(Name = "ReportDefinition_Expression")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Expression { get; set; }
 
         [Display(Name = "ReportDefinition_Localize")]
+        [NotNull]
         public bool? Localize { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
@@ -322,8 +334,10 @@ namespace Tellma.Entities
 
     public class ReportDefinitionSelect : ReportDefinitionSelectForSave
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
@@ -331,6 +345,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "ReportDefinition_KeyExpression")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string KeyExpression { get; set; }
@@ -341,6 +356,7 @@ namespace Tellma.Entities
         public string DisplayExpression { get; set; }
 
         [Display(Name = "ReportDefinition_Localize")]
+        [NotNull]
         public bool? Localize { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
@@ -369,8 +385,19 @@ namespace Tellma.Entities
         public int? AutoExpandLevel { get; set; }
 
         [Display(Name = "ReportDefinition_ShowAsTree")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? ShowAsTree { get; set; }
+
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
 
         [Display(Name = "ReportDefinition_Attributes")]
         [ForeignKey(nameof(ReportDefinitionDimensionAttribute.ReportDefinitionDimensionId))]
@@ -385,8 +412,10 @@ namespace Tellma.Entities
 
     public class ReportDefinitionColumn : ReportDefinitionDimension<ReportDefinitionDimensionAttribute>
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
@@ -397,19 +426,23 @@ namespace Tellma.Entities
 
     public class ReportDefinitionRow : ReportDefinitionDimension<ReportDefinitionDimensionAttribute>
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
     public class ReportDefinitionDimensionAttributeForSave : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Expression")]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Expression { get; set; }
 
         [Display(Name = "ReportDefinition_Localize")]
+        [NotNull]
         public bool? Localize { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
@@ -436,8 +469,10 @@ namespace Tellma.Entities
 
     public class ReportDefinitionDimensionAttribute : ReportDefinitionDimensionAttributeForSave
     {
+        [NotNull]
         public int? ReportDefinitionDimensionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
@@ -445,6 +480,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "ReportDefinition_Expression")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Expression { get; set; }
@@ -498,8 +534,10 @@ namespace Tellma.Entities
 
     public class ReportDefinitionMeasure : ReportDefinitionMeasureForSave
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 }

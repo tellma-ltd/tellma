@@ -9,15 +9,18 @@ namespace Tellma.Entities
     public class InboxRecord : EntityWithKey<int>
     {
         [Display(Name = "Assignment_Document")]
+        [NotNull]
         public int? DocumentId { get; set; }
 
         [Display(Name = "Document_Comment")]
         public string Comment { get; set; }
 
         [Display(Name = "Document_AssignedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "Document_AssignedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "Document_OpenedAt")]

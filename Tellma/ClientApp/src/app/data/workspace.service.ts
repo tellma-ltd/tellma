@@ -706,6 +706,7 @@ export interface MeasureCell {
   row: DimensionCell;
   isTotal?: boolean;
   disableDrilldown?: boolean; // Auto-calculated
+  drilledIndex?: number;
 }
 
 export interface LabelCell {
@@ -745,7 +746,7 @@ function veryRandomString() {
   .replace(/[xy]/g, _ => Math.floor(Math.random() * 16).toString(16));
 }
 
-export const undefinedToString = `UNDEFINED-${veryRandomString()}`; // Hopefully this will never clash with a user entered value
+export const undefinedToString = `undefined-${veryRandomString()}`; // Hopefully this will never clash with a user entered value
 
 export class ReportStoreBase {
   reportStatus: ReportStatus;
@@ -837,6 +838,10 @@ export class ReportStore extends ReportStoreBase {
   pivot: PivotTable;
   currentResultForPivot: any;
 
+  /**
+   * To highlight the table cell we just drilled down
+   */
+  drilledCell: MeasureCell;
 
   //////////// Details
 

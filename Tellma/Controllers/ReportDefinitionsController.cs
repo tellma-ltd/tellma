@@ -184,6 +184,32 @@ namespace Tellma.Controllers
                     entity.MainMenuSortKey = null;
                 }
 
+                // Rows
+                entity.Rows.ForEach(row =>
+                {
+                    if (row.Control != null)
+                    {
+                        row.ControlOptions = ControllerUtilities.PreprocessControlOptions(row.Control, row.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        row.ControlOptions = null;
+                    }
+                });
+
+                // Columns
+                entity.Columns.ForEach(col =>
+                {
+                    if (col.Control != null)
+                    {
+                        col.ControlOptions = ControllerUtilities.PreprocessControlOptions(col.Control, col.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        col.ControlOptions = null;
+                    }
+                });
+
                 // Generate Parameters
                 entity.Parameters.ForEach(parameter =>
                 {

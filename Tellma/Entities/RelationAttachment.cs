@@ -13,6 +13,7 @@ namespace Tellma.Entities
         [Display(Name = "Name")]
         [StringLength(255)]
         [Required]
+        [NotNull]
         [AlwaysAccessible]
         public string FileName { get; set; }
 
@@ -27,24 +28,31 @@ namespace Tellma.Entities
 
     public class RelationAttachment : RelationAttachmentForSave
     {
+        [NotNull]
         public int? RelationId { get; set; }
 
+        [NotNull]
         public string FileId { get; set; } // Ref to blob storage
 
         [Display(Name = "Attachment_Size")]
+        [NotNull]
         [AlwaysAccessible]
         public long Size { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

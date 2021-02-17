@@ -210,7 +210,7 @@
                                     <ng-container *ngTemplateOutlet="autocell; context: { 
                                         value: att.value, 
                                         desc: att.info.desc, 
-                                        entityDesc: att.info.entityDesc 
+                                        entityDesc: att.info.entityDesc
                                     }">
                                     </ng-container>
                                 </td>
@@ -222,6 +222,7 @@
                                     <td class="t-report-measure {{ cell.classes[i] }}"
                                         [class.t-disable-drilldown]="cell.disableDrilldown"
                                         [class.font-weight-bold]="cell.isTotal"
+                                        [class.t-highlight]="cell.drilledIndex === i"
                                         *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, i)">
                                         <ng-container *ngTemplateOutlet="autocell; context: { 
                                                 value: cell.values[i], 
@@ -262,6 +263,7 @@
                                     <td class="t-report-measure {{ cell.classes[i] }}"
                                         [class.t-disable-drilldown]="cell.disableDrilldown"
                                         [class.font-weight-bold]="cell.isTotal"
+                                        [class.t-highlight]="cell.drilledIndex === i"
                                         *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, i)">
                                         <ng-container *ngTemplateOutlet="autocell; context: { 
                                                 value: cell.values[i], 

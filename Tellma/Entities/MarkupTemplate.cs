@@ -10,6 +10,7 @@ namespace Tellma.Entities
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -52,6 +53,7 @@ namespace Tellma.Entities
 
         [Display(Name = "MarkupTemplate_Collection")]
         [StringLength(50)]
+        [NotNull]
         public string Collection { get; set; }
 
         [Display(Name = "MarkupTemplate_DefinitionId")]
@@ -59,17 +61,21 @@ namespace Tellma.Entities
 
         [Display(Name = "MarkupTemplate_MarkupLanguage")]
         [Required]
+        [NotNull]
         [ChoiceList(new object[] { MimeTypes.Html }, new string[] { "HTML" })]
         [StringLength(255)]
         public string MarkupLanguage { get; set; } // HTML, Markdown, XML, etc…
 
         [MultilingualDisplay(Name = "MarkupTemplate_Supports", Language = Language.Primary)]
+        [NotNull]
         public bool? SupportsPrimaryLanguage { get; set; }
 
         [MultilingualDisplay(Name = "MarkupTemplate_Supports", Language = Language.Secondary)]
+        [NotNull]
         public bool? SupportsSecondaryLanguage { get; set; }
 
         [MultilingualDisplay(Name = "MarkupTemplate_Supports", Language = Language.Ternary)]
+        [NotNull]
         public bool? SupportsTernaryLanguage { get; set; }
 
         [Display(Name = "MarkupTemplate_DownloadName")]
@@ -81,21 +87,26 @@ namespace Tellma.Entities
         public string Body { get; set; }
 
         [Display(Name = "MarkupTemplate_IsDeployed")]
+        [NotNull]
         public bool? IsDeployed { get; set; }
     }
 
     public class MarkupTemplate : MarkupTemplateForSave
     {
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

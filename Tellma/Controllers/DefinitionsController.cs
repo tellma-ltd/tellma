@@ -530,6 +530,8 @@ namespace Tellma.Controllers
                     OrderDirection = r.OrderDirection,
                     AutoExpandLevel = r.AutoExpandLevel ?? 0,
                     ShowAsTree = r.ShowAsTree ?? false,
+                    Control = r.Control,
+                    ControlOptions = r.ControlOptions,
                     Attributes = r.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
                     {
                         Expression = a.Expression,
@@ -556,6 +558,8 @@ namespace Tellma.Controllers
                     OrderDirection = c.OrderDirection,
                     AutoExpandLevel = c.AutoExpandLevel ?? 0,
                     ShowAsTree = c.ShowAsTree ?? false,
+                    Control = c.Control,
+                    ControlOptions = c.ControlOptions,
                     Attributes = c.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
                     {
                         Expression = a.Expression,

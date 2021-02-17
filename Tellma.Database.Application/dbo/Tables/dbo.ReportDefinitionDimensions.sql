@@ -13,5 +13,7 @@
 	[Label3]					NVARCHAR (255),
 	[OrderDirection]			NVARCHAR (10), -- N'asc', N'desc'
 	[AutoExpandLevel]			INT,
-	[ShowAsTree]				BIT NOT NULL DEFAULT 1
+	[ShowAsTree]				BIT NOT NULL DEFAULT 1,
+	[Control]					NVARCHAR (50),
+	[ControlOptions]			NVARCHAR (1024),
 );

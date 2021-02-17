@@ -1527,7 +1527,7 @@
             </ng-container>
 
             <!-- Quantity + Unit -->
-            <ng-container *ngIf="showQuantityAndUnit(entry)">
+            <ng-container *ngIf="showQuantity(entry)">
                 <t-form-group-dynamic [label]="'Entry_Quantity' | translate"
                     [serverErrors]="entry.serverErrors?.Quantity">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Quantity">
@@ -1539,6 +1539,8 @@
                     </t-decimal-editor>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
+            </ng-container>
+            <ng-container *ngIf="showUnit(entry)">
                 <t-form-group-dynamic [label]="'Entry_Unit' | translate" [serverErrors]="entry.serverErrors?.UnitId">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.UnitId">
                         <!-- <t-view-link link="../../../units" [itemId]="entry.UnitId"> -->

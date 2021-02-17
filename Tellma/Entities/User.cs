@@ -15,6 +15,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -31,6 +32,7 @@ namespace Tellma.Entities
 
         [Display(Name = "User_Email")]
         [Required]
+        [NotNull]
         [EmailAddress]
         [StringLength(255)]
         [AlwaysAccessible]
@@ -38,6 +40,7 @@ namespace Tellma.Entities
         public string Email { get; set; }
 
         [Display(Name = "User_PreferredLanguage")]
+        [NotNull]
         [StringLength(2)]
         [CultureChoiceList]
         public string PreferredLanguage { get; set; }
@@ -63,12 +66,15 @@ namespace Tellma.Entities
         public string PreferredChannel { get; set; }
 
         [Display(Name = "User_EmailNewInboxItem")]
+        [NotNull]
         public bool? EmailNewInboxItem { get; set; }
 
         [Display(Name = "User_SmsNewInboxItem")]
+        [NotNull]
         public bool? SmsNewInboxItem { get; set; }
 
         [Display(Name = "User_PushNewInboxItem")]
+        [NotNull]
         public bool? PushNewInboxItem { get; set; }
 
         [Display(Name = "User_Roles")]
@@ -105,19 +111,24 @@ namespace Tellma.Entities
         public DateTimeOffset? LastAccess { get; set; }
 
         [Display(Name = "IsActive")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

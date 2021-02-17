@@ -430,7 +430,7 @@ ON [S].{nodeColumnName}.IsDescendantOf([P].[Node]) = 1 AND [S].{nodeColumnName} 
                     string columnName = ColumnName(selects.Count); // e.g.: [C3]
                     selects.Add($"{sql.DeBracket()} AS {columnName}");// e.g.: [P].[Name] AS [C3]
 
-                    if (!exp.ContainsAggregations && groupbyHash.Add(exp))
+                    if (!exp.ContainsAggregations && exp.ContainsColumnAccesses && groupbyHash.Add(exp))
                     {
                         groupbys.Add(sql);
                     }
