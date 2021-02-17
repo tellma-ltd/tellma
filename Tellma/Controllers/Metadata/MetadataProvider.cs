@@ -1431,7 +1431,7 @@ namespace Tellma.Controllers
                 case nameof(Document.CenterId):
                 case nameof(Document.Center):
                     display = PropertyDisplay(settings, def.CenterVisibility, def.CenterLabel, def.CenterLabel2, def.CenterLabel3, display);
-                    isRequired = def.CenterRequiredState == 0 || def.CenterVisibility == Visibility.Required;
+                    isRequired = (def.CenterRequiredState == 0 || def.CenterVisibility == Visibility.Required) && (settings.SingleBusinessUnitId == null);
                     break;
                 case nameof(Document.CenterIsCommon):
                     display = PropertyDisplay(settings, def.CenterIsCommonVisibility, def.CenterLabel, def.CenterLabel2, def.CenterLabel3, display);

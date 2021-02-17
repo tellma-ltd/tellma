@@ -970,6 +970,12 @@ namespace Tellma.Controllers
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
                 doc.InternalReferenceIsCommon = docDef.InternalReferenceVisibility && (doc.InternalReferenceIsCommon ?? false);
 
+                // In case of a single business unit
+                if (settings.SingleBusinessUnitId != null)
+                {
+                    doc.CenterId = settings.SingleBusinessUnitId;
+                }
+
                 // Defaults that make the code simpler later
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();

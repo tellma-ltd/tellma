@@ -24,6 +24,6 @@ export interface SettingsForClient {
     TernaryLanguageSymbol: string;
     BrandColor: string;
     CreatedAt: string;
-    IsMultiBusinessUnit: boolean;
+    SingleBusinessUnitId?: number;
     SmsEnabled: boolean;
 }

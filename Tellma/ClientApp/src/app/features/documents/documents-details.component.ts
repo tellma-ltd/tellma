@@ -699,7 +699,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Center (Business Unit)
 
   public showDocumentCenter(_: DocumentForSave): boolean {
-    return !!this.definition.CenterVisibility && this.ws.settings.IsMultiBusinessUnit;
+    return !!this.definition.CenterVisibility && !this.ws.settings.SingleBusinessUnitId;
   }
 
   public showDocumentCenterIsCommon(_: Document): boolean {
