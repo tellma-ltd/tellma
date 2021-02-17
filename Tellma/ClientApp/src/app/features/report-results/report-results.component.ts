@@ -1935,6 +1935,15 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       filter = `(${reduced})`;
     }
 
+    // This causes the table cell to highlight when the user navigates back to the report
+    const s = this.state;
+    if (!!s.drilledCell) {
+      delete s.drilledCell.drilledIndex; // remove any existing highlight
+    }
+    cell.drilledIndex = measureIndex; // highlight the clicked cell
+    s.drilledCell = cell; // to easily remove the highlight later without scanning every measure cell
+
+    // Drilldown with the filter
     this.drilldown(filter);
   }
 

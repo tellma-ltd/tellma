@@ -389,6 +389,16 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? ShowAsTree { get; set; }
 
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
+
         [Display(Name = "ReportDefinition_Attributes")]
         [ForeignKey(nameof(ReportDefinitionDimensionAttribute.ReportDefinitionDimensionId))]
         [AlwaysAccessible]

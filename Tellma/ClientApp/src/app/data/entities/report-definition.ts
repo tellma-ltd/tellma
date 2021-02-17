@@ -110,6 +110,8 @@ export interface ReportDefinitionDimension<TAttribute> extends EntityForSave {
     OrderDirection?: ReportOrderDirection;
     AutoExpandLevel?: number;
     ShowAsTree?: boolean;
+    Control?: Control;
+    ControlOptions?: string; // JSON
     Attributes?: TAttribute[];
 }
 

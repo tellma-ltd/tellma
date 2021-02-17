@@ -821,6 +821,11 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return QueryexUtil.canShowAsTree(desc, this.workspace, this.translate);
   }
 
+  public showDimensionControl(dimToEdit: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): boolean {
+    const desc = this.dimKeyExpressionDesc(dimToEdit.KeyExpression, model);
+    return !!desc && desc.datatype !== 'entity';
+  }
+
   public validateDimension(dimension: ReportDefinitionRow | ReportDefinitionColumn, model: ReportDefinitionForSave): void {
     if (!dimension) {
       return;
@@ -844,10 +849,13 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       if (!!exp) {
         const aggregations = exp.aggregations();
         const parameters = exp.parameters();
+        const columnAccesses = exp.columnAccesses();
         if (aggregations.length > 0) {
           addKeyExpressionError(`Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
         } else if (parameters.length > 0) {
           addKeyExpressionError(`Expression cannot contain parameters like '${parameters[0]}'.`);
+        } else if (columnAccesses.length === 0) {
+          addKeyExpressionError(`Expression must contain at least one column access.`);
         }
       } else {
         addKeyExpressionError(`Expression cannot be empty.`);

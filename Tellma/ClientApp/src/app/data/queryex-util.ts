@@ -856,10 +856,13 @@ export class QueryexUtil {
             if (!!keyExp) {
                 const aggregations = keyExp.aggregations();
                 const parameters = keyExp.parameters();
+                const columnAccesses = keyExp.columnAccesses();
                 if (aggregations.length > 0) {
                     throw new Error(`Dimension key Expression cannot contain aggregation functions like '${aggregations[0].name}'.`);
                 } else if (parameters.length > 0) {
                     throw new Error(`Dimension key Expression cannot contain parameters like '${parameters[0]}'.`);
+                } else if (columnAccesses.length === 0) {
+                    throw new Error(`Dimension key Expression must contain at least one column access.`);
                 } else {
                     keyDesc = QueryexUtil.nativeDesc(keyExp, userOverrides, autoOverrides, coll, defId, wss, trx);
                     switch (keyDesc.datatype) {
@@ -875,6 +878,7 @@ export class QueryexUtil {
                 throw new Error(`Dimension key Expression cannot be empty.`);
             }
 
+            let visualDesc: PropVisualDescriptor;
             let dispExp: QueryexBase;
             let dispDesc: PropDescriptor;
             const attributes: AttributeInfo[] = [];
@@ -934,6 +938,12 @@ export class QueryexUtil {
                         throw new Error(`Dimension attribute Expression cannot be empty.`);
                     }
                 }
+            } else {
+                // Only taken into account when the dimension is not a nav property
+                visualDesc = dimension.Control ? descFromControlOptions(wss.currentTenant, dimension.Control, dimension.ControlOptions) : null;
+                if (!!visualDesc && !tryGetDescFromVisual(visualDesc, keyDesc.datatype, () => '', wss, trx)) {
+                    throw new Error(`Dimension key expression ${keyExp} (${keyDesc.datatype}) is incompatible with the selected control.`);
+                }
             }
 
             // Add the dimension info
@@ -952,7 +962,7 @@ export class QueryexUtil {
                     dispExp,
                     localize,
                     keyDesc,
-                    desc: dispDesc || keyDesc,
+                    desc: visualDesc || dispDesc || keyDesc,
                     entityDesc: keyEntityDesc,
                     label,
                     orderDir,
