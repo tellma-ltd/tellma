@@ -1321,27 +1321,31 @@ namespace Tellma.Controllers
             {
                 // Lines preprocessing
                 doc.Lines.ForEach(line =>
-            {
-                line.Entries.ForEach(entry =>
-            {
-                // If currency is functional, make sure that Value = MonetaryValue
-                if (entry.CurrencyId == settings.FunctionalCurrencyId)
                 {
-                    if (line.DefinitionId == manualLineDefId)
+                    line.Entries.ForEach(entry =>
                     {
-                        // Manual lines, the value is always entered by the user
-                        entry.MonetaryValue = entry.Value;
-                    }
-                    else
-                    {
-                        // Smart lines, the monetary value is always entered by the user
-                        entry.Value = entry.MonetaryValue;
-                    }
-                }
+                        // If currency is functional, make sure that Value = MonetaryValue
+                        if (entry.CurrencyId == settings.FunctionalCurrencyId)
+                        {
+                            if (line.DefinitionId == manualLineDefId)
+                            {
+                                // Manual lines, the value is always entered by the user
+                                entry.MonetaryValue = entry.Value;
+                            }
+                            else
+                            {
+                                // Smart lines, the monetary value is always entered by the user
+                                entry.Value = entry.MonetaryValue;
+                            }
+                        }
 
-                // Other logic
-            });
-            });
+                        // Always round the value according to the functional currency decimals
+                        if (entry.Value != null)
+                        {
+                            entry.Value = Math.Round(entry.Value.Value, settings.FunctionalCurrencyDecimals);
+                        }
+                    });
+                });
 
                 ////// handle subtle exchange rate rounding bugs. IF...
                 // (1) All non-manual entries have the same non-functional currency

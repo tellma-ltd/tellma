@@ -10,11 +10,13 @@ namespace Tellma.Entities
     {
         [Display(Name = "SqlDatabase_DatabaseName")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string DatabaseName { get; set; }
 
         [Display(Name = "SqlDatabase_Server")]
+        [NotNull]
         [AlwaysAccessible]
         public int? ServerId { get; set; }
 
@@ -27,15 +29,19 @@ namespace Tellma.Entities
     {
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

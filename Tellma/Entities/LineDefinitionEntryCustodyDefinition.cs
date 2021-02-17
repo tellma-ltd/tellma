@@ -9,28 +9,35 @@ namespace Tellma.Entities
     {
         [Display(Name = "LineDefinitionEntryCustodyDefinition_CustodyDefinition")]
         [Required]
+        [NotNull]
         public int? CustodyDefinitionId { get; set; }
     }
 
     public class LineDefinitionEntryCustodyDefinition : LineDefinitionEntryCustodyDefinitionForSave
     {
         [Display(Name = "LineDefinitionEntryCustodyDefinition_LineDefinitionEntry")]
+        [NotNull]
         public int? LineDefinitionEntryId { get; set; }
 
         [Display(Name = "LineDefinitionEntryCustodyDefinition_CustodyDefinition")]
+        [NotNull]
         [ForeignKey(nameof(CustodyDefinitionId))]
         public CustodyDefinition CustodyDefinition { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For query

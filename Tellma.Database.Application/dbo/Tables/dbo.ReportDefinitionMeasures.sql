@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ReportDefinitionMeasures]
 (
 	[Id]						INT						 CONSTRAINT [PK_ReportDefinitionMeasures] PRIMARY KEY IDENTITY,
-	[Index]						INT,
+	[Index]						INT				NOT NULL,
 	[ReportDefinitionId]		INT				NOT NULL CONSTRAINT [FK_ReportDefinitionMeasures__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
 	[Expression]				NVARCHAR (255)	NOT NULL,
 	[Label]						NVARCHAR (255),

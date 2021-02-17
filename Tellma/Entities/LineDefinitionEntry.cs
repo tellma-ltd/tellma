@@ -10,10 +10,12 @@ namespace Tellma.Entities
         [Display(Name = "LineDefinitionEntry_Direction")]
         [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
         [Required]
+        [NotNull]
         public short? Direction { get; set; }
 
         [Display(Name = "LineDefinitionEntry_ParentAccountType")]
         [Required]
+        [NotNull]
         public int? ParentAccountTypeId { get; set; }
 
         [Display(Name = "LineDefinitionEntry_EntryType")]
@@ -35,12 +37,15 @@ namespace Tellma.Entities
     public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryCustodyDefinition, LineDefinitionEntryResourceDefinition>
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
         [Display(Name = "LineDefinitionEntry_LineDefinition")]
+        [NotNull]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

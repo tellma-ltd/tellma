@@ -10,6 +10,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "SqlServer_ServerName")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string ServerName { get; set; }
@@ -32,15 +33,19 @@ namespace Tellma.Entities
     public class SqlServer : SqlServerForSave
     {
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query
