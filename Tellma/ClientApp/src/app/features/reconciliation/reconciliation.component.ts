@@ -734,7 +734,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     // The template is just one row containing 3 headers
     const templateArray = [[
       this.translate.instant('Line_PostingDate'),
-      this.translate.instant('Entry_ExternalReference'),
+      this.translate.instant('Reconciliation_Reference'),
       this.translate.instant('Entry_MonetaryValue'),
     ]];
 
@@ -816,10 +816,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
             ], [
               this.translate.instant('Line_Document'),
               this.translate.instant('Line_PostingDate'),
-              this.translate.instant('Entry_ExternalReference'),
+              this.translate.instant('Reconciliation_Reference'),
               this.translate.instant('Entry_MonetaryValue'),
               this.translate.instant('Line_PostingDate'),
-              this.translate.instant('Entry_ExternalReference'),
+              this.translate.instant('Reconciliation_Reference'),
               this.translate.instant('Entry_MonetaryValue'),
             ]];
 

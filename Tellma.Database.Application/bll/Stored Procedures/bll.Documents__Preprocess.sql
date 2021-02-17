@@ -257,8 +257,8 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
 	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
-	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+	--JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+	--JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
 		RD.UnitCardinality IN (N'Single', N'None')
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill'));
