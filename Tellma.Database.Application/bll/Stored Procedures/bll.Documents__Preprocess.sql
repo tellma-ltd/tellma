@@ -297,6 +297,11 @@ BEGIN
 
 	-- For financial amounts in foreign currency, the rate is manually set or read from a web service
 	UPDATE E
+	SET [MonetaryValue] = ROUND([MonetaryValue], C.E)
+	FROM @PreprocessedEntries E
+	JOIN dbo.Currencies C ON E.[CurrencyId] = C.[Id]
+
+	UPDATE E
 	SET E.[Value] = bll.fn_ConvertCurrencies(
 						L.[PostingDate], E.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]
 					)

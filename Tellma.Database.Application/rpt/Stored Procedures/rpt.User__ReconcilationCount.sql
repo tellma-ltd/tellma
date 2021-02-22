@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [rpt].[User__ReconcilationCount] -- [rpt].[User__ReconcilationCount] 45
-@CreatedById INT
+@CreatedById INT = NULL
 AS
 	SELECT U.[Name], CONVERT(NVARCHAR(10), R.[CreatedAt], 102) AS [Date], Count(*) AS RecCount
 	FROM reconciliations R
