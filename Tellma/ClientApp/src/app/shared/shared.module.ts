@@ -17,7 +17,8 @@ import {
   NgbDateAdapter,
   NgbDatepickerI18n,
   NgbTooltipModule,
-  NgbNavModule
+  NgbNavModule,
+  NgbCalendar
 } from '@ng-bootstrap/ng-bootstrap';
 
 import {
@@ -98,6 +99,7 @@ import { ContextMenuDirective } from '../data/context-menu.directive';
 import { SettingsComponent } from '../shared/settings/settings.component';
 import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-editor.component';
 import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.directive';
+import { NgbCalendarEthiopian } from '../data/ngb-calendar-ethiopian';
 
 @NgModule({
   declarations: [
@@ -206,6 +208,7 @@ import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.dir
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
+    { provide: NgbCalendar, useClass: NgbCalendarEthiopian },
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization },
     { provide: CDK_DRAG_CONFIG, useValue: { zIndex: 10000 } }
   ]

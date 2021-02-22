@@ -635,8 +635,7 @@ export class QueryexUtil {
             label,
             labelForParameter,
             choices: [2 /* Mon */, 3, 4, 5, 6, 7, 1 /* Sun */],
-            // SQL Server numbers the days differently from ngb-datepicker
-            format: (c: number) => !c ? '' : trx.instant(`ShortDay${(c - 1) === 0 ? 7 : c - 1}`)
+            format: (c: number) => !c ? '' : trx.instant(`ShortDay${c === 1 ? 7 : c - 1}`) // in SQL Date Sun=1, in ISO 8601 Sun=7
         };
     }
 
@@ -2521,7 +2520,7 @@ export class QueryexUtil {
                                 case 'day':
                                     return date.getDate();
                                 case 'weekday':
-                                    return (date.getDay() + 1) % 7; // SQL's weekday is 1 ahead of javascript's
+                                    return date.getDay() + 1; // SQL's weekdays are 1-7, javascript's are 0-6 (Sun-Mon)
                                 default:
                                     return; // To keep the TS compiler happy
                             }
