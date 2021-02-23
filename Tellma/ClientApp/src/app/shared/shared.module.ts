@@ -208,7 +208,7 @@ import { NgbCalendarEthiopian } from '../data/ngb-calendar-ethiopian';
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
-    { provide: NgbCalendar, useClass: NgbCalendarEthiopian },
+    // { provide: NgbCalendar, useClass: NgbCalendarEthiopian },
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization },
     { provide: CDK_DRAG_CONFIG, useValue: { zIndex: 10000 } }
   ]

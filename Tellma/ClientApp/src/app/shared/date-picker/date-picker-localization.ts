@@ -15,7 +15,7 @@ export class DatePickerLocalization extends NgbDatepickerI18n {
     }
 
     getMonthShortName(month: number): string {
-        return this.translation.instant('ShortMonthEt' + month);
+        return this.translation.instant('ShortMonth' + month);
     }
 
     getMonthFullName(month: number): string {
