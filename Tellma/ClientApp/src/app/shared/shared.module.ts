@@ -100,6 +100,7 @@ import { SettingsComponent } from '../shared/settings/settings.component';
 import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-editor.component';
 import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.directive';
 import { NgbCalendarEthiopian } from '../data/ngb-calendar-ethiopian';
+import { NgbCalendarDynamic } from '../data/ngb-calendar-dynamic';
 
 @NgModule({
   declarations: [
@@ -208,7 +209,7 @@ import { NgbCalendarEthiopian } from '../data/ngb-calendar-ethiopian';
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
-    // { provide: NgbCalendar, useClass: NgbCalendarEthiopian },
+    // { provide: NgbCalendar, useClass: NgbCalendarDynamic },
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization },
     { provide: CDK_DRAG_CONFIG, useValue: { zIndex: 10000 } }
   ]
