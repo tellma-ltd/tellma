@@ -18,6 +18,19 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[State] <> 0;
 
+	-- Cannot close it if it has no attachments
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_DocumentHasNoAttachment'
+	FROM @Ids FE
+	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	JOIN dbo.DocumentDefinitions DD ON D.[DefinitionId] = DD.[Id]
+	LEFT JOIN dbo.Attachments A ON D.[Id] = A.[DocumentId]
+	WHERE A.[Id] IS NULL
+	AND DD.Prefix IN (N'RA', N'SA', N'SMV', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' )
+	AND D.PostingDate > N'2021.01.08';
+
 	-- Cannot close a document which does not have lines ready to post
 	WITH SatisfactoryDocuments AS (
 		SELECT DISTINCT FE.[Index]

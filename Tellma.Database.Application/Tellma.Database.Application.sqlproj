@@ -10,8 +10,7 @@
     <ProjectGuid>{bf2096e3-ed24-4ee1-befc-a67c3ffa38b6}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
+    <RootPath />
     <RootNamespace>Tellma.Database.Application</RootNamespace>
     <AssemblyName>Tellma.Database.Application</AssemblyName>
     <ModelCollation>1033,CI</ModelCollation>
@@ -57,7 +56,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
@@ -763,6 +761,11 @@
     <Build Include="rpt\Stored Procedures\rpt.User__ReconcilationCount.sql" />
     <Build Include="rpt\Stored Procedures\rpt.SalesInvoices__Missing.sql" />
     <Build Include="rpt\Stored Procedures\rpt.RentalSpaces__Areas.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.Documents__NoAttachments.sql" />
+    <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
+    <Build Include="dbo\User Defined Types\dbo.InventoryEntryList.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.UnbalancedCSI___Balance.sql" />
+    <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
