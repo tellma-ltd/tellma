@@ -766,6 +766,7 @@
     <Build Include="dbo\User Defined Types\dbo.InventoryEntryList.sql" />
     <Build Include="rpt\Stored Procedures\rpt.UnbalancedCSI___Balance.sql" />
     <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
+    <Build Include="map\map.DocumentAssignmentsHistory2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
