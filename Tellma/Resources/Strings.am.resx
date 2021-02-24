@@ -1525,6 +1525,45 @@
   <data name="FromDate" xml:space="preserve">
     <value>ቀን ጀምሮ</value>
   </data>
+  <data name="FullMonthEt1" xml:space="preserve">
+    <value>መስከረም</value>
+  </data>
+  <data name="FullMonthEt10" xml:space="preserve">
+    <value>ሰኔ</value>
+  </data>
+  <data name="FullMonthEt11" xml:space="preserve">
+    <value>ሐምሌ</value>
+  </data>
+  <data name="FullMonthEt12" xml:space="preserve">
+    <value>ነሐሴ</value>
+  </data>
+  <data name="FullMonthEt13" xml:space="preserve">
+    <value>ጳጐሜን</value>
+  </data>
+  <data name="FullMonthEt2" xml:space="preserve">
+    <value>ጥቅምት</value>
+  </data>
+  <data name="FullMonthEt3" xml:space="preserve">
+    <value>ኅዳር</value>
+  </data>
+  <data name="FullMonthEt4" xml:space="preserve">
+    <value>ታኅሣሥ</value>
+  </data>
+  <data name="FullMonthEt5" xml:space="preserve">
+    <value>ጥር</value>
+  </data>
+  <data name="FullMonthEt6" xml:space="preserve">
+    <value>የካቲት</value>
+  </data>
+  <data name="FullMonthEt7" xml:space="preserve">
+    <value>መጋቢት</value>
+  </data>
+  <data name="FullMonthEt8" xml:space="preserve">
+    <value>ሚያዝያ</value>
+  </data>
+  <data name="FullMonthEt9" xml:space="preserve">
+    <value>ግንቦት</value>
+  </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>ጠቅላላ ቅንብሮች</value>
   </data>

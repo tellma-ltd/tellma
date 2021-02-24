@@ -46,7 +46,7 @@ namespace Tellma.Services.Utilities
         /// </summary>
         private static (int day, int month, int year) JdnToGregorian(int jdn)
         {
-            decimal q = jdn;
+            //decimal q = jdn;
             decimal z = jdn;
             decimal w = Math.Floor((z - 1867216.25m) / 36524.25m);
             decimal x = Math.Floor(w / 4m);
@@ -57,19 +57,9 @@ namespace Tellma.Services.Utilities
             decimal e = Math.Floor((b - d) / 30.6001m);
             decimal f = Math.Floor(30.6001m * e);
 
-            decimal day = b - d - f + (q - z);
+            decimal day = b - d - f; // + (q - z);
             decimal month = e <= 13 ? e - 1 : e - 13;
-
-            decimal year;
-            if (month <= 2)
-            {
-                // If Jan or Feb
-                year = c - 4715m;
-            }
-            else
-            {
-                year = c - 4716m;
-            }
+            decimal year = month <= 2 ? c - 4715m : c - 4716m;
 
             return ((int)day, (int)month, (int)year);
         }

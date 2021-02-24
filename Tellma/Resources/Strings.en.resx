@@ -1612,6 +1612,117 @@
   <data name="FromDate" xml:space="preserve">
     <value>From Date</value>
   </data>
+  <data name="FullMonth1" xml:space="preserve">
+    <value>January</value>
+  </data>
+  <data name="FullMonth10" xml:space="preserve">
+    <value>October</value>
+  </data>
+  <data name="FullMonth11" xml:space="preserve">
+    <value>November</value>
+  </data>
+  <data name="FullMonth12" xml:space="preserve">
+    <value>December</value>
+  </data>
+  <data name="FullMonth2" xml:space="preserve">
+    <value>February</value>
+  </data>
+  <data name="FullMonth3" xml:space="preserve">
+    <value>March</value>
+  </data>
+  <data name="FullMonth4" xml:space="preserve">
+    <value>April</value>
+  </data>
+  <data name="FullMonth5" xml:space="preserve">
+    <value>May</value>
+  </data>
+  <data name="FullMonth6" xml:space="preserve">
+    <value>June</value>
+  </data>
+  <data name="FullMonth7" xml:space="preserve">
+    <value>July</value>
+  </data>
+  <data name="FullMonth8" xml:space="preserve">
+    <value>August</value>
+  </data>
+  <data name="FullMonth9" xml:space="preserve">
+    <value>September</value>
+  </data>
+  <data name="FullMonthEt1" xml:space="preserve">
+    <value>Meskerem</value>
+  </data>
+  <data name="FullMonthEt10" xml:space="preserve">
+    <value>Sene</value>
+  </data>
+  <data name="FullMonthEt11" xml:space="preserve">
+    <value>Hamle</value>
+  </data>
+  <data name="FullMonthEt12" xml:space="preserve">
+    <value>Nehase</value>
+  </data>
+  <data name="FullMonthEt13" xml:space="preserve">
+    <value>Pagume</value>
+  </data>
+  <data name="FullMonthEt2" xml:space="preserve">
+    <value>Tikimt</value>
+  </data>
+  <data name="FullMonthEt3" xml:space="preserve">
+    <value>Hidar</value>
+  </data>
+  <data name="FullMonthEt4" xml:space="preserve">
+    <value>Tahsas</value>
+  </data>
+  <data name="FullMonthEt5" xml:space="preserve">
+    <value>Tir</value>
+  </data>
+  <data name="FullMonthEt6" xml:space="preserve">
+    <value>Yekatit</value>
+  </data>
+  <data name="FullMonthEt7" xml:space="preserve">
+    <value>Megabit</value>
+  </data>
+  <data name="FullMonthEt8" xml:space="preserve">
+    <value>Meyazya</value>
+  </data>
+  <data name="FullMonthEt9" xml:space="preserve">
+    <value>Ginbot</value>
+  </data>
+  <data name="FullMonthUq1" xml:space="preserve">
+    <value>Muharram</value>
+  </data>
+  <data name="FullMonthUq10" xml:space="preserve">
+    <value>Shawwal</value>
+  </data>
+  <data name="FullMonthUq11" xml:space="preserve">
+    <value>Dhu al-Qi'dah</value>
+  </data>
+  <data name="FullMonthUq12" xml:space="preserve">
+    <value>Dhu al-Hijjah</value>
+  </data>
+  <data name="FullMonthUq2" xml:space="preserve">
+    <value>Safar</value>
+  </data>
+  <data name="FullMonthUq3" xml:space="preserve">
+    <value>Rabi' al-Awwal</value>
+  </data>
+  <data name="FullMonthUq4" xml:space="preserve">
+    <value>Rabi' al-Thani</value>
+  </data>
+  <data name="FullMonthUq5" xml:space="preserve">
+    <value>Jumada al-Awwal</value>
+  </data>
+  <data name="FullMonthUq6" xml:space="preserve">
+    <value>Jumada al-Thani</value>
+  </data>
+  <data name="FullMonthUq7" xml:space="preserve">
+    <value>Rajab</value>
+  </data>
+  <data name="FullMonthUq8" xml:space="preserve">
+    <value>Sha'ban</value>
+  </data>
+  <data name="FullMonthUq9" xml:space="preserve">
+    <value>Ramadan</value>
+  </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>General Settings</value>
   </data>
@@ -2813,79 +2924,79 @@
     <value>Sep</value>
   </data>
   <data name="ShortMonthEt1" xml:space="preserve">
-    <value>Meskerem</value>
+    <value>Mesk</value>
   </data>
   <data name="ShortMonthEt10" xml:space="preserve">
     <value>Sene</value>
   </data>
   <data name="ShortMonthEt11" xml:space="preserve">
-    <value>Hamle</value>
+    <value>Haml</value>
   </data>
   <data name="ShortMonthEt12" xml:space="preserve">
-    <value>Nehase</value>
+    <value>Neha</value>
   </data>
   <data name="ShortMonthEt13" xml:space="preserve">
-    <value>Puagme</value>
+    <value>Pagu</value>
   </data>
   <data name="ShortMonthEt2" xml:space="preserve">
-    <value>Tikimt</value>
+    <value>Tiki</value>
   </data>
   <data name="ShortMonthEt3" xml:space="preserve">
-    <value>Hidar</value>
+    <value>Hida</value>
   </data>
   <data name="ShortMonthEt4" xml:space="preserve">
-    <value>Tahsas</value>
+    <value>Tahs</value>
   </data>
   <data name="ShortMonthEt5" xml:space="preserve">
     <value>Tir</value>
   </data>
   <data name="ShortMonthEt6" xml:space="preserve">
-    <value>Yekatit</value>
+    <value>Yeka</value>
   </data>
   <data name="ShortMonthEt7" xml:space="preserve">
-    <value>Megabit</value>
+    <value>Meg</value>
   </data>
   <data name="ShortMonthEt8" xml:space="preserve">
-    <value>Meyazya</value>
+    <value>Mey</value>
   </data>
   <data name="ShortMonthEt9" xml:space="preserve">
-    <value>Ginbot</value>
+    <value>Ginb</value>
   </data>
   <data name="ShortMonthUq1" xml:space="preserve">
-    <value>Muharram</value>
+    <value>Muh</value>
   </data>
   <data name="ShortMonthUq10" xml:space="preserve">
-    <value>Shawwal</value>
+    <value>Shww</value>
   </data>
   <data name="ShortMonthUq11" xml:space="preserve">
-    <value>Dhu al-Qi'dah</value>
+    <value>Qida</value>
   </data>
   <data name="ShortMonthUq12" xml:space="preserve">
-    <value>Dhu al-Hijjah</value>
+    <value>Hijja</value>
   </data>
   <data name="ShortMonthUq2" xml:space="preserve">
-    <value>Safar</value>
+    <value>Saf</value>
   </data>
   <data name="ShortMonthUq3" xml:space="preserve">
-    <value>Rabi' al-Awwal</value>
+    <value>Rab1</value>
   </data>
   <data name="ShortMonthUq4" xml:space="preserve">
-    <value>Rabi' al-Thani</value>
+    <value>Rab2</value>
   </data>
   <data name="ShortMonthUq5" xml:space="preserve">
-    <value>Jumada al-Awwal</value>
+    <value>Jum1</value>
   </data>
   <data name="ShortMonthUq6" xml:space="preserve">
-    <value>Jumada al-Thani</value>
+    <value>Jum2</value>
   </data>
   <data name="ShortMonthUq7" xml:space="preserve">
     <value>Rajab</value>
   </data>
   <data name="ShortMonthUq8" xml:space="preserve">
-    <value>Sha'ban</value>
+    <value>Shn</value>
   </data>
   <data name="ShortMonthUq9" xml:space="preserve">
-    <value>Ramadan</value>
+    <value>Ram</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>Q1</value>

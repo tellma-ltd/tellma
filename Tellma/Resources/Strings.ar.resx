@@ -1525,6 +1525,117 @@
   <data name="FromDate" xml:space="preserve">
     <value>من تاريخ</value>
   </data>
+  <data name="FullMonth1" xml:space="preserve">
+    <value>يناير</value>
+  </data>
+  <data name="FullMonth10" xml:space="preserve">
+    <value>أكتوبر</value>
+  </data>
+  <data name="FullMonth11" xml:space="preserve">
+    <value>نوفمبر</value>
+  </data>
+  <data name="FullMonth12" xml:space="preserve">
+    <value>ديسمبر</value>
+  </data>
+  <data name="FullMonth2" xml:space="preserve">
+    <value>فبراير</value>
+  </data>
+  <data name="FullMonth3" xml:space="preserve">
+    <value>مارس</value>
+  </data>
+  <data name="FullMonth4" xml:space="preserve">
+    <value>أبريل</value>
+  </data>
+  <data name="FullMonth5" xml:space="preserve">
+    <value>مايو</value>
+  </data>
+  <data name="FullMonth6" xml:space="preserve">
+    <value>يونيو</value>
+  </data>
+  <data name="FullMonth7" xml:space="preserve">
+    <value>يوليو</value>
+  </data>
+  <data name="FullMonth8" xml:space="preserve">
+    <value>أغسطس</value>
+  </data>
+  <data name="FullMonth9" xml:space="preserve">
+    <value>سبتمبر</value>
+  </data>
+  <data name="FullMonthEt1" xml:space="preserve">
+    <value>مسكرم</value>
+  </data>
+  <data name="FullMonthEt10" xml:space="preserve">
+    <value>سيني</value>
+  </data>
+  <data name="FullMonthEt11" xml:space="preserve">
+    <value>هاملي</value>
+  </data>
+  <data name="FullMonthEt12" xml:space="preserve">
+    <value>ناهاسي</value>
+  </data>
+  <data name="FullMonthEt13" xml:space="preserve">
+    <value>بيجومي</value>
+  </data>
+  <data name="FullMonthEt2" xml:space="preserve">
+    <value>تيكيمت</value>
+  </data>
+  <data name="FullMonthEt3" xml:space="preserve">
+    <value>هيدار</value>
+  </data>
+  <data name="FullMonthEt4" xml:space="preserve">
+    <value>تهساس</value>
+  </data>
+  <data name="FullMonthEt5" xml:space="preserve">
+    <value>تير</value>
+  </data>
+  <data name="FullMonthEt6" xml:space="preserve">
+    <value>يكاتيت</value>
+  </data>
+  <data name="FullMonthEt7" xml:space="preserve">
+    <value>ميجابيت</value>
+  </data>
+  <data name="FullMonthEt8" xml:space="preserve">
+    <value>ميازيا</value>
+  </data>
+  <data name="FullMonthEt9" xml:space="preserve">
+    <value>جينبوت</value>
+  </data>
+  <data name="FullMonthUq1" xml:space="preserve">
+    <value>محرم</value>
+  </data>
+  <data name="FullMonthUq10" xml:space="preserve">
+    <value>شوال</value>
+  </data>
+  <data name="FullMonthUq11" xml:space="preserve">
+    <value>ذو القعدة</value>
+  </data>
+  <data name="FullMonthUq12" xml:space="preserve">
+    <value>ذو الحجة</value>
+  </data>
+  <data name="FullMonthUq2" xml:space="preserve">
+    <value>صفر</value>
+  </data>
+  <data name="FullMonthUq3" xml:space="preserve">
+    <value>ربيع الأول</value>
+  </data>
+  <data name="FullMonthUq4" xml:space="preserve">
+    <value>ربيع الثاني</value>
+  </data>
+  <data name="FullMonthUq5" xml:space="preserve">
+    <value>جمادى الأول</value>
+  </data>
+  <data name="FullMonthUq6" xml:space="preserve">
+    <value>جمادى الثاني</value>
+  </data>
+  <data name="FullMonthUq7" xml:space="preserve">
+    <value>رجب</value>
+  </data>
+  <data name="FullMonthUq8" xml:space="preserve">
+    <value>شعبان</value>
+  </data>
+  <data name="FullMonthUq9" xml:space="preserve">
+    <value>رمضان</value>
+  </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>إعدادات عامة</value>
   </data>
@@ -2780,16 +2891,16 @@
     <value>صفر</value>
   </data>
   <data name="ShortMonthUq3" xml:space="preserve">
-    <value>ربيع الأول</value>
+    <value>ربيع 1</value>
   </data>
   <data name="ShortMonthUq4" xml:space="preserve">
-    <value>ربيع الثاني</value>
+    <value>ربيع 2</value>
   </data>
   <data name="ShortMonthUq5" xml:space="preserve">
-    <value>جمادى الأول</value>
+    <value>جمادى 1</value>
   </data>
   <data name="ShortMonthUq6" xml:space="preserve">
-    <value>جمادى الثاني</value>
+    <value>جمادى 2</value>
   </data>
   <data name="ShortMonthUq7" xml:space="preserve">
     <value>رجب</value>
