@@ -28,7 +28,7 @@
 
     <!-- StateSince -->
     <t-form-group class="t-form-group" [label]="'StateSince' | translate">
-        <div>{{ model?.StateSince | date:'yyyy-MM-dd HH:mm' }}</div>
+        <div>{{ model?.StateSince | datetimeFormat }}</div>
     </t-form-group>
 
     <!-- ErrorMessage -->

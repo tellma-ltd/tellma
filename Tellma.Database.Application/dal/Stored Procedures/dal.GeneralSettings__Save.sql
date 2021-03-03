@@ -8,6 +8,10 @@
 	@SecondaryLanguageSymbol NVARCHAR (5) = NULL,
 	@TernaryLanguageId NVARCHAR(255) = NULL,
 	@TernaryLanguageSymbol NVARCHAR (5) = NULL,
+	@PrimaryCalendar NVARCHAR (2) = NULL,
+	@SecondaryCalendar NVARCHAR (2) = NULL,
+	@DateFormat NVARCHAR (50) = NULL,
+	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL
 	-- Financial Settings
 	--@FunctionalCurrencyId NCHAR(3),
@@ -32,6 +36,10 @@ IF Exists(SELECT * FROM dbo.Settings)
 		[SecondaryLanguageSymbol] = @SecondaryLanguageSymbol,
 		[TernaryLanguageId]		= @TernaryLanguageId,
 		[TernaryLanguageSymbol] = @TernaryLanguageSymbol,
+		[PrimaryCalendar]		= ISNULL(@PrimaryCalendar, [PrimaryCalendar]),
+		[SecondaryCalendar]		= @SecondaryCalendar,
+		[DateFormat]			= ISNULL(@DateFormat, [DateFormat]),
+		[TimeFormat]			= ISNULL(@TimeFormat, [TimeFormat]),
 		[BrandColor]			= @BrandColor,
 		[SettingsVersion]		= NEWID(), -- To trigger cache refresh
 		[GeneralModifiedAt]		= @Now,
@@ -47,6 +55,10 @@ ELSE
 		[SecondaryLanguageSymbol],
 		[TernaryLanguageId],
 		[TernaryLanguageSymbol],
+		[PrimaryCalendar],
+		[SecondaryCalendar],
+		[DateFormat],
+		[TimeFormat],
 		[BrandColor]
 	)
 	VALUES(
@@ -59,5 +71,9 @@ ELSE
 		@SecondaryLanguageSymbol,
 		@TernaryLanguageId,
 		@TernaryLanguageSymbol,
+		@PrimaryCalendar,
+		@SecondaryCalendar,
+		@DateFormat,
+		@TimeFormat,
 		@BrandColor
 	);

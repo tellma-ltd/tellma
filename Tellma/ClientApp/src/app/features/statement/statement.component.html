@@ -241,7 +241,7 @@
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
                                 <ng-container *ngIf="col.id === 'PostingDate'">
-                                    {{ fromDate | date:'yyyy-MM-dd' }}
+                                    {{ fromDate | dateFormat }}
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'SerialNumber'">
                                     {{ 'OpeningBalance' | translate }}
@@ -281,7 +281,7 @@
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
                                 <ng-container *ngIf="col.id === 'PostingDate'">
-                                    <span>{{ toDate | date:'yyyy-MM-dd' }}</span>
+                                    <span>{{ toDate | dateFormat }}</span>
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'SerialNumber'">
                                     <span>{{ 'ClosingBalance' | translate }}</span>

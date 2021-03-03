@@ -48,6 +48,14 @@ namespace Tellma.Controllers.Dto
 
         public string TernaryLanguageSymbol { get; set; }
 
+        public string PrimaryCalendar { get; set; }
+
+        public string SecondaryCalendar { get; set; }
+
+        public string DateFormat { get; set; }
+
+        public string TimeFormat { get; set; }
+
         public string BrandColor { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }

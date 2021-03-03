@@ -19,16 +19,17 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { isSpecified, csvPackage, downloadBlob, FriendlyError, toLocalDateTimeISOString, dateFromISOString } from '~/app/data/util';
+import { isSpecified, csvPackage, downloadBlob, FriendlyError } from '~/app/data/util';
+import { toLocalDateTimeISOString, dateFromISOString } from '~/app/data/date-util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
-import { displayScalarValue } from '~/app/data/util';
 import { ChartType } from '~/app/data/entities/report-definition';
 import { DimensionInfo, MeasureInfo, ParameterInfo, QueryexUtil, SelectInfo, UniqueAggregationInfo } from '~/app/data/queryex-util';
 import { DeBracket, Queryex, QueryexColumnAccess, QueryexDirection, QueryexFunction } from '~/app/data/queryex';
 import { DynamicRow, GetAggregateResponse } from '~/app/data/dto/get-aggregate-response';
 import { GetFactResponse } from '~/app/data/dto/get-fact-response';
 import { DateGranularity } from '~/app/data/entities/base/metadata-types';
+import { displayScalarValue } from '~/app/shared/auto-cell/auto-cell.component';
 
 export enum ReportView {
   pivot = 'pivot',
@@ -2134,9 +2135,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // Single series charts bind to this property
     const pivot = this.pivot;
     const s = this.state;
-    if (s.currentPivotForSingle !== pivot || s.currentLangForSingle !== this.translate.currentLang) {
+    if (s.currentPivotForSingle !== pivot ||
+      s.currentLangForSingle !== this.translate.currentLang ||
+      s.currentCalendarForSingle !== this.workspace.calendar) {
       s.currentPivotForSingle = pivot;
       s.currentLangForSingle = this.translate.currentLang;
+      s.currentCalendarForSingle = this.workspace.calendar;
       const measureIndex = s.singleNumericMeasureIndex;
       const measure = s.measureInfos[measureIndex];
 
@@ -2266,9 +2270,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // Multi-series charts bind to this property
     const pivot = this.pivot;
     const s = this.state;
-    if (s.currentPivotForMulti !== pivot || s.currentLangForMulti !== this.translate.currentLang) {
+    if (s.currentPivotForMulti !== pivot ||
+      s.currentLangForMulti !== this.translate.currentLang ||
+      s.currentCalendarForMulti !== this.workspace.calendar) {
       s.currentPivotForMulti = pivot;
       s.currentLangForMulti = this.translate.currentLang;
+      s.currentCalendarForMulti = this.workspace.calendar;
       const measureIndex = s.singleNumericMeasureIndex;
       const measure = s.measureInfos[measureIndex];
 

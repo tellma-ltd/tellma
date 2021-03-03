@@ -13,12 +13,13 @@ import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
 import { DetailsEntry } from '~/app/data/entities/details-entry';
-import { formatDate, formatNumber } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { LineForQuery } from '~/app/data/entities/line';
 import { Document, formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
-import { FriendlyError, mergeEntitiesInWorkspace, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
+import { FriendlyError, mergeEntitiesInWorkspace, csvPackage, downloadBlob } from '~/app/data/util';
+import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 import { StatementArguments } from '~/app/data/dto/statement-arguments';
 import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
@@ -26,6 +27,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { ResourceDefinitionForClient, RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
+import { dateFormat } from '~/app/shared/date-format/date-time-format';
+import { accountingFormat } from '~/app/shared/accounting/accounting-format';
 
 @Component({
   selector: 't-statement',
@@ -289,8 +292,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     // Prepare the query filter
     const args: StatementArguments = {
       select, top, skip,
-      fromDate: formatDate(this.fromDate, 'yyyy-MM-dd', 'en-GB'),
-      toDate: formatDate(this.toDate, 'yyyy-MM-dd', 'en-GB'),
+      fromDate: toLocalDateOnlyISOString(new Date(this.fromDate)),
+      toDate: toLocalDateOnlyISOString(new Date(this.toDate)),
       accountId: this.accountId
     };
 
@@ -522,8 +525,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const data: string[][] = [];
 
         // (1) Add the parameters
-        data.push(this.normalize([this.translate.instant('FromDate'), formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
-        data.push(this.normalize([this.translate.instant('ToDate'), formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
+        data.push(this.normalize([this.translate.instant('FromDate'), toLocalDateOnlyISOString(new Date(args.fromDate))], columns.length));
+        data.push(this.normalize([this.translate.instant('ToDate'), toLocalDateOnlyISOString(new Date(args.toDate))], columns.length));
         data.push(this.normalize([this.translate.instant('Entry_Account'), this.ws.getMultilingualValue('Account', args.accountId, 'Name')], columns.length));
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
@@ -566,24 +569,24 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         for (const col of columns) {
           switch (col.id) {
             case 'PostingDate':
-              openingRow.push(formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB'));
-              closingRow.push(formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB'));
+              openingRow.push(toLocalDateOnlyISOString(new Date(args.fromDate)));
+              closingRow.push(toLocalDateOnlyISOString(new Date(args.toDate)));
               break;
             case 'SerialNumber':
               openingRow.push(this.translate.instant('OpeningBalance'));
               closingRow.push(this.translate.instant('ClosingBalance'));
               break;
             case 'QuantityAccumulation':
-              openingRow.push(formatAccounting(response.OpeningQuantity, '1.0-4'));
-              closingRow.push(formatAccounting(response.ClosingQuantity, '1.0-4'));
+              openingRow.push(accountingFormat(response.OpeningQuantity, '1.0-4'));
+              closingRow.push(accountingFormat(response.ClosingQuantity, '1.0-4'));
               break;
             case 'MonetaryValueAccumulation':
-              openingRow.push(formatAccounting(response.OpeningMonetaryValue, this.monetaryValueDigitsInfo));
-              closingRow.push(formatAccounting(response.ClosingMonetaryValue, this.monetaryValueDigitsInfo));
+              openingRow.push(accountingFormat(response.OpeningMonetaryValue, this.monetaryValueDigitsInfo));
+              closingRow.push(accountingFormat(response.ClosingMonetaryValue, this.monetaryValueDigitsInfo));
               break;
             case 'Accumulation':
-              openingRow.push(formatAccounting(response.Opening, this.functionalDigitsInfo));
-              closingRow.push(formatAccounting(response.Closing, this.functionalDigitsInfo));
+              openingRow.push(accountingFormat(response.Opening, this.functionalDigitsInfo));
+              closingRow.push(accountingFormat(response.Closing, this.functionalDigitsInfo));
               break;
             default:
               openingRow.push('');
@@ -596,7 +599,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         for (const entry of response.Result) {
           const dataRow: string[] = [];
           for (const col of columns) {
-            dataRow.push(col.display(entry));
+            dataRow.push(col.exportDisplay ? col.exportDisplay(entry) : col.display(entry));
           }
           data.push(dataRow);
         }
@@ -606,8 +609,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
         // Prepare a friendly file name
         const reportName = this.translate.instant('AccountStatement');
-        // const fromDate = formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB');
-        // const toDate = formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB');
         const fileName = `${reportName}.csv`;
 
         // Download the blob
@@ -1195,7 +1196,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const extras = this.state.extras;
     if (extras) {
       const opening = extras.opening || 0;
-      return formatAccounting(opening, this.functionalDigitsInfo);
+      return accountingFormat(opening, this.functionalDigitsInfo);
     }
 
     return '';
@@ -1205,7 +1206,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const extras = this.state.extras;
     if (!!extras) {
       const opening = extras.openingQuantity || 0;
-      return formatAccounting(opening, '1.0-4');
+      return accountingFormat(opening, '1.0-4');
     }
 
     return '';
@@ -1215,7 +1216,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const extras = this.state.extras;
     if (extras) {
       const opening = extras.openingMonetaryValue || 0;
-      return formatAccounting(opening, this.monetaryValueDigitsInfo);
+      return accountingFormat(opening, this.monetaryValueDigitsInfo);
     }
 
     return '';
@@ -1225,7 +1226,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const extras = this.state.extras;
     if (extras) {
       const closing = extras.closing || 0;
-      return formatAccounting(closing, this.functionalDigitsInfo);
+      return accountingFormat(closing, this.functionalDigitsInfo);
     }
 
     return '';
@@ -1235,7 +1236,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const extras = this.state.extras;
     if (extras) {
       const closing = extras.closingQuantity || 0;
-      return formatAccounting(closing, '1.0-4');
+      return accountingFormat(closing, '1.0-4');
     }
 
     return '';
@@ -1245,7 +1246,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const extras = this.state.extras;
     if (extras) {
       const closing = extras.closingMonetaryValue || 0;
-      return formatAccounting(closing, this.monetaryValueDigitsInfo);
+      return accountingFormat(closing, this.monetaryValueDigitsInfo);
     }
 
     return '';
@@ -1305,7 +1306,11 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           label: () => this.translate.instant('Line_PostingDate'),
           display: (entry: DetailsEntry) => {
             const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
-            return formatDate(line.PostingDate, 'yyyy-MM-dd', locale);
+            return dateFormat(line.PostingDate, this.workspace, this.translate);
+          },
+          exportDisplay: (entry: DetailsEntry) => {
+            const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
+            return toLocalDateOnlyISOString(new Date(line.PostingDate)); // For Excel to pick it up as a date
           },
           weight: 1
         },
@@ -1398,7 +1403,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['Time1'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time1Label'),
-            display: (entry: DetailsEntry) => !!entry.Time1 ? formatDate(entry.Time1, 'yyyy-MM-dd HH:mm', locale) : '',
+            display: (entry: DetailsEntry) => dateFormat(entry.Time1, this.workspace, this.translate),
+            exportDisplay: (entry: DetailsEntry) => !!entry.Time1 ? toLocalDateOnlyISOString(new Date(entry.Time1)) : '',
             weight: 1
           });
         }
@@ -1408,7 +1414,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['Time2'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time2Label'),
-            display: (entry: DetailsEntry) => !!entry.Time2 ? formatDate(entry.Time2, 'yyyy-MM-dd HH:mm', locale) : '',
+            display: (entry: DetailsEntry) => dateFormat(entry.Time2, this.workspace, this.translate),
+            exportDisplay: (entry: DetailsEntry) => !!entry.Time2 ? toLocalDateOnlyISOString(new Date(entry.Time2)) : '',
             weight: 1
           });
         }
@@ -1448,7 +1455,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['NotedDate'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedDateLabel'),
-            display: (entry: DetailsEntry) => !!entry.NotedDate ? formatDate(entry.NotedDate, 'yyyy-MM-dd', locale) : '',
+            display: (entry: DetailsEntry) => dateFormat(entry.NotedDate, this.workspace, this.translate),
+            exportDisplay: (entry: DetailsEntry) => !!entry.NotedDate ? toLocalDateOnlyISOString(new Date(entry.NotedDate)) : '',
             weight: 1
           });
         }
@@ -1458,7 +1466,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['NotedAmount'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedAmountLabel'),
-            display: (entry: DetailsEntry) => !!entry.NotedAmount ? formatAccounting(entry.NotedAmount, this.functionalDigitsInfo) : '',
+            display: (entry: DetailsEntry) => !!entry.NotedAmount ? accountingFormat(entry.NotedAmount, this.functionalDigitsInfo) : '',
             weight: 1
           });
         }
@@ -1511,7 +1519,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             return label;
           },
           display: (entry: DetailsEntry) => {
-            return formatAccounting(entry.Direction * entry.Quantity, '1.0-4');
+            return accountingFormat(entry.Direction * entry.Quantity, '1.0-4');
           },
           isRightAligned: true,
           weight: 1
@@ -1536,7 +1544,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
               return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', baseUnitId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {
-              return formatAccounting(entry.QuantityAccumulation, '1.0-4');
+              return accountingFormat(entry.QuantityAccumulation, '1.0-4');
             },
             isRightAligned: true,
             weight: 1
@@ -1559,7 +1567,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           },
           display: (entry: DetailsEntry) => {
             const currencyId = definedCurrencyId || entry.CurrencyId;
-            return formatAccounting(entry.Direction * entry.MonetaryValue, this.digitsInfo(currencyId));
+            return accountingFormat(entry.Direction * entry.MonetaryValue, this.digitsInfo(currencyId));
           },
           isRightAligned: true,
           weight: 1
@@ -1574,7 +1582,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
               return `${this.translate.instant('DetailsEntry_MonetaryValueAccumulation')} (${this.ws.getMultilingualValue('Currency', definedCurrencyId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {
-              return formatAccounting(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
+              return accountingFormat(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
             },
             isRightAligned: true,
             weight: 1
@@ -1597,7 +1605,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         label: () => `${this.translate.instant('Debit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
           if (entry.Direction > 0) {
-            return formatAccounting(entry.Value, this.functionalDigitsInfo);
+            return accountingFormat(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
           }
@@ -1612,7 +1620,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         label: () => `${this.translate.instant('Credit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
           if (entry.Direction < 0) {
-            return formatAccounting(entry.Value, this.functionalDigitsInfo);
+            return accountingFormat(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
           }
@@ -1627,7 +1635,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         select: ['Value', 'Direction'],
         label: () => `${this.translate.instant('DetailsEntry_Accumulation')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
-          return formatAccounting(entry.Accumulation, this.functionalDigitsInfo);
+          return accountingFormat(entry.Accumulation, this.functionalDigitsInfo);
         },
         isRightAligned: true,
         weight: 1
@@ -1679,6 +1687,7 @@ interface ColumnInfo {
   select: string[];
   label: () => string;
   display: (entry: DetailsEntry) => string;
+  exportDisplay?: (entry: DetailsEntry) => string;
   weight: number;
   isRightAligned?: boolean;
 }

@@ -1,3 +1,5 @@
+import { Calendar, HmsFormat, YmdFormat } from '../entities/base/metadata-types';
+
 // tslint:disable:variable-name
 export interface SettingsForClient {
     ShortCompanyName: string;
@@ -22,6 +24,10 @@ export interface SettingsForClient {
     TernaryLanguageId: string;
     TernaryLanguageName: string;
     TernaryLanguageSymbol: string;
+    PrimaryCalendar: Calendar;
+    SecondaryCalendar: Calendar;
+    DateFormat: YmdFormat;
+    TimeFormat: HmsFormat;
     BrandColor: string;
     CreatedAt: string;
     SingleBusinessUnitId?: number;

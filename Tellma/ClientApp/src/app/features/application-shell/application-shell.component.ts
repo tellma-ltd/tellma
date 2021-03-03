@@ -18,7 +18,7 @@ import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MyUserForSave } from '~/app/data/dto/my-user';
 import { User } from '~/app/data/entities/user';
 import { ApiService } from '~/app/data/api.service';
-import { switchMap, tap, catchError, filter } from 'rxjs/operators';
+import { switchMap, tap, catchError, filter, retry } from 'rxjs/operators';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { addSingleToWorkspace, addToWorkspace, isSpecified } from '~/app/data/util';
 import { clearServerErrors, applyServerErrors } from '~/app/shared/details/details.component';
@@ -29,6 +29,8 @@ import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { moveItemInArray, CdkDragDrop, DropListOrientation } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
+import { Calendar } from '~/app/data/entities/base/metadata-types';
+import { handleFreshUserSettings } from '~/app/data/tenant-resolver.guard';
 
 @Component({
   selector: 't-application-shell',
@@ -73,6 +75,11 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     this.notifyFetch$ = new Subject<any>();
     this._subscriptions.add(this.notifyFetch$.pipe(
       switchMap(() => this.doFetch())
+    ).subscribe());
+
+    this.notifySavePreferredCalendar$ = new Subject<Calendar>();
+    this._subscriptions.add(this.notifySavePreferredCalendar$.pipe(
+      switchMap(cal => this.doSavePreferredCalendar(cal))
     ).subscribe());
 
     // Refresh the inbox whenever the server signals a change
@@ -128,6 +135,36 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     // TODO: Set preferred langauge
   }
 
+  private onSetCalendar(cal: Calendar) {
+    // This applies the effect immediately
+    const ws = this.ws;
+    const clone = JSON.parse(JSON.stringify(ws.userSettings)) as UserSettingsForClient;
+    clone.PreferredCalendar = cal;
+    ws.userSettings = clone;
+    ws.notifyStateChanged();
+
+    // This remembers the user's preferred calendar in the server
+    this.notifySavePreferredCalendar$.next(cal);
+  }
+
+  private notifySavePreferredCalendar$: Subject<Calendar>;
+
+  private doSavePreferredCalendar(cal: Calendar): Observable<any> {
+    const ws = this.workspace.currentTenant;
+    const tenantId = this.workspace.ws.tenantId;
+    return this.usersApi.saveUserPreferredCalendar(cal)
+    .pipe(
+      tap(result => {
+        handleFreshUserSettings(result, tenantId, ws, this.storage);
+      }),
+      retry(2),
+      catchError(err => {
+        console.error(err);
+        return of(null);
+      })
+    );
+  }
+
   // UI Binding
 
   onToggleCollapse() {
@@ -148,6 +185,14 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   onTernary() {
     this.onSetLanguage(this.settings.TernaryLanguageId);
+  }
+
+  onPrimaryCalendar() {
+    this.onSetCalendar(this.settings.PrimaryCalendar);
+  }
+
+  onSecondaryCalendar() {
+    this.onSetCalendar(this.settings.SecondaryCalendar);
   }
 
   get settings(): SettingsForClient {

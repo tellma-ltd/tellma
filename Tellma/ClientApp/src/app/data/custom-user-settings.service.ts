@@ -82,7 +82,7 @@ export class CustomUserSettingsService {
         })
       );
     } else {
-      return this.api.usersApi(this.notifyDestruct$).saveForClient(args.key, args.value)
+      return this.api.usersApi(this.notifyDestruct$).saveUserSetting(args.key, args.value)
       .pipe(
         tap(result => {
           const workspace = args.workspace as TenantWorkspace;

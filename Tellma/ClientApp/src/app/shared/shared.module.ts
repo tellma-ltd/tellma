@@ -18,7 +18,8 @@ import {
   NgbDatepickerI18n,
   NgbTooltipModule,
   NgbNavModule,
-  NgbCalendar
+  NgbCalendar,
+  NgbDateParserFormatter
 } from '@ng-bootstrap/ng-bootstrap';
 
 import {
@@ -99,8 +100,11 @@ import { ContextMenuDirective } from '../data/context-menu.directive';
 import { SettingsComponent } from '../shared/settings/settings.component';
 import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-editor.component';
 import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.directive';
-import { NgbCalendarEthiopian } from '../data/ngb-calendar-ethiopian';
 import { NgbCalendarDynamic } from '../data/ngb-calendar-dynamic';
+import { DatePickerParserFormatter } from './date-picker/date-picker-parse-formatter';
+import { DateFormatPipe } from './date-format/date-format.pipe';
+import { DateTimeFormatPipe } from './date-format/date-time-format.pipe';
+import { TimeFormatPipe } from './date-format/time-format.pipe';
 
 @NgModule({
   declarations: [
@@ -128,6 +132,9 @@ import { NgbCalendarDynamic } from '../data/ngb-calendar-dynamic';
     AutoCellComponent,
     AutoLabelComponent,
     LabelPipe,
+    DateFormatPipe,
+    TimeFormatPipe,
+    DateTimeFormatPipe,
     PickerBaseComponent,
     FormGroupBaseComponent,
     FormGroupDynamicComponent,
@@ -202,6 +209,9 @@ import { NgbCalendarDynamic } from '../data/ngb-calendar-dynamic';
     AutoCellComponent,
     AutoLabelComponent,
     LabelPipe,
+    DateFormatPipe,
+    TimeFormatPipe,
+    DateTimeFormatPipe,
     MapBoundsFitterComponent,
     AccountingPipe,
     ContextMenuDirective,
@@ -209,8 +219,9 @@ import { NgbCalendarDynamic } from '../data/ngb-calendar-dynamic';
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
-    // { provide: NgbCalendar, useClass: NgbCalendarDynamic },
+    { provide: NgbCalendar, useClass: NgbCalendarDynamic },
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization },
+    { provide: NgbDateParserFormatter, useClass: DatePickerParserFormatter },
     { provide: CDK_DRAG_CONFIG, useValue: { zIndex: 10000 } }
   ]
 })

@@ -10,15 +10,20 @@ import { WorkspaceService } from './workspace.service';
 export class NgbCalendarDynamic extends NgbCalendar {
 
     constructor(
-        private workspace: WorkspaceService,
-        private gregorian: NgbCalendarGregorian,
-        private ummAlQura: NgbCalendarIslamicUmalqura,
-        private ethiopian: NgbCalendarEthiopian) {
+        private workspace: WorkspaceService) {
         super();
     }
 
+    private _gregorian = new NgbCalendarGregorian();
+    private _ethiopian = new NgbCalendarEthiopian();
+    private _umalqura = new NgbCalendarIslamicUmalqura();
+
     private get calendar(): NgbCalendar {
-        return this.ethiopian;
+        switch (this.workspace.calendarForPicker) {
+            case 'GC': return this._gregorian;
+            case 'ET': return this._ethiopian;
+            case 'UQ': return this._umalqura;
+        }
     }
 
     getDaysPerWeek(): number {

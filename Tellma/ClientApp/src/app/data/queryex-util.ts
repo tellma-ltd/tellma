@@ -1,11 +1,10 @@
 // tslint:disable:max-line-length
 import { TranslateService } from '@ngx-translate/core';
 import { ReportDefinitionDimensionForClient, ReportDefinitionForClient, ReportDefinitionMeasureForClient, ReportDefinitionSelectForClient } from './dto/definitions-for-client';
-import { DateGranularity, TimeGranularity } from './entities/base/metadata-types';
+import { Calendar, calendarsArray, DateGranularity, TimeGranularity } from './entities/base/metadata-types';
 import { Collection, DataType, DatePropDescriptor, DateTimePropDescriptor, EntityDescriptor, entityDescriptorImpl, getNavPropertyFromForeignKey, isNumeric, metadata, NavigationPropDescriptor, PropDescriptor, PropVisualDescriptor } from './entities/base/metadata';
 import {
     DeBracket,
-    isDigit,
     Queryex,
     QueryexBase,
     QueryexBinaryOperator,
@@ -19,11 +18,9 @@ import {
     QueryexQuote,
     QueryexUnaryOperator
 } from './queryex';
-import { descFromControlOptions, isSpecified, nowISOString, todayISOString, toLocalDateOnlyISOString, toLocalDateTimeISOString } from './util';
+import { descFromControlOptions, isSpecified } from './util';
+import { nowISOString, todayISOString, toLocalDateOnlyISOString, toLocalDateTimeISOString } from './date-util';
 import { WorkspaceService } from './workspace.service';
-
-type Calendar = 'GR' | 'ET' | 'UQ';
-const calendarsArray: Calendar[] = ['GR', 'ET', 'UQ'];
 
 const noLabel = (trx: TranslateService) => () => trx.instant('Expression');
 
@@ -412,10 +409,13 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
 
         case 'date':
             if (d2.datatype === 'date') {
+                const calendar = d1.calendar === d2.calendar ? d1.calendar : undefined;
+                const granularity = !!calendar ? Math.max(d1.granularity, d2.granularity) : DateGranularity.days;
                 return {
                     datatype: 'date',
                     control: 'date',
-                    granularity: Math.max(d1.granularity, d2.granularity),
+                    calendar,
+                    granularity,
                     label,
                     labelForParameter
                 };
@@ -424,10 +424,13 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
 
         case 'datetime':
             if (d2.datatype === 'datetime') {
+                const calendar = d1.calendar === d2.calendar ? d1.calendar : undefined;
+                const granularity = !!calendar ? Math.max(d1.granularity, d2.granularity) : TimeGranularity.minutes;
                 return {
                     datatype: 'datetime',
                     control: d1.control === 'date' && d2.control === 'date' ? 'date' : 'datetime',
-                    granularity: Math.max(d1.granularity, d2.granularity),
+                    calendar,
+                    granularity,
                     label,
                     labelForParameter
                 };
@@ -436,10 +439,13 @@ function mergeDescriptors(d1: PropDescriptor, d2: PropDescriptor, label: () => s
 
         case 'datetimeoffset':
             if (d2.datatype === 'datetimeoffset') {
+                const calendar = d1.calendar === d2.calendar ? d1.calendar : undefined;
+                const granularity = !!calendar ? Math.max(d1.granularity, d2.granularity) : TimeGranularity.minutes;
                 return {
                     datatype: 'datetimeoffset',
                     control: d1.control === 'date' && d2.control === 'date' ? 'date' : 'datetime',
-                    granularity: Math.max(d1.granularity, d2.granularity),
+                    calendar,
+                    granularity,
                     label,
                     labelForParameter
                 };
@@ -1499,157 +1505,6 @@ export class QueryexUtil {
                         } else {
                             return undefined;
                         }
-
-                        // Valid inputs are ones that do not mess up client side date functions:
-                        // 2021
-                        // 2021-1
-                        // 2021-01
-                        // 2021-02-4
-                        // 2021-02-04
-                        // 2021-02-04T11:28
-                        // 2021-02-04T11:28:13.457
-                        // 2021-02-14T11:28:13.4573204Z
-                        // const sections = ex.value.split('T');
-                        // const dateSection = sections[0];
-                        // if (dateSection.includes('.')) {
-                        //     return undefined;
-                        // }
-
-                        // const dateParts = dateSection.split('-');
-
-                        // const year = dateParts[0].trim();
-                        // if (year.length !== 4) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < year.length; i++) {
-                        //     const c = year.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-
-                        // let month = dateParts[1].trim() || '01';
-                        // if (month.length > 2) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < month.length; i++) {
-                        //     const c = month.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-                        // if (month.length < 2) {
-                        //   month = '0' + month;
-                        // }
-
-                        // let day = dateParts[2].trim() || '01';
-                        // if (day.length > 2) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < day.length; i++) {
-                        //     const c = day.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-                        // if (day.length < 2) {
-                        //     day = '0' + day;
-                        // }
-
-                        // const timeSection = sections[1] || '';
-                        // const timeParts = timeSection.split(':');
-
-                        // let hour = timeParts[0] || '00';
-                        // if (hour.length > 2) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < hour.length; i++) {
-                        //     const c = hour.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-                        // if (hour.length < 2) {
-                        //     hour = '0' + hour;
-                        // }
-
-                        // let minute = timeParts[1] || '00';
-                        // if (minute.length > 2) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < minute.length; i++) {
-                        //     const c = minute.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-                        // if (minute.length < 2) {
-                        //     minute = '0' + minute;
-                        // }
-
-                        // const secondSection = timeParts[2] || '';
-                        // const secondParts = secondSection.split('.');
-                        // let second = secondParts[0] || '00';
-                        // if (second.length > 2) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < second.length; i++) {
-                        //     const c = second.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-                        // if (second.length < 2) {
-                        //     second = '0' + second;
-                        // }
-
-                        // let milliseconds = secondParts[1];
-                        // if (!milliseconds) {
-                        //     if (targetType === 'datetimeoffset') {
-                        //         milliseconds = '0000000';
-                        //     } else {
-                        //         milliseconds = '000';
-                        //     }
-                        // }
-                        // let endsWithZ = false;
-                        // if (milliseconds.endsWith('Z')) {
-                        //     milliseconds = milliseconds.slice(0, -1);
-                        //     endsWithZ = true;
-                        // }
-
-                        // if (milliseconds.length > 7) {
-                        //     return undefined;
-                        // }
-                        // for (let i = 0; i < milliseconds.length; i++) {
-                        //     const c = milliseconds.charAt(i);
-                        //     if (!isDigit(c)) {
-                        //         return undefined;
-                        //     }
-                        // }
-                        // let z = '';
-                        // if (targetType === 'datetimeoffset') {
-                        //     if (milliseconds.length < 7) {
-                        //         milliseconds = '000000'.substring(0, 7 - milliseconds.length) + milliseconds;
-                        //     }
-                        //     z = 'Z';
-                        // } else {
-                        //     if (endsWithZ) {
-                        //         return undefined; // Date and date time cannot end with Z
-                        //     }
-                        //     if (milliseconds.length < 3) {
-                        //         milliseconds = '00'.substring(0, 3 - milliseconds.length) + milliseconds;
-                        //     } else if (milliseconds.length > 3) {
-                        //         milliseconds = milliseconds.substr(0, 3);
-                        //     }
-                        // }
-
-                        // // Create the final output
-                        // const isoDate = `${year}-${month}-${day}T${hour}:${minute}:${second}.${milliseconds}${z}`;
-
-                        // // Check if the parts make up a valid date
-                        // if (isNaN(Date.parse(isoDate))) {
-                        //     return undefined;
-                        // }
                     }
                 }
             } else if (ex instanceof QueryexParameter) {
@@ -1871,7 +1726,7 @@ export class QueryexUtil {
                         const arg1 = ex.arguments[0];
                         const arg1Desc = tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset');
                         if (!!arg1Desc) {
-                            let calendar: Calendar = 'GR'; // Gregorian
+                            let calendar: Calendar = 'GC'; // Gregorian
                             if (ex.arguments.length >= 2) {
                                 const arg2 = ex.arguments[1];
                                 if (arg2 instanceof QueryexQuote) {
@@ -1893,7 +1748,7 @@ export class QueryexUtil {
                                 case 'quarter':
                                     return QueryexUtil.quarterDesc(label, trx, labelForParameter);
                                 case 'month':
-                                    if (calendar === 'GR') {
+                                    if (calendar === 'GC') {
                                         return QueryexUtil.monthDesc(label, trx, labelForParameter);
                                     } else if (calendar === 'UQ') {
                                         return {
@@ -1941,17 +1796,22 @@ export class QueryexUtil {
                             throw new Error(`Function '${ex.name}': The second argument ${arg2} could not be interpreted as a date, datetime or datetimeoffset.`);
                         }
 
+                        let calendar: Calendar; // TODO: support for other calendars
                         let granularity: DateGranularity;
                         if (arg2Desc.control === 'date' || arg2Desc.control === 'datetime') {
                             granularity = arg2Desc.granularity as DateGranularity;
                             if (nameLower === 'adddays') {
                                 granularity = Math.max(granularity, DateGranularity.days);
+                                calendar = arg2Desc.calendar;
                             } else if (nameLower === 'addmonths') {
                                 granularity = Math.max(granularity, DateGranularity.months);
+                                calendar = 'GC'; // TODO: implement other calendars
+                            } else {
+                                calendar = 'GC'; // TODO: implement other calendars
                             }
                         }
 
-                        return { ...arg2Desc, granularity, label: noLabel(trx) };
+                        return { ...arg2Desc, granularity, calendar, label: noLabel(trx) };
                     }
 
                     case 'date':
@@ -1963,14 +1823,19 @@ export class QueryexUtil {
                         }
 
                         const arg1 = ex.arguments[0];
-                        const arg1Desc = tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset');
+                        const arg1Desc = (tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset')) as DatePropDescriptor | DateTimePropDescriptor;
                         if (!!arg1Desc) {
-                            const granularity = nameLower === 'startofyear' ? DateGranularity.years : nameLower === 'startofmonth' ? DateGranularity.months : DateGranularity.days;
+                            const granularity = nameLower === 'startofyear' ? DateGranularity.years :
+                                nameLower === 'startofmonth' ? DateGranularity.months : DateGranularity.days;
+
+                            const calendar: Calendar = granularity === DateGranularity.days ? arg1Desc.calendar : 'GC'; // TODO support for other calendars
+
                             return {
                                 datatype: 'date',
                                 control: 'date',
                                 label: noLabel(trx),
-                                granularity
+                                granularity,
+                                calendar
                             };
                         } else {
                             throw new Error(`Function '${ex.name}': The argument ${arg1} could not be interpreted as a date, datetime or datetimeoffset.`);
@@ -2503,12 +2368,12 @@ export class QueryexUtil {
                             return null;
                         }
 
-                        let calendar: Calendar = 'GR';
+                        let calendar: Calendar = 'GC';
                         if (ex.arguments.length > 1) {
-                            calendar = (evaluate(ex.arguments[1]) as Calendar) || 'GR';
+                            calendar = (evaluate(ex.arguments[1]) as Calendar) || 'GC';
                         }
 
-                        if (calendar === 'GR') {
+                        if (calendar === 'GC') {
                             const date = new Date(inputDateString) as Date;
                             switch (nameLower) {
                                 case 'year':

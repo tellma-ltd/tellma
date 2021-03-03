@@ -1,5 +1,20 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
+using Tellma.Controllers.Dto;
+using Tellma.Controllers.ImportExport;
+using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Utilities;
+using Tellma.Controllers.Utiltites;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
@@ -7,25 +22,8 @@ using Tellma.Services.ApiAuthentication;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.Email;
 using Tellma.Services.EmbeddedIdentityServer;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using System.Threading;
-using Microsoft.AspNetCore.Routing;
-using Tellma.Controllers.ImportExport;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using Tellma.Controllers.Utiltites;
-using Tellma.Controllers.Jobs;
 using Tellma.Services.Sms;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -60,6 +58,29 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var result = await _service.SaveUserSetting(args);
+                return Ok(result);
+            },
+            _logger);
+        }
+
+        [HttpPost("client/preferred-language")]
+        public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var result = await _service.SaveUserPreferredLanguage(preferredLanguage, cancellation);
+                return Ok(result);
+            },
+            _logger);
+        }
+
+
+        [HttpPost("client/preferred-calendar")]
+        public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var result = await _service.SaveUserPreferredCalendar(preferredCalendar, cancellation);
                 return Ok(result);
             },
             _logger);
@@ -194,6 +215,7 @@ namespace Tellma.Controllers
         private static readonly EmailAddressAttribute emailAtt = new EmailAddressAttribute();
         private static readonly Random rand = new Random();
 
+        private readonly ISettingsCache _settingsCache;
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
         private readonly IBlobService _blobService;
@@ -239,7 +261,8 @@ namespace Tellma.Controllers
             EmailTemplatesProvider emailTemplates,
             IBlobService blobService,
             MetadataProvider metadataProvider,
-            ExternalNotificationsService notifications) : base(serviceProvider)
+            ExternalNotificationsService notifications,
+            ISettingsCache settingsCache) : base(serviceProvider)
         {
             _appRepo = appRepo;
             _adminRepo = adminRepo;
@@ -249,6 +272,7 @@ namespace Tellma.Controllers
             _emailSender = emailSender;
             _emailTemplates = emailTemplates;
             _options = options.Value;
+            _settingsCache = settingsCache;
 
             // we use this trick since this is an optional dependency, it will resolve to null if 
             // the embedded identity server is not enabled
@@ -286,6 +310,47 @@ namespace Tellma.Controllers
             return await UserSettingsForClient(cancellation: default);
         }
 
+        public async Task<Versioned<UserSettingsForClient>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            if (string.IsNullOrWhiteSpace(preferredLanguage))
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, "PreferredLanguage"]);
+            }
+
+            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data ?? throw new InvalidOperationException($"Bug: {nameof(SaveUserPreferredLanguage)}: Settings were not cached.");
+            if (settings.PrimaryLanguageId != preferredLanguage &&
+                settings.SecondaryLanguageId != preferredLanguage &&
+                settings.TernaryLanguageId != preferredLanguage)
+            {
+                // Not one of the languages supported by this company
+                throw new BadRequestException(_localizer["Error_Language0IsNotSupported"]);
+            }
+
+            // Save and return
+            await _appRepo.Users__SavePreferredLanguage(preferredLanguage, cancellation);
+            return await UserSettingsForClient(cancellation: default);
+        }
+
+        public async Task<Versioned<UserSettingsForClient>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            if (string.IsNullOrWhiteSpace(preferredCalendar))
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, "PreferredCalendar"]);
+            }
+
+            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data ?? throw new InvalidOperationException($"Bug: {nameof(SaveUserPreferredCalendar)}: Settings were not cached.");
+            if (settings.PrimaryCalendar != preferredCalendar &&
+                settings.SecondaryCalendar != preferredCalendar)
+            {
+                // Not one of the Calendars supported by this company
+                throw new BadRequestException(_localizer["Error_Calendar0IsNotSupported"]);
+            }
+
+            // Save and return
+            await _appRepo.Users__SavePreferredCalendar(preferredCalendar, cancellation);
+            return await UserSettingsForClient(cancellation: default);
+        }
+
         public async Task<Versioned<UserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
         {
             var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
@@ -299,6 +364,7 @@ namespace Tellma.Controllers
                 Name3 = user.Name3,
                 ImageId = user.ImageId,
                 PreferredLanguage = user.PreferredLanguage,
+                PreferredCalendar = user.PreferredCalendar,
                 CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
             };
 
@@ -407,7 +473,7 @@ namespace Tellma.Controllers
                 PushNewInboxItem = user.PushNewInboxItem,
                 NormalizedContactMobile = user.NormalizedContactMobile,
                 PreferredChannel = user.PreferredChannel,
-                 
+
                 EntityMetadata = new EntityMetadata
                 {
                     [nameof(UserForSave.Id)] = FieldMetadata.Loaded,

@@ -10,6 +10,7 @@ AS
 		[U].[Name3], 
 		[U].[ImageId], 
 		[U].[PreferredLanguage], 
+		[U].[PreferredCalendar],
 		[U].[UserSettingsVersion]
 	FROM [dbo].[Users] AS [U]
 	WHERE [U].[Id] = @UserId

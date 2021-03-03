@@ -4,7 +4,7 @@
 
 
 <ng-template #template let-model="model" let-isEdit="isEdit">
-  
+
   <div class="m-0 pt-3 pt-sm-4 pb-3 pb-sm-5 pl-0 pl-sm-3 pr-0 pr-sm-3">
 
     <h5 class="col-12 bg-light t-settings-header">
@@ -18,8 +18,8 @@
         [description]="'Settings_ShortCompanyNameDescription' | translate"
         [serverErrors]="model.serverErrors?.ShortCompanyName">
         <div *ngIf="!isEdit">{{ model?.ShortCompanyName }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName"
-          [ngModelOptions]="{ updateOn: 'blur' }" required></t-text-editor>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName" [ngModelOptions]="{ updateOn: 'blur' }"
+          required></t-text-editor>
       </t-form-group-settings>
 
       <!-- Short Company Name 2 -->
@@ -28,9 +28,9 @@
         [description]="'Settings_ShortCompanyNameDescription' | translate"
         [serverErrors]="model.serverErrors?.ShortCompanyName2">
         <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2"
-          [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-      </t-form-group-settings>            
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+      </t-form-group-settings>
 
       <!-- Short Company Name 3 -->
       <t-form-group-settings class="t-form-group" *ngIf="model.TernaryLanguageId"
@@ -38,8 +38,8 @@
         [description]="'Settings_ShortCompanyNameDescription' | translate"
         [serverErrors]="model.serverErrors?.ShortCompanyName3">
         <div *ngIf="!isEdit">{{ model?.ShortCompanyName3 }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName3"
-          [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName3" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
       </t-form-group-settings>
 
       <!-- Primary Language -->
@@ -75,8 +75,8 @@
         [description]="'Settings_LanguageSymbolDescription' | translate"
         [serverErrors]="model.serverErrors?.PrimaryLanguageSymbol">
         <div *ngIf="!isEdit">{{ model?.PrimaryLanguageSymbol || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol"
-          [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
       </t-form-group-settings>
 
       <!-- Secondary Language Symbol -->
@@ -88,15 +88,56 @@
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol"
           [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
       </t-form-group-settings>
-      
+
       <!-- Ternary Language Symbol -->
       <t-form-group-settings class="t-form-group" *ngIf="model.TernaryLanguageId"
         [label]="'Settings_TernaryLanguageSymbol' | translate"
         [description]="'Settings_LanguageSymbolDescription' | translate"
         [serverErrors]="model.serverErrors?.TernaryLanguageSymbol">
         <div *ngIf="!isEdit">{{ model?.TernaryLanguageSymbol || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageSymbol"
-          [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+      </t-form-group-settings>
+    </div>
+
+    <h5 class="col-12 bg-light t-settings-header">
+      {{ 'DatesAndTimes' | translate }}
+    </h5>
+
+    <div class="row col-12 t-settings-section">
+
+      <!-- Primary Calendar -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_PrimaryCalendar' | translate"
+        [description]="'Settings_PrimaryCalendarDescription' | translate"
+        [serverErrors]="model.serverErrors?.PrimaryCalendar">
+        <div *ngIf="!isEdit">{{ calendarName(model?.PrimaryCalendar) || '-' }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.PrimaryCalendar" [choices]="calendars" required>
+        </t-selector>
+      </t-form-group-settings>
+
+      <!-- Secondary Calendar -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_SecondaryCalendar' | translate"
+        [description]="'Settings_SecondaryCalendarDescription' | translate"
+        [serverErrors]="model.serverErrors?.SecondaryCalendar">
+        <div *ngIf="!isEdit">{{ calendarName(model?.SecondaryCalendar) || '-' }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.SecondaryCalendar" [choices]="calendars" isOptional="true">
+        </t-selector>
+      </t-form-group-settings>
+
+      <!-- Date Format -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_DateFormat' | translate"
+        [description]="'Settings_DateFormatDescription' | translate" [serverErrors]="model.serverErrors?.DateFormat">
+        <div *ngIf="!isEdit">{{ dateFormatDisplay(model?.DateFormat) || '-' }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.DateFormat" [choices]="dateFormats" isOptional="true">
+        </t-selector>
+      </t-form-group-settings>
+
+      <!-- Time Format -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_TimeFormat' | translate"
+        [description]="'Settings_TimeFormatDescription' | translate" [serverErrors]="model.serverErrors?.TimeFormat">
+        <div *ngIf="!isEdit">{{ timeFormatDisplay(model?.TimeFormat) || '-' }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.TimeFormat" [choices]="timeFormats" isOptional="true">
+        </t-selector>
       </t-form-group-settings>
     </div>
 

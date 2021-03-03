@@ -25,6 +25,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { formatNumber } from '@angular/common';
 import { ParameterInfo, QueryexUtil } from '~/app/data/queryex-util';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
+import { toLocalDateTimeISOString } from '~/app/data/date-util';
 
 @Component({
   selector: 't-report',
@@ -114,16 +115,28 @@ export class ReportComponent implements OnInit, OnDestroy {
 
         // Read the arguments from the URL
         for (const p of this.parameters) {
-          const urlStringValue = params.get(p.keyLower) || null;
-          let urlValue: any = null;
-          if (urlStringValue === null) {
-            urlValue = null;
-          } else {
+          let urlValue: any;
+          if (params.has(p.keyLower)) {
+            const urlStringValue = params.get(p.keyLower);
             try {
               switch (p.datatype) {
                 case 'datetimeoffset':
+                  const dto = new Date(urlStringValue);
+                  if (!isNaN(dto.getTime())) {
+                    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/.test(urlStringValue)) {
+                      urlValue = urlStringValue;
+                    } else {
+                      urlValue = dto.toISOString().replace('Z', '0000Z');
+                    }
+                  }
+                  break;
                 case 'datetime':
                 case 'date':
+                  const date = new Date(urlStringValue);
+                  if (!isNaN(date.getTime())) {
+                    urlValue = toLocalDateTimeISOString(date);
+                  }
+                  break;
                 case 'string':
                   urlValue = urlStringValue;
                   break;

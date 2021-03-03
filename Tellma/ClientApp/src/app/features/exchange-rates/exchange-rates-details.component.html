@@ -5,7 +5,7 @@
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-    <span>{{ (model?.ValidAsOf | date:'yyyy-MM-dd') + '-' + model?.CurrencyId }}</span>
+    <span>{{ exchangeRateDisplay(model) }}</span>
 </ng-template>
 
 <!-- Edit/View Template -->
@@ -27,7 +27,7 @@
     <!-- Valid As Of -->
     <t-form-group class="t-form-group" [label]="'ExchangeRate_ValidAsOf' | translate"
         [serverErrors]="model?.serverErrors?.ValidAsOf">
-        <div *ngIf="!isEdit">{{ model?.ValidAsOf | date:'yyyy-MM-dd' }}</div>
+        <div *ngIf="!isEdit">{{ model?.ValidAsOf | dateFormat }}</div>
         <t-date-picker *ngIf="isEdit" [(ngModel)]="model.ValidAsOf" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="true">
         </t-date-picker>

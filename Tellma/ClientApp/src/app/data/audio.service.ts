@@ -8,10 +8,7 @@ export class AudioService {
   private initialized = false;
   private audioContext: AudioContext;
 
-  /**
-   * Credit to https://odino.org/emit-a-beeping-sound-with-javascript/
-   */
-  public beep(volume: number, frequency: number, duration: number) {
+  public initialize() {
     if (!this.initialized) {
       this.initialized = true;
 
@@ -21,6 +18,13 @@ export class AudioService {
         this.audioContext = new window.AudioContext();
       }
     }
+  }
+
+  /**
+   * Credit to https://odino.org/emit-a-beeping-sound-with-javascript/
+   */
+  public beep(volume: number, frequency: number, duration: number) {
+    this.initialize();
 
     if (!!this.audioContext) {
       const oscillator = this.audioContext.createOscillator();

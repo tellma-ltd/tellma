@@ -25,7 +25,7 @@
                     {{ ws.getMultilingualValue('User', c[id].CreatedById, 'Name') }}
                 </div>
                 <div class="text-truncate text-muted">
-                    {{ c[id].CreatedAt | date:'yyyy-MM-dd HH:mm' }}
+                    {{ c[id].CreatedAt | datetimeFormat }}
                 </div>
             </div>
             <div class="d-flex justify-content-between mt-1 small text-truncate">

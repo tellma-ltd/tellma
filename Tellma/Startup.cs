@@ -399,7 +399,7 @@ namespace Tellma
 
     /// <summary>
     /// Converts all DateTime values to the following format: "2021-02-15T01:17:13.286".
-    /// Converts all DateTimeOffset values to the following format: "2021-02-15T01:17:13.286Z".
+    /// Converts all DateTimeOffset values to the following format: "2021-02-15T01:17:13.2865330Z".
     /// </summary>
     public class CustomDateTimeConverter : IsoDateTimeConverter
     {

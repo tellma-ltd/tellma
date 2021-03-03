@@ -19,7 +19,6 @@ import { AccountClassification } from './entities/account-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
-import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { ReportDefinition } from './entities/report-definition';
 import { Center } from './entities/center';
 import { EntryType } from './entities/entry-type';
@@ -51,6 +50,16 @@ import { SmsMessageForQuery } from './entities/sms-message';
 import { QueryexBase, QueryexDirection } from './queryex';
 import { AttributeInfo, DimensionInfo, MeasureInfo, ParameterInfo, SelectInfo, UniqueAggregationInfo } from './queryex-util';
 import { DynamicRow } from './dto/get-aggregate-response';
+import {
+  Calendar,
+  DateGranularity,
+  YmdFormat,
+  DateFormat,
+  defaultDateFormat,
+  defaultTimeFormat,
+  HmsFormat
+} from './entities/base/metadata-types';
+import { adjustDateFormatForGranularity } from './date-time-formats';
 
 enum WhichWorkspace {
   /**
@@ -548,6 +557,42 @@ export class TenantWorkspace extends SpecificWorkspace {
     return false;
   }
 
+  get calendar(): Calendar {
+    return this.userSettings.PreferredCalendar || this.settings.PrimaryCalendar || 'GC';
+  }
+
+  get dateFormat(): YmdFormat {
+    return this.settings.DateFormat || defaultDateFormat;
+  }
+
+  get timeFormat(): HmsFormat {
+    return this.settings.TimeFormat || defaultTimeFormat;
+  }
+
+  get isPrimaryCalendar(): boolean {
+    const s = this.settings;
+    if (!!s) {
+      const primaryCalendar = s.PrimaryCalendar;
+      const currentUserCalendar = this.calendar;
+
+      return currentUserCalendar === primaryCalendar;
+    }
+
+    return false;
+  }
+
+  get isSecondaryCalendar(): boolean {
+    const s = this.settings;
+    if (!!s) {
+      const secondaryCalendar = s.SecondaryCalendar;
+      const currentUserCalendar = this.calendar;
+
+      return currentUserCalendar === secondaryCalendar;
+    }
+
+    return false;
+  }
+
   getMultilingualValue(collection: string, id: number | string, propName: string) {
     if (!!id) {
       const item = this.get(collection, id);
@@ -737,13 +782,13 @@ export class ChartDimensionCell {
     // ngx-charts throws an error if you return null
     // The value returned must uniquely identify the dimension
     // formatting will be handled in the tooltip template
-  return isSpecified(this.valueId) ? this.valueId.toString() : undefinedToString; // hopefully it won't be replicated
+    return isSpecified(this.valueId) ? this.valueId.toString() : undefinedToString; // hopefully it won't be replicated
   }
 }
 
 function veryRandomString() {
   return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-  .replace(/[xy]/g, _ => Math.floor(Math.random() * 16).toString(16));
+    .replace(/[xy]/g, _ => Math.floor(Math.random() * 16).toString(16));
 }
 
 export const undefinedToString = `undefined-${veryRandomString()}`; // Hopefully this will never clash with a user entered value
@@ -878,6 +923,7 @@ export class ReportStore extends ReportStoreBase {
   totalEqualsSum: boolean; // The ngx-guage displays the sum of the values, so we need to hide it if the total is not equal to the sum
   currentPivotForSingle: any;
   currentLangForSingle: string;
+  currentCalendarForSingle: Calendar;
 
   /**
    * For multi-series charts (e.g. line chart)
@@ -885,6 +931,7 @@ export class ReportStore extends ReportStoreBase {
   multi: MultiSeries;
   currentPivotForMulti: any;
   currentLangForMulti: string;
+  currentCalendarForMulti: Calendar;
 
 
   //////////// Custom Drilldown
@@ -1227,6 +1274,18 @@ export class WorkspaceService {
   public cloneId?: number | string;
 
   /**
+   * NgbDatePicker accepts one calendar at compile time, so we set a temporary
+   * override (a hack) so the current date picker uses this calendar while rendering
+   */
+  public calendarOverride?: Calendar;
+
+  /**
+   * NgbDatePicker accepts one calendar at compile time, so we set a temporary
+   * override (a hack) so the current date picker uses this granularity while rendering
+   */
+  public granularityOverride?: DateGranularity;
+
+  /**
    * Tracks whether the most recent router navigation was imperative (e.g. clicking a link)
    * or popstate (browser back and forward navigation)
    */
@@ -1303,6 +1362,27 @@ export class WorkspaceService {
 
   get isAdmin(): boolean {
     return this.ws.which === WhichWorkspace.admin;
+  }
+
+  public get calendarForPicker(): Calendar {
+    return this.calendarOverride || this.calendar;
+  }
+
+  public get calendar(): Calendar {
+    return this.isApp ? this.currentTenant.calendar : 'GC';
+  }
+
+  public get dateFormatForPicker(): DateFormat {
+    const format = this.dateFormat;
+    return adjustDateFormatForGranularity(format, this.granularityOverride);
+  }
+
+  public get dateFormat(): YmdFormat {
+    return this.isApp ? this.currentTenant.dateFormat : defaultDateFormat;
+  }
+
+  public get timeFormat(): HmsFormat {
+    return this.isApp ? this.currentTenant.timeFormat : defaultTimeFormat;
   }
 
   notifyStateChanged() {

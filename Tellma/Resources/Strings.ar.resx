@@ -247,6 +247,15 @@
   <data name="Byte" xml:space="preserve">
     <value>قيمة بايت</value>
   </data>
+  <data name="Calendar_ET" xml:space="preserve">
+    <value>تقويم أثيوبي</value>
+  </data>
+  <data name="Calendar_GC" xml:space="preserve">
+    <value>تقويم ميلادي</value>
+  </data>
+  <data name="Calendar_UQ" xml:space="preserve">
+    <value>تقويم أم القرى</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
@@ -916,6 +925,9 @@
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
   </data>
+  <data name="Error_Calendar0IsNotSupported" xml:space="preserve">
+    <value>التقويم {0} ليس مدعوما في هذه الشركة.</value>
+  </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>لا يمكن إرسال مستند في حالة {0}.</value>
   </data>
@@ -1081,6 +1093,9 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>عنوان العمود ({0}) يتطابق مع أكثر من حقل واحد على نوع {1}، قم بإلحاق عدد لإزالة اللبس، مثال: {0}.1.</value>
   </data>
+  <data name="Error_Language0IsNotSupported" xml:space="preserve">
+    <value>اللغة {0} ليست مدعومة في هذه الشركة.</value>
+  </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>لا يمكن توقيع السطر بالنيابة عن المستخدم ({0}).</value>
   </data>
@@ -1155,6 +1170,9 @@
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المورد ({0}).</value>
+  </data>
+  <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
+    <value>التقويم الثانوي لا يمكن أن يساوي التقويم الأساسي.</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
@@ -2740,11 +2758,17 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>لون العلامة التجارية</value>
   </data>
+  <data name="Settings_DateFormat" xml:space="preserve">
+    <value>صيغة التاريخ</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>العملة الوظيفية</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>العملة الرئيسية المستخدمة في المعاملات النقدية</value>
+  </data>
+  <data name="Settings_PrimaryCalendar" xml:space="preserve">
+    <value>التقويم الرئيسي</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>اللغة الرئيسية</value>
@@ -2754,6 +2778,9 @@
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
     <value>زمن الإنشاء</value>
+  </data>
+  <data name="Settings_SecondaryCalendar" xml:space="preserve">
+    <value>التقويم الثانوي</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية</value>
@@ -2772,6 +2799,9 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TimeFormat" xml:space="preserve">
+    <value>صيغة الزمن</value>
   </data>
   <data name="Settings_TIN" xml:space="preserve">
     <value>رقم التعريف الضريبي</value>
@@ -3067,6 +3097,12 @@
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>تم إزالة مسجل الدخول الخارجي.</value>
   </data>
+  <data name="Time_AM" xml:space="preserve">
+    <value>ص.</value>
+  </data>
+  <data name="Time_PM" xml:space="preserve">
+    <value>م.</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>العنوان</value>
   </data>
@@ -3171,6 +3207,9 @@
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>الأذونات</value>
+  </data>
+  <data name="User_PreferredCalendar" xml:space="preserve">
+    <value>التقويم المفضل</value>
   </data>
   <data name="User_PreferredChannel" xml:space="preserve">
     <value>وسيلة الاتصال المفضلة</value>

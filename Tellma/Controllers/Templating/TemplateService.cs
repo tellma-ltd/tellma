@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Tellma.Controllers.Templating
     {
         private readonly IServiceProvider _provider;
         private readonly ApplicationRepository _repo;
+        private readonly IStringLocalizer _localizer;
 
         // Just the names of the standard query functions
         private string QueryByFilter => nameof(QueryByFilter);
@@ -33,6 +35,7 @@ namespace Tellma.Controllers.Templating
         {
             _provider = serviceProvider;
             _repo = _provider.GetRequiredService<ApplicationRepository>();
+            _localizer = _provider.GetRequiredService<IStringLocalizer<Strings>>();
         }
 
         /// <summary>
@@ -65,6 +68,7 @@ namespace Tellma.Controllers.Templating
             {
                 Culture = culture,
                 Cancellation = cancellation,
+                Localizer = _localizer
             });
 
             // Add to it the input variables
@@ -267,7 +271,8 @@ namespace Tellma.Controllers.Templating
                 [nameof(EndsWith)] = EndsWith(),
                 [nameof(Localize)] = Localize(env),
                 [nameof(Format)] = Format(),
-                [nameof(ConvertCalendar)] = ConvertCalendar(),
+                [nameof(FormatDate)] = FormatDate(env),
+                //[nameof(ConvertCalendar)] = ConvertCalendar(),
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(Barcode)] = Barcode(),
@@ -1140,64 +1145,57 @@ namespace Tellma.Controllers.Templating
             return toFormat.ToString(formatString, null);
         }
 
-        #endregion,
+        #endregion
 
-        #region ConvertCalendar
+        #region FormatDate
 
-        private TemplateFunction ConvertCalendar()
+        private TemplateFunction FormatDate(TemplateEnvironment env)
         {
-            return new TemplateFunction(ConvertCalendarImpl);
+            return new TemplateFunction(function: (args, _) => FormatDateImpl(args, env));
         }
 
-        private CustomCalendarDate ConvertCalendarImpl(object[] args, EvaluationContext ctx)
+        private string FormatDateImpl(object[] args, TemplateEnvironment env)
         {
-            int argCount = 2;
-            if (args.Length != 2)
+            int minArgCount = 2; // date, format
+            int maxArgCount = 3; // date, format, calendar
+            if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects {argCount} arguments");
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
             }
 
-            var toConvertObj = args[0];
-            if (toConvertObj is null)
+            object dateObj = args[0];
+            object formatObj2 = args[1];
+            object calendarObj3 = args.Length > 2 ? args[2] : null;
+
+
+            if (!(dateObj is DateTime date))
             {
-                return null; // Null propagation
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 1st argument of type DateTime");
             }
 
-            int year;
-            int month;
-            int day;
-
-            if (toConvertObj is DateTime toConvertDt)
+            string format = null;
+            if (formatObj2 is null || formatObj2 is string)
             {
-                year = toConvertDt.Year;
-                month = toConvertDt.Month;
-                day = toConvertDt.Day;
-            }
-            else if (toConvertObj is DateTimeOffset toConvertDto)
-            {
-                year = toConvertDto.Year;
-                month = toConvertDto.Month;
-                day = toConvertDto.Day;
+                format = formatObj2 as string;
             }
             else
             {
-                throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects a 1st parameter 'toConvert' of type DateTime or DateTimeOffset");
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 2nd argument of type string");
             }
 
-            var calendarObj = args[1];
-            if (!(calendarObj is string calendar))
+            string calendar = CalendarUtilities.Gregorian;
+            if (calendarObj3 is null || calendarObj3 is string)
             {
-                throw new TemplateException($"Function '{nameof(Format)} expects a 2nd parameter 'calendarCode' of type string'");
+                calendar = calendarObj3 as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 3rd argument of type string");
             }
 
-            var (cDay, cMonth, cYear) = (calendar.ToUpper()) switch
-            {
-                CalendarUtilities.GregorianCode => (day, month, year),
-                CalendarUtilities.EthiopianCode => CalendarUtilities.GregorianToEthiopian(day, month, year),
-                _ => throw new TemplateException($"Function '{nameof(Format)} 2nd parameter 'calendarCode' must be one of the supported calendar codes: '{string.Join("', '", CalendarUtilities.AllCalendarCodes)}'"),
-            };
 
-            return new CustomCalendarDate(cDay, cMonth, cYear);
+
+            return CalendarUtilities.FormatDate(date, env.Localizer, format, calendar);
         }
 
         #endregion
@@ -1649,62 +1647,7 @@ namespace Tellma.Controllers.Templating
         {
             public CultureInfo Culture { get; set; }
             public CancellationToken Cancellation { get; set; }
-        }
-    }
-
-    // TODO: Temporarily until we add custom Calendar support
-    public class CustomCalendarDate : IFormattable, IComparable
-    {
-        public int Day { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
-
-        public CustomCalendarDate(int day, int month, int year)
-        {
-            Day = day;
-            Month = month;
-            Year = year;
-        }
-
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            format ??= "dd/MM/yyyy";
-
-            StringBuilder bldr = new StringBuilder(format);
-            bldr.Replace("yyyy", Year.ToString("D4"))
-                .Replace("yyy", Year.ToString("D3"))
-                .Replace("yy", Year.ToString("D2"))
-                .Replace("MMMM", Month.ToString()) // TODO
-                .Replace("MMMM", Month.ToString()) // TODO
-                .Replace("MM", Month.ToString("D2")) // TODO
-                .Replace("M", Month.ToString("D")) // TODO
-                .Replace("dd", Day.ToString("D2")) // TODO
-                .Replace("d", Day.ToString("D")); // TODO
-
-            return bldr.ToString();
-        }
-
-        public int CompareTo(object obj)
-        {
-            var left = this;
-            if (obj is CustomCalendarDate right)
-            {
-                var result = left.Year - right.Year;
-                if (result == 0)
-                {
-                    result = left.Month - right.Month;
-                    if (result == 0)
-                    {
-                        result = left.Day - right.Day;
-                    }
-                }
-
-                return result;
-            }
-            else
-            {
-                throw new InvalidCastException($"Cannot convert {obj?.GetType()?.Name} to {nameof(CustomCalendarDate)}");
-            }
+            public IStringLocalizer Localizer { get; set; }
         }
     }
 }
