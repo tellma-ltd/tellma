@@ -168,4 +168,12 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
 
     return this._selectDefaultResult;
   }
+
+  public get showDocumentPostingDate(): boolean {
+    return !!this.definition.PostingDateVisibility;
+  }
+
+  public get showDocumentMemo(): boolean {
+    return !!this.definition.MemoVisibility;
+  }
 }

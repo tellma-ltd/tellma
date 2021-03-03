@@ -2179,6 +2179,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>Maintenance</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>Password</value>
   </data>

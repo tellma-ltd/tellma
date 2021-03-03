@@ -19,7 +19,7 @@ import { Document, formatSerial, metadata_Document } from '~/app/data/entities/d
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
 import { FriendlyError, mergeEntitiesInWorkspace, csvPackage, downloadBlob } from '~/app/data/util';
-import { toLocalDateOnlyISOString, toLocalDateTimeISOString } from '~/app/data/date-util';
+import { toLocalDateTimeISOString } from '~/app/data/date-util';
 import { StatementArguments } from '~/app/data/dto/statement-arguments';
 import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';

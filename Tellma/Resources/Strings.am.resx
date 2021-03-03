@@ -650,7 +650,7 @@
     <value>ሰነዶች</value>
   </data>
   <data name="DocumentStateChange" xml:space="preserve">
-    <value>የሰነድ ክልል ለውጥ</value>
+    <value>የሰነድ ግዛት ለውጥ</value>
   </data>
   <data name="DocumentStateChanges" xml:space="preserve">
     <value>የሰነድ ክልል ለውጦች</value>
@@ -2020,6 +2020,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>ጥገና</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>ማርኬቲንግ</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>የይለፍ ቃል</value>
   </data>
@@ -2858,7 +2861,7 @@
     <value>ወደ ስልክ ቁጥር</value>
   </data>
   <data name="SmsMessages" xml:space="preserve">
-    <value>የ SMS መልዕክቶች</value>
+    <value>የኤስኤምኤስ መልዕክቶች</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>ደርድር ቁልፍ</value>

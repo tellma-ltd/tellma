@@ -2092,6 +2092,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>صيانة</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>تسويق</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>كلمة المرور</value>
   </data>
