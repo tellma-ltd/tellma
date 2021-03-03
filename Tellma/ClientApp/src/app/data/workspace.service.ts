@@ -558,7 +558,8 @@ export class TenantWorkspace extends SpecificWorkspace {
   }
 
   get calendar(): Calendar {
-    return this.userSettings.PreferredCalendar || this.settings.PrimaryCalendar || 'GC';
+    return (!!this.userSettings ? this.userSettings.PreferredCalendar : undefined) ||
+      (!!this.settings ? this.settings.PrimaryCalendar : undefined) || 'GC';
   }
 
   get dateFormat(): YmdFormat {

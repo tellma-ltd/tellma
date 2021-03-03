@@ -78,7 +78,13 @@ namespace Tellma.Controllers
             }
 
             // Return
-            return permissions;
+            return permissions.Select(p => new AbstractPermission
+            {
+                Action = p.Action,
+                Criteria = p.Criteria,
+                Mask = p.Mask,
+                View = p.View
+            });
         }
 
         public static async Task<IEnumerable<AbstractPermission>> GenericPermissionsFromCache(
@@ -96,7 +102,13 @@ namespace Tellma.Controllers
             }
 
             // Return
-            return permissions;
+            return permissions.Select(p => new AbstractPermission
+            {
+                Action = p.Action,
+                Criteria = p.Criteria,
+                Mask = p.Mask,
+                View = p.View
+            });
         }
 
         /// <summary>

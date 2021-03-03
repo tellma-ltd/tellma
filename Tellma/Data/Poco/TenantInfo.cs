@@ -17,6 +17,8 @@
         public string SecondaryLanguageSymbol { get; set; }
         public string TernaryLanguageId { get; set; }
         public string TernaryLanguageSymbol { get; set; }
+        public string DateFormat { get; set; }
+        public string TimeFormat { get; set; }
         public string TaxIdentificationNumber { get; set; }
     }
 }

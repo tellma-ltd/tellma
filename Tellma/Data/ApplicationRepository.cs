@@ -382,6 +382,8 @@ namespace Tellma.Data
                         SecondaryLanguageSymbol = reader.String(i++),
                         TernaryLanguageId = reader.String(i++),
                         TernaryLanguageSymbol = reader.String(i++),
+                        DateFormat = reader.String(i++),
+                        TimeFormat = reader.String(i++),
                         TaxIdentificationNumber = reader.String(i++),
                     };
                 }

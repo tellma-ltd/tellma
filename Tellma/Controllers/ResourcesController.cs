@@ -487,7 +487,7 @@ namespace Tellma.Controllers
                 string definitionPredicate = $"{nameof(Resource.DefinitionId)} eq {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
-                    permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
+                    permission.Criteria = $"({definitionPredicate}) and ({permission.Criteria})";
                 }
                 else
                 {

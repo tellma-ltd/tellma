@@ -48,7 +48,6 @@ namespace Tellma.Entities
         [Display(Name = "User_PreferredCalendar")]
         [NotNull]
         [StringLength(2)]
-        [CultureChoiceList]
         public string PreferredCalendar { get; set; }        
 
         [Display(Name = "Entity_ContactEmail")]
