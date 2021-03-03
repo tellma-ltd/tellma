@@ -19,7 +19,7 @@ import { Document, formatSerial, metadata_Document } from '~/app/data/entities/d
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
 import { FriendlyError, mergeEntitiesInWorkspace, csvPackage, downloadBlob } from '~/app/data/util';
-import { toLocalDateOnlyISOString } from '~/app/data/date-util';
+import { toLocalDateOnlyISOString, toLocalDateTimeISOString } from '~/app/data/date-util';
 import { StatementArguments } from '~/app/data/dto/statement-arguments';
 import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
@@ -292,8 +292,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     // Prepare the query filter
     const args: StatementArguments = {
       select, top, skip,
-      fromDate: toLocalDateOnlyISOString(new Date(this.fromDate)),
-      toDate: toLocalDateOnlyISOString(new Date(this.toDate)),
+      fromDate: toLocalDateTimeISOString(new Date(this.fromDate)),
+      toDate: toLocalDateTimeISOString(new Date(this.toDate)),
       accountId: this.accountId
     };
 
@@ -525,8 +525,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const data: string[][] = [];
 
         // (1) Add the parameters
-        data.push(this.normalize([this.translate.instant('FromDate'), toLocalDateOnlyISOString(new Date(args.fromDate))], columns.length));
-        data.push(this.normalize([this.translate.instant('ToDate'), toLocalDateOnlyISOString(new Date(args.toDate))], columns.length));
+        // data.push(this.normalize([this.translate.instant('FromDate'), toLocalDateOnlyISOString(new Date(args.fromDate))], columns.length));
+        // data.push(this.normalize([this.translate.instant('ToDate'), toLocalDateOnlyISOString(new Date(args.toDate))], columns.length));
+        data.push(this.normalize([this.translate.instant('FromDate'), dateFormat(args.fromDate, this.workspace, this.translate)], columns.length));
+        data.push(this.normalize([this.translate.instant('ToDate'), dateFormat(args.toDate, this.workspace, this.translate)], columns.length));
         data.push(this.normalize([this.translate.instant('Entry_Account'), this.ws.getMultilingualValue('Account', args.accountId, 'Name')], columns.length));
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
@@ -569,8 +571,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         for (const col of columns) {
           switch (col.id) {
             case 'PostingDate':
-              openingRow.push(toLocalDateOnlyISOString(new Date(args.fromDate)));
-              closingRow.push(toLocalDateOnlyISOString(new Date(args.toDate)));
+              // openingRow.push(toLocalDateOnlyISOString(new Date(args.fromDate)));
+              // closingRow.push(toLocalDateOnlyISOString(new Date(args.toDate)));
+              openingRow.push(dateFormat(args.fromDate, this.workspace, this.translate));
+              closingRow.push(dateFormat(args.toDate, this.workspace, this.translate));
               break;
             case 'SerialNumber':
               openingRow.push(this.translate.instant('OpeningBalance'));
@@ -1295,9 +1299,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       this._columnsSettings = settings;
       this._columnsParametersHaveChanged = false;
 
-
-      const locale = 'en-GB';
-
       this._columns = [
         // PostingDate
         {
@@ -1308,10 +1309,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
             return dateFormat(line.PostingDate, this.workspace, this.translate);
           },
-          exportDisplay: (entry: DetailsEntry) => {
-            const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
-            return toLocalDateOnlyISOString(new Date(line.PostingDate)); // For Excel to pick it up as a date
-          },
+          // exportDisplay: (entry: DetailsEntry) => {
+          //   const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
+          //   return toLocalDateOnlyISOString(new Date(line.PostingDate)); // For Excel to pick it up as a date
+          // },
           weight: 1
         },
 
@@ -1404,7 +1405,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             select: ['Time1'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time1Label'),
             display: (entry: DetailsEntry) => dateFormat(entry.Time1, this.workspace, this.translate),
-            exportDisplay: (entry: DetailsEntry) => !!entry.Time1 ? toLocalDateOnlyISOString(new Date(entry.Time1)) : '',
+            // exportDisplay: (entry: DetailsEntry) => !!entry.Time1 ? toLocalDateOnlyISOString(new Date(entry.Time1)) : '',
             weight: 1
           });
         }
@@ -1415,7 +1416,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             select: ['Time2'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time2Label'),
             display: (entry: DetailsEntry) => dateFormat(entry.Time2, this.workspace, this.translate),
-            exportDisplay: (entry: DetailsEntry) => !!entry.Time2 ? toLocalDateOnlyISOString(new Date(entry.Time2)) : '',
+            // exportDisplay: (entry: DetailsEntry) => !!entry.Time2 ? toLocalDateOnlyISOString(new Date(entry.Time2)) : '',
             weight: 1
           });
         }
@@ -1456,7 +1457,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             select: ['NotedDate'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedDateLabel'),
             display: (entry: DetailsEntry) => dateFormat(entry.NotedDate, this.workspace, this.translate),
-            exportDisplay: (entry: DetailsEntry) => !!entry.NotedDate ? toLocalDateOnlyISOString(new Date(entry.NotedDate)) : '',
+            // exportDisplay: (entry: DetailsEntry) => !!entry.NotedDate ? toLocalDateOnlyISOString(new Date(entry.NotedDate)) : '',
             weight: 1
           });
         }

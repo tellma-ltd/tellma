@@ -17,6 +17,7 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Tellma.Data
 {
@@ -56,6 +57,9 @@ namespace Tellma.Data
 
         private IInstrumentationService _instrumentation;
         private IInstrumentationService Instrumentation => _instrumentation ??= _serviceProvider.GetRequiredService<IInstrumentationService>();
+
+        private ILogger _logger;
+        private ILogger Logger => _logger ??= _serviceProvider.GetRequiredService<ILogger<ApplicationRepository>>();
 
         #endregion
 
@@ -238,7 +242,7 @@ namespace Tellma.Data
             var userId = userInfo.UserId ?? 0;
             var userToday = ClientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation);
+            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation, Logger);
         }
 
         /// <summary>

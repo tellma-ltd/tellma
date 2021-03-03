@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Data.SqlClient;
 using Tellma.Services;
@@ -10,7 +11,7 @@ namespace Tellma.Data.Queries
     /// </summary>
     public class QueryArguments
     {
-        public QueryArguments(SqlConnection conn, Func<Type, string> sources, int userId, DateTime? userToday, IStringLocalizer localizer, IInstrumentationService instrumentation)
+        public QueryArguments(SqlConnection conn, Func<Type, string> sources, int userId, DateTime? userToday, IStringLocalizer localizer, IInstrumentationService instrumentation, ILogger logger)
         {
             Connection = conn ?? throw new ArgumentNullException(nameof(conn));
             Sources = sources ?? throw new ArgumentNullException(nameof(sources));
@@ -18,6 +19,7 @@ namespace Tellma.Data.Queries
             UserToday = userToday;
             Localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             Instrumentation = instrumentation ?? throw new ArgumentNullException(nameof(instrumentation));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public SqlConnection Connection { get; }
@@ -30,6 +32,8 @@ namespace Tellma.Data.Queries
 
         public IStringLocalizer Localizer { get; }
 
-        public IInstrumentationService Instrumentation { get; set; }
+        public IInstrumentationService Instrumentation { get; }
+
+        public ILogger Logger { get; }
     }
 }

@@ -15,6 +15,7 @@ using System.Transactions;
 using System.Threading;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Tellma.Data
 {
@@ -24,6 +25,7 @@ namespace Tellma.Data
         private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer _localizer;
         private readonly IInstrumentationService _instrumentation;
+        private readonly ILogger _logger;
         private readonly string _connectionString;
 
         private SqlConnection _conn;
@@ -33,13 +35,14 @@ namespace Tellma.Data
         #region Lifecycle
 
         public AdminRepository(IOptions<AdminRepositoryOptions> config, IExternalUserAccessor externalUserAccessor,
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation)
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation, ILogger<AdminRepository> logger)
         {
             _connectionString = config?.Value?.ConnectionString ?? throw new ArgumentException("The admin connection string was not supplied", nameof(config));
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
             _localizer = localizer;
             _instrumentation = instrumentation;
+            _logger = logger;
         }
 
         public void Dispose()
@@ -152,7 +155,7 @@ namespace Tellma.Data
             var userId = userInfo.UserId ?? 0;
             var userToday = _clientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, userId, userToday, _localizer, _instrumentation);
+            return new QueryArguments(conn, Sources, userId, userToday, _localizer, _instrumentation, _logger);
         }
 
         private static string Sources(Type t)
