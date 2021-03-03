@@ -767,6 +767,8 @@
     <Build Include="rpt\Stored Procedures\rpt.UnbalancedCSI___Balance.sql" />
     <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
     <Build Include="map\map.DocumentAssignmentsHistory2.sql" />
+    <Build Include="bll\Functions\bll.fn_RSD__RLD.sql" />
+    <Build Include="bll\Functions\bll.fn_RS__RL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
