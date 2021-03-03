@@ -1173,7 +1173,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Gregorian Calendar
         /// </summary>
-        private const string Gregorian = "gr";
+        private const string Gregorian = "gc";
 
         /// <summary>
         /// Ethiopian Calendar
@@ -1188,7 +1188,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// All supported calendars
         /// </summary>
-        private readonly string[] SupportedCalendars = new string[] { Gregorian, UmmAlQura };
+        private readonly string[] SupportedCalendars = new string[] { Gregorian, Ethiopian, UmmAlQura };
 
         #endregion
 

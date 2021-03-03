@@ -684,12 +684,36 @@ export class ApiService {
 
         return obs$;
       },
-      saveForClient: (key: string, value: string) => {
+      saveUserSetting: (key: string, value: string) => {
         const body = { key, value };
         const url = appsettings.apiAddress + `api/users/client`;
         const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, body, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveUserPreferredLanguage: (preferredLanguage: string) => {
+        const url = appsettings.apiAddress + `api/users/client/preferred-language?preferredLanguage=${preferredLanguage}`;
+        const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, {}).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveUserPreferredCalendar: (preferredCalendar: string) => {
+        const url = appsettings.apiAddress + `api/users/client/preferred-calendar?preferredCalendar=${preferredCalendar}`;
+        const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, {}).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);

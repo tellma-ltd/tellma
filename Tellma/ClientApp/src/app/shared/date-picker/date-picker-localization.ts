@@ -1,25 +1,32 @@
 import { NgbDatepickerI18n, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { WorkspaceService } from '~/app/data/workspace.service';
+import { Calendar } from '~/app/data/entities/base/metadata-types';
+import { monthFullName, monthShortName, weekdayVeryShortName } from '~/app/data/date-time-localizations';
 
 @Injectable()
 export class DatePickerLocalization extends NgbDatepickerI18n {
 
-    constructor(private translation: TranslateService) {
+    constructor(private workspace: WorkspaceService, private translation: TranslateService) {
         super();
     }
 
+    private get calendar(): Calendar {
+        // Helper function
+        return this.workspace.calendarForPicker;
+    }
+
     getWeekdayShortName(weekday: number): string {
-        // weekday: 1 = Monday (ISO 8601)
-        return this.translation.instant('VeryShortDay' + weekday);
+        return weekdayVeryShortName(weekday, this.translation, this.calendar);
     }
 
     getMonthShortName(month: number): string {
-        return this.translation.instant('ShortMonth' + month);
+        return monthShortName(month, this.translation, this.calendar);
     }
 
     getMonthFullName(month: number): string {
-        return 'يناير';
+        return monthFullName(month, this.translation, this.calendar);
     }
 
     getDayAriaLabel(date: NgbDateStruct): string {

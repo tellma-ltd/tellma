@@ -11,6 +11,10 @@
 	[SecondaryLanguageSymbol]		NVARCHAR (5),
 	[TernaryLanguageId]				NVARCHAR (5),
 	[TernaryLanguageSymbol]			NVARCHAR (5),
+	[PrimaryCalendar]				NCHAR (2)			NOT NULL DEFAULT N'GC',
+	[SecondaryCalendar]				NCHAR (2),
+	[DateFormat]					NVARCHAR (50)		NOT NULL DEFAULT N'yyyy-MM-dd',
+	[TimeFormat]					NVARCHAR (50)		NOT NULL DEFAULT N'HH:mm:ss',
 	[BrandColor]					NCHAR (7),
 	[SmsEnabled]					BIT					NOT NULL DEFAULT 0, -- SMS is expensive, this value is only editable from Tellma's admin console
 	[DefinitionsVersion]			UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),

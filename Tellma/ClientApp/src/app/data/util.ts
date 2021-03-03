@@ -6,14 +6,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { from, Observable, Observer, throwError } from 'rxjs';
 import {
-  EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata, Control, PropVisualDescriptor
+  EntityDescriptor, Control, PropVisualDescriptor
 } from './entities/base/metadata';
-import { formatNumber, formatDate, formatPercent } from '@angular/common';
-import { Entity } from './entities/base/entity';
+import { formatNumber } from '@angular/common';
 import { insert, set, getSelection } from 'text-field-edit';
 import { concatMap, map } from 'rxjs/operators';
-import { formatSerial } from './entities/document';
-import { DateGranularity, DateTimeGranularity, TimeGranularity } from './entities/base/metadata-types';
+import { Calendar, DateGranularity, DateTimeGranularity, TimeGranularity } from './entities/base/metadata-types';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -421,97 +419,6 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
   return Object.keys(resultPaths).join(',');
 }
 
-/**
- * Returns today on the client machine as an ISO 8601 string like this 2021-01-16T00:00:00.000.
- * The format matches how Tellma's web server formats DateTime objects into JSON.
- */
-export function todayISOString(): string {
-  return `${toLocalDateOnlyISOString(new Date())}T00:00:00.000`;
-}
-
-/**
- * Returns the current time on the client machine as an ISO 8601 string like this 2021-02-16T21:17:08.0723404Z
- * The format matches how Tellma's web server formats DateTimeOffset objects into JSON.
- */
-export function nowISOString(): string {
-  return new Date().toISOString().replace('Z', '0000Z');
-}
-
-/**
- * Returns a date object in the local time zone with the date part (year, month, day) matching the input
- * @param stringDate An ISO date representation of the form 2020-01-21T00:00:00.000
- */
-export function dateFromISOString(stringDate: string): Date {
-  if (!!stringDate) {
-    // Extract the pieces
-    const pieces = stringDate.split('T')[0].split('-');
-    const year = +pieces[0];
-    const month = (+pieces[1] || 1) - 1;
-    const day = +pieces[2] || 1;
-
-    // Prepare the result
-    const result = new Date(year, month, day);
-    result.setFullYear(year); // Avoid 30 -> 1930 conversion
-    return result;
-  }
-}
-
-/**
- * Returns the date part of the argument as per the local time zone, formatted as ISO 8601, for example: '2020-03-17'
- */
-export function toLocalDateOnlyISOString(date: Date): string {
-  // We don't rely on Date.toISOString cause it changes the date parts to UTC, causing nasty off-by-1-day bugs
-
-  // Year
-  let year = date.getFullYear().toString();
-  if (year.length < 4) {
-    year = '000'.substring(0, 4 - year.length) + year;
-  }
-
-  // Month
-  let month = (date.getMonth() + 1).toString();
-  if (month.length < 2) {
-    month = '0' + month;
-  }
-
-  // Day
-  let day = date.getDate().toString();
-  if (day.length < 2) {
-    day = '0' + day;
-  }
-
-  return `${year}-${month}-${day}`;
-}
-
-/**
- * Returns the datetime part of the argument as per the local time zone, formatted as ISO 8601, for example: '2020-03-17T11:24:13.345'
- */
-export function toLocalDateTimeISOString(date: Date): string {
-  // We don't rely on Date.toISOString cause it changes the date parts to UTC, causing nasty off-by-1-day bugs
-  let hours = date.getHours().toString();
-  if (hours.length < 2) {
-    hours = '0' + hours;
-  }
-
-  let minutes = date.getMinutes().toString();
-  if (minutes.length < 2) {
-    minutes = '0' + minutes;
-  }
-
-  let seconds = date.getSeconds().toString();
-  if (seconds.length < 2) {
-    seconds = '0' + seconds;
-  }
-
-  let milliseconds = date.getMilliseconds().toString();
-  if (milliseconds.length < 2) {
-    milliseconds = '00'.substring(0, 3 - milliseconds.length) + milliseconds;
-  }
-
-  // This result matches how the JSON.NET-based server serializes C#'s DateTime
-  return `${toLocalDateOnlyISOString(date)}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-}
-
 function closePrint() {
   // Cleanup duty once the user closes the print dialog
   document.body.removeChild(this.__container__);
@@ -599,171 +506,9 @@ function processFieldForCsv(field: string) {
   return field;
 }
 
-export function formatAccounting(amount: number, digitsInfo: string): string {
-  if (!!amount || amount === 0) {
-    const result = formatNumber(Math.abs(amount), 'en-GB', digitsInfo);
-    if (amount >= 0) {
-      return ` ${result} `;
-    } else {
-      return `(${result})`;
-    }
-  } else {
-    return '';
-  }
-}
-
-function metadataFactory(collection: string) {
-  const factory = metadata[collection]; // metadata factory for User
-  if (!factory) {
-    throw new Error(`The collection ${collection} does not exist`);
-  }
-
-  return factory;
-}
-
 export interface ColumnDescriptor {
   path: string;
   display?: string;
-}
-
-export function composeEntities(
-  entities: Entity[],
-  columns: ColumnDescriptor[],
-  collection: string,
-  defId: number,
-  wss: WorkspaceService,
-  trx: TranslateService
-) {
-  const relatedEntities = wss.current;
-
-  // This array will contain the final result
-  const result: string[][] = [];
-
-  // This is the base descriptor
-  const baseDesc: EntityDescriptor = metadataFactory(collection)(wss, trx, defId);
-
-  // Step 1: Prepare the headers and extractors
-  const headers: string[] = []; // Simple array of header displays
-  const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
-
-  for (const col of columns) {
-    const pathArray = (col.path || '').split('.').map(e => e.trim()).filter(e => !!e);
-
-    // This will contain the display steps of a single header. E.g. Item / Created By / Name
-    const headerArray: string[] = [];
-    const navProps: NavigationPropDescriptor[] = [];
-    let finalPropDesc: PropDescriptor = null;
-
-    // Loop over all steps except last one
-    let isError = false;
-    let currentDesc = baseDesc;
-
-    for (let i = 0; i < pathArray.length; i++) {
-      const step = pathArray[i];
-      const prop = currentDesc.properties[step];
-      if (!prop) {
-        isError = true;
-        break;
-      } else {
-        headerArray.push(prop.label());
-        if (prop.datatype === 'entity') {
-          currentDesc = metadataFactory(prop.control)(wss, trx, prop.definitionId);
-          navProps.push(prop);
-        } else if (i !== pathArray.length - 1) {
-          // Only navigation properties are allowed unless this is the last one
-          isError = true;
-        } else {
-          finalPropDesc = prop;
-        }
-      }
-    }
-
-    if (isError) {
-      headers.push(`(${trx.instant('Error')})`);
-      extracts.push(_ => `(${trx.instant('Error')})`);
-    } else {
-      headers.push(col.display || headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
-      extracts.push(entity => {
-        let i = 0;
-        for (; i < navProps.length; i++) {
-          const navProp = navProps[i];
-          const propName = pathArray[i];
-
-          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
-
-            const entitiesOfType = relatedEntities[navProp.control];
-
-            // Get the foreign key
-            const fkValue = entity[navProp.foreignKeyName];
-            if (!fkValue) {
-              return ''; // The nav entity is null
-            }
-
-            // Get the nav entity
-            entity = entitiesOfType[fkValue];
-            if (!entity) {
-              // Anomaly from Server
-              console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
-              return `(${trx.instant('Error')})`;
-            }
-          } else if (entity.EntityMetadata[propName] === 1) {
-            // Masked because of user permissions
-            return `*******`;
-          } else {
-            // Bug
-            return `(${trx.instant('NotLoaded')})`;
-          }
-        }
-
-        // Final step
-        if (!!finalPropDesc) {
-          const propName = pathArray[i];
-          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
-            const val = entity[propName];
-            return displayScalarValue(val, finalPropDesc, wss, trx);
-          } else if (entity.EntityMetadata[propName] === 1) {
-            // Masked because of user permissions
-            return `*******`;
-          } else {
-            // Bug
-            return `(${trx.instant('NotLoaded')})`;
-          }
-        } else {
-          // It terminates with a nav prop
-          return displayEntity(entity, currentDesc);
-        }
-      });
-    }
-  }
-
-  // Step 2 Push headers in the result
-  result.push(headers);
-
-  // Step 3 Use extractors to convert the entities to strings and push them in the result
-  for (const entity of entities) {
-    const row: string[] = [];
-    let index = 0;
-    for (const extract of extracts) {
-      row[index++] = extract(entity);
-    }
-
-    result.push(row);
-  }
-
-  // Finally: Return the result
-  return result;
-}
-
-export function composeEntitiesFromResponse(
-  response: EntitiesResponse,
-  columns: ColumnDescriptor[],
-  collection: string,
-  defId: number,
-  ws: WorkspaceService,
-  trx: TranslateService): string[][] {
-
-  addToWorkspace(response, ws);
-  return composeEntities(response.Result, columns, collection, defId, ws, trx);
 }
 
 /**
@@ -816,75 +561,6 @@ export function onCodeTextareaKeydown(txtarea: HTMLTextAreaElement, e: KeyboardE
       insert(txtarea, '\t');
     }
   }
-}
-
-/**
- * The Levenshtein distance between two strings, with a maximum cap for optimization (smallest cap is 1).
- * The code is modified from https://bit.ly/2TiTyWZ, credit to Andrei Mackenzie
- */
-export function getEditDistance(a: string, b: string, cap: number = 10000000000): number {
-  a = a || '';
-  b = b || '';
-
-  // Optimizations
-  if (a === b) {
-    return 0;
-  } else if (cap <= 1) {
-    return 1;
-  } else if (a.length === 0) {
-    return Math.min(cap, b.length);
-  } else if (b.length === 0) {
-    return Math.min(cap, a.length);
-  }
-
-  const matrix = [];
-
-  // Reused varaiables
-  let capped = true;
-  let distance: number;
-  let substitutionCost: number;
-
-  // Increment along the first column of each row
-  let i = 0;
-  for (; i <= b.length; i++) {
-    matrix[i] = [i];
-  }
-
-  // Increment each column in the first row
-  let j = 0;
-  for (; j <= a.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  // Fill in the rest of the matrix
-  for (i = 1; i <= b.length; i++) {
-    capped = true;
-    for (j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        substitutionCost = 0;
-      } else {
-        substitutionCost = 1;
-      }
-
-      distance = Math.min(
-        matrix[i - 1][j] + 1, // deletion
-        matrix[i][j - 1] + 1, // insertion
-        matrix[i - 1][j - 1] + substitutionCost); // substitution
-
-      matrix[i][j] = distance;
-
-      // Optimization: If the entire row is >= cap, then we terminate the outer loop
-      if (capped && distance < cap) {
-        capped = false;
-      }
-    }
-
-    if (capped) {
-      return cap;
-    }
-  }
-
-  return matrix[b.length][a.length];
 }
 
 export function colorFromExtension(extension: string): string {
@@ -1006,103 +682,6 @@ export function iconFromExtension(extension: string): string {
   }
 }
 
-function formatFromGranularity(g: DateTimeGranularity): string {
-  switch (g) {
-    case DateGranularity.years: return 'yyyy';
-    case DateGranularity.months: return 'yyyy-MM';
-    case DateGranularity.days: return 'yyyy-MM-dd';
-    case TimeGranularity.hours: return 'yyyy-MM-dd HH';
-    case TimeGranularity.minutes: return 'yyyy-MM-dd HH:mm';
-    case TimeGranularity.seconds: return 'yyyy-MM-dd HH:mm:ss';
-  }
-}
-
-/**
- * Returns a string representation of the value based on the property descriptor.
- * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
- * @param value The value to represent as a string
- * @param prop The property descriptor used to format the value as a string
- */
-export function displayScalarValue(value: any, prop: PropVisualDescriptor, _: WorkspaceService, trx: TranslateService): string {
-  switch (prop.control) {
-    case 'null': {
-      return '';
-    }
-    case 'text': {
-      return value;
-    }
-    case 'number': {
-      if (value === undefined || value === null) {
-        return '';
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      let result = formatAccounting(value, digitsInfo);
-
-      if (prop.noSeparator) {
-        result = result.replace(',', '');
-      }
-
-      return result;
-    }
-    case 'percent': {
-      if (value === undefined || value === null) {
-        return '';
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      let result = isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
-
-      if (prop.noSeparator) {
-        result = result.replace(',', '');
-      }
-
-      return result;
-    }
-    case 'date': {
-      if (value === undefined || value === null) {
-        return '';
-      }
-      const format = formatFromGranularity(prop.granularity);
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'datetime': {
-      if (value === undefined || value === null) {
-        return '';
-      }
-      const format = formatFromGranularity(prop.granularity);
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'check': {
-      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
-    }
-    case 'choice': {
-      return !!prop && !!prop.format ? prop.format(value) : '';
-    }
-    case 'serial': {
-      if (value === undefined || value === null) {
-        return '';
-      }
-      return !!prop ? formatSerial(value, prop.prefix, prop.codeWidth) : (value + '');
-    }
-    case 'unsupported': {
-      return trx.instant('NotSupported');
-    }
-    default:
-      return (value === undefined || value === null) ? '' : value + '';
-    // throw new Error(`calling "displayValue" on a property of an unknown control ${prop.control}`);
-  }
-}
-
-/**
- * Returns a string representation of the entity based on the entity descriptor.
- * @param entity The entity to represent as a string
- * @param entityDesc The entity descriptor used to format the entity as a string
- */
-export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
-  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
-}
-
 /**
  * Constructs a PropDescriptor from scratch or overrides and existing one using the provided control and control options values.
  */
@@ -1143,7 +722,14 @@ export function descFromControlOptions(
         granularity = desc.granularity;
       }
 
-      return { control, granularity };
+      let calendar: Calendar = ws.calendar;
+      if (isSpecified(options.calendar)) {
+        calendar = options.calendar;
+      } else if (desc.control === 'date') {
+        calendar = desc.calendar;
+      }
+
+      return { control, granularity, calendar };
     }
     case 'datetime': {
       let granularity: DateTimeGranularity = TimeGranularity.minutes;
@@ -1152,7 +738,15 @@ export function descFromControlOptions(
       } else if (desc.control === 'datetime') {
         granularity = desc.granularity;
       }
-      return { control, granularity };
+
+      let calendar: Calendar = ws.calendar;
+      if (isSpecified(options.calendar)) {
+        calendar = options.calendar;
+      } else if (desc.control === 'datetime') {
+        calendar = desc.calendar;
+      }
+
+      return { control, granularity, calendar };
     }
 
     case 'number':

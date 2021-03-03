@@ -16,10 +16,11 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateOnlyISOString, FriendlyError,
+  FriendlyError,
   isSpecified, colorFromExtension, iconFromExtension,
-  onFileSelected, descFromControlOptions, updateOn, todayISOString
+  onFileSelected, descFromControlOptions, updateOn
 } from '~/app/data/util';
+import { toLocalDateOnlyISOString, todayISOString } from '~/app/data/date-util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { of, Observable, Subscription, timer } from 'rxjs';
@@ -36,11 +37,11 @@ import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
-import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 import { GetArguments } from '~/app/data/dto/get-arguments';
 import { AudioService } from '~/app/data/audio.service';
+import { dateFormat } from '~/app/shared/date-format/date-time-format';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -3937,7 +3938,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (error.status === 404) {
                 const message = this.translate.instant('Error_NoExRateFoundForCurrency0Date1', {
                   0: this.ws.getMultilingualValue('Currency', currencyId, 'Name'),
-                  1: formatDate(date, 'yyyy-MM-dd', 'en-GB')
+                  1: dateFormat(date, this.workspace, this.translate)
                 });
                 this.details.displayErrorModal(message);
               } else {

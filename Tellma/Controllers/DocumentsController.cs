@@ -1768,7 +1768,8 @@ namespace Tellma.Controllers
                     // Date cannot be before archive date
                     if (doc.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                     {
-                        var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                        var calendar = _clientInfo.GetInfo().Calendar ?? settings.PrimaryCalendar;
+                        var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
                             _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
                     }
@@ -1857,7 +1858,8 @@ namespace Tellma.Controllers
                             // Date cannot be before archive date
                             if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                             {
-                                var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                                var calendar = _clientInfo.GetInfo().Calendar ?? settings.PrimaryCalendar;
+                                var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
                                 ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
                                     _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
                             }

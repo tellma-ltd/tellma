@@ -55,12 +55,12 @@ export class NgbCalendarEthiopian extends NgbCalendar {
         }
     }
 
-    getPrev(eDate: NgbDate, period: NgbPeriod = 'd', number = 1): NgbDate {
-        return this.getNext(eDate, period, -number);
+    getPrev(eDate: NgbDate, period: NgbPeriod = 'd', n = 1): NgbDate {
+        return this.getNext(eDate, period, -n);
     }
 
     getWeekday(eDate: NgbDate): number {
-        const jsDate = toJSDate(eDate);
+        const jsDate = this.toJSDate(eDate);
         const day = jsDate.getDay();
         // in JS Date Sun=0, in ISO 8601 Sun=7
         return day === 0 ? 7 : day;
@@ -75,15 +75,15 @@ export class NgbCalendarEthiopian extends NgbCalendar {
         const thursdayIndex = (4 + 7 - firstDayOfWeek) % 7;
         const eDate = week[thursdayIndex];
 
-        const jsDate = toJSDate(eDate);
+        const jsDate = this.toJSDate(eDate);
         jsDate.setDate(jsDate.getDate() + 4 - (jsDate.getDay() || 7));  // Thursday
         const time = jsDate.getTime();
-        const meskerem1 = toJSDate(new NgbDate(eDate.year, 1, 1));  // Compare with 1st of Meskerem
+        const meskerem1 = this.toJSDate(new NgbDate(eDate.year, 1, 1));  // Compare with 1st of Meskerem
         return Math.floor(Math.round((time - meskerem1.getTime()) / 86400000) / 7) + 1;
     }
 
     getToday(): NgbDate {
-        return fromJSDate(new Date());
+        return this.fromJSDate(new Date());
     }
 
     isValid(eDate?: NgbDate | null): boolean {
@@ -101,33 +101,33 @@ export class NgbCalendarEthiopian extends NgbCalendar {
 
         return true;
     }
+
+    /**
+     * Returns Ethiopian Date
+     */
+    fromJSDate(jsDate: Date): NgbDate {
+        const gDate = new NgbDate(jsDate.getFullYear(), jsDate.getMonth() + 1, jsDate.getDate());
+        return ethiopianFromGregorian(gDate);
+    }
+
+    /**
+     * Turns an Ethiopian Date into a JS Date
+     */
+    toJSDate(eDate: NgbDate): Date {
+        const gDate = gregorianFromEthiopian(eDate);
+        const jsDate = new Date(gDate.year, gDate.month - 1, gDate.day);
+        // this is done avoid 30 -> 1930 conversion
+        if (!isNaN(jsDate.getTime())) {
+            jsDate.setFullYear(gDate.year);
+        }
+        return jsDate;
+    }
 }
 
 /////////////// Helper Functions
 
 function isInteger(value: any): value is number {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
-}
-
-/**
- * Returns Ethiopian Date
- */
-function fromJSDate(jsDate: Date): NgbDate {
-    const gDate = new NgbDate(jsDate.getFullYear(), jsDate.getMonth() + 1, jsDate.getDate());
-    return ethiopianFromGregorian(gDate);
-}
-
-/**
- * Turns an Ethiopian Date into a JS Date
- */
-function toJSDate(eDate: NgbDate): Date {
-    const gDate = gregorianFromEthiopian(eDate);
-    const jsDate = new Date(gDate.year, gDate.month - 1, gDate.day, 12);
-    // this is done avoid 30 -> 1930 conversion
-    if (!isNaN(jsDate.getTime())) {
-        jsDate.setFullYear(gDate.year);
-    }
-    return jsDate;
 }
 
 /**

@@ -325,6 +325,7 @@ namespace Tellma.Data.Queries
             var userToday = args.UserToday;
             var localizer = args.Localizer;
             var i = args.Instrumentation;
+            var logger = args.Logger;
 
             using var _ = i.Block("Query.ToListAndCountInnerAsync");
             IDisposable block;
@@ -567,6 +568,7 @@ namespace Tellma.Data.Queries
                 ps: ps,
                 conn: conn,
                 instrumentation: i,
+                logger: logger,
                 cancellation: cancellation);
 
             // Return the entities

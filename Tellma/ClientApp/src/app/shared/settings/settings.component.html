@@ -50,8 +50,8 @@
     </div>
 
     <!-- Content Area -->
-    <div class="row t-rest-of-screen">
-        <div class="w-100 h-100 p-0 d-flex flex-column bg-white" *ngIf="showDocument">
+    <div class="row t-rest-of-screen bg-white">
+        <div class="w-100 h-100 p-0 d-flex flex-column" *ngIf="showDocument">
 
             <!-- Document -->
             <ng-container *ngTemplateOutlet="template; context: { model: activeModel, isEdit: isEdit }">

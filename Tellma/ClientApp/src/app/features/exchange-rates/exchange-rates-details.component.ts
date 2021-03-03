@@ -3,7 +3,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ExchangeRateForSave, metadata_ExchangeRate, ExchangeRate } from '~/app/data/entities/exchange-rate';
-import { todayISOString } from '~/app/data/util';
+import { todayISOString, toLocalDateOnlyISOString } from '~/app/data/date-util';
 import { Currency } from '~/app/data/entities/currency';
 
 @Component({
@@ -78,5 +78,13 @@ export class ExchangeRatesDetailsComponent extends DetailsBaseComponent {
 
   public isInactive(): boolean {
     return false;
+  }
+
+  public exchangeRateDisplay(er: ExchangeRate): string {
+    if (!er) {
+      return '';
+    } else {
+      return `${toLocalDateOnlyISOString(new Date(er.ValidAsOf))}-${er.CurrencyId}`;
+    }
   }
 }

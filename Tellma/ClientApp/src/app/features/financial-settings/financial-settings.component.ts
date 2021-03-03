@@ -1,20 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
+import { SettingsBaseComponent } from '~/app/shared/settings-base/settings-base';
 
 @Component({
   selector: 't-financial-settings',
   templateUrl: './financial-settings.component.html',
   styles: []
 })
-export class FinancialSettingsComponent implements OnInit, OnDestroy {
+export class FinancialSettingsComponent extends SettingsBaseComponent {
 
   constructor(private workspace: WorkspaceService) {
-  }
-
-  ngOnInit() {
-  }
-
-  ngOnDestroy() {
+    super();
   }
 
   public get ws(): TenantWorkspace {

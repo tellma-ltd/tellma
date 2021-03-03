@@ -20,10 +20,10 @@ export const PERMISSIONS_PREFIX = 'permissions';
 export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
-export const SETTINGS_METAVERSION = '1.7';
-export const DEFINITIONS_METAVERSION = '5.0';
+export const SETTINGS_METAVERSION = '1.9';
+export const DEFINITIONS_METAVERSION = '5.1';
 export const PERMISSIONS_METAVERSION = '1.0';
-export const USER_SETTINGS_METAVERSION = '1.1';
+export const USER_SETTINGS_METAVERSION = '1.2';
 
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }

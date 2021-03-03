@@ -49,6 +49,23 @@ namespace Tellma.Entities
         [StringLength(5)]
         public string TernaryLanguageSymbol { get; set; }
 
+        [Display(Name = "Settings_PrimaryCalendar")]
+        [Required]
+        [StringLength(2)]
+        public string PrimaryCalendar { get; set; }
+
+        [Display(Name = "Settings_SecondaryCalendar")]
+        [StringLength(2)]
+        public string SecondaryCalendar { get; set; }
+
+        [Display(Name = "Settings_DateFormat")]
+        [StringLength(50)]
+        public string DateFormat { get; set; }
+
+        [Display(Name = "Settings_TimeFormat")]
+        [StringLength(50)]
+        public string TimeFormat { get; set; }
+
         // Branding
 
         [Display(Name = "Settings_BrandColor")]

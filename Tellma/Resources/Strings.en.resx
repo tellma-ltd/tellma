@@ -247,6 +247,15 @@
   <data name="Byte" xml:space="preserve">
     <value>Byte</value>
   </data>
+  <data name="Calendar_ET" xml:space="preserve">
+    <value>Ethiopian Calendar</value>
+  </data>
+  <data name="Calendar_GC" xml:space="preserve">
+    <value>Gregorian Calendar</value>
+  </data>
+  <data name="Calendar_UQ" xml:space="preserve">
+    <value>Umm Al-Qura Calendar</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -985,6 +994,9 @@
   <data name="Error_BarcodePropertyShouldBeOfTypeStringOrInt" xml:space="preserve">
     <value>Barcode Property should be of type string or int.</value>
   </data>
+  <data name="Error_Calendar0IsNotSupported" xml:space="preserve">
+    <value>Calendar '{0}' is not supported in this company.</value>
+  </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>Cannot assign a {0} document.</value>
   </data>
@@ -1156,6 +1168,9 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>Label '{0}' matches multiples fields on type {1}, use a numeric postfix to disambiguate, like this '{0}.1'.</value>
   </data>
+  <data name="Error_Language0IsNotSupported" xml:space="preserve">
+    <value>Language '{0}' is not supported in this company.</value>
+  </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>Line cannot be signed on behalf of user '{0}'</value>
   </data>
@@ -1242,6 +1257,9 @@
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
+  </data>
+  <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
+    <value>Secondary calendar cannot be the same as the primary calendar.</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Secondary language cannot be the same as the primary language.</value>
@@ -2161,6 +2179,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>Maintenance</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>Password</value>
   </data>
@@ -2827,11 +2848,17 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>Brand Color</value>
   </data>
+  <data name="Settings_DateFormat" xml:space="preserve">
+    <value>Date Format</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>The primary currency used when generating and spending cash</value>
+  </data>
+  <data name="Settings_PrimaryCalendar" xml:space="preserve">
+    <value>Primary Calendar</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>Primary Language</value>
@@ -2841,6 +2868,9 @@
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
     <value>Provisioned At</value>
+  </data>
+  <data name="Settings_SecondaryCalendar" xml:space="preserve">
+    <value>Secondary Calendar</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
     <value>Secondary Language</value>
@@ -2859,6 +2889,9 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary Language Symbol</value>
+  </data>
+  <data name="Settings_TimeFormat" xml:space="preserve">
+    <value>Time Format</value>
   </data>
   <data name="Settings_TIN" xml:space="preserve">
     <value>Tax Identification Number</value>
@@ -2975,7 +3008,7 @@
     <value>Hijja</value>
   </data>
   <data name="ShortMonthUq2" xml:space="preserve">
-    <value>Saf</value>
+    <value>Safar</value>
   </data>
   <data name="ShortMonthUq3" xml:space="preserve">
     <value>Rab1</value>
@@ -2993,7 +3026,7 @@
     <value>Rajab</value>
   </data>
   <data name="ShortMonthUq8" xml:space="preserve">
-    <value>Shn</value>
+    <value>Shbn</value>
   </data>
   <data name="ShortMonthUq9" xml:space="preserve">
     <value>Ram</value>
@@ -3154,6 +3187,12 @@
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>The external sign-in was removed.</value>
   </data>
+  <data name="Time_AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="Time_PM" xml:space="preserve">
+    <value>PM</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>
   </data>
@@ -3258,6 +3297,9 @@
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>Permissions</value>
+  </data>
+  <data name="User_PreferredCalendar" xml:space="preserve">
+    <value>Preferred Calendar</value>
   </data>
   <data name="User_PreferredChannel" xml:space="preserve">
     <value>Preferred Channel</value>

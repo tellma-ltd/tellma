@@ -157,6 +157,7 @@ namespace Tellma.Data.Queries
             var userId = queryArgs.UserId;
             var userToday = queryArgs.UserToday;
             var localizer = queryArgs.Localizer;
+            var logger = queryArgs.Logger;
 
             // ------------------------ Validation Step
 
@@ -271,6 +272,7 @@ SELECT COUNT(*) As [Count] FROM (
                 vars: vars,
                 ps: ps,
                 conn: conn,
+                logger: logger,
                 cancellation: cancellation);
 
             return (result, count);

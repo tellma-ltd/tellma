@@ -23,11 +23,11 @@
     </t-serial-editor>
 
     <!-- Date -->
-    <t-date-picker *ngSwitchCase="'date'" [(ngModel)]="value">
+    <t-date-picker *ngSwitchCase="'date'" [(ngModel)]="value" [calendar]="calendar" [granularity]="dateGranularity">
     </t-date-picker>
 
     <!-- Date Time -->
-    <t-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="value">
+    <t-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="value" [calendar]="calendar">
     </t-date-picker>
 
     <!-- Choice -->

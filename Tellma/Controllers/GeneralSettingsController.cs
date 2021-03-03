@@ -172,6 +172,15 @@ namespace Tellma.Controllers
                 }
             }
 
+            if (string.IsNullOrWhiteSpace(entity.SecondaryCalendar))
+            {
+                if (entity.PrimaryCalendar == entity.SecondaryCalendar)
+                {
+                    ModelState.AddModelError(nameof(entity.SecondaryLanguageId),
+                        _localizer["Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar"]);
+                }
+            }
+
             // Make sure the color is a valid HTML color
             // Credit: https://bit.ly/2ToV6x4
             if (!string.IsNullOrWhiteSpace(entity.BrandColor) && !Regex.IsMatch(entity.BrandColor, "^#(?:[0-9a-fA-F]{3}){1,2}$"))

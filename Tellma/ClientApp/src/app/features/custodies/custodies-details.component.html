@@ -260,7 +260,7 @@
     <t-form-group *ngIf="FromDate_isVisible" class="t-form-group" [label]="FromDate_label"
         [serverErrors]="model?.serverErrors?.FromDate">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.FromDate">
-            <div>{{ model?.FromDate | date:'yyyy-MM-dd' }}</div>
+            <div>{{ model?.FromDate | dateFormat }}</div>
         </t-restricted>
         <t-date-picker *ngIf="isEdit" [(ngModel)]="model.FromDate" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="FromDate_isRequired">
@@ -271,7 +271,7 @@
     <t-form-group *ngIf="ToDate_isVisible" class="t-form-group" [label]="ToDate_label"
         [serverErrors]="model?.serverErrors?.ToDate">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ToDate">
-            <div>{{ model?.ToDate | date:'yyyy-MM-dd' }}</div>
+            <div>{{ model?.ToDate | dateFormat }}</div>
         </t-restricted>
         <t-date-picker *ngIf="isEdit" [(ngModel)]="model.ToDate" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="ToDate_isRequired">

@@ -247,6 +247,15 @@
   <data name="Byte" xml:space="preserve">
     <value>字节</value>
   </data>
+  <data name="Calendar_ET" xml:space="preserve">
+    <value>埃塞俄比亚日历</value>
+  </data>
+  <data name="Calendar_GC" xml:space="preserve">
+    <value>公历</value>
+  </data>
+  <data name="Calendar_UQ" xml:space="preserve">
+    <value>乌姆Qura日历</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
@@ -916,6 +925,9 @@
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>
   </data>
+  <data name="Error_Calendar0IsNotSupported" xml:space="preserve">
+    <value>日历“{0}”未在该公司的支持。</value>
+  </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>无法分配{0}文件。</value>
   </data>
@@ -1081,6 +1093,9 @@
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>标签“{0}”可匹配于类型{1}的倍数字段，可使用一个数字后缀来消除歧义，像这样“{0} 0.1”。</value>
   </data>
+  <data name="Error_Language0IsNotSupported" xml:space="preserve">
+    <value>语言“{0}”未在该公司的支持。</value>
+  </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>线不能代表用户签署“{0}”</value>
   </data>
@@ -1155,6 +1170,9 @@
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>资源DefinitionId“{0}”未能找到。</value>
+  </data>
+  <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
+    <value>辅助日历不能是相同的作为主日历。</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>中学语文不能是相同的主要语言。</value>
@@ -1966,6 +1984,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>保养</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>营销</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>密码</value>
   </data>
@@ -2581,11 +2602,17 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>品牌颜色</value>
   </data>
+  <data name="Settings_DateFormat" xml:space="preserve">
+    <value>日期格式</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>功能货币</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>功能货币</value>
+  </data>
+  <data name="Settings_PrimaryCalendar" xml:space="preserve">
+    <value>主日历</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>主要语言</value>
@@ -2595,6 +2622,9 @@
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
     <value>在供应</value>
+  </data>
+  <data name="Settings_SecondaryCalendar" xml:space="preserve">
+    <value>二级日历</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
     <value>中学语文</value>
@@ -2613,6 +2643,9 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>
+  </data>
+  <data name="Settings_TimeFormat" xml:space="preserve">
+    <value>时间格式</value>
   </data>
   <data name="Settings_TIN" xml:space="preserve">
     <value>税号</value>
@@ -2836,6 +2869,12 @@
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>外部登录已被删除。</value>
   </data>
+  <data name="Time_AM" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="Time_PM" xml:space="preserve">
+    <value>下午</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>标题</value>
   </data>
@@ -2940,6 +2979,9 @@
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>权限</value>
+  </data>
+  <data name="User_PreferredCalendar" xml:space="preserve">
+    <value>首选日历</value>
   </data>
   <data name="User_PreferredChannel" xml:space="preserve">
     <value>首选渠道</value>

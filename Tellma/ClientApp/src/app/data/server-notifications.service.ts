@@ -39,13 +39,13 @@ export class ServerNotificationsService {
   } = {};
 
 
-  constructor(private authStorage: OAuthStorage, private api: ApiService, private ws: WorkspaceService) {
+  constructor(private authStorage: OAuthStorage, private api: ApiService, private wss: WorkspaceService) {
     // Listen to workspace changes, if the tenantId changes, recap summary of the new tenant (if it isn't already fresh)
-    ws.stateChanged$.subscribe(() => {
-      if (ws.isApp && this._currentTenantId !== ws.ws.tenantId) {
-        this._currentTenantId = ws.ws.tenantId;
+    wss.stateChanged$.subscribe(() => {
+      if (wss.isApp && this._currentTenantId !== wss.ws.tenantId) {
+        this._currentTenantId = wss.ws.tenantId;
 
-        const tenantState = this.state[ws.ws.tenantId];
+        const tenantState = this.state[wss.ws.tenantId];
         if (!tenantState || !tenantState.isFresh) {
           this.recap();
         }
@@ -120,7 +120,7 @@ export class ServerNotificationsService {
   }
 
   private recap = async () => {
-    if (!!this.ws.isApp && this._connection.state === HubConnectionState.Connected) {
+    if (!!this.wss.isApp && this._connection.state === HubConnectionState.Connected) {
       this.api.notificationsRecap().pipe(
         tap((summary: ServerNotificationSummary) => {
           this.handleFreshInboxCountsAndNotify(summary.Inbox);
@@ -240,8 +240,8 @@ export class ServerNotificationsService {
    * Returns the state of the last tenantId set with connect(tenantId)
    */
   public get tenantState(): TenantState {
-    if (this.ws.isApp) {
-      const tenantId = this.ws.ws.tenantId;
+    if (this.wss.isApp) {
+      const tenantId = this.wss.ws.tenantId;
       return this.state[tenantId];
     }
 

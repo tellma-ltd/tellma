@@ -17,6 +17,7 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Tellma.Data
 {
@@ -56,6 +57,9 @@ namespace Tellma.Data
 
         private IInstrumentationService _instrumentation;
         private IInstrumentationService Instrumentation => _instrumentation ??= _serviceProvider.GetRequiredService<IInstrumentationService>();
+
+        private ILogger _logger;
+        private ILogger Logger => _logger ??= _serviceProvider.GetRequiredService<ILogger<ApplicationRepository>>();
 
         #endregion
 
@@ -238,7 +242,7 @@ namespace Tellma.Data
             var userId = userInfo.UserId ?? 0;
             var userToday = ClientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation);
+            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation, Logger);
         }
 
         /// <summary>
@@ -463,6 +467,7 @@ namespace Tellma.Data
                     user.Name3 = reader.String(i++);
                     user.ImageId = reader.String(i++);
                     user.PreferredLanguage = reader.String(i++);
+                    user.PreferredCalendar = reader.String(i++);
 
                     version = reader.GetGuid(i++);
                 }
@@ -2464,6 +2469,38 @@ namespace Tellma.Data
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task Users__SavePreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SavePreferredLanguage));
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("PreferredLanguage", preferredLanguage);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredLanguage)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync(cancellation);
+        }
+
+        public async Task Users__SavePreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SavePreferredCalendar));
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("PreferredCalendar", preferredCalendar);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredCalendar)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync(cancellation);
         }
 
         public async Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)

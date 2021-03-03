@@ -134,7 +134,7 @@
         [disableLabelMenu]="!(isEdit && showDocumentPostingDateIsCommon(model))"
         [serverErrors]="model?.serverErrors?.PostingDate" *ngIf="showDocumentPostingDate(model)">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
-            <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
+            <div>{{ model?.PostingDate | dateFormat }}</div>
         </t-restricted>
         <t-date-picker *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
             [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
@@ -292,7 +292,7 @@
         *ngIf="showDocumentTime1(model)">
         <ng-container *ngIf="model?.Time1IsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time1">
-                {{ model?.Time1 | date:'yyyy-MM-dd' }}
+                {{ model?.Time1 | dateFormat }}
             </t-restricted>
             <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Time1" [ngModelOptions]="{ updateOn: 'blur' }"
                 [required]="requireDocumentTime1(model)" [disabled]="readonlyDocumentTime1(model)">
@@ -306,7 +306,7 @@
         *ngIf="showDocumentTime2(model)">
         <ng-container *ngIf="model?.Time2IsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time2">
-                {{ model?.Time2 | date:'yyyy-MM-dd' }}
+                {{ model?.Time2 | dateFormat }}
             </t-restricted>
             <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Time2" [ngModelOptions]="{ updateOn: 'blur' }"
                 [required]="requireDocumentTime2(model)" [disabled]="readonlyDocumentTime2(model)">
@@ -637,9 +637,9 @@
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}</span>
                         </div>
                         <span
-                            *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span
-                            *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span
                             *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
@@ -650,7 +650,7 @@
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
                         </div>
                         <span
-                            *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
@@ -658,7 +658,7 @@
                             *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
                         <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
-                            *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                     </ng-container>
                     <ng-template #editMode>
@@ -703,9 +703,9 @@
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
@@ -716,7 +716,7 @@
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
@@ -726,7 +726,7 @@
                                 <span
                                     *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}&zwnj;</span>
                                 <span
                                     *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                             </div>
@@ -1037,7 +1037,7 @@
                             </div>
                             <div>
                                 <span class="text-muted" *ngIf="signature.SignedAt">
-                                    &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
+                                    &nbsp;{{ signature.SignedAt | datetimeFormat }}
                                 </span>
                                 <div class="d-inline" placement="bottom" [ngbTooltip]="unsignTooltip(signature, model)"
                                     container="body">
@@ -1249,7 +1249,7 @@
                                     <!-- Audit info and Size -->
                                     <div class="flex-grow-1 small text-muted text-truncate" style="min-width: 0px;">
                                         <span *ngIf="w.attachment.CreatedById">{{ 'AttachmentAudit' | translate: { 
-                                                '0': ( w.attachment.CreatedAt | date:'yyyy-MM-dd HH:mm'),
+                                                '0': ( w.attachment.CreatedAt | datetimeFormat),
                                                 '1': ws.getMultilingualValue('User', w.attachment.CreatedById, 'Name')
                                                 }
                                             }}&nbsp;</span>
@@ -1327,7 +1327,7 @@
             <t-form-group class="t-form-group" *ngIf="!showDocumentPostingDate(model)"
                 [label]="'Line_PostingDate' | translate" [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
                 <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.PostingDate">
-                    <div>{{ manualLine(model)?.PostingDate | date:'yyyy-MM-dd' }}</div>
+                    <div>{{ manualLine(model)?.PostingDate | dateFormat }}</div>
                 </t-restricted>
                 <t-date-picker *ngIf="isEdit" required [(ngModel)]="manualLine(model).PostingDate"
                     [ngModelOptions]="{ updateOn: 'blur' }">
@@ -1563,7 +1563,7 @@
             <ng-container *ngIf="showTime1_Manual(entry)">
                 <t-form-group-dynamic [label]="labelTime1_Manual(entry)" [serverErrors]="entry.serverErrors?.Time1">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Time1">
-                        {{ entry.Time1 | date:'yyyy-MM-dd'}}
+                        {{ entry.Time1 | dateFormat}}
                     </t-restricted>
                     <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Time1"
                         (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
@@ -1576,7 +1576,7 @@
             <ng-container *ngIf="showTime2_Manual(entry)">
                 <t-form-group-dynamic [label]="labelTime2_Manual(entry)" [serverErrors]="entry.serverErrors?.Time2">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Time2">
-                        {{ entry.Time2 | date:'yyyy-MM-dd'}}
+                        {{ entry.Time2 | dateFormat}}
                     </t-restricted>
                     <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Time2"
                         (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
@@ -1694,7 +1694,7 @@
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedDate">
                         <div class="text-truncate">
-                            {{ entry.NotedDate | date:'yyyy-MM-dd' }}
+                            {{ entry.NotedDate | dateFormat }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
@@ -1926,7 +1926,7 @@
                                 </div>
                                 <div class="py-2 text-truncate">
                                     <span class="small text-muted">
-                                        {{ event.time | date:'HH:mm' }}
+                                        {{ event.time | timeFormat }}
                                     </span>
                                 </div>
                             </div>
@@ -1960,7 +1960,7 @@
                                 </div>
                                 <div class="py-2 text-truncate">
                                     <span class="my-auto t-vertical-alignment-center small text-muted">
-                                        {{ event.time | date:'HH:mm' }}
+                                        {{ event.time | timeFormat }}
                                     </span>
                                 </div>
                             </div>
@@ -1983,7 +1983,7 @@
                                 </div>
                                 <div class="py-2 text-truncate">
                                     <span class="small text-muted">
-                                        {{ event.time | date:'HH:mm' }}
+                                        {{ event.time | timeFormat }}
                                     </span>
                                 </div>
                             </div>

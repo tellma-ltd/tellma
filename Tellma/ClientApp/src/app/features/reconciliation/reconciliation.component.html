@@ -366,7 +366,7 @@
                                 </t-view-link>
                             </td>
                             <td class="t-a">
-                                {{ row.entry?.PostingDate | date:'yyyy-MM-dd' }}
+                                {{ row.entry?.PostingDate | dateFormat }}
                             </td>
                             <td class="t-a">
                                 {{ row.entry?.ExternalReference }}
@@ -423,7 +423,7 @@
                                             <p class="m-0 p-0">
                                                 <fa-icon icon="exclamation-circle"></fa-icon>
                                                 &nbsp;
-                                                {{ 'EntryReconciledAfter0' | translate: { '0': (toDate | date:'yyyy-MM-dd') } }}
+                                                {{ 'EntryReconciledAfter0' | translate: { '0': (toDate | dateFormat) } }}
                                             </p>
                                         </div>
                                     </ng-template>
@@ -551,7 +551,7 @@
                                     triggers="mouseenter:mouseleave">
                                     <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
                                         *ngIf="row.exEntry?.serverErrors?.PostingDate"></fa-icon>
-                                    {{ row.exEntry?.PostingDate | date:'yyyy-MM-dd' }}
+                                    {{ row.exEntry?.PostingDate | dateFormat }}
 
                                     <ng-template #postingDateErrors>
                                         <div class="" style="width: 250px">
@@ -809,7 +809,7 @@
             </t-form-group>
 
             <t-form-group class="t-wide-form-group" [label]="'AsOfDate' | translate">
-                {{ toDate ? (toDate | date:'yyyy-MM-dd') : '-' }}&zwnj;
+                {{ toDate ? (toDate | dateFormat) : '-' }}&zwnj;
             </t-form-group>
         </div>
 

@@ -1,15 +1,25 @@
 import { Component, HostBinding, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  AbstractControl,
+  ControlValueAccessor,
+  NgControl,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ValidationErrors,
+  Validator
+} from '@angular/forms';
 import { getChoices, NavigationPropDescriptor, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
+import { Calendar, DateGranularity, DateTimeGranularity } from '~/app/data/entities/base/metadata-types';
 import { IdService } from '~/app/data/id.service';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 't-editor',
   templateUrl: './editor.component.html',
-  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: EditorComponent }]
+  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: EditorComponent },
+  { provide: NG_VALIDATORS, multi: true, useExisting: EditorComponent }]
 })
-export class EditorComponent implements ControlValueAccessor {
+export class EditorComponent implements ControlValueAccessor, Validator {
 
   constructor(private id: IdService) { }
 
@@ -164,6 +174,30 @@ export class EditorComponent implements ControlValueAccessor {
     return [];
   }
 
+  public get dateGranularity(): DateGranularity {
+    if (this.desc.control === 'date') {
+      return this.desc.granularity;
+    }
+
+    console.error(`Editor error: requesting granularity from a ${this.desc.control}`);
+  }
+
+  public get dateTimeGranularity(): DateTimeGranularity {
+    if (this.desc.control === 'datetime') {
+      return this.desc.granularity;
+    }
+
+    console.error(`Editor error: requesting granularity from a ${this.desc.control}`);
+  }
+
+  public get calendar(): Calendar {
+    if (this.desc.control === 'date' || this.desc.control === 'datetime') {
+      return this.desc.calendar;
+    }
+
+    console.error(`Editor error: requesting calendar from a ${this.desc.control}`);
+  }
+
   public get filter(): string {
     const desc = this.desc as NavigationPropDescriptor;
     return desc.filter;
@@ -187,5 +221,9 @@ export class EditorComponent implements ControlValueAccessor {
     }
 
     return this.definitionIdArray;
+  }
+
+  public validate(control: AbstractControl): ValidationErrors | null {
+    return !!this.control && !!this.control.validator ? this.control.validator(control) : null;
   }
 }

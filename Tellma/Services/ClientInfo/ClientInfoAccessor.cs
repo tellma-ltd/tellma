@@ -39,10 +39,14 @@ namespace Tellma.Services.ClientInfo
                 }
             }
 
+            string calendar = _httpContextAccessor
+                    .HttpContext.Request.Headers["X-Calendar"].FirstOrDefault();
+
             // Return client info
             return new ClientInfo
             {
-                Today = userToday
+                Today = userToday,
+                Calendar = calendar,
             };
         }
     }

@@ -177,24 +177,28 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 't-blue3',
       items: []
     },
-    Sales: {
+    Marketing: {
       background: 't-green3',
       items: []
     },
-    HumanCapital: {
+    Sales: {
       background: 't-teal1',
       items: []
     },
-    Investments: {
+    HumanCapital: {
       background: 't-blue1',
       items: []
     },
-    Maintenance: {
+    Investments: {
       background: 't-green1',
       items: []
     },
-    Administration: {
+    Maintenance: {
       background: 't-teal2',
+      items: []
+    },
+    Administration: {
+      background: 't-blue2',
       items: [
         {
           label: 'Agents', icon: 'id-badge', link: '../agents',
@@ -230,7 +234,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Security: {
-      background: 't-blue2',
+      background: 't-green2',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',

@@ -37,7 +37,7 @@ import { metadata_LineDefinition } from '../line-definition';
 import { metadata_DocumentDefinition } from '../document-definition';
 import { metadata_Email } from '../email';
 import { metadata_SmsMessage } from '../sms-message';
-import { DateGranularity, DateTimeGranularity } from './metadata-types';
+import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types';
 
 export const metadata: {
     [collection: string]: (
@@ -302,6 +302,7 @@ export interface DateTimePropDescriptor extends DateTimePropVisualDescriptor, Pr
 export interface DateTimePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'datetime';
     granularity: DateTimeGranularity;
+    calendar?: Calendar;
 }
 
 export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescriptorBase {
@@ -310,6 +311,7 @@ export interface DatePropDescriptor extends DatePropVisualDescriptor, PropDescri
 export interface DatePropVisualDescriptor extends PropVisualDescriptorBase {
     control: 'date';
     granularity: DateGranularity;
+    calendar?: Calendar;
 }
 
 export interface NumberPropDescriptor extends NumberPropVisualDescriptor, PropDescriptorBase {

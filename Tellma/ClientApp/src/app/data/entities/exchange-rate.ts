@@ -4,8 +4,8 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
-import { formatDate } from '@angular/common';
 import { DateGranularity, TimeGranularity } from './base/metadata-types';
+import { toLocalDateOnlyISOString } from '../date-util';
 
 export interface ExchangeRateForSave extends EntityWithKey {
     CurrencyId?: string;
@@ -40,8 +40,8 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
             masterScreenUrl: 'exchange-rates',
             orderby: () => ['ValidAsOf', 'CurrencyId'],
             inactiveFilter: null,
-            format: (item: ExchangeRate) => `${formatDate(item.ValidAsOf, 'yyyy-MM-dd', 'en-GB')}-${item.CurrencyId}`,
-            formatFromVals: (vals: any[]) => `${formatDate(vals[0], 'yyyy-MM-dd', 'en-GB')} ${vals[1]}`,
+            format: (item: ExchangeRate) => `${toLocalDateOnlyISOString(new Date(item.ValidAsOf))}-${item.CurrencyId}`,
+            formatFromVals: (vals: any[]) => `${toLocalDateOnlyISOString(new Date(vals[0]))} ${vals[1]}`,
             properties: {
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },

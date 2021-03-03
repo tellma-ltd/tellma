@@ -10,6 +10,7 @@ using Tellma.Entities.Descriptors;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
 using Tellma.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Tellma.Data.Queries
 {
@@ -61,6 +62,7 @@ namespace Tellma.Data.Queries
             SqlStatementVariables vars,
             SqlStatementParameters ps,
             SqlConnection conn,
+            ILogger logger,
             CancellationToken cancellation)
         {
             dimAncestorsStatements ??= new List<DimensionAncestorsStatement>();
@@ -169,6 +171,11 @@ namespace Tellma.Data.Queries
                 {
                     throw new QueryException("The query caused a division by zero.");
                 }
+                catch (SqlException ex)
+                {
+                    logger.LogError(ex, FullSqlForLogger(sql, ps)); // Log the generated SQL code for debugging
+                    throw;
+                }
                 finally
                 {
                     // Otherwise we might get an error when a parameter is reused
@@ -184,6 +191,15 @@ namespace Tellma.Data.Queries
             }
 
             return (result, treeResults, count);
+        }
+
+        private static string FullSqlForLogger(string sql, SqlStatementParameters ps)
+        {
+            var stringifiedParams = string.Join(" ", ps.Select(e => $"DECLARE @{e.ParameterName} {e.SqlDbType.ToString().ToUpper()} = {e.Value};"));
+            var fullSql = @$"{stringifiedParams}
+
+{sql}";
+            return fullSql;
         }
 
         /// <summary>
@@ -203,6 +219,7 @@ namespace Tellma.Data.Queries
            SqlStatementParameters ps,
            SqlConnection conn,
            IInstrumentationService instrumentation,
+           ILogger logger,
            CancellationToken cancellation) where T : Entity
         {
             using var _ = instrumentation.Block("EntityLoader.Load");
@@ -219,7 +236,8 @@ namespace Tellma.Data.Queries
             string variablesSql = vars.ToSql();
 
             // Command Text
-            cmd.CommandText = PrepareSql(variablesSql, preparatorySql, countSql, statements.Select(e => e.Sql).ToArray());
+            var sql = PrepareSql(variablesSql, preparatorySql, countSql, statements.Select(e => e.Sql).ToArray());
+            cmd.CommandText = sql;
 
             // Command Parameters
             foreach (var parameter in ps)
@@ -397,6 +415,11 @@ namespace Tellma.Data.Queries
                     // Go over to the next result set
                     await reader.NextResultAsync(cancellation);
                 }
+            }
+            catch (SqlException ex)
+            {
+                logger.LogError(ex, FullSqlForLogger(sql, ps)); // Log the generated SQL code for debugging
+                throw;
             }
             finally
             {
