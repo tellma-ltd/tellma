@@ -9,7 +9,7 @@ RETURN (
 		ISNULL(
 			LEAD(DAH.[CreatedAt]) OVER(PARTITION BY DAH.[DocumentId] ORDER BY DAH.[Id]),
 			IIF(D.[State] = 0, GETDATE(), [StateAt])
-		) AS [Time2]
+		) AS [Time2], D.[State]
 		FROM dbo.DocumentAssignmentsHistory DAH
 		LEFT JOIN dbo.Documents D ON DAH.[DocumentId] = D.[Id]
 	)
