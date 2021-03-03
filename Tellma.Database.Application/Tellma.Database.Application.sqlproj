@@ -766,6 +766,7 @@
     <Build Include="dbo\User Defined Types\dbo.InventoryEntryList.sql" />
     <Build Include="rpt\Stored Procedures\rpt.UnbalancedCSI___Balance.sql" />
     <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
+    <Build Include="map\map.DocumentAssignmentsHistory2.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SavePreferredLanguage.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SavePreferredCalendar.sql" />
   </ItemGroup>
