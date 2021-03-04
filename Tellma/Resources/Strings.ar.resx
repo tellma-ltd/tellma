@@ -2266,9 +2266,6 @@
   <data name="PleaseConfirm" xml:space="preserve">
     <value>يرجى التأكيد</value>
   </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>القيمة أكبر من أو تساوي</value>
-  </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
   </data>

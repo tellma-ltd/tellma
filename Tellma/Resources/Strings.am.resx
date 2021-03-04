@@ -650,7 +650,7 @@
     <value>ሰነዶች</value>
   </data>
   <data name="DocumentStateChange" xml:space="preserve">
-    <value>የሰነድ ግዛት ለውጥ</value>
+    <value>የሰነድ ክልል ለውጥ</value>
   </data>
   <data name="DocumentStateChanges" xml:space="preserve">
     <value>የሰነድ ክልል ለውጦች</value>
@@ -2191,9 +2191,6 @@
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
   </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>እሴት> =</value>
-  </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
   </data>
@@ -2861,7 +2858,7 @@
     <value>ወደ ስልክ ቁጥር</value>
   </data>
   <data name="SmsMessages" xml:space="preserve">
-    <value>የኤስኤምኤስ መልዕክቶች</value>
+    <value>የ SMS መልዕክቶች</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>ደርድር ቁልፍ</value>

@@ -2155,9 +2155,6 @@
   <data name="PleaseConfirm" xml:space="preserve">
     <value>请确认</value>
   </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>值> =</value>
-  </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
   </data>

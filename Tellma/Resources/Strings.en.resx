@@ -2353,9 +2353,6 @@
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
   </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>Value >=</value>
-  </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
   </data>
