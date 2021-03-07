@@ -99,7 +99,6 @@ INSERT INTO @ET VALUES(611123, N'611123', N'/6/1/1/1/2/3/', N'PaymentsToAndOnBeh
 INSERT INTO @ET VALUES(611124, N'611124', N'/6/1/1/1/2/4/', N'PaymentsForPremiumsAndClaimsAnnuitiesAndOtherPolicyBenefits', N'Payments for premiums and claims, annuities and other policy benefits', N'')
 INSERT INTO @ET VALUES(611125, N'611125', N'/6/1/1/1/2/5/', N'PaymentsToManufactureOrAcquireAssetsHeldForRentalToOthersAndSubsequentlyHeldForSale', N'Payments to manufacture or acquire assets held for rental to others and subsequently held for sale', N'')
 INSERT INTO @ET VALUES(611126, N'611126', N'/6/1/1/1/2/6/', N'OtherCashPaymentsFromOperatingActivities', N'Other cash payments from operating activities', N'')
-
 INSERT INTO @ET VALUES(6112, N'6112', N'/6/1/1/2/', N'DividendsPaidClassifiedAsOperatingActivities', N'Dividends paid, classified as operating activities', N'')
 INSERT INTO @ET VALUES(6113, N'6113', N'/6/1/1/3/', N'DividendsReceivedClassifiedAsOperatingActivities', N'Dividends received, classified as operating activities', N'')
 INSERT INTO @ET VALUES(6114, N'6114', N'/6/1/1/4/', N'InterestPaidClassifiedAsOperatingActivities', N'Interest paid, classified as operating activities', N'')
@@ -107,7 +106,6 @@ INSERT INTO @ET VALUES(6115, N'6115', N'/6/1/1/5/', N'InterestReceivedClassified
 INSERT INTO @ET VALUES(6116, N'6116', N'/6/1/1/6/', N'IncomeTaxesPaidRefundClassifiedAsOperatingActivities', N'Income taxes paid (refund), classified as operating activities', N'')
 INSERT INTO @ET VALUES(6117, N'6117', N'/6/1/1/7/', N'OtherInflowsOutflowsOfCashClassifiedAsOperatingActivities', N'Other inflows (outflows) of cash, classified as operating activities', N'')
 INSERT INTO @ET VALUES(612, N'612', N'/6/1/2/', N'CashFlowsFromUsedInInvestingActivities', N'Cash flows from (used in) investing activities', N'')
-
 INSERT INTO @ET VALUES(61201, N'61201', N'/6/1/2/1/', N'CashFlowsFromLosingControlOfSubsidiariesOrOtherBusinessesClassifiedAsInvestingActivities', N'Cash flows from losing control of subsidiaries or other businesses, classified as investing activities', N'')
 INSERT INTO @ET VALUES(61202, N'61202', N'/6/1/2/2/', N'CashFlowsUsedInObtainingControlOfSubsidiariesOrOtherBusinessesClassifiedAsInvestingActivities', N'Cash flows used in obtaining control of subsidiaries or other businesses, classified as investing activities', N'')
 INSERT INTO @ET VALUES(61203, N'61203', N'/6/1/2/3/', N'OtherCashReceiptsFromSalesOfEquityOrDebtInstrumentsOfOtherEntitiesClassifiedAsInvestingActivities', N'Other cash receipts from sales of equity or debt instruments of other entities, classified as investing activities', N'')
@@ -131,7 +129,6 @@ INSERT INTO @ET VALUES(61220, N'61220', N'/6/1/2/20/', N'InterestReceivedClassif
 INSERT INTO @ET VALUES(61221, N'61221', N'/6/1/2/21/', N'IncomeTaxesPaidRefundClassifiedAsInvestingActivities', N'Income taxes paid (refund), classified as investing activities', N'')
 INSERT INTO @ET VALUES(61222, N'61222', N'/6/1/2/22/', N'OtherInflowsOutflowsOfCashClassifiedAsInvestingActivities', N'Other inflows (outflows) of cash, classified as investing activities', N'')
 INSERT INTO @ET VALUES(613, N'613', N'/6/1/3/', N'CashFlowsFromUsedInFinancingActivities', N'Cash flows from (used in) financing activities', N'')
-
 INSERT INTO @ET VALUES(61301, N'61301', N'/6/1/3/1/', N'ProceedsFromChangesInOwnershipInterestsInSubsidiaries', N'Proceeds from changes in ownership interests in subsidiaries that do not result in loss of control', N'')
 INSERT INTO @ET VALUES(61302, N'61302', N'/6/1/3/2/', N'PaymentsFromChangesInOwnershipInterestsInSubsidiaries', N'Payments from changes in ownership interests in subsidiaries that do not result in loss of control', N'')
 INSERT INTO @ET VALUES(61303, N'61303', N'/6/1/3/3/', N'ProceedsFromIssuingShares', N'Proceeds from issuing shares', N'')
@@ -197,9 +194,19 @@ INSERT INTO @ET VALUES(11002, N'B2', N'/11/2/', N'IncreaseDecreaseThroughApporti
 INSERT INTO @ET VALUES(11003, N'B3', N'/11/3/', N'CapitalizationExpenseByNatureExtension', N'Capitalization, expense by nature', N'')
 INSERT INTO @ET VALUES(11004, N'B4', N'/11/4/', N'PeriodClosingReversalExtension', N'Period closing (reversal), expense by nature', N'')
 INSERT INTO @ET VALUES(1200, N'C', N'/12/', N'ChangesInControlExtension', N'Increase (decrease) in control', N'')
-INSERT INTO @ET VALUES(12001, N'C1', N'/12/1/', N'AgreementExtension', N'Agreement', N'')
+INSERT INTO @ET VALUES(12001, N'C1', N'/12/1/', N'InvoiceExtension', N'Invoice', N'')
 INSERT INTO @ET VALUES(12002, N'C2', N'/12/2/', N'FulfillmentExtension', N'Fulfillment', N'')
 INSERT INTO @ET VALUES(12003, N'C3', N'/12/3/', N'ClassificationExtension', N'Classification', N'')
+INSERT INTO @ET VALUES(1300, N'D', N'/13/', N'ChangesInFinancialAssetsExtension', N'Increase (decrease) in financial assets', N'')
+INSERT INTO @ET VALUES(13001, N'D1', N'/13/1/', N'LoanIssueExtension', N'Loan issue', N'')
+INSERT INTO @ET VALUES(13002, N'D2', N'/13/2/', N'LoanRepaymentExtension', N'Loan repayment', N'')
+INSERT INTO @ET VALUES(13003, N'D3', N'/13/3/', N'LoanReschedulingExtension', N'Loan rescheduling', N'')
+INSERT INTO @ET VALUES(1400, N'E', N'/14/', N'ChangesInEmployeesBenefitsAccrualsExtension', N'Increase (decrease) in employees benefits accruals', N'')
+INSERT INTO @ET VALUES(14001, N'E1', N'/14/1/', N'CurrentDuesExtension', N'Current dues', N'')
+INSERT INTO @ET VALUES(14002, N'E2', N'/14/2/', N'PriorDuesExtension', N'Prior dues', N'')
+INSERT INTO @ET VALUES(14003, N'E3`', N'/14/3/', N'DueLoansExtension', N'Due loans', N'')
+INSERT INTO @ET VALUES(14004, N'E4', N'/14/4/', N'PaymentsExtension', N'Payments', N'')
+INSERT INTO @ET VALUES(14005, N'E5', N'/14/5/', N'DeferredDuesExtension', N'Deferred dues', N'')
 
 INSERT INTO @EntryTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [Description])
 SELECT ET.[Index], ET.[Code], ET.[Concept], ET.[Name], (SELECT [Index] FROM @ET WHERE [Node] = ET.[Node].GetAncestor(1)) AS ParentIndex, [Description]
@@ -325,7 +332,6 @@ DECLARE @PaymentsToAndOnBehalfOfEmployees INT = (SELECT [Id] FROM dbo.EntryTypes
 DECLARE @PaymentsForPremiumsAndClaimsAnnuitiesAndOtherPolicyBenefits INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PaymentsForPremiumsAndClaimsAnnuitiesAndOtherPolicyBenefits');
 DECLARE @PaymentsToManufactureOrAcquireAssetsHeldForRentalToOthersAndSubsequentlyHeldForSale INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PaymentsToManufactureOrAcquireAssetsHeldForRentalToOthersAndSubsequentlyHeldForSale');
 DECLARE @OtherCashPaymentsFromOperatingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'OtherCashPaymentsFromOperatingActivities');
-
 DECLARE @DividendsPaidClassifiedAsOperatingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DividendsPaidClassifiedAsOperatingActivities');
 DECLARE @DividendsReceivedClassifiedAsOperatingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DividendsReceivedClassifiedAsOperatingActivities');
 DECLARE @InterestPaidClassifiedAsOperatingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InterestPaidClassifiedAsOperatingActivities');
@@ -333,7 +339,6 @@ DECLARE @InterestReceivedClassifiedAsOperatingActivities INT = (SELECT [Id] FROM
 DECLARE @IncomeTaxesPaidRefundClassifiedAsOperatingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncomeTaxesPaidRefundClassifiedAsOperatingActivities');
 DECLARE @OtherInflowsOutflowsOfCashClassifiedAsOperatingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'OtherInflowsOutflowsOfCashClassifiedAsOperatingActivities');
 DECLARE @CashFlowsFromUsedInInvestingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CashFlowsFromUsedInInvestingActivities');
-
 DECLARE @CashFlowsFromLosingControlOfSubsidiariesOrOtherBusinessesClassifiedAsInvestingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CashFlowsFromLosingControlOfSubsidiariesOrOtherBusinessesClassifiedAsInvestingActivities');
 DECLARE @CashFlowsUsedInObtainingControlOfSubsidiariesOrOtherBusinessesClassifiedAsInvestingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CashFlowsUsedInObtainingControlOfSubsidiariesOrOtherBusinessesClassifiedAsInvestingActivities');
 DECLARE @OtherCashReceiptsFromSalesOfEquityOrDebtInstrumentsOfOtherEntitiesClassifiedAsInvestingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'OtherCashReceiptsFromSalesOfEquityOrDebtInstrumentsOfOtherEntitiesClassifiedAsInvestingActivities');
@@ -357,7 +362,6 @@ DECLARE @InterestReceivedClassifiedAsInvestingActivities INT = (SELECT [Id] FROM
 DECLARE @IncomeTaxesPaidRefundClassifiedAsInvestingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncomeTaxesPaidRefundClassifiedAsInvestingActivities');
 DECLARE @OtherInflowsOutflowsOfCashClassifiedAsInvestingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'OtherInflowsOutflowsOfCashClassifiedAsInvestingActivities');
 DECLARE @CashFlowsFromUsedInFinancingActivities INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CashFlowsFromUsedInFinancingActivities');
-
 DECLARE @ProceedsFromChangesInOwnershipInterestsInSubsidiaries INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ProceedsFromChangesInOwnershipInterestsInSubsidiaries');
 DECLARE @PaymentsFromChangesInOwnershipInterestsInSubsidiaries INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PaymentsFromChangesInOwnershipInterestsInSubsidiaries');
 DECLARE @ProceedsFromIssuingShares INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ProceedsFromIssuingShares');
@@ -423,6 +427,16 @@ DECLARE @IncreaseDecreaseThroughApportionmentExpenseByNatureExtension INT = (SEL
 DECLARE @CapitalizationExpenseByNatureExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CapitalizationExpenseByNatureExtension');
 DECLARE @PeriodClosingReversalExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PeriodClosingReversalExtension');
 DECLARE @ChangesInControlExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ChangesInControlExtension');
-DECLARE @AgreementExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AgreementExtension');
+DECLARE @InvoiceExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InvoiceExtension');
 DECLARE @FulfillmentExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'FulfillmentExtension');
 DECLARE @ClassificationExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ClassificationExtension');
+DECLARE @ChangesInFinancialAssetsExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ChangesInFinancialAssetsExtension');
+DECLARE @LoanIssueExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'LoanIssueExtension');
+DECLARE @LoanRepaymentExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'LoanRepaymentExtension');
+DECLARE @LoanReschedulingExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'LoanReschedulingExtension');
+DECLARE @ChangesInEmployeesBenefitsAccrualsExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ChangesInEmployeesBenefitsAccrualsExtension');
+DECLARE @CurrentDuesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CurrentDuesExtension');
+DECLARE @PriorDuesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PriorDuesExtension');
+DECLARE @DueLoansExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DueLoansExtension');
+DECLARE @PaymentsExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PaymentsExtension');
+DECLARE @DeferredDuesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DeferredDuesExtension');
