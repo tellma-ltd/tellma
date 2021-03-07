@@ -742,10 +742,10 @@
     <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
     <Build Include="wiz\Functions\wiz.fn_Ethiopian_DatePart.sql" />
-    <Build Include="wiz\Functions\wiz.fn_UmmAlQura_DatePart.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DatePart.sql" />
     <Build Include="wiz\Functions\wiz.fn_JulianDayNumber.sql" />
     <Build Include="wiz\Functions\wiz.fn_Ethiopian_DateAdd.sql" />
-    <Build Include="wiz\Functions\wiz.fn_UmmAlQura_DateAdd.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DateAdd.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitionDimensionAttribute.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReportDefinitionDimensionAttributeList.sql" />
     <Build Include="map\map.ReportDefinitionDimensionAttributes.sql" />
@@ -771,6 +771,14 @@
     <Build Include="bll\Functions\bll.fn_RS__RL.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SavePreferredLanguage.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SavePreferredCalendar.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DaysInMonth.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DateFromParts.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_StartOfMonth.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_StartOfYear.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_DateFromParts.sql" />
+    <Build Include="wiz\Functions\wiz.fn_FromJulianDayNumber.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_StartOfMonth.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_StartOfYear.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

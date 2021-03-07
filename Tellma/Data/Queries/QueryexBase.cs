@@ -1183,12 +1183,12 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Umm Al Qura Calendar
         /// </summary>
-        private const string UmmAlQura = "uq";
+        private const string UmAlQura = "uq";
 
         /// <summary>
         /// All supported calendars
         /// </summary>
-        private readonly string[] SupportedCalendars = new string[] { Gregorian, Ethiopian, UmmAlQura };
+        private readonly string[] SupportedCalendars = new string[] { Gregorian, Ethiopian, UmAlQura };
 
         #endregion
 
@@ -1372,8 +1372,7 @@ namespace Tellma.Data.Queries
                 case "year":
                 case "quarter":
                 case "month":
-                case "day":
-                case "weekday": // (date: Date | DateTime | DateTimeOffset, calendar?: string) => numeric
+                case "day": // (date: Date | DateTime | DateTimeOffset, calendar?: string) => numeric
                     {
                         if (Arguments.Length < 1 || Arguments.Length > 2)
                         {
@@ -1397,28 +1396,20 @@ namespace Tellma.Data.Queries
                                 }
                                 else
                                 {
-                                    throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{UmmAlQura}'.");
+                                    throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{UmAlQura.ToUpper()}'.");
                                 }
                             }
 
                             resultType = QxType.Numeric;
                             resultNullity = dateNullity;
-
-                            if (datePart == "weekday") // The weekday (Sunday, Monday etc..) is calendar independent
+                            resultSql = calendar switch
                             {
-                                resultSql = $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})";
-                            }
-                            else // All the others depened on calendar
-                            {
-                                resultSql = calendar switch
-                                {
-                                    Gregorian => $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})", // Use SQL's built in function
-                                    UmmAlQura => $"[wiz].[fn_UmmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
-                                    Ethiopian => $"[wiz].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                Gregorian => $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})", // Use SQL's built in function
+                                UmAlQura => $"[wiz].[fn_UmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                Ethiopian => $"[wiz].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
 
-                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
-                                };
-                            }
+                                _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
+                            };
 
                             break;
                         }
@@ -1428,9 +1419,42 @@ namespace Tellma.Data.Queries
                         }
                     }
 
-                case "adddays":
+                case "weekday": // (date: Date | DateTime | DateTimeOffset) => numeric
+                case "hour":
+                case "minute":
+                case "second": // (date: DateTime | DateTimeOffset) => numeric
+                    {
+                        int expectedArgCount = 1;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        string datePart = nameLower;
+
+                        // Those do not accept a QxType.Date
+                        bool supportsDate = datePart == "weekday"; // Only this one accepts a date
+
+                        var arg1 = Arguments[0];
+                        if ((supportsDate && arg1.TryCompile(QxType.Date, ctx, out string dateSql, out QxNullity dateNullity)) ||
+                            arg1.TryCompile(QxType.DateTime, ctx, out dateSql, out dateNullity) ||
+                            arg1.TryCompile(QxType.DateTimeOffset, ctx, out dateSql, out dateNullity))
+                        {
+                            resultType = QxType.Numeric;
+                            resultNullity = dateNullity;
+                            resultSql = $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})";
+
+                            break;
+                        }
+                        else
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {(supportsDate ? $"{QxType.Date}, " : "")}{QxType.DateTime} or {QxType.DateTimeOffset}.");
+                        }
+                    }
+
+                case "addyears":
                 case "addmonths":
-                case "addyears": // (number: numeric, date: Date | DateTime | DateTimeOffset) => Date | DateTime | DateTimeOffset
+                case "adddays": // (number: numeric, date: Date | DateTime | DateTimeOffset) => Date | DateTime | DateTimeOffset
                     {
                         var (numberSql, arg2) = AddDatePartParameters(ctx, nameLower);
 
@@ -1457,16 +1481,16 @@ namespace Tellma.Data.Queries
                         break;
                     }
 
-                case "date":
+                case "startofyear":
                 case "startofmonth":
-                case "startofyear": // (date: Date | DateTime | DateTimeOffset) => Date
+                case "date": // (date: Date | DateTime | DateTimeOffset) => Date
                     {
-                        int expectedArgCount = 1;
-                        if (Arguments.Length != expectedArgCount)
+                        if (Arguments.Length < 1 || Arguments.Length > 2)
                         {
-                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                            throw new QueryException($"No overload for function '{Name}' accepts {Arguments.Length} arguments.");
                         }
 
+                        // Argument #1: Date
                         var arg1 = Arguments[0];
                         QxType argumentType;
                         if (arg1.TryCompile(QxType.Date, ctx, out string dateSql, out QxNullity dateNullity))
@@ -1486,12 +1510,28 @@ namespace Tellma.Data.Queries
                             throw new QueryException($"Function '{Name}': The argument {arg1} could not be interpreted as a {QxType.Date}, {QxType.DateTime} or {QxType.DateTimeOffset}.");
                         }
 
+                        // Argument #2: Calendar
+                        string calendar = Gregorian; // Default
+                        if (Arguments.Length >= 2)
+                        {
+                            var arg2 = Arguments[1];
+                            if (arg2 is QueryexQuote calendarQuote)
+                            {
+                                calendar = calendarQuote.Value.ToLower();
+                            }
+                            else
+                            {
+                                throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{UmAlQura.ToUpper()}'.");
+                            }
+                        }
+
                         resultType = QxType.Date; // Always date
                         resultNullity = dateNullity;
 
                         switch (nameLower)
                         {
                             case "date":
+                                // Date is calendar independent
                                 if (argumentType == QxType.Date)
                                 {
                                     resultSql = dateSql; // Return the date as is
@@ -1502,15 +1542,75 @@ namespace Tellma.Data.Queries
                                 }
                                 break;
                             case "startofmonth":
-                                resultSql = $"DATEADD(DAY, 1, EOMONTH({dateSql.DeBracket()}, -1))";
-                                // resultSql = $"DATEFROMPARTS(YEAR({dateSql}), MONTH({dateSql}), 1)";
+                                resultSql = calendar switch
+                                {
+                                    Gregorian => $"DATEADD(DAY, 1, EOMONTH({dateSql.DeBracket()}, -1))", // resultSql = $"DATEFROMPARTS(YEAR({dateSql}), MONTH({dateSql}), 1)";
+                                    UmAlQura => $"[wiz].[fn_UmAlQura_StartOfMonth]({dateSql.DeBracket()})",
+                                    Ethiopian => $"[wiz].[fn_Ethiopian_StartOfMonth]({dateSql.DeBracket()})",
+
+                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
+                                };
                                 break;
                             case "startofyear":
-                                resultSql = $"DATEFROMPARTS(YEAR({dateSql.DeBracket()}), 1, 1)";
+                                resultSql = calendar switch
+                                {
+                                    Gregorian => $"DATEFROMPARTS(YEAR({dateSql.DeBracket()}), 1, 1)",
+                                    UmAlQura => $"[wiz].[fn_UmAlQura_StartOfYear]({dateSql.DeBracket()})",
+                                    Ethiopian => $"[wiz].[fn_Ethiopian_StartOfYear]({dateSql.DeBracket()})",
+
+                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
+                                };
                                 break;
                             default:
                                 throw new InvalidOperationException($"Unhandled {nameLower}");
                         }
+
+                        break;
+                    }
+
+                //case "diffyears":
+                //case "diffmonths":
+                case "diffdays":
+                case "diffhours":
+                case "diffminutes":
+                case "diffseconds": // (date1: Date | DateTime | DateTimeOffset, date2: Date | DateTime | DateTimeOffset) => numeric
+                    {
+                        int expectedArgCount = 2;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        // Arguments #1 a Date
+                        var arg1 = Arguments[0];
+                        if (!(arg1.TryCompile(QxType.Date, ctx, out string date1Sql, out QxNullity date1Nullity) ||
+                            arg1.TryCompile(QxType.DateTime, ctx, out date1Sql, out date1Nullity) ||
+                            arg1.TryCompile(QxType.DateTimeOffset, ctx, out date1Sql, out date1Nullity)))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.Date}, {QxType.DateTime} or {QxType.DateTimeOffset}.");
+                        }
+
+                        var arg2 = Arguments[1];
+                        if (!(arg2.TryCompile(QxType.Date, ctx, out string date2Sql, out QxNullity date2Nullity) ||
+                        arg2.TryCompile(QxType.DateTime, ctx, out date2Sql, out date2Nullity) ||
+                        arg2.TryCompile(QxType.DateTimeOffset, ctx, out date2Sql, out date2Nullity)))
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} could not be interpreted as a {QxType.Date}, {QxType.DateTime} or {QxType.DateTimeOffset}.");
+                        }
+
+                        string datePart = nameLower[4..^1]; // Remove "diff" and "s"
+                        decimal secondsPerUnit = datePart switch
+                        {
+                            "day" => 60m * 60m * 24m,
+                            "hour" => 60m * 60m,
+                            "minute" => 60m,
+                            "second" => 1m,
+                            _ => throw new Exception()
+                        };
+
+                        resultType = QxType.Numeric;
+                        resultNullity = date1Nullity | date2Nullity;
+                        resultSql = $"(DATEDIFF(SECOND, {date1Sql.DeBracket()}, {date2Sql.DeBracket()}) / {secondsPerUnit:F1})";
 
                         break;
                     }
@@ -1576,7 +1676,7 @@ namespace Tellma.Data.Queries
                         break;
                     }
 
-                case "if":
+                case "if": // (condition: boolean, value_if_true: X, value_if_false: X) => X
                     {
                         var (conditionSql, arg2, arg3) = IfParameters(ctx);
 
@@ -1640,14 +1740,14 @@ namespace Tellma.Data.Queries
                         }
                     }
 
-                case "today": // () => date
+                case "today": // () => Date | DateTime
                     {
                         resultType = QxType.Date;
                         (resultSql, resultNullity) = CompileToday(ctx, resultType);
                         break;
                     }
 
-                case "now": // () => datetimeoffset
+                case "now": // () => DateTimeOffset
                     {
                         if (Arguments.Length > 0)
                         {
@@ -1687,8 +1787,6 @@ namespace Tellma.Data.Queries
 
                 default:
                     {
-                        // TODO: Allow injecting custom functions in the context
-
                         throw new QueryException($"Unknown function '{Name}'.");
                     }
             }
@@ -1897,7 +1995,7 @@ namespace Tellma.Data.Queries
             //    }
             //    else
             //    {
-            //        throw new QueryException($"Function '{Name}': The third argument must be a simple quote like this: '{UmmAlQura}'.");
+            //        throw new QueryException($"Function '{Name}': The third argument must be a simple quote like this: '{UmAlQura}'.");
             //    }
             //}
 
@@ -1909,7 +2007,7 @@ namespace Tellma.Data.Queries
             //{
             //    resultSql = calendar switch
             //    {
-            //        UmmAlQura => $"[wiz].[fn_UmmAlQura_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
+            //        UmAlQura => $"[wiz].[fn_UmAlQura_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
             //        Ethiopian => $"[wiz].[fn_Ethiopian_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
 
             //        _ => throw new QueryException($"Function '{Name}': The third argument {Arguments[2]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")

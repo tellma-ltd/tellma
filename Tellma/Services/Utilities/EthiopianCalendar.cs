@@ -121,7 +121,7 @@ namespace Tellma.Services.Utilities
         public override DateTime ToDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond, int era)
         {
             int jdn = EthiopianToJdn(year, month, day);
-            return CalendarUtilities.JdnFromDateTime(jdn, hour, minute, second, millisecond);
+            return CalendarUtilities.JdnToDateTime(jdn, hour, minute, second, millisecond);
         }
 
         private (int year, int month, int day) DateParts(DateTime time)

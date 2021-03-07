@@ -2,7 +2,7 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { isSpecified, Key } from '~/app/data/util';
+import { csvPackage, downloadBlob, isSpecified, Key } from '~/app/data/util';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
@@ -13,6 +13,9 @@ import { metadata } from '~/app/data/entities/base/metadata';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { AdminUserSettingsForClient } from '~/app/data/dto/admin-user-settings-for-client';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCalendarUmAlQura } from '~/app/data/ngb-calendar-umalqura';
+import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 
 interface MenuSectionInfo {
   label?: string;
@@ -872,6 +875,44 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const item of section.items) {
       console.log(`${item.sortKey} ${item.label}`);
     }
+
+    // {
+    //   const uq = new NgbCalendarUmAlQura();
+    //   const date = new Date(2074, 8, 8);
+    //   const hDate = uq.fromGregorian(date);
+    //   const dateBack = uq.toGregorian(hDate);
+
+    //   console.log(toLocalDateOnlyISOString(date), hDate, toLocalDateOnlyISOString(dateBack));
+    // }
+
+    // if (false) {
+    //   const uq = new NgbCalendarUmAlQura();
+    //   const data = [['Gregorian', 'H Year', 'H Month', 'H Day']];
+    //   const date = new Date(1900, 3, 30);
+    //   let errors = 0;
+    //   while (date < new Date(2077, 10, 17)) {
+    //     const { year, month, day } = uq.fromGregorian(date);
+
+    //     // Test
+    //     const dateString = toLocalDateOnlyISOString(date);
+    //     if (year > 1500) {
+    //       console.error(dateString, { year, month, day });
+    //     }
+
+    //     const dateBack = uq.toGregorian(new NgbDate(year, month, day));
+    //     const dateBackString = toLocalDateOnlyISOString(dateBack);
+    //     if (dateString !== dateBackString && errors < 100) {
+    //       console.error(dateString, { year, month, day }, dateBackString);
+    //       errors++;
+    //     }
+
+    //     data.push([dateString, year + '', month + '', day + '']);
+    //     date.setDate(date.getDate() + 1);
+    //   }
+
+    //   const blob = csvPackage(data);
+    //   downloadBlob(blob, 'UmAlQura.csv');
+    // }
   }
 
   public onMenuItemClick(item: MenuItemInfo) {

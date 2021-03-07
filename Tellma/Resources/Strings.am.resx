@@ -412,11 +412,20 @@
   <data name="DatePart_day" xml:space="preserve">
     <value>የወር ቀን</value>
   </data>
+  <data name="DatePart_hour" xml:space="preserve">
+    <value>ሰአት</value>
+  </data>
+  <data name="DatePart_minute" xml:space="preserve">
+    <value>ደቂቃ</value>
+  </data>
   <data name="DatePart_month" xml:space="preserve">
     <value>ወር</value>
   </data>
   <data name="DatePart_quarter" xml:space="preserve">
     <value>ሩብ</value>
+  </data>
+  <data name="DatePart_second" xml:space="preserve">
+    <value>ሁለተኛ</value>
   </data>
   <data name="DatePart_weekday" xml:space="preserve">
     <value>በሳምንት ቀን</value>

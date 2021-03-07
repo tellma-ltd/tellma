@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { NgbCalendar, NgbPeriod, NgbDate, NgbCalendarGregorian, NgbCalendarIslamicUmalqura } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCalendar, NgbPeriod, NgbDate, NgbCalendarGregorian } from '@ng-bootstrap/ng-bootstrap';
 import { NgbCalendarEthiopian } from './ngb-calendar-ethiopian';
+import { NgbCalendarUmAlQura } from './ngb-calendar-umalqura';
 import { WorkspaceService } from './workspace.service';
 
 /**
@@ -16,7 +17,7 @@ export class NgbCalendarDynamic extends NgbCalendar {
 
     private _gregorian = new NgbCalendarGregorian();
     private _ethiopian = new NgbCalendarEthiopian();
-    private _umalqura = new NgbCalendarIslamicUmalqura();
+    private _umalqura = new NgbCalendarUmAlQura();
 
     private get calendar(): NgbCalendar {
         switch (this.workspace.calendarForPicker) {

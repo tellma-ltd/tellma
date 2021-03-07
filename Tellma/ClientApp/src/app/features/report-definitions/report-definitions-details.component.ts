@@ -497,7 +497,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return [
       {
         path: `Year(${parent.path})`,
-        desc: QueryexUtil.yearOrDayDesc(() => this.translate.instant('DatePart_year'), this.translate),
+        desc: QueryexUtil.datePartDesc(() => this.translate.instant('DatePart_year'), this.translate),
         level, parent
       },
       {
@@ -512,7 +512,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       },
       {
         path: `Day(${parent.path})`,
-        desc: QueryexUtil.yearOrDayDesc(() => this.translate.instant('DatePart_day'), this.translate),
+        desc: QueryexUtil.datePartDesc(() => this.translate.instant('DatePart_day'), this.translate),
         level, parent
       },
       {

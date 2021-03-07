@@ -46,7 +46,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.UserSettingsForClient(cancellation);
+                var result = await GetService().UserSettingsForClient(cancellation);
                 return Ok(result);
             },
             _logger);
@@ -57,7 +57,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.SaveUserSetting(args);
+                var result = await GetService().SaveUserSetting(args);
                 return Ok(result);
             },
             _logger);
@@ -68,7 +68,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.SaveUserPreferredLanguage(preferredLanguage, cancellation);
+                var result = await GetService().SaveUserPreferredLanguage(preferredLanguage, cancellation);
                 return Ok(result);
             },
             _logger);
@@ -80,7 +80,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.SaveUserPreferredCalendar(preferredCalendar, cancellation);
+                var result = await GetService().SaveUserPreferredCalendar(preferredCalendar, cancellation);
                 return Ok(result);
             },
             _logger);
@@ -91,7 +91,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                await _service.ResendInvitationEmail(id);
+                await GetService().ResendInvitationEmail(id);
                 return Ok();
             },
             _logger);
@@ -102,7 +102,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
+                var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
                 Response.Headers.Add("x-image-id", imageId);
                 return File(imageBytes, "image/jpeg");
             },
@@ -114,7 +114,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                User user = await _service.GetMyUser(cancellation);
+                User user = await GetService().GetMyUser(cancellation);
                 GetByIdResponse<User> response = TransformToResponse(user, cancellation);
                 return Ok(response);
             },
@@ -126,7 +126,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                User user = await _service.SaveMyUser(me);
+                User user = await GetService().SaveMyUser(me);
                 GetByIdResponse<User> result = TransformToResponse(user, cancellation: default);
                 Response.Headers.Set("x-user-settings-version", Constants.Stale);
                 return Ok(result);
@@ -140,7 +140,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
+                var (data, extras) = await GetService().Activate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             },
@@ -153,7 +153,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var (data, extras) = await GetService().Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             },
@@ -166,7 +166,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                string result = await _service.TestEmail(email);
+                string result = await GetService().TestEmail(email);
                 return Ok(new
                 {
                     Message = result
@@ -180,7 +180,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                string result = await _service.TestPhone(phone);
+                string result = await GetService().TestPhone(phone);
                 return Ok(new
                 {
                     Message = result
@@ -204,6 +204,11 @@ namespace Tellma.Controllers
         }
 
         protected override CrudServiceBase<UserForSave, User, int> GetCrudService()
+        {
+            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
+        }
+
+        private UsersService GetService()
         {
             return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
         }
