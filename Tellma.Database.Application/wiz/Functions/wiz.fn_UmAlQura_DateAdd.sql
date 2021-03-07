@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_UmmAlQura_DateAdd]
+﻿CREATE FUNCTION [wiz].[fn_UmAlQura_DateAdd]
 (
 	@DatePart CHAR (1), -- 'y' or 'm'
 	@Number INT,

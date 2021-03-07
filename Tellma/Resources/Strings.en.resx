@@ -460,11 +460,20 @@
   <data name="DatePart_day" xml:space="preserve">
     <value>Day</value>
   </data>
+  <data name="DatePart_hour" xml:space="preserve">
+    <value>Hour</value>
+  </data>
+  <data name="DatePart_minute" xml:space="preserve">
+    <value>Minute</value>
+  </data>
   <data name="DatePart_month" xml:space="preserve">
     <value>Month</value>
   </data>
   <data name="DatePart_quarter" xml:space="preserve">
     <value>Quarter</value>
+  </data>
+  <data name="DatePart_second" xml:space="preserve">
+    <value>Second</value>
   </data>
   <data name="DatePart_weekday" xml:space="preserve">
     <value>Week Day</value>

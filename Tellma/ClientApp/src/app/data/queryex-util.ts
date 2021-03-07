@@ -21,6 +21,7 @@ import {
 import { descFromControlOptions, isSpecified } from './util';
 import { nowISOString, todayISOString, toLocalDateOnlyISOString, toLocalDateTimeISOString } from './date-util';
 import { WorkspaceService } from './workspace.service';
+import { dateFromNgbDate, ngbDateFromDate } from './date-time-formats';
 
 const noLabel = (trx: TranslateService) => () => trx.instant('Expression');
 
@@ -520,6 +521,25 @@ function implicitCast(nativeDesc: PropDescriptor, targetType: DataType, hintDesc
     }
 }
 
+function getCalendarParam(ex: QueryexFunction, argIndex: 1 | 2): Calendar {
+    let calendar: Calendar; // Gregorian
+    if (argIndex < ex.arguments.length) {
+        const arg = ex.arguments[argIndex];
+        if (arg instanceof QueryexQuote) {
+            calendar = arg.value.toUpperCase() as Calendar;
+            if (calendarsArray.indexOf(calendar) < 0) {
+                const order = argIndex === 1 ? 'second ' : argIndex === 2 ? 'third ' : '';
+                throw new Error(`Function '${ex.name}': The ${order}argument ${arg} must be one of the supported calendars: '${calendarsArray.join(`', '`)}'.`);
+            }
+        } else {
+            const order = argIndex === 1 ? 'second ' : argIndex === 2 ? 'third ' : '';
+            throw new Error(`Function '${ex.name}': The ${order}argument must be a simple quote like this: 'UQ'.`);
+        }
+    }
+
+    return calendar;
+}
+
 export interface ParameterInfo {
     key: string;
     keyLower: string;
@@ -599,7 +619,7 @@ export interface ReportInfos {
 
 export class QueryexUtil {
 
-    public static yearOrDayDesc(label: () => string, _: TranslateService, labelForParameter?: () => string): PropDescriptor {
+    public static datePartDesc(label: () => string, _: TranslateService, labelForParameter?: () => string): PropDescriptor {
         return {
             datatype: 'numeric',
             control: 'number',
@@ -1716,8 +1736,7 @@ export class QueryexUtil {
                     case 'year':
                     case 'quarter':
                     case 'month':
-                    case 'day':
-                    case 'weekday': {
+                    case 'day': {
                         if (ex.arguments.length < 1 || ex.arguments.length > 2) {
                             throw new Error(`No overload for function '${ex.name}' accepts ${ex.arguments.length} arguments.`);
                         }
@@ -1726,25 +1745,13 @@ export class QueryexUtil {
                         const arg1 = ex.arguments[0];
                         const arg1Desc = tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset');
                         if (!!arg1Desc) {
-                            let calendar: Calendar = 'GC'; // Gregorian
-                            if (ex.arguments.length >= 2) {
-                                const arg2 = ex.arguments[1];
-                                if (arg2 instanceof QueryexQuote) {
-                                    calendar = arg2.value.toUpperCase() as Calendar;
-                                    if (calendarsArray.indexOf(calendar) < 0) {
-                                        throw new Error(`Function '${ex.name}': The second argument ${arg2} must be one of the supported calendars: '${calendarsArray.join(`', '`)}'.`);
-                                    }
-                                } else {
-                                    throw new Error(`Function '${ex.name}': The second argument must be a simple quote like this: 'UQ'.`);
-                                }
-                            }
-
+                            const calendar = getCalendarParam(ex, 1) || 'GC';
                             const label = () => `${arg1Desc.label()} (${trx.instant('DatePart_' + datePart)})`;
                             const labelForParameter = arg1Desc.labelForParameter ? () => `${arg1Desc.labelForParameter()} (${trx.instant('DatePart_' + datePart)})` : undefined;
                             switch (datePart) {
-                                case 'day':
                                 case 'year':
-                                    return QueryexUtil.yearOrDayDesc(label, trx, labelForParameter);
+                                case 'day':
+                                    return QueryexUtil.datePartDesc(label, trx, labelForParameter);
                                 case 'quarter':
                                     return QueryexUtil.quarterDesc(label, trx, labelForParameter);
                                 case 'month':
@@ -1756,7 +1763,7 @@ export class QueryexUtil {
                                             control: 'choice',
                                             label,
                                             choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                            format: (c: number | string) => !c ? '' : trx.instant(`ShortMonthUq${c}`),
+                                            format: (c: number | string) => !c ? '' : trx.instant(`FullMonthUq${c}`),
                                             labelForParameter
                                         };
                                     } else if (calendar === 'ET') {
@@ -1765,7 +1772,7 @@ export class QueryexUtil {
                                             control: 'choice',
                                             label,
                                             choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-                                            format: (c: number | string) => !c ? '' : trx.instant(`ShortMonthEt${c}`),
+                                            format: (c: number | string) => !c ? '' : trx.instant(`FullMonthEt${c}`),
                                             labelForParameter
                                         };
                                     } else {
@@ -1774,8 +1781,6 @@ export class QueryexUtil {
                                         console.error(msg);
                                         throw new Error(msg);
                                     }
-                                case 'weekday':
-                                    return QueryexUtil.weekdayDesc(label, trx, labelForParameter);
                                 default:
                                     throw new Error('Never'); // To keep compiler happy
                             }
@@ -1785,9 +1790,43 @@ export class QueryexUtil {
                         }
                     }
 
-                    case 'adddays':
+                    case 'weekday':
+                    case 'hour':
+                    case 'minute':
+                    case 'second': {
+                        const expectedArgCount = 1;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const datePart = nameLower;
+                        const supportsDate = datePart === 'weekday';
+                        const arg1 = ex.arguments[0];
+                        const arg1Desc = (supportsDate ? tryDescImpl(arg1, 'date') : null) ||
+                            tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset');
+
+                        if (!!arg1Desc) {
+                            const label = () => `${arg1Desc.label()} (${trx.instant('DatePart_' + datePart)})`;
+                            const labelForParameter = arg1Desc.labelForParameter ? () => `${arg1Desc.labelForParameter()} (${trx.instant('DatePart_' + datePart)})` : undefined;
+                            switch (datePart) {
+                                case 'weekday':
+                                    return QueryexUtil.weekdayDesc(label, trx, labelForParameter);
+                                case 'hour':
+                                case 'minute':
+                                case 'second':
+                                    return QueryexUtil.datePartDesc(label, trx, labelForParameter);
+                                default:
+                                    throw new Error('Never'); // To keep compiler happy
+                            }
+
+                        } else {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a ${supportsDate ? 'date, ' : ''}datetime or datetimeoffset.`);
+                        }
+                    }
+
+                    case 'addyears':
                     case 'addmonths':
-                    case 'addyears': {
+                    case 'adddays': {
                         // Arg #2 Date
                         const arg2 = addDatePartParameters(ex);
 
@@ -1814,21 +1853,25 @@ export class QueryexUtil {
                         return { ...arg2Desc, granularity, calendar, label: noLabel(trx) };
                     }
 
-                    case 'date':
+                    case 'startofyear':
                     case 'startofmonth':
-                    case 'startofyear': {
-                        const expectedArgCount = 1;
-                        if (ex.arguments.length !== expectedArgCount) {
-                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                    case 'date': {
+                        if (ex.arguments.length < 1 || ex.arguments.length > 2) {
+                            throw new Error(`No overload for function '${ex.name}' accepts ${ex.arguments.length} arguments.`);
                         }
 
                         const arg1 = ex.arguments[0];
                         const arg1Desc = (tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset')) as DatePropDescriptor | DateTimePropDescriptor;
                         if (!!arg1Desc) {
+
+                            // If the calendar parameter is not specified, the fallback depends on the function
+                            // date can assume the calendar of its input date (if any)
+                            // startofmonth and startofyear fallback to gregorian
+                            const calendar = getCalendarParam(ex, 1) || (nameLower === 'date' ? arg1Desc.calendar : 'GC');
+
+                            // The granularity depends on the function
                             const granularity = nameLower === 'startofyear' ? DateGranularity.years :
                                 nameLower === 'startofmonth' ? DateGranularity.months : DateGranularity.days;
-
-                            const calendar: Calendar = granularity === DateGranularity.days ? arg1Desc.calendar : 'GC'; // TODO support for other calendars
 
                             return {
                                 datatype: 'date',
@@ -1840,6 +1883,42 @@ export class QueryexUtil {
                         } else {
                             throw new Error(`Function '${ex.name}': The argument ${arg1} could not be interpreted as a date, datetime or datetimeoffset.`);
                         }
+                    }
+
+                    // case 'diffyears':
+                    // case 'diffmonths':
+                    case 'diffdays':
+                    case 'diffhours':
+                    case 'diffminutes':
+                    case 'diffseconds': {
+                        const expectedArgCount = 2;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        const arg1Desc = tryDescImpl(arg1, 'date') || tryDescImpl(arg1, 'datetime') || tryDescImpl(arg1, 'datetimeoffset');
+                        if (!arg1Desc) {
+                            throw new Error(`Function '${ex.name}': The argument ${arg1} could not be interpreted as a date, datetime or datetimeoffset.`);
+                        }
+
+                        const arg2 = ex.arguments[1];
+                        const arg2Desc = tryDescImpl(arg2, 'date') || tryDescImpl(arg2, 'datetime') || tryDescImpl(arg2, 'datetimeoffset');
+                        if (!arg2Desc) {
+                            throw new Error(`Function '${ex.name}': The argument ${arg2} could not be interpreted as a date, datetime or datetimeoffset.`);
+                        }
+
+                        const decimals = nameLower === 'diffseconds' ? 0 : 1;
+
+                        return {
+                            datatype: 'numeric',
+                            control: 'number',
+                            maxDecimalPlaces: decimals,
+                            minDecimalPlaces: decimals,
+                            noSeparator: false,
+                            isRightAligned: true,
+                            label: noLabel(trx)
+                        };
                     }
 
                     case 'not': {
@@ -2361,8 +2440,7 @@ export class QueryexUtil {
                     case 'year':
                     case 'quarter':
                     case 'month':
-                    case 'day':
-                    case 'weekday': {
+                    case 'day': {
                         const inputDateString = evaluate(ex.arguments[0]);
                         if (inputDateString === null) {
                             return null;
@@ -2373,31 +2451,50 @@ export class QueryexUtil {
                             calendar = (evaluate(ex.arguments[1]) as Calendar) || 'GC';
                         }
 
-                        if (calendar === 'GC') {
-                            const date = new Date(inputDateString) as Date;
-                            switch (nameLower) {
-                                case 'year':
-                                    return date.getFullYear();
-                                case 'quarter':
-                                    return Math.floor(date.getMonth() / 3) + 1;
-                                case 'month':
-                                    return date.getMonth() + 1; // Javascript months are 0-based
-                                case 'day':
-                                    return date.getDate();
-                                case 'weekday':
-                                    return date.getDay() + 1; // SQL's weekdays are 1-7, javascript's are 0-6 (Sun-Mon)
-                                default:
-                                    return; // To keep the TS compiler happy
-                            }
-
-                        } else {
-                            throw new Error(`Calendars other than Gregorian are not yet implemented on the client side.`);
+                        const date = new Date(inputDateString) as Date;
+                        const ngbDate = ngbDateFromDate(date, calendar);
+                        switch (nameLower) {
+                            // All these are calendar independent
+                            case 'year':
+                                return ngbDate.year;
+                            case 'quarter':
+                                return Math.min(Math.floor((ngbDate.month - 1) / 3) + 1, 4);
+                            case 'month':
+                                return ngbDate.month;
+                            case 'day':
+                                return ngbDate.day;
+                            default:
+                                return; // To keep the TS compiler happy
                         }
                     }
 
-                    case 'adddays':
+                    case 'weekday':
+                    case 'hour':
+                    case 'minute':
+                    case 'second': {
+                        const inputDateString = evaluate(ex.arguments[0]);
+                        if (inputDateString === null) {
+                            return null;
+                        }
+
+                        const date = new Date(inputDateString) as Date;
+                        switch (nameLower) {
+                            case 'weekday':
+                                return date.getDay() + 1; // SQL's weekdays are 1-7, javascript's are 0-6 (Sun-Mon)
+                            case 'hour':
+                                return date.getHours();
+                            case 'minute':
+                                return date.getMinutes();
+                            case 'second':
+                                return date.getSeconds();
+                            default:
+                                return; // To keep the TS compiler happy
+                        }
+                    }
+
+                    case 'addyears':
                     case 'addmonths':
-                    case 'addyears': {
+                    case 'adddays': {
                         const n = evaluate(ex.arguments[0]);
                         if (n === null) {
                             return null;
@@ -2433,26 +2530,75 @@ export class QueryexUtil {
                         }
                     }
 
-                    case 'date':
+                    case 'startofyear':
                     case 'startofmonth':
-                    case 'startofyear': {
+                    case 'date': {
                         const inputDateString = evaluate(ex.arguments[0]);
                         if (inputDateString === null) {
                             return null;
                         }
 
-                        const date = new Date(inputDateString) as Date;
+                        let calendar: Calendar = 'GC';
+                        if (ex.arguments.length > 1) {
+                            calendar = (evaluate(ex.arguments[1]) as Calendar) || 'GC';
+                        }
+
+                        let date = new Date(inputDateString) as Date;
+                        const ngbDate = ngbDateFromDate(date, calendar);
+
                         switch (nameLower) {
                             case 'startofmonth':
-                                date.setDate(1);
+                                ngbDate.day = 1;
                                 break;
                             case 'startofyear':
-                                date.setDate(1);
-                                date.setMonth(0);
+                                ngbDate.day = 1;
+                                ngbDate.month = 1;
                                 break;
                         }
 
+                        date = dateFromNgbDate(ngbDate, calendar);
                         return `${toLocalDateOnlyISOString(date)}T00:00:00.000`;
+                    }
+
+                    // case 'diffyears':
+                    // case 'diffmonths':
+                    case 'diffdays':
+                    case 'diffhours':
+                    case 'diffminutes':
+                    case 'diffseconds': {
+                        const inputDate1String = evaluate(ex.arguments[0]);
+                        if (inputDate1String === null) {
+                            return null;
+                        }
+                        const inputDate2String = evaluate(ex.arguments[1]);
+                        if (inputDate2String === null) {
+                            return null;
+                        }
+
+                        let secondsPerUnit: number;
+                        switch (nameLower) {
+                            // case 'diffyears':
+                            // case 'diffmonths':
+                            case 'diffdays':
+                                secondsPerUnit = 60 * 60 * 24;
+                                break;
+                            case 'diffhours':
+                                secondsPerUnit = 60 * 60;
+                                break;
+                            case 'diffminutes':
+                                secondsPerUnit = 60;
+                                break;
+                            case 'diffseconds':
+                                secondsPerUnit = 1;
+                                break;
+                            default:
+                                return; // TODO
+                        }
+
+                        const date1 = new Date(inputDate1String) as Date;
+                        const date2 = new Date(inputDate2String) as Date;
+                        const seconds = Math.floor((date2.getTime() - date1.getTime()) / 1000);
+                        return seconds / secondsPerUnit;
                     }
 
                     case 'not': {

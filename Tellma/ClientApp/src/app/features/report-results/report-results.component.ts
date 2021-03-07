@@ -30,6 +30,7 @@ import { DynamicRow, GetAggregateResponse } from '~/app/data/dto/get-aggregate-r
 import { GetFactResponse } from '~/app/data/dto/get-fact-response';
 import { DateGranularity } from '~/app/data/entities/base/metadata-types';
 import { displayScalarValue } from '~/app/shared/auto-cell/auto-cell.component';
+import { dateFromNgbDate, monthsCount, ngbDateFromDate } from '~/app/data/date-time-formats';
 
 export enum ReportView {
   pivot = 'pivot',
@@ -2093,17 +2094,30 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // Increments the date and returns its ISO Date Time representation
     const desc = dimCell.info.keyDesc;
     if (desc.datatype === 'date') {
-      switch (desc.granularity) {
-        case DateGranularity.years:
-          d.setFullYear(d.getFullYear() + 1);
-          break;
-        case DateGranularity.months:
-          d.setMonth(d.getMonth() + 1);
-          break;
-        case DateGranularity.days:
-          d.setDate(d.getDate() + 1);
-          break;
+      if (desc.granularity === DateGranularity.days) {
+        // Calendar independent
+        d.setDate(d.getDate() + 1);
+      } else {
+        const calendar = desc.calendar || 'GC';
+        const ngbDate = ngbDateFromDate(d, calendar);
+        if (ngbDate.day !== 1) {
+          console.error(`Bug: incrementDate called on`, ngbDate);
+        }
+        switch (desc.granularity) {
+          case DateGranularity.years:
+            ngbDate.year++;
+            break;
+          case DateGranularity.months:
+            ngbDate.month++;
+            if (ngbDate.month > monthsCount(calendar)) {
+              ngbDate.month = 1;
+              ngbDate.year++;
+            }
+            break;
+        }
+        d.setTime(dateFromNgbDate(ngbDate, calendar).getTime());
       }
+
       return toLocalDateTimeISOString(d);
     }
   }
@@ -2169,7 +2183,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             // If it's an ordered date dimension, fill the date gaps in order to keep the axis linear
-            while (!!current && dimCell.valueId > current) {
+            while (!!current && current < dimCell.valueId) {
               single.push({
                 name: this.chartDimensionCellFromDimensionCell(dimCell.info, current, current, undefined, index++),
                 value: 0
@@ -2187,7 +2201,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               value: measureValue
             });
 
-            if (!!current) {
+            if (!!current && !!dimCell.valueId) {
               current = this.incrementDate(currentDate, dimCell);
             }
           }

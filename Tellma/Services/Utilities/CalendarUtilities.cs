@@ -53,7 +53,7 @@ namespace Tellma.Services.Utilities
         /// Converts from Julian Day Number (JDN) to Gregorian Calendar.
         /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
         /// </summary>
-        public static DateTime JdnFromDateTime(int jdn, int hour, int minute, int second, int millisecond)
+        public static DateTime JdnToDateTime(int jdn, int hour, int minute, int second, int millisecond)
         {
             //decimal q = jdn;
             decimal z = jdn;

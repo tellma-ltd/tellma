@@ -1,4 +1,4 @@
-import { NgbCalendarIslamicUmalqura, NgbDate, NgbDateNativeAdapter, NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDate, NgbDateNativeAdapter, NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { afterNoonName, beforeNoonName, monthFullName, monthShortName } from './date-time-localizations';
 import { getEditDistance } from './edit-distance';
@@ -17,6 +17,7 @@ import {
     YmdFormat
 } from './entities/base/metadata-types';
 import { NgbCalendarEthiopian } from './ngb-calendar-ethiopian';
+import { NgbCalendarUmAlQura } from './ngb-calendar-umalqura';
 
 ///////////////////////////////
 //            Date
@@ -24,7 +25,7 @@ import { NgbCalendarEthiopian } from './ngb-calendar-ethiopian';
 
 const nativeAdapter: NgbDateNativeAdapter = new NgbDateNativeAdapter();
 const ethiopianCalendar: NgbCalendarEthiopian = new NgbCalendarEthiopian();
-const umalquraCalendar: NgbCalendarIslamicUmalqura = new NgbCalendarIslamicUmalqura();
+const umalquraCalendar: NgbCalendarUmAlQura = new NgbCalendarUmAlQura();
 
 export function ngbDateFromDate(date: Date, calendar: Calendar): NgbDateStruct {
 
@@ -66,6 +67,15 @@ export function dateFromNgbDate(ngbDate: NgbDateStruct, calendar: Calendar): Dat
     }
 
     return date;
+}
+
+export function monthsCount(calendar: Calendar) {
+    switch (calendar) {
+        case 'ET': return 13;
+        case 'GC':
+        case 'UQ':
+        default: return 12;
+    }
 }
 
 export function adjustDateFormatForGranularity(format: YmdFormat, granularity: DateTimeGranularity) {
@@ -295,7 +305,7 @@ export function parseDate(input: string, format: DateFormat, trx: TranslateServi
 
             // Compare with the short month name
             const shortName = shortNames[i];
-            const shortCap =  Math.floor(shortName.length / 2) + 1;
+            const shortCap = Math.floor(shortName.length / 2) + 1;
             dist = getEditDistance(shortName, monthPieceLower, shortCap);
             if (dist < shortCap && dist < minDistance) {
                 month = i + 1;

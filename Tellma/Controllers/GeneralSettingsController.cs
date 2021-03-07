@@ -172,11 +172,11 @@ namespace Tellma.Controllers
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(entity.SecondaryCalendar))
+            if (!string.IsNullOrWhiteSpace(entity.SecondaryCalendar))
             {
                 if (entity.PrimaryCalendar == entity.SecondaryCalendar)
                 {
-                    ModelState.AddModelError(nameof(entity.SecondaryLanguageId),
+                    ModelState.AddModelError(nameof(entity.SecondaryCalendar),
                         _localizer["Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar"]);
                 }
             }
