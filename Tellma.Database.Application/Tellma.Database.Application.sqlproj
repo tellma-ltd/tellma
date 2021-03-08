@@ -812,6 +812,8 @@
     <None Include="Provisioning\000\u_Lookups.sql" />
     <None Include="_Azure\Azure.200.BananET.publish.xml" />
     <None Include="_Azure\Azure.399.BananSADemos.publish.xml" />
+    <None Include="_Azure\Azure.202.Lifan.publish.xml" />
+    <None Include="202.Lifan.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

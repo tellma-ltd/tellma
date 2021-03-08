@@ -5,5 +5,9 @@
 	@PrimaryLanguageId = @PrimaryLanguageId,
 	@SecondaryLanguageId = @SecondaryLanguageId,
 	@TernaryLanguageId = @TernaryLanguageId,
+	@PrimaryCalendar = N'GC',
+	@SecondaryCalendar = N'ET',
+	@DateFormat =NULL,
+	@TimeFormat =NULL,
 	@BrandColor	= @BrandColor,
 	@ValidationErrorsJson = @ValidationErrorsJson;

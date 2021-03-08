@@ -23,6 +23,9 @@ SET NOCOUNT ON;
 	SET @PrimaryLanguageSymbol = ISNULL(@PrimaryLanguageSymbol, dbo.fn_LanguageId__Symbol(@PrimaryLanguageId));
 	SET @SecondaryLanguageSymbol = ISNULL(@SecondaryLanguageSymbol, dbo.fn_LanguageId__Symbol(@SecondaryLanguageId));
 	SET @TernaryLanguageSymbol = ISNULL(@TernaryLanguageSymbol, dbo.fn_LanguageId__Symbol(@TernaryLanguageId));
+	SET @PrimaryCalendar = ISNULL(@PrimaryCalendar, N'GC');
+	SET @DateFormat = ISNULL(@DateFormat, N'yyyy-MM-dd');
+	SET @TimeFormat = ISNULL(@TimeFormat, N'HH:mm:ss');
 
 IF Exists(SELECT * FROM dbo.Settings)
 	UPDATE dbo.[Settings]

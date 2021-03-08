@@ -27,7 +27,7 @@ BEGIN
 	DECLARE @D [dbo].[DocumentList], @DLDE dbo.[DocumentLineDefinitionEntryList],
 			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
-	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine'),0);
 	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
 	DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = 
 		(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
