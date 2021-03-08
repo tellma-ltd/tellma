@@ -1867,7 +1867,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       if (!isSpecified(valueId)) {
         valueString = 'null';
       } else if (QueryexUtil.needsQuotes(datatype)) {
-        valueString = `'${valueId.replace('\'', '\'\'')}'`;
+        valueString = `'${valueId.replace(/\'/g, '\'\'')}'`;
       } else {
         valueString = valueId + '';
       }
@@ -2438,7 +2438,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   public formatStringChartMeasureValue = (value: string) => {
     // For some reason, some chart types pass a formatted string 3,241.2 instead of a number
-    value = value.replace(',', '');
+    value = value.replace(/,/g, '');
     return this.formatChartMeasureValue(+value);
   }
 

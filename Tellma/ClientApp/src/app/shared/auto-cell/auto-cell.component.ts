@@ -258,7 +258,7 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, ws: W
       let result = accountingFormat(value, digitsInfo);
 
       if (prop.noSeparator) {
-        result = result.replace(',', '');
+        result = result.replace(/,/g, '');
       }
 
       return result;
@@ -271,7 +271,7 @@ export function displayScalarValue(value: any, prop: PropVisualDescriptor, ws: W
       let result = isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
 
       if (prop.noSeparator) {
-        result = result.replace(',', '');
+        result = result.replace(/,/g, '');
       }
 
       return result;

@@ -495,7 +495,7 @@ function processFieldForCsv(field: string) {
   }
 
   // Escape every double quote with another double quote
-  field = field.replace('"', '""');
+  field = field.replace(/"/g, '""');
 
   // Surround any field that contains double quotes, new lines, or commas with double quotes
   if (field.indexOf('"') > -1 || field.indexOf(',') > -1 || field.indexOf('\n') > -1 || field.indexOf('\r') > -1) {
@@ -722,7 +722,7 @@ export function descFromControlOptions(
         granularity = desc.granularity;
       }
 
-      let calendar: Calendar = ws.calendar;
+      let calendar: Calendar;
       if (isSpecified(options.calendar)) {
         calendar = options.calendar;
       } else if (desc.control === 'date') {
@@ -739,7 +739,7 @@ export function descFromControlOptions(
         granularity = desc.granularity;
       }
 
-      let calendar: Calendar = ws.calendar;
+      let calendar: Calendar;
       if (isSpecified(options.calendar)) {
         calendar = options.calendar;
       } else if (desc.control === 'datetime') {

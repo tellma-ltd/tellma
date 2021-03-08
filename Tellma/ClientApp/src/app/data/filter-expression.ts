@@ -199,7 +199,7 @@ export class FilterTools {
         oldFilter = null;
         while (oldFilter !== filter) {
             oldFilter = filter;
-            filter = filter.replace('  ', ' ');
+            filter = filter.replace(/\s\s/g, ' ');
         }
 
         filter = filter.trim();
