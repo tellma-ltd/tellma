@@ -53,27 +53,28 @@
         #dashboard>
         <ng-container *ngIf="rendered; else spinner">
 
-            <div class="{{ isVerticalMode ? 't-vertical-dashboard' : 't-dashboard' }}" style="position: relative; max-height: 0;" id="dashboard">
+            <div class="{{ isVerticalMode ? 't-vertical-dashboard' : 't-dashboard' }}"
+                style="position: relative; max-height: 0;" id="dashboard">
 
                 <!-- Big Screen -->
                 <ng-container *ngIf="!isVerticalMode; else phoneView">
-                    <ng-container *ngFor="let widget of definition.Widgets; let i = index; trackBy: trackByReportId">
-                        <!-- Placeholder -->
-                        <div class="t-dashboard-widget" style="position: absolute;" [style.left.px]="placeholderLeft"
-                            [style.right.px]="placeholderRight" [style.top.px]="placeholderTop"
-                            [style.width.px]="placeholderWidth" [style.height.px]="placeholderHeight"
-                            *ngIf="showPlaceholder">
-                            <div class="w-100 h-100" style="background-color: lightgrey;">
-                            </div>
+                    <!-- Placeholder -->
+                    <div class="t-dashboard-widget" style="position: absolute; z-index: 0"
+                        [style.left.px]="placeholderLeft" [style.right.px]="placeholderRight"
+                        [style.top.px]="placeholderTop" [style.width.px]="placeholderWidth"
+                        [style.height.px]="placeholderHeight" *ngIf="showPlaceholder">
+                        <div class="w-100 h-100" style="background-color: lightgrey;">
                         </div>
+                    </div>
+
+                    <ng-container *ngFor="let widget of definition.Widgets; let i = index; trackBy: trackByReportId">
 
                         <!-- Widget itself (non Vertical) -->
-                        <div class="t-dashboard-widget" style="position: absolute"
-                            *ngIf="renderWidget(widget)" (dblclick)="onDoubleClickWidget($event, i)"
-                            [style.left.px]="left(widget)" [style.right.px]="right(widget)" [style.top.px]="top(widget)"
+                        <div class="t-dashboard-widget" style="position: absolute" *ngIf="renderWidget(widget)"
+                            (dblclick)="onDoubleClickWidget($event, i)" [style.left.px]="left(widget)"
+                            [style.right.px]="right(widget)" [style.top.px]="top(widget)"
                             [style.width.px]="width(widget)" [style.height.px]="height(widget)" cdkDrag
-                            [cdkDragDisabled]="!isEdit"
-                            (cdkDragStarted)="onDragStarted($event, widget)"
+                            [cdkDragDisabled]="!isEdit" (cdkDragStarted)="onDragStarted($event, widget)"
                             (cdkDragMoved)="onDragMoved($event, widget)" (cdkDragEnded)="onDragEnded($event, i)">
                             <div class="w-100 h-100 border bg-white shadow-sm d-flex flex-column p-2">
                                 <!-- Widget Header -->
