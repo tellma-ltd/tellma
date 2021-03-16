@@ -253,73 +253,76 @@ namespace Tellma.Data
         {
             var result = t.Name switch
             {
-                nameof(Entities.Account) => "[map].[Accounts]()",
-                nameof(Entities.AccountClassification) => "[map].[AccountClassifications]()",
-                nameof(Entities.AccountType) => "[map].[AccountTypes]()",
-                nameof(Entities.AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
-                nameof(Entities.AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
-                nameof(Entities.Agent) => "[map].[Agents]()",
-                nameof(Entities.Attachment) => "[map].[Attachments]()",
-                nameof(Entities.Center) => "[map].[Centers]()",
-                nameof(Entities.Currency) => "[map].[Currencies]()",
-                nameof(Entities.Custody) => "[map].[Custodies]()",
-                nameof(Entities.CustodyDefinition) => "[map].[CustodyDefinitions]()",
-                nameof(Entities.CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
-                nameof(Entities.DetailsEntry) => "[map].[DetailsEntries]()",
-                nameof(Entities.Document) => "[map].[Documents]()",
-                nameof(Entities.DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
-                nameof(Entities.DocumentDefinition) => "[map].[DocumentDefinitions]()",
-                nameof(Entities.DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
-                nameof(Entities.DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
-                nameof(Entities.DocumentStateChange) => "[map].[DocumentStatesHistory]()",
-                nameof(Entities.EmailForQuery) => "[map].[Emails]()",
-                nameof(Entities.Entry) => "[map].[Entries]()",
-                nameof(Entities.EntryType) => "[map].[EntryTypes]()",
-                nameof(Entities.ExchangeRate) => "[map].[ExchangeRates]()",
+                nameof(Account) => "[map].[Accounts]()",
+                nameof(AccountClassification) => "[map].[AccountClassifications]()",
+                nameof(AccountType) => "[map].[AccountTypes]()",
+                nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
+                nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
+                nameof(Agent) => "[map].[Agents]()",
+                nameof(Attachment) => "[map].[Attachments]()",
+                nameof(Center) => "[map].[Centers]()",
+                nameof(Currency) => "[map].[Currencies]()",
+                nameof(Custody) => "[map].[Custodies]()",
+                nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
+                nameof(CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
+                nameof(DetailsEntry) => "[map].[DetailsEntries]()",
+                nameof(Document) => "[map].[Documents]()",
+                nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
+                nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
+                nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
+                nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
+                nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
+                nameof(EmailForQuery) => "[map].[Emails]()",
+                nameof(Entry) => "[map].[Entries]()",
+                nameof(EntryType) => "[map].[EntryTypes]()",
+                nameof(ExchangeRate) => "[map].[ExchangeRates]()",
                 nameof(Entities.GeneralSettings) => "[map].[GeneralSettings]()",
                 nameof(Entities.FinancialSettings) => "[map].[FinancialSettings]()",
-                nameof(Entities.IfrsConcept) => "[map].[IfrsConcepts]()",
-                nameof(Entities.InboxRecord) => "[map].[Inbox]()",
-                nameof(Entities.Line) => "[map].[Lines]()",
-                nameof(Entities.LineDefinition) => "[map].[LineDefinitions]()",
-                nameof(Entities.LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
-                nameof(Entities.LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
-                nameof(Entities.LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
-                nameof(Entities.LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
-                nameof(Entities.LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
-                nameof(Entities.LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
-                nameof(Entities.LineForQuery) => "[map].[Lines]()",
-                nameof(Entities.Lookup) => "[map].[Lookups]()",
-                nameof(Entities.LookupDefinition) => "[map].[LookupDefinitions]()",
-                nameof(Entities.LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
-                nameof(Entities.MarkupTemplate) => "[map].[MarkupTemplates]()",
-                nameof(Entities.OutboxRecord) => "[map].[Outbox]()",
-                nameof(Entities.Permission) => "[dbo].[Permissions]",
-                nameof(Entities.Relation) => "[map].[Relations]()",
-                nameof(Entities.RelationDefinition) => "[map].[RelationDefinitions]()",
-                nameof(Entities.RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
-                nameof(Entities.RelationUser) => "[map].[RelationUsers]()",
-                nameof(Entities.RelationAttachment) => "[map].[RelationAttachments]()",
-                nameof(Entities.ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
-                nameof(Entities.ReportDefinition) => "[map].[ReportDefinitions]()",
-                nameof(Entities.ReportDefinitionMeasure) => "[map].[ReportDefinitionMeasures]()",
-                nameof(Entities.ReportDefinitionParameter) => "[map].[ReportDefinitionParameters]()",
-                nameof(Entities.ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
-                nameof(Entities.ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
-                nameof(Entities.ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
-                nameof(Entities.RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
-                nameof(Entities.Resource) => "[map].[Resources]()",
-                nameof(Entities.ResourceDefinition) => "[map].[ResourceDefinitions]()",
-                nameof(Entities.ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
-                nameof(Entities.ResourceUnit) => "[map].[ResourceUnits]()",
-                nameof(Entities.Role) => "[dbo].[Roles]",
-                nameof(Entities.RoleMembership) => "[dbo].[RoleMemberships]",
-                nameof(Entities.SmsMessageForQuery) => "[map].[SmsMessages]()",
-                nameof(Entities.Unit) => "[map].[Units]()",
-                nameof(Entities.User) => "[map].[Users]()",
-                nameof(Entities.VoucherBooklet) => "[dbo].[VoucherBooklets]",
-                nameof(Entities.Workflow) => "[map].[Workflows]()",
-                nameof(Entities.WorkflowSignature) => "[map].[WorkflowSignatures]()",
+                nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
+                nameof(InboxRecord) => "[map].[Inbox]()",
+                nameof(Line) => "[map].[Lines]()",
+                nameof(LineDefinition) => "[map].[LineDefinitions]()",
+                nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
+                nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
+                nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
+                nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
+                nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
+                nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
+                nameof(LineForQuery) => "[map].[Lines]()",
+                nameof(Lookup) => "[map].[Lookups]()",
+                nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
+                nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+                nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+                nameof(OutboxRecord) => "[map].[Outbox]()",
+                nameof(Permission) => "[dbo].[Permissions]",
+                nameof(Relation) => "[map].[Relations]()",
+                nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
+                nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
+                nameof(RelationUser) => "[map].[RelationUsers]()",
+                nameof(RelationAttachment) => "[map].[RelationAttachments]()",
+                nameof(ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
+                nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
+                nameof(ReportDefinitionMeasure) => "[map].[ReportDefinitionMeasures]()",
+                nameof(ReportDefinitionParameter) => "[map].[ReportDefinitionParameters]()",
+                nameof(ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
+                nameof(ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
+                nameof(ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
+                nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+                nameof(Resource) => "[map].[Resources]()",
+                nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
+                nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
+                nameof(ResourceUnit) => "[map].[ResourceUnits]()",
+                nameof(Role) => "[dbo].[Roles]",
+                nameof(RoleMembership) => "[dbo].[RoleMemberships]",
+                nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
+                nameof(Unit) => "[map].[Units]()",
+                nameof(User) => "[map].[Users]()",
+                nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
+                nameof(Workflow) => "[map].[Workflows]()",
+                nameof(WorkflowSignature) => "[map].[WorkflowSignatures]()",
+                nameof(DashboardDefinition) => "[map].[DashboardDefinitions]()",
+                nameof(DashboardDefinitionWidget) => "[map].[DashboardDefinitionWidgets]()",
+                nameof(DashboardDefinitionRole) => "[map].[DashboardDefinitionRoles]()",
                 _ => throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries"),
             };
             return result;
@@ -582,12 +585,13 @@ namespace Tellma.Data
             return (singleBusinessUnitId, gSettings, fSettings);
         }
 
-        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
+        public async Task<(Guid, IEnumerable<AbstractPermission>, List<int> dashboardIds)> Permissions__Load(bool includeReportAndDashboardIds, CancellationToken cancellation)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Permissions__Load));
 
             Guid version;
             var permissions = new List<AbstractPermission>();
+            var dashboardIds = new List<int>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -595,6 +599,9 @@ namespace Tellma.Data
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@IncludeReportAndDashboardIds", includeReportAndDashboardIds);
 
                 // Execute
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
@@ -610,7 +617,6 @@ namespace Tellma.Data
 
                 // Load the permissions
                 await reader.NextResultAsync(cancellation);
-
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
@@ -622,9 +628,19 @@ namespace Tellma.Data
                         Mask = reader.String(i++)
                     });
                 }
+
+                if (includeReportAndDashboardIds)
+                {
+                    // Dashboard Ids
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        dashboardIds.Add(reader.GetInt32(0));
+                    }
+                }
             }
 
-            return (version, permissions);
+            return (version, permissions, dashboardIds);
         }
 
         public async Task<(Guid,
@@ -633,6 +649,7 @@ namespace Tellma.Data
             IEnumerable<CustodyDefinition>,
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
+            IEnumerable<DashboardDefinition>,
             IEnumerable<DocumentDefinition>,
             IEnumerable<LineDefinition>,
             IEnumerable<MarkupTemplate>,
@@ -650,6 +667,7 @@ namespace Tellma.Data
             var custodyDefinitions = new List<CustodyDefinition>();
             var resourceDefinitions = new List<ResourceDefinition>();
             var reportDefinitions = new List<ReportDefinition>();
+            var dashboardDefinitions = new List<DashboardDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
             var lineDefinitions = new List<LineDefinition>();
             var markupTemplates = new List<MarkupTemplate>();
@@ -952,7 +970,8 @@ namespace Tellma.Data
                 {
                     var entity = new ReportDefinitionDimensionAttribute();
                     foreach (var prop in reportDefinitionAttributeProps)
-                    {                        // get property value
+                    {
+                        // get property value
                         var propValue = reader[prop.Name];
                         propValue = propValue == DBNull.Value ? null : propValue;
 
@@ -984,6 +1003,48 @@ namespace Tellma.Data
                 }
 
                 reportDefinitions = reportDefinitionsDic.Values.ToList();
+
+                // Dashboard Definitions
+                await reader.NextResultAsync(cancellation);
+                var dashboardDefinitionsDic = new Dictionary<int, DashboardDefinition>();
+                var dashboardDefinitionProps = TypeDescriptor.Get<DashboardDefinition>().SimpleProperties;
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new DashboardDefinition();
+                    foreach (var prop in dashboardDefinitionProps)
+                    {
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    dashboardDefinitionsDic[entity.Id] = entity;
+                }
+
+                // Widgets
+
+                var dashboardDefinitionsWidgetProps = TypeDescriptor.Get<DashboardDefinitionWidget>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new DashboardDefinitionWidget();
+                    foreach (var prop in dashboardDefinitionsWidgetProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var dashboardDefinition = dashboardDefinitionsDic[entity.DashboardDefinitionId.Value];
+                    dashboardDefinition.Widgets ??= new List<DashboardDefinitionWidget>();
+                    dashboardDefinition.Widgets.Add(entity);
+                }
+
+
+                dashboardDefinitions = dashboardDefinitionsDic.Values.ToList();
 
                 // Next load document definitions
                 await reader.NextResultAsync(cancellation);
@@ -1243,7 +1304,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
+            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, dashboardDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
         }
 
         #endregion
@@ -7851,6 +7912,183 @@ namespace Tellma.Data
         }
 
         #endregion
+
+        #endregion
+
+        #region DashboardDefinitions
+
+        public async Task<IEnumerable<ValidationError>> DashboardDefinitions_Validate__Save(List<DashboardDefinitionForSave> entities, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable widgetsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Widgets);
+            var widgetsTvp = new SqlParameter("@Widgets", widgetsTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionWidget)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionRole)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(widgetsTvp);
+            cmd.Parameters.Add(rolesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DashboardDefinitions_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions__Save));
+
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable widgetsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Widgets);
+            var widgetsTvp = new SqlParameter("@Widgets", widgetsTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionWidget)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionRole)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(widgetsTvp);
+            cmd.Parameters.Add(rolesTvp);
+            cmd.Parameters.Add("@ReturnIds", returnIds);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DashboardDefinitions__Save)}]";
+
+            if (returnIds)
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new IndexedId
+                    {
+                        Index = reader.GetInt32(i++),
+                        Id = reader.GetInt32(i++)
+                    });
+                }
+            }
+            else
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Return ordered result
+            if (returnIds)
+            {
+                var sortedResult = new int[entities.Count];
+                result.ForEach(e =>
+                {
+                    sortedResult[e.Index] = e.Id;
+                });
+
+                return sortedResult.ToList();
+            }
+            else
+            {
+                return new List<int>();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> DashboardDefinitions_Validate__Delete(List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions_Validate__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DashboardDefinitions_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task DashboardDefinitions__Delete(IEnumerable<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DashboardDefinitions__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
 
         #endregion
     }

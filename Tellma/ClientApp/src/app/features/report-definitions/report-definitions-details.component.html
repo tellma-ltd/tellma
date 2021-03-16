@@ -13,7 +13,7 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
     <div class="h-100 d-flex flex-drop-row" *ngIf="watchIsEdit(isEdit)">
 
-        <!-- Collapsed Definition Editor -->
+        <!-- Collapsed Fields -->
         <div class="p-2 t-dark t-text-whitish t-collapsed-studio-pane t-pointer" *ngIf="isEdit && collapseFields"
             (click)="onToggleFields()">
             <div class="text-center mb-3">
@@ -255,7 +255,11 @@
 
                         <!-- Rows -->
                         <div class="form-group">
-                            <label class="small">{{ 'ReportDefinition_Rows' | translate }}</label>
+                            <label class="small">{{ 'ReportDefinition_Rows' | translate }}</label>&nbsp;
+                            <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                (click)="onCreateRow(model)" [title]="'Create' | translate">
+                                <fa-icon icon="plus"></fa-icon>
+                            </button>
                             <div class="t-studio-drop-area" cdkDropList #rows="cdkDropList"
                                 [cdkDropListConnectedTo]="[fields, columns, measures]"
                                 (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getRows(model)">
@@ -294,7 +298,11 @@
 
                         <!-- Columns -->
                         <div class="form-group">
-                            <label class="small">{{ 'ReportDefinition_Columns' | translate }}</label>
+                            <label class="small">{{ 'ReportDefinition_Columns' | translate }}</label>&nbsp;
+                            <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                (click)="onCreateColumn(model)" [title]="'Create' | translate">
+                                <fa-icon icon="plus"></fa-icon>
+                            </button>
                             <div class="t-studio-drop-area" cdkDropList #columns="cdkDropList"
                                 [cdkDropListConnectedTo]="[fields, rows, measures]"
                                 (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getColumns(model)">
@@ -332,7 +340,11 @@
 
                         <!-- Measures -->
                         <div class="form-group">
-                            <label class="small">{{ 'ReportDefinition_Measures' | translate }}</label>
+                            <label class="small">{{ 'ReportDefinition_Measures' | translate }}</label>&nbsp;
+                            <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                (click)="onCreateMeasure(model)" [title]="'Create' | translate">
+                                <fa-icon icon="plus"></fa-icon>
+                            </button>
                             <div class="t-studio-drop-area" cdkDropList #measures="cdkDropList"
                                 [cdkDropListConnectedTo]="[fields, rows, columns]"
                                 (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getMeasures(model)">
@@ -404,7 +416,11 @@
 
                         <!-- Select -->
                         <div class="form-group">
-                            <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>
+                            <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>&nbsp;
+                            <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                (click)="onCreateSelect(model)" [title]="'Create' | translate">
+                                <fa-icon icon="plus"></fa-icon>
+                            </button>
                             <div class="t-studio-drop-area" style="height: 10rem;" cdkDropList #select="cdkDropList"
                                 [cdkDropListConnectedTo]="[fields]" (cdkDropListDropped)="drop($event, model)"
                                 [cdkDropListData]="getSelect(model)">
@@ -558,7 +574,11 @@
 
                             <!-- Select -->
                             <div class="form-group">
-                                <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>
+                                <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>&nbsp;
+                                <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                    (click)="onCreateSelect(model)" [title]="'Create' | translate">
+                                    <fa-icon icon="plus"></fa-icon>
+                                </button>
                                 <div class="t-studio-drop-area" style="height: 10rem;" cdkDropList
                                     #drilldown_select="cdkDropList" [cdkDropListConnectedTo]="[fields]"
                                     (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getSelect(model)">
@@ -670,11 +690,11 @@
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('MainMenu')">
 
                     <!-- Show In Main Menu -->
-                    <div class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox form-group">
                         <input type="checkbox" class="custom-control-input" id="showInMainMenu"
                             [(ngModel)]="model.ShowInMainMenu"
                             (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
-                        <label class="custom-control-label" for="showInMainMenu">{{ 'ReportDefinition_ShowInMainMenu' |
+                        <label class="custom-control-label" for="showInMainMenu">{{ 'Definition_ShowInMainMenu' |
                             translate }}</label>
                     </div>
 

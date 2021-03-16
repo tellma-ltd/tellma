@@ -91,6 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<OutboxService>()
                 .AddScoped<PermissionsService>()
                 .AddScoped<ReportDefinitionsService>()
+                .AddScoped<DashboardDefinitionsService>()
                 .AddScoped<ResourcesService>()
                 .AddScoped<ResourcesGenericService>()
                 .AddScoped<RolesService>()

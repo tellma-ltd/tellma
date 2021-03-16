@@ -297,8 +297,8 @@
 
                 <!-- Card -->
                 <ng-container *ngSwitchCase="'Card'">
-                    <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
-                        <h1 class="display-3 t-report-measure mx-5 {{ pointClass }}" (click)="onPointSelect()"> {{ point
+                    <div class="h-100 d-flex justify-content-center align-items-center py-4" *ngIf="supportsPoint;else notsupported">
+                        <h1 class="display-4 t-report-measure mx-5 {{ pointClass }}" (click)="onPointSelect()"> {{ point
                             }} </h1>
                     </div>
                 </ng-container>

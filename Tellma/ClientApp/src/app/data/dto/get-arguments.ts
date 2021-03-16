@@ -7,5 +7,5 @@ export interface GetArguments extends SelectExpandArguments {
   search?: string;
   filter?: string;
   countEntities?: boolean;
-  unobtrusive?: boolean;
+  silent?: boolean;
 }

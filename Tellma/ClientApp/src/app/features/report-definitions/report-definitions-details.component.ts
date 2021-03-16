@@ -296,6 +296,32 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   ///////////////////// Fields, Drag n Drop v2.0
 
+  private createDimension(exp?: string): ReportDefinitionColumn | ReportDefinitionRow {
+    return {
+      Id: 0,
+      KeyExpression: exp,
+      Localize: true,
+      AutoExpandLevel: 1000,
+      ShowAsTree: true,
+      Attributes: [],
+    };
+  }
+
+  private createMeasure(exp?: string): ReportDefinitionMeasure {
+    return {
+      Id: 0,
+      Expression: exp,
+    };
+  }
+
+  private createSelect(exp?: string): ReportDefinitionSelect {
+    return {
+      Id: 0,
+      Expression: exp,
+      Localize: false
+    };
+  }
+
   public drop(event: CdkDragDrop<any[]>, model: ReportDefinition) {
 
     // The four collections
@@ -325,14 +351,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     } else if (source === allFields && (destination === rows || destination === columns)) {
       // Create a new measure
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const dimension: ReportDefinitionColumn | ReportDefinitionRow = {
-        Id: 0,
-        KeyExpression: fieldInfo.path,
-        Localize: true,
-        AutoExpandLevel: 1000,
-        ShowAsTree: true,
-        Attributes: [],
-      };
+      const dimension = this.createDimension(fieldInfo.path);
       destination.splice(destinationIndex, 0, dimension);
       modelHasChanged = true;
     } else if (source === allFields && destination === measures) {
@@ -343,20 +362,13 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
         path += '.Id'; // Measures do not accept nav properties
       }
       const aggregation = isNumeric(fieldInfo.desc) && path !== 'Id' ? 'Sum' : 'Count';
-      const measure: ReportDefinitionMeasure = {
-        Id: 0,
-        Expression: `${aggregation}(${path})`,
-      };
+      const measure = this.createMeasure(`${aggregation}(${path})`);
       destination.splice(destinationIndex, 0, measure);
       modelHasChanged = true;
     } else if (source === allFields && destination === selects) {
       // Create a new dimension
       const fieldInfo = source[sourceIndex] as FieldInfo;
-      const select: ReportDefinitionSelect = {
-        Id: 0,
-        Expression: fieldInfo.path,
-        Localize: false
-      };
+      const select = this.createSelect(fieldInfo.path);
       destination.splice(destinationIndex, 0, select);
       modelHasChanged = true;
     } else if (source !== allFields && destination === allFields) {
@@ -956,7 +968,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   private onConfigureDimension(index: number, coll: (ReportDefinitionRow | ReportDefinitionColumn)[], model: ReportDefinition) {
 
     this.dimToEditHasChanged = false;
-    const dimToEdit = JSON.parse(JSON.stringify(coll[index])) as ReportDefinitionRow | ReportDefinitionColumn;
+    const dim = coll[index] || this.createDimension();
+    const dimToEdit = JSON.parse(JSON.stringify(dim)) as ReportDefinitionRow | ReportDefinitionColumn;
     this.dimToEdit = dimToEdit;
     this.modelRef = model;
     this.dimToEditIsRow = coll === model.Rows;
@@ -993,6 +1006,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       (dimToEdit.Attributes && dimToEdit.Attributes.some(att => !!att.OrderDirection)));
   }
 
+  public onCreateRow(model: ReportDefinition) {
+    this.onConfigureDimension(model.Rows.length, model.Rows, model);
+  }
+
   public onConfigureRow(index: number, model: ReportDefinition) {
     this.onConfigureDimension(index, model.Rows, model);
   }
@@ -1000,6 +1017,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public onDeleteRow(index: number, model: ReportDefinition) {
     model.Rows.splice(index, 1);
     this.onDefinitionChange(model);
+  }
+
+  public onCreateColumn(model: ReportDefinition) {
+    this.onConfigureDimension(model.Columns.length, model.Columns, model);
   }
 
   public onConfigureColumn(index: number, model: ReportDefinition): void {
@@ -1041,9 +1062,13 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return model.Measures;
   }
 
+  public onCreateMeasure(model: ReportDefinition) {
+    this.onConfigureMeasure(model.Measures.length, model);
+  }
+
   public onConfigureMeasure(index: number, model: ReportDefinition) {
     this.measureToEditHasChanged = false;
-    const measureToEdit = { ...model.Measures[index] } as ReportDefinitionMeasure;
+    const measureToEdit = { ...model.Measures[index] || this.createMeasure() } as ReportDefinitionMeasure;
     this.measureToEdit = measureToEdit;
     this.modelRef = model;
 
@@ -1169,9 +1194,13 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.onDefinitionChange(model);
   }
 
+  public onCreateSelect(model: ReportDefinition) {
+    this.onConfigureSelect(model.Select.length, model);
+  }
+
   public onConfigureSelect(index: number, model: ReportDefinition) {
     this.selectToEditHasChanged = false;
-    const selectToEdit = { ...model.Select[index] } as ReportDefinitionSelect;
+    const selectToEdit = { ...model.Select[index] || this.createSelect() } as ReportDefinitionSelect;
     this.selectToEdit = selectToEdit;
     this.modelRef = model;
 

@@ -1,5 +1,11 @@
 export interface PermissionsForClient {
-    [view: string]: {
-      [action: string]: boolean;
-    };
-  }
+  Views: PermissionsForClientViews;
+  ReportIds: number[];
+  DashboardIds: number[];
+}
+
+export interface PermissionsForClientViews {
+  [view: string]: {
+    [action: string]: boolean;
+  };
+}

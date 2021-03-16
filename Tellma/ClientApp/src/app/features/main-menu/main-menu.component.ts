@@ -8,14 +8,11 @@ import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
+import { PermissionsForClient, PermissionsForClientViews } from '~/app/data/dto/permissions-for-client';
 import { metadata } from '~/app/data/entities/base/metadata';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { AdminUserSettingsForClient } from '~/app/data/dto/admin-user-settings-for-client';
-import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { NgbCalendarUmAlQura } from '~/app/data/ngb-calendar-umalqura';
-import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 
 interface MenuSectionInfo {
   label?: string;
@@ -257,20 +254,24 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'report-definitions', sortKey: 100
         },
         {
+          label: 'DashboardDefinitions', icon: 'tools', link: '../dashboard-definitions',
+          view: 'dashboard-definitions', sortKey: 150
+        },
+        {
           label: 'LineDefinitions', icon: 'tools', link: '../line-definitions',
           view: 'line-definitions', sortKey: 200
         },
         {
           label: 'DocumentDefinitions', icon: 'tools', link: '../document-definitions',
-          view: 'document-definitions', sortKey: 200
+          view: 'document-definitions', sortKey: 225
         },
         {
           label: 'RelationDefinitions', icon: 'tools', link: '../relation-definitions',
-          view: 'relation-definitions', sortKey: 200
+          view: 'relation-definitions', sortKey: 250
         },
         {
           label: 'CustodyDefinitions', icon: 'tools', link: '../custody-definitions',
-          view: 'custody-definitions', sortKey: 200
+          view: 'custody-definitions', sortKey: 275
         },
         {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
@@ -315,7 +316,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._quickAccess;
   }
 
-  _permissions: PermissionsForClient = null;
+  _permissions: PermissionsForClientViews = null;
   _definitions: DefinitionsForClient = null;
   _settings: SettingsForClient = null;
   _mainMenu: MenuSectionInfo[];
@@ -358,6 +359,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
       this.addReportDefinitions(menu);
+      this.addDashboardDefinitions(menu);
 
       // Set the mainMenu field and sort the items based on sortKey
       this._mainMenu = Object.keys(menu).map(sectionKey => ({
@@ -488,6 +490,44 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
             return paramsWithoutNulls;
           },
           link: `../report/${definitionId}`
+        });
+      }
+    }
+  }
+
+  private addDashboardDefinitions(menu: { [section: string]: MenuSectionInfo }) {
+    const ws = this.workspace.currentTenant;
+    const sharedDefIds = {};
+    for (const defId of ws.dashboardIds) {
+      sharedDefIds[defId] = true;
+    }
+
+    for (const definitionId of Object.keys(ws.definitions.Dashboards)) {
+      const definition = ws.definitions.Dashboards[+definitionId];
+      if (!definition.ShowInMainMenu) {
+        continue;
+      }
+
+      if (sharedDefIds[definitionId]) {
+
+        // Get the label
+        const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+        const sortKey = definition.MainMenuSortKey;
+        const icon = definition.MainMenuIcon || 'folder';
+
+        // Get the section
+        let menuSection: string;
+        if (menu[definition.MainMenuSection]) {
+          menuSection = definition.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
+        }
+
+        menu[menuSection].items.push({
+          label,
+          sortKey,
+          icon,
+          link: `../dashboard/${definitionId}`
         });
       }
     }

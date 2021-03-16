@@ -14,7 +14,7 @@ namespace Tellma.Controllers
     [Route("api/permissions")]
     [ApiController]
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class PermissionsController : ControllerBase
     {
@@ -51,10 +51,10 @@ namespace Tellma.Controllers
         public async Task<Versioned<PermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
         {                
             // Retrieve the user permissions and their current version
-            var (version, permissions) = await _repo.Permissions__Load(cancellation);
+            var (version, permissions, dashboardIds) = await _repo.Permissions__Load(true, cancellation);
 
             // Arrange the permission in a DTO that is easy for clients to consume
-            var permissionsForClient = new PermissionsForClient();
+            var views = new PermissionsForClientViews();
             foreach (var gView in permissions.GroupBy(e => e.View))
             {
                 string view = gView.Key;
@@ -62,8 +62,16 @@ namespace Tellma.Controllers
                     .GroupBy(e => e.Action)
                     .ToDictionary(g => g.Key, g => true);
 
-                permissionsForClient[view] = viewActions;
+                views[view] = viewActions;
             }
+
+            // Include the report Ids and definitionIds
+            var permissionsForClient = new PermissionsForClient
+            {
+                Views = views,
+                ReportIds = new List<int>(),
+                DashboardIds = dashboardIds
+            };
 
             // Tag the permissions for client with their current version
             var result = new Versioned<PermissionsForClient>

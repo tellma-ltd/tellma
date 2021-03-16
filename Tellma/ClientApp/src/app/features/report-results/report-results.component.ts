@@ -17,10 +17,10 @@ import {
   DataType,
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
-import { switchMap, tap, catchError, finalize, skip as skipObservable } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, skip as skipObservable, filter as filterObs } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { isSpecified, csvPackage, downloadBlob, FriendlyError } from '~/app/data/util';
-import { toLocalDateTimeISOString, dateFromISOString } from '~/app/data/date-util';
+import { toLocalDateTimeISOString, dateFromISOString, nowISOString } from '~/app/data/date-util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
 import { ChartType } from '~/app/data/entities/report-definition';
@@ -107,16 +107,19 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   view: ReportView;
 
   @Input()
-  refresh: Observable<void>; // Must be set only once
+  refresh: Observable<boolean>; // boolean is the "silent" parameter
 
   @Input()
-  export: Observable<string>; // Must be set only once
+  export: Observable<string>;
 
   @Input()
-  mode: 'screen' | 'preview' | 'dashboard' | 'embedded' = 'screen';
+  mode: 'screen' | 'preview' | 'widget' | 'embedded' = 'screen';
 
   @Input()
   disableDrilldown = false; // In popup mode we want to disable drilldown
+
+  @Output()
+  public silentRefreshError = new EventEmitter<FriendlyError>();
 
   @Output()
   public exportStarting = new EventEmitter<void>();
@@ -134,7 +137,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   flatHeader: ElementRef<HTMLTableRowElement>;
 
   private _subscriptions: Subscription;
-  private notifyFetch$ = new Subject();
+  private _refreshSubscription: Subscription;
+  private _exportSubscription: Subscription;
+  private notifyFetch$ = new Subject<boolean>();
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
@@ -175,21 +180,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }));
 
     this._subscriptions.add(this.notifyFetch$.pipe(
-      switchMap(() => this.doFetch())
+      switchMap(silent => this.doFetch(silent))
     ).subscribe());
-
-    // Hook the refresh event
-    if (!!this.refresh) {
-      this._subscriptions.add(this.refresh.pipe(
-        tap(_ => this.state.reportStatus === ReportStatus.loaded))
-        .subscribe(() => this.fetch()));
-    }
-
-    if (!!this.export) {
-      this._subscriptions.add(this.export.pipe(
-        tap(fileName => this.onExport(fileName)))
-        .subscribe());
-    }
 
     if (this.mode === 'screen') {
       const extractOrderByFields = (params: ParamMap) => {
@@ -266,6 +258,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         this.cdr.markForCheck();
       }
     }
+
+    // Subscribe to refresh and export
+    this.subscribeRefresh();
+    this.subscribeExport();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -286,6 +282,54 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         this.state.skip = 0; // when arguments change reset to first page
         this.fetch();
       }
+
+      // Subscribe to the refresh observable
+      if (!!changes.refresh && !changes.refresh.isFirstChange()) {
+        this.unsubscribeRefresh();
+        this.subscribeRefresh();
+      }
+
+      // Subscribe to the export observable
+      if (!!changes.export && !changes.export.isFirstChange()) {
+        this.unsubscribeExport();
+        this.subscribeExport();
+      }
+    }
+  }
+
+  private unsubscribeRefresh() {
+    // Unsubscribe previous (if any)
+    if (!!this._refreshSubscription) {
+      this._refreshSubscription.unsubscribe();
+    }
+  }
+
+  private subscribeRefresh() {
+    // Subscribe new (if any)
+    if (!!this.refresh) {
+      this._refreshSubscription = this.refresh.pipe(
+        filterObs((silent: boolean) =>
+          (!silent && this.state.reportStatus !== ReportStatus.loading) || (silent && !this.state.silentQuery)),
+        tap((silent?: boolean) => this.fetch(silent))
+      ).subscribe();
+    }
+  }
+
+  private unsubscribeExport() {
+    // Unsubscribe previous (if any)
+    if (!!this._exportSubscription) {
+      this._exportSubscription.unsubscribe();
+    }
+  }
+
+  private subscribeExport() {
+
+    // Subscribe new (if any)
+    if (!!this.export) {
+      this._exportSubscription = this.export.pipe(
+        filterObs(_ => this.state.reportStatus !== ReportStatus.loading),
+        tap(fileName => this.onExport(fileName)))
+        .subscribe();
     }
   }
 
@@ -327,7 +371,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.notifyDestruct$.next();
-    this._subscriptions.unsubscribe();
+    this.unsubscribeRefresh();
+    this.unsubscribeExport();
   }
 
   get entityDescriptor(): EntityDescriptor {
@@ -354,11 +399,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return !!desc ? desc.apiEndpoint : null;
   }
 
-  public fetch(): void {
-    this.notifyFetch$.next();
+  public fetch(silent?: boolean): void {
+    this.notifyFetch$.next(silent);
   }
 
-  private doFetch(): Observable<void> {
+  private doFetch(silent?: boolean): Observable<void> {
 
     let s = this.state;
     if (s.badDefinition) {
@@ -366,7 +411,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       return of(null);
     }
 
-    s.reportStatus = ReportStatus.loading;
+    if (silent) {
+      s.silentQuery = true;
+    } else {
+      s.reportStatus = ReportStatus.loading;
+    }
 
     // FILTER & HAVING
     let filter: string;
@@ -375,6 +424,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       filter = this.computeFilter(s);
       having = this.computeHaving(s);
     } catch (e) {
+      s.silentQuery = false;
       s.reportStatus = ReportStatus.error;
       s.errorMessage = e.message;
       return of(null);
@@ -383,7 +433,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     // This will show the spinner
     this.cdr.markForCheck();
 
-    let obs$: Observable<any>;
+    let obs$: Observable<GetFactResponse | GetAggregateResponse>;
     if (this.showDetails) {
       const top = this.definition.Top || ReportResultsComponent.DEFAULT_PAGE_SIZE;
       const skip = !!this.definition.Top ? 0 : s.skip;
@@ -395,12 +445,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         select = this.computeSelect(s);
         orderby = this.computeOrderBy(s);
         if (!select) {
+          s.silentQuery = false;
           s.reportStatus = ReportStatus.information;
           s.information = () => this.translate.instant('DragSelect');
 
           return of(null);
         }
       } catch (e) {
+        s.silentQuery = false;
         s.reportStatus = ReportStatus.error;
         s.errorMessage = e.message;
         return of(null);
@@ -415,9 +467,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         orderby,
         select,
         filter,
-        countEntities: true
+        countEntities: true,
+        silent
       }).pipe(
         tap((response: GetFactResponse) => {
+          s.silentQuery = false;
           s.reportStatus = ReportStatus.loaded;
           s.top = response.Result.length;
           s.skip = skip;
@@ -433,12 +487,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       try {
         select = this.computeAggregateSelect(s);
         if (!select) {
+          s.silentQuery = false;
           s.reportStatus = ReportStatus.information;
           s.information = () => this.translate.instant('DragDimensionsOrMeasures');
 
           return of(null);
         }
       } catch (e) {
+        s.silentQuery = false;
         s.reportStatus = ReportStatus.error;
         s.errorMessage = e.message;
         return of(null);
@@ -450,9 +506,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         top,
         select,
         filter,
-        having
+        having,
+        silent
       }).pipe(
         tap((response: GetAggregateResponse) => {
+          s.silentQuery = false;
           s.reportStatus = ReportStatus.loaded;
           s.result = response.Result;
 
@@ -472,9 +530,19 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return obs$.pipe(
+      tap(() => {
+        s.silentError = false;
+        s.time = nowISOString();
+      }),
       catchError((friendlyError) => {
         s = this.state; // get the source
-        s.reportStatus = ReportStatus.error;
+        if (silent) {
+          s.silentQuery = false;
+          s.silentError = true;
+          this.silentRefreshError.emit(friendlyError);
+        } else {
+          s.reportStatus = ReportStatus.error;
+        }
         s.errorMessage = friendlyError.error;
         return of(null);
       }),

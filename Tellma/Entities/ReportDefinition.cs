@@ -160,7 +160,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsCustomDrilldown { get; set; }
 
-        [Display(Name = "ReportDefinition_ShowInMainMenu")]
+        [Display(Name = "Definition_ShowInMainMenu")]
         [AlwaysAccessible]
         public bool? ShowInMainMenu { get; set; }
 

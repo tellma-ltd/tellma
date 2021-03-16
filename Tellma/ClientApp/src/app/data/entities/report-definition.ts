@@ -238,7 +238,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
-                ShowInMainMenu: { datatype: 'bit', control: 'check', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
+                ShowInMainMenu: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_ShowInMainMenu') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },

@@ -38,6 +38,7 @@ import { metadata_DocumentDefinition } from '../document-definition';
 import { metadata_Email } from '../email';
 import { metadata_SmsMessage } from '../sms-message';
 import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types';
+import { metadata_DashboardDefinition } from '../dashboard-definition';
 
 export const metadata: {
     [collection: string]: (
@@ -60,6 +61,7 @@ export const metadata: {
     AccountType: metadata_AccountType,
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,
+    DashboardDefinition: metadata_DashboardDefinition,
     Center: metadata_Center,
     EntryType: metadata_EntryType,
     Document: metadata_Document,

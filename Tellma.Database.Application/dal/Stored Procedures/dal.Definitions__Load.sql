@@ -29,6 +29,10 @@ SELECT * FROM [map].[ReportDefinitionColumns]() ORDER BY [Index];
 SELECT * FROM [map].[ReportDefinitionDimensionAttributes]() ORDER BY [Index];
 SELECT * FROM [map].[ReportDefinitionMeasures]() ORDER BY [Index];
 
+-- Get the dashboard definitions
+SELECT * FROM [map].[DashboardDefinitions]() WHERE [ShowInMainMenu] = 1;
+SELECT * FROM [map].[DashboardDefinitionWidgets]() WHERE [DashboardDefinitionId] IN (SELECT [Id] FROM [map].[DashboardDefinitions]() WHERE [ShowInMainMenu] = 1)
+
 -- Get the document definitions
 DECLARE @DocDefIds [dbo].[IdList];
 INSERT INTO @DocDefIds ([Id]) SELECT [Id] FROM [map].[DocumentDefinitions]() WHERE [State] <> N'Hidden' OR [Code] = N'ManualJournalVoucher'
