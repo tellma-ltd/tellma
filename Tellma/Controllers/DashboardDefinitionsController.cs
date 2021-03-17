@@ -115,6 +115,16 @@ namespace Tellma.Controllers
                 {
                     entity.Code = Guid.NewGuid().ToString("D");
                 }
+
+                // Main Menu
+                entity.ShowInMainMenu ??= false;
+                if (!entity.ShowInMainMenu.Value)
+                {
+                    entity.Roles = new List<DashboardDefinitionRoleForSave>();
+                    entity.MainMenuIcon = null;
+                    entity.MainMenuSection = null;
+                    entity.MainMenuSortKey = null;
+                }
             });
 
             return Task.FromResult(entities);

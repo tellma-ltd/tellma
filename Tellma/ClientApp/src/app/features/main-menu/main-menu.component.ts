@@ -402,93 +402,36 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private addReportDefinitions(menu: { [section: string]: MenuSectionInfo }) {
     const ws = this.workspace.currentTenant;
-    const definitions = ws.definitions.Reports;
-    if (!!definitions) {
-      const canViewRelations = Object.keys(ws.definitions.Relations).some(v => this.canView(`relations/${v}`));
-      const canViewCustodies = Object.keys(ws.definitions.Custodies).some(v => this.canView(`custodies/${v}`));
-      const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
-      const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
-      const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
+    const sharedDefIds = {};
+    for (const defId of ws.reportIds) {
+      sharedDefIds[defId] = true;
+    }
 
-      for (const definitionId of Object.keys(definitions)) {
+    for (const definitionId of Object.keys(ws.definitions.Reports)) {
+      const definition = ws.definitions.Reports[+definitionId];
+      if (!definition.ShowInMainMenu) {
+        continue;
+      }
 
-        // Get the definition and check it wants to appear in main menu
-        const definition = definitions[definitionId];
-        if (!definition.ShowInMainMenu) {
-          continue;
-        }
+      if (sharedDefIds[definitionId]) {
 
-        // Check if the user has permission
-        // Some reports can be based on the generic version of a definitioned collection
-        let canView: boolean;
-        if (!definition.DefinitionId) {
-          switch (definition.Collection) {
-            case 'Relation':
-              canView = canViewRelations;
-              break;
-            case 'Custody':
-              canView = canViewCustodies;
-              break;
-            case 'Resource':
-              canView = canViewResources;
-              break;
-            case 'Lookup':
-              canView = canViewLookups;
-              break;
-            case 'Document':
-              canView = canViewDocuments;
-              break;
-            default:
-              const metadataFn = metadata[definition.Collection];
-              if (!!metadataFn) {
-                const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-                canView = this.canView(view);
-              } else {
-                canView = false;
-              }
-              break;
-          }
-        } else {
-          const metadataFn = metadata[definition.Collection];
-          if (!!metadataFn) {
-            const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-            canView = this.canView(view);
-          } else {
-            canView = false;
-          }
-        }
-
-        if (!canView) {
-          continue;
-        }
-
-        // get the label function
+        // Get the label
         const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+        const sortKey = definition.MainMenuSortKey;
+        const icon = definition.MainMenuIcon || 'folder';
 
-        // add the menu section if missing
-        if (!menu[definition.MainMenuSection]) {
-          definition.MainMenuSection = 'Miscellaneous';
+        // Get the section
+        let menuSection: string;
+        if (menu[definition.MainMenuSection]) {
+          menuSection = definition.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
         }
 
-        // push the menu item
-        menu[definition.MainMenuSection].items.push({
+        menu[menuSection].items.push({
           label,
-          sortKey: definition.MainMenuSortKey,
-          icon: definition.MainMenuIcon || 'folder',
-          paramsFunc: () => {
-            // This is to solve the unfortunate 'null' bug that kept haunting us for a long time even after we fixed it
-            const params = this.userSettings.get<Params>(`report/${definitionId}/arguments`);
-            const paramsWithoutNulls = {};
-            if (!!params) {
-              for (const key of Object.keys(params)) {
-                const value = params[key];
-                if (isSpecified(value)) {
-                  paramsWithoutNulls[key] = value;
-                }
-              }
-            }
-            return paramsWithoutNulls;
-          },
+          sortKey,
+          icon,
           link: `../report/${definitionId}`
         });
       }

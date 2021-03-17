@@ -698,6 +698,36 @@
                             translate }}</label>
                     </div>
 
+                    <!-- Roles -->
+                    <div class="form-group t-text-whitish" *ngIf="model.ShowInMainMenu">
+                        <label class="small">{{ 'ForMembersOfRoles' | translate }}</label>
+                        <table class="table table-sm table-dark text-nowrap mb-1">
+                            <tbody>
+                                <tr *ngFor="let role of model.Roles; let i = index">
+                                    <td class="p-0">
+                                        <t-roles-picker [(ngModel)]="role.RoleId" theme="dark" #rolemodel="ngModel"
+                                            [showCreate]="false"></t-roles-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: role?.serverErrors?.Key }">
+                                        </ng-container>
+                                    </td>
+                                    <td>
+                                        <button
+                                            class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                            (click)="onDeleteRole(model, i)">
+                                            <fa-icon icon="trash">
+                                            </fa-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                            (click)="onInsertRole(model)">
+                            <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                        </button>
+                    </div>
+
                     <!-- Main Menu Section -->
                     <ng-container *ngIf="model.ShowInMainMenu">
                         <div class="form-group">

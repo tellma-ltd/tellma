@@ -43,7 +43,7 @@ namespace Tellma.Controllers
                     if (cacheEntry.Permissions?.Version != dbPermissionsVersion)
                     {
                         // Load from DB
-                        var (guid, permissions, _) = await repo.Permissions__Load(false, cancellation);
+                        var (guid, permissions, _, _) = await repo.Permissions__Load(false, cancellation);
 
                         // Set the cache
                         cacheEntry.Permissions = new Versioned<IEnumerable<AbstractPermission>>(

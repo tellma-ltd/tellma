@@ -7,6 +7,7 @@
 	@Columns [ReportDefinitionDimensionList] READONLY,
 	@ColumnsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
 	@Measures [ReportDefinitionMeasureList] READONLY,
+	@Roles [dbo].[ReportDefinitionRoleList] READONLY,
 	@Top INT = 10
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

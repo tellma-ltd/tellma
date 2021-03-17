@@ -53,7 +53,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     MainMenu: false
   };
 
-  public expand = 'Parameters,Select,Rows.Attributes,Columns.Attributes,Measures';
+  public expand = 'Parameters,Select,Rows.Attributes,Columns.Attributes,Measures,Roles.Role';
   public search: string;
 
   // Collapse or expand the 2 panes on the left
@@ -758,6 +758,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       delete model.RowsTotalLabel;
       delete model.RowsTotalLabel2;
       delete model.RowsTotalLabel3;
+    }
+
+    if (!model.ShowInMainMenu) {
+      model.Roles = [];
     }
   }
 
@@ -1616,5 +1620,18 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.previewDrilldown = !this.previewDrilldown;
     this._currentModelModified = true;
     this.onDefinitionChange(model);
+  }
+
+  ///////////////////// Roles
+
+  public onDeleteRole(model: ReportDefinition, index: number) {
+    if (index >= 0) {
+      model.Roles.splice(index, 1);
+    }
+  }
+
+  public onInsertRole(model: ReportDefinition) {
+    const item = { Id: 0 };
+    model.Roles.push(item);
   }
 }

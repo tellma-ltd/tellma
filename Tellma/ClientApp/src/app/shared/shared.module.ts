@@ -61,7 +61,8 @@ import {
   faInfoCircle,
   faTools,
   faCamera,
-  faRuler
+  faRuler,
+  faAngleDoubleRight
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -229,7 +230,7 @@ export class SharedModule {
   constructor(library: FaIconLibrary) {
     // Icons to be used in the web app
     library.addIcons(
-      faSignOutAlt, faCheck, faPlus, faAngleDoubleLeft,
+      faSignOutAlt, faCheck, faPlus, faAngleDoubleLeft, faAngleDoubleRight,
       faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,

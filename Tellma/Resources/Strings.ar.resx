@@ -424,12 +424,6 @@
   <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
     <value>التقرير</value>
   </data>
-  <data name="DashboardDefinition_Role" xml:space="preserve">
-    <value>الدور</value>
-  </data>
-  <data name="DashboardDefinition_Roles" xml:space="preserve">
-    <value>الأدوار</value>
-  </data>
   <data name="DashboardDefinition_Widgets" xml:space="preserve">
     <value>القطع</value>
   </data>
@@ -504,6 +498,9 @@
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>تعريفات التقارير</value>
+  </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>الدور</value>
   </data>
   <data name="Definition_Roles" xml:space="preserve">
     <value>الأدوار</value>

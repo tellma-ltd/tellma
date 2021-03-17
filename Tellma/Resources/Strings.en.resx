@@ -472,12 +472,6 @@
   <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
     <value>Report</value>
   </data>
-  <data name="DashboardDefinition_Role" xml:space="preserve">
-    <value>Role</value>
-  </data>
-  <data name="DashboardDefinition_Roles" xml:space="preserve">
-    <value>Roles</value>
-  </data>
   <data name="DashboardDefinition_Widgets" xml:space="preserve">
     <value>Widgets</value>
   </data>
@@ -552,6 +546,9 @@
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
+  </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>Role</value>
   </data>
   <data name="Definition_Roles" xml:space="preserve">
     <value>Roles</value>

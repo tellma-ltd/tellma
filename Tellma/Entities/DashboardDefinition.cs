@@ -154,7 +154,7 @@ namespace Tellma.Entities
 
     public class DashboardDefinitionRoleForSave : EntityWithKey<int>
     {
-        [Display(Name = "DashboardDefinition_Role")]
+        [Display(Name = "Definition_Role")]
         [NotNull]
         public int? RoleId { get; set; }
     }
@@ -164,7 +164,7 @@ namespace Tellma.Entities
         [NotNull]
         public int? DashboardDefinitionId { get; set; }
 
-        [Display(Name = "DashboardDefinition_Role")]
+        [Display(Name = "Definition_Role")]
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
     }

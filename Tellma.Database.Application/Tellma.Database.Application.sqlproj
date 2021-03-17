@@ -792,6 +792,8 @@
     <Build Include="map\map.DashboardDefinitions.sql" />
     <Build Include="map\map.DashboardDefinitionWidgets.sql" />
     <Build Include="map\map.DashboardDefinitionRoles.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionRole.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionRoleList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

@@ -424,12 +424,6 @@
   <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
     <value>报告</value>
   </data>
-  <data name="DashboardDefinition_Role" xml:space="preserve">
-    <value>角色</value>
-  </data>
-  <data name="DashboardDefinition_Roles" xml:space="preserve">
-    <value>角色</value>
-  </data>
   <data name="DashboardDefinition_Widgets" xml:space="preserve">
     <value>小工具</value>
   </data>
@@ -504,6 +498,9 @@
   </data>
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>
+  </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>角色</value>
   </data>
   <data name="Definition_Roles" xml:space="preserve">
     <value>角色</value>

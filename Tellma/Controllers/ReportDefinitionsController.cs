@@ -179,6 +179,7 @@ namespace Tellma.Controllers
                 entity.ShowInMainMenu ??= false;
                 if (!entity.ShowInMainMenu.Value)
                 {
+                    entity.Roles = new List<ReportDefinitionRoleForSave>();
                     entity.MainMenuIcon = null;
                     entity.MainMenuSection = null;
                     entity.MainMenuSortKey = null;

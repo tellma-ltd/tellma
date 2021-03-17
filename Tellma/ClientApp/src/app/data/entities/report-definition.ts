@@ -21,7 +21,8 @@ export interface ReportDefinitionForSave<
     TRow = ReportDefinitionRowForSave,
     TColumn = ReportDefinitionColumnForSave,
     TMeasure = ReportDefinitionMeasureForSave,
-    TSelect = ReportDefinitionSelectForSave> extends EntityForSave {
+    TSelect = ReportDefinitionSelectForSave,
+    TRole = ReportDefinitionRoleForSave> extends EntityForSave {
 
     Code?: string;
     Title?: string;
@@ -59,10 +60,11 @@ export interface ReportDefinitionForSave<
     Rows?: TRow[];
     Columns?: TColumn[];
     Measures?: TMeasure[];
+    Roles?: TRole[];
 }
 
 export interface ReportDefinition extends ReportDefinitionForSave<
-    ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect> {
+    ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect, ReportDefinitionRole> {
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
@@ -80,7 +82,6 @@ export interface ReportDefinitionParameterForSave extends EntityForSave {
     ControlOptions?: string; // JSON
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionParameter extends ReportDefinitionParameterForSave {
     ReportDefinitionId?: number;
 }
@@ -95,7 +96,6 @@ export interface ReportDefinitionSelectForSave extends EntityForSave {
     ControlOptions?: string; // JSON
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionSelect extends ReportDefinitionSelectForSave {
     ReportDefinitionId?: number;
 }
@@ -115,20 +115,16 @@ export interface ReportDefinitionDimension<TAttribute> extends EntityForSave {
     Attributes?: TAttribute[];
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionColumnForSave extends ReportDefinitionDimension<ReportDefinitionDimensionAttributeForSave> {
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionColumn extends ReportDefinitionDimension<ReportDefinitionDimensionAttribute> {
     ReportDefinitionId?: number;
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionRowForSave extends ReportDefinitionDimension<ReportDefinitionDimensionAttributeForSave> {
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionRow extends ReportDefinitionDimension<ReportDefinitionDimensionAttribute> {
     ReportDefinitionId?: number;
 }
@@ -147,7 +143,6 @@ export interface ReportDefinitionDimensionAttribute extends ReportDefinitionDime
     ReportDefinitionDimensionId?: number;
 }
 
-
 export interface ReportDefinitionMeasureForSave extends EntityForSave {
     Expression?: string;
     Label?: string;
@@ -161,8 +156,15 @@ export interface ReportDefinitionMeasureForSave extends EntityForSave {
     SuccessWhen?: string;
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface ReportDefinitionMeasure extends ReportDefinitionMeasureForSave {
+    ReportDefinitionId?: number;
+}
+
+export interface ReportDefinitionRoleForSave extends EntityForSave {
+    RoleId?: number;
+}
+
+export interface ReportDefinitionRole extends ReportDefinitionRoleForSave {
     ReportDefinitionId?: number;
 }
 

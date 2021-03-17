@@ -218,6 +218,13 @@ export class DashboardDefinitionsDetailsComponent extends DetailsBaseComponent {
       (!!model.Roles && model.Roles.some(e => this.weakEntityErrors(e)));
   }
 
+  public savePreprocessing(model: DashboardDefinition) {
+
+    if (!model.ShowInMainMenu) {
+      model.Roles = [];
+    }
+  }
+
   /////////////////////////// Main Menu
 
   public get allMainMenuSections(): SelectorChoice[] {

@@ -1,7 +1,7 @@
 <t-details collection="DashboardDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
     [additionalSelect]="additionalSelect" [masterCrumb]="'DashboardDefinitions' | translate"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen"
-    [actions]="[]" [isInactive]="isInactive" theme="dark">
+    [actions]="[]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
 </t-details>
 
 <!-- Details Crumb -->
@@ -182,18 +182,10 @@
                     </div>
 
                     <!-- Roles -->
-                    <div class="form-group t-text-whitish">
+                    <div class="form-group t-text-whitish" *ngIf="model.ShowInMainMenu">
                         <label class="small">{{ 'ForMembersOfRoles' | translate }}</label>
 
                         <table class="table table-sm table-dark text-nowrap mb-1">
-                            <!-- <thead class="small font-weight-normal">
-                                <tr>
-                                    <th class="py-1">{{ 'DashboardDefinition_Role' | translate }}
-                                    </th>
-                                    <th class="py-1" style="width: 1px;">
-                                    </th>
-                                </tr>
-                            </thead> -->
                             <tbody>
                                 <tr *ngFor="let role of model.Roles">
                                     <td class="p-0">

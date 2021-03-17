@@ -51,7 +51,7 @@ namespace Tellma.Controllers
         public async Task<Versioned<PermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
         {                
             // Retrieve the user permissions and their current version
-            var (version, permissions, dashboardIds) = await _repo.Permissions__Load(true, cancellation);
+            var (version, permissions, reportIds, dashboardIds) = await _repo.Permissions__Load(true, cancellation);
 
             // Arrange the permission in a DTO that is easy for clients to consume
             var views = new PermissionsForClientViews();
@@ -69,7 +69,7 @@ namespace Tellma.Controllers
             var permissionsForClient = new PermissionsForClient
             {
                 Views = views,
-                ReportIds = new List<int>(),
+                ReportIds = reportIds,
                 DashboardIds = dashboardIds
             };
 

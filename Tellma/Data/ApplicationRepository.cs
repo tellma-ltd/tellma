@@ -307,6 +307,7 @@ namespace Tellma.Data
                 nameof(ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
                 nameof(ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
                 nameof(ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
+                nameof(ReportDefinitionRole) => "[map].[ReportDefinitionRoles]()",
                 nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
                 nameof(Resource) => "[map].[Resources]()",
                 nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
@@ -585,12 +586,13 @@ namespace Tellma.Data
             return (singleBusinessUnitId, gSettings, fSettings);
         }
 
-        public async Task<(Guid, IEnumerable<AbstractPermission>, List<int> dashboardIds)> Permissions__Load(bool includeReportAndDashboardIds, CancellationToken cancellation)
+        public async Task<(Guid, IEnumerable<AbstractPermission>, List<int> reportIds, List<int> dashboardIds)> Permissions__Load(bool includeReportAndDashboardIds, CancellationToken cancellation)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Permissions__Load));
 
             Guid version;
             var permissions = new List<AbstractPermission>();
+            var reportIds = new List<int>();
             var dashboardIds = new List<int>();
 
             var conn = await GetConnectionAsync(cancellation);
@@ -631,6 +633,13 @@ namespace Tellma.Data
 
                 if (includeReportAndDashboardIds)
                 {
+                    // Report Ids
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        reportIds.Add(reader.GetInt32(0));
+                    }
+
                     // Dashboard Ids
                     await reader.NextResultAsync(cancellation);
                     while (await reader.ReadAsync(cancellation))
@@ -640,7 +649,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (version, permissions, dashboardIds);
+            return (version, permissions, reportIds, dashboardIds);
         }
 
         public async Task<(Guid,
@@ -6044,6 +6053,13 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionRole)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
             cmd.Parameters.Add(parametersTvp);
             cmd.Parameters.Add(selectTvp);
@@ -6052,6 +6068,7 @@ namespace Tellma.Data
             cmd.Parameters.Add(columnsTvp);
             cmd.Parameters.Add(columnsAttributesTvp);
             cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add(rolesTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -6126,6 +6143,13 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionRole)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add(entitiesTvp);
             cmd.Parameters.Add(parametersTvp);
             cmd.Parameters.Add(selectTvp);
@@ -6134,6 +6158,7 @@ namespace Tellma.Data
             cmd.Parameters.Add(columnsTvp);
             cmd.Parameters.Add(columnsAttributesTvp);
             cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add(rolesTvp);
             cmd.Parameters.Add("@ReturnIds", returnIds);
 
             cmd.CommandType = CommandType.StoredProcedure;
