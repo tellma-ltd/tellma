@@ -160,8 +160,8 @@ export class DashboardComponent implements OnInit, OnChanges, AfterViewInit, OnD
     }
   }
 
-  public get canFullScreen(): boolean {
-    return true; // TODO
+  public disableFullScreen(isEdit: boolean): boolean {
+    return isEdit;
   }
 
   public onRefresh(): void {

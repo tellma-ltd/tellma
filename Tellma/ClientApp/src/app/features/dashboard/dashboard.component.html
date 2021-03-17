@@ -17,7 +17,7 @@
             <div>
                 <!-- Full Screen -->
                 <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onFullScreen()"
-                    [disabled]="!canFullScreen">
+                    [disabled]="disableFullScreen(isEdit)">
                     <fa-icon icon="expand"></fa-icon>
                     <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'FullScreen' | translate }}</span>
                 </button>
