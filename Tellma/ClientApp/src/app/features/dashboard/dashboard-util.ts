@@ -3,8 +3,8 @@ import { DashboardDefinitionWidgetForClient } from '~/app/data/dto/definitions-f
 export const tileWidth = 260;
 export const tileHeight = 180;
 
-export const defaultWidth = 2;
-export const defaultHeight = 2;
+export const defaultWidth = 1;
+export const defaultHeight = 1;
 
 export const maxSize = 16;
 export const maxOffset = 1000;
