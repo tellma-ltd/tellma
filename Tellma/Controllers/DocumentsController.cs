@@ -874,12 +874,28 @@ namespace Tellma.Controllers
 
         protected override Query<Document> Search(Query<Document> query, GetArguments args)
         {
-            var prefix = CurrentDefinition?.Prefix;
-            var map = new List<(string Prefix, int DefinitionId)>
+            var def = CurrentDefinition;
+            List<(string prefix, int definitionId)> map;
+            bool includeInternalRef;
+            bool includeExternalRef;
+            if (def != null)
             {
-                (prefix, DefinitionId.Value)
-            };
-            return DocumentServiceUtil.SearchImpl(query, args, map);
+                var prefix = def.Prefix;
+                map = new List<(string prefix, int definitionId)>
+                {
+                    (prefix, DefinitionId.Value)
+                };
+                includeInternalRef = def.InternalReferenceVisibility;
+                includeExternalRef = def.ExternalReferenceVisibility;
+            }
+            else
+            {
+                map = new List<(string prefix, int definitionId)>();
+                includeInternalRef = false;
+                includeExternalRef = false;
+            }
+
+            return DocumentServiceUtil.SearchImpl(query, args, map, includeInternalRef, includeExternalRef);
         }
 
         protected override async Task<Extras> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
@@ -2813,7 +2829,7 @@ namespace Tellma.Controllers
                 .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
                 new List<(string, int)>(); // Avoiding null reference exception at all cost
 
-            return DocumentServiceUtil.SearchImpl(query, args, prefixMap);
+            return DocumentServiceUtil.SearchImpl(query, args, prefixMap, false, false);
         }
 
         protected override ExpressionOrderBy DefaultOrderBy()
@@ -2827,7 +2843,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<(string Prefix, int DefinitionId)> prefixMap)
+        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<(string Prefix, int DefinitionId)> prefixMap, bool includeInternalRef, bool includeExternalRef)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -2856,23 +2872,30 @@ namespace Tellma.Controllers
                 {
                     search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                    var memoProp = nameof(Document.Memo);
-                    var serialNumberProp = nameof(Document.SerialNumber);
-                    var postingDateProp = nameof(Document.PostingDate);
 
                     // Prepare the filter string
-                    var filterString = $"{memoProp} contains '{search}'";
+                    var filterString = $"{nameof(Document.Memo)} contains '{search}'";
 
                     // If the search is a number, include documents with that serial number
                     if (int.TryParse(search.Trim(), out int searchNumber))
                     {
-                        filterString = $"{filterString} or {serialNumberProp} eq {searchNumber}";
+                        filterString = $"{filterString} or {nameof(Document.SerialNumber)} eq {searchNumber}";
                     }
 
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {postingDateProp} eq {searchDate:yyyy-MM-dd}";
+                        filterString = $"{filterString} or {nameof(Document.PostingDate)} eq {searchDate:yyyy-MM-dd}";
+                    }
+
+                    if (includeInternalRef)
+                    {
+                        filterString = $"{filterString} or {nameof(Document.InternalReference)} contains '{search}'";
+                    }
+
+                    if (includeExternalRef)
+                    {
+                        filterString = $"{filterString} or {nameof(Document.ExternalReference)} contains '{search}'";
                     }
 
                     // Apply the filter
