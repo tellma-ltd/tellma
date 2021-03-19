@@ -2885,7 +2885,7 @@ namespace Tellma.Controllers
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {nameof(Document.PostingDate)} eq {searchDate:yyyy-MM-dd}";
+                        filterString = $"{filterString} or {nameof(Document.PostingDate)} eq '{searchDate:yyyy-MM-dd}'";
                     }
 
                     if (includeInternalRef)

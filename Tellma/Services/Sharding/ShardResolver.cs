@@ -57,7 +57,7 @@ namespace Tellma.Services.Sharding
                 {
                     // To avoid a race-condition causing multiple threads to populate the cache in parallel immediately after they all 
                     // have a cache miss, here we check the cache again inside the single-threaded block
-                    if(_cache.TryGetValue(CacheKey(databaseId), out shardConnString))
+                    if (_cache.TryGetValue(CacheKey(databaseId), out shardConnString))
                     {
                         return shardConnString;
                     }
@@ -151,6 +151,7 @@ namespace Tellma.Services.Sharding
                             IntegratedSecurity = isWindowsAuth,
                             PersistSecurityInfo = false,
                             MultipleActiveResultSets = true,
+                            ConnectTimeout = 15 * 60 // Increase the SQL server timeout to 15 minutes (web server timeout is 15.25 minutes)
                         };
 
                         shardConnString = shardConnStringBuilder.ConnectionString;
