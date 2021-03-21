@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "ReportDefinition", Plural = "ReportDefinitions")]
-    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<int>
+    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect, TRole> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [NotNull]
@@ -160,7 +160,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsCustomDrilldown { get; set; }
 
-        [Display(Name = "ReportDefinition_ShowInMainMenu")]
+        [Display(Name = "Definition_ShowInMainMenu")]
         [AlwaysAccessible]
         public bool? ShowInMainMenu { get; set; }
 
@@ -203,14 +203,19 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ReportDefinitionSelect.ReportDefinitionId))]
         [AlwaysAccessible]
         public List<TSelect> Select { get; set; }
+
+        [Display(Name = "Definition_Roles")]
+        [ForeignKey(nameof(ReportDefinitionRole.ReportDefinitionId))]
+        [AlwaysAccessible]
+        public List<TRole> Roles { get; set; }
     }
 
-    public class ReportDefinitionForSave : ReportDefinitionForSave<ReportDefinitionParameterForSave, ReportDefinitionRowForSave, ReportDefinitionColumnForSave, ReportDefinitionMeasureForSave, ReportDefinitionSelectForSave>
+    public class ReportDefinitionForSave : ReportDefinitionForSave<ReportDefinitionParameterForSave, ReportDefinitionRowForSave, ReportDefinitionColumnForSave, ReportDefinitionMeasureForSave, ReportDefinitionSelectForSave, ReportDefinitionRoleForSave>
     {
 
     }
 
-    public class ReportDefinition : ReportDefinitionForSave<ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect>
+    public class ReportDefinition : ReportDefinitionForSave<ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect, ReportDefinitionRole>
     {
         [Display(Name = "CreatedAt")]
         [NotNull]
@@ -539,5 +544,22 @@ namespace Tellma.Entities
 
         [NotNull]
         public int? Index { get; set; }
+    }
+
+    public class ReportDefinitionRoleForSave : EntityWithKey<int>
+    {
+        [Display(Name = "Definition_Role")]
+        [NotNull]
+        public int? RoleId { get; set; }
+    }
+
+    public class ReportDefinitionRole : ReportDefinitionRoleForSave
+    {
+        [NotNull]
+        public int? ReportDefinitionId { get; set; }
+
+        [Display(Name = "Definition_Role")]
+        [ForeignKey(nameof(RoleId))]
+        public Role Role { get; set; }
     }
 }

@@ -501,7 +501,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get showEditDefinition(): boolean {
-    return this.isScreenMode;
+    return this.isScreenMode && this.workspace.currentTenant.canDo('report-definitions', 'Update', null);
   }
 
   public get showDataDropdown(): boolean {
@@ -509,15 +509,15 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public onEdit(): void {
-    const ws = this.workspace;
-    ws.isEdit = true;
+    const wss = this.workspace;
+    wss.isEdit = true;
     this.router.navigate(['../../report-definitions', this.definitionId], { relativeTo: this.route })
       .then(success => {
         if (!success) {
-          delete ws.isEdit;
+          delete wss.isEdit;
         }
       })
-      .catch(_ => delete ws.isEdit);
+      .catch(_ => delete wss.isEdit);
   }
 
   // Collapse parameters

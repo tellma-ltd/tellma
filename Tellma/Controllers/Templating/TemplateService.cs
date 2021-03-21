@@ -1167,6 +1167,10 @@ namespace Tellma.Controllers.Templating
             object formatObj2 = args[1];
             object calendarObj3 = args.Length > 2 ? args[2] : null;
 
+            if (dateObj is null)
+            {
+                return null; // Null propagation
+            }
 
             if (!(dateObj is DateTime date))
             {
@@ -1192,8 +1196,6 @@ namespace Tellma.Controllers.Templating
             {
                 throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 3rd argument of type string");
             }
-
-
 
             return CalendarUtilities.FormatDate(date, env.Localizer, format, calendar);
         }

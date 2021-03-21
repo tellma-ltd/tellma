@@ -18,3 +18,4 @@ AS
 	-- Return the Custom Settings
 	SELECT [Key], [Value] FROM [dbo].[UserSettings]
 	WHERE [UserId] = @UserId
+

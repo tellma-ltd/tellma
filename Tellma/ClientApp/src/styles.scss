@@ -285,6 +285,11 @@ ngb-tabset li.nav-item .small {
   overflow-x: hidden;
 }
 
+.dropdown.show .dropdown-menu {
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%) !important;
+  margin-top: 0px;
+}
+
 ///////////////////////////////// Tellma /////////////////////////////////
 
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
@@ -596,7 +601,7 @@ input.t-h2,
 }
 
 .t-icon-selector-icon {
-  width: 32px;
+  width: 30px;
   border: 1px solid $secondary;
 }
 
@@ -1256,7 +1261,8 @@ div.t-less-dark.t-highlight {
   }
 }
 
-tr.t-highlight, td.t-highlight  {
+tr.t-highlight,
+td.t-highlight {
   background-color: rgba(17, 17, 17, 0.075) !important;
 }
 
@@ -1660,7 +1666,6 @@ $container-margin: 15px;
   display: flex;
 }
 
-
 td.t-success {
   color: #155724;
   background-color: #d4edda;
@@ -1677,10 +1682,12 @@ td.t-danger {
 }
 
 h1.t-success {
+  // font-weight: normal;
   color: $success;
 }
 
 h1.t-warning {
+  // font-weight: normal;
   color: $warning;
 }
 
@@ -1688,12 +1695,24 @@ h1.t-danger {
   color: $danger;
 }
 
+h1.t-report-measure.t-success:hover {
+  color: #155724;
+}
+
+h1.t-report-measure.t-warning:hover {
+  color: #856404;
+}
+
+h1.t-report-measure.t-danger:hover {
+  color: #721c24;
+}
+
 tr.t-report-row:hover .t-report-dimension {
   background-color: #e9e9e9;
 }
 
 .t-report-dimension {
-  background-color:whitesmoke;
+  background-color: whitesmoke;
   // font-weight: 600;
   // font-size: 80%;
   // font-weight:bold;
@@ -1891,7 +1910,7 @@ button:focus {
   }
 }
 
-$menu-padding: 46px;
+$menu-padding: 40px;
 
 .t-menu-icon {
   width: $menu-padding;
@@ -1992,3 +2011,45 @@ tr.t-draw-attention {
   background: lightgreen;
 }
 
+.t-dashboard {
+  margin: 5px;
+  width: 100%;
+}
+.t-vertical-dashboard {
+  padding: 5px;
+  width: 100%;
+}
+
+.t-dashboard-widget {
+  padding: 5px;
+}
+
+.t-widget-header {
+  height: 45px;
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+$knob-border-color: rgb(190, 190, 190);
+
+.t-drag-knob {
+  cursor: se-resize;
+  padding: 0.25rem;
+  .t-drag-knob-inner {
+    width: 100%;
+    height: 100%;
+    border-bottom: 2px solid $knob-border-color;
+    border-right: 2px solid $knob-border-color;
+  }
+}
+
+.t-rtl {
+  .t-drag-knob {
+    cursor: sw-resize;
+    .t-drag-knob-inner {
+      border-right-width: 0px;
+      border-left: 2px solid $knob-border-color;
+    }
+  }
+}

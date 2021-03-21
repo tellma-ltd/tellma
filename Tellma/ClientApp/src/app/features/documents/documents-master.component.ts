@@ -170,10 +170,12 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   }
 
   public get showDocumentPostingDate(): boolean {
-    return !!this.definition.PostingDateVisibility;
+    const def = this.definition;
+    return !def || !!def.PostingDateVisibility;
   }
 
   public get showDocumentMemo(): boolean {
-    return !!this.definition.MemoVisibility;
+    const def = this.definition;
+    return !def || !!def.MemoVisibility;
   }
 }

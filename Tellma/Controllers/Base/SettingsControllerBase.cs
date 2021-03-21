@@ -21,7 +21,7 @@ namespace Tellma.Controllers
     /// entity type using OData-like parameters
     /// </summary>
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class SettingsControllerBase<TSettingsForSave, TSettings> : ControllerBase

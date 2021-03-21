@@ -15,7 +15,7 @@ namespace Tellma.Controllers
 {
     [Route("api/notifications")]
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ServerNotificationsController : ControllerBase

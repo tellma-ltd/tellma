@@ -5,7 +5,7 @@ import { Role } from './entities/role';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { SettingsForClient } from './dto/settings-for-client';
-import { PermissionsForClient } from './dto/permissions-for-client';
+import { PermissionsForClient, PermissionsForClientViews } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
@@ -60,6 +60,7 @@ import {
   HmsFormat
 } from './entities/base/metadata-types';
 import { adjustDateFormatForGranularity } from './date-time-formats';
+import { DashboardDefinition } from './entities/dashboard-definition';
 
 enum WhichWorkspace {
   /**
@@ -223,7 +224,7 @@ export interface EntityWorkspace<T extends EntityWithKey> {
 
 export abstract class SpecificWorkspace {
 
-  permissions: PermissionsForClient | AdminPermissionsForClient;
+  permissions: PermissionsForClientViews | AdminPermissionsForClient;
   permissionsVersion: string;
 
   public canRead(view: string) {
@@ -264,6 +265,7 @@ export abstract class SpecificWorkspace {
 }
 
 export class AdminWorkspace extends SpecificWorkspace {
+
   settings: AdminSettingsForClient;
   settingsVersion: string;
 
@@ -335,6 +337,9 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   ////// Globals
   // cannot navigate to any tenant screen until these global values are initialized via a router guard
+  reportIds: number[];
+  dashboardIds: number[];
+
   settings: SettingsForClient;
   settingsVersion: string;
 
@@ -408,6 +413,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
+  DashboardDefinition: EntityWorkspace<DashboardDefinition>;
   Center: EntityWorkspace<Center>;
 
   EntryType: EntityWorkspace<EntryType>;
@@ -457,6 +463,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.AccountType = {};
     this.Account = {};
     this.ReportDefinition = {};
+    this.DashboardDefinition = {};
     this.Center = {};
 
     this.EntryType = {};
@@ -823,12 +830,15 @@ export class StatementStore extends ReportStoreBase {
 }
 
 export class ReportStore extends ReportStoreBase {
+  silentQuery: boolean; // Indicates that a silent query in progress
+  silentError: boolean; // Indicates that a silent query has finished with an error
   definition: ReportDefinitionForClient;
   skip = 0;
   top = 0;
   total = 0;
   arguments: ReportArguments = {};
   result: DynamicRow[];
+  time: string; // When did the result arrive
   ancestorGroups: { [id: number]: AncestorGroup };
   badDefinition = false; // set it to true upon a catastrophic failure from a bad definition
   collapseParams = false; // When true hides the report parameters
@@ -1297,6 +1307,20 @@ export class WorkspaceService {
    * Used by OnPush components to mark for check
    */
   stateChanged$: Observable<void> = new Subject<void>();
+
+  /**
+   * Notifies that the browser tab has either beceome visible or invisible
+   * Used by OnPush components to mark for check
+   */
+  visibilityChanged$: Observable<void> = new Subject<void>();
+  visibility: 'visible' | 'hidden' = 'visible';
+
+  /**
+   * Notifies that the browser tab has either beceome visible or invisible
+   * Used by OnPush components to mark for check
+   */
+  mediumDeviceChanged$: Observable<void> = new Subject<void>();
+  mediumDevice: boolean;
 
   constructor() {
     this.reset();

@@ -454,6 +454,33 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>Custody Definitions</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>Dashboard Definition</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>Auto-Refresh Period (Minutes)</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>Height (Tiles)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>Offset X (Tiles)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>Offset Y (Tiles)</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>Widgets</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>Width (Tiles)</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>Dashboard Definitions</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
   </data>
@@ -520,8 +547,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>Show</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>Show in Main Menu</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>State</value>
@@ -1134,6 +1170,9 @@
   </data>
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>The field {0} must be at least {2} and at max {1} characters long.</value>
+  </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>Field {0} value cannot exceed {1}.</value>
   </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>Import failed because of the following:</value>
@@ -1749,6 +1788,9 @@
   </data>
   <data name="FullMonthUq9" xml:space="preserve">
     <value>Ramadan</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>Full Screen</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>General Settings</value>
@@ -2624,7 +2666,7 @@
     <value>Having</value>
   </data>
   <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
-    <value>Use Custom Drilldown</value>
+    <value>Use Custom Drillthrough</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
@@ -2667,9 +2709,6 @@
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>Show Columns Total</value>
-  </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>Show in Main Menu</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>Show Rows Total</value>

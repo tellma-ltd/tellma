@@ -371,7 +371,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     let s = this.inboxState;
     s.masterStatus = MasterStatus.loading;
 
-    const unobtrusive = true;
+    const silent = true;
     const top = 25; // Only get the top 25 items
     const skip = 0;
     const select = `Comment,CreatedAt,CreatedBy.Name,CreatedBy.Name2,CreatedBy.Name3,
@@ -387,7 +387,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
       const tenantId = this.workspace.ws.tenantId;
 
       // Retrieve the inbox items
-      return this.inboxCrud.getEntities({ unobtrusive, top, skip, select, countEntities: true }).pipe(
+      return this.inboxCrud.getEntities({ silent, top, skip, select, countEntities: true }).pipe(
         tap((response: GetResponse) => {
           s = this.inboxState; // get the source
           s.top = response.Top;
@@ -502,7 +502,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   }
 
   get isMdScreen(): boolean {
-    return window.matchMedia(`(min-width: 768px)`).matches;
+    return this.workspace.mediumDevice;
   }
 
   // Favorites management

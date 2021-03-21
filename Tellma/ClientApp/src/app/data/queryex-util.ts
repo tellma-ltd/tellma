@@ -699,7 +699,7 @@ export class QueryexUtil {
 
                 if (isSpecified(value)) {
                     if (QueryexUtil.needsQuotes(datatype)) {
-                        return `'${(value + '').replace('\'', '\'\'')}'`;
+                        return `'${(value + '').replace(/\'/g, '\'\'')}'`;
                     } else {
                         return value + '';
                     }

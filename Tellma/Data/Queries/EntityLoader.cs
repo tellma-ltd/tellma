@@ -16,6 +16,7 @@ namespace Tellma.Data.Queries
 {
     internal static class EntityLoader
     {
+        private const string DIVISION_BY_ZERO_MESSAGE = "The query caused a division by zero.";
         private static string PrepareSql(string variablesSql, string preparatorySql, string countSql, params string[] statementSqls)
         {
             // Prepare the main sql script
@@ -169,7 +170,7 @@ namespace Tellma.Data.Queries
                 }
                 catch (SqlException ex) when (ex.Number is 8134) // Divide by zero
                 {
-                    throw new QueryException("The query caused a division by zero.");
+                    throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
                 }
                 catch (SqlException ex)
                 {
@@ -415,6 +416,10 @@ namespace Tellma.Data.Queries
                     // Go over to the next result set
                     await reader.NextResultAsync(cancellation);
                 }
+            }
+            catch (SqlException ex) when (ex.Number is 8134) // Divide by zero
+            {
+                throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
             }
             catch (SqlException ex)
             {

@@ -406,6 +406,33 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>የጥበቃ ፍቺዎች</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>ዳሽቦርድ ፍቺ</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>ራስ-አድስ ክፍለ ጊዜ (ደቂቃዎች)</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>ቁመት (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>የሚካካሱ የ X (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>የሚካካሱ Y (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>ሪፖርት</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>ፍርግሞች</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>ስፋት (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>ዳሽቦርድ ፍቺዎች</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>ወሂብ</value>
   </data>
@@ -472,8 +499,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>ሚና</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>ሚናዎች</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>አሳይ</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>ዋና ምናሌ ውስጥ አሳይ</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>ሁኔታ</value>
@@ -1060,6 +1096,9 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>መስኩ {0} ቢያንስ {2} እና ቢበዛ {1} ቁምፊዎች መሆን አለበት።</value>
   </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>የመስክ {0} እሴት {1} መብለጥ አይችልም.</value>
+  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>አስመጣ ምክንያት የሚከተለውን ምክንያት አልተሳካም:</value>
   </data>
@@ -1590,6 +1629,9 @@
   </data>
   <data name="FullMonthEt9" xml:space="preserve">
     <value>ግንቦት</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>ሙሉ ማያ</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>ጠቅላላ ቅንብሮች</value>
@@ -2463,9 +2505,6 @@
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>አሳይ አምዶች ጠቅላላ</value>
-  </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>ዋና ምናሌ ውስጥ አሳይ</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>አሳይ ረድፎች ጠቅላላ</value>

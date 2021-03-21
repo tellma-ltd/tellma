@@ -1,0 +1,235 @@
+<div class="h-100 d-flex flex-column">
+    <div class="row border-bottom bg-white">
+
+        <!-- Breadcrumb -->
+        <div class="col-12 p-1" *ngIf="!!title">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ title }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
+
+            <!-- Left Buttons -->
+            <div>
+                <!-- Full Screen -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onFullScreen()"
+                    [disabled]="disableFullScreen(isEdit)">
+                    <fa-icon icon="expand"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'FullScreen' | translate }}</span>
+                </button>
+
+                <!-- Actions dropdown -->
+                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
+                    *ngIf="showActionsDropdown">
+                    <button type="button"
+                        class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
+                        ngbDropdownToggle>
+                        {{ 'Actions' | translate }}
+                    </button>
+                    <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+                        <button type="button" *ngIf="showEditDefinition" class="dropdown-item btn-light" ngbDropdownItem
+                            (click)="onEdit()">
+                            {{ 'EditDefinition' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Buttons -->
+            <div>
+                <!-- Refresh -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    [disabled]="disableRefresh" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row t-rest-of-screen bg-light" style="overflow: auto;" (dblclick)="onDoubleClickSurface($event)"
+        #dashboard>
+        <ng-container *ngIf="rendered; else spinner">
+
+            <div class="{{ isVerticalMode ? 't-vertical-dashboard' : 't-dashboard' }}"
+                style="position: relative; max-height: 0;" id="dashboard">
+
+                <!-- Big Screen -->
+                <ng-container *ngIf="!isVerticalMode; else phoneView">
+                    <!-- Placeholder -->
+                    <div class="t-dashboard-widget" style="position: absolute; z-index: 0"
+                        [style.left.px]="placeholderLeft" [style.right.px]="placeholderRight"
+                        [style.top.px]="placeholderTop" [style.width.px]="placeholderWidth"
+                        [style.height.px]="placeholderHeight" *ngIf="showPlaceholder">
+                        <div class="w-100 h-100" style="background-color: lightgrey;">
+                        </div>
+                    </div>
+
+                    <ng-container *ngFor="let widget of definition.Widgets; let i = index; trackBy: trackByReportId">
+
+                        <!-- Widget itself (non Vertical) -->
+                        <div class="t-dashboard-widget" style="position: absolute" *ngIf="renderWidget(widget)"
+                            (dblclick)="onDoubleClickWidget($event, i)" [style.left.px]="left(widget)"
+                            [style.right.px]="right(widget)" [style.top.px]="top(widget)"
+                            [style.width.px]="width(widget)" [style.height.px]="height(widget)" cdkDrag
+                            [cdkDragDisabled]="!isEdit" (cdkDragStarted)="onDragStarted($event, widget)"
+                            (cdkDragMoved)="onDragMoved($event, widget)" (cdkDragEnded)="onDragEnded($event, i)">
+                            <div class="w-100 h-100 border bg-white shadow-sm d-flex flex-column p-2">
+                                <!-- Widget Header -->
+                                <div class="t-widget-header d-flex" cdkDragHandle
+                                    [style.cursor]="isEdit ? 'move' : 'auto'">
+                                    <ng-container *ngTemplateOutlet="widgetHeader; context: { widget: widget, i: i }">
+                                    </ng-container>
+                                </div>
+
+                                <!-- Widget Body -->
+                                <ng-container *ngTemplateOutlet="widgetBody; context: { widget: widget, i: i }">
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- Drag Handle for Resize-->
+                        <div class="t-drag-knob" [style.width.px]="resizeHandleSize"
+                            [style.height.px]="resizeHandleSize" style="position: absolute;" *ngIf="isEdit"
+                            [style.left.px]="leftResizeHandle(widget)" [style.right.px]="rightResizeHandle(widget)"
+                            [style.top.px]="topResizeHandle(widget)" cdkDrag
+                            (cdkDragStarted)="onResizeStarted($event, widget)"
+                            (cdkDragMoved)="onResizeMoved($event, widget)"
+                            (cdkDragEnded)="onResizeEnded($event, widget, i)">
+                            <div class="t-drag-knob-inner"></div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+
+                <!-- Phone Screen -->
+                <ng-template #phoneView>
+                    <ng-container *ngFor="let widget of definition.Widgets; let i = index; trackBy: trackByReportId">
+
+                        <!-- Widget itself (Vertical) -->
+                        <div class="t-dashboard-widget w-100" *ngIf="renderWidget(widget)"
+                            [style.height.px]="height(widget)">
+                            <div class="w-100 h-100 border bg-white shadow-sm d-flex flex-column p-2">
+                                <!-- Widget Header -->
+                                <div class="t-widget-header d-flex w-100">
+                                    <ng-container *ngTemplateOutlet="widgetHeader; context: { widget: widget, i: i }">
+                                    </ng-container>
+                                </div>
+
+                                <!-- Widget Body -->
+                                <ng-container *ngTemplateOutlet="widgetBody; context: { widget: widget, i: i }">
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-template>
+
+                <!-- Widget Header -->
+                <ng-template #widgetHeader let-widget="widget" let-i="i">
+                    <div class="flex-grow-1 text-truncate">
+                        <!-- Title -->
+                        <span> {{ ws.getMultilingualValueImmediate(widget, 'Title') ||
+                            ws.getMultilingualValueImmediate(reportDefinition(widget), 'Title') }}
+                        </span>
+                        <br />
+                        <!-- Refresh Time -->
+                        <span class="small text-muted"
+                            [title]="state(widget).time | datetimeFormat:null:6">{{'Refreshed0' |
+                            translate:
+                            {
+                            '0': (state(widget).time |
+                            datetimeFormat:null:6) } }}</span>
+                    </div>
+                    <!-- Error -->
+                    <div class="flex-grow-0 text-danger">
+                        <div [ngbPopover]="errorPopover" popoverClass="t-error-popover" [container]="null"
+                            [placement]="popoverPlacement" triggers="mouseenter:mouseleave"
+                            *ngIf="showErrorIcon(widget)">
+                            <fa-icon icon="exclamation-triangle">
+                            </fa-icon>
+                        </div>
+                    </div>
+                    <!-- Menu -->
+                    <div class="flex-grow-0" ngbDropdown [placement]="popoverPlacement" [container]="null">
+                        <button
+                            class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                            ngbDropdownToggle><span class="small text-muted">
+                                <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                            </span></button>
+                        <div ngbDropdownMenu>
+                            <button ngbDropdownItem class="px-0" (click)="onRefreshWidget(i)">
+                                <div class="t-menu-icon">
+                                    <fa-icon icon="sync-alt"></fa-icon>
+                                </div>
+                                <div class="t-menu-text"> {{ 'Refresh' | translate }} </div>
+                            </button>
+                            <button ngbDropdownItem class="px-0" (click)="onExpandWidget(widget)">
+                                <div class="t-menu-icon">
+                                    <fa-icon icon="expand"></fa-icon>
+                                </div>
+                                <div class="t-menu-text"> {{ 'Expand' | translate }} </div>
+                            </button>
+                            <button ngbDropdownItem class="px-0" (click)="onExportWidget(i)">
+                                <div class="t-menu-icon">
+                                    <fa-icon icon="download"></fa-icon>
+                                </div>
+                                <div class="t-menu-text"> {{ 'Export' | translate }} </div>
+                            </button>
+                            <button ngbDropdownItem class="px-0" *ngIf="showEditReportDefinition"
+                                (click)="onEditReportDefinition(widget)">
+                                <div class="t-menu-icon">
+                                    <fa-icon icon="edit"></fa-icon>
+                                </div>
+                                <div class="t-menu-text"> {{ 'EditDefinition' | translate }} </div>
+                            </button>
+                            <ng-container *ngIf="isEdit">
+                                <hr />
+                                <button ngbDropdownItem class="px-0" (click)="onEditWidget(i)">
+                                    <div class="t-menu-icon">
+                                        <fa-icon icon="pen"></fa-icon>
+                                    </div>
+                                    <div class="t-menu-text"> {{ 'Edit' | translate }} </div>
+                                </button>
+                                <button ngbDropdownItem class="px-0" (click)="onDeleteWidget(i)">
+                                    <div class="t-menu-icon">
+                                        <fa-icon icon="trash"></fa-icon>
+                                    </div>
+                                    <div class="t-menu-text"> {{ 'Delete' | translate }} </div>
+                                </button>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <ng-template #errorPopover>
+                        <div style="width: 200px">
+                            <p class="m-0 p-0">
+                                <fa-icon icon="exclamation-triangle"></fa-icon>
+                                &nbsp;
+                                {{ errorMessage(widget) }}
+                            </p>
+                        </div>
+                    </ng-template>
+                </ng-template>
+
+                <!-- Widget Body -->
+                <ng-template #widgetBody let-widget="widget" let-i="i">
+                    <t-report-results class="w-100 flex-grow-1 bg-light2 border-top2" style="overflow: hidden;"
+                        [class.bg-light]="isPivot(widget)" [definition]="reportDefinition(widget)"
+                        [view]="reportView(widget)" [state]="state(widget)" mode="widget" [refresh]="refreshSubject(i)"
+                        [export]="exportSubject(i)" (silentRefreshError)="onSilentRefreshError($event, widget, i)"
+                        [disableDrilldown]="disableDrilldown">
+                    </t-report-results>
+                </ng-template>
+
+            </div>
+        </ng-container>
+
+        <!-- Spinner for huge menu -->
+        <ng-template #spinner>
+            <div class="text-center pt-4 w-100">
+                <t-spinner [scale]="2"></t-spinner>
+            </div>
+        </ng-template>
+    </div>
+</div>

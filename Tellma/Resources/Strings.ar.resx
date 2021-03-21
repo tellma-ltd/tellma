@@ -406,6 +406,33 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>تعريفات عهد</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>تعريف داشبورد</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>مدة التحديث التلقائي (دقائق)</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>الطول (قطع)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>الانزياح الأفقي (قطع)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>الانزياح الرأسي (قطع)</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>التقرير</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>القطع</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>العرض (قطع)</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>تعريفات داشبورد</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
   </data>
@@ -472,8 +499,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>تعريفات التقارير</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>الأدوار</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>إظهار</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>إظهار في القائمة الرئيسية</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>الحالة</value>
@@ -1059,6 +1095,9 @@
   </data>
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف</value>
+  </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>قيمة الحقل {0} لا يمكن أن تتجاوز {1}.</value>
   </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>عملية الاستيراد فشلت بسبب الآتي:</value>
@@ -1662,6 +1701,9 @@
   </data>
   <data name="FullMonthUq9" xml:space="preserve">
     <value>رمضان</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>ملأ الشاشة</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>إعدادات عامة</value>
@@ -2580,9 +2622,6 @@
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>أظهر مجموع الأعمدة</value>
-  </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>إظهار في القائمة الرئيسية</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>أظهر مجموع الأسطر</value>

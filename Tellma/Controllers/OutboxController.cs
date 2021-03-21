@@ -13,7 +13,7 @@ using Tellma.Entities;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     public class OutboxController : FactWithIdControllerBase<OutboxRecord, int>
     {
         public const string BASE_ADDRESS = "outbox";

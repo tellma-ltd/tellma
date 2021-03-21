@@ -3,4 +3,5 @@ export interface GetAggregateArguments {
     filter?: string;
     having?: string;
     select?: string;
+    silent?: boolean;
 }

@@ -7,12 +7,44 @@
 	@Columns [ReportDefinitionDimensionList] READONLY,
 	@ColumnsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
 	@Measures [ReportDefinitionMeasureList] READONLY,
+	@Roles [dbo].[ReportDefinitionRoleList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @RowsIndexedIds [dbo].[IndexIdWithHeaderList], @ColumnsIndexedIds [dbo].[IndexIdWithHeaderList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+
+	-- Update all users whose report definitions have changed
+	IF EXISTS (
+		SELECT * FROM dbo.[Roles] R
+		JOIN dbo.[ReportDefinitionRoles] DR ON DR.[RoleId] = R.[Id]
+		JOIN dbo.[ReportDefinitions] D ON D.[Id] = DR.[ReportDefinitionId]
+		WHERE
+			D.[Id] IN (SELECT [Id] FROM @Entities) AND 
+			D.[ShowInMainMenu] = 1 AND
+			R.[IsActive] = 1 AND
+			R.[IsPublic] = 1
+	)
+	BEGIN
+		 -- If a public role is mentioned invalidate the cache for all users
+		UPDATE dbo.[Users] SET [PermissionsVersion] = NEWID();
+	END
+	ELSE
+	BEGIN
+		-- Invalidate the cache for affected users only
+		UPDATE U
+		SET U.[PermissionsVersion] = NEWID()
+		FROM dbo.[Users] U
+		JOIN dbo.[RoleMemberships] RM ON U.[Id] = RM.[UserId]
+		JOIN dbo.[Roles] R ON RM.[RoleId] = R.[Id]
+		JOIN dbo.[ReportDefinitionRoles] DR ON DR.[RoleId] = R.[Id]
+		JOIN dbo.[ReportDefinitions] D ON D.[Id] = DR.[ReportDefinitionId]
+		WHERE 
+			D.[Id] IN (SELECT [Id] FROM @Entities) AND 
+			D.[ShowInMainMenu] = 1 AND
+			R.[IsActive] = 1
+	END
 
 	-- Report Definitions
 	INSERT INTO @IndexedIds([Index], [Id])
@@ -385,9 +417,66 @@ SET NOCOUNT ON;
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
+				
+	-- Roles
+	WITH BM AS (
+		SELECT * FROM [dbo].[ReportDefinitionRoles]
+		WHERE [ReportDefinitionId] IN (SELECT [Id] FROM @Entities)
+	)
+	MERGE INTO BM AS t
+	USING (
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[RoleId]
+		FROM @Roles L 
+		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED 
+	THEN
+		UPDATE SET
+			t.[RoleId]				= s.[RoleId]
+	WHEN NOT MATCHED THEN
+		INSERT (
+			[ReportDefinitionId], [RoleId]
+		)
+		VALUES (
+			s.[ReportDefinitionId], s.[RoleId]
+		)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- Signal clients to refresh their cache
 	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+	
+	-- Update all users whose report definitions have changed
+	IF EXISTS (
+		SELECT * FROM dbo.[Roles] R
+		JOIN dbo.[ReportDefinitionRoles] DR ON DR.[RoleId] = R.[Id]
+		JOIN dbo.[ReportDefinitions] D ON D.[Id] = DR.[ReportDefinitionId]
+		WHERE
+			D.[Id] IN (SELECT [Id] FROM @IndexedIds) AND 
+			D.[ShowInMainMenu] = 1 AND
+			R.[IsActive] = 1 AND
+			R.[IsPublic] = 1
+	)
+	BEGIN
+		 -- If a public role is mentioned invalidate the cache for all users
+		UPDATE dbo.[Users] SET [PermissionsVersion] = NEWID();
+	END
+	ELSE
+	BEGIN
+		-- Invalidate the cache for affected users only
+		UPDATE U
+		SET U.[PermissionsVersion] = NEWID()
+		FROM dbo.[Users] U
+		JOIN dbo.[RoleMemberships] RM ON U.[Id] = RM.[UserId]
+		JOIN dbo.[Roles] R ON RM.[RoleId] = R.[Id]
+		JOIN dbo.[ReportDefinitionRoles] DR ON DR.[RoleId] = R.[Id]
+		JOIN dbo.[ReportDefinitions] D ON D.[Id] = DR.[ReportDefinitionId]
+		WHERE 
+			D.[Id] IN (SELECT [Id] FROM @IndexedIds) AND 
+			D.[ShowInMainMenu] = 1 AND
+			R.[IsActive] = 1
+	END
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

@@ -21,9 +21,9 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
 export const SETTINGS_METAVERSION = '1.9';
-export const DEFINITIONS_METAVERSION = '5.1';
-export const PERMISSIONS_METAVERSION = '1.0';
-export const USER_SETTINGS_METAVERSION = '1.2';
+export const DEFINITIONS_METAVERSION = '5.2';
+export const PERMISSIONS_METAVERSION = '1.1';
+export const USER_SETTINGS_METAVERSION = '1.3';
 
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }
@@ -75,7 +75,9 @@ export function handleFreshPermissions(
   storage.setItem(versionStorageKey(prefix, tenantId), version);
   storage.setItem(metaVersionStorageKey(prefix, tenantId), metaversion);
 
-  tws.permissions = permissions;
+  tws.permissions = permissions.Views;
+  tws.reportIds = permissions.ReportIds;
+  tws.dashboardIds = permissions.DashboardIds;
   tws.permissionsVersion = version;
   tws.notifyStateChanged();
 }
@@ -182,7 +184,9 @@ export class TenantResolverGuard implements CanActivate {
           const cachedPermissionsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
           const cachedPermissionsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix, tenantId));
           if (!!cachedPermissions && cachedPermissionsMetaVersion === PERMISSIONS_METAVERSION) {
-            current.permissions = cachedPermissions;
+            current.permissions = cachedPermissions.Views;
+            current.reportIds = cachedPermissions.ReportIds;
+            current.dashboardIds = cachedPermissions.DashboardIds;
             current.permissionsVersion = cachedPermissionsVersion || '???';
           }
         };

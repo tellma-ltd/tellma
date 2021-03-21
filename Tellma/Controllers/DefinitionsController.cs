@@ -15,7 +15,7 @@ namespace Tellma.Controllers
 {
     [Route("api/definitions")]
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class DefinitionsController : ControllerBase
@@ -633,6 +633,42 @@ namespace Tellma.Controllers
                 MainMenuSection = def.MainMenuSection,
             };
         }
+
+        private static DashboardDefinitionForClient MapDashboardDefinition(DashboardDefinition def)
+        {
+            return new DashboardDefinitionForClient
+            {
+                // Title
+                Id = def.Id,
+                Code = def.Code,
+                Title = def.Title,
+                Title2 = def.Title2,
+                Title3 = def.Title3,
+
+                // Widgets
+                AutoRefreshPeriodInMinutes = def.AutoRefreshPeriodInMinutes ?? 0,
+
+                Widgets = def.Widgets?.Select(m => new DashboardDefinitionWidgetForClient
+                {
+                    ReportDefinitionId = m.ReportDefinitionId.Value,
+                    Title = m.Title,
+                    Title2 = m.Title2,
+                    Title3 = m.Title3,
+                    AutoRefreshPeriodInMinutes = m.AutoRefreshPeriodInMinutes,
+                    OffsetX = Math.Min(m.OffsetX ?? 0, 1000),
+                    OffsetY = Math.Min(m.OffsetY ?? 0, 1000),
+                    Width = Math.Min(m.Width ?? 0, 16),
+                    Height = Math.Min(m.Height ?? 0, 16)
+                })?.ToList() ?? new List<DashboardDefinitionWidgetForClient>(),
+
+                // Main Menu
+                ShowInMainMenu = def.ShowInMainMenu ?? false,
+                MainMenuIcon = def.MainMenuIcon,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
+                MainMenuSection = def.MainMenuSection,
+            };
+        }
+
 
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
             Dictionary<int, List<int>> entryCustodianDefs,
@@ -1341,6 +1377,7 @@ namespace Tellma.Controllers
                 custodyDefs,
                 resourceDefs,
                 reportDefs,
+                dashboardDefs,
                 docDefs,
                 lineDefs,
                 markupTemplates,
@@ -1357,6 +1394,7 @@ namespace Tellma.Controllers
                 Custodies = custodyDefs.ToDictionary(def => def.Id, MapCustodyDefinition),
                 Resources = resourceDefs.ToDictionary(def => def.Id, MapResourceDefinition),
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
+                Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs)),
                 MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
             };

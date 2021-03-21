@@ -29,7 +29,7 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
         public const string BASE_ADDRESS = "users";
@@ -370,7 +370,7 @@ namespace Tellma.Controllers
                 ImageId = user.ImageId,
                 PreferredLanguage = user.PreferredLanguage,
                 PreferredCalendar = user.PreferredCalendar,
-                CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
+                CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value),
             };
 
             var result = new Versioned<UserSettingsForClient>

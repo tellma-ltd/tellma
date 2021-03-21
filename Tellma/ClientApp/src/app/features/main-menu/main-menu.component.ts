@@ -8,14 +8,11 @@ import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
+import { PermissionsForClient, PermissionsForClientViews } from '~/app/data/dto/permissions-for-client';
 import { metadata } from '~/app/data/entities/base/metadata';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { AdminUserSettingsForClient } from '~/app/data/dto/admin-user-settings-for-client';
-import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { NgbCalendarUmAlQura } from '~/app/data/ngb-calendar-umalqura';
-import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 
 interface MenuSectionInfo {
   label?: string;
@@ -257,20 +254,24 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'report-definitions', sortKey: 100
         },
         {
+          label: 'DashboardDefinitions', icon: 'tools', link: '../dashboard-definitions',
+          view: 'dashboard-definitions', sortKey: 150
+        },
+        {
           label: 'LineDefinitions', icon: 'tools', link: '../line-definitions',
           view: 'line-definitions', sortKey: 200
         },
         {
           label: 'DocumentDefinitions', icon: 'tools', link: '../document-definitions',
-          view: 'document-definitions', sortKey: 200
+          view: 'document-definitions', sortKey: 225
         },
         {
           label: 'RelationDefinitions', icon: 'tools', link: '../relation-definitions',
-          view: 'relation-definitions', sortKey: 200
+          view: 'relation-definitions', sortKey: 250
         },
         {
           label: 'CustodyDefinitions', icon: 'tools', link: '../custody-definitions',
-          view: 'custody-definitions', sortKey: 200
+          view: 'custody-definitions', sortKey: 275
         },
         {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
@@ -315,7 +316,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._quickAccess;
   }
 
-  _permissions: PermissionsForClient = null;
+  _permissions: PermissionsForClientViews = null;
   _definitions: DefinitionsForClient = null;
   _settings: SettingsForClient = null;
   _mainMenu: MenuSectionInfo[];
@@ -358,6 +359,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
       this.addReportDefinitions(menu);
+      this.addDashboardDefinitions(menu);
 
       // Set the mainMenu field and sort the items based on sortKey
       this._mainMenu = Object.keys(menu).map(sectionKey => ({
@@ -400,94 +402,75 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private addReportDefinitions(menu: { [section: string]: MenuSectionInfo }) {
     const ws = this.workspace.currentTenant;
-    const definitions = ws.definitions.Reports;
-    if (!!definitions) {
-      const canViewRelations = Object.keys(ws.definitions.Relations).some(v => this.canView(`relations/${v}`));
-      const canViewCustodies = Object.keys(ws.definitions.Custodies).some(v => this.canView(`custodies/${v}`));
-      const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
-      const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
-      const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
+    const sharedDefIds = {};
+    for (const defId of ws.reportIds) {
+      sharedDefIds[defId] = true;
+    }
 
-      for (const definitionId of Object.keys(definitions)) {
+    for (const definitionId of Object.keys(ws.definitions.Reports)) {
+      const definition = ws.definitions.Reports[+definitionId];
+      if (!definition.ShowInMainMenu) {
+        continue;
+      }
 
-        // Get the definition and check it wants to appear in main menu
-        const definition = definitions[definitionId];
-        if (!definition.ShowInMainMenu) {
-          continue;
-        }
+      if (sharedDefIds[definitionId]) {
 
-        // Check if the user has permission
-        // Some reports can be based on the generic version of a definitioned collection
-        let canView: boolean;
-        if (!definition.DefinitionId) {
-          switch (definition.Collection) {
-            case 'Relation':
-              canView = canViewRelations;
-              break;
-            case 'Custody':
-              canView = canViewCustodies;
-              break;
-            case 'Resource':
-              canView = canViewResources;
-              break;
-            case 'Lookup':
-              canView = canViewLookups;
-              break;
-            case 'Document':
-              canView = canViewDocuments;
-              break;
-            default:
-              const metadataFn = metadata[definition.Collection];
-              if (!!metadataFn) {
-                const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-                canView = this.canView(view);
-              } else {
-                canView = false;
-              }
-              break;
-          }
-        } else {
-          const metadataFn = metadata[definition.Collection];
-          if (!!metadataFn) {
-            const view = metadataFn(this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-            canView = this.canView(view);
-          } else {
-            canView = false;
-          }
-        }
-
-        if (!canView) {
-          continue;
-        }
-
-        // get the label function
+        // Get the label
         const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+        const sortKey = definition.MainMenuSortKey;
+        const icon = definition.MainMenuIcon || 'folder';
 
-        // add the menu section if missing
-        if (!menu[definition.MainMenuSection]) {
-          definition.MainMenuSection = 'Miscellaneous';
+        // Get the section
+        let menuSection: string;
+        if (menu[definition.MainMenuSection]) {
+          menuSection = definition.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
         }
 
-        // push the menu item
-        menu[definition.MainMenuSection].items.push({
+        menu[menuSection].items.push({
           label,
-          sortKey: definition.MainMenuSortKey,
-          icon: definition.MainMenuIcon || 'folder',
-          paramsFunc: () => {
-            // This is to solve the unfortunate 'null' bug that kept haunting us for a long time even after we fixed it
-            const params = this.userSettings.get<Params>(`report/${definitionId}/arguments`);
-            const paramsWithoutNulls = {};
-            if (!!params) {
-              for (const key of Object.keys(params)) {
-                const value = params[key];
-                if (isSpecified(value)) {
-                  paramsWithoutNulls[key] = value;
-                }
-              }
-            }
-            return paramsWithoutNulls;
-          },
+          sortKey,
+          icon,
           link: `../report/${definitionId}`
+        });
+      }
+    }
+  }
+
+  private addDashboardDefinitions(menu: { [section: string]: MenuSectionInfo }) {
+    const ws = this.workspace.currentTenant;
+    const sharedDefIds = {};
+    for (const defId of ws.dashboardIds) {
+      sharedDefIds[defId] = true;
+    }
+
+    for (const definitionId of Object.keys(ws.definitions.Dashboards)) {
+      const definition = ws.definitions.Dashboards[+definitionId];
+      if (!definition.ShowInMainMenu) {
+        continue;
+      }
+
+      if (sharedDefIds[definitionId]) {
+
+        // Get the label
+        const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+        const sortKey = definition.MainMenuSortKey;
+        const icon = definition.MainMenuIcon || 'folder';
+
+        // Get the section
+        let menuSection: string;
+        if (menu[definition.MainMenuSection]) {
+          menuSection = definition.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
+        }
+
+        menu[menuSection].items.push({
+          label,
+          sortKey,
+          icon,
+          link: `../dashboard/${definitionId}`
         });
       }
     }

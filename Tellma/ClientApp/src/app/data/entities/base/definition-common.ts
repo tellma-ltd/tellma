@@ -99,6 +99,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
         choices: [
             'anchor',
             'angle-double-left',
+            'angle-double-right',
             'angle-left',
             'angle-right',
             'archive',

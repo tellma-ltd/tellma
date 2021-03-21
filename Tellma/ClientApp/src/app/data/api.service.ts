@@ -91,8 +91,8 @@ export class ApiService {
 
   public notificationsRecap() {
     // This call occurs automatically when the computer becomes online again,
-    // So it should be unobtrusive, ie. doesn't update user activity
-    const url = appsettings.apiAddress + 'api/notifications/recap?unobtrusive=true';
+    // So it should be silent, ie. doesn't update user activity
+    const url = appsettings.apiAddress + 'api/notifications/recap?silent=true';
     const obs$ = this.http.get<ServerNotificationSummary>(url).pipe(
       catchError(error => {
         const friendlyError = friendlify(error, this.trx);
@@ -673,7 +673,7 @@ export class ApiService {
       activate: this.activateFactory<User>('users', cancellationToken$),
       deactivate: this.deactivateFactory<User>('users', cancellationToken$),
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/users/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/users/client?silent=true`;
         const obs$ = this.http.get<Versioned<UserSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -984,7 +984,7 @@ export class ApiService {
     return {
 
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/general-settings/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/general-settings/client?silent=true`;
         const obs$ = this.http.get<Versioned<SettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -1010,7 +1010,7 @@ export class ApiService {
   public permissionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/permissions/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/permissions/client?silent=true`;
         const obs$ = this.http.get<Versioned<PermissionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -1027,7 +1027,7 @@ export class ApiService {
   public definitionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/definitions/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/definitions/client?silent=true`;
         const obs$ = this.http.get<Versioned<DefinitionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -1250,6 +1250,10 @@ export class ApiService {
 
         if (!!args.having) {
           paramsArray.push(`having=${encodeURIComponent(args.having)}`);
+        }
+
+        if (!!args.silent) {
+          paramsArray.push(`silent=${!!args.silent}`);
         }
 
         this.addExtras(paramsArray, extras);
@@ -1712,8 +1716,8 @@ export class ApiService {
       paramsArray.push(`countEntities=true`);
     }
 
-    if (!!args.unobtrusive) {
-      paramsArray.push(`unobtrusive=${args.unobtrusive}`);
+    if (!!args.silent) {
+      paramsArray.push(`silent=${!!args.silent}`);
     }
 
     return paramsArray;

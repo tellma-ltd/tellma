@@ -406,6 +406,33 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>托管定义</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>仪表板定义</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>自动刷新周期（分钟）</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>高度（瓷砖）</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>偏移X（砖）</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>偏移Y（砖）</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>报告</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>小工具</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>宽度（砖）</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>仪表板定义</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>数据</value>
   </data>
@@ -472,8 +499,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>角色</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>角色</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>展示</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>显示在主菜单</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -1060,6 +1096,9 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>字段{0}必须至少{2}和在最大{1}个字符长。</value>
   </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>字段{0}的值不能超过{1}。</value>
+  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>导入失败，因为以下的原因：</value>
   </data>
@@ -1554,6 +1593,9 @@
   </data>
   <data name="FullMonthEt13" xml:space="preserve">
     <value>Pagume</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>全屏</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>通用设置</value>
@@ -2427,9 +2469,6 @@
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>显示列总计</value>
-  </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>显示在主菜单</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>展会共行</value>

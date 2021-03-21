@@ -44,6 +44,11 @@ namespace Tellma.Controllers.Dto
         public Dictionary<int, ReportDefinitionForClient> Reports { get; set; }
 
         /// <summary>
+        /// Mapping from dashboard definition Id to dashboard definition
+        /// </summary>
+        public Dictionary<int, DashboardDefinitionForClient> Dashboards { get; set; }
+
+        /// <summary>
         /// A collection of markup templates
         /// </summary>
         public IEnumerable<MarkupTemplateForClient> MarkupTemplates { get; set; }
@@ -179,6 +184,32 @@ namespace Tellma.Controllers.Dto
         public string DangerWhen { get; set; }
         public string WarningWhen { get; set; }
         public string SuccessWhen { get; set; }
+    }
+
+    ///////////////////// Dashboard Definitions
+
+    public class DashboardDefinitionForClient : DefinitionForClient
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Title2 { get; set; }
+        public string Title3 { get; set; }
+        public int AutoRefreshPeriodInMinutes { get; set; }
+        public List<DashboardDefinitionWidgetForClient> Widgets { get; set; }
+        public bool ShowInMainMenu { get; set; }
+    }
+
+    public class DashboardDefinitionWidgetForClient
+    {
+        public int ReportDefinitionId { get; set; }
+        public int OffsetX { get; set; }
+        public int OffsetY { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string Title { get; set; }
+        public string Title2 { get; set; }
+        public string Title3 { get; set; }
+        public int? AutoRefreshPeriodInMinutes { get; set; }
     }
 
     ///////////////////// Document Definitions

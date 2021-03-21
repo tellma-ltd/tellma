@@ -28,15 +28,13 @@ namespace Tellma.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="allowUnobtrusive">Allows clients to call this controller silently, without updating LastActive of the user</param>
-        public ApplicationControllerAttribute(bool allowUnobtrusive = false) :
-            base(allowUnobtrusive ? typeof(UnobtrusiveApplicationApiFilter) : typeof(ObtrusiveApplicationApiFilter))
+        public ApplicationControllerAttribute() : base(typeof(ApplicationApiFilter))
         { }
 
         /// <summary>
         /// An implementation of the method described here https://bit.ly/2MKwY7A
         /// </summary>
-        private abstract class ApplicationApiFilter : IAsyncResourceFilter
+        private class ApplicationApiFilter : IAsyncResourceFilter
         {
             private readonly ApplicationRepository _appRepo;
             private readonly ITenantIdAccessor _tenantIdAccessor;
@@ -57,8 +55,6 @@ namespace Tellma.Controllers
                 _serviceProvider = sp;
             }
 
-            protected abstract bool AllowUnobtrusive { get; }
-
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
                 // (1) Make sure the API caller have provided a tenantId, and extract it
@@ -70,8 +66,8 @@ namespace Tellma.Controllers
                     // Init the database connection...
                     // The client sometimes makes ambient API calls, not in response to user interaction
                     // Such calls should not update LastAccess of that user
-                    bool unobtrusive = AllowUnobtrusive && context.HttpContext.Request.Query["unobtrusive"].FirstOrDefault()?.ToString()?.ToLower() == "true";
-                    await _appRepo.InitConnectionAsync(tenantId, setLastActive: !unobtrusive, cancellation);
+                    bool silent = context.HttpContext.Request.Query["silent"].FirstOrDefault()?.ToString()?.ToLower() == "true";
+                    await _appRepo.InitConnectionAsync(tenantId, setLastActive: !silent, cancellation);
 
                     // (2) Make sure the user is a member of this tenant
                     UserInfo userInfo = await _appRepo.GetUserInfoAsync(cancellation);
@@ -232,33 +228,5 @@ namespace Tellma.Controllers
                 }
             }
         }
-
-        #region Implementations
-
-        /// <summary>
-        /// An implementation of <see cref="ApplicationApiFilter"/> that allows the client to bypass setting LastAccess of the user
-        /// </summary>
-        private class UnobtrusiveApplicationApiFilter : ApplicationApiFilter
-        {
-            public UnobtrusiveApplicationApiFilter(IServiceProvider sp) : base(sp)
-            {
-            }
-
-            protected override bool AllowUnobtrusive => true;
-        }
-
-        /// <summary>
-        /// An implementation of <see cref="ApplicationApiFilter"/> that forces the setting of LastAccess of the user
-        /// </summary>
-        private class ObtrusiveApplicationApiFilter : ApplicationApiFilter
-        {
-            public ObtrusiveApplicationApiFilter(IServiceProvider sp) : base(sp)
-            {
-            }
-
-            protected override bool AllowUnobtrusive => false;
-        }
-
-        #endregion
     };
 }

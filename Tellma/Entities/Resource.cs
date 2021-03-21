@@ -99,11 +99,11 @@ namespace Tellma.Entities
         //public int? Lookup5Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text1 { get; set; } // Check
 
         [Display(Name = "Entity_Text2")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text2 { get; set; } // Check
 
         [NotMapped]

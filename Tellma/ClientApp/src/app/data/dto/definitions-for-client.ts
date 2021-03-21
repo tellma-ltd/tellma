@@ -15,6 +15,7 @@ export interface DefinitionsForClient {
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
+    Dashboards: { [definitionId: number]: DashboardDefinitionForClient };
     MarkupTemplates: MarkupTemplateForClient[];
 
     ManualJournalVouchersDefinitionId: number;
@@ -129,7 +130,33 @@ export interface ReportDefinitionDimensionAttributeForClient {
     Label2?: string;
     Label3?: string;
     OrderDirection?: ReportOrderDirection;
+}
 
+export interface DashboardDefinitionForClient extends DefinitionForClient {
+    Id: number;
+    Title: string;
+    Title2?: string;
+    Title3?: string;
+    AutoRefreshPeriodInMinutes: number;
+    Widgets: DashboardDefinitionWidgetForClient[];
+    ShowInMainMenu: boolean;
+}
+
+export interface DashboardDefinitionWidgetForClient {
+    ReportDefinitionId: number;
+    OffsetX: number;
+    OffsetY: number;
+    Width: number;
+    Height: number;
+    Title?: string;
+    Title2?: string;
+    Title3?: string;
+    AutoRefreshPeriodInMinutes: number;
+
+    // Client only
+    changeY?: number;
+    changeW?: number;
+    changeH?: number;
 }
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
