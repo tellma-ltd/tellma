@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[BankAccounts__Reconciled]
-	@AsOfDate DATE
+	@AsOfDate DATE = NULL
 AS
+	SET @AsOfDate = ISNULL(@AsOfDate, CAST(GETDATE() AS DATE));
 	DECLARE @ReconciliationIds IdList;
 
 	WITH BankAccounts AS (

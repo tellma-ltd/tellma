@@ -779,6 +779,11 @@
     <Build Include="wiz\Functions\wiz.fn_FromJulianDayNumber.sql" />
     <Build Include="wiz\Functions\wiz.fn_Ethiopian_StartOfMonth.sql" />
     <Build Include="wiz\Functions\wiz.fn_Ethiopian_StartOfYear.sql" />
+    <Build Include="bll\Functions\bll.fn_RSD__CD.sql" />
+    <Build Include="bll\Functions\bll.fn_RS__C.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Relation__Name.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Custody__Name.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

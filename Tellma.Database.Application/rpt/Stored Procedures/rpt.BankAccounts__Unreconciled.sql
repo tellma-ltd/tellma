@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[BankAccounts__Unreconciled]
-	@AsOfDate		DATE
+	@AsOfDate		DATE = NULL
 AS
+	SET @AsOfDate = ISNULL(@AsOfDate, CAST(GETDATE() AS DATE));
 	WITH BankAccounts AS (
 		SELECT [Id] FROM dbo.Accounts
 		WHERE AccountTypeId IN (
