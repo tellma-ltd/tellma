@@ -52,7 +52,8 @@ AS
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	INNER JOIN dbo.ReconciliationEntries R ON R.[EntryId] = E.[Id]
 	WHERE R.[ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
-
+	AND (@ToDate IS NULL OR L.PostingDate >= @FromDate)
+	AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
 	-- Select the External Entries
 	SELECT R.[ReconciliationId], E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt]
 	FROM dbo.ExternalEntries E

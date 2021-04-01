@@ -11,11 +11,11 @@ AS
 		ToCount INT
 	)
 	INSERT INTO @IssuedInvoices VALUES
-	(1, 698), -- 671 Sebeta
-	(662, 3001), -- Assela
-	(1357, 1510), -- HQ
-	(451, 1184), -- Aman
-	(1, 312);-- Gadisa
+	(1, 698), -- Sebeta
+	(662, 3004), -- Assela
+	(1357, 1523), -- HQ
+	(451, 1191), -- Aman
+	(1, 355);-- Gadisa
 
 	DECLARE @InvoiceRepetitions TABLE (
 		InvoiceId		INT PRIMARY KEY,
@@ -34,8 +34,8 @@ AS
 	AND ISNULL(D.InternalReference, E.InternalReference) Like N'FS%'
 	GROUP BY ISNULL(D.InternalReference, E.InternalReference), D.Id
 	) T
-	GROUP BY InternalReference
-	ORDER BY InternalReference;
+	GROUP BY  RIGHT(InternalReference, 6)
+	ORDER BY  RIGHT(InternalReference, 6);
 
 	WITH IntList AS (
 		SELECT TOP (10000) InvoiceId = ROW_NUMBER() OVER (ORDER BY [object_id]) FROM sys.all_objects ORDER BY InvoiceId	
