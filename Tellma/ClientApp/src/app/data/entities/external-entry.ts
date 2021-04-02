@@ -14,4 +14,5 @@ export interface ExternalEntry extends ExternalEntryForSave {
     CreatedById?: number;
     ModifiedAt?: string;
     ModifiedById?: number;
+    IsReconciledLater?: boolean;
 }

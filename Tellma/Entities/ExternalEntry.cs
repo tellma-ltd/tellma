@@ -45,6 +45,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
+        public bool? IsReconciledLater { get; set; }
 
         // For Query
 

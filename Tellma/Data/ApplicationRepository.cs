@@ -7907,7 +7907,8 @@ namespace Tellma.Data
                         CreatedById = reader.Int32(i++),
                         CreatedAt = reader.GetDateTimeOffset(i++),
                         ModifiedById = reader.Int32(i++),
-                        ModifiedAt = reader.GetDateTimeOffset(i++)
+                        ModifiedAt = reader.GetDateTimeOffset(i++),
+                        IsReconciledLater = reader.GetBoolean(i++),
                     });
                 }
             }
