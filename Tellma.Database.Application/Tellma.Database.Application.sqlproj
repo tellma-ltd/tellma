@@ -800,6 +800,7 @@
     <Build Include="dbo\Functions\dbo.fn_Custody__Name.sql" />
     <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
     <Build Include="map\map.ReportDefinitionRoles.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.BankReconciliationAnomalies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
