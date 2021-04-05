@@ -7,7 +7,6 @@ AS
 	DELETE FROM [dbo].[AccountTypes]
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
-
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
 		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E.[Code])

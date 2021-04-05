@@ -39,7 +39,6 @@
 	[UnitMass]					DECIMAL (19,4),
 	[UnitMassUnitId]			INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[Units] ([Id]),
 	-- 
-	--[ParentId]					INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
 	[MonetaryValue]				DECIMAL (19,4),
 	[ParticipantId]				INT					CONSTRAINT [FK_Resources__ParticipantId] REFERENCES [dbo].[Relations] ([Id]),
 

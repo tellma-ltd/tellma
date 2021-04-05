@@ -16,7 +16,7 @@ RETURN
 			[OperationId]			INT,
 			[AccountId]				INT,
 			[ResourceId]			INT,
-			[CustodyId]				INT,
+			[RelationId]				INT,
 			[Direction]				SMALLINT,
 			[Amount]				DECIMAL (19,4),
 			[Mass]					DECIMAL,

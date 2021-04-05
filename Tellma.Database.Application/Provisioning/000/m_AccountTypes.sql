@@ -3,7 +3,7 @@ BEGIN
 DECLARE @AT TABLE (
 	[Index] INT, [StandardAndPure] BIT, [IsMonetary] BIT, [Code] NVARCHAR(50),
 	[Node] HIERARCHYID, [EntryTypeParentConcept] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX),
-	[CustodianDefinitionId] INT, [ParticipantDefinitionId] INT
+	[CustodianDefinitionId] INT, [NotedRelationDefinitionId] INT
 )
 --Script
 INSERT INTO @AT VALUES(1,0,0,'1', '/1/', NULL,N'StatementOfFinancialPositionAbstract', N'Statement of financial position [abstract]',N'',NULL, NULL)
@@ -374,9 +374,9 @@ INSERT INTO @AT VALUES(532,0,1,'532', '/5/3/2/', NULL,N'CostCenterAssignmentExte
 INSERT INTO @AT VALUES(533,0,1,'533', '/5/3/3/', NULL,N'PromotionExtension', N'Promotions',N'',NULL, @EmployeeRLD)
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'',NULL, NULL)
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
-		[EntryTypeParentId], [Description],[CustodianDefinitionId], [ParticipantDefinitionId])
+		[EntryTypeParentId], [Description],[CustodianDefinitionId], [NotedRelationDefinitionId])
 SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [StandardAndPure], [IsMonetary],
-		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = RC.EntryTypeParentConcept), [Description],[CustodianDefinitionId], [ParticipantDefinitionId]
+		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = RC.EntryTypeParentConcept), [Description],[CustodianDefinitionId], [NotedRelationDefinitionId]
 FROM @AT RC;
 UPDATE @AccountTypes SET IsAssignable = 1
 WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
@@ -574,7 +574,6 @@ WHERE [Concept] IN (
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
@@ -973,7 +972,7 @@ INSERT INTO @AccountTypes(
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
-	[CustodianDefinitionId], [ParticipantDefinitionId]
+	[RelationDefinitionId], [CustodianDefinitionId], [NotedRelationDefinitionId]
 )
 SELECT
 	[Id], [ParentId], [Id], [ParentId],
@@ -992,7 +991,7 @@ SELECT
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
-	[CustodianDefinitionId], [ParticipantDefinitionId]
+	[RelationDefinitionId], [CustodianDefinitionId], [NotedRelationDefinitionId]
 FROM dbo.AccountTypes
 
 INSERT INTO @AccountTypeResourceDefinitions([Index],
@@ -1181,57 +1180,11 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (880,@CollectionGuaranteeExtension,						@CheckReceivedRD),
 (885,@DishonouredGuaranteeExtension,					@CheckReceivedRD);
 
-INSERT INTO @AccountTypeCustodyDefinitions([Index],
-[HeaderIndex],										[CustodyDefinitionId]) VALUES
---(0,@Land,											@PPECustodyCD),
---(1,@Buildings,										@PPECustodyCD),
---(2,@Machinery,										@PPECustodyCD),
---(3,@Machinery,										@RentalCD),
---(4,@MotorVehicles,									@PPECustodyCD),
---(5,@MotorVehicles,									@RentalCD),
---(6,@FixturesAndFittings,							@PPECustodyCD),
---(7,@OfficeEquipment,								@PPECustodyCD),
---(8,@OfficeEquipment,								@RentalCD),
---(13,@BearerPlants,									@PPECustodyCD),
---(14,@TangibleExplorationAndEvaluationAssets,		@PPECustodyCD),
---(15,@TangibleExplorationAndEvaluationAssets,		@RentalCD),
---(16,@MiningAssets,									@PPECustodyCD),
---(17,@OilAndGasAssets,								@PPECustodyCD),
---(18,@MiningAssets,									@PPECustodyCD),
---(20,@ConstructionInProgress,						@PPECustodyCD),
---(21,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,
---													@PPECustodyCD),
---(22,@OtherPropertyPlantAndEquipment,				@PPECustodyCD),
 
---(23,@InvestmentPropertyCompleted,					@RentalCD),
---(24,@InvestmentPropertyCompleted,					@PPECustodyCD),
-(37,@Merchandise,									@WarehouseCD),
-(38,@CurrentFoodAndBeverage,						@WarehouseCD),
-(39,@CurrentAgriculturalProduce,					@WarehouseCD),
-(310,@FinishedGoods,								@WarehouseCD),
-(311,@WorkInProgress,								@WarehouseCD),
-(312,@RawMaterials,									@WarehouseCD),
-(313,@ProductionSupplies,							@WarehouseCD),
-(314,@CurrentPackagingAndStorageMaterials,			@WarehouseCD),
-(315,@SpareParts,									@WarehouseCD),
-(316,@CurrentFuel,									@WarehouseCD),
---(317,@CurrentInventoriesInTransit,					@TransitCustodyCD),
-(319,@OtherInventories,								@WarehouseCD),
---(325,@CurrentReceivablesFromRentalOfProperties,		@RentalCD),
-(327,@CashOnHand,									@CashOnHandAccountCD),
-(328,@BalancesWithBanks,							@BankAccountCD),
-(329,@RevenueFromSaleOfGoods,						@WarehouseCD),
-(330,@RevenueFromSaleOfFoodAndBeverage,				@WarehouseCD),
-(331,@RevenueFromSaleOfAgriculturalProduce,			@WarehouseCD),
-(331,@OtherRevenue,									@WarehouseCD),
-(332,@CostOfMerchandiseSold,						@WarehouseCD),
-(344,@CollectionGuaranteeExtension,					@CashOnHandAccountCD),
-(345,@DishonouredGuaranteeExtension,				@CashOnHandAccountCD);
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 

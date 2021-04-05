@@ -65,19 +65,19 @@ BEGIN
 	WHERE AC.[CustodianDefinitionId] IS NULL;
 
 	UPDATE E
-	SET E.[CustodyId] = NULL
+	SET E.[RelationId] = NULL
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.[CustodyDefinitionId] IS NULL;
+	WHERE A.[RelationDefinitionId] IS NULL;
 
 	UPDATE E
-	SET E.[ParticipantId] = NULL
+	SET E.[NotedRelationId] = NULL
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.[ParticipantDefinitionId] IS NULL
+	WHERE AC.[NotedRelationDefinitionId] IS NULL
 	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
 	UPDATE E
@@ -101,8 +101,8 @@ BEGIN
 	-- TODO : Overwrite readonly Memo
 	WITH CTE AS (
 		SELECT
-			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodianId], E.[CustodyId],
-			E.[ParticipantId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
+			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[RelationId], E.[CustodianId],
+			E.[NotedRelationId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
 			E.[ExternalReference], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
@@ -115,9 +115,9 @@ BEGIN
 	SET
 		E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
 		E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
+		E.[RelationId]			= IIF(CTE.[ColumnName] = N'RelationId', CTE.[RelationId], E.[RelationId]),
 		E.[CustodianId]			= IIF(CTE.[ColumnName] = N'CustodianId', CTE.[CustodianId], E.[CustodianId]),
-		E.[CustodyId]			= IIF(CTE.[ColumnName] = N'CustodyId', CTE.[CustodyId], E.[CustodyId]),
-		E.[ParticipantId]		= IIF(CTE.[ColumnName] = N'ParticipantId', CTE.[ParticipantId], E.[ParticipantId]),
+		E.[NotedRelationId]		= IIF(CTE.[ColumnName] = N'NotedRelationId', CTE.[NotedRelationId], E.[NotedRelationId]),
 		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
 		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
 		E.[UnitId]				= IIF(CTE.[ColumnName] = N'UnitId', CTE.[UnitId], E.[UnitId]),
@@ -125,6 +125,7 @@ BEGIN
 		E.[Time1]				= IIF(CTE.[ColumnName] = N'Time1', CTE.[Time1], E.[Time1]),
 		E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
 		E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
+		E.[ReferenceSourceId]	= IIF(CTE.[ColumnName] = N'ReferenceSourceId', CTE.[ReferenceSourceId], E.[ReferenceSourceId]),
 		E.[InternalReference]	= IIF(CTE.[ColumnName] = N'InternalReference', CTE.[InternalReference], E.[InternalReference]),
 		E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
 		E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
@@ -215,41 +216,41 @@ BEGIN
 	SET
 		E.[CurrencyId]		= R.[CurrencyId],
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
-		E.[ParticipantId]	= COALESCE(R.[ParticipantId], E.[ParticipantId])
+		E.[NotedRelationId]	= COALESCE(R.[NotedRelationId], E.[NotedRelationId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
 
-	-- for smart lines, Get center from Custodies if available.
+	-- for smart lines, Get center from Relations if available.
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId])
+		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
 	JOIN dbo.AccountTypes AC ON LDE.[ParentAccountTypeId] = AC.[Id]
-	JOIN dbo.[Custodies] C ON E.[CustodyId] = C.Id
+	JOIN dbo.[Relations] RL ON E.[RelationId] = RL.Id
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
-	-- for JV, Get Center from Custodies if available
+	-- for JV, Get Center from Relations if available
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId])
+		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[Custodies] C ON E.[CustodyId] = C.Id
+	JOIN dbo.[Relations] RL ON E.[RelationId] = C.Id
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
-	-- for all lines, Get currency and custodian from Custodies if available.
+	-- for all lines, Get currency from Relations if available.
 	UPDATE E 
 	SET
-		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId]),
-		E.[CustodianId]		= COALESCE(C.[CustodianId], E.[CustodianId])
+		E.[CurrencyId]		= COALESCE(RL.[CurrencyId], E.[CurrencyId])
+--		E.[CustodianId]		= COALESCE(RL.[CustodianId], E.[CustodianId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[Custodies] C ON E.[CustodyId] = C.Id
+	JOIN dbo.Relations RL ON E.[RelationId] = RL.Id
 
 	-- When the resource has exactly one non-null unit Id, and the account does not allow PureUnit set it as the Entry's UnitId
 	UPDATE E
@@ -274,9 +275,9 @@ BEGIN
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
+		E.[RelationId]		= COALESCE(A.[RelationId], E.[RelationId]),
 		E.[CustodianId]		= COALESCE(A.[CustodianId], E.[CustodianId]),
-		E.[CustodyId]		= COALESCE(A.[CustodyId], E.[CustodyId]),
-		E.[ParticipantId]	= COALESCE(A.[ParticipantId], E.[ParticipantId]),
+		E.[NotedRelationId]	= COALESCE(A.[NotedRelationId], E.[NotedRelationId]),
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
@@ -315,20 +316,19 @@ BEGIN
 				[LineIndex] INT, 
 				[DocumentIndex] INT,  
 				[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
+				[RelationId] INT,
 				[CustodianId] INT, 
-				[CustodyDefinitionId] INT, 
-				[CustodyId] INT,
-				[ParticipantId] INT,
+				[NotedRelationId] INT,
 				[ResourceDefinitionId] INT,
 				[ResourceId] INT,
 				[CenterId] INT,
 				[CurrencyId] NCHAR (3)
 			)
-	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId], [CustodianId],
-					[CustodyDefinitionId], [CustodyId], [ParticipantId],
+	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId],
+					[RelationId], [CustodianId], [NotedRelationId],
 					[ResourceDefinitionId], [ResourceId], [CenterId], [CurrencyId])
 	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
-			E.[CustodianId], C.[DefinitionId] AS [CustodyDefinitionId], E.[CustodyId], E.[ParticipantId],
+			E.[RelationId], E.[CustodianId], E.[NotedRelationId],
 			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId], E.[CenterId], E.[CurrencyId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
@@ -336,13 +336,15 @@ BEGIN
 	JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 	JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 	LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-	LEFT JOIN dbo.[Custodies] C ON E.[CustodyId] = C.[Id]
+	LEFT JOIN dbo.[Relations] RL ON E.[RelationId] = RL.[Id] -- added
 	LEFT JOIN dbo.[Relations] CR ON E.[CustodianId] = CR.[Id] -- added
-	LEFT JOIN dbo.[Relations] PR ON E.[ParticipantId] = PR.[Id] -- added
+	LEFT JOIN dbo.[Relations] NR ON E.[NotedRelationId] = NR.[Id] -- added
 	WHERE L.DefinitionId <> @ManualLineLD
-	--TODO: By using Null Resource and Null Custody, we can speed up the following code by 3x, as we can then use INNER JOIN
-	AND (E.[ResourceId] IS NOT NULL OR ATC.[ParticipantDefinitionId] IS NULL AND PR.[DefinitionId] IS NULL OR ATC.[ParticipantDefinitionId] = PR.[DefinitionId])
-	AND (E.[CustodyId] IS NOT NULL OR ATC.[CustodianDefinitionId] IS NULL AND CR.[DefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
+	--TODO: By using Null Resource and Null Relation, we can speed up the following code by 3x, as we can then use INNER JOIN
+	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
+	AND (E.[CustodianId] IS NOT NULL OR ATC.[CustodianDefinitionId] IS NULL AND CR.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = CR.[DefinitionId])
+	AND (E.[ResourceId] IS NOT NULL OR ATC.[NotedRelationDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedRelationDefinitionId] = NR.[DefinitionId])
+
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;
 
 	-- Set the Account based on provided info so far
@@ -361,10 +363,9 @@ BEGIN
 		(A.[IsActive] = 1)
 	AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 	AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+	AND (A.[RelationId] IS NULL OR A.[RelationId] = LE.[RelationId])
 	AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
-	AND (A.[CustodyDefinitionId] IS NULL AND LE.[CustodyDefinitionId] IS NULL OR A.[CustodyDefinitionId] = LE.[CustodyDefinitionId])
-	AND (A.[CustodyId] IS NULL OR A.[CustodyId] = LE.[CustodyId])
-	AND (A.[ParticipantId] IS NULL OR A.[ParticipantId] = LE.[ParticipantId])
+	AND (A.[NotedRelationId] IS NULL OR A.[NotedRelationId] = LE.[NotedRelationId])
 	AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 	AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
 	

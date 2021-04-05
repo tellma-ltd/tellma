@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__Save]
 	@AccountId					INT, 
-	@CustodyId					INT,
+	@RelationId					INT,
 	@ExternalEntries			ExternalEntryList READONLY, -- insert/update
 	@Reconciliations			ReconciliationList READONLY, -- insert
 	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
@@ -42,7 +42,7 @@ AS
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[AccountId]			= @AccountId,
-				t.[CustodyId]			= @CustodyId,
+				t.[RelationId]			= @RelationId,
 				t.[PostingDate]			= s.[PostingDate],
 				t.[Direction]			= s.[Direction],
 				t.[MonetaryValue]		= s.[MonetaryValue],
@@ -50,8 +50,8 @@ AS
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([AccountId], [CustodyId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference])
-			Values (@AccountId, @CustodyId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference])
+			INSERT ([AccountId], [RelationId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference])
+			Values (@AccountId, @RelationId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference])
 	OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

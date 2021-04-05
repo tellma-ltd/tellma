@@ -14,12 +14,13 @@
 	[CenterId]						INT,
 	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
 	
+	[RelationId]					INT,
+	[RelationIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[CustodianId]					INT,
 	[CustodianIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[CustodyId]						INT,
-	[CustodyIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[ParticipantId]					INT,
-	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
+
+	[NotedRelationId]				INT,
+	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[ResourceId]					INT,
 	[ResourceIsCommon]				BIT				NOT NULL DEFAULT 0,
 
@@ -34,6 +35,8 @@
 
 	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
+	[ReferenceSourceId]				INT,
+	[ReferenceSourceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	[InternalReference]				NVARCHAR (50), -- e.g., machine number
 	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	

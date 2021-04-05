@@ -12,7 +12,7 @@ AS
 		[PostingDate]			DATE,
 		[LineId]				INT,
 		[Direction]				SMALLINT,
-		[CustodyId]				INT,
+		[RelationId]			INT,
 		[ResourceId]			INT,
 		[AlgebraicQuantity]		DECIMAL (19, 4),
 		[AlgebraicMonetaryValue]DECIMAL (19, 4),
@@ -77,14 +77,14 @@ AS
 		FROM dbo.Accounts A
 		WHERE AccountTypeId IN (SELECT [Id] FROM InventoryAccountTypes)
 	)
-	INSERT INTO @T([PostingDate], [LineId], [Direction], [CustodyId], [ResourceId],
+	INSERT INTO @T([PostingDate], [LineId], [Direction], [RelationId], [ResourceId],
 				[AlgebraicQuantity], [AlgebraicMonetaryValue], [AlgebraicValue],
 				[RunningQuantity], [RunningMonetaryValue], [RunningValue])
-	SELECT L.PostingDate, L.[Id], E.[Direction], E.[CustodyId], E.[ResourceId],
+	SELECT L.PostingDate, L.[Id], E.[Direction], E.[RelationId], E.[ResourceId],
 		E.[Direction] * E.[BaseQuantity], E.[Direction] * E.[MonetaryValue], E.[Direction] * E.[Value],
-			SUM(E.[Direction] * E.[BaseQuantity]) OVER (Partition BY  [ResourceId], [CustodyId] ORDER BY [PostingDate], [LineId]) AS RunningQuantity,
-			SUM(E.[Direction] * E.[MonetaryValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
-			SUM(E.[Direction] * E.[Value]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
+			SUM(E.[Direction] * E.[BaseQuantity]) OVER (Partition BY  [ResourceId], [RelationId] ORDER BY [PostingDate], [LineId]) AS RunningQuantity,
+			SUM(E.[Direction] * E.[MonetaryValue]) OVER (Partition BY [RelationId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
+			SUM(E.[Direction] * E.[Value]) OVER (Partition BY [RelationId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
 	FROM map.DetailsEntries() E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	WHERE AccountId IN (SELECT [Id] FROM InventoryAccounts)
@@ -101,25 +101,25 @@ AS
 			PriorVPU =  IIF([RunningQuantity]=[AlgebraicQuantity],0,([RunningValue] - [AlgebraicValue]) /  ([RunningQuantity] - [AlgebraicQuantity]));
 		-- Look for first smart issue where the CPU has deviated from Prior CPU
 		WITH BatchStartAndVPU AS (
-			SELECT MIN([Id]) As Id, [CustodyId], [ResourceId]
+			SELECT MIN([Id]) As Id, [RelationId], [ResourceId]
 			FROM @T T
 			WHERE [Direction] = -1
 			AND [LineId] NOT IN (SELECT [Id] FROM dbo.Lines WHERE DefinitionId = @ManualLine)
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
-			GROUP BY [CustodyId], [ResourceId]
+			GROUP BY [RelationId], [ResourceId]
 		),
 		-- Look for first receipt (smart or JV) where the CPU has deviated from Prior CPU
 		BatchEnd AS (
 			SELECT
-				MIN(T.[Id]) As Id, T.[CustodyId], T.[ResourceId]
+				MIN(T.[Id]) As Id, T.[RelationId], T.[ResourceId]
 			FROM @T AS T
-			JOIN BatchStartAndVPU BS ON T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
+			JOIN BatchStartAndVPU BS ON T.[RelationId] = BS.[RelationId] AND T.[ResourceId] = BS.[ResourceId]
 			WHERE [Direction] = 1
 			AND T.[Id] > BS.[Id]
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
-			GROUP BY T.[CustodyId], T.[ResourceId]
+			GROUP BY T.[RelationId], T.[ResourceId]
 		)
 		-- Update all the smart inventory issues in between with the prior CPU
 		UPDATE T
@@ -127,8 +127,8 @@ AS
 			T.[AlgebraicMonetaryValue] = T.[AlgebraicQuantity] * T.[PriorMVPU],
 			T.[AlgebraicValue] = T.[AlgebraicQuantity] * T.[PriorVPU]
 		FROM @T T
-		JOIN BatchStartAndVPU BS ON T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
-		LEFT JOIN BatchEnd BE ON T.[CustodyId] = BE.[CustodyId] AND T.[ResourceId] = BE.[ResourceId]
+		JOIN BatchStartAndVPU BS ON T.[RelationId] = BS.[RelationId] AND T.[ResourceId] = BS.[ResourceId]
+		LEFT JOIN BatchEnd BE ON T.[RelationId] = BE.[RelationId] AND T.[ResourceId] = BE.[ResourceId]
 		WHERE T.[Id] >= BS.[Id] AND (BE.[Id] IS NULL OR T.[Id] < BE.[Id])
 		AND T.[LineId] NOT IN (SELECT [Id] FROM dbo.Lines WHERE DefinitionId = @ManualLine)
 		AND (T.[AlgebraicMonetaryValue] <> T.[AlgebraicQuantity] * T.[PriorMVPU] OR T.[AlgebraicValue] <> T.[AlgebraicQuantity] * T.[PriorVPU]);
@@ -144,8 +144,8 @@ AS
 	
 		WITH CumBalances AS (
 			SELECT [Id],
-				SUM([AlgebraicMonetaryValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
-				SUM([AlgebraicValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
+				SUM([AlgebraicMonetaryValue]) OVER (Partition BY [RelationId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
+				SUM([AlgebraicValue]) OVER (Partition BY [RelationId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
 			FROM @T
 		)
 		UPDATE T

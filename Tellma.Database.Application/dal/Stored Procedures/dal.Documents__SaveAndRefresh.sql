@@ -33,13 +33,12 @@ BEGIN
 				[CurrencyIsCommon],
 				[CenterId],
 				[CenterIsCommon],
-
+				[RelationId],
+				[RelationIsCommon],
 				[CustodianId],
 				[CustodianIsCommon],
-				[CustodyId],
-				[CustodyIsCommon],
-				[ParticipantId],
-				[ParticipantIsCommon],
+				[NotedRelationId],
+				[NotedRelationIsCommon],
 				[ResourceId],
 				[ResourceIsCommon],
 				
@@ -54,6 +53,8 @@ BEGIN
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
+				[ReferenceSourceId],
+				[ReferenceSourceIsCommon],
 				[InternalReference],
 				[InternalReferenceIsCommon],
 
@@ -78,13 +79,13 @@ BEGIN
 				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
 				t.[CenterId]					= s.[CenterId],
 				t.[CenterIsCommon]				= s.[CenterIsCommon],
-				
+				t.[RelationId]					= s.[RelationId],
+				t.[RelationIsCommon]			= s.[RelationIsCommon],				
 				t.[CustodianId]					= s.[CustodianId],
 				t.[CustodianIsCommon]			= s.[CustodianIsCommon],
-				t.[CustodyId]					= s.[CustodyId],
-				t.[CustodyIsCommon]				= s.[CustodyIsCommon],
-				t.[ParticipantId]				= s.[ParticipantId],
-				t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
+
+				t.[NotedRelationId]				= s.[NotedRelationId],
+				t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
 				t.[ResourceId]					= s.[ResourceId],
 				t.[ResourceIsCommon]			= s.[ResourceIsCommon],
 								
@@ -99,6 +100,8 @@ BEGIN
 
 				t.[ExternalReference]			= s.[ExternalReference],
 				t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
+				t.[ReferenceSourceId]			= s.[ReferenceSourceId],
+				t.[ReferenceSourceIsCommon]		= s.[ReferenceSourceIsCommon],
 				t.[InternalReference]			= s.[InternalReference],
 				t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
 
@@ -118,13 +121,12 @@ BEGIN
 				[CurrencyIsCommon],
 				[CenterId],
 				[CenterIsCommon],
-
+				[RelationId],
+				[RelationIsCommon],
 				[CustodianId],
 				[CustodianIsCommon],
-				[CustodyId],
-				[CustodyIsCommon],
-				[ParticipantId],
-				[ParticipantIsCommon],
+				[NotedRelationId],
+				[NotedRelationIsCommon],
 				[ResourceId],
 				[ResourceIsCommon],
 				
@@ -139,6 +141,8 @@ BEGIN
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
+				[ReferenceSourceId],
+				[ReferenceSourceIsCommon],
 				[InternalReference],
 				[InternalReferenceIsCommon]
 			)
@@ -155,13 +159,13 @@ BEGIN
 				s.[CurrencyIsCommon],
 				s.[CenterId],
 				s.[CenterIsCommon],
-
+				s.[RelationId],
+				s.[RelationIsCommon],
 				s.[CustodianId],
 				s.[CustodianIsCommon],
-				s.[CustodyId],
-				s.[CustodyIsCommon],
-				s.[ParticipantId],
-				s.[ParticipantIsCommon],
+
+				s.[NotedRelationId],
+				s.[NotedRelationIsCommon],
 				s.[ResourceId],
 				s.[ResourceIsCommon],
 				
@@ -176,6 +180,8 @@ BEGIN
 
 				s.[ExternalReference],
 				s.[ExternalReferenceIsCommon],
+				s.[ReferenceSourceId],
+				s.[ReferenceSourceIsCommon],
 				s.[InternalReference],
 				s.[InternalReferenceIsCommon]
 			)
@@ -203,13 +209,14 @@ BEGIN
 			LDE.[CurrencyIsCommon],
 			LDE.[CenterId],
 			LDE.[CenterIsCommon],
-			
+	
+			LDE.[RelationId],
+			LDE.[RelationIsCommon],			
 			LDE.[CustodianId],
 			LDE.[CustodianIsCommon],
-			LDE.[CustodyId],
-			LDE.[CustodyIsCommon],
-			LDE.[ParticipantId],
-			LDE.[ParticipantIsCommon],
+
+			LDE.[NotedRelationId],
+			LDE.[NotedRelationIsCommon],
 			LDE.[ResourceId],
 			LDE.[ResourceIsCommon],
 			
@@ -225,6 +232,8 @@ BEGIN
 
 			LDE.[ExternalReference],
 			LDE.[ExternalReferenceIsCommon],
+			LDE.[ReferenceSourceId],
+			LDE.[ReferenceSourceIsCommon],
 			LDE.[InternalReference],
 			LDE.[InternalReferenceIsCommon]
 		FROM @DocumentLineDefinitionEntries LDE
@@ -246,12 +255,13 @@ BEGIN
 			t.[CenterId]					= s.[CenterId],
 			t.[CenterIsCommon]				= s.[CenterIsCommon],
 
+			t.[RelationId]					= s.[RelationId],
+			t.[RelationIsCommon]			= s.[RelationIsCommon],
 			t.[CustodianId]					= s.[CustodianId],
 			t.[CustodianIsCommon]			= s.[CustodianIsCommon],
-			t.[CustodyId]					= s.[CustodyId],
-			t.[CustodyIsCommon]				= s.[CustodyIsCommon],
-			t.[ParticipantId]				= s.[ParticipantId],
-			t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
+
+			t.[NotedRelationId]				= s.[NotedRelationId],
+			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
 			t.[ResourceId]					= s.[ResourceId],
 			t.[ResourceIsCommon]			= s.[ResourceIsCommon],
 
@@ -267,6 +277,8 @@ BEGIN
 
 			t.[ExternalReference]			= s.[ExternalReference],
 			t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
+			t.[ReferenceSourceId]			= s.[ReferenceSourceId],
+			t.[ReferenceSourceIsCommon]		= s.[ReferenceSourceIsCommon],
 			t.[InternalReference]			= s.[InternalReference],
 			t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
 			
@@ -287,13 +299,12 @@ BEGIN
 			[CurrencyIsCommon],
 			[CenterId],
 			[CenterIsCommon],
-			
+			[RelationId],
+			[RelationIsCommon],
 			[CustodianId],
 			[CustodianIsCommon],
-			[CustodyId],
-			[CustodyIsCommon],
-			[ParticipantId],
-			[ParticipantIsCommon],
+			[NotedRelationId],
+			[NotedRelationIsCommon],
 			[ResourceId],
 			[ResourceIsCommon],
 
@@ -309,6 +320,8 @@ BEGIN
 
 			[ExternalReference],
 			[ExternalReferenceIsCommon],
+			[ReferenceSourceId],
+			[ReferenceSourceIdIsCommon],
 			[InternalReference],
 			[InternalReferenceIsCommon]
 		)
@@ -326,13 +339,12 @@ BEGIN
 			s.[CurrencyIsCommon],
 			s.[CenterId],
 			s.[CenterIsCommon],
-			
+			s.[RelationId],
+			s.[RelationIsCommon],			
 			s.[CustodianId],
 			s.[CustodianIsCommon],
-			s.[CustodyId],
-			s.[CustodyIsCommon],
-			s.[ParticipantId],
-			s.[ParticipantIsCommon],
+			s.[NotedRelationId],
+			s.[NotedRelationIsCommon],
 			s.[ResourceId],
 			s.[ResourceIsCommon],
 
@@ -348,6 +360,8 @@ BEGIN
 
 			s.[ExternalReference],
 			s.[ExternalReferenceIsCommon],
+			s.[ReferenceSourceId],
+			s.[ReferenceSourceIdIsCommon],
 			s.[InternalReference],
 			s.[InternalReferenceIsCommon]
 		)
@@ -408,13 +422,13 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineId], E.[Index], E.[IsSystem], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[CustodianId], E.[CustodyId], E.[ParticipantId], E.[ResourceId], E.[CenterId],
+			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
+			E.[RelationId], E.[CustodianId], E.[NotedRelationId], E.[ResourceId], E.[CenterId],
 			E.[EntryTypeId],
-			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
+			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value], E.[RValue], E.[PValue],
 			E.[Time1], E.[Time2],
 			E.[ExternalReference],
-			E.[InternalReference],
+			E.[ReferenceSourceId], E.[InternalReference],
 			E.[NotedAgentName], 
 			E.[NotedAmount], 
 			E.[NotedDate]
@@ -425,13 +439,12 @@ BEGIN
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
-			t.[IsSystem]				= ISNULL(s.[IsSystem], 0), 
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
+			t.[RelationId]					= s.[RelationId],
 			t.[CustodianId]				= s.[CustodianId],
-			t.[CustodyId]				= s.[CustodyId],
-			t.[ParticipantId]			= s.[ParticipantId],
+			t.[NotedRelationId]			= s.[NotedRelationId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[CenterId]				= s.[CenterId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -439,9 +452,12 @@ BEGIN
 			t.[Quantity]				= s.[Quantity],
 			t.[UnitId]					= s.[UnitId],
 			t.[Value]					= s.[Value],
+			t.[RValue]					= s.[RValue],
+			t.[PValue]					= s.[PValue],
 			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
 			t.[ExternalReference]		= s.[ExternalReference],
+			t.[ReferenceSourceId]		= s.[ReferenceSourceId],
 			t.[InternalReference]		= s.[InternalReference],
 			t.[NotedAgentName]			= s.[NotedAgentName],
 			t.[NotedAmount]				= s.[NotedAmount],
@@ -449,24 +465,24 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [Index], [IsSystem], [Direction], [AccountId], [CurrencyId],
-			[CustodianId], [CustodyId], [ParticipantId], [ResourceId], [CenterId],
+		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
+			[AgentId], [CustodianId], [NotedAgentId], [ResourceId], [CenterId],
 			[EntryTypeId],
-			[MonetaryValue], [Quantity], [UnitId], [Value],
+			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
 			[Time1], [Time2],
 			[ExternalReference],
-			[InternalReference],
+			[ReferenceSourceId], [InternalReference],
 			[NotedAgentName], 
 			[NotedAmount], 
 			[NotedDate]
 		)
-		VALUES (s.[LineId], s.[Index], s.[IsSystem], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[CustodianId], s.[CustodyId], s.[ParticipantId], s.[ResourceId], s.[CenterId],
+		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
+			s.[RelationId], s.[CustodianId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
 			s.[EntryTypeId],
-			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
+			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value], s.[RValue], s.[PValue],
 			s.[Time1], s.[Time2],
 			s.[ExternalReference],
-			s.[InternalReference],
+			s.[ReferenceSourceId], s.[InternalReference],
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
 			s.[NotedDate]
@@ -512,13 +528,6 @@ BEGIN
 	) AS x
 	WHERE x.[InsertedFileId] IS NULL
 
-	-- if we added/deleted draft lines, the document state should change
-
-	--DECLARE @DocIds dbo.IdList;
-	--INSERT INTO @DocIds([Id])
-	--SELECT [Id] FROM @DocumentsIndexedIds;
-	--EXEC dal.Documents_State__Refresh @DocIds;
-
 	---- Assign the new ones to self
 	DECLARE @NewDocumentsIds dbo.IdList;
 	INSERT INTO @NewDocumentsIds([Id])
@@ -528,8 +537,7 @@ BEGIN
 	-- This automatically returns the new notification counts
 	EXEC [dal].[Documents__Assign]
 		@Ids = @NewDocumentsIds,
-		@AssigneeId = @UserId --,
-		-- @Comment = N'FYC' -- Not necessary, also doesn't work in other languages
+		@AssigneeId = @UserId 
 
 	-- Return deleted File IDs, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedFileIds;

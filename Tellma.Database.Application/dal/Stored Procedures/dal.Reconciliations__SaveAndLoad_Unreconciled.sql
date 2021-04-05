@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__SaveAndLoad_Unreconciled]
 	-- Save Parameters
 	@AccountId					INT, 
-	@CustodyId					INT,
+	@RelationId					INT,
 	@ExternalEntries			ExternalEntryList READONLY, -- insert/update
 	@Reconciliations			ReconciliationList READONLY, -- insert
 	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
@@ -23,7 +23,7 @@ AS
 	-- Save
 	EXEC [dal].[Reconciliations__Save]
 		@AccountId = @AccountId, 
-		@CustodyId = @CustodyId, 
+		@RelationId = @RelationId, 
 		@ExternalEntries = @ExternalEntries, 
 		@Reconciliations = @Reconciliations, 
 		@ReconciliationEntries = @ReconciliationEntries, 
@@ -34,7 +34,7 @@ AS
 	-- Load
 	EXEC [dal].[Reconciliation__Load_Unreconciled]
 		@AccountId = @AccountId,
-		@CustodyId = @CustodyId,
+		@RelationId = @RelationId,
 		@AsOfDate = @AsOfDate,
 		@Top = 	@Top,
 		@Skip =	@Skip,

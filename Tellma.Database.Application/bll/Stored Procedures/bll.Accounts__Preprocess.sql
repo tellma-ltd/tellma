@@ -11,11 +11,11 @@ SET NOCOUNT ON;
 DECLARE @ProcessedEntities [dbo].[AccountList];
 INSERT INTO @ProcessedEntities SELECT * FROM @Entities;
 
--- If Custody has a Currency or Center copy it to Account
+-- If Relation has a Currency or Center copy it to Account
 UPDATE A
-SET A.[CurrencyId] = COALESCE(C.[CurrencyId], A.[CurrencyId]),
-	A.[CenterId] = COALESCE(C.[CenterId], A.[CenterId])
-FROM @ProcessedEntities A JOIN dbo.[Custodies] C ON A.[CustodyId] = C.Id;
+SET A.[CurrencyId] = COALESCE(R.[CurrencyId], A.[CurrencyId]),
+	A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
+FROM @ProcessedEntities A JOIN dbo.[Relations] R ON A.[RelationId] = R.Id;
 
 -- If Resource has a CurrencyId Or Center, copy it to Account
 UPDATE A
@@ -26,38 +26,19 @@ SET
 		A.[CenterId])
 FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id
 JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id];
--- In account type, Custodian def is null iff all custody definitions have custodian def is null
 
-
--- Exists Custody Definitions in AT => (Custody Def is optional) 
--- If custody is defined, then /Custodian = Custody/Custodian
-
-
--- Account/AccountType/CustodianDefinition = null => Account/Custodian = null
+-- Account Type/Relation Definition = null => Account/Relation is null
 UPDATE A
-SET	CustodianId = NULL 
+SET A.[RelationId] = NULL
+FROM  @ProcessedEntities A
+JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+WHERE AC.RelationDefinitionId IS NULL 
+
+UPDATE A
+SET A.[NotedRelationId] = NULL 
 FROM  @ProcessedEntities A
 JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-WHERE AC.CustodianDefinitionId IS NULL
-
--- No Account/AccountType/CustodyDefinitions => Account/Custody = null, Account/CustodyDefinition = null
-UPDATE A
-SET CustodyId = NULL, CustodyDefinitionId = NULL 
-FROM  @ProcessedEntities A
-LEFT JOIN dbo.AccountTypeCustodyDefinitions ATCD ON A.AccountTypeId = ATCD.AccountTypeId AND A.CustodyDefinitionId = ATCD.CustodyDefinitionId
-WHERE A.CustodyDefinitionId IS NOT NULL AND ATCD.CustodyDefinitionId IS NULL
-
--- Account/CustodyDefinition = null => Account/Custody is null
-UPDATE A
-SET CustodyId = NULL
-FROM  @ProcessedEntities A
-WHERE CustodyDefinitionId IS NULL 
-
-UPDATE A
-SET ParticipantId = NULL 
-FROM  @ProcessedEntities A
-JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-WHERE AC.ParticipantDefinitionId IS NULL
+WHERE AC.[NotedRelationDefinitionId] IS NULL
 
 UPDATE A
 SET ResourceId = NULL, ResourceDefinitionId = NULL 

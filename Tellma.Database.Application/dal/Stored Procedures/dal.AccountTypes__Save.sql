@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeCustodyDefinitions [AccountTypeCustodyDefinitionList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -22,8 +21,9 @@ SET NOCOUNT ON;
 				E.[IsMonetary],
 				E.[IsAssignable],
 				E.[StandardAndPure],
+				E.[RelationDefinitionId],
 				E.[CustodianDefinitionId],
-				E.[ParticipantDefinitionId],
+				E.[NotedRelationDefinitionId],
 				E.[EntryTypeParentId],
 				E.[Time1Label],
 				E.[Time1Label2],
@@ -63,8 +63,9 @@ SET NOCOUNT ON;
 				t.[IsMonetary]				= IIF(t.[IsSystem]=0,s.[IsMonetary],t.[IsMonetary]),
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[StandardAndPure]			= IIF(t.[IsSystem]=0,s.[StandardAndPure],t.[StandardAndPure]),
+				t.[RelationDefinitionId]	= s.[RelationDefinitionId],
 				t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
-				t.[ParticipantDefinitionId]	= s.[ParticipantDefinitionId],
+				t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
 				t.[Time1Label]				= s.[Time1Label],
 				t.[Time1Label2]				= s.[Time1Label2],
@@ -96,8 +97,9 @@ SET NOCOUNT ON;
 					[IsMonetary],
 					[IsAssignable],
 					[StandardAndPure],
+					[RelationDefinitionId],
 					[CustodianDefinitionId],
-					[ParticipantDefinitionId],
+					[NotedRelationDefinitionId],
 					[EntryTypeParentId],
 					[Time1Label],
 					[Time1Label2],
@@ -128,8 +130,9 @@ SET NOCOUNT ON;
 					s.[IsMonetary],
 					s.[IsAssignable],
 					s.[StandardAndPure],
+					s.[RelationDefinitionId],
 					s.[CustodianDefinitionId],
-					s.[ParticipantDefinitionId],
+					s.[NotedRelationDefinitionId],
 					s.[EntryTypeParentId],
 					s.[Time1Label],
 					s.[Time1Label2],
@@ -174,27 +177,6 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([AccountTypeId],	[ResourceDefinitionId])
 		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId])
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
-
-	-- AccountTypeCustodyDefinitions
-	WITH BEATCD AS (
-		SELECT * FROM dbo.[AccountTypeCustodyDefinitions]
-		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
-	)
-	MERGE INTO BEATCD AS t
-	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[CustodyDefinitionId]
-		FROM @AccountTypeCustodyDefinitions L
-		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
-	) AS s ON t.Id = s.Id
-	WHEN MATCHED THEN
-		UPDATE SET 
-			t.[CustodyDefinitionId]		= s.[CustodyDefinitionId], 
-			t.[SavedById]					= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[CustodyDefinitionId])
-		VALUES (s.[AccountTypeId], s.[CustodyDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

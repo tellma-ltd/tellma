@@ -27,13 +27,12 @@ BEGIN
 	[LineIndex]					INT '$.LineIndex',
 	[DocumentIndex]				INT '$.DocumentIndex',
 	[Id]						INT '$.Id',
-	[IsSystem]					BIT '$.IsSystem',
 	[Direction]					SMALLINT '$.Direction',
 	[AccountId]					INT '$.AccountId',
 	[CurrencyId]				NCHAR (3) '$.CurrencyId',
+	[RelationId]				INT '$.RelationId',
 	[CustodianId]				INT '$.CustodianId',
-	[CustodyId]					INT '$.CustodyId',
-	[ParticipantId]				INT '$.ParticipantId',
+	[NotedRelationId]			INT '$.NotedRelationId',
 	[ResourceId]				INT '$.ResourceId',
 	[CenterId]					INT '$.CenterId',
 	[EntryTypeId]				INT '$.EntryTypeId',
@@ -41,10 +40,12 @@ BEGIN
 	[Quantity]					DECIMAL (19,4) '$.Quantity',
 	[UnitId]					INT '$.UnitId',
 	[Value]						DECIMAL (19,4) '$.Value',
-
+	[RValue]					DECIMAL (19,4) '$.RValue',
+	[PValue]					DECIMAL (19,4) '$.PValue',
 	[Time1]						DATETIME2 (2) '$.Time1',	-- from time
 	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
 	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
+	[ReferenceSourceId]			INT	'$.ReferenceSourceId',
 	[InternalReference]			NVARCHAR (50) '$.InternalReference',
 	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
 	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item

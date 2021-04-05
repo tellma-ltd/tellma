@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryCustodyDefinitions [LineDefinitionEntryCustodyDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
@@ -18,7 +17,6 @@ SET NOCOUNT ON;
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
-		@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
@@ -39,7 +37,6 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
-		@LineDefinitionEntryCustodyDefinitions = @LineDefinitionEntryCustodyDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,

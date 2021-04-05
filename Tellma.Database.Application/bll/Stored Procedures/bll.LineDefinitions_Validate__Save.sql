@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[LineDefinitions_Validate__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryCustodyDefinitions [LineDefinitionEntryCustodyDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
@@ -23,24 +22,5 @@ AS
 	FROM @Entities LD 
 	JOIN @LineDefinitionColumns LDC ON LD.[Index] = LDC.[HeaderIndex]
 	WHERE LDC.[ColumnName] IN (N'CurrencyId', N'CenterId')  AND LDC.RequiredState <> 0;
-
-	--WITH LineDefinitionParticipants AS (
-	--	SELECT LD.[Index]
-	--	FROM @Entities LD 
-	--	JOIN dbo.LineDefinitionEntries LDE ON LDE.[LineDefinitionId] = LD.[Id]
-	--	JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-	--	JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-	--	JOIN dbo.LineDefinitionColumns LDC ON LDC.LineDefinitionId = LD.[Id]
-	--	WHERE ATC.[ParticipantDefinitionId] IS NOT NULL
-	--	AND LDC.ColumnName = N'ParticipantId'
-	--	AND LDC.[InheritsFromHeader] = 2
-	--	GROUP BY LD.[Index]
-	--	HAVING COUNT(DISTINCT ATC.[ParticipantDefinitionId]) > 1
-	--)
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(LD.[Index] AS NVARCHAR (255)) +	']',
-	--	N'localize:Error__DistinctRelationDefinitionInheritFromDocumentHeader'
-	--FROM LineDefinitionParticipants LD 
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

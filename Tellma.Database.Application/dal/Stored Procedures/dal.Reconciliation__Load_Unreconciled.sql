@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliation__Load_Unreconciled]
 	@AccountId		INT, 
-	@CustodyId		INT, 
+	@RelationId		INT, 
 	@AsOfDate		DATE, 
 	@Top			INT, 
 	@Skip			INT,
@@ -16,7 +16,7 @@ AS
 	SELECT @EntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[CustodyId] = @CustodyId
+	WHERE E.[RelationId] = @RelationId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate;
@@ -26,7 +26,7 @@ AS
 		@UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[CustodyId] = @CustodyId
+	WHERE E.[RelationId] = @RelationId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND L.PostingDate <= @AsOfDate
@@ -38,13 +38,13 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
 		WHERE (EE.PostingDate <=  @AsOfDate)
 		AND (EE.[AccountId] = @AccountId)
-		AND (EE.[CustodyId] = @CustodyId)
+		AND (EE.[RelationId] = @RelationId)
 	)
 
 	SELECT @UnreconciledExternalEntriesCount = COUNT(*),
 		@UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.ExternalEntries E
-	WHERE E.[CustodyId] = @CustodyId
+	WHERE E.[RelationId] = @RelationId
 	AND E.[AccountId] = @AccountId
 	AND E.[PostingDate] <= @AsOfDate
 	AND E.[Id] NOT IN (
@@ -56,7 +56,7 @@ AS
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		WHERE (L.PostingDate <= @AsOfDate) --
 		AND (E.[AccountId] = @AccountId)
-		AND (E.[CustodyId] = @CustodyId)
+		AND (E.[RelationId] = @RelationId)
 	)
 	
 	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue],
@@ -66,7 +66,7 @@ AS
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-	WHERE E.[CustodyId] = @CustodyId
+	WHERE E.[RelationId] = @RelationId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate
@@ -78,7 +78,7 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
 		WHERE (EE.PostingDate <=  @AsOfDate)
 		AND (EE.[AccountId] = @AccountId)
-		AND (EE.[CustodyId] = @CustodyId)
+		AND (EE.[RelationId] = @RelationId)
 	)
 	
 	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
@@ -87,7 +87,7 @@ AS
 	SELECT E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt],
 	CAST(IIF(E.[Id] IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.ExternalEntries E
-	WHERE E.[CustodyId] = @CustodyId
+	WHERE E.[RelationId] = @RelationId
 	AND E.[AccountId] = @AccountId
 	AND E.[PostingDate] <= @AsOfDate
 	AND E.[Id] NOT IN (
@@ -99,7 +99,7 @@ AS
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		WHERE (L.PostingDate <= @AsOfDate) --
 		AND (E.[AccountId] = @AccountId)
-		AND (E.[CustodyId] = @CustodyId)
+		AND (E.[RelationId] = @RelationId)
 	)
 	ORDER BY E.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
 	OFFSET (@SkipExternal) ROWS FETCH NEXT (@TopExternal) ROWS ONLY;
