@@ -20,7 +20,7 @@ AS
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate;
 
-	With SpecialEntries AS (
+	With SpecialEntries AS ( -- Internal Entries that were reconciled @AsOfDate
 		SELECT DISTINCT RE.[EntryId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
@@ -41,10 +41,10 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND (
-		L.[PostingDate] > @AsOfDate 
+		L.[PostingDate] > @AsOfDate -- was reconciled after @AsOfDate
 		AND E.[Id] IN (SELECT EntryId FROM SpecialEntries)
 		OR
-		L.[PostingDate] <= @AsOfDate  
+		L.[PostingDate] <= @AsOfDate   -- or was not reconciled @AsOfDate
 		AND E.[Id] NOT IN (SELECT EntryId FROM SpecialEntries)
 	);
 
@@ -65,14 +65,6 @@ AS
 	AND L.[State] = 4
 	AND E.[Id] NOT IN (
 		SELECT [EntryId] FROM dbo.ReconciliationEntries
-		--SELECT DISTINCT RE.[EntryId]
-		--FROM dbo.ReconciliationEntries RE
-		--JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
-		--JOIN dbo.ReconciliationExternalEntries REE ON REE.ReconciliationId = R.Id
-		--JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
-		--WHERE EE.PostingDate <=  @AsOfDate	
-		--AND EE.[AccountId] = @AccountId
-		--AND EE.[CustodyId] = @CustodyId
 	)
 	AND L.[PostingDate] <= @AsOfDate
 	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
